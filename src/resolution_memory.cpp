@@ -25,6 +25,12 @@ static const MemoryRow kMemoryRows[] = {
     {"RememberObjects", ParamForm::NAMES_TARGETED, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
     {"RememberChanged", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED}},
     {"RememberLKI", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED_LKI}},
+    {"RememberSacrificed", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::SACRIFICED}},
+    {"RememberMilled", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::MILLED}},
+    {"RememberRevealed", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::REVEALED_HAND}},
+    {"RememberPumped", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::PUMPED}},
+    {"RememberFound", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::FOUND}},
+    {"ImprintRevealed", ParamForm::IS_TRUE, {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::REVEALED_TOP}},
 };
 
 // Adds `op` to `def`, into the op it shares a slot and an action with if there is one.
@@ -64,12 +70,14 @@ static bool reads_report(const AbilityDef &def, uint32_t sources) {
 static void clear_slot(MemorySlot slot) {
     switch (slot) {
         case MemorySlot::REMEMBERED: cur_game.resolution.memory.remembered.clear(); break;
+        case MemorySlot::IMPRINTED: cur_game.resolution.memory.imprinted.clear(); break;
     }
 }
 
 static void add_to_slot(MemorySlot slot, const ObjectRef &ref) {
     switch (slot) {
         case MemorySlot::REMEMBERED: cur_game.resolution.memory.remembered.push_back(ref); break;
+        case MemorySlot::IMPRINTED: cur_game.resolution.memory.imprinted.push_back(ref); break;
     }
 }
 

@@ -18,11 +18,17 @@ struct EffectObjects {
         TARGETS = 1u << 0,    // the ability's targets, as it starts to resolve
         MOVED = 1u << 1,      // the objects a ChangeZone, ChangeZoneAll or Dig moved
         MOVED_LKI = 1u << 2,  // the same, on the ChangeZone branches that honour RememberLKI$
+        SACRIFICED = 1u << 3,     // what a Sacrifice sacrificed
+        MILLED = 1u << 4,         // what a Mill milled
+        REVEALED_HAND = 1u << 5,  // the hand a RevealHand revealed
+        REVEALED_TOP = 1u << 6,   // the library cards a PeekAndReveal revealed to everyone
+        PUMPED = 1u << 7,         // the object a Pump applies to
+        FOUND = 1u << 8,          // the card a DigUntil found
     };
 };
 
 // The part of the resolution's memory a row writes (ResolutionMemory).
-enum class MemorySlot { REMEMBERED };
+enum class MemorySlot { REMEMBERED, IMPRINTED };
 
 enum class MemoryAction {
     APPEND,   // add the reported objects

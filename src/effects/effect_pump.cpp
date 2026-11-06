@@ -16,6 +16,7 @@
 #include "../input_logger.h"
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 
@@ -150,8 +151,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
     // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
-    if (ab.def->remember_pumped && ab.target.get() != 0)
-        cur_game.resolution.memory.remembered.push_back(ObjectRef::of(ab.target.get()));
+    if (ab.target.get() != 0) report_object(ab, EffectObjects::PUMPED, ab.target.get());
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.

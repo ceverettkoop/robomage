@@ -15,6 +15,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 #include "../unless_payment.h"
 
@@ -107,7 +108,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     if (!rt.pre_done) {
         // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
         // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
-        if (ab.def->remember_sacrificed) cur_game.resolution.memory.remembered.clear();
+        report_effect(ab, EffectObjects::SACRIFICED);
 
         // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
         // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
@@ -133,7 +134,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     const bool edict = ab.def->defined.is(ObjectSpec::OPPONENT);
     if (ab.def->sac_valid.empty() && !edict) {
         Entity sacked = sacrifice_self(ab, orderer);
-        if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
+        if (sacked) report_object(ab, EffectObjects::SACRIFICED, sacked);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -152,7 +153,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
+            if (sacked) report_object(ab, EffectObjects::SACRIFICED, sacked);
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -171,7 +172,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
+            if (sacked) report_object(ab, EffectObjects::SACRIFICED, sacked);
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -181,7 +182,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         bool suspended = false;
         Entity sacked = sacrifice_one(ab, ab.controller, ab.def->optional_choice, orderer, ctx, suspended);
         if (suspended) return HandlerResult::SUSPENDED;
-        if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
+        if (sacked) report_object(ab, EffectObjects::SACRIFICED, sacked);
         if (sacked == 0) break;
     }
     return HandlerResult::DONE_RUN_SUBS;

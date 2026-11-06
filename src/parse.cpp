@@ -2091,14 +2091,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
     } else if (key == "TgtZone") {
         if (value == "Graveyard") ability.target_in_graveyard = true;
-    } else if (key == "RememberRevealed") {
-        // RememberRevealed$ True (Cloak and Dagger): the revealed hand becomes the remembered
-        // candidate set for a later Defined$ Remembered exile (handled in effect_reveal_hand).
-        ability.remember_revealed = (value == "True");
-    } else if (key == "RememberPumped") {
-        // RememberPumped$ True (Cloak and Dagger): the optionally-chosen creature is appended
-        // to the remembered candidate set (handled in effect_pump).
-        ability.remember_pumped = (value == "True");
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
     } else if (key == "ClearChosenCard") {
@@ -2240,8 +2232,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
-    } else if (key == "RememberSacrificed") {
-        ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {
         ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
     } else if (key == "RepeatTypesFrom") {

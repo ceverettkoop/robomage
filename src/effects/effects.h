@@ -144,7 +144,6 @@ bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string
 bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_delayed_trigger(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &value);
-bool parse_mill(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value);

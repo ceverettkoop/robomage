@@ -29,7 +29,6 @@ bool apply_parse_hook(AbilityDef &ab, const std::string &key, const std::string 
         || parse_dig(ab, key, value)
         || parse_delayed_trigger(ab, key, value)
         || parse_discard(ab, key, value)
-        || parse_mill(ab, key, value)
         || parse_peek_and_reveal(ab, key, value)
         || parse_reveal(ab, key, value)
         || parse_amass(ab, key, value)

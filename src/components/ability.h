@@ -138,7 +138,6 @@ struct AbilityDef {
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
     FilterSpec sac_valid;         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
-    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to the remembered set
     FilterSpec return_cost_type;        // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
@@ -545,8 +544,6 @@ struct AbilityDef {
     FilterSpec choose_card_filter;
     Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
-    // Mill: remember milled cards in cur_game.resolution.memory.remembered
-    bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
 
@@ -566,17 +563,6 @@ struct AbilityDef {
     // reduces to the controller choosing one matching permanent; the winner is fed to the
     // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
     FilterSpec vote_card_filter;
-
-    // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
-    // stash every revealed card into cur_game.resolution.memory.remembered so a later Defined$ Remembered
-    // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first
-    // link of the chain that records the candidates a subsequent exile picks from.
-    bool remember_revealed = false;
-
-    // RememberPumped$ True (Cloak and Dagger's DBPump): a Pump used purely as an (optional)
-    // target-selector — it applies no stat change, it just APPENDS its chosen creature to
-    // cur_game.resolution.memory.remembered so it joins the candidate pool of a later exile.
-    bool remember_pumped = false;
 
     // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e linked
     // exile-and-return: Cloak and Dagger, Sheltered by Ghosts, Static Prison). Each card moved
@@ -696,11 +682,9 @@ struct AbilityDef {
     // DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches
     // change_valid (Valid$). dig_until_found_dest is where the matching card goes,
     // dig_until_revealed_dest where the non-matching cards passed over go (both Exile for
-    // Amped Raptor). dig_until_remember_found stores the matching card in
-    // cur_game.resolution.memory.remembered (RememberFound$) for a chained DB$ Play.
+    // Amped Raptor).
     int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
     int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
-    bool dig_until_remember_found = false;       // RememberFound$ True
     bool dig_until_attacking = false;            // Attacking$ True — the found card (FoundDestination$ Battlefield)
                                                  // enters tapped (enters_tapped) and attacking (Raph & Mikey; CR 508.4)
 

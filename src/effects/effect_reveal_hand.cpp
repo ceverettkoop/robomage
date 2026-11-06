@@ -12,6 +12,7 @@
 #include "../ecs/coordinator.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -36,7 +37,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // later Defined$ Remembered exile picks from. This RevealHand is the first link of the chain,
     // so start a FRESH remembered set (clear it) and fill it with the revealed cards. A later
     // RememberPumped$ Pump appends the chosen creature to this same set (CR 608.2c chaining).
-    if (ab.def->remember_revealed) cur_game.resolution.memory.remembered.clear();
+    report_effect(ab, EffectObjects::REVEALED_HAND);
 
     if (hand.empty()) {
         game_log("%s reveals their hand: it is empty.\n", player_name(hand_owner).c_str());
@@ -48,7 +49,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         game_log("  %s\n", cd.name.c_str());
-        if (ab.def->remember_revealed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(e));
+        report_object(ab, EffectObjects::REVEALED_HAND, e);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
