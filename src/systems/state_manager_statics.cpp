@@ -603,8 +603,8 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster,
     return cost;
 }
 
-ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
-                                Zone::Ownership caster, int hybrid_pips) {
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana, Zone::Ownership caster,
+                                Zone::ZoneValue from, int hybrid_pips) {
     // The alternative cost SUBSTITUTES for the printed mana cost (CR 601.2b); cost increases
     // and the SetCost floor then apply ON TOP (CR 601.2f) — the same ordering as
     // effective_base_cost, just against the substituted mana instead of the printed cost.
@@ -616,6 +616,10 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
     // via the shared active_raise_cost_for; the per-spell surcharge needs the casting player.
     int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // Cost reductions apply to an alternative cost as to any other (CR 118.9d): only generic pips,
+    // after the increases (Bilbo: a flashback costs {1} less).
+    for (int reduce = active_reduce_cost_for(card_data, caster, from); reduce > 0 && cost.count(GENERIC) > 0; reduce--)
+        cost.erase(cost.find(GENERIC));
     // SetCost floor (Trinisphere): applied LAST — after the increase (601.2f). Colored pips stay;
     // only generic is added to raise a sub-floor total.
     int floor = active_cost_floor_for(card_data);

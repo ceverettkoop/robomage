@@ -76,7 +76,7 @@ static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone:
                                  const ManaValue &mana, std::shared_ptr<Orderer> orderer);
 static bool alt_svar_condition_holds(const std::string &svar, const std::string &compare, Zone::Ownership player);
 static bool can_afford_alt(const CardData &card_data, const AltCost &alt_cost, Zone::Ownership priority_player,
-                           Entity card_entity, std::shared_ptr<Orderer> orderer);
+                           Entity card_entity, Zone::ZoneValue from, std::shared_ptr<Orderer> orderer);
 static bool offer_timing_ok(CastOffer &offer);
 static bool offer_gates_ok(CastOffer &offer);
 static bool offer_castable(CastOffer &offer);
@@ -346,7 +346,8 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant
     // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
     if (!is_normal_play) {
         int grant_life = perm_grant.resource == GrantResource::LIFE ? perm_grant.amount : 0;
-        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
+        ManaValue floor_mana =
+            floored_alt_mana_cost(ecd, ManaValue{}, caster, global_coordinator.GetComponent<Zone>(card).location);
         if (!floor_mana.empty() &&
             !can_pay_mana(caster, floor_mana, card, orderer, ecd.has_delve,
                           ecd.tap_to_pay, /*exclude_entity=*/0,
@@ -367,7 +368,7 @@ bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Ordere
     if (!can_cast_now(cd, card, owner, Zone::HAND, /*sorcery_window=*/false,
                       /*ignore_timing=*/true, orderer))
         return false;
-    const ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner);
+    const ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner, Zone::HAND);
     CostCheck check = total_cost_check(cd, card, owner, orderer);
     check.mana = &alt_mana;
     check.unchecked = kAllButMana;
@@ -402,7 +403,7 @@ static bool alt_svar_condition_holds(const std::string &svar, const std::string 
 
 static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Zone::Ownership priority_player,
-                           Entity card_entity, std::shared_ptr<Orderer> orderer) {
+                           Entity card_entity, Zone::ZoneValue from, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
     // Check SVar conditions (e.g. Once Upon a Time: free only if first spell this game)
@@ -438,7 +439,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // The mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
     // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player,
+    const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player, from,
                                                      static_cast<int>(alt_cost.cost.hybrid().size()));
     CostCheck check = total_cost_check(card_data, card_entity, priority_player, orderer);
     check.mana = &alt_mana;
@@ -478,7 +479,7 @@ static bool mana_cost_offered(CastOffer &offer) {
 
 static bool alternative_offered(CastOffer &offer) {
     return offer_castable(offer) && can_afford_alt(offer.face, offer.face.alt_cost, offer.window.caster, offer.card,
-                                                   offer.window.orderer);
+                                                   offer.zone, offer.window.orderer);
 }
 
 static bool evoke_offered(CastOffer &offer) { return offer.face.alt_cost.is_evoke && alternative_offered(offer); }
@@ -539,7 +540,7 @@ static bool free_cast_offered(CastOffer &offer) {
     const bool timing_ok = offer_timing_ok(offer) ||
                            (grant.with_flash && (w.sorcery_window || !rules_mod::opponent_sorcery_speed_locked(w.caster)));
     if (!timing_ok || !offer_gates_ok(offer)) return false;
-    const ManaValue mana = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster);
+    const ManaValue mana = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster, offer.zone);
     CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
     check.mana = &mana;
     return can_pay(spell_additional_cost(offer.face), check);
@@ -548,7 +549,7 @@ static bool free_cast_offered(CastOffer &offer) {
 static bool free_offspring_offered(CastOffer &offer) {
     if (!offer.face.has_offspring || !free_cast_offered(offer)) return false;
     const CastWindow &w = offer.window;
-    ManaValue with_offspring = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster);
+    ManaValue with_offspring = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster, offer.zone);
     for (Colors c : offer.face.offspring_cost.mana()) with_offspring.insert(c);
     CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
     check.mana = &with_offspring;
@@ -559,7 +560,7 @@ static bool free_offspring_offered(CastOffer &offer) {
 // costs (CR 702.34a, 702.139a), so an active SetCost floor applies to them too.
 static bool replacing_cost_payable(const CastOffer &offer, const CostParts &cost) {
     const CastWindow &w = offer.window;
-    const ManaValue mana = floored_alt_mana_cost(offer.face, cost.mana(), w.caster);
+    const ManaValue mana = floored_alt_mana_cost(offer.face, cost.mana(), w.caster, offer.zone);
     CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
     check.mana = &mana;
     return can_pay(cost, check);

@@ -494,7 +494,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    pc.cost_to_pay = floored_alt_mana_cost(card_data, mana, caster);
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, mana, caster, pc.chosen.option.zone);
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.cost.is_free() && pc.cost_to_pay.empty()) {
@@ -1845,7 +1845,7 @@ static void determine_mana_cost(Game::PendingCast &pc, const CardData &card_data
     // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
     // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
     // additional costs below are offered and paid as on any cast.
-    pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
+    pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster, pc.chosen.option.zone)
                                        : effective_base_cost(card_data, caster, pc.chosen.option.zone);
     // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
     // once they are chosen (AURA_TARGET), the total cost being determined after them
@@ -1879,7 +1879,7 @@ static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_dat
     // — paid ON TOP of the resource cost (energy/life). Deferred until after targets
     // like every other cost. Empty (no floor / increase applies) leaves the cast free
     // of mana.
-    pc.cost_to_pay = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, ManaValue{}, caster, pc.chosen.option.zone);
 }
 
 // FLASHBACK COST — determined here (601.2f), but PAID after targets are
@@ -1889,7 +1889,7 @@ static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_dat
 static void determine_flashback_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
     // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
     // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster, pc.chosen.option.zone);
     pc.pay.life = card_data.flashback_cost.life();
 }
 
@@ -1899,7 +1899,7 @@ static void determine_flashback_cost(Game::PendingCast &pc, const CardData &card
 // after targets are chosen, like every other cost (601.2c before 601.2g/h).
 static void determine_escape_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
     // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster, pc.chosen.option.zone);
     pc.pay.life = card_data.escape_cost.life();
 }
 
