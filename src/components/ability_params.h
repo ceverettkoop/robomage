@@ -66,11 +66,6 @@ struct DestroyAllParams {
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
     // expression. Empty = no dynamic bound.
     std::string cmc_expr = "";
-    // UnlessCost$ PayEnergy<N> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies):
-    // the controller pays N energy ({E}); with UnlessSwitched the destroy happens ONLY IF the
-    // energy is paid. energy_unless_expr is the runtime Count$ expression for N (Count$ChosenNumber).
-    std::string energy_unless_expr = "";
-    bool energy_unless_switched = false;  // UnlessSwitched$ True — invert to "do only if paid"
 };
 
 // Token creation (e.g. Cori-Steel Cutter). TokenScript$ string parsed at resolve.

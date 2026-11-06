@@ -19,6 +19,7 @@
 #include "../queries/players.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -33,19 +34,11 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // UnlessCost$ PayEnergy<N> (Wrath of the Skies: with UnlessSwitched$ True). N
     // (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
-    if (dp && !dp->energy_unless_expr.empty()) {
-        int n = static_cast<int>(
-            evaluate_amount(dp->energy_unless_expr, ab.controller, 0, ab.target.get()));
-        Entity ctrl_entity = get_player_entity(ab.controller);
-        auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-        if (dp->energy_unless_switched) {
-            // Switched: the spell's controller pays N {E} as a single cost of resolution and the
-            // destroy proceeds ONLY IF it is paid (CR 122.1c). Wrath of the Skies: pay the chosen
-            // amount, then destroy each artifact/creature/enchantment with MV <= that amount.
-            bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
-            if (n > 0)
-                game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
-            if (!paid) return HandlerResult::DONE_RUN_SUBS;  // couldn't pay -> nothing is destroyed
+    if (!ab.def->unless_energy_expr.empty()) {
+        if (ab.def->unless_switched) {
+            // Wrath of the Skies: pay the chosen amount, then destroy each
+            // artifact/creature/enchantment with MV <= that amount.
+            if (!pay_switched_energy(ab)) return HandlerResult::DONE_RUN_SUBS;  // couldn't pay -> nothing is destroyed
         } else {
             // Non-switched genuine "destroy each X unless its controller pays {E}": the payment is
             // per-permanent by EACH affected permanent's controller, and paying PREVENTS that

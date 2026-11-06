@@ -16,6 +16,7 @@
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "resolution_frame.h"
+#include "svar_eval.h"
 #include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -101,6 +102,14 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // meaningless (check it FIRST). The MANA kind is a live-menu loop (Shape C): its pay/decline menu
 // interleaves per-source tap-for-mana actions rebuilt from live state each pass, so a chosen tap
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
+bool pay_switched_energy(const Ability &ab) {
+    const int n = static_cast<int>(evaluate_amount(ab.def->unless_energy_expr, ab.controller, 0, ab.target.get()));
+    auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(ab.controller));
+    const bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
+    if (n > 0) game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
+    return paid;
+}
+
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
     Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,

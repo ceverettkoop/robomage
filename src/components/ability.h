@@ -259,9 +259,13 @@ struct AbilityDef {
     bool unless_cost_is_discard = false;
     // UnlessCost$ PayEnergy<N> on a non-DestroyAll effect (Static Prison: "sacrifice CARDNAME
     // unless you pay {E}"). The payer may pay `unless_generic_cost` energy ({E}, CR 122.1c) to
-    // prevent the effect; if they can't or decline, the effect happens. (DestroyAll's energy
-    // unless-cost rides on DestroyAllParams::energy_unless_expr instead — see parse.cpp.)
+    // prevent the effect; if they can't or decline, the effect happens. (An amount read as it
+    // resolves rides on unless_energy_expr instead — see parse.cpp.)
     bool unless_cost_is_energy = false;
+    // UnlessCost$ PayEnergy<SVar> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies'
+    // DestroyAll): the controller pays that much energy ({E}) and the effect happens ONLY IF it is
+    // paid. The runtime Count$ expression of the amount (Count$ChosenNumber).
+    std::string unless_energy_expr = "";
     // UnlessPayer$ TriggeredSourceSAController — the payer of the unless-cost is the controller of
     // the triggering spell/ability (the opponent who targeted the permanent), NOT the trigger's own
     // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
@@ -278,8 +282,7 @@ struct AbilityDef {
     ManaValue unless_cost_pips;
     // UnlessSwitched$ True on a NON-DestroyAll effect (Chain Lightning's DB$ CopySpellAbility):
     // invert the normal "do the effect UNLESS the cost is paid" into "do the effect ONLY IF the cost
-    // is paid" (paying {R}{R} ENABLES the copy). (DestroyAll's switched energy cost rides on
-    // DestroyAllParams::energy_unless_switched instead — see parse.cpp.)
+    // is paid" (paying {R}{R} ENABLES the copy).
     bool unless_switched = false;
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 

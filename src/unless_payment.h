@@ -11,6 +11,7 @@
 
 class Orderer;
 class FrameCtx;
+struct Ability;
 
 // Offer an unless-cost (CR 118.12) to `controller`: pay `cost` of `kind` — {cost} generic mana or
 // the exact `cost_pips` (Chain Lightning: {R}{R}), `cost` life (Ward—Pay life, CR 702.21), discard
@@ -24,5 +25,10 @@ class FrameCtx;
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
                      Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
                      UnlessPayKind kind = UnlessPayKind::MANA, const ManaValue *cost_pips = nullptr);
+
+// UnlessCost$ PayEnergy<SVar> with UnlessSwitched$ True: `ab`'s controller pays the amount read now
+// as a single cost of resolution, an amount they chose earlier in it (Count$ChosenNumber), so
+// nothing is asked. True if it is paid, and the effect then happens.
+bool pay_switched_energy(const Ability &ab);
 
 #endif /* UNLESS_PAYMENT_H */

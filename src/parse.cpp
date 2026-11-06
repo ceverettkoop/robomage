@@ -1941,10 +1941,9 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
     std::vector<std::string> parts;
     if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1) {
         // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
-        // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
-        // DestroyAll params.
+        // not the generic {N} mana unless-cost: the energy amount is an SVar read as it resolves.
         if (ability.category == "DestroyAll") {
-            effect_params<DestroyAllParams>(ability).energy_unless_expr = parts[0];  // SVar token; resolved post-parse
+            ability.unless_energy_expr = parts[0];  // SVar token; resolved post-parse
             return;
         }
         // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice): pay N
@@ -2035,14 +2034,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         else if (value == "TargetedOrController")
             ability.unless_payer_is_targeted_or_controller = true;
     } else if (key == "UnlessSwitched") {
-        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid". For a
-        // DestroyAll (Wrath of the Skies: destroy only if the energy was paid) it rides on the
-        // DestroyAll params; for any other effect (Chain Lightning's CopySpellAbility: copy only if
-        // {R}{R} was paid) it rides on the generic unless_switched flag.
-        if (ability.category == "DestroyAll")
-            effect_params<DestroyAllParams>(ability).energy_unless_switched = (value == "True");
-        else
-            ability.unless_switched = (value == "True");
+        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid" (Wrath of
+        // the Skies: destroy only if the energy was paid; Chain Lightning's CopySpellAbility: copy
+        // only if {R}{R} was paid).
+        ability.unless_switched = (value == "True");
     } else if (key == "MayChooseTarget") {
         // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets.
         // The shared copy machine (effect_copy_spell.cpp) re-runs target selection for every copy
@@ -2681,7 +2676,7 @@ static void resolve_destroyall_svars(AbilityDef &ability,
             dp.cmc_expr = it->second;
         }
     }
-    resolve_svar_ref(dp.energy_unless_expr, svars);
+    resolve_svar_ref(ability.unless_energy_expr, svars);
 }
 
 // The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
