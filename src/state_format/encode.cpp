@@ -162,7 +162,7 @@ static void write_pending(const Ctx &c, Zone::Ownership decider);
 static void write_pending_cost(const Ctx &c);
 static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions);
 static bool description_hides_identity(Zone::Ownership viewer, const LegalAction &la);
-static uint16_t cast_variant_mask(const LegalAction &la);
+static uint32_t cast_variant_mask(const LegalAction &la);
 static void write_match(const Ctx &c);
 static void write_own_deck(const Ctx &c);
 static void write_events(const Ctx &c, const std::vector<ObsEvent> &events);
@@ -1064,7 +1064,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             if (sp->chosen.option.cost == CastCost::WARP) bit(CastVariant::WARP);
             if (sp->chosen.back_face()) bit(CastVariant::BACK_FACE);
         }
-        r.u16(variant)
+        r.u32(variant)
             .u8(sp && sp->is_copy ? 1 : 0)
             .u8(sp && sp->cant_be_countered ? 1 : 0)
             .u8(sp && sp->chosen.gift_promised ? 1 : 0);
@@ -1392,7 +1392,7 @@ static bool description_hides_identity(Zone::Ownership viewer, const LegalAction
     return false;
 }
 
-static uint16_t cast_variant_mask(const LegalAction &la) {
+static uint32_t cast_variant_mask(const LegalAction &la) {
     using rmstate::CastVariant;
     uint32_t m = 0;
     auto bit = [&m](bool on, CastVariant v) {
@@ -1409,7 +1409,7 @@ static uint16_t cast_variant_mask(const LegalAction &la) {
     bit(la.companion_to_hand, CastVariant::COMPANION);
     bit(la.suspend_action, CastVariant::SUSPEND);
     bit(la.cancel_proposal, CastVariant::CANCEL);
-    return static_cast<uint16_t>(m);
+    return m;
 }
 
 static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
@@ -1430,7 +1430,7 @@ static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
         const bool has_ability = la.type == ACTIVATE_ABILITY && la.ability.def != blank_ability_def();
         put_abref(r, has_ability ? la.ability.def : nullptr, src_card, src_zoned && handle(c, src) != 0 ? src : 0);
         r.i16(std::max(-32768, std::min(la.option_ordinal, 32767)))
-            .u16(cast_variant_mask(la))
+            .u32(cast_variant_mask(la))
             .u8(la.card_is_public ? 1 : 0);
         r.text(menu_row_description(la, c.viewer));
     }

@@ -861,7 +861,7 @@ computes neither outside its legal-action enumeration.
 | | `x` | i16 | `signed` | −1 = no X |
 | | `amount` | u16 | `count` | `Ability::amount` |
 | | `kicked`, `replicate` | u8 | `count` | |
-| | `variant` | u16 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face |
+| | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face |
 | | `copy`, `cant_be_countered`, `gift_promised` | u8 | `bool` | |
 | | `mana_spent` | u8 | `count` | the mana that left the pool: a pip a delve exile or a tap paid is none |
 | | `colors_spent` | u8 | `mask:color` | |
@@ -937,7 +937,7 @@ computes neither outside its legal-action enumeration.
 | | `source_player`, `target_player` | seat | | when the source / target is a player |
 | | ability | abref | | an ACTIVATE_ABILITY action's ability |
 | | `ordinal` | i16 | `signed` | `option_ordinal`; −1 = n/a |
-| | `variant` | u16 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static) |
+| | `variant` | u32 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static) |
 | | `card_public` | u8 | `bool` | |
 | | `description` | text | `text` | covered by the leak checks (register 12). For a seat, an entry whose source or target's identity the viewer cannot see (and that is not `card_public`) gets `(hidden card)` instead |
 | `match` (47) | `game` | u8 | `count` | as `header.game` |

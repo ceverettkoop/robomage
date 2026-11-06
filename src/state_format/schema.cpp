@@ -381,7 +381,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_count(s, "amount", Storage::U16);
     col_count(s, "kicked", Storage::U8);
     col_count(s, "replicate", Storage::U8);
-    col(s, "variant", Storage::U16, "mask:cast_variant");
+    col(s, "variant", Storage::U32, "mask:cast_variant");
     col_bool(s, "copy");
     col_bool(s, "cant_be_countered");
     col_bool(s, "gift_promised");
@@ -501,7 +501,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_seat(m, "target_player");
     col_abref(m);
     col(m, "ordinal", Storage::I16, "signed");
-    col(m, "variant", Storage::U16, "mask:cast_variant");
+    col(m, "variant", Storage::U32, "mask:cast_variant");
     col_bool(m, "card_public");
     col_text(m, "description");
 
