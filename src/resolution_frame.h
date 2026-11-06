@@ -11,6 +11,7 @@
 #include "classes/action.h"
 #include "components/ability.h"
 #include "components/zone.h"
+#include "cost_payment.h"
 #include "ecs/entity.h"
 #include "pending_query.h"
 
@@ -260,7 +261,7 @@ using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, Di
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZonePicksRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
-                                   ResolutionCastRt, RepeatLoopRt>;
+                                   ResolutionCastRt, RepeatLoopRt, CostRun>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

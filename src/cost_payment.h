@@ -127,9 +127,14 @@ struct CostPayer {
         bool commit = true;
         int life_reserve = 0;
 
-        bool mandatory = false;               // a triggered ability's cost its controller doesn't choose (CR 603.8)
+        bool mandatory = false;     // a triggered ability's cost its controller doesn't choose (CR 603.8)
+        bool source_gone = false;   // a triggered ability's source is no longer the object that triggered
         const UnlessTerms *unless = nullptr;  // an unless-cost offered (CR 118.12)
 };
+
+// A triggered ability's cost, paid as it resolves (CR 603.2, 603.5). Its CostRun is the ability's resolving level's, so a parked question resumes there.
+// PAID: go on to the effect. DECLINED: the ability does nothing more. SUSPENDED: a choice is parked.
+PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 
 // Which part of a cast's cost its payment has reached, for the state format's pending_cost.
 enum class CastCostStage {

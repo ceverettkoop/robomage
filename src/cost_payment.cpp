@@ -277,6 +277,16 @@ CastCostStage cast_cost_stage(const CostRun &run) {
                                                                                : CastCostStage::MANA;
 }
 
+PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    CostRun local;
+    CostRun &run = ctx.can_suspend() ? ctx.rt<CostRun>() : local;
+    const Entity named = ab.source.lki_entity();
+    CostPayer who(CostPath::TRIGGER, ab.controller, named, ManaPayee(named, ManaPurpose::OTHER), &ab.def->cost, &run);
+    who.mandatory = ab.def->mandatory;
+    who.source_gone = ab.source.get() == 0;
+    return run_cost_parts(who, ctx, orderer);
+}
+
 PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     const CostSteps steps = path_steps(who.path);
     if (!who.run) {
@@ -786,10 +796,10 @@ static PayStatus pay_from_working_pool(const CostPayer &who) {
 // so the "if you do" effect doesn't happen.
 static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     const Entity src = who.source;
-    const std::string sname = global_coordinator.entity_has_component<Permanent>(src)
+    const std::string sname = !who.source_gone && global_coordinator.entity_has_component<Permanent>(src)
                                   ? global_coordinator.GetComponent<Permanent>(src).name
                                   : std::string("it");
-    if (src == 0 || !is_battlefield_permanent(src)) {
+    if (who.source_gone || !is_battlefield_permanent(src)) {
         game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
         return PayStatus::DECLINED;
     }

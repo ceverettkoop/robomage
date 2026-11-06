@@ -311,10 +311,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // are skipped. Activated abilities never reach here with ability_type == TRIGGERED, so
         // their already-paid sac is not double-charged.
         if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->cost.self(CostPart::SACRIFICE)) {
-            const Entity src = ab.source.get();
-            CostPayer who(CostPath::TRIGGER, ab.controller, src, src, &ab.def->cost, nullptr);
-            who.mandatory = ab.def->mandatory;
-            const PayStatus paid = run_cost_parts(who, ctx, orderer);
+            const PayStatus paid = pay_trigger_cost(ab, ctx, orderer);
             if (paid == PayStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
             if (paid != PayStatus::PAID) return ResolveStatus::DONE;
         }
