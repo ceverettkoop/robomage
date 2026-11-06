@@ -134,15 +134,15 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "4 new card(s): 0 clean, 4 need 8 mechanic(s) (38 points)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "diff": {
    "detail": {
@@ -159,11 +159,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "33 cards: 29 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "implement": {
    "detail": {
@@ -180,15 +180,15 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Goblin Welder swap, Taps trigger, filter:sharesControllerWith Remembered",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "parse": {
    "detail": {
@@ -380,14 +380,14 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "4 new card(s), 4 with findings (21 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "provision": {
    "detail": {
@@ -401,11 +401,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "scrape": {
    "detail": {

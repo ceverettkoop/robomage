@@ -20,19 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Bargain and free casting (Beseech the Mirror)": {
-      "cards": [
-       "Beseech the Mirror"
-      ],
-      "findings": [
-       "ability_param:Play.Condition",
-       "ability_param:Play.ImprintPlayed",
-       "ability_param:Play.WithoutManaCost",
-       "amount_svar:All",
-       "keyword:Bargain"
-      ],
-      "size": "M"
-     },
      "Chrome Mox imprint": {
       "cards": [
        "Chrome Mox"
@@ -66,9 +53,6 @@
      }
     },
     "needs": {
-     "Beseech the Mirror": [
-      "Bargain and free casting (Beseech the Mirror)"
-     ],
      "Chrome Mox": [
       "Chrome Mox imprint"
      ],
@@ -78,31 +62,29 @@
      ]
     },
     "new_cards": [
-     "Beseech the Mirror",
      "Chrome Mox",
      "Gaea's Will"
     ],
-    "size_points": 17
+    "size_points": 14
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (17 points)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (14 points)",
+   "time": "2026-11-06T12:35:25"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 27,
+    "in_vocab": 28,
     "no_script": [],
     "not_in_vocab": [
-     "Beseech the Mirror",
      "Chrome Mox",
      "Gaea's Will"
     ]
@@ -110,16 +92,15 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "30 cards: 27 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "30 cards: 28 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-06T12:35:25"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Bargain and free casting (Beseech the Mirror)",
      "Chrome Mox imprint",
      "Gaea's Will",
      "Hogaak casting"
@@ -127,63 +108,19 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Gaea's Will, Hogaak casting",
-   "time": "2026-11-06T11:12:52"
+   "summary": "3 mechanic(s) to implement: Chrome Mox imprint, Gaea's Will, Hogaak casting",
+   "time": "2026-11-06T12:35:25"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Beseech the Mirror": {
-      "card": "Beseech the Mirror",
-      "faces": [
-       "Beseech the Mirror"
-      ],
-      "findings": [
-       {
-        "detail": "Play Condition$ Bargain",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
-        "name": "Play.Condition"
-       },
-       {
-        "detail": "Play ImprintPlayed$ True",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
-        "name": "Play.ImprintPlayed"
-       },
-       {
-        "detail": "Play WithoutManaCost$ True",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
-        "name": "Play.WithoutManaCost"
-       },
-       {
-        "detail": "Play: the amount names no SVar",
-        "kind": "amount_svar",
-        "line": "A:SP$ ChangeZone | ChangeNum$ 1 | ChangeType$ Card | Mandatory$ True | SubAbility$ DBPlay | Origin$ Library | Destination$ Exile | ExileFaceDown$ True | RememberChanged$ True | SpellDescription$ Search your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
-        "name": "All"
-       },
-       {
-        "detail": "Bargain",
-        "kind": "keyword",
-        "line": "K:Bargain",
-        "name": "Bargain"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/b/beseech_the_mirror.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Chrome Mox": {
       "card": "Chrome Mox",
       "faces": [
@@ -259,14 +196,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (12 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
+   "time": "2026-11-06T12:35:25"
   },
   "provision": {
    "detail": {
@@ -280,11 +217,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "scrape": {
    "detail": {

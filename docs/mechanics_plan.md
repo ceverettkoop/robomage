@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M6 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M7 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -619,8 +619,8 @@ What stayed of (c1), and why:
 | item | first testable card | stage | what it must build |
 |---|---|---|---|
 | `Exert` (CR 701.43) | Arena of Glory | M6 | done (M6's Done) |
-| Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | a `TapToPay` row, `GENERIC_OR_OWN_COLOR`; it also needs M6's restriction and M7's graveyard cast |
-| Bargain (CR 702.166) | Beseech the Mirror | M7 | an optional additional cost, read through `ChosenCost::paid` |
+| Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | done (M7's Done) |
+| Bargain (CR 702.166) | Beseech the Mirror | M7 | done (M7's Done) |
 | Waterbend (CR 701.67) | Invasion Submersible | M10 | a `TapToPay` row and a cost token calling `set_tap_to_pay`, with `Exhaust$`. CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: this card's whole cost is it |
 | Crew (CR 301.7) | Unlicensed Hearse | M10 | an activation whose cost taps other creatures |
 | `Imprint$` that outlives the resolution, an `ObjectSet` on the permanent | Chrome Mox | M9 | the slot on the source, with `ForgetImprinted$` |
@@ -685,7 +685,7 @@ No script has these, so each stays out of the scenarios:
 | X, Phyrexian pips, Delve or Improvise with a card's own flashback, escape or alternative cost; kicker or replicate with one | a card; the one flow carries it |
 | {X} in an alternative cost | `cost_form_pays` refuses it, a finding |
 | `TapToPay` on an activation or a trigger | Waterbend (M10) |
-| A colored pip paid by a tap | Convoke (M7) |
+| A colored pip paid by a tap | done: Convoke (M7) |
 | A mana ability's Sac, Return, energy | Lazotep Quarry (M8) |
 | Sacrifice as an unless cost | Grist (a candidate, its own stage) |
 
@@ -785,7 +785,7 @@ Against the (b) list: `ManaFromCard`, `Count$CastTotalManaSpent`, `S:Mode$ ManaR
 
 | item | first testable card | stage | what it must build |
 |---|---|---|---|
-| `S:Mode$ ManaRestriction` | Hogaak, Arisen Necropolis | M7 | `ValidSource$ Card,Emblem`, `InvertValidSource$`, `EffectZone$ All`: a check of each unit's `source` against the spell in `unit_spendable_on`, so a simulated payment must stamp `source` too. It also needs Convoke and M7's graveyard cast |
+| `S:Mode$ ManaRestriction` | Hogaak, Arisen Necropolis | M7 | done (M7's Done) |
 | `ManaConvert` with `ValidPlayer$`, `ValidCard$`, `ValidSA$` | Agatha's Soul Cauldron | M8 | `any_mana_as_any_color_active` taking the payee, read through `spendable_unit`'s `NO_COLOR` as Mycosynth Lattice is; it also needs `GainsAbilitiesOf$` |
 | `Count$CastTotalManaSpent` | Mockingbird | M8 | a row reading the entry's `mana_paid`, which `spell_reads_colors_spent` must then hold while it stands; it also needs `K:ETBReplacement:Copy` |
 | `ManaFromCard`, `ValidSA$ Spell.ManaFromCard.StrictlySelf` | The Myriad Pools (The Everflowing Well's back) | M9 | `mana_from` as the reader, on a `SpellCast` trigger's `ValidSA$`; it also needs `Clone`'s `CloneTarget$` and `Duration$` and `ValidCard$ Permanent` |
@@ -926,6 +926,52 @@ What stayed, and why:
 Evidence. `c825d039`, the inert commit: `replay` byte-identical, `make registry` a no-op, `--parse-report @vocab` unchanged. Every fix fails with it removed, by reverting the file or mutating the line: the half's name, the combined colors, the half's name for name-a-card, the second half from exile, the second condition, the chained target, `SpellExit` at a counter and a fizzle, `block_prohibited`, the overlay's end at resolution and in the state-based pass, the paid `UnlessResolveSubs$`, `AttachedTo`'s filter, the prepared designation and the copy leaving with its permanent. 46 scenario files, each card and each ability; a scenario that could only look at the log was given a line that tells the two apart. The corpus moved once, `eb1a31cc`: one `.replay` menu of `lg_burn__wrb_energy` gains `Name card: Gone`, its decision log unchanged. `tests/cli` never moved. `decks/tests/mech_cast` is the fixture, every key hit at 16 games under three seeds: `--fuzz-games 100` in `explore` and `explore:patient`, no error, no draw, `cast:fused` the rarest key at 19 and 20. Its name put it first among the fixtures, and fixture k's seeds moved every other's: `mech_mana` lost its rare key's one hit and `mech_clean_cards` met a 35,000-decision Basalt Monolith game. A fixture's seeds come from its name now. 120 games at `--selfcheck-knowledge --selfcheck-state-sample 1`, a third each of `explore`, `--no-auto-mana` and random under `--offer-cancel`: no error; twelve explore games of them, counted, reached every overlay (adventure 39, prepared 38, bestow 16, overload 11, fused 2). `scripted` and Python `explore`: six bo1 games each, `scripted` bo3 three matches. No new prompt: the rows are `CAST_SPELL`, the target `SELECT_TARGET`, the offer `PAY_UNLESS`, and `state`'s snapshots run through each scenario. `play_spec`'s `name:` reads the row, since a split card's names ground to one card. The debug `bench` tier: engine alone 1605.6 us per decision before the unit, 1686.5 after, the actor loop 245 decisions/s and 241.
 
 Unproved. Release `bench` wasn't compared; the debug numbers are one run each. A token copy of a preparation card (`Token::prepare_spell`, Nantuko copying a Cultivator) and a prepared permanent phasing out and in are code with no scenario. The `actor` tier's torch part was skipped, for want of `$ROBOMAGE_TORCH_PYTHON`. Reading a modal back face's characteristics on the stack through `card_characteristics` has no vocab card. A copy of an overloaded or fused spell has no card to make one.
+
+**Done (2026-11-06).** Unit (c), and with it M7.
+
+- **A resolution's cast is rows.** `CastOption::grant` holds what an effect puts in place of the mana cost, set as the row is offered, so `determine_grant_cost` reads the row and `during_resolution` goes. `kResolutionCasts`, walked by `resolution_cast_rows` on `ResolutionCastTerms`, has for exile and the graveyard each the front, the back and the Adventure, plus a free-cast static's row from the graveyard; `cast_during_resolution` takes a list of offers, so one menu holds a card's faces and a zone's cards. `offer_timing_ok` answers true for a resolution. A menu row carries only the face and overlay: the frames of a front-face offer don't move.
+- **`DB$ Play`** reads `PlayParams`: `ValidZone$`, `Valid$`, `ValidSA$` (a filter of the face), `PlayCost$`, `WithoutManaCost$`, `Condition$ Bargain`, `ReplaceGraveyard$`, `ReplaceGraveyardValid$`, `Amount$ All`. `ImprintPlayed$` is a memory row reading `EffectObjects::PLAYED`. `play_cost` amounts are the mana value of the face cast (`amount_is_mana_value`).
+- **`ReplaceGraveyard$`:** `CastOption::cast_by` names the effect, and `spell_destination` reads it at both exits. `cast_variant` gains `GRAVEYARD_REPLACED`, for the frames. A spell it exiles when countered is logged by `remove_from_stack`.
+- **Convoke:** `TapToPay::CONVOKE`, `GENERIC_OR_OWN_COLOR`, and `asks` on the rule. The cast's `TAP_TO_PAY` step comes after the snapshot and asks a creature at a time, each row leaving the rest payable; then mana pays what is left, with nothing more tapped. Improvise stays the payer's, so nothing moved. Rows are `PAYING_COSTS`: explore draws among them, `scripted` takes the first, the CLI and `--trace-decisions` render them, and the `--play` verb is `convoke:<card>` / `convoke:done`. In the simulation a colored pip takes the creature of fewest colors, which is exact for the two colors of the one card.
+- **Bargain:** a cast step for the intention, a pick for the sacrifice. `spell_bargained` reads `ChosenCost::moved` for a spell with the keyword; `cast_variant` gains `BARGAINED`.
+- **`S:Mode$ ManaRestriction`:** `spell_refuses_mana` checks each unit's `source` against `ValidSource$` in `unit_spendable_on` and `mana_source_usable_for`, and a simulated payment stamps `source`. A source gone from the game counts as matching: `Card,Emblem` is every object that makes mana.
+- **`Permission::GRAVEYARD_SELF`,** a row of `kPermissionRows` and a section, appended to `permission_kind`: a card whose own static lets its owner cast it from the graveyard. `static_form:MayPlay.Graveyard` for `Card.Self` and `EffectZone$ Graveyard` close with it; Gaea's Will's Effect form stays.
+- **`wasCastFromYourHand`** reads `MatchCtx::cast_from`: `effective_base_cost` and `floored_alt_mana_cost` take the zone.
+
+**A permission lost mid-cast.** Decided: the row stands. CR 601.3 checks the permission as casting begins, and CR 601.5 again after the proposal (601.2a-d), but no player acts between them, mana abilities and costs come at 601.2f-h, and "it doesn't matter if a rule or effect would make the casting of the spell illegal while determining and paying that spell's costs". So nothing the engine models can lose a permission where it counts. Omniscience sacrificed to Beseech the Mirror's bargain leaves that cast free (`cr601_5_...`); a prepared permanent sacrificed while its copy is paid for is `prepared_copy_cast`'s null case, which reads the same. Nothing to fix but the read after the move, which the row replaced.
+
+Bugs, each with a scenario:
+
+| bug | rule | vocab cards it changes |
+|---|---|---|
+| A reduction missed an alternative cost | CR 118.9d | none but under Bilbo: Eye of Ugin and It That Heralds the End reach no card with one |
+| `ConditionDefined$ Imprinted` read the remembered set, and the `Defined$ Remembered` move reported nothing, so `Imprint$ True` wrote nothing | CR 608.2c | Phelia, Exuberant Shepherd: same outcome, her scenarios hold before and after |
+| Delve in a simulated payment counted the spell itself in its graveyard | CR 601.2a | none but Hogaak |
+| Amped Raptor's energy was the card's mana value, a split card's two halves together | CR 709.3 | Amped Raptor over Dead/Gone, Wear/Tear, Rough/Tumble, Brazen Borrower |
+
+Found by the gate before any commit: `spell_bargained` read every sacrifice, and `open_vocab` caught Natural Order's frames moving.
+
+What stayed, and why:
+
+- **An alternative cost at a resolution, Overload and Bestow from another zone:** `docs/rules_deviations.md` §2.5. Bilbo casts Cyclonic Rift for its mana cost.
+- **Improvise** taps only for what mana can't pay, as (c2) left it: asking would move `ur_delver`'s frames for a choice only `--no-auto-mana` needs.
+- **`Tap nothing more`,** Convoke's stop row, has no card: Hogaak takes no mana, so the row never shows. A throwaway build with the restriction off showed it: two Bears, seven Forests, one tap, the row, six Forests paying the rest.
+- **`spell_destination`'s order:** still no card with both a shuffle and a flashback.
+- **`Amount$ All`** reads one card, and `Condition$` only `Bargain`.
+- **`CheckSecondSVar$`** closed in (b). Nothing left needs it.
+
+**Lands with its first card, not here.** Mystic Forge is the only provisioned script that casts from a library, and it needs M11's `MayLookAt$` and the `TopLibrary` qualifier, so none of this was built.
+
+| item | first testable card | stage | what it must build |
+|---|---|---|---|
+| Library: a row of `kPermissionRows` and a section | Mystic Forge | M11 | before `NONE`, appended to `permission_kind` after `GRAVEYARD_SELF`; `encode.cpp`'s loop ends at `GRAVEYARD_SELF` |
+| `Orderer::begin_cast_move` from a library | Mystic Forge | M11 | it is fatal today; `rewind_cast_move` reopens only graveyard and exile slots, and the card's handle is hidden: what each seat sees on a rewind |
+| `static_form:MayPlay.Library`, `TopLibrary` | Mystic Forge | M11 | the top card read live, so the permission moves with a shuffle: the plan's top-of-library test |
+| An Effect's `MayPlay$` over a graveyard | Gaea's Will | M9 | beside its `Moved` replacement |
+
+Evidence. `40d7d5a7` and `5ee8495c`, the inert commits: 494 and 152 explore games under `--narrative --trace-decisions` identical to the prior binary, the parse report unchanged. Every fix failed with its line removed, by mutating the file and rerunning its scenarios: the half's mana value, the back rows, `wasCastFromYourHand`, `ReplaceGraveyard$` and its filter, `ValidSA$`, `Valid$`, a resolution's timing, the reduction on an alternative cost, the imprinted read, `Condition$ Bargain`, the bargain's filter, the unit's refusal, Delve's own card, each pip rule, `owner_only`, `asks`. The source check in `mana_source_usable_for` alone isn't proved by a scenario: the unit's check catches the same mana. 36 scenario files, naming each card and each ability; a floating {G} and a cancelled Convoke cast among them, and the `state` tier runs every one at sample 1, so each parks on the new rows. `tests/corpus` and `tests/cli` never moved, so no `make regen`. `decks/tests/mech_cast_zones` is the fixture: every key hit at 16 games under four seeds, and `--fuzz-games 100` in `explore` and `explore:patient`, no error, no draw, `cast_row:graveyard_resolution_back` the rarest at 7 and 2, so it stays out of `.expect`. 120 games at `--selfcheck-knowledge --selfcheck-state-sample 1`, a third each of `explore`, `--no-auto-mana` and random under `--offer-cancel`: no error; twelve of the explore games, counted, reached every row but `graveyard_self` (bargained 13, exile 3, graveyard 4, Adventure 2, back 2, Convoke taps 10, replaced 5). `scripted` six bo1 games and three bo3 matches, Python `explore` six games. `make registry` appended the two keywords, `cast_variant`'s two bits and `permission_kind`'s value, and the digest added three cards; no known card's rows moved. The debug `bench` tier, one run each: 225 decisions/s engine alone before the unit, 229 after, the actor loop 243 and 251. The candidates' status files are refreshed.
+
+Unproved. Release `bench` wasn't compared. The `actor` tier's torch part was skipped and `robomage_nn` not rebuilt. `Tap nothing more` has no card, only the throwaway. A prepared permanent sacrificed while its copy is paid for has no scenario. A Treasure's mana on Hogaak (a source gone from the game) has no scenario. A copy of a bargained spell has no card to make one. A Beseech cast rewound under `--offer-cancel` went through random games with no error, but it was not read that the card, public for the cast, comes back face down with its owner's look lost (§2.6a's reveal note).
 
 ### M8. A characteristics view across zones (L)
 
@@ -1104,6 +1150,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **M6 (b) (2026-11-06).** Both of the M6 row entered: Engineered Explosives 429, Arena of Glory 430. None was placed elsewhere. No other candidate card's findings reached zero: the 44 left outside the vocab of the 330 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Cyclonic Rift, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Next free card id 431, token 921.
 
 **M7 (b) (2026-11-06).** Six of the M7 row and Brazen Borrower entered: Massacre 431, Cyclonic Rift 432, Wear/Tear 433 (three names, one id), Brazen Borrower 434 with Petty Theft 435, Springheart Nantuko 436 with the Insect token 921, Carnivorous Cultivator 437 with Enroot 438. Brazen Borrower is the only Adventure card among the provisioned scripts, so `S:Mode$ CantBlockBy` came with it from M8; the only other scripts with that mode are Kappa Cannoneer, Manifold Key's effect and Cryptic Coat, which needs M11. None of the six was placed elsewhere. No other candidate card's findings reached zero: the 38 names left outside the vocab of the 330 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Hullbreacher, Renegade Rallier, Sink into Stupor, Sundering Eruption). Unit (c) has Hogaak, Bilbo and Beseech the Mirror left of the M7 row. Next free card id 439, token 922.
+
+**M7 (c) (2026-11-06).** The rest of the M7 row entered: Bilbo, Thief in the Night 439, Beseech the Mirror 440, Hogaak, Arisen Necropolis 441. None was placed elsewhere. Gaea's Will (M9) and Mystic Forge (M11) stay out, their findings open. No other candidate card's findings reached zero: the 34 names left outside the vocab of the 321 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Hullbreacher, Renegade Rallier, Sink into Stupor, Sundering Eruption). All three had parts that reported clean and played wrong until fixed: Bilbo's flashback cost, Beseech's "if it wasn't cast this way", Hogaak's Delve of itself. Next free card id 442, token 922.
 
 | last stage | cards (all stages needed) |
 |---|---|

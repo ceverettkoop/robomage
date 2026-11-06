@@ -19,139 +19,68 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "Play from a zone with replacement (Bilbo)": {
-      "cards": [
-       "Bilbo, Thief in the Night"
-      ],
-      "findings": [
-       "ability_param:Play.ReplaceGraveyard",
-       "ability_param:Play.ReplaceGraveyardValid",
-       "ability_param:Play.Valid",
-       "ability_param:Play.ValidZone",
-       "filter:!wasCastFromYourHand"
-      ],
-      "size": "M"
-     }
-    },
-    "needs": {
-     "Bilbo, Thief in the Night": [
-      "Play from a zone with replacement (Bilbo)"
-     ]
-    },
-    "new_cards": [
-     "Bilbo, Thief in the Night"
-    ],
-    "size_points": 3
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-06T12:35:25"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 31,
+    "in_vocab": 32,
     "no_script": [],
-    "not_in_vocab": [
-     "Bilbo, Thief in the Night"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "32 cards: 31 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "32 cards: 32 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-06T12:35:25"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Play from a zone with replacement (Bilbo)"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: Play from a zone with replacement (Bilbo)",
-   "time": "2026-11-06T11:12:52"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-06T12:35:25"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Bilbo, Thief in the Night": {
-      "card": "Bilbo, Thief in the Night",
-      "faces": [
-       "Bilbo, Thief in the Night"
-      ],
-      "findings": [
-       {
-        "detail": "Play ValidZone$ Graveyard",
-        "kind": "ability_param",
-        "line": "T:Mode$ Attacks | ValidCard$ Card.Self | TriggerZones$ Battlefield | Execute$ TrigCast | OptionalDecider$ You | TriggerDescription$ Whenever NICKNAME attacks, you may cast an artifact, instant, or sorcery spell from your graveyard. If an instant or sorcery spell cast this way would be put into your graveyard, exile it instead.",
-        "name": "Play.ValidZone"
-       },
-       {
-        "detail": "Play Valid$ Card.YouOwn",
-        "kind": "ability_param",
-        "line": "T:Mode$ Attacks | ValidCard$ Card.Self | TriggerZones$ Battlefield | Execute$ TrigCast | OptionalDecider$ You | TriggerDescription$ Whenever NICKNAME attacks, you may cast an artifact, instant, or sorcery spell from your graveyard. If an instant or sorcery spell cast this way would be put into your graveyard, exile it instead.",
-        "name": "Play.Valid"
-       },
-       {
-        "detail": "Play ReplaceGraveyard$ Exile",
-        "kind": "ability_param",
-        "line": "T:Mode$ Attacks | ValidCard$ Card.Self | TriggerZones$ Battlefield | Execute$ TrigCast | OptionalDecider$ You | TriggerDescription$ Whenever NICKNAME attacks, you may cast an artifact, instant, or sorcery spell from your graveyard. If an instant or sorcery spell cast this way would be put into your graveyard, exile it instead.",
-        "name": "Play.ReplaceGraveyard"
-       },
-       {
-        "detail": "Play ReplaceGraveyardValid$ Instant,Sorcery",
-        "kind": "ability_param",
-        "line": "T:Mode$ Attacks | ValidCard$ Card.Self | TriggerZones$ Battlefield | Execute$ TrigCast | OptionalDecider$ You | TriggerDescription$ Whenever NICKNAME attacks, you may cast an artifact, instant, or sorcery spell from your graveyard. If an instant or sorcery spell cast this way would be put into your graveyard, exile it instead.",
-        "name": "Play.ReplaceGraveyardValid"
-       },
-       {
-        "detail": "ValidCard$ Card.!wasCastFromYourHand",
-        "kind": "filter",
-        "line": "S:Mode$ ReduceCost | ValidCard$ Card.!wasCastFromYourHand | Activator$ You | Type$ Spell | Amount$ 1 | Description$ Spells you cast from anywhere other than your hand cost {1} less to cast.",
-        "name": "!wasCastFromYourHand"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/b/bilbo_thief_in_the_night.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-06T12:35:25"
   },
   "provision": {
    "detail": {
@@ -165,11 +94,11 @@
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:25"
   },
   "scrape": {
    "detail": {

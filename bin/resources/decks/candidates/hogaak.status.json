@@ -20,15 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Convoke (CR 702.51)": {
-      "cards": [
-       "Hogaak, Arisen Necropolis"
-      ],
-      "findings": [
-       "keyword:Convoke"
-      ],
-      "size": "M"
-     },
      "Enters as a copy (Mockingbird)": {
       "cards": [
        "Mockingbird"
@@ -37,19 +28,6 @@
        "keyword:ETBReplacement:DBCopy"
       ],
       "size": "M"
-     },
-     "Hogaak casting": {
-      "cards": [
-       "Hogaak, Arisen Necropolis"
-      ],
-      "findings": [
-       "static_form:MayPlay.Graveyard",
-       "static_mode:ManaRestriction",
-       "static_param:EffectZone",
-       "static_param:InvertValidSource",
-       "static_param:ValidSource"
-      ],
-      "size": "L"
      },
      "Mana spent on casting (Count$CastTotalManaSpent)": {
       "cards": [
@@ -62,132 +40,68 @@
      }
     },
     "needs": {
-     "Hogaak, Arisen Necropolis": [
-      "Convoke (CR 702.51)",
-      "Hogaak casting"
-     ],
      "Mockingbird": [
       "Enters as a copy (Mockingbird)",
       "Mana spent on casting (Count$CastTotalManaSpent)"
      ]
     },
     "new_cards": [
-     "Hogaak, Arisen Necropolis",
      "Mockingbird"
     ],
-    "size_points": 15
+    "size_points": 4
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (15 points)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (4 points)",
+   "time": "2026-11-06T12:35:24"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 26,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
-     "Hogaak, Arisen Necropolis",
      "Mockingbird"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "28 cards: 26 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "28 cards: 27 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T12:35:24"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Convoke (CR 702.51)",
      "Enters as a copy (Mockingbird)",
-     "Hogaak casting",
      "Mana spent on casting (Count$CastTotalManaSpent)"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent)",
-   "time": "2026-11-06T11:12:52"
+   "summary": "2 mechanic(s) to implement: Enters as a copy (Mockingbird), Mana spent on casting (Count$CastTotalManaSpent)",
+   "time": "2026-11-06T12:35:24"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Hogaak, Arisen Necropolis": {
-      "card": "Hogaak, Arisen Necropolis",
-      "faces": [
-       "Hogaak, Arisen Necropolis"
-      ],
-      "findings": [
-       {
-        "detail": "ManaRestriction ValidSource$ Card,Emblem",
-        "kind": "static_param",
-        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
-        "name": "ValidSource"
-       },
-       {
-        "detail": "ManaRestriction InvertValidSource$ True",
-        "kind": "static_param",
-        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
-        "name": "InvertValidSource"
-       },
-       {
-        "detail": "the engine applies no such static",
-        "kind": "static_mode",
-        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
-        "name": "ManaRestriction"
-       },
-       {
-        "detail": "ManaRestriction EffectZone$ All",
-        "kind": "static_param",
-        "line": "S:Mode$ ManaRestriction | ValidSource$ Card,Emblem | InvertValidSource$ True | EffectZone$ All | Description$ You can't spend mana to cast this spell.",
-        "name": "EffectZone"
-       },
-       {
-        "detail": "Continuous EffectZone$ Graveyard",
-        "kind": "static_param",
-        "line": "S:Mode$ Continuous | Affected$ Card.Self | MayPlay$ True | AffectedZone$ Graveyard | EffectZone$ Graveyard | Description$ You may cast CARDNAME from your graveyard.",
-        "name": "EffectZone"
-       },
-       {
-        "detail": "a permission to play Card.Self from Graveyard",
-        "kind": "static_form",
-        "line": "S:Mode$ Continuous | Affected$ Card.Self | MayPlay$ True | AffectedZone$ Graveyard | EffectZone$ Graveyard | Description$ You may cast CARDNAME from your graveyard.",
-        "name": "MayPlay.Graveyard"
-       },
-       {
-        "detail": "Convoke",
-        "kind": "keyword",
-        "line": "K:Convoke",
-        "name": "Convoke"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/h/hogaak_arisen_necropolis.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Mockingbird": {
       "card": "Mockingbird",
       "faces": [
@@ -219,14 +133,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (9 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-06T12:35:24"
   },
   "provision": {
    "detail": {
@@ -240,11 +154,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "scrape": {
    "detail": {

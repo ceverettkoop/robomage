@@ -79,15 +79,15 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "diff": {
    "detail": {
@@ -103,11 +103,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "38 cards: 35 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "implement": {
    "detail": {
@@ -120,15 +120,15 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Revolt trigger condition, UnlessCost on more effects",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "parse": {
    "detail": {
@@ -215,14 +215,14 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "3 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "provision": {
    "detail": {
@@ -238,11 +238,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "scrape": {
    "detail": {

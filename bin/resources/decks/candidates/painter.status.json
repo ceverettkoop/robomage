@@ -191,15 +191,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "8 new card(s): 0 clean, 8 need 12 mechanic(s) (49 points)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "diff": {
    "detail": {
@@ -220,11 +220,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "41 cards: 33 in vocab, 8 new (0 without a script)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "implement": {
    "detail": {
@@ -245,15 +245,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "pending",
    "summary": "12 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin ",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "parse": {
    "detail": {
@@ -562,14 +562,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "8 new card(s), 8 with findings (30 findings), 0 without a script",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "provision": {
    "detail": {
@@ -585,11 +585,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T11:12:52"
+   "time": "2026-11-06T12:35:24"
   },
   "scrape": {
    "detail": {
