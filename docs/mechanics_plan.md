@@ -435,6 +435,12 @@ repeated in `orderer.cpp`. Spells cannot override their characteristics beyond c
 **Lands here.** Adventure, Prepare, Overload, Bestow, Fuse, Hogaak's graveyard cast, Mystic Forge's cast,
 Bilbo, Beseech the Mirror.
 
+Fuse is also where split cards get audited against CR 709, since Dead/Gone and Rough/Tumble entered
+without it: combined characteristics outside the stack (709.4, mana value and colors from the combined
+cost, 709.4b), each half's name for name-a-card (709.4a), and the cast half's own name on the stack
+(709.3b: Tumble's damage logs as "Rough deals" today). Unchecked so far, and not in
+`docs/rules_deviations.md`.
+
 **Test.** Every existing cast mode through the corpus. New: an Adventure exiled and cast later, and
 countered (goes to the graveyard); Bestow falling off into a creature (CR 702.103f); Overload with hexproof
 objects; a permission lost mid-cast; `ReplaceGraveyard` when the spell is countered. Top-of-library casting
