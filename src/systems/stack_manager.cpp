@@ -222,7 +222,6 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             game_log("%s enters the battlefield\n", card_data.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
-            bool was_flashback = spell_cast_with_flashback(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
                 // On suspension leave EVERYTHING in place (frame armed, spell on
@@ -240,6 +239,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.entity_has_component<Spell>(top_entity)
                     ? global_coordinator.GetComponent<Spell>(top_entity).resolves_to
                     : Zone::GRAVEYARD;
+            const SpellDestination to = spell_destination(top_entity, resolves_to, SpellExit::RESOLVED);
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
                 game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
@@ -247,17 +247,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.DestroyEntity(top_entity);
                 return;
             }
-            // Shuffle into library instead of graveyard (e.g. Green Sun's Zenith)
-            if (card_data.shuffle_into_library) {
-                orderer->add_to_zone(false, top_entity, Zone::LIBRARY);
+            orderer->add_to_zone(false, top_entity, to.zone);
+            if (to.shuffled) {
                 orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
                 game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
-            } else if (was_flashback) {
-                orderer->add_to_zone(false, top_entity, Zone::EXILE);
-                game_log("%s is exiled (flashback)\n", card_data.name.c_str());
-            } else {
-                orderer->add_to_zone(false, top_entity, resolves_to);
-                if (resolves_to == Zone::EXILE) game_log("%s is exiled\n", card_data.name.c_str());
+            } else if (to.zone == Zone::EXILE) {
+                game_log("%s is exiled%s\n", card_data.name.c_str(), to.by_cast ? " (flashback)" : "");
             }
         }
     }

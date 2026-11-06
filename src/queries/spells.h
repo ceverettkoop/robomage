@@ -17,13 +17,21 @@ struct CardData;
 
 // ── Spells (CR 112 / 601) ─────────────────────────────────────────────────────
 
-// True if `e` is a spell that was cast via flashback. Such a spell is exiled
-// (rather than sent to the graveyard) when it leaves the stack — whether it
-// resolves or is countered. Single source for that "leaves-stack → exile" rule.
-inline bool spell_cast_with_flashback(Entity e) {
-    return global_coordinator.entity_has_component<Spell>(e) &&
-           global_coordinator.GetComponent<Spell>(e).chosen.flashback();
-}
+// How a spell leaves the stack: it finished resolving (CR 608.2n), or something else moved it
+// (countered, an illegal target, a bounce).
+enum class SpellExit { RESOLVED, REMOVED };
+
+// Where a spell goes as it leaves the stack.
+struct SpellDestination {
+    Zone::ZoneValue zone = Zone::GRAVEYARD;
+    bool shuffled = false;  // into its owner's library, which is then shuffled (Green Sun's Zenith)
+    bool by_cast = false;   // how it was cast decided it, whatever was proposed (flashback, CR 702.34a)
+};
+
+// The one answer to where `spell` goes: `proposed` is where the spell's own instructions
+// (Spell::resolves_to) or the effect moving it send it. A stack object that isn't a spell goes
+// where it is proposed.
+SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, SpellExit exit);
 
 // The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the
 // card's SPELL ability `Cost$` (e.g. Natural Order's "Sac<1/Creature.Green>" →

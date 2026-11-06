@@ -14,6 +14,21 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player);
 
+SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, SpellExit exit) {
+    SpellDestination to;
+    to.zone = proposed;
+    if (exit == SpellExit::RESOLVED && global_coordinator.entity_has_component<CardData>(spell) &&
+        global_coordinator.GetComponent<CardData>(spell).shuffle_into_library) {
+        to.zone = Zone::LIBRARY;
+        to.shuffled = true;
+    } else if (global_coordinator.entity_has_component<Spell>(spell) &&
+               global_coordinator.GetComponent<Spell>(spell).chosen.flashback()) {
+        to.zone = Zone::EXILE;
+        to.by_cast = true;
+    }
+    return to;
+}
+
 FilterSpec spell_additional_sac_spec(const CardData &cd) {
     for (const auto &ab : cd.abilities)
         if (ab->ability_type == AbilityDef::SPELL && !ab->cost.filter(CostPart::SACRIFICE).empty())
