@@ -32,11 +32,7 @@ HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     bool castable =
         rt.stage == ResolutionCastRt::OFFER && miracle_castable(card, ab.controller, orderer);
     const std::string nm = entity_name(card);
-    LegalAction cast(CAST_SPELL, card, "Cast " + nm + " (miracle)");
-    cast.category = ActionCategory::CAST_SPELL;
-    cast.option.cost = CastCost::ALTERNATIVE;
-    cast.option_ordinal = 1;
-    if (cast_during_resolution(cast, ab.controller, castable, "Cast " + nm + " for its miracle cost",
+    if (cast_during_resolution(miracle_cast_action(card, nm), ab.controller, castable, "Cast " + nm + " for its miracle cost",
                                rt, ctx, orderer) == ResolutionCastStatus::SUSPENDED)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;

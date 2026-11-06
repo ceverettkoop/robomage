@@ -369,8 +369,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
     // Graveyard / exile cards the priority player has some play route for (the shared
     // play_permissions predicate, which ignores timing and cost), in ascending entity
-    // order, with their route bits. Every graveyard / exile play loop below walks this list
-    // and applies its own timing, cost and target gates.
+    // order, with their route bits. The graveyard land rows and offer_cast_options walk this
+    // list and apply their own timing, cost and target gates.
     const std::vector<std::pair<Entity, unsigned>> zone_play_routes = play_routes(orderer->mEntities, priority_player);
 
     // PASS PRIORITY

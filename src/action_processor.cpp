@@ -3030,11 +3030,7 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
         castable = exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer);
     }
     const std::string nm = entity_name(card);
-    LegalAction cast(CAST_SPELL, card, "Cast " + nm);
-    cast.category = ActionCategory::CAST_SPELL;
-    cast.option.zone = Zone::EXILE;
-    cast.option.cost = CastCost::GRANT;
-    cast.option.permission = Permission::EXILE_GRANT;
+    const LegalAction cast = exile_grant_cast_action(card, nm);
     const char *how = grant.resource == Game::ImpulseCastPermission::FREE
                           ? " without paying its mana cost" : "";
     ResolutionCastStatus status =

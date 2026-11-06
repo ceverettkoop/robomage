@@ -64,15 +64,12 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
 static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
-static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                   const std::shared_ptr<Orderer> &orderer);
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                  const ManaValue &mana, std::shared_ptr<Orderer> orderer);
-static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
-    Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static bool can_afford_alt(const CardData &card_data, const AltCost &alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer);
 static bool offer_timing_ok(CastOffer &offer);
@@ -91,6 +88,17 @@ static bool free_offspring_offered(CastOffer &offer);
 static bool replacing_cost_payable(const CastOffer &offer, const CostParts &cost);
 static bool flashback_offered(CastOffer &offer);
 static bool escape_offered(CastOffer &offer);
+static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::ImpulseCastPermission &grant,
+                               Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer);
+static bool grant_offered(CastOffer &offer);
+static bool exile_mana_cost_offered(CastOffer &offer);
+static bool exile_resource_offered(CastOffer &offer);
+static bool exile_no_cost_offered(CastOffer &offer);
+static bool exile_free_offered(CastOffer &offer);
+static bool exile_free_offspring_offered(CastOffer &offer);
+static bool cast_from_exile(const CardData &card);
+static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions);
 static bool cast_from_front(const CardData &card);
 static bool cast_from_back(const CardData &front);
 static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
@@ -133,7 +141,29 @@ static const CastSection kCastSections[] = {
         {"graveyard_free",  CastCost::NO_MANA_COST, false, 8, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"graveyard_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from graveyard) without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
+    // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
+    // exiled card its grant lets this player play, for its normal cost, without paying its mana
+    // cost, or for an alternative resource cost (CR 118.9). Cast from EXILE at the timing its type
+    // allows; only the granted player may cast it, and only if they can pay the cost. The
+    // EXILE_GRANT route covers a card still in exile whose grant names this player (and a land
+    // only under a "play" grant that allows lands).
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, cast_from_exile, offer_exile_land, {
+        {"exile_mana_cost", CastCost::MANA_COST,    false, 7, " (from exile)",         Zone::GRAVEYARD, exile_mana_cost_offered},
+        {"exile_resource",  CastCost::GRANT,        false, 7, " (from exile)",         Zone::GRAVEYARD, exile_resource_offered},
+        {"exile_no_cost",   CastCost::GRANT,        false, 7, " (from exile, no cost)", Zone::GRAVEYARD, exile_no_cost_offered},
+        {"exile_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
+        {"exile_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from exile) without paying its mana cost (offspring)", Zone::GRAVEYARD, exile_free_offspring_offered},
+    }},
 };
+
+// The casts a resolution offers (CR 608.2g), not priority: miracle_castable and exile_grant_castable
+// say whether they are offered, so they aren't walked.
+static const CastSection kMiracleCast = {Zone::HAND, Permission::NONE, CastFace::FRONT, nullptr, nullptr, {
+    {"miracle",             CastCost::ALTERNATIVE,  false, 1, " (miracle)",            Zone::GRAVEYARD, nullptr},
+}};
+static const CastSection kResolutionGrantCast = {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, nullptr, nullptr, {
+    {"exile_resolution",    CastCost::GRANT,        false, -1, "",                     Zone::GRAVEYARD, nullptr},
+}};
 
 // May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
 // 307.1)? An instant, a Flash card, or a spell a cast-with-flash permission covers (Teferi, Time
@@ -189,17 +219,6 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
     return !payment_blocked(card_entity);
 }
 
-// A CAST_SPELL action for `card_entity`; `option_ordinal` tells the cast variants apart
-// (0 normal, 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback,
-// 5 escape, 6 cast-from-graveyard permission, 7 impulse / free cast from exile, 8 without paying
-// its mana cost under a free-cast static).
-static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal) {
-    LegalAction la(CAST_SPELL, card_entity, desc);
-    la.category = ActionCategory::CAST_SPELL;
-    la.option_ordinal = option_ordinal;
-    return la;
-}
-
 // The regular cost of casting `face` from `card_entity` for `caster` that the cast-legality gates
 // check: effective_base_cost, less the most a ValidTarget$-conditioned reduction takes off for one
 // of the spell's legal targets (best_target_cost_reduction; Mystical Dispute targeting a blue
@@ -232,42 +251,6 @@ static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone:
     return can_pay(spell_additional_cost(face), check);
 }
 
-// Free-cast statics (Omniscience, Aluren; rules_mod::free_cast_grant): beside `cast`, the card's
-// cast from `from_zone` for its own costs, offer the cast without paying its mana cost — the
-// alternative cost of CR 118.9, so never combined with another one (118.9a). It keeps the
-// spell's own timing, or any time its caster holds priority when the grant gives flash (CR
-// 601.3c; an opponent's sorcery-speed lock still applies), and the other cast gates. Its mana is
-// what cost increases and the SetCost floor add to {0} (CR 118.9d); the spell's own additional
-// sacrifice must be payable, and with Offspring a second row pays that additional cost too.
-static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
-    Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer) {
-    const Entity card = cast.source_entity;
-    const rules_mod::FreeCastGrant grant = rules_mod::free_cast_grant(card, face, caster);
-    if (!grant.granted) return;
-    const bool timing_ok = grant.with_flash ? sorcery_window || !rules_mod::opponent_sorcery_speed_locked(caster)
-                                            : spell_timing_ok(face, caster, sorcery_window);
-    if (!timing_ok || !can_cast_now(face, card, caster, from_zone, sorcery_window, /*ignore_timing=*/true, orderer))
-        return;
-    const ManaValue mana = floored_alt_mana_cost(face, ManaValue{}, caster);
-    CostCheck check = total_cost_check(face, card, caster, orderer);
-    check.mana = &mana;
-    const CostParts &additional = spell_additional_cost(face);
-    if (!can_pay(additional, check)) return;
-    LegalAction free_la = cast;
-    free_la.option.cost = CastCost::NO_MANA_COST;
-    free_la.option_ordinal = 8;
-    free_la.description = cast.description + " without paying its mana cost";
-    actions.push_back(free_la);
-    if (!face.has_offspring) return;
-    ManaValue with_offspring = mana;
-    for (Colors c : face.offspring_cost.mana()) with_offspring.insert(c);
-    check.mana = &with_offspring;
-    if (!can_pay(additional, check)) return;
-    free_la.option.offspring = true;
-    free_la.description += " (offspring)";
-    actions.push_back(free_la);
-}
-
 // See declaration in cast_options.h.
 bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
                           std::shared_ptr<Orderer> orderer) {
@@ -284,7 +267,12 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
     if (!can_cast_now(ecd, card, caster, Zone::EXILE, sorcery_window,
                       /*ignore_timing=*/perm_grant.during_resolution, orderer))
         return false;
+    return grant_cost_payable(card, ecd, perm_grant, caster, orderer);
+}
 
+// Can `caster` pay what `perm_grant` asks of `card`?
+static bool grant_cost_payable(Entity card, const CardData &ecd, const Game::ImpulseCastPermission &perm_grant,
+                               Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     // Affordability of the alternative resource cost.
     Entity pe = get_player_entity(caster);
     if (!global_coordinator.entity_has_component<Player>(pe)) return false;
@@ -542,6 +530,56 @@ static bool escape_offered(CastOffer &offer) {
     return offer_castable(offer) && replacing_cost_payable(offer, offer.face.escape_cost);
 }
 
+static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer) {
+    return *cur_game.resolved_effects.impulse_cast_permission.find(offer.card);
+}
+
+static bool grant_offered(CastOffer &offer) {
+    return offer_castable(offer) &&
+           grant_cost_payable(offer.card, offer.face, offer_grant(offer), offer.window.caster, offer.window.orderer);
+}
+
+// A NORMAL grant casts the card for its own costs, which leaves them open to a free-cast static's
+// alternative cost; any other grant is an alternative cost itself (CR 118.9a).
+static bool exile_mana_cost_offered(CastOffer &offer) {
+    return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && grant_offered(offer);
+}
+
+static bool exile_resource_offered(CastOffer &offer) {
+    const Game::ImpulseCastPermission::Resource resource = offer_grant(offer).resource;
+    return (resource == Game::ImpulseCastPermission::ENERGY || resource == Game::ImpulseCastPermission::LIFE) &&
+           grant_offered(offer);
+}
+
+static bool exile_no_cost_offered(CastOffer &offer) {
+    return offer_grant(offer).resource == Game::ImpulseCastPermission::FREE && grant_offered(offer);
+}
+
+static bool exile_free_offered(CastOffer &offer) {
+    return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && free_cast_offered(offer);
+}
+
+static bool exile_free_offspring_offered(CastOffer &offer) {
+    return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && free_offspring_offered(offer);
+}
+
+// A land among the exiled cards is played, not cast (offer_exile_land).
+static bool cast_from_exile(const CardData &card) { return !is_land_card(card); }
+
+// A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may
+// PLAY those cards", Dauthi Voidwalker's "you may play it") may play it — a land play,
+// sorcery-timing, own main phase, empty stack, and a land drop remaining (CR 305.1 /
+// 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and play_permissions
+// reports no route for a land under one.
+static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions) {
+    if (!is_land_card(offer.face) || !offer.window.sorcery_window) return;
+    // Same shared land-drop expression the hand loop uses.
+    if (rules_mod::land_drops_remaining(offer.window.caster) <= 0) return;
+    LegalAction land_la(SPECIAL_ACTION, offer.card, "Play " + offer.face.name + " (from exile)");
+    land_la.category = ActionCategory::PLAY_LAND;
+    actions.push_back(land_la);
+}
+
 // A land isn't cast (CR 601.1).
 static bool cast_from_front(const CardData &card) { return !card_has_type(card, "Land"); }
 
@@ -578,9 +616,14 @@ static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions) {
     actions.push_back(sus_la);
 }
 
-// The menu row of `row`, offered for `card`.
+// The menu row of `row`, offered for `card`. The ordinal tells the cast variants apart (0 normal,
+// 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback, 5 escape,
+// 6 cast-from-graveyard permission, 7 impulse / free cast from exile, 8 without paying its mana cost
+// under a free-cast static).
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc) {
-    LegalAction la = cast_action(card, desc, row.ordinal);
+    LegalAction la(CAST_SPELL, card, desc);
+    la.category = ActionCategory::CAST_SPELL;
+    la.option_ordinal = row.ordinal;
     la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination};
     return la;
 }
@@ -599,60 +642,26 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
 }
 
 // See declaration in cast_options.h.
+LegalAction miracle_cast_action(Entity card, const std::string &name) {
+    const CastRow &row = kMiracleCast.rows.front();
+    return row_action(row, kMiracleCast, card, "Cast " + name + row.label);
+}
+
+// See declaration in cast_options.h.
+LegalAction exile_grant_cast_action(Entity card, const std::string &name) {
+    const CastRow &row = kResolutionGrantCast.rows.front();
+    return row_action(row, kResolutionGrantCast, card, "Cast " + name + row.label);
+}
+
+// See declaration in cast_options.h.
 void offer_cast_options(std::vector<LegalAction> &actions, const CastWindow &window, const std::vector<Entity> &hand,
-                        const std::vector<std::pair<Entity, unsigned>> &zone_play_routes) {
-    const Zone::Ownership priority_player = window.caster;
-    const bool sorcery_window = window.sorcery_window;
-    const std::shared_ptr<Orderer> &orderer = window.orderer;
+                        const std::vector<std::pair<Entity, unsigned>> &routes) {
     for (const CastSection &section : kCastSections) {
         if (section.permission == Permission::NONE) {
             for (Entity card : hand) enumerate_cast_options(card, section, window, actions);
             continue;
         }
-        for (const auto &[card, routes] : zone_play_routes)
-            if (routes & permission_bit(section.permission)) enumerate_cast_options(card, section, window, actions);
-    }
-    // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
-    // exiled card its grant lets this player play, for its normal cost, without paying its mana
-    // cost, or for an alternative resource cost (CR 118.9). Cast from EXILE at the timing its type
-    // allows; only the granted player may cast it, and only if they can pay the cost. The
-    // EXILE_GRANT route covers a card still in exile whose grant names this player (and a land
-    // only under a "play" grant that allows lands).
-    for (const auto &[ex_entity, routes] : zone_play_routes) {
-        if (!(routes & permission_bit(Permission::EXILE_GRANT))) continue;
-        const auto &perm_grant = *cur_game.resolved_effects.impulse_cast_permission.find(ex_entity);
-        auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
-
-        // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may
-        // PLAY those cards", Dauthi Voidwalker's "you may play it") may play it — a land play,
-        // sorcery-timing, own main phase, empty stack, and a land drop remaining (CR 305.1 /
-        // 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and play_permissions
-        // reports no route for a land under one.
-        if (is_land_card(ecd)) {
-            if (!sorcery_window) continue;
-            // Same shared land-drop expression the hand loop above uses.
-            if (rules_mod::land_drops_remaining(priority_player) <= 0) continue;
-            LegalAction land_la(SPECIAL_ACTION, ex_entity, "Play " + ecd.name + " (from exile)");
-            land_la.category = ActionCategory::PLAY_LAND;
-            actions.push_back(land_la);
-            continue;
-        }
-
-        // A grant to cast the card for its normal cost leaves its cost open to a free-cast
-        // static's alternative cost; any other grant is an alternative cost itself (CR 118.9a).
-        const bool normal_grant =
-            perm_grant.resource == Game::ImpulseCastPermission::NORMAL && !perm_grant.during_resolution;
-        const bool castable = exile_grant_castable(ex_entity, priority_player, sorcery_window, orderer);
-        if (!castable && !normal_grant) continue;
-
-        const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
-                                     ? " (from exile, no cost)"
-                                     : " (from exile)";
-        LegalAction imp_la = cast_action(ex_entity, "Cast " + ecd.name + imp_suffix, 7);
-        imp_la.option.zone = Zone::EXILE;
-        imp_la.option.permission = Permission::EXILE_GRANT;
-        if (perm_grant.resource != Game::ImpulseCastPermission::NORMAL) imp_la.option.cost = CastCost::GRANT;
-        if (castable) actions.push_back(imp_la);
-        if (normal_grant) offer_free_cast(actions, imp_la, ecd, Zone::EXILE, priority_player, sorcery_window, orderer);
+        for (const auto &[card, sources] : routes)
+            if (sources & permission_bit(section.permission)) enumerate_cast_options(card, section, window, actions);
     }
 }

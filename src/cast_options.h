@@ -2,6 +2,7 @@
 #define CAST_OPTIONS_H
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -35,5 +36,10 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
 // its miracle trigger resolves (CR 702.94a, 608.2g): timing ignored, its targets and cast
 // prohibitions (can_cast_now), and the miracle mana cost with any cost floor (CR 118.9d, 601.2f).
 bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
+
+// The cast a miracle trigger offers, and the cast from exile a resolution offers under its grant,
+// `name` being what the row calls the card.
+LegalAction miracle_cast_action(Entity card, const std::string &name);
+LegalAction exile_grant_cast_action(Entity card, const std::string &name);
 
 #endif /* CAST_OPTIONS_H */
