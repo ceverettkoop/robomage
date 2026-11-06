@@ -88,6 +88,9 @@ static bool plain_alternative_offered(CastOffer &offer);
 static bool offspring_offered(CastOffer &offer);
 static bool free_cast_offered(CastOffer &offer);
 static bool free_offspring_offered(CastOffer &offer);
+static bool replacing_cost_payable(const CastOffer &offer, const CostParts &cost);
+static bool flashback_offered(CastOffer &offer);
+static bool escape_offered(CastOffer &offer);
 static bool cast_from_front(const CardData &card);
 static bool cast_from_back(const CardData &front);
 static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
@@ -114,6 +117,21 @@ static const CastSection kCastSections[] = {
         {"back_face",       CastCost::MANA_COST,    false, 3, "",                      Zone::GRAVEYARD, mana_cost_offered},
         {"back_face_free",  CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"back_face_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
+    }},
+    {Zone::GRAVEYARD, Permission::FLASHBACK, CastFace::FRONT, nullptr, nullptr, {
+        {"flashback",       CastCost::FLASHBACK,    false, 4, " (flashback)",          Zone::EXILE,     flashback_offered},
+    }},
+    {Zone::GRAVEYARD, Permission::ESCAPE, CastFace::FRONT, nullptr, nullptr, {
+        {"escape",          CastCost::ESCAPE,       false, 5, " (escape)",             Zone::GRAVEYARD, escape_offered},
+    }},
+    // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
+    // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
+    // for its normal cost, at the timing its type allows. The GRAVEYARD_CAST route covers
+    // only the graveyard owner and never a land (601.1).
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::FRONT, nullptr, nullptr, {
+        {"graveyard_cast",  CastCost::MANA_COST,    false, 6, " (from graveyard)",     Zone::GRAVEYARD, mana_cost_offered},
+        {"graveyard_free",  CastCost::NO_MANA_COST, false, 8, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
+        {"graveyard_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from graveyard) without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
 };
 
@@ -498,6 +516,32 @@ static bool free_offspring_offered(CastOffer &offer) {
     return can_pay(spell_additional_cost(offer.face), check);
 }
 
+// A cost that replaces the mana cost, with its mana floored: flashback and escape are alternative
+// costs (CR 702.34a, 702.139a), so an active SetCost floor applies to them too.
+static bool replacing_cost_payable(const CastOffer &offer, const CostParts &cost) {
+    const CastWindow &w = offer.window;
+    const ManaValue mana = floored_alt_mana_cost(offer.face, cost.mana(), w.caster);
+    CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
+    check.mana = &mana;
+    return can_pay(cost, check);
+}
+
+// A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback. Cabal
+// Therapy's Flashback— Sacrifice a creature can't be cast unless a matching permanent is available
+// to sacrifice (CR 601.2f / 601.3a).
+static bool flashback_offered(CastOffer &offer) {
+    return offer_castable(offer) && replacing_cost_payable(offer, offer.face.flashback_cost);
+}
+
+// ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
+// escape cost (mana + additional cost). Same sorcery-speed timing flashback uses unless the
+// card is an instant. Nethergoyf's additional cost is ExileFromGrave with a "≥N card types
+// among the chosen cards" constraint, so the cast is only legal when OTHER cards in the
+// caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
+static bool escape_offered(CastOffer &offer) {
+    return offer_castable(offer) && replacing_cost_payable(offer, offer.face.escape_cost);
+}
+
 // A land isn't cast (CR 601.1).
 static bool cast_from_front(const CardData &card) { return !card_has_type(card, "Land"); }
 
@@ -567,73 +611,6 @@ void offer_cast_options(std::vector<LegalAction> &actions, const CastWindow &win
         }
         for (const auto &[card, routes] : zone_play_routes)
             if (routes & permission_bit(section.permission)) enumerate_cast_options(card, section, window, actions);
-    }
-    // checking graveyard for flashback spells (the FLASHBACK route)
-    for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & permission_bit(Permission::FLASHBACK))) continue;
-        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
-        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
-                          /*ignore_timing=*/false, orderer))
-            continue;
-
-        // Check affordability: the cost with its mana floored — flashback is an alternative cost
-        // (CR 702.34a), so an active SetCost floor applies to it too. Cabal Therapy's Flashback—
-        // Sacrifice a creature can't be cast unless a matching permanent is available to sacrifice
-        // (CR 601.2f / 601.3a).
-        const ManaValue fb_mana = floored_alt_mana_cost(gcd, gcd.flashback_cost.mana(), priority_player);
-        CostCheck fb_check = total_cost_check(gcd, gy_entity, priority_player, orderer);
-        fb_check.mana = &fb_mana;
-        if (!can_pay(gcd.flashback_cost, fb_check)) continue;
-
-        LegalAction fb_la = cast_action(gy_entity, "Cast " + gcd.name + " (flashback)", 4);
-        fb_la.option.zone = Zone::GRAVEYARD;
-        fb_la.option.cost = CastCost::FLASHBACK;
-        fb_la.option.permission = Permission::FLASHBACK;
-        fb_la.option.destination = Zone::EXILE;
-        actions.push_back(fb_la);
-    }
-    // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
-    // escape cost (mana + additional cost). Same sorcery-speed timing flashback uses unless the
-    // card is an instant. Nethergoyf's additional cost is ExileFromGrave with a "≥N card types
-    // among the chosen cards" constraint, so the cast is only legal when OTHER cards in the
-    // caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
-    // The permission itself is the ESCAPE route.
-    for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & permission_bit(Permission::ESCAPE))) continue;
-        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
-                          /*ignore_timing=*/false, orderer))
-            continue;
-
-        // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        const ManaValue esc_mana = floored_alt_mana_cost(gcd, gcd.escape_cost.mana(), priority_player);
-        CostCheck esc_check = total_cost_check(gcd, gy_entity, priority_player, orderer);
-        esc_check.mana = &esc_mana;
-        if (!can_pay(gcd.escape_cost, esc_check)) continue;
-
-        LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);
-        esc_la.option.zone = Zone::GRAVEYARD;
-        esc_la.option.cost = CastCost::ESCAPE;
-        esc_la.option.permission = Permission::ESCAPE;
-        actions.push_back(esc_la);
-    }
-    // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
-    // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
-    // for its normal cost, at the timing its type allows. The GRAVEYARD_CAST route covers
-    // only the graveyard owner and never a land (601.1).
-    for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & permission_bit(Permission::GRAVEYARD_CAST))) continue;
-        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
-        gy_la.option.zone = Zone::GRAVEYARD;
-        gy_la.option.permission = Permission::GRAVEYARD_CAST;
-        if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
-                /*ignore_timing=*/false, orderer) &&
-            regular_cast_payable(gcd, gy_entity, priority_player,
-                                 regular_cast_cost(gcd, gy_entity, priority_player, orderer), orderer))
-            actions.push_back(gy_la);
-        offer_free_cast(actions, gy_la, gcd, Zone::GRAVEYARD, priority_player, sorcery_window, orderer);
     }
     // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
     // exiled card its grant lets this player play, for its normal cost, without paying its mana
