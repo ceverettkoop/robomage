@@ -56,6 +56,8 @@ static void fizzle(const Ability &ab);
 // CR 608.2b: `ab` declares no target of its own, its chained instructions chose some, and all of
 // them are illegal now.
 static bool chained_targets_all_illegal(const Ability &ab);
+// CR 608.2b: a target `ab`'s chained instructions chose themselves is still legal.
+static bool chained_target_still_legal(const Ability &ab);
 
 static bool condition_svar_passes(const Ability &ab) {
     const Entity src = ab.source.lki_entity();
@@ -239,6 +241,13 @@ static bool chained_targets_all_illegal(const Ability &ab) {
     return chosen;
 }
 
+static bool chained_target_still_legal(const Ability &ab) {
+    for (const Ability *sub : ab.chained_subs())
+        if (sub->def->valid_tgts != "N_A" && (!sub->target.empty() || !sub->targets.empty()) && targets_still_legal(*sub))
+            return true;
+    return false;
+}
+
 // Transitional blocking shim: every non-stack caller (sub-ability recursion, the
 // gift loop, charm's chosen modes, repeat_each, immediate/delayed triggers, the
 // mana-system riders) resolves inline exactly as before. A blocking ctx can
@@ -356,9 +365,11 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             }
             // Pre-resolve target validity check (CR 608.2b): every targeted effect, a Pump
             // included, was targeted as it was put on the stack and fizzles here if its target
-            // became illegal (it does NOT retarget).
+            // became illegal (it does NOT retarget). A stack object fizzles only when all its
+            // targets are illegal: with one of a chained instruction's still legal it resolves,
+            // and this instruction alone does nothing (phase 3).
             if (ab.def->valid_tgts != "N_A") {
-                if (!targets_still_legal(ab)) {
+                if (!targets_still_legal(ab) && !(ctx.is_stack_object() && chained_target_still_legal(ab))) {
                     fizzle(ab);
                     return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
                 }
@@ -434,8 +445,8 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     if (phase == 3) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
-        bool condition_passed = true;
-        if (!ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
+        bool condition_passed = ab.def->valid_tgts == "N_A" || !ctx.is_stack_object() || targets_still_legal(ab);
+        if (condition_passed && !ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
         // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you
         // control four or fewer lands"), ConditionDefined$ Remembered (Birthing Ritual: the dig
