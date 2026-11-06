@@ -846,6 +846,57 @@ countered (goes to the graveyard); Bestow falling off into a creature (CR 702.10
 objects; a permission lost mid-cast; `ReplaceGraveyard` when the spell is countered. Top-of-library casting
 across a shuffle. The state format's how-cast enum extended.
 
+**Progress (2026-11-06).** Unit (a), the inert migration. Nothing about play changed.
+
+- **`spell_destination(spell, proposed, exit)`** (`src/queries/spells.h`) is the one answer to where a spell goes off the stack: the resolve path's if-chain and `remove_from_stack`'s repeat read it, with `SpellExit` saying which it is.
+- **`Permission`** (`src/queries/permissions.{h,cpp}`) is `kPermissionRows`: a kind, the zone it reaches, whether only the owner has it, what covers the card, when it lapses, what using it spends. `play_permissions` walks the rows of the card's zone and looks at no other zone, so a Library row is one line. Its values are the state format's `permission_kind`.
+- **`CastOption`** (`src/components/cast_option.h`): face, zone, `CastCost`, permission, Offspring, destination and its row's name. `LegalAction::option` and `ChosenCost::option` replace eight booleans of the one and the mode and four booleans of the other. `CastCost` takes in `ChosenCost::Mode`, so evoke, impending and warp come from the row and nothing works them out as the spell becomes cast; the NORMAL grant is `MANA_COST` on an exile row, and nothing looks the grant up to tell. A PLAY_LAND row holds its face there too.
+- **How the cast proceeds:** the COST step is `kCastCostRows`, a row per `CastCost`: what it owes and the next step. `mana_cost_replaced` is `cost != MANA_COST`.
+- **The cast table** (`src/cast_options.{h,cpp}`): `kCastSections`, each a zone, permission and face with its rows, walked by `offer_cast_options` a section at a time and by `enumerate_cast_options` a card at a time, which is what keeps the menu's order. A row is a name, a cost, Offspring, ordinal, label, destination and the gate that offers it; the alternative kinds are rows. No cast row is built anywhere else: a miracle's and a resolution's cast from exile are rows too (`kMiracleCast`, `kResolutionGrantCast`), offered by `cast_during_resolution`, not walked. Rows share `can_cast_now` and the timing through `CastOffer`, worked out once per card.
+- **Coverage:** `cast_offer` and `cast_row` count the rows. The `cast` keys, and every `.expect`, stay.
+
+What stayed, and why:
+
+- **`SpellOverlay` isn't defined.** An empty type is dead weight here: nothing could read it, and (b) decides what it holds. It is a column of `CastRow` and a field of `CastOption` when it has a kind.
+- **Land rows from the hand and the graveyard** stay in `determine_legal_actions`: no land is cast, and they come before the companion's row. A land from exile, and suspend, sit among the casts in the menu, so they are their sections' `beside` hooks.
+- **`free_cast_grant`** stays in `rules_mod`: it says what a cast costs, not where it may be cast from. **`may_cast_this_turn` and `impulse_cast_permission`** stay as they are, read and spent through the rows.
+- **`PAY_COSTS`** still fills `CostPayer::alternative`, `flashback` and `escape` one by one: `cost_payment.cpp`'s pick tables name those slots.
+- **`exile_resource` and the `*_offspring` rows nothing reaches** stay, as the loops offered them. Removing one would be a change.
+- **`CLAUDE.md`'s key-file index** doesn't list the two new files: this unit was not told to edit it.
+
+**(b) must:**
+
+- Define `SpellOverlay` on `CastRow` and `CastOption`, with `operator==` (`interchangeable_choices` compares options) and its reader through `active_face`.
+- Library: a row of `kPermissionRows` and a section. A new `Permission` goes before `NONE` and appends to `permission_kind`, and `encode.cpp`'s loop ends at `EXILE_GRANT`. `Orderer::begin_cast_move` is fatal on a library cast.
+- `destination` applies at every exit. Adventure's holds only at `SpellExit::RESOLVED` (countered, it goes to the graveyard), and `ReplaceGraveyard` belongs to a resolution, so both need `spell_destination` to read more than the field. `resolve_top` logs " (flashback)" for any `by_cast`.
+- `spell_destination` tries `shuffle_into_library` first; flashback says exile instead of anywhere else (CR 702.34a). A bug by order, with no script having both. Swap them with the first card that does.
+- `DB$ Play` over any zone: `kResolutionGrantCast` is exile's, `effects::play` stops anywhere else, and `impulse_cast_permission` is the only store a cast reads its resource from.
+- A new `CastCost` is a row of `kCastCostRows`, in order: its `static_assert` names `WARP` as the last, and `alternative()` is `>= ALTERNATIVE`. Fuse needs a third `CastFace` past `back_face()`.
+- `cast_variant_mask` and the stack row's variant read the option field by field: the how-cast enum extends there, with `make registry`.
+- A permission lost mid-cast: the row is decided at the offer, and `determine_grant_cost` reads the grant after the card has moved.
+- Row gates must stay free of side effects: a walk skips them by short circuit and shares `CastOffer`'s answers. Convoke, Bargain and `ManaRestriction` (M5's and M6's tables) are `TapToPay` and cost rows beside this.
+
+Evidence. Against `ab4c992d`, built apart, the tip's debug binary: 9,600 explore games under `--narrative --trace-decisions` over the 23 top-level, `league/`, `heldout/` and `tests/mech_*` decks, 3,200 each of bo1, `explore:patient` bo3 and `--no-auto-mana`, 5.4 GB byte-identical; `--rmstate-dump` frames of 300 games, 2.1 GB, identical; 120 random games under `--offer-cancel` and 240 under `--selfcheck-state`, identical, no error. Each run's old `--coverage` keys identical too. All 410 scenarios run through both binaries: output identical. `--parse-report @vocab`, over 430 cards with the candidates, and `--cards-frame`: identical. `make registry` a no-op; these commits touch nothing in `tests/` or `src/featurize`, so no `make regen`. Each commit: `make check` green and 560 games identical. Release `bench`, median of 9 alternating runs: engine alone 137.0 us per decision before, 132.8 after; the actor loop 2,445 decisions/s before, 2,491 after, and neither pair's ranges overlap. Likely why, not measured: the offer no longer builds a row it won't offer. The `actor` tier's torch part, run by hand on `robomage_nn` rebuilt at the tip: green.
+
+How often each mode was reached, over those 10,260 games:
+
+| row | offered | cast | row | offered | cast |
+|---|---|---|---|---|---|
+| `hand` | 676,985 | 278,110 | `flashback` | 8,944 | 3,890 |
+| `alternative` | 39,135 | 27,475 | `escape` | 1,676 | 594 |
+| `evoke` | 6,403 | 3,711 | `exile_mana_cost` | 1,922 | 698 |
+| `warp` | 3,627 | 1,548 | `exile_no_cost` | 86 | 65 |
+| `impending` | 1,410 | 616 | `exile_free` | 22 | 18 |
+| `spectacle` | 756 | 374 | `exile_free_offspring` | 2 | 1 |
+| `offspring` | 109 | 17 | `exile_resolution` (free 428, energy 334) | at resolution | 697 |
+| `hand_free` | 2,541 | 1,313 | `miracle` | at resolution | 78 |
+| `hand_free_offspring` | 36 | 14 | `exile_land` | 486 | 254 |
+| `back_face` (split halves only) | 1,099 | 439 | `graveyard_land` | | 1,150 |
+
+Beside them: 704 suspends, 437 companions, 560 land back faces.
+
+No game reached these. `graveyard_cast`: Emry is in no deck, and a `--play` line through both binaries is identical. `back_face_free`: the same, Gone under Omniscience. With no vocab card or script to reach them, so unproved beyond the code: a modal DFC's nonland back face (`back_face`'s other half; Witch Enchanter's back is a land), `back_face_free_offspring`, `graveyard_free`, `graveyard_free_offspring` (no free-cast static covers the graveyard, no Offspring card is an artifact), `exile_resource` and a grant's life (nothing grants energy or life at priority, and no `PlayCost$` pays life).
+
 ### M8. A characteristics view across zones (L)
 
 **Today.** Continuous effects come from battlefield permanents and emblems and mostly reach the
