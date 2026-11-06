@@ -1,0 +1,15 @@
+{
+  "name": "cr702_66a_delve_on_a_free_cast_from_exile",
+  "why": "CR 118.9d, 601.2f, 702.66a: Delve acts on the total cost, so Murktide Regent cast free from Dauthi Voidwalker's exile pays Trinisphere's {3} by exiling cards, with no mana to spend",
+  "hand_a": ["Thoughtseize"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp", "Dauthi Voidwalker", "Trinisphere"],
+  "graveyard_a": ["Lightning Bolt", "Lightning Bolt", "Lightning Bolt"],
+  "hand_b": ["Murktide Regent"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Thoughtseize", "A:target:Player B", "A:desc:Murktide Regent", "A:activate:Dauthi Voidwalker", "A:cast:Murktide Regent", "A:desc:Lightning Bolt", "A:desc:Lightning Bolt", "A:desc:Lightning Bolt"],
+  "max_decisions": 24,
+  "expect_menu": ["Cast Murktide Regent \\(from exile, no cost\\)"],
+  "expect_count": {"exiles .* via Delve": 3},
+  "expect": ["Player A casts Murktide Regent", "Murktide Regent enters with 3 \\+1/\\+1 counter"]
+}

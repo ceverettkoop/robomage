@@ -62,6 +62,8 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                  const std::shared_ptr<Orderer> &orderer);
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                  const ManaValue &mana, std::shared_ptr<Orderer> orderer);
 static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
@@ -168,6 +170,16 @@ static ManaValue regular_cast_cost(
     return cost;
 }
 
+// A check of a cost of casting `face`: its Delve and TapToPay act on the total cost, whichever cost
+// that was made from (CR 702.66a, 702.126a).
+static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                  const std::shared_ptr<Orderer> &orderer) {
+    CostCheck check(caster, card_entity, orderer);
+    check.delve = face.has_delve;
+    check.tap_to_pay = face.tap_to_pay;
+    return check;
+}
+
 // Can `caster` cast `face` for its mana cost, `mana` after reductions, with the hybrid and Phyrexian
 // pips folded in (castable iff SOME assignment is payable), and pay its additional costs?
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
@@ -195,10 +207,8 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     if (!timing_ok || !can_cast_now(face, card, caster, from_zone, sorcery_window, /*ignore_timing=*/true, orderer))
         return;
     const ManaValue mana = floored_alt_mana_cost(face, ManaValue{}, caster);
-    CostCheck check(caster, card, orderer);
+    CostCheck check = total_cost_check(face, card, caster, orderer);
     check.mana = &mana;
-    check.delve = face.has_delve;
-    check.tap_to_pay = face.tap_to_pay;
     const CostParts &additional = spell_additional_cost(face);
     if (!can_pay(additional, check)) return;
     LegalAction free_la = cast;
@@ -293,8 +303,8 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
                              ? perm_grant.amount : 0;
         ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
         if (!floor_mana.empty() &&
-            !can_pay_mana(caster, floor_mana, card, orderer, /*has_delve=*/false,
-                          TapToPay::NONE, /*exclude_entity=*/0,
+            !can_pay_mana(caster, floor_mana, card, orderer, ecd.has_delve,
+                          ecd.tap_to_pay, /*exclude_entity=*/0,
                           /*life_reserve=*/grant_life))
             return false;
     }
@@ -313,7 +323,7 @@ bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Ordere
                       /*ignore_timing=*/true, orderer))
         return false;
     const ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner);
-    CostCheck check(owner, card, orderer);
+    CostCheck check = total_cost_check(cd, card, owner, orderer);
     check.mana = &alt_mana;
     check.unchecked = kAllButMana;
     return can_pay(cd.alt_cost.cost, check);
@@ -466,7 +476,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
     const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player,
                                                      static_cast<int>(alt_cost.cost.hybrid().size()));
-    CostCheck check(priority_player, card_entity, orderer);
+    CostCheck check = total_cost_check(card_data, card_entity, priority_player, orderer);
     check.mana = &alt_mana;
     return can_pay(alt_cost.cost, check);
 }
@@ -866,7 +876,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Sacrifice a creature can't be cast unless a matching permanent is available to sacrifice
         // (CR 601.2f / 601.3a).
         const ManaValue fb_mana = floored_alt_mana_cost(gcd, gcd.flashback_cost.mana(), priority_player);
-        CostCheck fb_check(priority_player, gy_entity, orderer);
+        CostCheck fb_check = total_cost_check(gcd, gy_entity, priority_player, orderer);
         fb_check.mana = &fb_mana;
         if (!can_pay(gcd.flashback_cost, fb_check)) continue;
 
@@ -889,7 +899,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
         const ManaValue esc_mana = floored_alt_mana_cost(gcd, gcd.escape_cost.mana(), priority_player);
-        CostCheck esc_check(priority_player, gy_entity, orderer);
+        CostCheck esc_check = total_cost_check(gcd, gy_entity, priority_player, orderer);
         esc_check.mana = &esc_mana;
         if (!can_pay(gcd.escape_cost, esc_check)) continue;
 

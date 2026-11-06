@@ -123,7 +123,7 @@ static bool mana_payable(const CostParts &cost, const CostCheck &check) {
     const TapToPay tap = check.tap_to_pay != TapToPay::NONE ? check.tap_to_pay : cost.tap_to_pay();
     if (check.hybrid || !hybrid->empty())
         return resolve_hybrid_cost(check.payer, owed, *hybrid, check.payee, check.orderer, check.delve, tap,
-                                   nullptr, 0, exclude);
+                                   nullptr, cost.life() + check.life_reserve, exclude);
     if (owed.empty()) return true;
     if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
     return can_pay_mana(check.payer, owed, check.payee, check.orderer, check.delve, tap, exclude,

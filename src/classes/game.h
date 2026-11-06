@@ -389,6 +389,10 @@ struct Game {
             size_t kicker_idx = 0;     // next kicker pip to offer/apply
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
             size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
+            // An alternative cost, or nothing, is paid rather than the mana cost (CR 118.9): its X is 0
+            // (CR 107.3b) and its hybrid and Phyrexian pips aren't owed. Additional costs, cost
+            // increases, Delve and TapToPay still apply to the total (CR 118.9d, 702.66a).
+            bool mana_cost_replaced = false;
             // The regular cost is reduced by a ValidTarget$-conditioned ReduceCost static once
             // the targets are chosen (Mystical Dispute; CR 601.2c before 601.2f): the target
             // picks are limited to those whose cost is payable, and the reduction comes off

@@ -259,6 +259,7 @@ static bool additional_cost_payable(const Game::PendingCast &pc, const CardData 
     check.hybrid = &mana_cost_hybrid_pips(pc, card_data);
     check.delve = card_data.has_delve;
     check.tap_to_pay = card_data.tap_to_pay;
+    check.life_reserve = pc.pay.life;
     return can_pay(extra, check);
 }
 
@@ -445,33 +446,27 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 // Daze's bounce are no longer spent before the spell has a target — and a payment that then
 // fails rewinds without having consumed them (see CostItem).
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster, const ManaValue &mana) {
+    Game::PendingCast &pc = game.pending.cast;
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor (Trinisphere)
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, mana, caster);
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, mana, caster);
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
-    if (card_data.alt_cost.cost.is_free() && alt_mana.empty()) {
+    if (card_data.alt_cost.cost.is_free() && pc.cost_to_pay.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
         return;
     }
 
-    // Affordability is pre-verified by can_afford_alt (against the same floored cost),
-    // so in machine mode the deferred payment always succeeds.
-    if (!alt_mana.empty()) {
-        game.pending.cast.pay.mana = alt_mana;
-        game.pending.cast.pay.mana_pending = true;
-    }
-    if (card_data.alt_cost.cost.life() != 0)
-        game.pending.cast.pay.life += card_data.alt_cost.cost.life();
+    pc.pay.life += card_data.alt_cost.cost.life();
 }
 
-// The hybrid pips of the mana cost this cast pays: none when it is cast without paying its mana
-// cost (CR 118.9), the card's otherwise.
+// The hybrid pips of the mana cost this cast pays: none when something else is paid rather than its
+// mana cost (CR 118.9), the card's otherwise.
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data) {
     static const std::vector<HybridPip> kNone;
-    return pc.chosen.without_mana_cost ? kNone : card_data.hybrid_mana;
+    return pc.mana_cost_replaced ? kNone : card_data.hybrid_mana;
 }
 
 // See forward declaration at top of file.
@@ -1827,6 +1822,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
             const bool impulse_normal = pc.chosen.impulse && grant_p &&
                                         grant_p->resource == Game::ImpulseCastPermission::NORMAL;
+            pc.mana_cost_replaced = pc.chosen.flashback() || pc.chosen.escape() || pc.chosen.alternative() ||
+                                    pc.chosen.without_mana_cost || (pc.chosen.impulse && !impulse_normal);
+            // Delve and TapToPay act on the total cost, whichever cost it was made from.
+            pc.pay.delve = card_data.has_delve;
+            pc.pay.tap_to_pay = card_data.tap_to_pay;
+            if (!card_data.kicker_costs.empty()) pc.chosen.kicked.assign(card_data.kicker_costs.size(), false);
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
             // chosen (601.2c before 601.2g/h; see CostRun). Paying
             // the sacrifice first leaked information and changed the board before the
@@ -1834,11 +1835,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             if (pc.chosen.flashback()) {
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                pc.pay.mana =
-                    floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
-                pc.pay.mana_pending = true;
+                pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
                 pc.pay.life = card_data.flashback_cost.life();
-                pc.step = Game::PendingCast::ADDITIONAL;
+                pc.step = Game::PendingCast::KICKER;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
@@ -1846,11 +1845,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (pc.chosen.escape()) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                pc.pay.mana =
-                    floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
-                pc.pay.mana_pending = true;
+                pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
                 pc.pay.life = card_data.escape_cost.life();
-                pc.step = Game::PendingCast::ADDITIONAL;
+                pc.step = Game::PendingCast::KICKER;
 
             // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
             // (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
@@ -1871,20 +1868,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pc.pay.life = grant.amount;
                 }
 
-                if (card_data.has_x_cost) pc.chosen.x = 0;
-
                 // Cost-increase / SetCost-floor statics apply to alternative costs too
                 // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
                 // Trinisphere floor pads it up to its minimum ({3}) and Thalia adds its surcharge
                 // — paid ON TOP of the resource cost (energy/life). Deferred until after targets
                 // like every other cost. Empty (no floor / increase applies) leaves the cast free
                 // of mana.
-                ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
-                if (!floor_mana.empty()) {
-                    pc.pay.mana = floor_mana;
-                    pc.pay.mana_pending = true;
-                }
-                pc.step = Game::PendingCast::ADDITIONAL;
+                pc.cost_to_pay = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+                pc.step = Game::PendingCast::KICKER;
 
             // ALTERNATE COST — determined here, paid in the payment phase like every
             // other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
@@ -1912,8 +1903,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (pc.chosen.offspring)
                     for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
 
-                if (!card_data.kicker_costs.empty())
-                    pc.chosen.kicked.assign(card_data.kicker_costs.size(), false);
                 pc.step = Game::PendingCast::KICKER;
             }
             break;
@@ -1991,11 +1980,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::CHOOSE_X: {
-            // X-COST: prompt player to choose X value, add X generic to cost. Cast without
-            // paying its mana cost, the only legal X is 0 (CR 107.3b).
-            if (card_data.has_x_cost && pc.chosen.without_mana_cost) {
-                pc.chosen.x = 0;
-            } else if (card_data.has_x_cost) {
+            // X-COST: prompt player to choose X value, add X generic to cost. With its mana cost
+            // not paid, the only legal X is 0 (CR 107.3b), which it holds.
+            if (card_data.has_x_cost && !pc.mana_cost_replaced) {
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
@@ -2061,7 +2048,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         case Game::PendingCast::PHYREXIAN_PIP: {
             // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life (none when the
             // mana cost is not paid)
-            if (!card_data.phyrexian_mana.empty() && !pc.chosen.without_mana_cost) {
+            if (!card_data.phyrexian_mana.empty() && !pc.mana_cost_replaced) {
                 Entity caster_entity = get_player_entity(caster);
                 auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                 while (pc.phyrexian_idx < card_data.phyrexian_mana.size()) {
@@ -2138,8 +2125,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // after targets" identical to paying now, so a single unified order serves every
             // cast.
             pc.pay.mana = pc.cost_to_pay;
-            pc.pay.delve = card_data.has_delve;
-            pc.pay.tap_to_pay = card_data.tap_to_pay;
             pc.pay.mana_pending = true;
             pc.step = Game::PendingCast::LIFE_X;
             break;
@@ -2181,6 +2166,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // An alternative cost's hybrid pips (Evoke {R/G}{R/G}), then what it comes to.
             HybridAnnouncement hybrid{caster, spell_entity, spell_entity, &card_data.alt_cost.cost.hybrid(),
                                       &pc.hybrid_idx, &pc.cost_to_pay};
+            hybrid.delve = card_data.has_delve;
+            hybrid.tap_to_pay = card_data.tap_to_pay;
             hybrid.colors_matter = spell_reads_colors_spent(card_data);
             FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
             const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
@@ -2190,7 +2177,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 return;
             }
             defer_alternate_cost(game, card_data, caster, pc.cost_to_pay);
-            pc.step = Game::PendingCast::ADDITIONAL;
+            pc.step = Game::PendingCast::KICKER;
             break;
         }
 

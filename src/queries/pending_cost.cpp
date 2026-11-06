@@ -79,11 +79,11 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
             discards += face->additional_choices[static_cast<size_t>(pc.chosen.additional_choice)].count(CostPart::DISCARD);
         out.discard = std::max(0, discards - pc.pay.discards_chosen);
     }
-    // The regular cost branch folds X, hybrid and Phyrexian pips into cost_to_pay one step at a
-    // time (KICKER through PHYREXIAN_PIP; the alternative branches skip them): the pips of the
-    // steps not yet reached are still owed as printed.
+    // A cast that pays its mana cost folds X, hybrid and Phyrexian pips into cost_to_pay one step at
+    // a time (KICKER through PHYREXIAN_PIP): the pips of the steps not yet reached are still owed as
+    // printed.
     const CardData *face = cast_face(pc);
-    const bool regular = pc.step >= Cast::KICKER && pc.step <= Cast::PHYREXIAN_PIP;
+    const bool regular = !pc.mana_cost_replaced && pc.step >= Cast::KICKER && pc.step <= Cast::PHYREXIAN_PIP;
     if (face && regular) {
         if (pc.step <= Cast::CHOOSE_X && face->has_x_cost) out.x_pips = face->x_pip_count;
         if (pc.step <= Cast::HYBRID) out.hybrid = face->hybrid_mana;
