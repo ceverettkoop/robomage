@@ -25,12 +25,22 @@ namespace effects {
 
 // Forward declaration (see definition below).
 static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid);
+// `owner` discards each of `cards`, with no choice to make.
+static void discard_cards(const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
 
 // True if the card entity `e` matches a DiscardValid$ filter spec (Thoughtseize's
 // Card.nonLand, Cabal Therapy's Card.NamedCard, Mox Diamond's Land), matched by the shared filter
 // matcher against the card's characteristics. An empty filter matches every card.
 static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid) {
     return discard_valid.empty() || card_matches_filter(e, discard_valid);
+}
+
+static void discard_cards(const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer) {
+    for (Entity card : cards) {
+        game_log("%s discards %s\n", player_name(owner).c_str(),
+                 global_coordinator.GetComponent<CardData>(card).name.c_str());
+        orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+    }
 }
 
 HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -50,6 +60,13 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def->params);
     const FilterSpec discard_valid = dp ? dp->valid : FilterSpec();
     std::string mode = dp ? dp->mode : std::string();
+
+    // Hand (Song of Creation: "discard your hand"): every card of it, with no reveal and no choice
+    // (CR 701.9a).
+    if (mode == "Hand") {
+        discard_cards(hand, tgt_owner, orderer);
+        return HandlerResult::DONE_RUN_SUBS;
+    }
 
     // Random (Hymn to Tourach): the target player discards NumCards$ cards chosen uniformly at
     // random from their hand — no reveal and no choice by any player (CR 701.8e/f). If the hand
@@ -98,15 +115,8 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         std::vector<Entity> valid;
         for (auto e : hand)
             if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
-        if (valid.empty()) {
-            game_log("No matching cards to discard.\n");
-        } else {
-            for (auto chosen : valid) {
-                auto &cd = global_coordinator.GetComponent<CardData>(chosen);
-                game_log("%s discards %s\n", player_name(tgt_owner).c_str(), cd.name.c_str());
-                orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
-            }
-        }
+        if (valid.empty()) game_log("No matching cards to discard.\n");
+        discard_cards(valid, tgt_owner, orderer);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -154,7 +164,7 @@ bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &va
     // SetState's Mode$ Transform, use the same key with a different meaning).
     if (key == "Mode" &&
         (value == "RevealYouChoose" || value == "RevealDiscardAll" || value == "Random" ||
-         value == "TgtChoose")) {
+         value == "TgtChoose" || value == "Hand")) {
         effect_params<DiscardParams>(ab).mode = value;
         return true;
     }

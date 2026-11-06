@@ -1,0 +1,39 @@
+{
+  "name": "cr701_9_song_of_creation_only_on_your_end_step",
+  "why": "CR 603.2 / 701.9a: Song of Creation's end-step discard is its controller's alone: Player A's end step passes it by, and Player B's discards Player B's hand",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Song of Creation"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 8,
+  "expect_not": [
+    "Player A discards",
+    "chooses a card to discard"
+  ],
+  "expect_order": [
+    "TURN 2 \\(Player B\\)",
+    "Song of Creation triggered",
+    "Player B discards Island",
+    "TURN 3"
+  ],
+  "expect_count": {
+    "Song of Creation triggered": 1
+  }
+}

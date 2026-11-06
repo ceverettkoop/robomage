@@ -1,0 +1,43 @@
+{
+  "name": "cr603_2_song_of_creation_draws_two_on_your_spell",
+  "why": "CR 603.2: Song of Creation triggers on its controller's spell and draws two; the opponent's spell does not trigger it",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Song of Creation",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A"
+  ],
+  "max_decisions": 7,
+  "expect_count": {
+    "Song of Creation triggered": 1,
+    "^Player A draws": 2
+  },
+  "expect_order": [
+    "Player A casts Lightning Bolt",
+    "Song of Creation triggered",
+    "Player B casts Lightning Bolt"
+  ]
+}
