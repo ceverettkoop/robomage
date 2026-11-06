@@ -15,6 +15,8 @@
 class FrameCtx;
 class Orderer;
 struct Ability;
+struct Player;
+struct UnlessTerms;
 
 // ── Paying a cost (CR 118, 601.2f-h, 602.2b) ─────────────────────────────────────────────────
 //
@@ -22,10 +24,10 @@ struct Ability;
 // pays (cost_payment.cpp), each step paying a part of the cost or choosing what a part moves. Any
 // step may ask a choice through its FrameCtx and park; all progress lives in the path's CostRun,
 // on Game, so a snapshot of a parked payment covers it and the re-entered run lands on the step
-// that asked.
+// that asked. A path of one step, whose question re-derives from the live state, keeps no CostRun.
 
 // The paths that pay a cost, each with its own order of steps.
-enum class CostPath { CAST, ACTIVATION };
+enum class CostPath { CAST, ACTIVATION, MANA_ABILITY, TRIGGER, IMMEDIATE_TRIGGER, UNLESS };
 
 // A permanent or card chosen to pay a cost: it moves only once the mana has committed, so a payment
 // that fails has moved nothing (CR 733.1) and the mana can still be taken from a permanent on its
@@ -88,7 +90,7 @@ struct CostPayer {
     Entity source;  // the spell or the ability's source: the object {T} taps, `Other` excludes and asks each choice
     ManaPayee payee;
     const CostParts *cost;  // the cost being paid
-    CostRun *run;
+    CostRun *run;           // null on a path that keeps no progress
 
     // An activation: the ability activated, its copy going on the stack and the X announced.
     const Ability *ability = nullptr;
@@ -105,15 +107,26 @@ struct CostPayer {
     bool spell_has_delve = false;
     int *mana_spent = nullptr;          // the pips the mana cost comes to (CR 106/601.2g)
     ManaValue *spent_colors = nullptr;  // the colors spent, persisting with `run`
+
+    // A mana ability paying through activate_mana_source: the pool and the player it pays from, the
+    // real ones or a simulated payment's copies (commit false: no tap, no sacrifice, no narrative).
+    ManaValue *pool = nullptr;
+    Player *working = nullptr;
+    bool commit = true;
+    int life_reserve = 0;
+
+    bool mandatory = false;              // a triggered ability's cost its controller doesn't choose (CR 603.8)
+    const UnlessTerms *unless = nullptr;  // an unless-cost offered (CR 118.12)
 };
 
 // Which part of a cast's cost its payment has reached, for the state format's pending_cost.
 enum class CastCostStage { ALTERNATIVE, ADDITIONAL, MANA };
 CastCostStage cast_cost_stage(const CostRun &run);
 
-// Pay `who`'s cost, from where its CostRun stands. PAID: all of it, in the path's order. FAILED: it
-// can't be paid, and the caller reverses the proposal. SUSPENDED: a choice is parked, and the caller
-// returns until it is answered. An answered choice comes back through `ctx`.
+// Pay `who`'s cost, from where its CostRun stands. PAID: all of it, in the path's order. DECLINED: an
+// optional cost not paid, by choice or because it couldn't be. FAILED: it can't be paid, and the
+// caller reverses the proposal. SUSPENDED: a choice is parked, and the caller returns until it is
+// answered. An answered choice comes back through `ctx`.
 PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 
 #endif /* COST_PAYMENT_H */

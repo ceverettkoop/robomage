@@ -83,7 +83,7 @@ struct SylvanRt {
     size_t pick = 0;              // next choose-a-card pick
     size_t resolved = 0;          // next pay-4-life-or-top decision
 };
-// run_discard_unless (Reality Smasher's "unless they discard a card"): the
+// An unless-cost's discard (Reality Smasher's "unless they discard a card"): the
 // yes/no answer and the count of discards already made. The per-discard menu is
 // intentionally rebuilt from the LIVE hand each ask — the hand only shrinks by
 // the discards themselves between asks. Shares the level's rt slot with the
@@ -123,7 +123,7 @@ struct ChangeZoneSearchRt {
 // or the battlefield's CURRENT contents at every arm and every consume (a card
 // already moved left the eligible zones), so only the count of picks already
 // made persists; it caps the remaining picks after a resume. The other Shape C
-// loop (run_unless_loop's MANA kind) persists nothing at all: it carries no
+// loop (the MANA kind of an unless-cost offer) persists nothing at all: it carries no
 // counter — every pass is fully re-derived from floated mana, so a resume just
 // rebuilds the identical menu.
 struct ChangeZonePicksRt {

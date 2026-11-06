@@ -6,13 +6,10 @@
 #include "../action_processor.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
-#include "../components/player.h"
+#include "../cost_payment.h"
 #include "../ecs/coordinator.h"
-#include "../input_logger.h"
 #include "../queries/characteristics.h"
-#include "../queries/costs.h"
 #include "../queries/filters.h"
-#include "../queries/player_resources.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../systems/orderer.h"
@@ -58,25 +55,11 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to
         // pay and has the energy to do so (CR 122.1c). Decline / insufficient ⇒ skip Execute.
         if (fire && ab.def->cost.energy() > 0) {
-            Entity ctrl_entity = get_player_entity(ab.controller);
-            auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-            if (!can_pay(ab.def->cost, CostCheck(ab.controller, ab.source.lki_entity(), orderer))) {
-                fire = false;  // can't pay — not offered
-            } else {
-                // The request_optional_yesno menu, asked through ctx so it can
-                // suspend (same "Decline:/Accept:" entries, same chooser
-                // repoint-and-restore), with the ability's source as the
-                // pending-decision source.
-                std::string prompt = "Pay " + std::to_string(ab.def->cost.energy()) + " energy";
-                std::vector<LegalAction> yn = optional_yesno_menu(prompt);
-                int yc = ctx.ask(std::move(yn), ab.controller, ab.source.lki_entity());
-                if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-                if (yc == 1 && pay_energy(pl, ab.def->cost.energy())) {
-                    game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.def->cost.energy());
-                } else {
-                    fire = false;  // declined
-                }
-            }
+            const Entity src = ab.source.lki_entity();
+            CostPayer who(CostPath::IMMEDIATE_TRIGGER, ab.controller, src, src, &ab.def->cost, nullptr);
+            const PayStatus paid = run_cost_parts(who, ctx, orderer);
+            if (paid == PayStatus::SUSPENDED) return HandlerResult::SUSPENDED;
+            fire = paid == PayStatus::PAID;
         }
         rt.fire = fire;
         rt.init = true;

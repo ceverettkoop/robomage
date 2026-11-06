@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "choice_labels.h"
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
@@ -17,12 +18,14 @@
 #include "ecs/coordinator.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
+#include "queries/costs.h"
 #include "queries/counters.h"
 #include "queries/filters.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "resolution_frame.h"
 #include "systems/orderer.h"
+#include "unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -73,6 +76,14 @@ struct CostStep {
         MOVE_ITEMS,         // what the picks chose moves
         DISCARD_SELF,
         DISCARD_HAND,
+        // A mana ability paying through activate_mana_source, from its working pool and player.
+        MANA_ABILITY_GATE,  // the life it costs and loses can be paid
+        MANA_ABILITY_POOL,  // its activation mana, from the pool alone
+        MANA_ABILITY_SACRIFICE,
+        MANA_ABILITY_LIFE,
+        TRIGGER_SACRIFICE,  // a triggered ability's Sac<1/CARDNAME>, paid as it resolves
+        TRIGGER_ENERGY,     // an ImmediateTrigger's optional PayEnergy<N>
+        UNLESS_OFFER,       // an unless-cost, offered to its payer
     };
     Op op;
     const PickRule *pick = nullptr;
@@ -110,6 +121,12 @@ static void pay_life_x(const CostPayer &who);
 static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
+static PayStatus pay_from_working_pool(const CostPayer &who);
+static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus offer_trigger_energy(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus offer_unless_resource(const CostPayer &who, FrameCtx &ctx);
+static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 
 // ── What a pick chooses ──────────────────────────────────────────────────────────────────────
 // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary).
@@ -197,18 +214,48 @@ static const CostStep kActivationSteps[] = {
     {CostStep::DISCARD_HAND},
 };
 
+// A mana ability activated while paying for something else, off the stack (CR 605.3): a refusal
+// happens before anything else, so it cancels cleanly; the auto-payer pre-covers its activation mana
+// by tapping other sources into the pool, and the interactive payer and the unless offer rely on
+// the refusal.
+static const CostStep kManaAbilitySteps[] = {
+    {CostStep::MANA_ABILITY_GATE},
+    {CostStep::MANA_ABILITY_POOL},
+    {CostStep::TAP},
+    {CostStep::MANA_ABILITY_SACRIFICE},
+    {CostStep::MANA_ABILITY_LIFE},
+};
+
+// A triggered ability pays its cost as it resolves (CR 603.2).
+static const CostStep kTriggerSteps[] = {{CostStep::TRIGGER_SACRIFICE}};
+static const CostStep kImmediateTriggerSteps[] = {{CostStep::TRIGGER_ENERGY}};
+static const CostStep kUnlessSteps[] = {{CostStep::UNLESS_OFFER}};
+
+template <size_t N>
+static constexpr CostSteps table(const CostStep (&rows)[N]) {
+    return {rows, N};
+}
+
 static CostSteps path_steps(CostPath path) {
     switch (path) {
         case CostPath::CAST:
-            return {kCastSteps, sizeof(kCastSteps) / sizeof(kCastSteps[0])};
+            return table(kCastSteps);
+        case CostPath::MANA_ABILITY:
+            return table(kManaAbilitySteps);
+        case CostPath::TRIGGER:
+            return table(kTriggerSteps);
+        case CostPath::IMMEDIATE_TRIGGER:
+            return table(kImmediateTriggerSteps);
+        case CostPath::UNLESS:
+            return table(kUnlessSteps);
         case CostPath::ACTIVATION:
             break;
     }
-    return {kActivationSteps, sizeof(kActivationSteps) / sizeof(kActivationSteps[0])};
+    return table(kActivationSteps);
 }
 
 CastCostStage cast_cost_stage(const CostRun &run) {
-    if (run.step >= sizeof(kCastSteps) / sizeof(kCastSteps[0])) return CastCostStage::MANA;
+    if (run.step >= table(kCastSteps).size) return CastCostStage::MANA;
     const CostStep &step = kCastSteps[run.step];
     if (step.op == CostStep::PICK)
         return step.pick->slot == CostSlot::ALTERNATIVE ? CastCostStage::ALTERNATIVE : CastCostStage::ADDITIONAL;
@@ -218,6 +265,13 @@ CastCostStage cast_cost_stage(const CostRun &run) {
 
 PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     const CostSteps steps = path_steps(who.path);
+    if (!who.run) {
+        for (size_t i = 0; i < steps.size; ++i) {
+            const PayStatus status = pay_step(steps.rows[i], who, ctx, orderer);
+            if (status != PayStatus::PAID) return status;
+        }
+        return PayStatus::PAID;
+    }
     CostRun &run = *who.run;
     for (; run.step < steps.size; ++run.step, run.picks = 0) {
         const PayStatus status = pay_step(steps.rows[run.step], who, ctx, orderer);
@@ -228,8 +282,6 @@ PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_
 
 static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &ctx,
                           const std::shared_ptr<Orderer> &orderer) {
-    CostRun &run = *who.run;
-    auto &player = global_coordinator.GetComponent<Player>(get_player_entity(who.payer));
     switch (step.op) {
         case CostStep::PICK:
             return pick_items(*step.pick, who, ctx, orderer);
@@ -239,32 +291,32 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             return choose_delve_cards(who, ctx, orderer);
         case CostStep::SNAPSHOT:
             // The first step that can activate a mana ability (CR 733.1).
-            run.mana_snap = snapshot_mana_state(who.payer, orderer);
-            run.mana_snap_taken = true;
+            who.run->mana_snap = snapshot_mana_state(who.payer, orderer);
+            who.run->mana_snap_taken = true;
             break;
         case CostStep::TAP:
-            if (who.cost->taps() && global_coordinator.entity_has_component<Permanent>(who.source))
+            if (who.commit && who.cost->taps() && global_coordinator.entity_has_component<Permanent>(who.source))
                 global_coordinator.GetComponent<Permanent>(who.source).is_tapped = true;
             break;
         case CostStep::OWE_ACTIVATION:
             owe_activation(who, orderer);
             break;
         case CostStep::FLOAT_LEAVING:
-            if (run.mana_pending)
-                for (const CostItem &item : run.items)
-                    float_mana_before_cost_removal(item.entity, who.payer, orderer, run.mana, who.payee);
+            if (who.run->mana_pending)
+                for (const CostItem &item : who.run->items)
+                    float_mana_before_cost_removal(item.entity, who.payer, orderer, who.run->mana, who.payee);
             break;
         case CostStep::RECORD_MANA_SPENT:
             // The cost's pip count is the total mana paid, after any delve/improvise reduction
             // already removed pips from it, for a ValidSA$ Spell.ManaSpent trigger to read at cast
             // time. A no-mana alternative cost leaves the 0 that defer_alternate_cost recorded.
-            if (run.mana_pending) *who.mana_spent = static_cast<int>(run.mana.size());
+            if (who.run->mana_pending) *who.mana_spent = static_cast<int>(who.run->mana.size());
             break;
         case CostStep::PAY_MANA:
             return pay_mana(who, ctx, orderer);
         case CostStep::CHECK_RESOURCES:
             if (!resources_payable(who)) return PayStatus::FAILED;
-            run.committed = true;
+            who.run->committed = true;
             break;
         case CostStep::COUNT_TAP:
             if (who.cost->taps()) coverage_cost("Tap");
@@ -273,9 +325,9 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             pay_loyalty(who);
             break;
         case CostStep::LIFE:
-            if (run.life > 0) {
-                pay_life(player, run.life);
-                game_log("%s pays %d life\n", player_name(who.payer).c_str(), run.life);
+            if (who.run->life > 0) {
+                pay_life(global_coordinator.GetComponent<Player>(get_player_entity(who.payer)), who.run->life);
+                game_log("%s pays %d life\n", player_name(who.payer).c_str(), who.run->life);
                 coverage_cost("PayLife");
             }
             break;
@@ -284,9 +336,9 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             break;
         case CostStep::ENERGY:
             // PayEnergy<N>, CR 122.1c.
-            if (run.energy > 0) {
-                pay_energy(player, run.energy);
-                game_log("%s pays %d energy\n", player_name(who.payer).c_str(), run.energy);
+            if (who.run->energy > 0) {
+                pay_energy(global_coordinator.GetComponent<Player>(get_player_entity(who.payer)), who.run->energy);
+                game_log("%s pays %d energy\n", player_name(who.payer).c_str(), who.run->energy);
                 coverage_cost("PayEnergy");
             }
             break;
@@ -301,6 +353,43 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             break;
         case CostStep::DISCARD_HAND:
             discard_hand(who, orderer);
+            break;
+        case CostStep::MANA_ABILITY_GATE:
+            // A life cost the player can't pay (CR 119.4) refuses the activation before any effect.
+            if (!mana_ability_life_payable(*who.working, who.payer, *who.ability, who.life_reserve))
+                return PayStatus::FAILED;
+            break;
+        case CostStep::MANA_ABILITY_POOL:
+            return pay_from_working_pool(who);
+        case CostStep::MANA_ABILITY_SACRIFICE:
+            if (who.commit && who.cost->self(CostPart::SACRIFICE)) {
+                game_log("%s sacrifices %s\n", player_name(who.payer).c_str(),
+                         global_coordinator.GetComponent<Permanent>(who.source).name.c_str());
+                orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
+            }
+            break;
+        case CostStep::MANA_ABILITY_LIFE:
+            // Paid on the working player in both modes: a simulated payment (auto_pay_mana_attempt)
+            // pays from a copy, so a second life-costing source sees the life already spent.
+            if (who.cost->life() > 0) {
+                pay_life(*who.working, who.cost->life());
+                if (who.commit) game_log("%s pays %d life\n", player_name(who.payer).c_str(), who.cost->life());
+            }
+            break;
+        case CostStep::TRIGGER_SACRIFICE:
+            return pay_trigger_sacrifice(who, ctx, orderer);
+        case CostStep::TRIGGER_ENERGY:
+            return offer_trigger_energy(who, ctx, orderer);
+        case CostStep::UNLESS_OFFER:
+            switch (who.unless->kind) {
+                case UnlessPayKind::DISCARD:
+                    return offer_unless_discard(who, ctx, orderer);
+                case UnlessPayKind::LIFE:
+                case UnlessPayKind::ENERGY:
+                    return offer_unless_resource(who, ctx);
+                case UnlessPayKind::MANA:
+                    return offer_unless_mana(who, ctx, orderer);
+            }
             break;
     }
     return PayStatus::PAID;
@@ -676,5 +765,198 @@ static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &o
                                 : "card";
         orderer->add_to_zone(false, card, Zone::GRAVEYARD);
         game_log("%s discards %s\n", player_name(who.payer).c_str(), cname.c_str());
+    }
+}
+
+// The ability's activation mana, from the working pool. pay_from_pool returns the unpayable remainder
+// and drains the pool even on a partial payment, so snapshot the pool and restore it when the cost
+// bounces.
+static PayStatus pay_from_working_pool(const CostPayer &who) {
+    if (who.cost->mana().empty()) return PayStatus::PAID;
+    ManaValue pool_before = *who.pool;
+    ManaValue unpaid = pay_from_pool(*who.pool, who.cost->mana());
+    if (unpaid.empty()) return PayStatus::PAID;
+    *who.pool = pool_before;
+    return PayStatus::FAILED;
+}
+
+// Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a triggered ability (The
+// Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>). The
+// Sac<.../CARDNAME> cost makes the whole effect optional: prompt the controller, sacrifice the source
+// on accept, and do nothing on decline. With Cost$ Mandatory (Dark Depths: "sacrifice it. If you do,
+// create Marit Lage.") the sacrifice is not optional and nothing is asked. Either way a source no
+// longer on the battlefield is not the permanent that triggered (CR 400.7): it can't be sacrificed,
+// so the "if you do" effect doesn't happen.
+static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const Entity src = who.source;
+    const std::string sname = global_coordinator.entity_has_component<Permanent>(src)
+                                  ? global_coordinator.GetComponent<Permanent>(src).name
+                                  : std::string("it");
+    if (src == 0 || !is_battlefield_permanent(src)) {
+        game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
+        return PayStatus::DECLINED;
+    }
+    if (!who.mandatory) {
+        const int yc = ctx.ask(yesno_menu("Don't sacrifice " + sname, "Sacrifice " + sname), who.payer, src);
+        if (yc < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        if (yc == 0) {
+            game_log("%s declines to sacrifice %s.\n", player_name(who.payer).c_str(), sname.c_str());
+            return PayStatus::DECLINED;
+        }
+    }
+    orderer->add_to_zone(false, src, Zone::GRAVEYARD);
+    game_log("%s sacrifices %s.\n", player_name(who.payer).c_str(), sname.c_str());
+    return PayStatus::PAID;
+}
+
+// An ImmediateTrigger's optional PayEnergy<N> ("you may pay {E}. When you do, ..."): offered only
+// when the controller can pay it (CR 122.1c).
+static PayStatus offer_trigger_energy(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    if (!can_pay(*who.cost, CostCheck(who.payer, who.source, orderer))) return PayStatus::DECLINED;
+    const int energy = who.cost->energy();
+    const int yc = ctx.ask(optional_yesno_menu("Pay " + std::to_string(energy) + " energy"), who.payer, who.source);
+    if (yc < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+    auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(who.payer));
+    if (yc != 1 || !pay_energy(payer, energy)) return PayStatus::DECLINED;
+    game_log("%s pays %d energy.\n", player_name(who.payer).c_str(), energy);
+    return PayStatus::PAID;
+}
+
+// The "unless they discard N cards" flavor (CR 701.8; Reality Smasher): the payer may discard
+// `amount` cards of their choice from hand, and declines if they have too few. The chosen cards go to
+// the graveyard (a public zone — every viewer sees them). The yes/no answer and the discard-count
+// progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from the
+// LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
+static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const UnlessTerms &terms = *who.unless;
+    UnlessRt local_rt;
+    UnlessRt &rt = ctx.can_suspend() ? ctx.rt<UnlessRt>() : local_rt;
+
+    if (!rt.pay_answered) {
+        const bool payable = orderer->get_hand(who.payer).size() >= terms.amount;  // the full count or none
+        std::vector<LegalAction> actions;
+        if (payable) actions.push_back(unless_pay_action(terms.subject, terms.kind, terms.amount, nullptr));
+        const size_t decline_idx = actions.size();
+        actions.push_back(unless_decline_action(terms.subject, terms.kind));
+
+        const int choice = ctx.ask(std::move(actions), who.payer, who.source);
+        if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        if (!payable || choice == static_cast<int>(decline_idx)) return PayStatus::DECLINED;
+        rt.pay_answered = true;
+    }
+
+    // Pay: the payer chooses `amount` distinct cards from hand to discard.
+    for (; rt.discards_done < terms.amount; ++rt.discards_done) {
+        std::vector<Entity> cur_hand = orderer->get_hand(who.payer);
+        if (cur_hand.empty()) break;
+        std::vector<LegalAction> dactions;
+        for (auto e : cur_hand) {
+            LegalAction la(PASS_PRIORITY, e, global_coordinator.GetComponent<CardData>(e).name);
+            la.category = ActionCategory::DISCARD;
+            dactions.push_back(la);
+        }
+        const int dchoice = ctx.ask(dactions, who.payer, who.source);
+        if (dchoice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        const Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
+        game_log("%s discards %s — %s\n", player_name(who.payer).c_str(),
+                 global_coordinator.GetComponent<CardData>(chosen).name.c_str(),
+                 unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+        orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+    }
+    return PayStatus::PAID;
+}
+
+// Pay `amount` life (Ward—Pay N life, CR 702.21) or energy ({E}, CR 122.1c: Static Prison's "sacrifice
+// CARDNAME unless you pay {E}"), or decline. Offered only to a payer who has it (CR 119.4; energy
+// lives as an "ENERGY" counter on the payer).
+static PayStatus offer_unless_resource(const CostPayer &who, FrameCtx &ctx) {
+    const UnlessTerms &terms = *who.unless;
+    const bool life = terms.kind == UnlessPayKind::LIFE;
+    const int amount = static_cast<int>(terms.amount);
+    auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(who.payer));
+    const bool payable = life ? can_pay_life(payer, amount) : player_energy(payer) >= amount;
+
+    std::vector<LegalAction> unless_actions;
+    if (payable) unless_actions.push_back(unless_pay_action(terms.subject, terms.kind, terms.amount, nullptr));
+    unless_actions.push_back(unless_decline_action(terms.subject, terms.kind));
+
+    const int choice = ctx.ask(std::move(unless_actions), who.payer, who.source);
+    if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+    if (!payable || choice != 0) return PayStatus::DECLINED;
+    if (life)
+        pay_life(payer, amount);
+    else
+        pay_energy(payer, amount);
+    game_log("%s pays %zu %s — %s\n", player_name(who.payer).c_str(), terms.amount, life ? "life" : "energy",
+             unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+    return PayStatus::PAID;
+}
+
+// Daze / Mana Leak / Ward {N}: pay-{N}-unless with tap-for-mana sub-choices. A live-menu loop (Shape
+// C) with no persisted progress: the menu is rebuilt from live state every pass — floated mana
+// (Player.mana, snapshot-covered) changes which cost-bearing sources are offered and whether "Pay"
+// is affordable — so a resume re-enters, rebuilds the identical menu, and the ask consumes the
+// latched answer (its size assert guards drift). A chosen tap action executes its mana ability at
+// consume time (mana floats), then the loop re-arms the rebuilt menu. Exact colored pips (Chain
+// Lightning: {R}{R}) when supplied; else `amount` generic pips.
+static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const UnlessTerms &terms = *who.unless;
+    std::multiset<Colors> cond_cost;
+    if (terms.pips && !terms.pips->empty())
+        cond_cost = *terms.pips;
+    else
+        for (size_t i = 0; i < terms.amount; i++) cond_cost.insert(GENERIC);
+
+    while (true) {
+        std::vector<LegalAction> unless_actions = collect_mana_legal_actions(who.payer, orderer, who.payee);
+        // Drop cost-bearing mana sources (Talon Gates' {1}{T}) whose activation cost the
+        // FLOATING pool can't cover right now: the tap-a-source loop below pays activation
+        // costs only from mana already floating, so offering such a source would either
+        // produce free mana or (refused) re-offer the same menu forever to a deterministic
+        // machine-mode agent. The menu is rebuilt each iteration, so the source reappears
+        // as soon as enough mana has been floated.
+        unless_actions.erase(
+            std::remove_if(unless_actions.begin(), unless_actions.end(),
+                [&](const LegalAction &la) {
+                    return !la.ability.def->cost.mana().empty() &&
+                           !can_afford(who.payer, la.ability.def->cost.mana());
+                }),
+            unless_actions.end());
+
+        const bool payable = can_afford(who.payer, cond_cost);
+        const size_t pay_idx = unless_actions.size();
+        if (payable) unless_actions.push_back(unless_pay_action(terms.subject, terms.kind, terms.amount, terms.pips));
+        const size_t decline_idx = unless_actions.size();
+        unless_actions.push_back(unless_decline_action(terms.subject, terms.kind));
+
+        // Passed as an lvalue: the tap branch below still needs the menu to map
+        // the chosen action.
+        const int choice = ctx.ask(unless_actions, who.payer, who.source);
+        if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+
+        if (choice == static_cast<int>(decline_idx)) return PayStatus::DECLINED;
+
+        if (payable && choice == static_cast<int>(pay_idx)) {
+            spend_mana(who.payer, cond_cost, who.payee.entity);
+            game_log("%s pays %s — %s\n", player_name(who.payer).c_str(),
+                     unless_cost_text(terms.kind, terms.amount, terms.pips).c_str(),
+                     unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+            return PayStatus::PAID;
+        }
+
+        if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
+            auto &chosen = unless_actions[static_cast<size_t>(choice)];
+            auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(who.payer));
+            // Canonical activation against the player's real (floating) pool: pays a
+            // cost-bearing source's activation cost (Talon Gates' {1}{T}) from the pool —
+            // refusing cleanly (no tap, no mana) while the pool can't cover it, so the
+            // re-prompt lets the player float mana from a cost-free source first — and
+            // applies the full mana-ability semantics: tap only tap-cost sources, a self-sacrifice
+            // (Lotus Petal), life costs, dynamic amounts, SubAbility$ riders (Ancient
+            // Tomb's damage), ProduceMana replacements, and activation counters.
+            if (!activate_mana_source(chosen.source_entity, chosen.ability, who.payer, orderer, pl.mana, pl,
+                                      /*commit=*/true, ManaLogStyle::TAPPED_SYMBOL))
+                game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
+        }
     }
 }

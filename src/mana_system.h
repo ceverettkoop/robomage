@@ -256,6 +256,18 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
                                     const ManaValue& unpaid_cost, ManaPayee paid_for);
 
+// Pays `cost` out of `pool` and returns the portion that could not be paid. `spent` (when non-null)
+// collects each color erased from `pool` — so a REAL-pool consumer can report the colors it spent.
+// Dry-run callers (can_afford_pool, activation-cost trials) pass nullptr and are unaffected.
+ManaValue pay_from_pool(ManaValue& pool, const ManaValue& cost, ManaValue* spent = nullptr);
+
+// Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
+// payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
+// own life cost, whichever is larger — for the life part of the cost being paid, since a spell or
+// ability whose total cost can't be paid is illegal (CR 601.2h, 602.2b). `life_reserve` is how a
+// legality gate asks "payable along with N life?" before any payment is in flight.
+bool mana_ability_life_payable(const Player& pl, Zone::Ownership seat, const Ability& ab, int life_reserve);
+
 // How paying a cost, or a part of one, stands: all of it paid, the payer declined an optional cost,
 // it can't be paid, or a choice is parked and the caller returns until it is answered.
 enum class PayStatus { PAID, DECLINED, FAILED, SUSPENDED };

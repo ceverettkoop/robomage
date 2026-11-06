@@ -19,6 +19,7 @@
 #include "components/player.h"
 #include "components/static_ability.h"
 #include "components/types.h"
+#include "cost_payment.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "effects/effects.h"
@@ -51,10 +52,6 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // pay_from_pool on POOL COPIES with a null `spent`, so they never pollute it.
 static ManaValue *s_mana_spent_sink = nullptr;
 
-// `spent` (when non-null) collects each color erased from `pool` — so a REAL-pool consumer can
-// report the colors it spent. Dry-run callers (can_afford_pool, activation-cost trials) pass
-// nullptr and are unaffected.
-static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent = nullptr);
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
 static ManaValue pool_shortfall(const ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
@@ -90,13 +87,6 @@ static int mana_ability_life_loss(const Ability &ab);
 // flashback / escape life cost and announced X-life cost (CR 601.2g-h), or an activation's life
 // cost (CR 602.2b); 0 when that seat is paying for nothing.
 static int life_reserved_for_pending_payment(Zone::Ownership seat);
-// Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
-// payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
-// own life cost, whichever is larger — for the life part of the cost being paid, since a spell or
-// ability whose total cost can't be paid is illegal (CR 601.2h, 602.2b). `life_reserve` is how a
-// legality gate asks "payable along with N life?" before any payment is in flight.
-static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab,
-                                      int life_reserve);
 static bool has_nonmana_activated_ability(Entity entity);
 static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
                                             std::shared_ptr<Orderer> orderer);
@@ -680,7 +670,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 // Pays `cost` out of `pool` (mutating it) and returns the portion that could NOT be
 // paid. can_afford_pool/spend_mana/pay_partial and the auto-payer all route through this,
 // so the spend rule (including generic color preference) lives in exactly one place.
-static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent) {
+ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent) {
     ManaValue remaining;
     auto erase_recording = [&](std::multiset<Colors>::iterator it) {
         if (spent) spent->insert(*it);
@@ -836,38 +826,19 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
     if (commit) increment_activation_count(perm, ab);
 }
 
-// Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half
-// lives here; the production half is produce_mana_from_ability. A refusal (unpayable
-// activation mana cost) cancels cleanly with no side effects; the auto-payer pre-covers the
-// cost by tapping other sources into the pool (cover_activation_cost), and the interactive
-// payer / pay-unless loop rely on this check to refuse.
+// Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half is
+// the MANA_ABILITY path of run_cost_parts; the production half is produce_mana_from_ability.
 bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership controller,
                           std::shared_ptr<Orderer> orderer, ManaValue &pool,
                           Player &player, bool commit, ManaLogStyle log_style, int life_reserve) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(source);
-    // A life cost the player can't pay (CR 119.4) refuses the activation before any effect.
-    if (!mana_ability_life_payable(player, controller, ab, life_reserve)) return false;
-    if (!ab.def->cost.mana().empty()) {
-        // pay_from_pool returns the unpayable remainder and drains the pool even on a
-        // partial payment, so snapshot the pool and restore it when the cost bounces.
-        ManaValue pool_before = pool;
-        ManaValue unpaid = pay_from_pool(pool, ab.def->cost.mana());
-        if (!unpaid.empty()) {
-            pool = pool_before;
-            return false;
-        }
-    }
-    if (commit && ab.def->cost.taps()) perm.is_tapped = true;
-    if (commit && ab.def->cost.self(CostPart::SACRIFICE)) {
-        game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
-        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-    }
-    // Paid on the working player in both modes: a simulated payment (auto_pay_mana_attempt)
-    // pays from a copy, so a second life-costing source sees the life already spent.
-    if (ab.def->cost.life() > 0) {
-        pay_life(player, ab.def->cost.life());
-        if (commit) game_log("%s pays %d life\n", player_name(controller).c_str(), ab.def->cost.life());
-    }
+    CostPayer who(CostPath::MANA_ABILITY, controller, source, source, &ab.def->cost, nullptr);
+    who.ability = &ab;
+    who.pool = &pool;
+    who.working = &player;
+    who.commit = commit;
+    who.life_reserve = life_reserve;
+    FrameCtx ctx = FrameCtx::blocking();
+    if (run_cost_parts(who, ctx, orderer) != PayStatus::PAID) return false;
     produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);
     return true;
 }
@@ -959,8 +930,7 @@ static int life_reserved_for_pending_payment(Zone::Ownership seat) {
 }
 
 // See forward declaration at top of file.
-static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab,
-                                      int life_reserve) {
+bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab, int life_reserve) {
     if (!can_pay_life(pl, ab.def->cost.life())) return false;
     int loss = mana_ability_life_loss(ab);
     int reserve = std::max(life_reserve, life_reserved_for_pending_payment(seat));

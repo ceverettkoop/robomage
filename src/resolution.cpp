@@ -12,6 +12,7 @@
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
+#include "cost_payment.h"
 #include "ecs/coordinator.h"
 #include "effects/effects.h"
 #include "input_logger.h"
@@ -305,51 +306,17 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         phase = 1;
     }
     if (phase == 1) {
-        // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
-        // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
-        // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
-        // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
-        // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
-        // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
-        // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
+        // A triggered ability pays its cost as it resolves (CR 603.2), and a Sac<.../CARDNAME> cost
+        // makes the whole effect conditional on it: on no sacrifice, the effect and its subabilities
+        // are skipped. Activated abilities never reach here with ability_type == TRIGGERED, so
+        // their already-paid sac is not double-charged.
         if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->cost.self(CostPart::SACRIFICE)) {
             const Entity src = ab.source.get();
-            std::string sname = global_coordinator.entity_has_component<Permanent>(src)
-                                    ? global_coordinator.GetComponent<Permanent>(src).name
-                                    : std::string("it");
-            bool on_bf = src != 0 && is_battlefield_permanent(src);
-            if (ab.def->mandatory) {
-                // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
-                // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
-                // clause: only run the effect (the token creation) if the source was actually on
-                // the battlefield to be sacrificed (CR 603.8 fired, but the permanent may already
-                // have left). A source no longer on the battlefield → no sacrifice, no effect.
-                if (!on_bf) {
-                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-            } else {
-                // The source is no longer the permanent that triggered (CR 400.7): it can't be
-                // sacrificed, so the "if you do" effect doesn't happen.
-                if (!on_bf) {
-                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
-                // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
-                // accept, do nothing (skip the effect and its subabilities) on decline.
-                int yc = ctx.ask(yesno_menu("Don't sacrifice " + sname, "Sacrifice " + sname),
-                                 ab.controller, src);
-                if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
-                if (yc == 0) {
-                    game_log("%s declines to sacrifice %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-            }
+            CostPayer who(CostPath::TRIGGER, ab.controller, src, src, &ab.def->cost, nullptr);
+            who.mandatory = ab.def->mandatory;
+            const PayStatus paid = run_cost_parts(who, ctx, orderer);
+            if (paid == PayStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
+            if (paid != PayStatus::PAID) return ResolveStatus::DONE;
         }
         phase = 2;
     }

@@ -14,6 +14,14 @@ class Orderer;
 class FrameCtx;
 struct Ability;
 
+// What an unless-cost offer pays and what it governs (run_unless_loop's terms).
+struct UnlessTerms {
+    size_t amount;
+    UnlessPayKind kind;
+    const ManaValue *pips;
+    const UnlessSubject &subject;
+};
+
 // An UnlessCost$ as run_unless_loop takes it: how it is paid, and how much of that (0 for no cost).
 UnlessPayKind unless_pay_kind(const CostParts &cost);
 size_t unless_amount(const CostParts &cost);
@@ -23,9 +31,9 @@ size_t unless_amount(const CostParts &cost);
 // `cost` card(s) from hand (Reality Smasher, CR 701.8), or `cost` energy ({E}, CR 122.1c — Static
 // Prison) — or decline. Returns true if the payer declined or couldn't pay. `subject` names the
 // governed effect and its object, which the shared choice_labels builders word into the pay and
-// decline entries. The LIFE/ENERGY yes-no and the DISCARD flow ask through `ctx` and may suspend
-// (`suspended` set, return value meaningless — check it FIRST); the MANA tap-for-mana loop is a
-// live-menu loop (Shape C). `decision_source` (the resolving ability's source) is the
+// decline entries. The payer decides whether to pay, not the ability's controller: run_cost_parts
+// seats every ask on `controller` through `ctx`, which may suspend (`suspended` set, return value
+// meaningless — check it FIRST). `decision_source` (the resolving ability's source) is the
 // pending-decision context of every ask.
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
                      Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
