@@ -1,0 +1,33 @@
+{
+  "name": "cr603_5_melded_moxite_declined_draws_nothing",
+  "why": "CR 603.5: Melded Moxite's discard declined: no card is drawn",
+  "hand_a": [
+    "Melded Moxite",
+    "Mountain",
+    "Mountain",
+    "Island",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Melded Moxite",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 6,
+  "expect_not": [
+    "Player A draws Grizzly Bears",
+    "Player A discards"
+  ]
+}

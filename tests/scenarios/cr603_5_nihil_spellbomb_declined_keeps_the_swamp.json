@@ -1,0 +1,43 @@
+{
+  "name": "cr603_5_nihil_spellbomb_declined_keeps_the_swamp",
+  "why": "CR 603.5: Nihil Spellbomb's {B} declined: no mana is paid and no card is drawn; its first ability still exiles the graveyard, and doesn't shuffle a library",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Nihil Spellbomb",
+    "Swamp"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Nihil Spellbomb",
+    "A:target:Player B",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Player A declines to pay \\{B\\}",
+    "Grizzly Bears.*[Ee]xile"
+  ],
+  "expect_not": [
+    "Player A draws Grizzly Bears",
+    "Player A activated Swamp",
+    "shuffles"
+  ]
+}

@@ -607,6 +607,7 @@ struct Game {
             struct CostPayment {
                 bool active = false;
                 bool unless = false;  // an unless-cost offered to its payer
+                bool trigger = false;  // a triggered ability's cost offered to its controller
                 Entity paid_for = 0;  // the spell or ability (or the resolving ability's source)
                 ManaValue remaining;  // mana still to pay
                 int life = 0;

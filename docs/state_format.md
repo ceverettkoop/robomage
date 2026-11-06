@@ -918,12 +918,12 @@ computes neither outside its legal-action enumeration.
 | | `source` | u32 | `handle` | `Game::pending.decision_source` (else the query's) |
 | | `source_card` | u16 | `card` | |
 | | `source_controller` | seat | | |
-| `pending_cost` (44): `pending_cost` (`src/queries/pending_cost.h`): the cast flow at a cost step (not while choosing modes or targets), the activation flow at its X or cost steps, the interactive mana payment loop, an unless-cost offer | `for` | u32 | `handle` | spell or ability paid for (an unless offer: the spell it governs, else the asking source) |
+| `pending_cost` (44): `pending_cost` (`src/queries/pending_cost.h`): the cast flow at a cost step (not while choosing modes or targets), the activation flow at its X or cost steps, the interactive mana payment loop, an unless-cost offer, a triggered ability's offered cost | `for` | u32 | `handle` | spell or ability paid for (an unless offer: the spell it governs, else the asking source) |
 | | `for_card` | u16 | `card` | |
-| | `part` | u8 | `enum:cost_part` | mana, alternative, additional, unless, X, activation |
+| | `part` | u8 | `enum:cost_part` | mana, alternative, additional, unless, X, activation, a triggered ability's cost |
 | | `rem_w`, `rem_u`, `rem_b`, `rem_r`, `rem_g`, `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips; `rem_x` = {X} pips still to announce |
 | | `rem_life` | u16 | `count` | |
-| | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers, a spell's escalate) |
+| | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers, a spell's escalate, a triggered ability's cost) |
 | | `paid` | u8 | `count` | mana already paid (interactive payment; the pool's mana that applies to the cost counts as paid, and the `rem_*` columns leave it out) |
 | `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
 | | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |
@@ -1027,7 +1027,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `target_kind` | OBJECT, PLAYER |
 | `attack_target_kind` | PLAYER, PLANESWALKER |
 | `delayed_state` | WAITING, ON_STACK |
-| `cost_part` | MANA, ALTERNATIVE, ADDITIONAL, UNLESS, X, ACTIVATION |
+| `cost_part` | MANA, ALTERNATIVE, ADDITIONAL, UNLESS, X, ACTIVATION, TRIGGER |
 | `layer` | COPY, CONTROL, TEXT, TYPE, COLOR, ABILITY, PT_CDA, PT_SET, PT_MODIFY, PT_COUNTERS, PT_SWITCH |
 | `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
 | `link_kind` | EXILED_WITH, RETURNABLE |

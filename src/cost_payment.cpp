@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "queries/costs.h"
 #include "queries/counters.h"
 #include "queries/filters.h"
+#include "queries/pending_cost.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "resolution_frame.h"
@@ -93,6 +95,9 @@ struct CostStep {
             MANA_ABILITY_SACRIFICE,
             MANA_ABILITY_LIFE,
             TRIGGER_SACRIFICE,  // a triggered ability's Sac<1/CARDNAME>, paid as it resolves
+            TRIGGER_OFFER,      // a triggered ability's "you may" cost, offered if it can be paid
+            OWE_TRIGGER,        // what the triggered ability owes
+            TRIGGER_MANA,       // its mana; a payment given up declines the offer
             TRIGGER_ENERGY,     // an ImmediateTrigger's optional PayEnergy<N>
             UNLESS_OFFER,       // an unless-cost, offered to its payer
         };
@@ -126,6 +131,7 @@ static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const s
 static void choose_delve_exile(const CostPayer &who, Entity e);
 static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static const char *path_form(CostPath path);
 static bool resources_payable(const CostPayer &who);
 static void pay_loyalty(const CostPayer &who);
 static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
@@ -135,6 +141,9 @@ static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &o
 static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static PayStatus pay_from_working_pool(const CostPayer &who);
 static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus offer_trigger_cost(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static std::string cost_offer_text(const CostParts &cost);
+static PayStatus pay_trigger_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_trigger_energy(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_unless_resource(const CostPayer &who, FrameCtx &ctx);
@@ -179,6 +188,9 @@ static const PickRule kEscapeExileTypes = {CostSlot::ESCAPE, CostPart::EXILE_FRO
 static const PickRule kEscapeExileCount = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",
     " from graveyard", ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard",
     PickRule::BY_COUNT, false, true, false};
+// A triggered ability's discard ("you may discard a card. If you do, ...": Formidable Speaker).
+static const PickRule kTriggerDiscard = {CostSlot::COST, CostPart::DISCARD, "Discard ", "", ActionCategory::DISCARD,
+    Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false, true, false};
 
 // ── The paths ────────────────────────────────────────────────────────────────────────────────
 // CR 601.2f-h, after the targets: first every non-mana cost item is chosen, then the mana is paid,
@@ -240,8 +252,17 @@ static const CostStep kManaAbilitySteps[] = {
     {CostStep::MANA_ABILITY_LIFE},
 };
 
-// A triggered ability pays its cost as it resolves (CR 603.2).
-static const CostStep kTriggerSteps[] = {{CostStep::TRIGGER_SACRIFICE}};
+// A triggered ability pays its cost as it resolves (CR 603.2): what its controller may decline is
+// offered, chosen, paid for in mana and only then moves, as on an activation.
+static const CostStep kTriggerSteps[] = {
+    {CostStep::TRIGGER_SACRIFICE},
+    {CostStep::TRIGGER_OFFER},
+    {CostStep::PICK, &kTriggerDiscard},
+    {CostStep::OWE_TRIGGER},
+    {CostStep::SNAPSHOT},
+    {CostStep::TRIGGER_MANA},
+    {CostStep::MOVE_ITEMS},
+};
 static const CostStep kImmediateTriggerSteps[] = {{CostStep::TRIGGER_ENERGY}};
 static const CostStep kUnlessSteps[] = {{CostStep::UNLESS_OFFER}};
 
@@ -277,6 +298,8 @@ CastCostStage cast_cost_stage(const CostRun &run) {
                                                                                : CastCostStage::MANA;
 }
 
+bool trigger_cost_offered(const CostParts &cost) { return cost.has(CostPart::MANA) || cost.has(CostPart::DISCARD); }
+
 PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     CostRun local;
     CostRun &run = ctx.can_suspend() ? ctx.rt<CostRun>() : local;
@@ -284,7 +307,18 @@ PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_p
     CostPayer who(CostPath::TRIGGER, ab.controller, named, ManaPayee(named, ManaPurpose::OTHER), &ab.def->cost, &run);
     who.mandatory = ab.def->mandatory;
     who.source_gone = ab.source.get() == 0;
-    return run_cost_parts(who, ctx, orderer);
+    // What is owed, for the state format's pending_cost, while the offer is open.
+    Game::PendingDecisions::CostPayment offer;
+    offer.trigger = true;
+    offer.paid_for = named;
+    offer.remaining = ab.def->cost.mana();
+    offer.discard = ab.def->cost.count(CostPart::DISCARD) - run.discards_chosen;
+    bool parked = false;
+    std::optional<CostPaymentScope> scope;
+    if (trigger_cost_offered(ab.def->cost)) scope.emplace(offer, &parked);
+    const PayStatus paid = run_cost_parts(who, ctx, orderer);
+    parked = paid == PayStatus::SUSPENDED;
+    return paid;
 }
 
 PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
@@ -402,6 +436,14 @@ static PayStatus pay_step(
             break;
         case CostStep::TRIGGER_SACRIFICE:
             return pay_trigger_sacrifice(who, ctx, orderer);
+        case CostStep::TRIGGER_OFFER:
+            return offer_trigger_cost(who, ctx, orderer);
+        case CostStep::OWE_TRIGGER:
+            who.run->mana = who.cost->mana();
+            who.run->mana_pending = !who.run->mana.empty();
+            break;
+        case CostStep::TRIGGER_MANA:
+            return pay_trigger_mana(who, ctx, orderer);
         case CostStep::TRIGGER_ENERGY:
             return offer_trigger_energy(who, ctx, orderer);
         case CostStep::UNLESS_OFFER:
@@ -676,13 +718,16 @@ static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> 
     run.energy = who.cost->energy();
 }
 
+// The --coverage form of a part paid along `path`, when the path has one of its own.
+static const char *path_form(CostPath path) { return path == CostPath::TRIGGER ? "trigger" : nullptr; }
+
 // The mana, last of what a payment can fail on.
 static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
         /*has_delve=*/false, run.improvise, &run.spent_colors);
-    if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA);
+    if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA, path_form(who.path));
     return paid;
 }
 
@@ -723,7 +768,7 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
     // an etbCounter replacement consumes it).
     if (who.spell_has_delve) cur_game.delve_exiled.clear();
     for (const CostItem &item : run.items) {
-        coverage_cost(item.kind, item.delve ? "delve" : nullptr);
+        coverage_cost(item.kind, item.delve ? "delve" : path_form(who.path));
         if (who.path == CostPath::CAST) game_log("%s\n", item.log.c_str());
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
@@ -795,6 +840,7 @@ static PayStatus pay_from_working_pool(const CostPayer &who) {
 // longer on the battlefield is not the permanent that triggered (CR 400.7): it can't be sacrificed,
 // so the "if you do" effect doesn't happen.
 static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    if (!who.cost->self(CostPart::SACRIFICE)) return PayStatus::PAID;
     const Entity src = who.source;
     const std::string sname = !who.source_gone && global_coordinator.entity_has_component<Permanent>(src)
                                   ? global_coordinator.GetComponent<Permanent>(src).name
@@ -814,6 +860,42 @@ static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, cons
     orderer->add_to_zone(false, src, Zone::GRAVEYARD);
     game_log("%s sacrifices %s.\n", player_name(who.payer).c_str(), sname.c_str());
     return PayStatus::PAID;
+}
+
+// "You may discard a card", "you may pay {B}" (CR 603.5): offered only when the controller can pay
+// (CR 118.3), and on no answer of yes the rest of the ability doesn't happen.
+static PayStatus offer_trigger_cost(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    if (!trigger_cost_offered(*who.cost)) return PayStatus::PAID;
+    CostCheck check(who.payer, who.source, orderer);
+    check.payee = who.payee;
+    if (!can_pay(*who.cost, check)) return PayStatus::DECLINED;
+    const int yc = ctx.ask(optional_yesno_menu(cost_offer_text(*who.cost)), who.payer, who.source);
+    if (yc < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+    if (yc == 1) return PayStatus::PAID;
+    game_log("%s declines to %s.\n", player_name(who.payer).c_str(), cost_offer_text(*who.cost).c_str());
+    return PayStatus::DECLINED;
+}
+
+// "discard a card", "pay {B}".
+static std::string cost_offer_text(const CostParts &cost) {
+    std::string text;
+    if (!cost.mana().empty()) text = "pay " + mana_value_text(cost.mana());
+    const int discards = cost.count(CostPart::DISCARD);
+    if (discards > 0) {
+        if (!text.empty()) text += " and ";
+        text += "discard " + (discards == 1 ? std::string("a card") : std::to_string(discards) + " cards");
+    }
+    return text;
+}
+
+// A payment given up partway (the last row of the interactive payment) gives its mana abilities
+// back (CR 733.1), and the offer stands declined.
+static PayStatus pay_trigger_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const PayStatus paid = pay_mana(who, ctx, orderer);
+    if (paid != PayStatus::FAILED) return paid;
+    restore_mana_state(who.payer, who.run->mana_snap, orderer);
+    game_log("%s declines to %s.\n", player_name(who.payer).c_str(), cost_offer_text(*who.cost).c_str());
+    return PayStatus::DECLINED;
 }
 
 // An ImmediateTrigger's optional PayEnergy<N> ("you may pay {E}. When you do, ..."): offered only

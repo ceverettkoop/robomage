@@ -135,6 +135,9 @@ struct CostPayer {
 // A triggered ability's cost, paid as it resolves (CR 603.2, 603.5). Its CostRun is the ability's resolving level's, so a parked question resumes there.
 // PAID: go on to the effect. DECLINED: the ability does nothing more. SUSPENDED: a choice is parked.
 PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+// Is a triggered ability's cost put to its controller as an offer ("you may discard a card", "you
+// may pay {B}", CR 603.5)? That offer is the ability's one "may".
+bool trigger_cost_offered(const CostParts &cost);
 
 // Which part of a cast's cost its payment has reached, for the state format's pending_cost.
 enum class CastCostStage {

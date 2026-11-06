@@ -636,7 +636,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // itself; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
 // Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
 // (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
-// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>. An alternative cost
+// Sac<1/CARDNAME>, mana and a discard of N matching cards (pay_trigger_cost); an ImmediateTrigger
+// Sac<1/CARDNAME> and PayEnergy<N>. An alternative cost
 // pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
 // fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
 // Escalate mana and a discard of N matching cards. A Ward cost is {N} or fixed life; an unless-cost
@@ -660,10 +661,12 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
             return part.kind == CostPart::X_MANA || part.kind == CostPart::MANA ||
                    (part.kind == CostPart::LIFE && part.count_is_x) || (sacrifices_one && !part.is_self());
         case CostForm::IMMEDIATE_TRIGGER:
-            if (part.kind == CostPart::ENERGY) return true;
-            [[fallthrough]];
+            return part.kind == CostPart::ENERGY || part.kind == CostPart::MANDATORY ||
+                   (sacrifices_one && part.is_self());
         case CostForm::TRIGGERED:
-            return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self());
+            return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self()) ||
+                   part.kind == CostPart::MANA ||
+                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
         case CostForm::ALTERNATIVE:
             return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self()) ||
                    (part.kind == CostPart::RETURN && !part.is_self()) ||

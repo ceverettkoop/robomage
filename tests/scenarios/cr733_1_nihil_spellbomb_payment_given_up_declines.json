@@ -1,0 +1,45 @@
+{
+  "name": "cr733_1_nihil_spellbomb_payment_given_up_declines",
+  "why": "CR 733.1 / 603.5: the interactive payment of a triggered ability's {B} given up by its last row reverses the mana abilities it activated and declines the offer",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Nihil Spellbomb",
+    "Plains",
+    "Swamp"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Nihil Spellbomb",
+    "A:target:Player B",
+    "A:choice:Accept: pay",
+    "A:tap:Plains",
+    "A:desc:Cancel casting"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A declines to pay \\{B\\}"
+  ],
+  "expect_not": [
+    "Player A draws Grizzly Bears"
+  ]
+}

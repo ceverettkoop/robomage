@@ -111,7 +111,7 @@ bool pending_cost(PendingCost &out) {
     if (pd.cost_payment.active) {
         const Game::PendingDecisions::CostPayment &cp = pd.cost_payment;
         out.paid_for = cp.paid_for;
-        out.part = cp.unless ? StatePart::UNLESS : StatePart::MANA;
+        out.part = cp.unless ? StatePart::UNLESS : cp.trigger ? StatePart::TRIGGER : StatePart::MANA;
         out.remaining = cp.remaining;
         out.life = cp.life;
         out.energy = cp.energy;

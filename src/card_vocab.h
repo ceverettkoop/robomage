@@ -339,6 +339,9 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Thought Monitor", 416},
     {"Thundertrap Trainer", 417},
     {"Defense Grid", 418},
+    {"Formidable Speaker", 419},
+    {"Melded Moxite", 420},
+    {"Nihil Spellbomb", 421},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -382,6 +385,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"c_1_1_eldrazi_scion_sac", "Eldrazi Scion", 917},               // Eldrazi Confluence
     {"r_1_1_goblin", "Goblin", 918},                                 // Empty the Warrens
     {"c_3_3_a_golem", "Golem", 919},                                 // Legion Extruder
+    {"c_2_2_a_robot", "Robot", 920},                                 // Melded Moxite
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

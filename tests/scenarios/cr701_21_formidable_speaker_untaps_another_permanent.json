@@ -1,0 +1,36 @@
+{
+  "name": "cr701_21_formidable_speaker_untaps_another_permanent",
+  "why": "CR 701.21: Formidable Speaker's {1}, {T}: Untap another target permanent: the Forest tapped for its {1} untaps; the Speaker itself can't be the target",
+  "hand_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Formidable Speaker",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Formidable Speaker",
+    "A:target:Forest"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A activated Forest",
+    "Formidable Speaker ability targeting Forest is on the stack"
+  ],
+  "expect_menu_not": [
+    "Target Formidable Speaker"
+  ]
+}

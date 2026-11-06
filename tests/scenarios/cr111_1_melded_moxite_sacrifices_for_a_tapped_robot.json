@@ -1,0 +1,42 @@
+{
+  "name": "cr111_1_melded_moxite_sacrifices_for_a_tapped_robot",
+  "why": "CR 111.1: Melded Moxite's {3}, Sacrifice: create a tapped 2/2 colorless Robot artifact creature token: it can't block on the next turn",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Melded Moxite",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Melded Moxite",
+    "B:attack:Grizzly Bears"
+  ],
+  "max_decisions": 9,
+  "expect_order": [
+    "Player A sacrifices Melded Moxite",
+    "Token created: 2/2 Robot"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "expect": [
+    "Grizzly Bears attacking Player A",
+    "No creatures eligible to block"
+  ]
+}

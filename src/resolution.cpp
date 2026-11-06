@@ -293,7 +293,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         }
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
-        if (ab.def->trigger_optional) {
+        if (ab.def->trigger_optional && !trigger_cost_offered(ab.def->cost)) {
             int yc = ctx.ask(
                 optional_yesno_menu("use " + entity_name(ab.source.lki_entity()) + "'s triggered ability"),
                 ab.controller, ab.source.lki_entity());
@@ -306,11 +306,12 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         phase = 1;
     }
     if (phase == 1) {
-        // A triggered ability pays its cost as it resolves (CR 603.2), and a Sac<.../CARDNAME> cost
-        // makes the whole effect conditional on it: on no sacrifice, the effect and its subabilities
+        // A triggered ability pays its cost as it resolves (CR 603.2), and the cost makes the whole
+        // effect conditional on it: on no sacrifice, discard or mana, the effect and its subabilities
         // are skipped. Activated abilities never reach here with ability_type == TRIGGERED, so
         // their already-paid sac is not double-charged.
-        if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->cost.self(CostPart::SACRIFICE)) {
+        if (ab.def->ability_type == AbilityDef::TRIGGERED &&
+            (ab.def->cost.self(CostPart::SACRIFICE) || trigger_cost_offered(ab.def->cost))) {
             const PayStatus paid = pay_trigger_cost(ab, ctx, orderer);
             if (paid == PayStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
             if (paid != PayStatus::PAID) return ResolveStatus::DONE;

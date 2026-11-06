@@ -1,0 +1,45 @@
+{
+  "name": "cr603_5_formidable_speaker_discards_and_tutors",
+  "why": "CR 603.5 / 701.23: Formidable Speaker: you may discard a card; if you do, search for a creature card, reveal it, put it into hand, shuffle. The discard is the triggered ability's cost, paid as it resolves, chosen among the hand",
+  "hand_a": [
+    "Formidable Speaker",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Lightning Bolt",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Formidable Speaker",
+    "A:choice:Accept",
+    "A:discard:Lightning Bolt",
+    "A:search:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player A casts Formidable Speaker",
+    "Player A discards Lightning Bolt",
+    "Grizzly Bears"
+  ],
+  "expect": [
+    "Player A discards Lightning Bolt"
+  ],
+  "expect_menu": [
+    "Accept: discard a card",
+    "Discard Lightning Bolt",
+    "Discard Island"
+  ]
+}

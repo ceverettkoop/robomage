@@ -1,0 +1,36 @@
+{
+  "name": "cr603_5_melded_moxite_discards_then_draws_two",
+  "why": "CR 603.5: Melded Moxite: when it enters you may discard a card; if you do, draw two cards",
+  "hand_a": [
+    "Melded Moxite",
+    "Mountain",
+    "Mountain",
+    "Island",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Melded Moxite",
+    "A:choice:Accept",
+    "A:discard:Island"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A casts Melded Moxite",
+    "Player A discards Island",
+    "Player A draws Grizzly Bears",
+    "Player A draws Forest"
+  ]
+}
