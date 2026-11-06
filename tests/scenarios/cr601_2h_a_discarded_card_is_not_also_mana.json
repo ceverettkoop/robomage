@@ -1,0 +1,32 @@
+{
+  "name": "cr601_2h_a_discarded_card_is_not_also_mana",
+  "why": "CR 118.3, 601.2h: one card can't pay two costs: with 2 life Bitter Triumph's only form is the discard, and the only card to discard is the Simian Spirit Guide the {1} would need, so it isn't offered (a mulligan to two makes the hand; seven of the deck's eight cards hold both)",
+  "deck_a": "tests/discard_or_mana",
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "life_a": 2,
+  "play": [
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:keep",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Simian Spirit Guide",
+    "A:bottom:Simian Spirit Guide"
+  ],
+  "max_decisions": 14,
+  "expect_menu": [
+    "Exile Simian Spirit Guide for"
+  ],
+  "expect_menu_not": [
+    "Cast Bitter Triumph"
+  ]
+}

@@ -22,6 +22,7 @@ class FrameCtx;
 class Orderer;
 struct Permanent;
 struct Ability;
+struct CostItem;
 struct HybridPip;
 struct CardData;
 struct Player;
@@ -39,6 +40,10 @@ enum class ManaPurpose {
 struct ManaPayee {
     Entity entity = 0;
     ManaPurpose purpose = ManaPurpose::CAST;
+    // What the payment leaves in the hand, which no mana ability may exile from there: the cards a
+    // payment in flight has chosen to move, and how many more the cost being offered will take.
+    const std::vector<CostItem> *chosen = nullptr;
+    int hand_reserved = 0;
     ManaPayee(Entity paid_for = 0, ManaPurpose why = ManaPurpose::CAST) : entity(paid_for), purpose(why) {}
 };
 
@@ -207,7 +212,8 @@ ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership cont
 // Map a mana color to its ActionCategory (MANA_W, MANA_U, etc.)
 ActionCategory mana_action_category(Colors color);
 
-// Collect legal actions for all activatable mana sources a player controls.
+// Collect legal actions for all activatable mana sources a player controls, and those of the cards
+// in their hand, after the battlefield's.
 // Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
 // Sources with a mana cost of their own are included only if the cost is affordable.
 // at_priority includes instant-speed mana abilities (e.g. Lion's Eye Diamond), which may

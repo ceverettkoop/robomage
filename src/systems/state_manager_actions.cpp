@@ -187,6 +187,7 @@ static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone:
     CostCheck check(caster, card_entity, orderer);
     check.mana = &mana;
     check.spell = &face;
+    check.hand_reserved = fewest_hand_cards(face.additional_choices, check);
     return can_pay(spell_additional_cost(face), check);
 }
 
@@ -1023,7 +1024,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // With auto-mana on, normal mana sources stay hidden and are auto-paid during cost
         // payment, with three exceptions offered at priority so mana can still be floated:
         // instant-speed sources (e.g. LED, only activatable here), a card's ability from the hand
-        // (Simian Spirit Guide, which the auto-payer doesn't spend), and any source that is
+        // (Simian Spirit Guide, a card the player may spend whether or not a payment needs it), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield).
         if (auto_mana && !ma.ability.def->instant_speed && ma.ability.def->activation_zone == -1 &&

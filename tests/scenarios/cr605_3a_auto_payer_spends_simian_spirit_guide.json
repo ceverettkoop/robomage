@@ -1,0 +1,25 @@
+{
+  "name": "cr605_3a_auto_payer_spends_simian_spirit_guide",
+  "why": "CR 605.3a: a mana ability from the hand is mana a cost can be paid with: with no land Lightning Bolt is offered and the auto-payer exiles Simian Spirit Guide for it",
+  "hand_a": [
+    "Lightning Bolt",
+    "Simian Spirit Guide"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A exiles Simian Spirit Guide",
+    "Player A adds 1\\(R\\)",
+    "Player A casts Lightning Bolt"
+  ]
+}

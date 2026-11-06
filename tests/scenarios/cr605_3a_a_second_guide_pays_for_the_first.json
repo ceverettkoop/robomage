@@ -1,0 +1,27 @@
+{
+  "name": "cr605_3a_a_second_guide_pays_for_the_first",
+  "why": "CR 605.3a: a second Simian Spirit Guide is mana for the first: two Mountains and the other copy cast it",
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Simian Spirit Guide"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Simian Spirit Guide"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Player A exiles Simian Spirit Guide",
+    "Player A casts Simian Spirit Guide"
+  ]
+}

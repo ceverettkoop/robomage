@@ -1,5 +1,6 @@
 #include "costs.h"
 
+#include <algorithm>
 #include <cstddef>
 
 #include "../components/player.h"
@@ -21,6 +22,7 @@ static bool controls_enough(const CostPart &part, const CostCheck &check, Entity
 static bool pitch_covers(const CostPart &part, const CostCheck &check);
 static bool hand_covers(const CostPart &part, const CostCheck &check);
 static bool graveyard_covers(const CostPart &part, const CostCheck &check);
+static int hand_cards_taken(const CostParts &cost, const CostCheck &check);
 static bool mana_payable(const CostParts &cost, const CostCheck &check);
 
 bool can_pay(const CostParts &cost, const CostCheck &check) {
@@ -34,6 +36,17 @@ std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const
     for (size_t i = 0; i < choices.size(); ++i)
         if (can_pay(choices[i], check)) payable.push_back(i);
     return payable;
+}
+
+int fewest_hand_cards(const std::vector<CostParts> &choices, const CostCheck &check) {
+    CostCheck forms = check;
+    forms.unchecked = CostParts::kind_bit(CostPart::MANA);
+    int fewest = -1;
+    for (size_t i : payable_choices(choices, forms)) {
+        const int taken = hand_cards_taken(choices[i], forms);
+        if (fewest < 0 || taken < fewest) fewest = taken;
+    }
+    return std::max(fewest, 0);
 }
 
 static bool part_payable(const CostPart &part, const CostCheck &check) {
@@ -110,6 +123,15 @@ static bool graveyard_covers(const CostPart &part, const CostCheck &check) {
     return graveyard_card_count(check.payer, entities, check.source) >= part.count;
 }
 
+// The cards of the payer's hand the cost takes besides its mana: what is discarded or pitched can't
+// also be exiled for mana.
+static int hand_cards_taken(const CostParts &cost, const CostCheck &check) {
+    int taken = check.hand_reserved;
+    if (!cost.self(CostPart::DISCARD)) taken += cost.count(CostPart::DISCARD) * check.times;
+    if (!cost.self(CostPart::EXILE_FROM_HAND)) taken += cost.count(CostPart::EXILE_FROM_HAND);
+    return taken;
+}
+
 // The mana owed. A {T} in the cost spends the source's tap, so its mana ability is NOT also available
 // to pay with — exclude it, or a Blast Zone whose only other land is an Ancient Tomb reads as able to
 // pay {3} off 2 mana plus its own {C}. The mana is paid before a PayLife cost, so a painful source
@@ -117,15 +139,17 @@ static bool graveyard_covers(const CostPart &part, const CostCheck &check) {
 static bool mana_payable(const CostParts &cost, const CostCheck &check) {
     if (check.unchecked & CostParts::kind_bit(CostPart::MANA)) return true;
     const ManaValue &owed = check.mana ? *check.mana : cost.mana();
-    if (check.spell) return can_pay_spell_mana(check.payer, owed, *check.spell, check.payee, check.orderer);
+    ManaPayee payee = check.payee;
+    payee.hand_reserved = hand_cards_taken(cost, check);
+    if (check.spell) return can_pay_spell_mana(check.payer, owed, *check.spell, payee, check.orderer);
     const Entity exclude = cost.taps() ? check.source : 0;
     const std::vector<HybridPip> *hybrid = check.hybrid ? check.hybrid : &cost.hybrid();
     const TapToPay tap = check.tap_to_pay != TapToPay::NONE ? check.tap_to_pay : cost.tap_to_pay();
     if (check.hybrid || !hybrid->empty())
-        return resolve_hybrid_cost(check.payer, owed, *hybrid, check.payee, check.orderer, check.delve, tap,
+        return resolve_hybrid_cost(check.payer, owed, *hybrid, payee, check.orderer, check.delve, tap,
                                    nullptr, cost.life() + check.life_reserve, exclude);
     if (owed.empty()) return true;
     if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
-    return can_pay_mana(check.payer, owed, check.payee, check.orderer, check.delve, tap, exclude,
+    return can_pay_mana(check.payer, owed, payee, check.orderer, check.delve, tap, exclude,
                         cost.life() + check.life_reserve);
 }

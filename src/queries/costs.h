@@ -57,4 +57,7 @@ bool can_pay(const CostParts &cost, const CostCheck &check);
 // Which of a spell's additional-cost forms can be paid (CR 601.2b): their indices, in order.
 std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const CostCheck &check);
 
+// The fewest cards of the payer's hand any payable form takes: what a cast's mana must leave there.
+int fewest_hand_cards(const std::vector<CostParts> &choices, const CostCheck &check);
+
 #endif /* QUERIES_COSTS_H */

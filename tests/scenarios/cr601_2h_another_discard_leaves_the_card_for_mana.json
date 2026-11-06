@@ -1,0 +1,34 @@
+{
+  "name": "cr601_2h_another_discard_leaves_the_card_for_mana",
+  "why": "CR 601.2h: with a second card to discard, Simian Spirit Guide pays the {1} of Bitter Triumph",
+  "hand_a": [
+    "Bitter Triumph",
+    "Simian Spirit Guide",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "life_a": 2,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Bitter Triumph",
+    "A:target:Grizzly Bears@opp",
+    "A:discard:Swamp"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A exiles Simian Spirit Guide",
+    "Player A discards Swamp",
+    "Grizzly Bears is destroyed"
+  ]
+}

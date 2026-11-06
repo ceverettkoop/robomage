@@ -1,0 +1,34 @@
+{
+  "name": "cr605_3a_auto_payer_keeps_the_card_while_a_land_can_pay",
+  "why": "CR 605.3a: the card is the payer's last resort: with a Mountain and a Lotus Petal out the land pays, then the Petal, and Simian Spirit Guide stays in the hand",
+  "hand_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Simian Spirit Guide"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Lotus Petal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A activated Mountain",
+    "Player A sacrifices Lotus Petal"
+  ],
+  "expect_not": [
+    "Player A exiles Simian Spirit Guide"
+  ]
+}

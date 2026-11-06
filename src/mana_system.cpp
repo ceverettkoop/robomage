@@ -80,10 +80,16 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 // Can `player` pay a mana ability's own mana cost (Talon Gates' {1}{T})? The physical gate
 // (mana_ability_available_now) has held its {T} and its life. Nothing holds it to the rest: a
 // Sac<1/Type>, Return or energy in a mana ability's cost is offered whether or not it can be paid.
-static void append_hand_mana_actions(Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for,
-                                     std::vector<LegalAction> &actions);
 static bool mana_source_affordable(Zone::Ownership player, Entity source, const Ability &ab,
                                    std::shared_ptr<Orderer> orderer);
+static void push_mana_source(Entity source, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
+                             std::vector<std::pair<Entity, Ability>> &sources);
+static bool chosen_to_pay(Entity card, ManaPayee paid_for);
+// The mana abilities of the cards in `hand` that function there (CR 113.6b, 605.3a): what the payment
+// has spoken for stays, and `paid_for.hand_reserved` cards are left over for the rest of the cost.
+static void push_hand_mana_sources(const std::vector<Entity> &hand, Zone::Ownership player, ManaPayee paid_for,
+                                   const EntitySet &entities, bool include_instant_speed, int life_reserve,
+                                   std::vector<std::pair<Entity, Ability>> &sources);
 static bool mana_ability_is_painful(const Ability &ab);
 // Life a mana ability's activation takes from its controller: its PayLife cost plus any
 // self-damage / life-loss rider (Ancient Tomb's 2 damage).
@@ -397,15 +403,18 @@ static bool mana_source_affordable(Zone::Ownership player, Entity source, const 
     return can_pay(ab.def->cost, check);
 }
 
-// Collect all mana abilities a player could activate.
+// Collect all mana abilities a player could activate, the battlefield's and then the hand's.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT the ability's mana cost — callers handle that
 // to avoid circularity with can_afford_with_sources.
 static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false,
-    int life_reserve = 0) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for = {},
+    bool include_instant_speed = false, int life_reserve = 0) {
     std::vector<std::pair<Entity, Ability>> sources;
+    std::vector<Entity> hand;
     for (auto entity : orderer->mEntities) {
+        const Zone &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location == Zone::HAND && zone.owner == player) hand.push_back(entity);
         if (!is_battlefield_permanent(entity, player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (rules_mod::mana_activation_prohibited(entity)) continue;
@@ -415,28 +424,66 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
             if (!mana_ability_available_now(entity, ab, player, orderer->mEntities,
                                             include_instant_speed, life_reserve))
                 continue;
-            // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
-            // the Valid$-matching permanents you control, computed live. Expand into per-color
-            // choices like mana_choices. An empty set (no/colorless legendaries) makes the
-            // ability produce nothing, so it is not offered as a usable mana source.
-            if (!ab.def->reflected_mana_filter.empty()) {
-                for (Colors choice_color : reflected_color_set(ab, player, orderer->mEntities)) {
-                    Ability choice_ab = ab;
-                    choice_ab.color = choice_color;
-                    sources.push_back({entity, choice_ab});
-                }
-            } else if (!ab.def->mana_choices.empty()) {
-                for (Colors choice_color : ab.def->mana_choices) {
-                    Ability choice_ab = ab;
-                    choice_ab.color = choice_color;
-                    sources.push_back({entity, choice_ab});
-                }
-            } else {
-                sources.push_back({entity, ab});
-            }
+            push_mana_source(entity, ab, player, orderer->mEntities, sources);
         }
     }
+    push_hand_mana_sources(hand, player, paid_for, orderer->mEntities, include_instant_speed, life_reserve, sources);
     return sources;
+}
+
+// `ab` as one source per color it can make. AB$ ManaReflected (Mox Amber): producible colors are the
+// union of the colors of the Valid$-matching permanents you control, computed live, expanded into
+// per-color choices like mana_choices. An empty set (no/colorless legendaries) makes the ability
+// produce nothing, so it is not offered as a usable mana source.
+static void push_mana_source(Entity source, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
+                             std::vector<std::pair<Entity, Ability>> &sources) {
+    if (!ab.def->reflected_mana_filter.empty()) {
+        for (Colors choice_color : reflected_color_set(ab, player, entities)) {
+            Ability choice_ab = ab;
+            choice_ab.color = choice_color;
+            sources.push_back({source, choice_ab});
+        }
+    } else if (!ab.def->mana_choices.empty()) {
+        for (Colors choice_color : ab.def->mana_choices) {
+            Ability choice_ab = ab;
+            choice_ab.color = choice_color;
+            sources.push_back({source, choice_ab});
+        }
+    } else {
+        sources.push_back({source, ab});
+    }
+}
+
+// Has the payment in flight chosen `card` to pay another part of its cost?
+static bool chosen_to_pay(Entity card, ManaPayee paid_for) {
+    if (!paid_for.chosen) return false;
+    return std::any_of(paid_for.chosen->begin(), paid_for.chosen->end(),
+                       [card](const CostItem &item) { return item.entity == card; });
+}
+
+// See forward declaration at top of file. The card being paid for is no source of its own payment.
+static void push_hand_mana_sources(const std::vector<Entity> &hand, Zone::Ownership player, ManaPayee paid_for,
+                                   const EntitySet &entities, bool include_instant_speed, int life_reserve,
+                                   std::vector<std::pair<Entity, Ability>> &sources) {
+    int spendable = -paid_for.hand_reserved;
+    for (Entity card : hand)
+        if (card != paid_for.entity && !chosen_to_pay(card, paid_for)) spendable++;
+    const Player &pl = global_coordinator.GetComponent<Player>(get_player_entity(player));
+    for (Entity card : hand) {
+        if (spendable <= 0) return;
+        if (card == paid_for.entity || chosen_to_pay(card, paid_for)) continue;
+        const size_t before = sources.size();
+        for (const AbilityDef *def : global_coordinator.GetComponent<CardData>(card).abilities) {
+            if (def->activation_zone != Zone::HAND) continue;
+            const Ability ab(def);
+            if (!ability_is_mana(ab)) continue;
+            if (def->instant_speed && !include_instant_speed) continue;
+            if (!activation_source_ready(ab, card, player, entities)) continue;
+            if (!mana_ability_life_payable(pl, player, ab, life_reserve)) continue;
+            push_mana_source(card, ab, player, entities, sources);
+        }
+        if (sources.size() > before) spendable--;
+    }
 }
 
 // See mana_system.h for the contract. One pass over the player's live battlefield
@@ -500,40 +547,22 @@ ActionCategory mana_action_category(Colors color) {
 std::vector<LegalAction> collect_mana_legal_actions(
     Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for, bool at_priority) {
     std::vector<LegalAction> actions;
-    auto sources = collect_available_mana_sources(player, orderer, at_priority);
+    auto sources = collect_available_mana_sources(player, orderer, paid_for, at_priority);
     for (auto &[entity, ab] : sources) {
         // Filter restricted mana (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
         // hide a source whose spending restriction doesn't match the spell being paid for.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         // Sources with activation mana cost: check affordability
         if (!mana_source_affordable(player, entity, ab, orderer)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        std::string desc = "Tap " + perm.name + " for (" +
-                           mana_symbol_str(ab.color) + ")";
+        const std::string mana = std::string(" for (") + mana_symbol_str(ab.color) + ")";
+        std::string desc = global_coordinator.entity_has_component<Permanent>(entity)
+                               ? "Tap " + global_coordinator.GetComponent<Permanent>(entity).name + mana
+                               : "Exile " + global_coordinator.GetComponent<CardData>(entity).name + mana;
         LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
         la.category = mana_action_category(ab.color);
         actions.push_back(la);
     }
-    append_hand_mana_actions(player, orderer, paid_for, actions);
     return actions;
-}
-
-// CR 605.3a allows a mana ability wherever mana is paid, and these rows go wherever the
-// battlefield's do. The auto-payer doesn't spend them: a card is no land to tap, so it is the
-// player's to exile, at priority or at a row.
-static void append_hand_mana_actions(Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for,
-                                     std::vector<LegalAction> &actions) {
-    for (Entity card : orderer->get_hand(player)) {
-        const CardData &cd = global_coordinator.GetComponent<CardData>(card);
-        for (const AbilityDef *def : cd.abilities) {
-            if (def->activation_zone != Zone::HAND) continue;
-            const Ability ab(def);
-            if (!ability_is_mana(ab) || !mana_source_usable_for(ab, card, paid_for)) continue;
-            LegalAction la(ACTIVATE_ABILITY, card, ab, "Exile " + cd.name + " for (" + mana_symbol_str(ab.color) + ")");
-            la.category = mana_action_category(ab.color);
-            actions.push_back(la);
-        }
-    }
 }
 
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
@@ -551,7 +580,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     std::set<Entity> counted_entities;
     size_t flexible_count = 0;
 
-    auto sources = collect_available_mana_sources(player_owner, orderer);
+    auto sources = collect_available_mana_sources(player_owner, orderer, paid_for);
 
     // Filter restricted mana sources (Cavern of Souls etc.): drop any whose spending
     // restriction doesn't match the spell being paid for.
@@ -881,7 +910,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
     // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
     // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
     // emitted only on the real activation (commit).
-    if (perm) fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
+    fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
     if (commit && !perm) {
         game_log("%s adds %zu(%s)\n", player_name(controller).c_str(), amount, mana_symbol_str(produced_color));
     } else if (commit) {
@@ -946,6 +975,7 @@ static bool tapped_source_is_creature(Entity e) {
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaPool &pool,
                                         bool log) {
+    if (!global_coordinator.entity_has_component<Permanent>(tapped_source)) return;  // a card in the hand taps nothing
     for (auto entity : orderer->mEntities) {
         if (!is_battlefield_permanent(entity, controller)) continue;
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
@@ -1028,6 +1058,7 @@ bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Abi
 }
 
 static bool has_nonmana_activated_ability(Entity entity) {
+    if (!global_coordinator.entity_has_component<Permanent>(entity)) return false;
     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
     for (const auto &ab : perm.abilities)
         if (ab.def->ability_type == AbilityDef::ACTIVATED && !ability_is_mana(ab)) return true;
@@ -1152,7 +1183,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     }
 
     // Collect available sources with their color info
-    auto sources = collect_available_mana_sources(controller, orderer,
+    auto sources = collect_available_mana_sources(controller, orderer, paid_for,
                                                   /*include_instant_speed=*/false, life_reserve);
 
     // Build per-entity info: which colors it can produce, how many entries
@@ -1161,6 +1192,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         Ability ability;        // one representative ability (for tap/life/activation costs)
         Colors color;
         bool is_multi_color;
+        bool from_hand;         // a card, spent by the activation, and the last thing a payment engages
     };
     // Filter to actions valid for this payment (same as collect_mana_legal_actions)
     std::vector<SourceInfo> valid_sources;
@@ -1193,7 +1225,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             break;
         }
         if (replaced) continue;
-        valid_sources.push_back({entity, ab, ab.color, is_multi});
+        valid_sources.push_back(
+            {entity, ab, ab.color, is_multi, !global_coordinator.entity_has_component<Permanent>(entity)});
     }
 
     // max_yield_only (the retry strategy — see auto_pay_mana): a permanent taps once, so
@@ -1223,9 +1256,10 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     }
 
     // Candidate ordering: within every preference tier below, engage first the source
-    // whose tap gives up the least. Two ranked criteria, applied by a stable sort (ties
+    // whose tap gives up the least. Three ranked criteria, applied by a stable sort (ties
     // keep entity order), read uniformly by all tiers and cover_activation_cost's payer
     // scan, so simulate (can_pay_mana) and the real payment stay in lockstep:
+    //   0. A CARD IN THE HAND goes after every permanent: it is a card given up.
     //   1. HAND COLOR DEMAND — prefer a source whose producible colors the other cards in
     //      hand need least (with Lightning Bolt in hand, a generic pip taps Wasteland's
     //      {C} before a Mountain, keeping red open). A multi-color source is scored by
@@ -1250,6 +1284,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                 entity_utility[si.entity] = has_nonmana_activated_ability(si.entity);
         std::stable_sort(valid_sources.begin(), valid_sources.end(),
             [&](const SourceInfo &a, const SourceInfo &b) {
+                if (a.from_hand != b.from_hand) return b.from_hand;
                 int da = entity_demand[a.entity], db = entity_demand[b.entity];
                 if (da != db) return da < db;
                 return entity_utility[a.entity] < entity_utility[b.entity];
@@ -1260,8 +1295,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // equals si.ability.color (set when the SourceInfo was built), so the shared
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
-        return activate_mana_source(si.entity, si.ability, controller, orderer, pool, payer,
-                                    commit, ManaLogStyle::ACTIVATED, life_reserve);
+        if (!activate_mana_source(si.entity, si.ability, controller, orderer, pool, payer, commit,
+                                  ManaLogStyle::ACTIVATED, life_reserve))
+            return false;
+        if (commit && si.from_hand) coverage_cost(CostPart::MANA, "hand");
+        return true;
     };
 
     std::set<Entity> tapped_entities;
@@ -1330,6 +1368,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // outranks life; only necessity (no painless way to finish the payment, including a
     // colored pip only a painful source produces) does.
     auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
+
+    // A source that spends itself, sacrificed or exiled from the hand, is the last resort.
+    auto keeps_itself = [](const SourceInfo &s) {
+        return !s.ability.def->cost.self(CostPart::SACRIFICE) && !s.from_hand;
+    };
 
     // A pip of `color` (any, with NO_COLOR) paid from the working pool, if it holds mana that can be
     // spent on this payment.
@@ -1430,13 +1473,13 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_source([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_source([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
-        if (try_source([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
+        if (try_source([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && keeps_itself(s) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && keeps_itself(s) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && keeps_itself(s) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && keeps_itself(s) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return keeps_itself(s) && painless(s); })) continue;
+        if (try_source(keeps_itself)) continue;  // painful, if needed
+        if (try_source([](const SourceInfo &) { return true; })) continue;  // spending the source, last resort
         if (tap_for_pip(needed)) continue;
         return false;
     }
@@ -1466,11 +1509,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_generic([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_generic([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
-        if (try_generic([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
-        if (try_generic([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
+        if (try_generic([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && keeps_itself(s) && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && keeps_itself(s) && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return keeps_itself(s) && painless(s); })) continue;
+        if (try_generic(keeps_itself)) continue;  // painful, if needed
+        if (try_generic([](const SourceInfo &) { return true; })) continue;  // spending the source, last resort
         if (tap_for_pip(GENERIC)) continue;
         return false;
     }

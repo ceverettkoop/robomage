@@ -94,7 +94,9 @@ struct CostRun {
 struct CostPayer {
         CostPayer(
             CostPath path_, Zone::Ownership who, Entity paying_for, ManaPayee to, const CostParts *cost_, CostRun *run_)
-            : path(path_), payer(who), source(paying_for), payee(to), cost(cost_), run(run_) {}
+            : path(path_), payer(who), source(paying_for), payee(to), cost(cost_), run(run_) {
+            if (run) payee.chosen = &run->items;
+        }
 
         CostPath path;
         Zone::Ownership payer;
