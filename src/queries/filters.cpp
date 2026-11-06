@@ -28,6 +28,7 @@
 #include "lki.h"
 #include "spells.h"
 #include "types.h"
+#include "zones.h"
 
 // ── Unified filter matcher (declared in filters.h) ─────────────────────
 // A flattened view of the one object under test, populated either from a card's printed
@@ -194,6 +195,7 @@ static bool ev_opp_own(const CharView &v, const Qualifier &q, const MatchCtx &ct
 static bool ev_token(const CharView &v, const Qualifier &q);
 static bool ev_non_token(const CharView &v, const Qualifier &q);
 static bool ev_entered_this_turn(const CharView &v, const Qualifier &q);
+static bool ev_least_power(const CharView &v, const Qualifier &q);
 static bool ev_was_cast_by_you(const CharView &v, const Qualifier &q);
 static bool ev_attacking(const CharView &v, const Qualifier &q);
 static bool ev_blocking(const CharView &v, const Qualifier &q);
@@ -288,6 +290,11 @@ static const QualifierRow kQualifierRows[] = {
     local_row("token", ev_token),
     local_row("nonToken", ev_non_token),
     local_row("ThisTurnEntered", ev_entered_this_turn),
+    // leastPower — no creature on the battlefield has less power (Drop of Honey's "the creature with
+    // the least power"). It compares with every creature there, not with what the filter's other
+    // qualifiers leave: with an indestructible creature least, withoutIndestructible matches nothing
+    // rather than promoting the next creature up.
+    local_row("leastPower", ev_least_power),
     // wasCastByYou — the permanent entered by being cast (The One Ring's "if you cast it"); its
     // controller cast it, since a permanent spell enters under its caster's control (CR 608.3a).
     local_row("wasCastByYou", ev_was_cast_by_you),
@@ -798,6 +805,13 @@ static bool ev_non_token(const CharView &v, const Qualifier &) { return !v.is_to
 
 static bool ev_entered_this_turn(const CharView &v, const Qualifier &) {
     return v.on_battlefield && entered_battlefield_this_turn(v.entered_on_turn);
+}
+
+static bool ev_least_power(const CharView &v, const Qualifier &) {
+    if (!v.on_battlefield || !v.has_pt) return false;
+    for (Entity e : battlefield_permanents(zoned_entities()))
+        if (global_coordinator.entity_has_component<Creature>(e) && effective_power(e) < v.power) return false;
+    return true;
 }
 
 static bool ev_was_cast_by_you(const CharView &v, const Qualifier &) { return v.on_battlefield && v.entered_by_cast; }

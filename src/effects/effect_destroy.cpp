@@ -7,6 +7,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
 #include "../systems/orderer.h"
@@ -51,6 +52,9 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // the shared destroy/unless path below operates on the creature. Idempotent on a suspend/resume.
     if (ab.def->defined.is(ObjectSpec::SELF) && ab.target.empty() && ab.targets.empty())
         ab.target = ab.source;
+    // Defined$ ChosenCard (Drop of Honey): what its ChooseCard chose, nothing if it chose nothing.
+    if (ab.def->defined.is(ObjectSpec::CHOSEN_CARDS) && ab.targets.empty())
+        for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab))) ab.targets.push_back(ObjectRef::of(e));
 
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
     // color. The spell still resolves (doing nothing) against a wrong-color permanent.

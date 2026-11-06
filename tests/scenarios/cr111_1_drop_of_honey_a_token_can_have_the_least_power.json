@@ -1,0 +1,15 @@
+{
+  "name": "cr111_1_drop_of_honey_a_token_can_have_the_least_power",
+  "why": "CR 111.1 / 111.4: a token is a creature like any other: an Orc Army tied for least power with Orcish Bowmasters is offered, and chosen, destroyed",
+  "hand_a": ["Orcish Bowmasters", "Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Grizzly Bears"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Drop of Honey"],
+  "play": ["A:keep", "B:keep", "A:cast:Orcish Bowmasters", "A:target:Player B", "B:desc:Choose Orc Army"],
+  "max_decisions": 8,
+  "expect": ["Orc Army token is destroyed"],
+  "expect_menu": ["Choose Orc Army", "Choose Orcish Bowmasters"],
+  "expect_not": ["Orcish Bowmasters is destroyed"]
+}

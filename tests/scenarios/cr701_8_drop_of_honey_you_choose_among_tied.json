@@ -1,0 +1,16 @@
+{
+  "name": "cr701_8_drop_of_honey_you_choose_among_tied",
+  "why": "Drop of Honey's Oracle text: creatures tied for least power are its controller's choice, across both players; a creature above the tie is not offered, and only the chosen one is destroyed",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Drop of Honey", "Flying Men", "Grizzly Bears"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Soul Warden"],
+  "play": ["A:keep", "B:keep", "A:desc:Choose Soul Warden"],
+  "max_decisions": 4,
+  "expect": ["Soul Warden is destroyed"],
+  "expect_menu": ["Choose Flying Men", "Choose Soul Warden"],
+  "expect_menu_not": ["Choose Grizzly Bears"],
+  "expect_not": ["Flying Men is destroyed", "Grizzly Bears is destroyed"]
+}

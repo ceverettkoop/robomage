@@ -19,7 +19,7 @@ struct ObjectSpec {
         REMEMBERED,          // the objects the resolution remembers
         DELAY_REMEMBERED,    // the objects a delayed trigger captured, restored as remembered
         IMPRINTED,           // the objects the resolution imprinted (a filter's set; no Defined$ name)
-        CHOSEN_CARDS,        // the cards the resolution chose (a filter's set; no Defined$ name)
+        CHOSEN_CARDS,        // the cards the resolution chose
         TARGETED,            // the target its parent chose
         PARENT_TARGET,       // the same; only ChangeZone tells the two apart
         TRIGGERED_ATTACKER,  // bound as the target when it triggered

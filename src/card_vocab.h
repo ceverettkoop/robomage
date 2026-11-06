@@ -291,6 +291,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Peer into the Abyss", 368},
     {"Dark Matter Manipulator", 369},
     {"Powder Keg", 370},
+    {"Drop of Honey", 371},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

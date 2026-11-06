@@ -1,0 +1,14 @@
+{
+  "name": "cr701_8_drop_of_honey_tied_with_indestructible",
+  "why": "withoutIndestructible, as Forge's script writes it: a creature tied for least power that is indestructible is not offered, so the tied Air Elemental is destroyed with no choice (docs/rules_deviations.md: the Oracle text would let the controller choose the Ring and destroy nothing)",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Karn the Great Creator", "The One Ring", "Air Elemental", "Griselbrand"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Drop of Honey"],
+  "play": ["A:keep", "B:keep", "A:activate:Karn", "A:target:The One Ring", "A:attack:done"],
+  "max_decisions": 22,
+  "expect": ["Air Elemental is destroyed"],
+  "expect_not": ["Griselbrand is destroyed", "The One Ring is destroyed"]
+}

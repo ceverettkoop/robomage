@@ -56,6 +56,7 @@ static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone
 static bool read_by_change_zone(const AbilityDef &ability);
 static bool read_by_change_zone_all(const AbilityDef &ability);
 static bool read_by_copy_permanent(const AbilityDef &ability);
+static bool read_by_destroy(const AbilityDef &ability);
 static bool read_by_pump(const AbilityDef &ability);
 static bool read_by_each_player(const AbilityDef &ability);
 static bool read_by_no_ability(const AbilityDef &ability);
@@ -69,9 +70,8 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
-    // Sets only a filter's qualifiers read (IsImprinted, nonChosenCard).
+    // A set only a filter's qualifiers read (IsImprinted).
     {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
-    {nullptr, ObjectSpec::CHOSEN_CARDS, Refers::OBJECT, objects_chosen_cards},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed zones and fired
@@ -87,6 +87,9 @@ static const DefinedRow kDefinedRows[] = {
     {"TriggeredCard", ObjectSpec::SELF, Refers::OBJECT, objects_source},
 
     {"Remembered", ObjectSpec::REMEMBERED, Refers::OBJECT, objects_remembered},
+    // ChosenCard — the cards a ChooseCard of this resolution chose (Drop of Honey's destroy; the set
+    // of the filter's ChosenCard and nonChosenCard).
+    {"ChosenCard", ObjectSpec::CHOSEN_CARDS, Refers::OBJECT, objects_chosen_cards, nullptr, read_by_destroy},
     // The objects a DB$ DelayedTrigger captured at registration (RememberObjects$ RememberedLKI).
     // delayed_trigger() restores them into cur_game.resolution.memory.remembered before the fire
     // ability resolves, so this resolves exactly like Defined$ Remembered (Flickerwisp / Phelia
@@ -275,6 +278,7 @@ static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone
 static bool read_by_change_zone(const AbilityDef &ability) { return ability.category == "ChangeZone"; }
 static bool read_by_change_zone_all(const AbilityDef &ability) { return ability.category == "ChangeZoneAll"; }
 static bool read_by_copy_permanent(const AbilityDef &ability) { return ability.category == "CopyPermanent"; }
+static bool read_by_destroy(const AbilityDef &ability) { return ability.category == "Destroy"; }
 static bool read_by_pump(const AbilityDef &ability) { return ability.category == "Pump"; }
 
 static bool read_by_each_player(const AbilityDef &ability) {

@@ -144,6 +144,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     std::vector<Entity> cands = choose_card_candidates(ab, orderer);
     if (cands.empty()) {
         if (!ctx.resuming()) game_log("There is no card to choose.\n");
+        cur_game.resolution.memory.chosen_cards.clear();
         return HandlerResult::DONE_RUN_SUBS;
     }
     std::vector<LegalAction> picks;
@@ -175,8 +176,9 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
 }  // namespace effects
 
-// The cards a generic ChooseCard chooses among: those in its ChoiceZone$ matching its Choices$
-// filter, read relative to the ability's controller (YouOwn / OppOwn).
+// The objects a generic ChooseCard chooses among: those in its ChoiceZone$ matching its Choices$
+// filter, read relative to the ability's controller (YouOwn / OppOwn). On the battlefield they are
+// permanents, tokens too; elsewhere they are cards.
 static std::vector<Entity> choose_card_candidates(const Ability &ab,
                                                  std::shared_ptr<Orderer> orderer) {
     MatchCtx mctx;
@@ -184,9 +186,11 @@ static std::vector<Entity> choose_card_candidates(const Ability &ab,
     mctx.source = ab.source.lki_entity();
     std::vector<Entity> cands;
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         if (global_coordinator.GetComponent<Zone>(e).location != ab.def->choose_card_zone) continue;
-        if (ab.def->choose_card_zone == Zone::BATTLEFIELD && !is_battlefield_permanent(e)) continue;
+        const bool candidate = ab.def->choose_card_zone == Zone::BATTLEFIELD
+                                   ? is_battlefield_permanent(e)
+                                   : global_coordinator.entity_has_component<CardData>(e);
+        if (!candidate) continue;
         if (!object_matches_filter(e, ab.def->choose_card_filter, mctx)) continue;
         cands.push_back(e);
     }

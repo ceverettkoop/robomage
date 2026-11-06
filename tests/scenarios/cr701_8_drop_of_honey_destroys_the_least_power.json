@@ -1,0 +1,14 @@
+{
+  "name": "cr701_8_drop_of_honey_destroys_the_least_power",
+  "why": "CR 701.8a: at your upkeep Drop of Honey destroys the creature with the least power, whoever controls it; one creature alone has it, so no one chooses, and the bigger creatures stay",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Drop of Honey", "Grizzly Bears"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Birds of Paradise", "Air Elemental"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 3,
+  "expect": ["Birds of Paradise is destroyed"],
+  "expect_not": ["Grizzly Bears is destroyed", "Air Elemental is destroyed"]
+}
