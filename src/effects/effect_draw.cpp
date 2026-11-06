@@ -71,12 +71,14 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // for each burden counter on it") is evaluated at resolution against the source permanent.
         if (!ab.def->dynamic_amount_expr.empty())
             count = evaluate_amount(ab.def->dynamic_amount_expr, owner, ab.source.lki_entity(), ab.target.get());
-        rt.owner = owner;
+        rt.owners = affected_players(ab);
         rt.total = count;
         rt.init = true;
     }
-    if (!draw_n_with_replacements(ctx, orderer, rt.owner, rt.done, rt.total, ab.source.lki_entity()))
-        return HandlerResult::SUSPENDED;
+    // The active player performs all of their draws first (CR 121.2c).
+    for (; rt.owner_idx < rt.owners.size(); ++rt.owner_idx, rt.done = 0)
+        if (!draw_n_with_replacements(ctx, orderer, rt.owners[rt.owner_idx], rt.done, rt.total, ab.source.lki_entity()))
+            return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }
 

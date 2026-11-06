@@ -111,35 +111,40 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         search_zones.push_back(ab.def->origin);
     }
 
+    // With no player named or targeted the effect reaches every player's zones, each player's own
+    // (Echo of Eons: "each player shuffles their hand and graveyard into their library"; Stronghold
+    // Gambit's revealed cards in either hand), active player first.
+    std::vector<Zone::Ownership> owners = {owner};
+    if (!player_defined && ab.def->defined.is(ObjectSpec::DEFAULT) && ab.def->valid_tgts == "N_A")
+        owners = {active_seat(), opponent_of(active_seat())};
+
     // Collect all cards from the specified zones
     std::vector<Entity> zone_contents;
     for (auto zone : search_zones) {
-        if (zone == Zone::LIBRARY) {
-            auto lib = orderer->get_library_contents(owner);
-            zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
-        } else if (zone == Zone::HAND) {
-            auto hand = orderer->get_hand(owner);
-            zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
-        } else if (zone == Zone::GRAVEYARD) {
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
-            }
-        } else if (zone == Zone::BATTLEFIELD) {
+        if (zone == Zone::BATTLEFIELD) {
             // Origin$ Battlefield (Terminus: "put all creatures on the bottom of their owners'
             // libraries"): every permanent on the battlefield, or the defined player's alone.
             for (auto e : battlefield_permanents(orderer->mEntities))
                 if (!player_defined || global_coordinator.GetComponent<Zone>(e).controller == owner)
                     zone_contents.push_back(e);
-        } else if (zone == Zone::EXILE) {
-            // Origin$ Exile — the owner's exiled cards (Triumph of Saint Katherine's recursion:
-            // move the self-exiled pile back onto the library). Usually paired with a
-            // Card.IsRemembered filter so only the intended pile (not every exiled card) moves.
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::EXILE && z.owner == owner) zone_contents.push_back(e);
+            continue;
+        }
+        for (Zone::Ownership o : owners) {
+            if (zone == Zone::LIBRARY) {
+                auto lib = orderer->get_library_contents(o);
+                zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
+            } else if (zone == Zone::HAND) {
+                auto hand = orderer->get_hand(o);
+                zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
+            } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE) {
+                // Origin$ Exile — the owner's exiled cards (Triumph of Saint Katherine's recursion:
+                // move the self-exiled pile back onto the library). Usually paired with a
+                // Card.IsRemembered filter so only the intended pile (not every exiled card) moves.
+                for (auto e : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                    auto &z = global_coordinator.GetComponent<Zone>(e);
+                    if (z.location == zone && z.owner == o) zone_contents.push_back(e);
+                }
             }
         }
     }
@@ -167,24 +172,29 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         stable_shuffle(to_move, cur_game.rng.engine);
     }
 
-    // A permanent goes to its owner's zone (CR 400.3), so the cards moved from the battlefield
-    // are moved owner by owner, each owner's cards into their library as one batch.
-    if (std::find(search_zones.begin(), search_zones.end(), Zone::BATTLEFIELD) != search_zones.end()) {
+    // A permanent goes to its owner's zone (CR 400.3), so the cards moved from the battlefield are
+    // moved owner by owner, each owner's cards into their library as one batch, and so are the cards
+    // of every player's zones.
+    const bool from_battlefield =
+        std::find(search_zones.begin(), search_zones.end(), Zone::BATTLEFIELD) != search_zones.end();
+    if (from_battlefield || owners.size() > 1) {
         for (Zone::Ownership o : {Zone::PLAYER_A, Zone::PLAYER_B}) {
             std::vector<Entity> owned;
             for (auto e : to_move)
                 if (global_coordinator.GetComponent<Zone>(e).owner == o) owned.push_back(e);
-            if (!owned.empty()) move_all_cards(ab, orderer, owned, o);
+            if (!owned.empty() || (!from_battlefield && o == ab.controller)) move_all_cards(ab, orderer, owned, o);
         }
     } else {
         move_all_cards(ab, orderer, to_move, owner);
     }
 
     // Shuffle$ True (Emrakul's death trigger: "shuffle their graveyard into their library"): after
-    // moving the cards into the library, shuffle it.
+    // moving the cards into the library, shuffle it, even with no card moved (CR 701.24d).
     if (ab.def->shuffle_after && ab.def->destination == Zone::LIBRARY) {
-        orderer->shuffle_library(owner);
-        game_log("%s shuffles their library.\n", player_name(owner).c_str());
+        for (Zone::Ownership o : owners) {
+            orderer->shuffle_library(o);
+            game_log("%s shuffles their library.\n", player_name(o).c_str());
+        }
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

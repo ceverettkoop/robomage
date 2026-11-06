@@ -75,6 +75,10 @@ bool names_defined_player(const Ability &ab);
 // sub-ability chain; else its controller ("you", CR 109.5).
 Zone::Ownership affected_player(const Ability &ab);
 
+// Every player an effect acts on: both for a Defined$ naming each player, active player first, else
+// affected_player's one.
+std::vector<Zone::Ownership> affected_players(const Ability &ab);
+
 // The objects an effect acts on: its chosen targets when the ability targets; else its Defined$
 // objects — the source for Defined$ Self or no Defined$ (Forge's default), the inherited target(s)
 // for Defined$ Targeted / ParentTarget / Parent, the triggering object bound when it triggered

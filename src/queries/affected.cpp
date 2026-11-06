@@ -282,8 +282,9 @@ static bool read_by_destroy(const AbilityDef &ability) { return ability.category
 static bool read_by_pump(const AbilityDef &ability) { return ability.category == "Pump"; }
 
 static bool read_by_each_player(const AbilityDef &ability) {
-    return ability.category == "Vote" || (ability.category == "ChangeZone" && ability.origin == Zone::HAND &&
-                                          ability.destination == Zone::BATTLEFIELD);
+    return ability.category == "Vote" || ability.category == "Draw" ||
+           (ability.category == "ChangeZone" && ability.origin == Zone::HAND &&
+            ability.destination == Zone::BATTLEFIELD);
 }
 
 static bool read_by_no_ability(const AbilityDef &) { return false; }
@@ -398,6 +399,14 @@ Zone::Ownership affected_player(const Ability &ab) {
         if (t != 0 && global_coordinator.entity_has_component<Player>(t)) return seat_of_player(t);
     }
     return ab.controller;
+}
+
+std::vector<Zone::Ownership> affected_players(const Ability &ab) {
+    if (names_defined_player(ab)) {
+        const std::vector<Zone::Ownership> who = resolve_players(ab.def->defined, ResolveCtx::of(ab));
+        if (!who.empty()) return who;
+    }
+    return {affected_player(ab)};
 }
 
 std::vector<Entity> affected_objects(const Ability &ab) {

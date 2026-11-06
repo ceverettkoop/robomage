@@ -2379,7 +2379,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             "NoRegen",
             // LockTokenScript$ True (Into the Flood Maw): keeps Forge from swapping the gifted Fish's
             // script. Nothing here replaces a token's script.
-            "LockTokenScript"
+            "LockTokenScript",
+            // UseAllOriginZones$ True (Echo of Eons): the move takes every zone of Origin$, as it
+            // always does here.
+            "UseAllOriginZones"
         };
         if (ignored_keys.find(key) == ignored_keys.end() && !param_form_checked(key)) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

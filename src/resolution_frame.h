@@ -217,14 +217,15 @@ struct CopySpellRT {
                                   // becomes-target) fire once every copy is made (CR 603.3b)
 };
 // ── Batch 14: resolution-time draws (effects::draw) ─────────────────────────
-// The drawing player, the resolved draw count (a dynamic NumCards$ is
+// The drawing players, the resolved draw count (a dynamic NumCards$ is
 // evaluated ONCE — never re-evaluated after dredge mills mutate the counted
-// state), and completed draws, so a resume re-enters the parked dredge
-// question mid-batch. Holds no entities — the parked dredge menu's graveyard
-// cards are covered by the generic menu pins.
+// state), and the player and completed draws under way, so a resume re-enters
+// the parked dredge question mid-batch. Holds no entities — the parked dredge
+// menu's graveyard cards are covered by the generic menu pins.
 struct DrawRt {
     bool init = false;
-    Zone::Ownership owner = Zone::PLAYER_A;
+    std::vector<Zone::Ownership> owners;
+    size_t owner_idx = 0;
     size_t total = 0;
     size_t done = 0;
 };
