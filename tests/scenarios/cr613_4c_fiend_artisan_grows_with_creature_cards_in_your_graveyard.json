@@ -1,0 +1,38 @@
+{
+  "name": "cr613_4c_fiend_artisan_grows_with_creature_cards_in_your_graveyard",
+  "why": "CR 613.4c: Fiend Artisan gets +1/+1 for each creature card in your graveyard: two there, one in the opponent's not counted: it attacks for 3",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Fiend Artisan"
+  ],
+  "graveyard_a": [
+    "Goblin Guide",
+    "Grizzly Bears",
+    "Lightning Bolt"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Fiend Artisan"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Fiend Artisan deals 3 damage to Player B"
+  ]
+}

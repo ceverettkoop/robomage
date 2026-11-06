@@ -347,6 +347,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Runehorn Hellkite", 424},
     {"Simian Spirit Guide", 425},
     {"Bitter Triumph", 426},
+    {"Fiend Artisan", 427},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

@@ -1,0 +1,45 @@
+{
+  "name": "cr107_4e_fiend_artisan_hybrid_pip_asked_row_by_row",
+  "why": "CR 107.4e / 601.2b: under --no-auto-mana Fiend Artisan's {B/G} is announced by a menu of its two colors, after X; this parks on a hybrid pip of an activation",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Fiend Artisan",
+    "Goblin Guide",
+    "Swamp",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Fiend Artisan",
+    "A:x:1",
+    "A:pay:{G}",
+    "A:sacrifice:Goblin Guide",
+    "A:tap:Forest",
+    "A:tap:Swamp"
+  ],
+  "max_decisions": 10,
+  "expect_menu": [
+    "Pay \\{B\\}",
+    "Pay \\{G\\}"
+  ],
+  "expect": [
+    "Player A sacrifices Goblin Guide"
+  ]
+}

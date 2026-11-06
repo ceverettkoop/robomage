@@ -1,0 +1,31 @@
+{
+  "name": "cr602_5d_fiend_artisan_only_as_a_sorcery",
+  "why": "CR 602.5d: Fiend Artisan's ability is sorcery timed, and needs another creature to sacrifice: alone it isn't offered",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Fiend Artisan",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate Fiend Artisan"
+  ]
+}

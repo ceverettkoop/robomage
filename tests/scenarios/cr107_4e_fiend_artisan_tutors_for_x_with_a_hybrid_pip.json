@@ -1,0 +1,45 @@
+{
+  "name": "cr107_4e_fiend_artisan_tutors_for_x_with_a_hybrid_pip",
+  "why": "CR 107.4e / 602.2b: Fiend Artisan's {X}{B/G}, {T}, Sacrifice another creature: search for a creature of mana value X or less, onto the battlefield, then shuffle. The hybrid pip is paid by one land of either color, on top of X",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Formidable Speaker",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Fiend Artisan",
+    "Goblin Guide",
+    "Swamp",
+    "Forest",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Fiend Artisan",
+    "A:x:2",
+    "A:sacrifice:Goblin Guide",
+    "A:search:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player A chooses X = 2",
+    "Player A sacrifices Goblin Guide",
+    "Player A's Fiend Artisan ability is on the stack",
+    "Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "X = 3",
+    "Sacrifice Fiend Artisan",
+    "Formidable Speaker"
+  ]
+}

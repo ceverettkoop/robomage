@@ -312,6 +312,7 @@ CastCostStage cast_cost_stage(const CostRun &run) {
 PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     const std::vector<HybridPip> &pips = *a.pips;
     if (pips.empty()) return PayStatus::PAID;
+    if (*a.next == 0) coverage_cost(CostPart::MANA, "hybrid");
     if (auto_mana && !a.colors_matter) {
         ManaValue resolved;
         if (resolve_hybrid_cost(a.payer, *a.owed, pips, a.payee, orderer, a.delve, a.improvise, &resolved, 0, a.exclude)) {

@@ -665,7 +665,7 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
     // Hybrid pips are announced where announce_hybrid_pips is called; anywhere else they are a finding.
-    if (!part.hybrid.empty()) return false;
+    if (!part.hybrid.empty() && form != CostForm::ACTIVATED) return false;
     const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
     switch (form) {
         case CostForm::ACTIVATED:
