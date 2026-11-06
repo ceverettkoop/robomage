@@ -18,15 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Elvish Mystic",
-     "Elvish Visionary",
-     "Fyndhorn Elves",
-     "Llanowar Elves",
-     "Quirion Ranger",
-     "Temur Sabertooth",
-     "Wirewood Symbiote"
-    ],
+    "clean": [],
     "mechanics": {
      "AnimateAll power, toughness and types": {
       "cards": [
@@ -97,58 +89,44 @@
     },
     "new_cards": [
      "Allosaurus Shepherd",
-     "Elvish Mystic",
-     "Elvish Visionary",
      "Formidable Speaker",
-     "Fyndhorn Elves",
      "Hogaak, Arisen Necropolis",
-     "Llanowar Elves",
-     "Quirion Ranger",
-     "Temur Sabertooth",
-     "Vibrance",
-     "Wirewood Symbiote"
+     "Vibrance"
     ],
     "size_points": 16
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "11 new card(s): 7 clean, 4 need 5 mechanic(s) (16 points)",
-   "time": "2026-11-05T20:28:13"
+   "summary": "4 new card(s): 0 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T21:18:39"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 21,
+    "in_vocab": 28,
     "no_script": [],
     "not_in_vocab": [
      "Allosaurus Shepherd",
-     "Elvish Mystic",
-     "Elvish Visionary",
      "Formidable Speaker",
-     "Fyndhorn Elves",
      "Hogaak, Arisen Necropolis",
-     "Llanowar Elves",
-     "Quirion Ranger",
-     "Temur Sabertooth",
-     "Vibrance",
-     "Wirewood Symbiote"
+     "Vibrance"
     ]
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "32 cards: 21 in vocab, 11 new (0 without a script)",
-   "time": "2026-11-05T20:28:01"
+   "summary": "32 cards: 28 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-05T21:18:39"
   },
   "implement": {
    "detail": {
@@ -162,15 +140,15 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting, Hybrid pips in costs",
-   "time": "2026-11-05T20:28:13"
+   "time": "2026-11-05T21:18:39"
   },
   "parse": {
    "detail": {
@@ -207,32 +185,6 @@
        -1
       ]
      },
-     "Elvish Mystic": {
-      "card": "Elvish Mystic",
-      "faces": [
-       "Elvish Mystic"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/e/elvish_mystic.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Elvish Visionary": {
-      "card": "Elvish Visionary",
-      "faces": [
-       "Elvish Visionary"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/e/elvish_visionary.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Formidable Speaker": {
       "card": "Formidable Speaker",
       "faces": [
@@ -248,19 +200,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/f/formidable_speaker.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Fyndhorn Elves": {
-      "card": "Fyndhorn Elves",
-      "faces": [
-       "Fyndhorn Elves"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/f/fyndhorn_elves.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -322,45 +261,6 @@
        -1
       ]
      },
-     "Llanowar Elves": {
-      "card": "Llanowar Elves",
-      "faces": [
-       "Llanowar Elves"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/l/llanowar_elves.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Quirion Ranger": {
-      "card": "Quirion Ranger",
-      "faces": [
-       "Quirion Ranger"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/q/quirion_ranger.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Temur Sabertooth": {
-      "card": "Temur Sabertooth",
-      "faces": [
-       "Temur Sabertooth"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/temur_sabertooth.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Vibrance": {
       "card": "Vibrance",
       "faces": [
@@ -386,33 +286,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Wirewood Symbiote": {
-      "card": "Wirewood Symbiote",
-      "faces": [
-       "Wirewood Symbiote"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/w/wirewood_symbiote.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "11 new card(s), 4 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T20:28:01"
+   "summary": "4 new card(s), 4 with findings (13 findings), 0 without a script",
+   "time": "2026-11-05T21:18:39"
   },
   "provision": {
    "detail": {
@@ -426,11 +313,11 @@
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T20:28:01"
+   "time": "2026-11-05T21:18:39"
   },
   "scrape": {
    "detail": {

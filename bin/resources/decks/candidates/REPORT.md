@@ -14,25 +14,25 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 2 | 0 | 0 | implement |
-| reanimator_top8 | Reanimator | 3.0 | combo | 28 | 6 | 2 | 2 | capability |
+| reanimator_top8 | Reanimator | 3.0 | combo | 28 | 3 | 2 | 2 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 2 | 3 | 5 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 3 | 2 | 6 | capability |
 | cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 7 | 5 | 13 | capability |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 2 | 3 | 14 | capability |
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 6 | 8 | 14 | capability |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 4 | 5 | 16 | capability |
-| maverick | Maverick | 1.0 | aggro | 38 | 6 | 5 | 16 | capability |
-| elves | Elves | 2.0 | combo | 32 | 11 | 5 | 16 | capability |
+| elves | Elves | 2.0 | combo | 32 | 4 | 5 | 16 | capability |
+| maverick | Maverick | 1.0 | aggro | 38 | 4 | 5 | 16 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 2 | 4 | 17 | capability |
 | dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 9 | 9 | 21 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 9 | 6 | 21 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 3 | 24 | capability |
-| storm | Storm | 3.0 | combo | 30 | 11 | 8 | 25 | capability |
+| storm | Storm | 3.0 | combo | 30 | 6 | 8 | 25 | capability |
 | aluren | Aluren | 4.0 | combo | 32 | 5 | 4 | 27 | capability |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 5 | 7 | 27 | capability |
-| hogaak | Hogaak | 2.0 | combo | 28 | 7 | 8 | 30 | capability |
+| hogaak | Hogaak | 2.0 | combo | 28 | 5 | 8 | 30 | capability |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 10 | 9 | 43 | capability |
-| painter | Painter | 1.0 | combo | 41 | 15 | 12 | 51 | capability |
+| painter | Painter | 1.0 | combo | 41 | 14 | 12 | 51 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -170,7 +170,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### reanimator_top8 — Reanimator (3.0%, combo)
 
-28 cards, 6 new; clean: Collective Brutality, Faithless Looting, Raucous Theater, Unmask
+28 cards, 3 new; clean: Collective Brutality
 
 - Bitter Triumph: AlternateAdditionalCost keyword
 - Shallow Grave: Top creature of a graveyard (Shallow Grave)
@@ -224,23 +224,23 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Massacre: Two-condition alternative cost (Massacre)
 - Nihil Spellbomb: Mana cost on a triggered ability
 
-### maverick — Maverick (1.0%, aggro)
-
-38 cards, 6 new; clean: Lush Portico, Nurturing Peatland
-
-- Carnivorous Cultivator: Prepare (CR 722)
-- Frenzied Baloth: CantPreventDamage static
-- Grist, the Hunger Tide: A creature card in every other zone (Grist); UnlessCost on more effects
-- Renegade Rallier: Revolt trigger condition
-
 ### elves — Elves (2.0%, combo)
 
-32 cards, 11 new; clean: Elvish Mystic, Elvish Visionary, Fyndhorn Elves, Llanowar Elves, Quirion Ranger, Temur Sabertooth, Wirewood Symbiote
+32 cards, 4 new; clean: -
 
 - Allosaurus Shepherd: AnimateAll power, toughness and types
 - Formidable Speaker: Discard-a-card activation cost
 - Hogaak, Arisen Necropolis: Convoke (CR 702.51); Hogaak casting
 - Vibrance: Hybrid pips in costs
+
+### maverick — Maverick (1.0%, aggro)
+
+38 cards, 4 new; clean: -
+
+- Carnivorous Cultivator: Prepare (CR 722)
+- Frenzied Baloth: CantPreventDamage static
+- Grist, the Hunger Tide: A creature card in every other zone (Grist); UnlessCost on more effects
+- Renegade Rallier: Revolt trigger condition
 
 ### doomsday — Doomsday (4.0%, combo)
 
@@ -280,7 +280,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### storm — Storm (3.0%, combo)
 
-30 cards, 11 new; clean: Burning Wish, Empty the Warrens, Giant's Boulder, Haywire Mite, Raucous Theater, Taiga, Tendrils of Agony
+30 cards, 6 new; clean: Giant's Boulder, Haywire Mite
 
 - Beseech the Mirror: Bargain and free casting (Beseech the Mirror)
 - Chrome Mox: Chrome Mox imprint; Imprint past the resolution
@@ -307,7 +307,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### hogaak — Hogaak (2.0%, combo)
 
-28 cards, 7 new; clean: Stitcher's Supplier, Watery Grave
+28 cards, 5 new; clean: -
 
 - Brazen Borrower: Adventure (CR 715); Can't-block restrictions (CantBlockBy)
 - Engineered Explosives: Sunburst (CR 702.44)
@@ -328,7 +328,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### painter — Painter (1.0%, combo)
 
-41 cards, 15 new; clean: Chromatic Star, Goblin Engineer, Great Furnace, Legion Extruder, Soul-Guide Lantern
+41 cards, 14 new; clean: Chromatic Star, Goblin Engineer, Legion Extruder, Soul-Guide Lantern
 
 - Agatha's Soul Cauldron: Agatha's Soul Cauldron
 - Arena of Glory: Mana with riders and Exert (Arena of Glory)

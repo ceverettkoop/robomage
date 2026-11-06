@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Lush Portico",
-     "Nurturing Peatland"
-    ],
+    "clean": [],
     "mechanics": {
      "A creature card in every other zone (Grist)": {
       "cards": [
@@ -90,46 +87,42 @@
      "Carnivorous Cultivator",
      "Frenzied Baloth",
      "Grist, the Hunger Tide",
-     "Lush Portico",
-     "Nurturing Peatland",
      "Renegade Rallier"
     ],
     "size_points": 16
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (16 points)",
-   "time": "2026-11-05T20:28:13"
+   "summary": "4 new card(s): 0 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T21:18:39"
   },
   "diff": {
    "detail": {
     "distinct": 38,
-    "in_vocab": 32,
+    "in_vocab": 34,
     "no_script": [],
     "not_in_vocab": [
      "Carnivorous Cultivator",
      "Frenzied Baloth",
      "Grist, the Hunger Tide",
-     "Lush Portico",
-     "Nurturing Peatland",
      "Renegade Rallier"
     ]
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "38 cards: 32 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T20:28:02"
+   "summary": "38 cards: 34 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-05T21:18:39"
   },
   "implement": {
    "detail": {
@@ -143,15 +136,15 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Revolt trigger condition, UnlessCost on more effects",
-   "time": "2026-11-05T20:28:13"
+   "time": "2026-11-05T21:18:39"
   },
   "parse": {
    "detail": {
@@ -241,32 +234,6 @@
        -1
       ]
      },
-     "Lush Portico": {
-      "card": "Lush Portico",
-      "faces": [
-       "Lush Portico"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/l/lush_portico.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Nurturing Peatland": {
-      "card": "Nurturing Peatland",
-      "faces": [
-       "Nurturing Peatland"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/n/nurturing_peatland.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Renegade Rallier": {
       "card": "Renegade Rallier",
       "faces": [
@@ -292,14 +259,14 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (7 findings), 0 without a script",
-   "time": "2026-11-05T20:28:02"
+   "summary": "4 new card(s), 4 with findings (7 findings), 0 without a script",
+   "time": "2026-11-05T21:18:39"
   },
   "provision": {
    "detail": {
@@ -315,11 +282,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T20:28:02"
+   "time": "2026-11-05T21:18:39"
   },
   "scrape": {
    "detail": {

@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Stitcher's Supplier",
-     "Watery Grave"
-    ],
+    "clean": [],
     "mechanics": {
      "Adventure (CR 715)": {
       "cards": [
@@ -127,47 +124,43 @@
      "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
-     "Mockingbird",
-     "Stitcher's Supplier",
-     "Watery Grave"
+     "Mockingbird"
     ],
     "size_points": 30
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "7 new card(s): 2 clean, 5 need 8 mechanic(s) (30 points)",
-   "time": "2026-11-05T20:28:13"
+   "summary": "5 new card(s): 0 clean, 5 need 8 mechanic(s) (30 points)",
+   "time": "2026-11-05T21:18:39"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 21,
+    "in_vocab": 23,
     "no_script": [],
     "not_in_vocab": [
      "Brazen Borrower",
      "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
-     "Mockingbird",
-     "Stitcher's Supplier",
-     "Watery Grave"
+     "Mockingbird"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "28 cards: 21 in vocab, 7 new (0 without a script)",
-   "time": "2026-11-05T20:28:02"
+   "summary": "28 cards: 23 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-05T21:18:39"
   },
   "implement": {
    "detail": {
@@ -184,15 +177,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre)",
-   "time": "2026-11-05T20:28:13"
+   "time": "2026-11-05T21:18:39"
   },
   "parse": {
    "detail": {
@@ -358,46 +351,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Stitcher's Supplier": {
-      "card": "Stitcher's Supplier",
-      "faces": [
-       "Stitcher's Supplier"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/s/stitchers_supplier.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Watery Grave": {
-      "card": "Watery Grave",
-      "faces": [
-       "Watery Grave"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/w/watery_grave.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "7 new card(s), 5 with findings (15 findings), 0 without a script",
-   "time": "2026-11-05T20:28:02"
+   "summary": "5 new card(s), 5 with findings (15 findings), 0 without a script",
+   "time": "2026-11-05T21:18:39"
   },
   "provision": {
    "detail": {
@@ -411,11 +378,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T20:28:02"
+   "time": "2026-11-05T21:18:39"
   },
   "scrape": {
    "detail": {

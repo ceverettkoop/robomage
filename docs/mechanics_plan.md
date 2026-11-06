@@ -699,6 +699,8 @@ The 21 cards M0 repairs: the 15 vocab cards (Animate Dead, Cori-Steel Cutter, Dr
 
 A card joins the vocab as soon as every mechanic it needs is implemented (M1's `onboard.py vocab --card`), at the end of the unit that finishes the last of them, whatever stage the table below gives: the table is the survey's estimate, and a card outside the vocab cannot be run. So each unit ends by entering every card it finished, and the cards reporting clean do not wait for M13. Each still needs a scenario and a reading of its script and oracle text, since clean is not correct; a clean card that turns out to need a later primitive stays out and is placed here.
 
+**Clean-card batch (2026-11-05).** Nineteen cards entered with no later stage needed, ids 381 to 399: Temur Sabertooth; Burning Wish; Elvish Mystic, Fyndhorn Elves, Llanowar Elves, Elvish Visionary, Quirion Ranger, Wirewood Symbiote, Stitcher's Supplier; Taiga, Watery Grave, Great Furnace, Lush Portico, Nurturing Peatland, Raucous Theater; Faithless Looting, Tendrils of Agony, Empty the Warrens, Unmask. None was placed. Three reported clean and played wrong until fixed: a numeric `ChangeNum$` on the battlefield multi-select, an untargeted Pump's `Defined$`, and a bare `Origin$ Stack` move.
+
 | last stage | cards (all stages needed) |
 |---|---|
 | M3 | Dark Matter Manipulator; Drop of Honey (M2 M3); Peer into the Abyss; Powder Keg; Rough/Tumble; Strategic Betrayal |

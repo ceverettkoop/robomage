@@ -19,13 +19,8 @@
   "capability": {
    "detail": {
     "clean": [
-     "Burning Wish",
-     "Empty the Warrens",
      "Giant's Boulder",
-     "Haywire Mite",
-     "Raucous Theater",
-     "Taiga",
-     "Tendrils of Agony"
+     "Haywire Mite"
     ],
     "mechanics": {
      "Abilities activated from any zone": {
@@ -129,58 +124,48 @@
     },
     "new_cards": [
      "Beseech the Mirror",
-     "Burning Wish",
      "Chrome Mox",
-     "Empty the Warrens",
      "Gaea's Will",
      "Giant's Boulder",
      "Haywire Mite",
-     "Raucous Theater",
-     "Runehorn Hellkite",
-     "Taiga",
-     "Tendrils of Agony"
+     "Runehorn Hellkite"
     ],
     "size_points": 25
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "11 new card(s): 7 clean, 4 need 8 mechanic(s) (25 points)",
-   "time": "2026-11-05T20:28:14"
+   "summary": "6 new card(s): 2 clean, 4 need 8 mechanic(s) (25 points)",
+   "time": "2026-11-05T21:18:39"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 19,
+    "in_vocab": 24,
     "no_script": [],
     "not_in_vocab": [
      "Beseech the Mirror",
-     "Burning Wish",
      "Chrome Mox",
-     "Empty the Warrens",
      "Gaea's Will",
      "Giant's Boulder",
      "Haywire Mite",
-     "Raucous Theater",
-     "Runehorn Hellkite",
-     "Taiga",
-     "Tendrils of Agony"
+     "Runehorn Hellkite"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "30 cards: 19 in vocab, 11 new (0 without a script)",
-   "time": "2026-11-05T20:28:02"
+   "summary": "30 cards: 24 in vocab, 6 new (0 without a script)",
+   "time": "2026-11-05T21:18:39"
   },
   "implement": {
    "detail": {
@@ -197,15 +182,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution",
-   "time": "2026-11-05T20:28:14"
+   "time": "2026-11-05T21:18:39"
   },
   "parse": {
    "detail": {
@@ -249,19 +234,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/b/beseech_the_mirror.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Burning Wish": {
-      "card": "Burning Wish",
-      "faces": [
-       "Burning Wish"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/b/burning_wish.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -313,24 +285,6 @@
       "layout": "normal",
       "script": "cardsfolder/c/chrome_mox.txt",
       "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Empty the Warrens": {
-      "card": "Empty the Warrens",
-      "faces": [
-       "Empty the Warrens"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/e/empty_the_warrens.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "r_1_1_goblin"
-       }
-      ],
       "vocab": [
        -1
       ]
@@ -387,19 +341,6 @@
        -1
       ]
      },
-     "Raucous Theater": {
-      "card": "Raucous Theater",
-      "faces": [
-       "Raucous Theater"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/r/raucous_theater.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Runehorn Hellkite": {
       "card": "Runehorn Hellkite",
       "faces": [
@@ -431,54 +372,26 @@
       "vocab": [
        -1
       ]
-     },
-     "Taiga": {
-      "card": "Taiga",
-      "faces": [
-       "Taiga"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/taiga.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Tendrils of Agony": {
-      "card": "Tendrils of Agony",
-      "faces": [
-       "Tendrils of Agony"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/tendrils_of_agony.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "11 new card(s), 4 with findings (16 findings), 0 without a script",
-   "time": "2026-11-05T20:28:02"
+   "summary": "6 new card(s), 4 with findings (16 findings), 0 without a script",
+   "time": "2026-11-05T21:18:39"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "r_1_1_goblin"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -486,11 +399,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T20:28:02"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T21:18:39"
   },
   "scrape": {
    "detail": {

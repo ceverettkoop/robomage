@@ -19,10 +19,7 @@
   "capability": {
    "detail": {
     "clean": [
-     "Collective Brutality",
-     "Faithless Looting",
-     "Raucous Theater",
-     "Unmask"
+     "Collective Brutality"
     ],
     "mechanics": {
      "AlternateAdditionalCost keyword": {
@@ -56,47 +53,41 @@
     "new_cards": [
      "Bitter Triumph",
      "Collective Brutality",
-     "Faithless Looting",
-     "Raucous Theater",
-     "Shallow Grave",
-     "Unmask"
+     "Shallow Grave"
     ],
     "size_points": 2
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "6 new card(s): 4 clean, 2 need 2 mechanic(s) (2 points)",
-   "time": "2026-11-05T20:28:13"
+   "summary": "3 new card(s): 1 clean, 2 need 2 mechanic(s) (2 points)",
+   "time": "2026-11-05T21:18:39"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 22,
+    "in_vocab": 25,
     "no_script": [],
     "not_in_vocab": [
      "Bitter Triumph",
      "Collective Brutality",
-     "Faithless Looting",
-     "Raucous Theater",
-     "Shallow Grave",
-     "Unmask"
+     "Shallow Grave"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "28 cards: 22 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T20:28:02"
+   "summary": "28 cards: 25 in vocab, 3 new (0 without a script)",
+   "time": "2026-11-05T21:18:39"
   },
   "implement": {
    "detail": {
@@ -107,15 +98,15 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: AlternateAdditionalCost keyword, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-11-05T20:28:13"
+   "time": "2026-11-05T21:18:39"
   },
   "parse": {
    "detail": {
@@ -153,32 +144,6 @@
        -1
       ]
      },
-     "Faithless Looting": {
-      "card": "Faithless Looting",
-      "faces": [
-       "Faithless Looting"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/f/faithless_looting.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Raucous Theater": {
-      "card": "Raucous Theater",
-      "faces": [
-       "Raucous Theater"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/r/raucous_theater.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Shallow Grave": {
       "card": "Shallow Grave",
       "faces": [
@@ -204,33 +169,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Unmask": {
-      "card": "Unmask",
-      "faces": [
-       "Unmask"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/u/unmask.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
+    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
-   "summary": "6 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T20:28:02"
+   "summary": "3 new card(s), 2 with findings (3 findings), 0 without a script",
+   "time": "2026-11-05T21:18:39"
   },
   "provision": {
    "detail": {
@@ -244,11 +196,11 @@
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
+    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T20:28:02"
+   "time": "2026-11-05T21:18:39"
   },
   "scrape": {
    "detail": {
