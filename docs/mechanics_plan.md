@@ -846,7 +846,8 @@ Meld with one half missing; each new field across a snapshot.
   deck stay held out.
 - Fuzz all playable decks, `--matchups all --fuzz-games 100`, bo1 and `explore:patient`.
 - Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`. Known so far: its
-  key files omit `src/resolution_memory.{h,cpp}`, and its `src/coverage` line omits the `row` kind.
+  key files omit `src/resolution_memory.{h,cpp}`, `src/cost_payment.{h,cpp}` and `src/components/chosen_cost.h`, its `src/coverage`
+  line omits the `row` kind, and its machine protocol section still names `prompt_mana_payment` (now `pay_mana_cost`).
 - Make an amount SVar `is_runtime_amount_expr` doesn't list a finding, or read it from the SVar table: today it
   is silently 0 (M4's Done note).
 
