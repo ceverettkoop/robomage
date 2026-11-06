@@ -49,7 +49,6 @@ constexpr uint16_t kAllButMana = static_cast<uint16_t>(~CostParts::kind_bit(Cost
 // triggered ability's optional cost. Reads no decision and changes nothing.
 //
 // What it does not hold a player to, here or at the call sites' `unchecked`:
-// - ExileFromHand<N/...> asks for one matching card, whatever N.
 // - The rest of a cost that names the source, or a hand, is always payable: Sac<1/CARDNAME>,
 //   Discard<1/CARDNAME>, Discard<0/Hand>.
 bool can_pay(const CostParts &cost, const CostCheck &check);

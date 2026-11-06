@@ -23,7 +23,7 @@ struct CostPart {
         SACRIFICE,             // Sac<count/filter>, or the source (`object`)
         DISCARD,               // Discard<count/filter>, the source (`object`), or `whole_hand`
         RETURN,                // Return<count/filter>: to its owner's hand
-        EXILE_FROM_HAND,       // ExileFromHand<count/filter>; `color` when the filter is a pitch's
+        EXILE_FROM_HAND,       // ExileFromHand<count/filter>
         EXILE_FROM_GRAVEYARD,  // ExileFromGrave<count/filter>; count_is_x: any number, covering `min_types`
         MANDATORY,             // not a payment: a triggered ability's cost is not optional (CR 603.8)
     };
@@ -35,7 +35,6 @@ struct CostPart {
     ObjectSpec object;        // SELF for CARDNAME; DEFAULT when `filter` picks
     ManaValue mana;           // MANA's pips
     bool whole_hand = false;  // DISCARD: Discard<0/Hand>
-    Colors color = NO_COLOR;  // EXILE_FROM_HAND: the color of Card.<Color>+Other
     int min_types = 0;        // EXILE_FROM_GRAVEYARD: distinct card types among the cards exiled
 
     static CostPart of(Kind kind, int count = 0) {
@@ -73,7 +72,6 @@ class CostParts {
         int loyalty() const { return count(CostPart::LOYALTY); }
         bool loyalty_is_x() const { return variable(CostPart::LOYALTY); }
         bool discards_hand() const;
-        Colors pitch_color() const;  // the color of an ExileFromHand<N/Card.<Color>+Other>
         int exile_min_types() const;  // the distinct card types an ExileFromGrave<X/...> must cover
 
         // The first part of `kind`'s count; 0 with none.

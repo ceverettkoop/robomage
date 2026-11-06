@@ -485,13 +485,13 @@ static std::vector<Entity> pick_pool(
         case CostPart::RETURN:
             pool = controlled_permanents_matching(who.payer, cost.filter(rule.kind), orderer->mEntities);
             break;
-        case CostPart::EXILE_FROM_HAND:
-            // The color is read through effective_colors, which a color-setting static reaches.
+        case CostPart::EXILE_FROM_HAND: {
+            MatchCtx ctx;
+            ctx.source = who.source;
             for (Entity e : orderer->get_hand(who.payer))
-                if (e != who.source &&
-                    (cost.pitch_color() == NO_COLOR || effective_colors(e).count(cost.pitch_color())))
-                    pool.push_back(e);
+                if (card_matches_filter(e, cost.filter(rule.kind), ctx)) pool.push_back(e);
             break;
+        }
         case CostPart::DISCARD:
             for (Entity e : orderer->get_hand(who.payer))
                 if (e != who.source && card_matches_filter(e, cost.filter(rule.kind))) pool.push_back(e);

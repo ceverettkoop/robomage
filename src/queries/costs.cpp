@@ -18,7 +18,7 @@ extern Coordinator global_coordinator;
 
 static bool part_payable(const CostPart &part, const CostCheck &check);
 static bool controls_enough(const CostPart &part, const CostCheck &check, Entity except);
-static bool pitch_available(const CostPart &part, const CostCheck &check);
+static bool pitch_covers(const CostPart &part, const CostCheck &check);
 static bool hand_covers(const CostPart &part, const CostCheck &check);
 static bool graveyard_covers(const CostPart &part, const CostCheck &check);
 static bool mana_payable(const CostParts &cost, const CostCheck &check);
@@ -52,7 +52,7 @@ static bool part_payable(const CostPart &part, const CostCheck &check) {
         case CostPart::DISCARD:
             return hand_covers(part, check);
         case CostPart::EXILE_FROM_HAND:
-            return pitch_available(part, check);
+            return pitch_covers(part, check);
         case CostPart::EXILE_FROM_GRAVEYARD:
             return graveyard_covers(part, check);
         default:
@@ -66,13 +66,15 @@ static bool controls_enough(const CostPart &part, const CostCheck &check, Entity
            static_cast<size_t>(part.count);
 }
 
-// A card of the pitch's color in the payer's hand, other than the spell itself. The color is read
-// through effective_colors, which a color-setting static reaches; the filter matcher's card view
-// reads printed colors.
-static bool pitch_available(const CostPart &part, const CostCheck &check) {
+// Enough cards matching the pitch's filter in the payer's hand, the spell itself left out of its
+// .Other.
+static bool pitch_covers(const CostPart &part, const CostCheck &check) {
+    MatchCtx ctx;
+    ctx.source = check.source;
+    int matching = 0;
     for (Entity e : check.orderer->get_hand(check.payer))
-        if (e != check.source && effective_colors(e).count(part.color)) return true;
-    return false;
+        if (card_matches_filter(e, part.filter, ctx)) matching++;
+    return matching >= part.count;
 }
 
 // Enough cards in the payer's hand, other than the spell, for a Discard<N/...> `times` over: that many

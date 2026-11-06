@@ -118,7 +118,6 @@ static const struct {
 static Colors mana_letter_color(char c);
 static bool is_colored_mana_letter(char c);
 static Colors color_word_color(const std::string &word);
-static Colors filter_color(const std::string &filter);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string svar_or_literal(const std::map<std::string, std::string>& svars,
                                    const std::string& name);
@@ -580,9 +579,7 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
 }
 
 // <name><N/Filter[/label]>: N objects matching Filter; CARDNAME for the filter is the source, and
-// Discard's Hand the whole hand (Discard<0/Hand>, Lion's Eye Diamond). ExileFromHand's pitch filter
-// Card.<Color>+Other (CR 118.9, Force of Will) names `color`, the Other being the spell on its way
-// out of the hand.
+// Discard's Hand the whole hand (Discard<0/Hand>, Lion's Eye Diamond).
 static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part) {
     std::vector<std::string> args;
     if (!cost_token_arg(tok, name, args) || args.size() < 2) return false;
@@ -594,10 +591,6 @@ static bool read_cost_filter_token(const std::string &tok, const char *name, Cos
         part.whole_hand = true;
     else
         part.filter = args[1];
-    if (kind != CostPart::EXILE_FROM_HAND) return true;
-    const Colors color = filter_color(args[1]);
-    for (const auto &cn : kColorNames)
-        if (cn.color == color && args[1] == std::string("Card.") + cn.word + "+Other") part.color = color;
     return true;
 }
 
@@ -674,7 +667,7 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
         case CostForm::ALTERNATIVE:
             return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self()) ||
                    (part.kind == CostPart::RETURN && !part.is_self()) ||
-                   (part.kind == CostPart::EXILE_FROM_HAND && part.color != NO_COLOR);
+                   (part.kind == CostPart::EXILE_FROM_HAND && !part.is_self());
         case CostForm::FLASHBACK:
             return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self());
         case CostForm::ESCAPE:
@@ -1668,14 +1661,6 @@ static Colors color_word_color(const std::string &word) {
     const std::string lower = ascii_lower(word);
     for (const auto &cn : kColorNames)
         if (lower == ascii_lower(cn.word)) return cn.color;
-    return NO_COLOR;
-}
-
-// The first of the five colors a card filter names as a qualifier ("Card.Blue+Other" → BLUE), or
-// NO_COLOR.
-static Colors filter_color(const std::string &filter) {
-    for (const auto &cn : kColorNames)
-        if (cn.color != COLORLESS && filter.find(cn.word) != std::string::npos) return cn.color;
     return NO_COLOR;
 }
 
