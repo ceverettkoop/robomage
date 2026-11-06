@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "../classes/colors.h"
 #include "../components/cost_part.h"
@@ -12,6 +13,7 @@
 
 class Orderer;
 struct CardData;
+struct HybridPip;
 
 // Who a cost is being offered to and what for (can_pay).
 struct CostCheck {
@@ -26,6 +28,12 @@ struct CostCheck {
         const CardData *spell = nullptr;  // a cast for its mana cost: the card's hybrid and Phyrexian pips too
         bool delve = false;               // the spell's Delve applies to `mana`
         bool improvise = false;           // the spell's Improvise applies to `mana`
+        // A cost added to a cast: the hybrid pips still to resolve on top of `mana`, which is the
+        // mana the cast has committed to with this cost's.
+        const std::vector<HybridPip> *hybrid = nullptr;
+        int times = 1;          // the cost is paid this many times over: its Discard's count
+        int hand_reserved = 0;  // cards of the payer's hand the rest of the cost takes
+        int life_reserve = 0;   // life the rest of the cost takes, which a painful source may not spend
         bool estimate_mana = false;       // a mana ability's own mana: can_afford_with_sources, not the payer
         // The kinds this path does not hold the player to (CostParts::kind_bit, ORed): what it offers
         // whether or not they can be paid.
@@ -37,7 +45,8 @@ constexpr uint16_t kAllButMana = static_cast<uint16_t>(~CostParts::kind_bit(Cost
 
 // Can `check.payer` pay `cost` now? The one affordability check behind every offer of a cost: an
 // activation, a mana ability, an alternative, flashback or escape cast, a regular cast's additional
-// costs, suspend and a triggered ability's optional cost. Reads no decision and changes nothing.
+// costs, Kicker, Replicate and Escalate on top of what the cast has committed to, suspend and a
+// triggered ability's optional cost. Reads no decision and changes nothing.
 //
 // What it does not hold a player to, here or at the call sites' `unchecked`:
 // - ExileFromHand<N/...> asks for one matching card, whatever N.

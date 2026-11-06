@@ -19,6 +19,7 @@ extern Coordinator global_coordinator;
 static bool part_payable(const CostPart &part, const CostCheck &check);
 static bool controls_enough(const CostPart &part, const CostCheck &check, Entity except);
 static bool pitch_available(const CostPart &part, const CostCheck &check);
+static bool hand_covers(const CostPart &part, const CostCheck &check);
 static bool graveyard_covers(const CostPart &part, const CostCheck &check);
 static bool mana_payable(const CostParts &cost, const CostCheck &check);
 
@@ -48,6 +49,8 @@ static bool part_payable(const CostPart &part, const CostCheck &check) {
             return part.is_self() || controls_enough(part, check, check.source);
         case CostPart::RETURN:
             return controls_enough(part, check, 0);
+        case CostPart::DISCARD:
+            return hand_covers(part, check);
         case CostPart::EXILE_FROM_HAND:
             return pitch_available(part, check);
         case CostPart::EXILE_FROM_GRAVEYARD:
@@ -72,6 +75,21 @@ static bool pitch_available(const CostPart &part, const CostCheck &check) {
     return false;
 }
 
+// Enough cards in the payer's hand, other than the spell, for a Discard<N/...> `times` over: that many
+// matching its filter, and that many left once the rest of the cost has taken its own.
+static bool hand_covers(const CostPart &part, const CostCheck &check) {
+    if (part.is_self() || part.whole_hand) return true;
+    const int need = part.count * check.times;
+    int hand = 0;
+    int matching = 0;
+    for (Entity e : check.orderer->get_hand(check.payer)) {
+        if (e == check.source) continue;
+        hand++;
+        if (card_matches_filter(e, part.filter)) matching++;
+    }
+    return hand - check.hand_reserved >= need && matching >= need;
+}
+
 // Enough OTHER cards in the payer's graveyard: a fixed number of them (Uro's escape), or any number
 // that collectively cover the card types the cost asks for (Nethergoyf's, CR 601.2f).
 static bool graveyard_covers(const CostPart &part, const CostCheck &check) {
@@ -88,9 +106,12 @@ static bool mana_payable(const CostParts &cost, const CostCheck &check) {
     if (check.unchecked & CostParts::kind_bit(CostPart::MANA)) return true;
     const ManaValue &owed = check.mana ? *check.mana : cost.mana();
     if (check.spell) return can_pay_spell_mana(check.payer, owed, *check.spell, check.payee, check.orderer);
+    if (check.hybrid)
+        return resolve_hybrid_cost(check.payer, owed, *check.hybrid, check.payee, check.orderer, check.delve,
+                                   check.improvise);
     if (owed.empty()) return true;
     const Entity exclude = cost.taps() ? check.source : 0;
     if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
     return can_pay_mana(check.payer, owed, check.payee, check.orderer, check.delve, check.improvise, exclude,
-                        cost.life());
+                        cost.life() + check.life_reserve);
 }

@@ -26,6 +26,7 @@
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/combat.h"
+#include "queries/costs.h"
 #include "queries/counters.h"
 #include "queries/entry.h"
 #include "queries/filters.h"
@@ -155,10 +156,10 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
                                int resume_choice);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
-// The cards in `caster`'s hand the escalate discard of the spell `pc` is casting may discard
-// (escalate_cost.filter(CostPart::DISCARD)), less those already chosen as a cost.
-static std::vector<Entity> escalate_discard_candidates(
-    const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+// Can `caster` pay `extra`, an optional additional cost (CR 601.2b), on top of what the spell `pc` is
+// casting has committed to? `with_extra` is the mana the cast comes to with it.
+static bool additional_cost_payable(const Game::PendingCast &pc, const CardData &card_data, const CostParts &extra,
+    const ManaValue &with_extra, Zone::Ownership caster, const std::shared_ptr<Orderer> &orderer);
 // Can `caster` pay the escalate cost (CR 702.120a) of the spell `pc` is casting `extra` times, on
 // top of the cost determined so far: its mana with the mana owed, its discards from the hand the
 // alternative cost's pitch leaves?
@@ -251,36 +252,32 @@ static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> or
 }
 
 // See forward declaration at top of file.
-static std::vector<Entity> escalate_discard_candidates(
-    const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> out;
-    for (Entity e : orderer->get_hand(caster)) {
-        if (e == pc.spell_entity) continue;
-        if (!card_matches_filter(e, card_data.escalate_cost.filter(CostPart::DISCARD))) continue;
-        out.push_back(e);
-    }
-    return out;
+static bool additional_cost_payable(const Game::PendingCast &pc, const CardData &card_data, const CostParts &extra,
+    const ManaValue &with_extra, Zone::Ownership caster, const std::shared_ptr<Orderer> &orderer) {
+    CostCheck check(caster, pc.spell_entity, orderer);
+    check.mana = &with_extra;
+    check.hybrid = &mana_cost_hybrid_pips(pc, card_data);
+    check.delve = card_data.has_delve;
+    check.improvise = card_data.has_improvise;
+    return can_pay(extra, check);
 }
 
 // See forward declaration at top of file.
 static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, int extra,
     std::shared_ptr<Orderer> orderer) {
-    if (card_data.escalate_cost.count(CostPart::DISCARD) > 0) {
-        const int need = card_data.escalate_cost.count(CostPart::DISCARD) * extra;
-        const int pitch = pc.chosen.alternative() ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
-        int hand = 0;
-        for (Entity e : orderer->get_hand(caster))
-            if (e != pc.spell_entity) hand++;
-        if (hand - pitch < need ||
-            static_cast<int>(escalate_discard_candidates(pc, card_data, caster, orderer).size()) < need)
-            return false;
-    }
-    if (card_data.escalate_cost.mana().empty()) return true;
     ManaValue total = pc.pay.mana_pending ? pc.pay.mana : ManaValue{};
     for (int i = 0; i < extra; i++)
         for (Colors c : card_data.escalate_cost.mana()) total.insert(c);
-    return can_pay_mana(caster, total, pc.spell_entity, orderer, card_data.has_delve, card_data.has_improvise,
-        /*exclude_entity=*/0, /*life_reserve=*/pc.pay.life + std::max(0, pc.pay.life_x));
+    CostCheck check(caster, pc.spell_entity, orderer);
+    check.mana = &total;
+    check.delve = card_data.has_delve;
+    check.improvise = card_data.has_improvise;
+    check.times = extra;
+    check.hand_reserved = pc.chosen.alternative() ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
+    check.life_reserve = pc.pay.life + std::max(0, pc.pay.life_x);
+    // A cost of discards alone adds no mana to hold the cast to.
+    if (card_data.escalate_cost.mana().empty()) check.unchecked = CostParts::kind_bit(CostPart::MANA);
+    return can_pay(card_data.escalate_cost, check);
 }
 
 // See forward declaration at top of file.
@@ -1897,8 +1894,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 size_t ki = pc.kicker_idx;
                 ManaValue with_kicker = pc.cost_to_pay;
                 for (Colors c : card_data.kicker_costs[ki].mana()) with_kicker.insert(c);
-                if (!resolve_hybrid_cost(caster, with_kicker, mana_cost_hybrid_pips(pc, card_data), spell_entity,
-                        orderer, card_data.has_delve, card_data.has_improvise)) {
+                if (!additional_cost_payable(pc, card_data, card_data.kicker_costs[ki], with_kicker, caster, orderer)) {
                     pc.kicker_idx++;
                     continue;
                 }
@@ -1935,8 +1931,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 while (true) {
                     ManaValue with_replicate = pc.cost_to_pay;
                     for (Colors c : card_data.replicate_cost.mana()) with_replicate.insert(c);
-                    if (!resolve_hybrid_cost(caster, with_replicate, mana_cost_hybrid_pips(pc, card_data), spell_entity,
-                            orderer, card_data.has_delve, card_data.has_improvise))
+                    if (!additional_cost_payable(pc, card_data, card_data.replicate_cost, with_replicate, caster, orderer))
                         break;
                     if (resume_choice >= 0) {
                         bool accepted = (resume_choice == 1);
