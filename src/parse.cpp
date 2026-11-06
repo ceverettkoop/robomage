@@ -24,6 +24,7 @@
 #include "error.h"
 #include "queries/affected.h"
 #include "queries/filters.h"
+#include "resolution_memory.h"
 #include "str_util.h"
 #include "type_constants.h"
 
@@ -1990,6 +1991,7 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
+    const bool memory_param = read_memory_param(ability, key, value);
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
         key == "TokenAmount" || key == "ScryNum" || key == "Num" || key == "NumTurns") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
@@ -2075,12 +2077,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // GainControl$ True on a ChangeZone Destination$ Battlefield: the moved card enters under
         // the ability controller's control, not its owner's (Animate Dead's reanimation). CR 110.2a.
         ability.gain_control = (value == "True");
-    } else if (key == "RememberTargets") {
-        ability.remember_targeted = (value == "True");
     } else if (key == "RememberObjects") {
-        // RememberObjects$ Targeted — remember the spell's target(s) for later
-        // Remembered.sameName subabilities (Surgical Extraction).
-        if (value.find("Targeted") != std::string::npos) ability.remember_targeted = true;
         // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
         // can't-be-blocked effect remembers the creature it applies to).
         if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
@@ -2328,6 +2325,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.duration_until_end_of_your_next_turn = true;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
+    } else if (memory_param) {
+        // A row of the memory table (resolution_memory.cpp).
     } else {
         // Params with no effect of their own: prose shown to players, hints for Forge's AI, or a
         // fact another param already states. A key that carries rules in some forms is checked once

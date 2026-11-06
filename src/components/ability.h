@@ -6,6 +6,7 @@
 #include "../effects/effect_kind.h"
 #include "../object_ref.h"
 #include "ability_params.h"
+#include "memory_ops.h"
 #include "object_spec.h"
 #include "static_ability.h"
 #include "types.h"
@@ -196,10 +197,9 @@ struct AbilityDef {
     std::string change_type_cmc_expr = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
-    // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
-    // into cur_game.resolution.memory.remembered so chained ChangeType$ Remembered.sameName
-    // subabilities can reference the card whose name to match (Surgical Extraction).
-    bool remember_targeted = false;
+    // What this ability's resolution remembers of what it did (memory_ops.h): the rows of the
+    // memory table its params and its effect kind name.
+    std::vector<MemoryOp> memory_ops;
     // TgtZone$ Graveyard — this spell/ability targets a card in a graveyard even though
     // its category isn't ChangeZone (e.g. Surgical Extraction's SP$ Pump vehicle). Lets
     // target enumeration offer graveyard cards.
@@ -934,6 +934,9 @@ struct Ability {
     // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
     // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
     std::vector<ObjectRef> restore_remembered_exiled_with;
+
+    // What the effect has reported so far for its definition's memory_ops (memory_ops.h).
+    EffectReport report;
 
     // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
     DelayedTriggerLink delayed_link;

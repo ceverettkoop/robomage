@@ -24,6 +24,7 @@
 #include "queries/players.h"
 #include "queries/spells.h"
 #include "queries/visibility.h"
+#include "resolution_memory.h"
 #include "svar_eval.h"
 #include "systems/orderer.h"
 #include "targeting.h"
@@ -409,15 +410,8 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             count_resolution(ab, ctx.is_stack_object());
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-            if (ab.def->remember_targeted) {
-                cur_game.resolution.memory.remembered.clear();
-                if (!ab.targets.empty()) {
-                    for (const ObjectRef &t : ab.targets)
-                        if (Entity te = t.get()) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
-                } else if (Entity te = ab.target.get()) {
-                    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
-                }
-            }
+            report_targets(ab);
+            apply_memory_ops(ab);
             game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
                      resolving_log_detail(ab, orderer).c_str());
             next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
@@ -505,6 +499,9 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
         // or clearing the named card — the re-entry finishes both.
         if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
+        // The effect is done: what it reported goes into the resolution's memory, once, before
+        // anything chained after it can read it.
+        apply_memory_ops(ab);
         coverage_effect(ab.def->kind);
         next_sub = 0;
         // Chain subabilities unless the handler opted out (Charm/WinsGame and the
