@@ -565,6 +565,8 @@ creature card in the graveyard for reanimation filters. Copy of a copy.
 
 ### M9. Effect objects, triggers and replacements (L)
 
+**Also here.** CR 610.3: the return of an "until" exile is a one-shot effect immediately after the event, but `register_exile_until_host_leaves` fires it as a delayed trigger, so players get priority first and a host that re-enters at once orders it among that entry's triggers (Portable Hole under Displacer Kitten; in `docs/rules_deviations.md`). Scenario that re-blink in both orderings.
+
 **Today.** Triggers bind in a 14-mode if-chain. `Effect`s hold no replacements: two shapes of
 `ReplacementEffects$` are substring-matched into flags, and `Emblem` holds statics only. `Event$ Draw`
 yields a replacement only for win-the-game text.
