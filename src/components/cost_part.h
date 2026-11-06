@@ -8,12 +8,27 @@
 #include "filter_spec.h"
 #include "object_spec.h"
 
+// A hybrid mana pip (CR 107.4b/107.4e, 202.3f). Stored parallel to a card's mana_cost and a cost's
+// plain pips (which hold only the NON-hybrid pips), the same way phyrexian_mana is kept separate.
+// Two forms:
+//   - Color hybrid {W/U}: `colors` holds the two color options (one mana of either); generic_alt
+//     is 0. Mana value contribution = 1 (CR 202.3f: greatest component MV).
+//   - Monocolored hybrid / "twobrid" {2/W}: `colors` holds the single color option (one mana of
+//     that color) and generic_alt is the generic alternative (2). Mana value contribution = 2.
+// `mana_value` caches the CMC contribution so consumers don't re-derive it (Phyrexian {W/P} is
+// NOT modeled here — it stays in phyrexian_mana — so this is purely color-hybrid / twobrid).
+struct HybridPip {
+    std::vector<Colors> colors;  // color alternatives (color-hybrid: 2; twobrid: 1)
+    int generic_alt = 0;         // generic-mana alternative count (twobrid: 2; color-hybrid: 0)
+    int mana_value = 1;          // contribution to mana value (CMC)
+};
+
 // One part of a cost (CR 118, 601.2f-h, 602.2b) as the script's cost string names it: "T", "2 R",
 // "PayLife<2>", "Sac<1/Creature>". Parsed once, by parse_cost, onto the immutable definition that
 // holds it; can_pay (queries/costs.h) reads it as a payment is offered.
 struct CostPart {
     enum Kind : uint8_t {
-        MANA,                  // plain pips, `mana` (WUBRGC and generic); one part per cost
+        MANA,                  // plain pips, `mana` (WUBRGC and generic), and `hybrid` ones; one part per cost
         X_MANA,                // {X}: `count` pips, each owing the one chosen X; one part per cost
         TAP,                   // {T}: the source taps
         LIFE,                  // PayLife<count>; count_is_x: PayLife<X>, the life paid is X
@@ -35,6 +50,7 @@ struct CostPart {
     FilterSpec filter;
     ObjectSpec object;        // SELF for CARDNAME; DEFAULT when `filter` picks
     ManaValue mana;           // MANA's pips
+    std::vector<HybridPip> hybrid;  // MANA's hybrid pips (CR 107.4e)
     bool whole_hand = false;  // DISCARD: Discard<0/Hand>
     int min_types = 0;        // EXILE_FROM_GRAVEYARD: distinct card types among the cards exiled
 
@@ -65,6 +81,7 @@ class CostParts {
         const CostPart *find(CostPart::Kind kind) const;
 
         const ManaValue &mana() const;
+        const std::vector<HybridPip> &hybrid() const;
         bool taps() const { return has(CostPart::TAP); }
         int x_pips() const { return count(CostPart::X_MANA); }
         int life() const { return count(CostPart::LIFE); }

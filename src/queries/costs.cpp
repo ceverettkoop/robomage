@@ -118,11 +118,12 @@ static bool mana_payable(const CostParts &cost, const CostCheck &check) {
     if (check.unchecked & CostParts::kind_bit(CostPart::MANA)) return true;
     const ManaValue &owed = check.mana ? *check.mana : cost.mana();
     if (check.spell) return can_pay_spell_mana(check.payer, owed, *check.spell, check.payee, check.orderer);
-    if (check.hybrid)
-        return resolve_hybrid_cost(check.payer, owed, *check.hybrid, check.payee, check.orderer, check.delve,
-                                   check.improvise);
-    if (owed.empty()) return true;
     const Entity exclude = cost.taps() ? check.source : 0;
+    const std::vector<HybridPip> *hybrid = check.hybrid ? check.hybrid : &cost.hybrid();
+    if (check.hybrid || !hybrid->empty())
+        return resolve_hybrid_cost(check.payer, owed, *hybrid, check.payee, check.orderer, check.delve, check.improvise,
+                                   nullptr, 0, exclude);
+    if (owed.empty()) return true;
     if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
     return can_pay_mana(check.payer, owed, check.payee, check.orderer, check.delve, check.improvise, exclude,
                         cost.life() + check.life_reserve);

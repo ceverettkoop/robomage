@@ -229,7 +229,7 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
                          const std::vector<HybridPip>& hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
                          bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
-                         int life_reserve = 0);
+                         int life_reserve = 0, Entity exclude_entity = 0);
 
 // Can `caster` pay `base_flat_cost` plus the hybrid pips (CR 107.4e, via resolve_hybrid_cost) and
 // the Phyrexian pips (CR 107.4f) of `cd`, the face being cast? Each Phyrexian pip is paid with its

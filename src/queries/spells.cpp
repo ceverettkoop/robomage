@@ -19,6 +19,12 @@ FilterSpec spell_additional_sac_spec(const CardData &cd) {
     return FilterSpec();
 }
 
+bool spell_reads_colors_spent(const CardData &cd) {
+    for (const AbilityDef *def : cd.abilities)
+        if (def->condition_present.text().rfind("Count$Adamant_", 0) == 0) return true;
+    return false;
+}
+
 const CostParts &spell_additional_cost(const CardData &cd) {
     static const CostParts kNoCost;
     for (const auto &ab : cd.abilities)

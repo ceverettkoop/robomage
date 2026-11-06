@@ -81,6 +81,7 @@ struct CostRun {
         // `life` only so the narrative can still say "pays N life (X = N)". -1 = no such cost.
         int life_x = -1;
         bool committed = false;  // the mana is paid and the rest of the cost is being paid
+        bool mana_announced = false;  // `mana` was determined as the cost was announced (its hybrid pips)
         // Delve (CR 702.66): the chosen exile count, and the pre-delve priority seat. Both delve steps
         // are seated on the caster; delve_seat_held says the seat is still to be restored.
         size_t delve_count = 0;
@@ -141,6 +142,26 @@ std::string cost_label(const CostParts &cost);
 // Is a triggered ability's cost put to its controller as an offer ("you may discard a card", "you
 // may pay {B}", CR 603.5)? That offer is the ability's one "may".
 bool trigger_cost_offered(const CostParts &cost);
+
+// Hybrid pips being announced as a cost is determined (CR 601.2b, 107.4e): each resolves to one
+// of its options, added to `owed`. `next` persists with the flow.
+struct HybridAnnouncement {
+        Zone::Ownership payer;
+        Entity source;  // what asks
+        ManaPayee payee;
+        const std::vector<HybridPip> *pips;
+        size_t *next;     // the next pip to resolve
+        ManaValue *owed;  // the mana owed so far, the pips resolved included
+        bool delve = false;
+        bool improvise = false;
+        Entity exclude = 0;  // the source, when its own {T} is part of the cost
+        // Under auto-mana the pips still go to the player, among the assignments that can be paid:
+        // which color is spent matters to the card (Vibrance).
+        bool colors_matter = false;
+};
+// Resolves the pips: under auto-mana the first payable assignment, else one prompt per pip, which
+// may suspend (re-enter with the same `next` and `owed`).
+PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 
 // Which part of a cast's cost its payment has reached, for the state format's pending_cost.
 enum class CastCostStage {

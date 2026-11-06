@@ -61,6 +61,7 @@ static void parse_finding(const char *kind, const std::string &name, const std::
 static bool is_mana_cost_token(const std::string &tok);
 static bool is_plain_mana_token(const std::string &tok);
 static std::string cost_finding_name(const std::string &tok);
+static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *hybrid_out);
 static std::vector<std::string> cost_tokens(const std::string &cost_str);
 static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts);
 static bool read_cost_count(const std::string &text, int &count);
@@ -562,6 +563,12 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
         part.mana = parse_mana_cost(tok);
         return true;
     }
+    std::vector<HybridPip> pips;
+    if (parse_hybrid_token(tok, &pips)) {
+        part = CostPart::of(CostPart::MANA);
+        part.hybrid = pips;
+        return true;
+    }
     std::vector<std::string> args;
     if (cost_token_arg(tok, "PayLife", args)) {
         // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid), chosen as an
@@ -657,6 +664,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // mana, energy or a discard of N cards of the payer's choice (run_discard_unless takes any card).
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
+    // Hybrid pips are announced where announce_hybrid_pips is called; anywhere else they are a finding.
+    if (!part.hybrid.empty()) return false;
     const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
     switch (form) {
         case CostForm::ACTIVATED:

@@ -18,6 +18,7 @@
 #include "components/player.h"
 #include "coverage.h"
 #include "ecs/coordinator.h"
+#include "game_driver.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/costs.h"
@@ -306,6 +307,55 @@ CastCostStage cast_cost_stage(const CostRun &run) {
         return step.pick->slot == CostSlot::ALTERNATIVE ? CastCostStage::ALTERNATIVE : CastCostStage::ADDITIONAL;
     return step.op == CostStep::DELVE_COUNT || step.op == CostStep::DELVE_PICK ? CastCostStage::ADDITIONAL
                                                                                : CastCostStage::MANA;
+}
+
+PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const std::vector<HybridPip> &pips = *a.pips;
+    if (pips.empty()) return PayStatus::PAID;
+    if (auto_mana && !a.colors_matter) {
+        ManaValue resolved;
+        if (resolve_hybrid_cost(a.payer, *a.owed, pips, a.payee, orderer, a.delve, a.improvise, &resolved, 0, a.exclude)) {
+            *a.owed = resolved;
+            return PayStatus::PAID;
+        }
+        // No payable assignment: add the colored option (else the generic alternative) so payment
+        // fails cleanly through the normal path.
+        for (const HybridPip &pip : pips) {
+            if (!pip.colors.empty()) a.owed->insert(pip.colors.front());
+            else for (int i = 0; i < pip.generic_alt; i++) a.owed->insert(GENERIC);
+        }
+        return PayStatus::PAID;
+    }
+    for (; *a.next < pips.size(); ++*a.next) {
+        const HybridPip &pip = pips[*a.next];
+        const std::vector<HybridPip> later(pips.begin() + static_cast<std::ptrdiff_t>(*a.next) + 1, pips.end());
+        // What each row adds to `owed`, offered under auto-mana only if the rest can be paid with it.
+        std::vector<LegalAction> menu;
+        std::vector<ManaValue> adds;
+        auto offer = [&](const std::string &label, const ManaValue &add) {
+            ManaValue with_it = *a.owed;
+            with_it.insert(add.begin(), add.end());
+            if (auto_mana && !resolve_hybrid_cost(a.payer, with_it, later, a.payee, orderer, a.delve, a.improvise,
+                                                  nullptr, 0, a.exclude))
+                return;
+            LegalAction row(PASS_PRIORITY, label);
+            row.category = ActionCategory::PAYING_COSTS;
+            menu.push_back(row);
+            adds.push_back(add);
+        };
+        for (Colors c : pip.colors) offer(std::string("Pay {") + mana_symbol_str(c) + "}", ManaValue{c});
+        if (pip.generic_alt > 0) {
+            ManaValue generic;
+            for (int i = 0; i < pip.generic_alt; i++) generic.insert(GENERIC);
+            offer("Pay {" + std::to_string(pip.generic_alt) + "} generic", generic);
+        }
+        if (menu.empty()) return PayStatus::FAILED;
+        const int choice = ctx.ask(std::move(menu), a.payer, a.source, AskKind::MID_PAYMENT);
+        if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        const ManaValue &add = adds[static_cast<size_t>(choice)];
+        a.owed->insert(add.begin(), add.end());
+    }
+    return PayStatus::PAID;
 }
 
 bool trigger_cost_offered(const CostParts &cost) { return cost.has(CostPart::MANA) || cost.has(CostPart::DISCARD); }
@@ -725,9 +775,11 @@ static void choose_delve_exile(const CostPayer &who, Entity e) {
 // not X.
 static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
-    run.mana = effective_activation_mana_cost(*who.ability, who.payer, orderer);
-    const size_t x_pips = std::max<size_t>(1, who.cost->x_pips());
-    for (size_t i = 0; i < who.x * x_pips; i++) run.mana.insert(GENERIC);
+    if (!run.mana_announced) {
+        run.mana = effective_activation_mana_cost(*who.ability, who.payer, orderer);
+        const size_t x_pips = std::max<size_t>(1, who.cost->x_pips());
+        for (size_t i = 0; i < who.x * x_pips; i++) run.mana.insert(GENERIC);
+    }
     run.mana_pending = true;
     run.life = who.cost->life();
     run.energy = who.cost->energy();

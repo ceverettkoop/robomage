@@ -133,9 +133,10 @@ bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has
 // of the cost (pitch, sacrifice, life) are unaffected and colored pips in the alt cost are kept.
 // `caster` folds in the per-spell/NamedCard-aware increase for the casting player (Zone::UNKNOWN
 // omits the caster-relative part). Shared by determine_legal_actions (affordability) and
-// action_processor (payment) so the two cannot disagree.
+// action_processor (payment) so the two cannot disagree. `hybrid_pips` counts toward the floor: pips
+// of the alternative cost not yet resolved into `alt_mana`.
 ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
-                                Zone::Ownership caster = Zone::UNKNOWN);
+                                Zone::Ownership caster = Zone::UNKNOWN, int hybrid_pips = 0);
 
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single

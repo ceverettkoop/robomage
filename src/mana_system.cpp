@@ -1505,10 +1505,9 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
                                    const std::vector<HybridPip> &hybrids, size_t idx,
                                    ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                    bool has_delve, bool has_improvise, ManaValue *out,
-                                   int life_reserve) {
+                                   int life_reserve, Entity exclude_entity) {
     if (idx == hybrids.size()) {
-        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, has_improvise,
-                          /*exclude_entity=*/0, life_reserve))
+        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, has_improvise, exclude_entity, life_reserve))
             return false;
         if (out) *out = cur;
         return true;
@@ -1517,14 +1516,14 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
     for (Colors c : pip.colors) {
         cur.insert(c);
         if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
-                                   has_delve, has_improvise, out, life_reserve))
+                                   has_delve, has_improvise, out, life_reserve, exclude_entity))
             return true;
         cur.erase(cur.find(c));
     }
     if (pip.generic_alt > 0) {
         for (int i = 0; i < pip.generic_alt; i++) cur.insert(GENERIC);
         if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
-                                   has_delve, has_improvise, out, life_reserve))
+                                   has_delve, has_improvise, out, life_reserve, exclude_entity))
             return true;
         for (int i = 0; i < pip.generic_alt; i++) cur.erase(cur.find(GENERIC));
     }
@@ -1534,10 +1533,10 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
 bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost,
                          const std::vector<HybridPip> &hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
-                         ManaValue *out_resolved, int life_reserve) {
+                         ManaValue *out_resolved, int life_reserve, Entity exclude_entity) {
     ManaValue cur = base_flat_cost;
     return resolve_hybrid_recurse(caster, cur, hybrids, 0, paid_for, orderer, has_delve,
-                                  has_improvise, out_resolved, life_reserve);
+                                  has_improvise, out_resolved, life_reserve, exclude_entity);
 }
 
 bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,

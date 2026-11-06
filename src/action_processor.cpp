@@ -78,7 +78,7 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
 // offer gate's payment_blocked guard and reverse the activation.
 static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer);
-static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster);
+static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster, const ManaValue &mana);
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data);
 // The menu of the forms of `card_data`'s additional cost that can be paid (CR 601.2b).
 static std::vector<LegalAction> additional_choice_menu(const CardData &card_data, const std::vector<size_t> &payable);
@@ -183,14 +183,17 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // monotone in X, so the first accepted value is the maximum), exactly as delve's count menu bounds
 // its exile count — offered ladder and eventual payment can never disagree.
 // `x_pips` is how many {X} the cost carries (2 for Blast Zone's {X}{X}); `exclude` is the
-// ability's source when its own tap is part of the cost.
+// ability's source when its own tap is part of the cost; `hybrid` the pips still to be announced
+// on top of it.
 static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, size_t coarse_max,
                             size_t x_pips, ManaPayee paid_for, Entity exclude,
-                            std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise) {
+                            std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
+                            const std::vector<HybridPip> &hybrid) {
     while (coarse_max > 0) {
         ManaValue trial = base_cost;
         for (size_t i = 0; i < coarse_max * x_pips; i++) trial.insert(GENERIC);
-        if (can_pay_mana(payer, trial, paid_for, orderer, has_delve, has_improvise, exclude)) break;
+        if (resolve_hybrid_cost(payer, trial, hybrid, paid_for, orderer, has_delve, has_improvise, nullptr, 0, exclude))
+            break;
         coarse_max--;
     }
     return coarse_max;
@@ -446,12 +449,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 // and its mana payment all run after targets are chosen, so a Force of Will's pitch and a
 // Daze's bounce are no longer spent before the spell has a target — and a payment that then
 // fails rewinds without having consumed them (see CostItem).
-static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster) {
+static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster, const ManaValue &mana) {
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor (Trinisphere)
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.cost.mana(), caster);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, mana, caster);
 
     // Record the mana this alternative cost will pay (CR 106/601.2g). A pitch/life alt cost
     // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
@@ -1603,17 +1606,21 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                              pa.x_activation);
                 } else {
                     ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
+                    const std::vector<HybridPip> &pips = ability.def->cost.hybrid();
+                    // Each hybrid pip takes one mana at the least, its color not yet known.
+                    ManaValue with_pips = base_cost;
+                    for (size_t i = 0; i < pips.size(); i++) with_pips.insert(GENERIC);
                     // The source's own tap is part of this ability's cost, so its mana
                     // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
                     // counting its own {C}). Each {X} in the cost is paid separately, so a
                     // {X}{X} ability can only afford half the budget (CR 601.2b).
                     Entity x_exclude = ability.def->cost.taps() ? permanent_entity : 0;
-                    size_t max_x = max_available_mana(controller, base_cost, orderer, x_exclude);
+                    size_t max_x = max_available_mana(controller, with_pips, orderer, x_exclude);
                     size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
                     max_x /= x_pips;
                     max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
                                           x_exclude, orderer, /*has_delve=*/false,
-                                          /*has_improvise=*/false);
+                                          /*has_improvise=*/false, pips);
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
@@ -1656,6 +1663,31 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     }
                     arm_flow_query(PendingQuery::ACTIVATION, std::move(x_actions),
                                    controller, permanent_entity);
+                    return;
+                }
+            }
+            pa.step = Game::PendingActivation::HYBRID;
+            break;
+        }
+
+        case Game::PendingActivation::HYBRID: {
+            // Hybrid pips (CR 107.4e), announced after X (CR 601.2b, 602.2b): the mana owed is
+            // determined here, with X and the pips resolved.
+            const std::vector<HybridPip> &pips = ability.def->cost.hybrid();
+            if (!pips.empty()) {
+                if (!pa.pay.mana_announced) {
+                    pa.pay.mana = effective_activation_mana_cost(ability, controller, orderer);
+                    const size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
+                    for (size_t i = 0; i < pa.x_activation * x_pips; i++) pa.pay.mana.insert(GENERIC);
+                    pa.pay.mana_announced = true;
+                }
+                HybridAnnouncement hybrid{controller, permanent_entity, ability_payee, &pips, &pa.hybrid_idx, &pa.pay.mana};
+                hybrid.exclude = ability.def->cost.taps() ? permanent_entity : 0;
+                FrameCtx ctx = FrameCtx::flow(PendingQuery::ACTIVATION, resume_choice);
+                const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
+                if (announced == PayStatus::SUSPENDED) return;
+                if (announced == PayStatus::FAILED) {
+                    fail_activation_payment(pa, orderer);
                     return;
                 }
             }
@@ -1867,8 +1899,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // ALTERNATE COST — determined here, paid in the payment phase like every
             // other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
             } else if (pc.chosen.alternative()) {
-                defer_alternate_cost(game, card_data, caster);
-                pc.step = Game::PendingCast::ADDITIONAL;
+                pc.cost_to_pay = card_data.alt_cost.cost.mana();
+                pc.step = Game::PendingCast::ALT_HYBRID;
 
             } else {  // REGULAR COST + DELVE (also a NORMAL play-from-exile grant)
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
@@ -1987,7 +2019,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer) / x_pips;
                     max_x = payable_max_x(caster, pc.cost_to_pay, max_x, x_pips, spell_entity,
                                           /*exclude=*/0, orderer, card_data.has_delve,
-                                          card_data.has_improvise);
+                                          card_data.has_improvise, {});
                     // For a spell whose required target count IS X (Hide on the Ceiling), X can't
                     // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
                     // pick an X that leaves a mandatory target choice with too few candidates.
@@ -2018,49 +2050,18 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // before the colored/generic payment runs below. Auto-mana picks the first payable
             // assignment (shared with the cast-legality gate via resolve_hybrid_cost); with
             // auto-mana off the player is prompted per pip, like the Phyrexian block below.
-            if (!mana_cost_hybrid_pips(pc, card_data).empty()) {
-                if (auto_mana) {
-                    ManaValue resolved;
-                    if (resolve_hybrid_cost(caster, pc.cost_to_pay, card_data.hybrid_mana,
-                                            spell_entity, orderer, card_data.has_delve,
-                                            card_data.has_improvise, &resolved)) {
-                        pc.cost_to_pay = resolved;
-                    } else {
-                        // No payable assignment: add the colored option (else the generic
-                        // alternative) so payment fails cleanly through the normal path.
-                        for (const auto &pip : card_data.hybrid_mana) {
-                            if (!pip.colors.empty()) pc.cost_to_pay.insert(pip.colors.front());
-                            else for (int i = 0; i < pip.generic_alt; i++)
-                                pc.cost_to_pay.insert(GENERIC);
-                        }
-                    }
-                } else {
-                    for (; pc.hybrid_idx < card_data.hybrid_mana.size(); ++pc.hybrid_idx) {
-                        const HybridPip &pip = card_data.hybrid_mana[pc.hybrid_idx];
-                        std::vector<LegalAction> hybrid_actions;
-                        for (Colors c : pip.colors) {
-                            LegalAction a(PASS_PRIORITY,
-                                std::string("Pay {") + mana_symbol_str(c) + "}");
-                            a.category = ActionCategory::PAYING_COSTS;
-                            hybrid_actions.push_back(a);
-                        }
-                        if (pip.generic_alt > 0) {
-                            LegalAction a(PASS_PRIORITY,
-                                "Pay {" + std::to_string(pip.generic_alt) + "} generic");
-                            a.category = ActionCategory::PAYING_COSTS;
-                            hybrid_actions.push_back(a);
-                        }
-                        FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
-                        int hc = ctx.ask(std::move(hybrid_actions), caster, spell_entity, AskKind::MID_PAYMENT);
-                        if (hc < 0 && decision_suspended()) return;
-                        size_t uc = static_cast<size_t>(hc);
-                        if (uc < pip.colors.size()) {
-                            pc.cost_to_pay.insert(pip.colors[uc]);
-                        } else {
-                            for (int i = 0; i < pip.generic_alt; i++)
-                                pc.cost_to_pay.insert(GENERIC);
-                        }
-                    }
+            {
+                HybridAnnouncement hybrid{caster, spell_entity, spell_entity, &mana_cost_hybrid_pips(pc, card_data),
+                                          &pc.hybrid_idx, &pc.cost_to_pay};
+                hybrid.delve = card_data.has_delve;
+                hybrid.improvise = card_data.has_improvise;
+                hybrid.colors_matter = spell_reads_colors_spent(card_data);
+                FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
+                const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
+                if (announced == PayStatus::SUSPENDED) return;
+                if (announced == PayStatus::FAILED) {
+                    fail_cast_payment(pc, orderer);
+                    return;
                 }
             }
             pc.step = Game::PendingCast::PHYREXIAN_PIP;
@@ -2185,6 +2186,23 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     return;
                 }
             }
+            pc.step = Game::PendingCast::ADDITIONAL;
+            break;
+        }
+
+        case Game::PendingCast::ALT_HYBRID: {
+            // An alternative cost's hybrid pips (Evoke {R/G}{R/G}), then what it comes to.
+            HybridAnnouncement hybrid{caster, spell_entity, spell_entity, &card_data.alt_cost.cost.hybrid(),
+                                      &pc.hybrid_idx, &pc.cost_to_pay};
+            hybrid.colors_matter = spell_reads_colors_spent(card_data);
+            FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
+            const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
+            if (announced == PayStatus::SUSPENDED) return;
+            if (announced == PayStatus::FAILED) {
+                fail_cast_payment(pc, orderer);
+                return;
+            }
+            defer_alternate_cost(game, card_data, caster, pc.cost_to_pay);
             pc.step = Game::PendingCast::ADDITIONAL;
             break;
         }

@@ -360,6 +360,7 @@ struct Game {
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
                                   // CR 601.2b announces the value, the life is paid with the cost)
+                ALT_HYBRID,       // an alternative cost's hybrid pips, then the mana it owes
                 ADDITIONAL,       // which form of a mandatory additional cost (CR 601.2b)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 MODES_TARGETS,    // modes (CR 601.2b) and every target (601.2c) via run_announce
@@ -443,6 +444,7 @@ struct Game {
                 ZONE_TARGET,       // hand/graveyard activation: pre-cost modes/targets
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
+                HYBRID,            // hybrid pips, announced with the mana owed (Fiend Artisan)
                 TARGET,            // battlefield pre-cost modes/targets (run_announce)
                 PAY_COSTS,         // the cost's parts, through run_cost_parts (failure rewinds)
                 FINISH             // mana production, or the ability becomes activated + take_action
@@ -470,6 +472,7 @@ struct Game {
             // X chosen at the X_LADDER step (added as generic pips to the
             // cost's mana). Every announced X (a loyalty X too) is stack_ab.x_paid.
             size_t x_activation = 0;
+            size_t hybrid_idx = 0;  // the next hybrid pip to announce
             CostRun pay;  // the PAY_COSTS step's payment
             // The modes-and-targets announcement (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime

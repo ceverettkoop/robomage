@@ -471,7 +471,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // The mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
     // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player);
+    const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player,
+                                                     static_cast<int>(alt_cost.cost.hybrid().size()));
     CostCheck check(priority_player, card_entity, orderer);
     check.mana = &alt_mana;
     return can_pay(alt_cost.cost, check);

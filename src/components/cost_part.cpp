@@ -1,11 +1,12 @@
 #include "cost_part.h"
 
 void CostParts::add(const CostPart &part) {
-    if (part.kind == CostPart::MANA && part.mana.empty()) return;
+    if (part.kind == CostPart::MANA && part.mana.empty() && part.hybrid.empty()) return;
     const bool merges = part.kind == CostPart::MANA || part.kind == CostPart::X_MANA;
     for (CostPart &own : parts_) {
         if (!merges || own.kind != part.kind) continue;
         own.mana.insert(part.mana.begin(), part.mana.end());
+        own.hybrid.insert(own.hybrid.end(), part.hybrid.begin(), part.hybrid.end());
         own.count += part.count;
         return;
     }
@@ -24,6 +25,12 @@ const ManaValue &CostParts::mana() const {
     static const ManaValue kNoMana;
     const CostPart *part = find(CostPart::MANA);
     return part ? part->mana : kNoMana;
+}
+
+const std::vector<HybridPip> &CostParts::hybrid() const {
+    static const std::vector<HybridPip> kNoPips;
+    const CostPart *part = find(CostPart::MANA);
+    return part ? part->hybrid : kNoPips;
 }
 
 bool CostParts::discards_hand() const {

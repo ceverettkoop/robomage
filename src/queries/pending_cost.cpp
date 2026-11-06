@@ -42,6 +42,8 @@ static StatePart cast_step_part(const Cast &pc) {
                 default:
                     return StatePart::MANA;
             }
+        case Cast::ALT_HYBRID:
+            return StatePart::ALTERNATIVE;
         case Cast::KICKER:
         case Cast::REPLICATE:
         case Cast::ADDITIONAL:
@@ -88,6 +90,10 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
         for (size_t i = pc.phyrexian_idx; i < face->phyrexian_mana.size(); ++i)
             out.phyrexian.push_back(face->phyrexian_mana[i]);
     }
+    if (face && pc.step == Cast::ALT_HYBRID) {
+        const std::vector<HybridPip> &pips = face->alt_cost.cost.hybrid();
+        out.hybrid.assign(pips.begin() + static_cast<std::ptrdiff_t>(pc.hybrid_idx), pips.end());
+    }
     return true;
 }
 
@@ -100,12 +106,18 @@ static bool activation_cost(const Activation &pa, PendingCost &out) {
         (pa.step == Activation::X_LADDER || pa.step == Activation::LOYALTY_X) ? StatePart::X : StatePart::ACTIVATION;
     const AbilityDef &def = *pa.ability.def;
     const Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
-    out.remaining = effective_activation_mana_cost(pa.ability, controller, nullptr);
-    if (pa.step == Activation::X_LADDER && def.cost.has(CostPart::X_MANA))
-        out.x_pips = std::max(1, def.cost.x_pips());
-    else
-        for (size_t i = 0; i < pa.x_activation * static_cast<size_t>(std::max(1, def.cost.x_pips())); ++i)
-            out.remaining.insert(GENERIC);
+    if (pa.pay.mana_announced) {
+        out.remaining = pa.pay.mana;
+    } else {
+        out.remaining = effective_activation_mana_cost(pa.ability, controller, nullptr);
+        if (pa.step == Activation::X_LADDER && def.cost.has(CostPart::X_MANA))
+            out.x_pips = std::max(1, def.cost.x_pips());
+        else
+            for (size_t i = 0; i < pa.x_activation * static_cast<size_t>(std::max(1, def.cost.x_pips())); ++i)
+                out.remaining.insert(GENERIC);
+    }
+    if (pa.step <= Activation::HYBRID)
+        out.hybrid.assign(def.cost.hybrid().begin() + static_cast<std::ptrdiff_t>(pa.hybrid_idx), def.cost.hybrid().end());
     out.life = def.cost.life();
     out.energy = def.cost.energy();
     return true;
