@@ -102,10 +102,12 @@ static bool exile_resource_offered(CastOffer &offer);
 static bool exile_no_cost_offered(CastOffer &offer);
 static bool exile_free_offered(CastOffer &offer);
 static bool exile_free_offspring_offered(CastOffer &offer);
+static bool exile_adventure_offered(CastOffer &offer);
 static bool cast_from_exile(const CardData &card);
 static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions);
 static bool cast_from_front(const CardData &card);
 static bool cast_from_back(const CardData &front);
+static bool cast_as_adventure(const CardData &front);
 static bool cast_fused(const CardData &front);
 static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc);
@@ -132,6 +134,11 @@ static const CastSection kCastSections[] = {
         {"back_face",       CastCost::MANA_COST,    false, 3, "",                      Zone::GRAVEYARD, mana_cost_offered},
         {"back_face_free",  CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"back_face_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
+    }},
+    // CR 715.3: an adventurer card is cast as itself (the rows above) or as an Adventure.
+    {Zone::HAND, Permission::NONE, CastFace::BACK, cast_as_adventure, nullptr, {
+        {"adventure",       CastCost::MANA_COST,    false, 3, "",                      Zone::GRAVEYARD, mana_cost_offered, SpellOverlay::ADVENTURE},
+        {"adventure_free",  CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered, SpellOverlay::ADVENTURE},
     }},
     // CR 702.102a: fuse is the hand's only.
     {Zone::HAND, Permission::NONE, CastFace::BOTH, cast_fused, nullptr, {
@@ -173,6 +180,11 @@ static const CastSection kCastSections[] = {
         {"exile_back_resource",  CastCost::GRANT,     false, 7, " (from exile)",       Zone::GRAVEYARD, exile_resource_offered},
         {"exile_back_no_cost",   CastCost::GRANT,     false, 7, " (from exile, no cost)", Zone::GRAVEYARD, exile_no_cost_offered},
         {"exile_back_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
+    }},
+    // CR 715.3d: the permission an Adventure leaves doesn't cast it as an Adventure again; another
+    // effect's may.
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_as_adventure, nullptr, {
+        {"exile_adventure", CastCost::MANA_COST,    false, 7, " (from exile)",         Zone::GRAVEYARD, exile_adventure_offered, SpellOverlay::ADVENTURE},
     }},
 };
 
@@ -588,6 +600,10 @@ static bool exile_free_offspring_offered(CastOffer &offer) {
     return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && free_offspring_offered(offer);
 }
 
+static bool exile_adventure_offered(CastOffer &offer) {
+    return !offer_grant(offer).on_an_adventure && exile_mana_cost_offered(offer);
+}
+
 // A land among the exiled cards is played, not cast (offer_exile_land).
 static bool cast_from_exile(const CardData &card) { return !is_land_card(card); }
 
@@ -619,6 +635,8 @@ static bool cast_from_back(const CardData &front) {
     if ((!front.is_modal_dfc && !front.is_split) || !front.backside) return false;
     return !is_land_card(*front.backside);  // land back is a PLAY_LAND
 }
+
+static bool cast_as_adventure(const CardData &front) { return front.is_adventure && front.backside; }
 
 static bool cast_fused(const CardData &front) { return front.has_fuse && front.combined; }
 

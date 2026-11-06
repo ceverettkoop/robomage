@@ -19,6 +19,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/entry.h"
 #include "../queries/lki.h"
+#include "../queries/overlays.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../queries/types.h"
@@ -221,12 +222,14 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             game_log("%s enters the battlefield\n", face.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
+            bool fizzled = false;
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
                 // re-enters here as the resume path.
                 if (resolve_ability(ab, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+                fizzled = cur_game.resolution.fizzled;
                 frame_finish();
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
@@ -238,7 +241,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.entity_has_component<Spell>(top_entity)
                     ? global_coordinator.GetComponent<Spell>(top_entity).resolves_to
                     : Zone::GRAVEYARD;
-            const SpellDestination to = spell_destination(top_entity, resolves_to, SpellExit::RESOLVED);
+            const SpellExit exit = fizzled ? SpellExit::REMOVED : SpellExit::RESOLVED;
+            const SpellDestination to = spell_destination(top_entity, resolves_to, exit);
+            const Spell cast = global_coordinator.GetComponent<Spell>(top_entity);
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
                 game_log("%s (copy) ceases to exist\n", face.name.c_str());
@@ -254,6 +259,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 game_log("%s is exiled%s\n", face.name.c_str(),
                          to.by_cast ? (" (" + std::string(to.by_cast) + ")").c_str() : "");
             }
+            const SpellOverlayRow &overlay = spell_overlay(cast.chosen.option.overlay);
+            if (exit == SpellExit::RESOLVED && overlay.resolved &&
+                global_coordinator.GetComponent<Zone>(top_entity).location == overlay.resolved_to)
+                overlay.resolved(top_entity, cast.caster);
         }
     }
     // CASE FOR ABILITY ON STACK; not spell

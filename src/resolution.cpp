@@ -52,7 +52,7 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 // Forward-declared per CLAUDE.md.
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
 // CR 608.2b: every target of `ab` became illegal; it is removed from the stack without effect.
-static void fizzle(const Ability &ab);
+static void fizzle(const Ability &ab, const FrameCtx &ctx);
 // CR 608.2b: `ab` declares no target of its own, its chained instructions chose some, and all of
 // them are illegal now.
 static bool chained_targets_all_illegal(const Ability &ab);
@@ -224,11 +224,9 @@ struct BlockingRememberedScope {
 };
 }  // namespace
 
-static void fizzle(const Ability &ab) {
-    // stack manager present behavior moves everything to graveyard or destroys it
-    // so for now this is a stub
+static void fizzle(const Ability &ab, const FrameCtx &ctx) {
+    if (ctx.is_stack_object()) cur_game.resolution.fizzled = true;
     game_log("%s fizzles\n", ab.def->category.c_str());
-    return;
 }
 
 static bool chained_targets_all_illegal(const Ability &ab) {
@@ -370,7 +368,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // and this instruction alone does nothing (phase 3).
             if (ab.def->valid_tgts != "N_A") {
                 if (!targets_still_legal(ab) && !(ctx.is_stack_object() && chained_target_still_legal(ab))) {
-                    fizzle(ab);
+                    fizzle(ab, ctx);
                     return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
                 }
                 // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
@@ -395,7 +393,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // the spell's targets (Cabal Therapy's player, Galvanic Discharge's creature), so with
             // all of them illegal not even its untargeted first instruction happens.
             if (ctx.is_stack_object() && ab.def->valid_tgts == "N_A" && chained_targets_all_illegal(ab)) {
-                fizzle(ab);
+                fizzle(ab, ctx);
                 return ResolveStatus::DONE;
             }
             // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,

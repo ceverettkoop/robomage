@@ -2,7 +2,7 @@
 "dims":{"F":96,"C":12,"K":6,"Q":2,"G":1408,"types":64,"categorical":6144,"relations":64,"ab_keys":256,"abilities_per_card":16,"hash_buckets":256},
 "enums":[
 {"name":"face","capacity":2,"closed":true,"values":["FRONT","BACK"]},
-{"name":"layout","capacity":16,"values":["NORMAL","TRANSFORM","MODAL_DFC","SPLIT"]},
+{"name":"layout","capacity":16,"values":["NORMAL","TRANSFORM","MODAL_DFC","SPLIT","ADVENTURE"]},
 {"name":"color","capacity":8,"closed":true,"values":["WHITE","BLUE","BLACK","RED","GREEN","COLORLESS","GENERIC","NO_COLOR"]},
 {"name":"card_type","capacity":32,"values":["Artifact","Battle","Conspiracy","Creature","Dragon","Elemental","Enchantment","Goblin","Hero","Instant","Jaguar","Kindred","Knights","Land","Legend","Phenomenon","Plane","Planeswalker","Scheme","Sorcery","Stickers","Summon","Tribal","Universewalker","Vanguard","Wolf","instant"]},
 {"name":"supertype","capacity":8,"values":["Basic","Host","Legendary","Ongoing","Snow","World"]},
@@ -25,7 +25,7 @@
 {"name":"link_kind","capacity":8,"values":["EXILED_WITH","RETURNABLE"]},
 {"name":"attack_target_kind","capacity":8,"values":["PLAYER","PLANESWALKER"]},
 {"name":"stack_kind","capacity":8,"values":["SPELL","ACTIVATED","TRIGGERED","COPY"]},
-{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL","WITHOUT_MANA_COST","OVERLOAD","FUSED"]},
+{"name":"cast_variant","capacity":32,"values":["FLASHBACK","EVOKE","ESCAPE","OFFSPRING","IMPENDING","WARP","BACK_FACE","ALT_COST","IMPULSE","COMPANION","SUSPEND","CANCEL","WITHOUT_MANA_COST","OVERLOAD","FUSED","ADVENTURE"]},
 {"name":"target_kind","capacity":8,"values":["OBJECT","PLAYER"]},
 {"name":"delayed_state","capacity":8,"values":["WAITING","ON_STACK"]},
 {"name":"fire_kind","capacity":8,"values":["FIRE_UPKEEP","FIRE_END_STEP","FIRE_END_OF_COMBAT","FIRE_LEAVES_BATTLEFIELD"]},

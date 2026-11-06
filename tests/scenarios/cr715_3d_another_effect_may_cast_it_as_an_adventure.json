@@ -1,0 +1,13 @@
+{
+  "name": "cr715_3d_another_effect_may_cast_it_as_an_adventure",
+  "why": "CR 715.3d: other effects that let a player cast it may let them cast it as an Adventure: Brazen Borrower exiled by Light Up the Stage is cast as Petty Theft from exile, and resolving it exiles the card again, now under the Adventure's own permission.",
+  "hand_a": ["Light Up the Stage", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Brazen Borrower", "Island"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Island", "Island"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Light Up the Stage", "A:desc:Cast Petty Theft (from exile)", "A:target:Grizzly Bears"],
+  "max_decisions": 14,
+  "expect_order": ["Player A casts Petty Theft targeting Grizzly Bears", "Petty Theft is exiled \\(adventure\\)"],
+  "expect_menu": ["Cast Brazen Borrower \\(from exile\\)", "Cast Petty Theft \\(from exile\\)"]
+}

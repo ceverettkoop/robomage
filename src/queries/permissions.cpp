@@ -84,7 +84,7 @@ static bool exile_grant_expires(const PermissionQuery &q) {
     // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
     // whose active player is its caster; every other grant lapses at this cleanup.
     Zone::Ownership active = cur_game.turn_state.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
-    return !g.warp && (!g.persist_until_end_of_next_turn ||
+    return !g.lasts_while_exiled() && (!g.persist_until_end_of_next_turn ||
                        (g.caster == active && cur_game.turn_state.turn > g.grant_turn));
 }
 

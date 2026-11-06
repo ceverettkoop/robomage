@@ -1,0 +1,16 @@
+{
+  "name": "cr715_3d_adventure_countered_goes_to_the_graveyard",
+  "why": "CR 715.3d: exile replaces the graveyard only as the Adventure resolves; countered, it goes to its owner's graveyard, where Surgical Extraction can target it as the card it is again (CR 715.4), and no permission follows.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island"],
+  "hand_b": ["Counterspell", "Surgical Extraction"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Petty Theft", "A:target:Grizzly Bears", "B:cast:Counterspell", "B:cast:Surgical Extraction"],
+  "max_decisions": 12,
+  "expect": ["Player A casts Petty Theft targeting Grizzly Bears", "Player B casts Counterspell"],
+  "expect_not": ["is exiled", "Grizzly Bears is moved to hand"],
+  "expect_menu": ["^Brazen Borrower$"],
+  "expect_menu_not": ["from exile"]
+}

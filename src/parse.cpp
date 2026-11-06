@@ -863,8 +863,9 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.is_split = (value_from_script(front_script, "AlternateMode") == "Split");
     // AlternateMode:DoubleFaced is a transforming double-faced card (the ALTERNATE face is its back).
     const std::string alternate_mode = value_from_script(front_script, "AlternateMode");
+    card.is_adventure = alternate_mode == "Adventure";
     if (!alternate_mode.empty() && alternate_mode != "Modal" && alternate_mode != "Split" &&
-        alternate_mode != "DoubleFaced")
+        alternate_mode != "DoubleFaced" && !card.is_adventure)
         parse_finding("layout", alternate_mode, "AlternateMode:" + alternate_mode + " is read as a transforming card");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
@@ -3993,6 +3994,10 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 else static_value_finding(sa, key, value);
             } else if (key == "ValidCause") {
                 sa.disable_triggers_cause = value;
+            } else if (key == "ValidAttacker" && sa.category == "CantBlockBy") {
+                sa.cant_block_attacker = value;
+            } else if (key == "ValidBlocker" && sa.category == "CantBlockBy") {
+                sa.cant_block_blocker = value;
             } else if (key == "CharacteristicDefining") {
                 sa.characteristic_defining = (value == "True");
             } else if (key == "SetPower") {
@@ -4635,7 +4640,7 @@ static bool alt_cost_param_assumed(const std::string &key, const std::string &va
 // etbCounter keyword's own). AlternativeCost lines are parsed apart (parse_card_face_body).
 static bool static_mode_modelled(const std::string &mode) {
     static const char *const kModes[] = {"Continuous", "CantBeActivated", "CantBeCast", "RaiseCost", "ReduceCost",
-        "SetCost", "MustAttack", "ManaConvert", "DisableTriggers", "CantAttack", "EtbCounter"};
+        "SetCost", "MustAttack", "ManaConvert", "DisableTriggers", "CantAttack", "CantBlockBy", "EtbCounter"};
     for (const char *m : kModes)
         if (mode == m) return true;
     return false;
@@ -4661,6 +4666,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         {"CantBeCast", true, "ValidCard Caster NumLimitEachTurn OnlySorcerySpeed Origin cmcGT"},
         {"CantBeActivated", false, "ValidCard ValidSA AffectedZone Activator"},
         {"CantAttack", true, "ValidCard Target"},
+        {"CantBlockBy", true, "ValidAttacker ValidBlocker"},
         {"MustAttack", true, "ValidCreature"},
         {"DisableTriggers", false, "ValidCause ValidMode Destination"},
         {"ManaConvert", false, "ManaConversion"},

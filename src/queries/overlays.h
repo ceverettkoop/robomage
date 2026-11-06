@@ -5,6 +5,7 @@
 
 #include "../components/cast_option.h"
 #include "../components/zone.h"
+#include "../ecs/entity.h"
 
 struct CardData;
 
@@ -22,6 +23,8 @@ struct SpellOverlayRow {
         // copy of the card's own. Null for an overlay that reads a face the card has anyway.
         bool (*has)(const CardData &card);
         void (*change)(CardData &face);
+        // What follows once it has gone to `resolved_to`, for the player who cast it.
+        void (*resolved)(Entity card, Zone::Ownership caster);
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);

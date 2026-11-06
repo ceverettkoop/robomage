@@ -211,7 +211,7 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
     // long as the card remains in exile; it is never expired by the per-turn cleanup.
     resolved_effects.impulse_cast_permission.purge_stale();
     resolved_effects.impulse_cast_permission.erase_if([&](Entity, const ImpulseCastPermission &g) {
-        if (g.warp) return false;
+        if (g.lasts_while_exiled()) return false;
         return !g.persist_until_end_of_next_turn ||
                (g.caster == active_player && turn_state.turn > g.grant_turn);
     });

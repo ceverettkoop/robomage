@@ -386,6 +386,8 @@ struct ResolutionFrame {
     // Count$Converge through current_x_paid() / current_converge().
     int x_paid = 0;
     int converge = 0;
+    // CR 608.2b: every target of the stack object was illegal, so it didn't resolve.
+    bool fizzled = false;
     ResolutionMemory memory;
     std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by

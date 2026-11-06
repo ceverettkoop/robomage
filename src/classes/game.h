@@ -759,6 +759,10 @@ struct Game {
             // creature is recast at sorcery speed), so during_resolution stays false. See
             // effect_warp.cpp.
             bool warp = false;
+            // on_an_adventure: its caster may play the card that resolved as an Adventure for as
+            // long as it remains exiled, though not as an Adventure again (CR 715.3d).
+            bool on_an_adventure = false;
+            bool lasts_while_exiled() const { return warp || on_an_adventure; }
         };
         // Continuous effects and floating triggered abilities that belong to no permanent: created
         // by resolved spells and abilities (CR 611.2), and emblems (CR 114). Each lasts as its

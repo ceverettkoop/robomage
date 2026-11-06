@@ -111,6 +111,11 @@ struct StaticAbility {
     // every creature). Empty x_svar = the filter has no dynamic X.
     FilterSpec cant_attack_filter;
     std::string cant_attack_x_svar = "";
+    // CantBlockBy fields (category = "CantBlockBy"; Brazen Borrower): a combat restriction, CR
+    // 509.1b: a creature matching cant_block_blocker (ValidBlocker$; empty: any creature) can't be
+    // declared as a blocker of an attacker matching cant_block_attacker (ValidAttacker$).
+    FilterSpec cant_block_attacker;
+    FilterSpec cant_block_blocker;
     // CantBeActivated fields (category = "CantBeActivated"):
     FilterSpec cant_activate_card_filter;  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):

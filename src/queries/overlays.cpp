@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../state_format/schema.h"
@@ -14,11 +15,13 @@ static bool has_overload(const CardData &card);
 static void target_reads_each(AbilityDef &ability);
 static void overload_spell(CardData &face);
 static std::shared_ptr<const CardData> combined_halves(const CardData &left, const CardData &right);
+static void on_an_adventure(Entity card, Zone::Ownership caster);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
-    // kind                  name        variant                                            resolved_to      has           change
-    {SpellOverlay::NONE,     "",         -1,                                                Zone::GRAVEYARD, nullptr,      nullptr},
-    {SpellOverlay::OVERLOAD, "overload", static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell},
+    // kind                   name         variant                                            resolved_to      has           change          resolved
+    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr},
+    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr},
+    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }
@@ -72,6 +75,16 @@ static std::shared_ptr<const CardData> combined_halves(const CardData &left, con
             break;
         }
     return both;
+}
+
+// CR 715.3d: for as long as the card remains exiled, the player who cast the Adventure may play it.
+static void on_an_adventure(Entity card, Zone::Ownership caster) {
+    Game::ImpulseCastPermission grant;
+    grant.resource = Game::ImpulseCastPermission::NORMAL;
+    grant.caster = caster;
+    grant.allow_land = true;
+    grant.on_an_adventure = true;
+    cur_game.resolved_effects.impulse_cast_permission[card] = grant;
 }
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }

@@ -82,6 +82,11 @@ FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership
 // prohibited creature is never offered as a legal attacker.
 bool attack_prohibited(Entity creature);
 
+// May `blocker` not be declared as a blocker of `attacker` (CR 509.1b)? True when an active CantBlockBy
+// static's ValidAttacker$ matches the attacker and its ValidBlocker$, if any, the blocker: Brazen
+// Borrower, whose "can block only creatures with flying" reads as can't block Creature.withoutFlying.
+bool block_prohibited(Entity blocker, Entity attacker);
+
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);
 bool may_play_lands_from_graveyard(Zone::Ownership player);

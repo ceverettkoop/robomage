@@ -824,6 +824,7 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
 
         if (atk_flying && !blocker_can_fly) continue;
         if (has_protection_from(acr, blocker)) continue;
+        if (rules_mod::block_prohibited(blocker, atk)) continue;
         result.push_back(atk);
     }
     return result;

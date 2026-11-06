@@ -99,6 +99,9 @@ struct CardData{
     // half's characteristics are used while the spell is on the stack. Distinct from is_modal_dfc
     // so split cards never pick up MDFC permanent-entering logic.
     bool is_split = false;
+    // AlternateMode:Adventure — an adventurer card (CR 715): `backside` holds the Adventure's
+    // alternative characteristics, which exist only on a spell cast as an Adventure (CR 715.4).
+    bool is_adventure = false;
     // A split card's two halves as one object (CR 709.4): both names joined, the combined mana cost,
     // both halves' types, keywords and abilities, the right half's spell ability following the
     // left's. What it is in every zone but the stack, and on the stack when fused (CR 702.102b).

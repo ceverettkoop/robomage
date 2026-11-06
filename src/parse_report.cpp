@@ -346,6 +346,7 @@ static bool svar_expr_read_at_parse(const std::string &expr) {
 static std::string card_layout(const CardData &card) {
     if (card.is_split) return "split";
     if (card.is_modal_dfc) return "modal";
+    if (card.is_adventure) return "adventure";
     if (card.backside) return "transform";
     return "normal";
 }

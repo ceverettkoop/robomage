@@ -1,0 +1,13 @@
+{
+  "name": "cr715_3b_an_adventure_is_no_creature_on_the_stack",
+  "why": "CR 715.3b: on the stack as an Adventure the spell has only its alternative characteristics: an instant, so Spell Pierce's noncreature spell filter finds Petty Theft though the card is a creature card.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island"],
+  "hand_b": ["Spell Pierce"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Petty Theft", "A:target:Grizzly Bears", "B:cast:Spell Pierce"],
+  "max_decisions": 10,
+  "expect_menu": ["Cast Spell Pierce"]
+}

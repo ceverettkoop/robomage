@@ -266,6 +266,21 @@ bool attack_prohibited(Entity creature_entity) {
     return false;
 }
 
+bool block_prohibited(Entity blocker, Entity attacker) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        const StaticAbility &sa = *as.sa();
+        if (sa.category != "CantBlockBy") continue;
+        MatchCtx ctx;
+        ctx.controller = as.controller;
+        ctx.source = as.entity;
+        if (permanent_matches_filter(attacker, sa.cant_block_attacker, ctx) &&
+            (sa.cant_block_blocker.empty() || permanent_matches_filter(blocker, sa.cant_block_blocker, ctx)))
+            return true;
+    }
+    return false;
+}
+
 int land_play_bonus(Zone::Ownership player) {
     int bonus = 0;
     for (const auto &as : g_active_statics) {

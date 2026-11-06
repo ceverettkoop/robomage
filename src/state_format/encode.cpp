@@ -269,6 +269,7 @@ static const CardData &object_face(Entity e, const CardData &cd) {
 static rmstate::Layout card_layout(const CardData &cd) {
     if (cd.is_split) return rmstate::Layout::SPLIT;
     if (cd.is_modal_dfc) return rmstate::Layout::MODAL_DFC;
+    if (cd.is_adventure) return rmstate::Layout::ADVENTURE;
     if (cd.backside) return rmstate::Layout::TRANSFORM;
     return rmstate::Layout::NORMAL;
 }

@@ -1,0 +1,13 @@
+{
+  "name": "cr715_5_an_adventure_may_be_named",
+  "why": "CR 715.5: a player may choose an adventurer card's alternative name when choosing a card name; the card in a hand has only its normal name (CR 715.4), so Cabal Therapy naming Petty Theft discards nothing and naming Brazen Borrower would.",
+  "hand_a": ["Cabal Therapy"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Brazen Borrower", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B", "A:name:Petty Theft"],
+  "max_decisions": 8,
+  "expect_menu": ["Name card: Brazen Borrower", "Name card: Petty Theft"],
+  "expect_not": ["Player B discards"]
+}
