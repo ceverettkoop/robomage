@@ -9,9 +9,10 @@ must stop moving first, since a run's actors load them on every restart.
 - History is on: `FeatureOptions::history_events` (`docs/featurizer.md` §3.7), the events of this turn and the
   previous one, newest first, at most 32, each with up to 8 cards. "Previous" is one turn back, which is the
   opponent's last turn from your own. That is the window wanted, so `EventHistory` doesn't change.
-- A short paired run comes first: 5k steps on the nine decks left of the old league with `ur_tempo`, `lands_top8` and `death_and_taxes` among them (§3; `maverick` isn't playable until M9), from one seed,
-  history on against off, judged by `value_mse_gap`, held-out value MSE and a paired bench. It needs §2's items 1 to 3 and
-  nothing from M13's decks. It runs after M7 from a frozen copy of the build, since actors reload their binaries on restart.
+- A short paired run comes first, after M13 and before the main run: 5k steps per arm from one seed, history on against off,
+  on the old league's six remaining decks with `ur_tempo`, `lands_top8`, `death_and_taxes` and `maverick`, judged by
+  `value_mse_gap`, held-out value MSE and a paired bench. The arms run one after the other, about 8 to 10 hours each. It decides
+  whether history stays on for the main run. It needs §2's items 1 to 3.
 - Old episodes are gone (`runs/*/episodes`, `runs/bc1/corpus/episodes`, 280 GB). The run needs none: R-NaD
   learns from its current policy. Checkpoints, decision logs, ladders and benchmarks stay. Gone with them:
   `run.corpus_dir` reuse of the B0 corpus (a run re-records it), the DAgger labels, and
