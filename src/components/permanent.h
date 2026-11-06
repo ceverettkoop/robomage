@@ -92,9 +92,9 @@ struct Permanent {
     // other entry). Its enters-the-battlefield triggered abilities use this X, though the
     // permanent's own X is 0. Set one-shot from EntryInfo::x_paid.
     int entered_x = 0;
-    // Each mana spent to cast the spell that became this permanent, by color, for a card that reads
-    // it (Count$Adamant_: Vibrance's "if {R}{R} was spent to cast it"); empty for any other.
-    ManaValue cast_mana_by_color;
+    // The mana spent to cast the spell that became this permanent, for a card that reads it
+    // (Count$Adamant_: Vibrance's "if {R}{R} was spent to cast it"); empty for any other.
+    ManaPaid cast_mana_paid;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,

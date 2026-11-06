@@ -3,11 +3,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include "../classes/colors.h"
+#include "../ecs/entity.h"
 #include "../object_ref.h"
 
 // What a mana ability says its mana may be spent on (CR 106.6), from its RestrictValid$. On a
@@ -56,6 +58,18 @@ struct ManaUnit {
         Colors color;
         uint8_t riders = MANA_RIDER_NONE;
 };
+
+// The mana a cost spent, in the order it left the pool. Everything a card asks about the mana spent
+// to cast a spell is a view of this list.
+using ManaPaid = std::vector<ManaUnit>;
+
+// How much of it was `color`: "if {R}{R} was spent to cast it" (Vibrance).
+size_t mana_of_color(const ManaPaid &paid, Colors color);
+// The distinct colors of it, WHITE..GREEN: colorless mana is not a color (CR 105.1).
+std::set<Colors> colors_of(const ManaPaid &paid);
+// How much of it `source` made: a ValidSA$ Spell.ManaFromCard reads this. The id survives the source
+// moving, so a source that spent itself to make the mana still counts.
+size_t mana_from(const ManaPaid &paid, Entity source);
 
 // A player's mana pool (CR 106.4), or the copy a simulated payment works on. Its units stay in Colors
 // order, oldest first within a color: what the pool spends first is what a multiset of colors would.

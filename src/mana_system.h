@@ -159,7 +159,9 @@ size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
 
 // Spend mana from player's pool (assumes can_afford was checked)
 // paid_for: the entity being paid for (used for diagnostics on insufficient mana)
-void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for);
+// spent: when non-null, collects each unit spent
+void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for,
+                ManaPaid* spent = nullptr);
 
 // One mana of `color` as `ab`, activated or resolving from `source`, makes it: the restriction and
 // riders its definition gives it, and in a real payment (commit) where it came from. A chosen type
@@ -170,7 +172,7 @@ ManaUnit mana_unit_from(const Ability& ab, Colors color, Entity source, bool com
 void add_mana(Zone::Ownership player, const ManaUnit& unit, size_t amount);
 
 // Pay as much of cost as possible from player's pool, return the unpaid remainder
-ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
+ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost, ManaPaid* spent = nullptr);
 
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
@@ -274,9 +276,9 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     const ManaValue& unpaid_cost, ManaPayee paid_for);
 
 // Pays `cost` out of `pool` and returns the portion that could not be paid. `spent` (when non-null)
-// collects each color erased from `pool` — so a REAL-pool consumer can report the colors it spent.
+// collects each unit erased from `pool` — so a REAL-pool consumer can report the mana it spent.
 // Dry-run callers (can_afford_pool, activation-cost trials) pass nullptr and are unaffected.
-ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaValue* spent = nullptr);
+ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaPaid* spent = nullptr);
 
 // Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
 // payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
@@ -300,12 +302,11 @@ struct ManaPaymentRT {
 // `ctx` for one source at a time, which may suspend (re-enter with the same `rt` and `cost`). On
 // FAILED the caller must restore from snapshot.
 // With a `tap`, the permanents it lets the player tap are offered alongside the mana abilities.
-// `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
-// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90). It
-// must persist with `rt`.
+// `spent_out` (when non-null) collects the mana actually removed from the pool to pay this cost: a
+// cast's ChosenCost::mana_paid. It must persist with `rt`.
 PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const ManaValue& cost,
                         ManaPayee paid_for, FrameCtx& ctx, std::shared_ptr<Orderer> orderer,
-                        TapToPay tap = TapToPay::NONE, ManaValue* spent_out = nullptr);
+                        TapToPay tap = TapToPay::NONE, ManaPaid* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from

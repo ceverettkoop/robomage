@@ -8,6 +8,7 @@
 #include "../classes/colors.h"
 #include "../object_ref.h"
 #include "cost_part.h"
+#include "mana_unit.h"
 
 // What a cast committed to (CR 601.2b-h): how the spell was cast and what was paid. Built on
 // Game::PendingCast as the cast is proposed, and recorded on the Spell as it becomes cast
@@ -56,21 +57,11 @@ struct ChosenCost {
         // give the opponent the gift, and (via current_gift_promised() at cast time) to switch
         // a Count$PromisedGift-driven effect (e.g. Into the Flood Maw widening its bounce target).
         bool gift_promised = false;
-        // Total mana actually spent to cast this spell, what left the pool to pay it (CR 106/601.2g).
-        // 0 for a spell cast for free or via an alternative cost that pays no mana (Force of Will's
+        // The mana actually spent to cast this spell, what left the pool to pay it (CR 106/601.2g).
+        // Empty for a spell cast for free or via an alternative cost that pays no mana (Force of Will's
         // pitch+life, a 0-cost spell); a pip a delve exile or a tap paid (TapToPay) is no mana spent,
-        // so a spell can owe mana and spend none. Read by a SpellCast trigger's ValidSA$
-        // Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent"). Shared, general —
-        // Lavinia, Azorius Renegade reads the same field.
-        int mana_spent = 0;
-        // Converge (CR 702.90): the distinct COLORS of mana actually spent to cast this spell (WHITE..
-        // GREEN; colorless mana is not a color, CR 105.1). Its size is the Converge count, taken by the
-        // resolution frame as it resolves and read by a Count$Converge amount/condition bound (Prismatic
-        // Ending). Empty for a free / no-mana cast.
-        std::set<Colors> colors_spent;
-        // Each mana spent to cast this spell, by color: what "if {R}{R} was spent to cast it" reads
-        // of the permanent it becomes (Vibrance).
-        ManaValue mana_by_color;
+        // so a spell can owe mana and spend none.
+        ManaPaid mana_paid;
         // What the cost moved, as the objects they became where they went: sacrificed, returned,
         // discarded or exiled, in the order they moved.
         struct Moved {
@@ -78,6 +69,15 @@ struct ChosenCost {
                 ObjectRef object;
         };
         std::vector<Moved> moved;
+
+        // How much mana was spent: read by a SpellCast trigger's ValidSA$ Spell.ManaSpent <op><n> filter
+        // (Roiling Vortex: "if no mana was spent"). Shared, general — Lavinia, Azorius Renegade reads
+        // the same count.
+        int mana_spent() const { return static_cast<int>(mana_paid.size()); }
+        // Converge (CR 702.90): the distinct colors of mana spent. Its size is the Converge count, taken
+        // by the resolution frame as it resolves and read by a Count$Converge amount/condition bound
+        // (Prismatic Ending).
+        std::set<Colors> colors_spent() const { return colors_of(mana_paid); }
 
         bool flashback() const { return mode == Mode::FLASHBACK; }
         bool escape() const { return mode == Mode::ESCAPE; }

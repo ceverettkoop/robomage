@@ -42,8 +42,8 @@ struct EntryInfo {
     // The X its spell was cast with (> 0): an "enters with X counters" replacement (Chalice of
     // the Void) and Permanent::entered_x for its ETB abilities (CR 107.3m). 0 = none.
     int x_paid = 0;
-    // Each mana its spell was cast with, by color → Permanent::cast_mana_by_color.
-    ManaValue mana_by_color;
+    // The mana its spell was cast with → Permanent::cast_mana_paid.
+    ManaPaid mana_paid;
     // What its spell's cost moved (ChosenCost::moved), read as it enters: Murktide Regent's "exiled
     // with it". An object that wasn't cast has none, whatever an earlier cast of the card paid.
     std::vector<ChosenCost::Moved> moved;
@@ -64,7 +64,7 @@ struct EntryInfo {
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
-               x_paid == 0 && mana_by_color.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
+               x_paid == 0 && mana_paid.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
     }
 };
 

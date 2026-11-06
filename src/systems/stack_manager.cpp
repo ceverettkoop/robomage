@@ -76,7 +76,7 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab) {
     if (global_coordinator.entity_has_component<Spell>(top_entity)) {
         const Spell &spell = global_coordinator.GetComponent<Spell>(top_entity);
         fr.x_paid = spell.chosen.x;
-        fr.converge = static_cast<int>(spell.chosen.colors_spent.size());
+        fr.converge = static_cast<int>(spell.chosen.colors_spent().size());
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
     }
@@ -125,7 +125,7 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     // Vibrance's "if {R}{R} was spent to cast it" reads it. Kept only for a card that does: the
     // record is a column of every object's row, which no other card's should move.
     if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
-        entry.mana_by_color = spell.chosen.mana_by_color;
+        entry.mana_paid = spell.chosen.mana_paid;
     entry.moved = spell.chosen.moved;
     // Offspring: its token-copy ETB trigger fires.
     if (spell.chosen.offspring) entry.offspring = true;

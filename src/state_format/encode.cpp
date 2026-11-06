@@ -840,7 +840,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         .u8(perm && perm->cast_with_escape ? 1 : 0);
     r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
     for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
-        r.u8(perm ? u8_count(count_color(perm->cast_mana_by_color, col)) : 0);
+        r.u8(perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.
@@ -1061,7 +1061,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             .u8(sp && sp->is_copy ? 1 : 0)
             .u8(sp && sp->cant_be_countered ? 1 : 0)
             .u8(sp && sp->chosen.gift_promised ? 1 : 0);
-        r.u8(sp ? u8_count(sp->chosen.mana_spent) : 0).u8(sp ? color_mask(sp->chosen.colors_spent) : 0);
+        r.u8(sp ? u8_count(sp->chosen.mana_spent()) : 0).u8(sp ? color_mask(sp->chosen.colors_spent()) : 0);
         r.u32(ab ? ab->delayed_link.seq : 0);
         if (!ab) continue;
         for (int mode : ab->charm_chosen) {

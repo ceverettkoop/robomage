@@ -124,7 +124,7 @@ struct LastKnownInfo {
     // the permanent entered (CR 603.3a), even though its Permanent component is gone by now.
     bool entered_by_cast = false;          // "if you cast it" gate (The One Ring)
     bool evoked = false;                   // evoke self-sacrifice gate
-    ManaValue cast_mana_by_color;          // "if {R}{R} was spent to cast it", read past a sacrifice
+    ManaPaid cast_mana_paid;               // "if {R}{R} was spent to cast it", read past a sacrifice
     bool entered_with_offspring = false;   // offspring token-copy gate
     bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
     bool abilities_removed = false;        // Permanent::abilities_removed snapshot: a permanent that

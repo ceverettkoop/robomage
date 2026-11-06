@@ -66,9 +66,6 @@ struct CostRun {
         bool delve = false;      // the spell's Delve applies to `mana`
         TapToPay tap_to_pay = TapToPay::NONE;  // what may be tapped toward `mana`
         ManaPaymentRT mana_payment;
-        // The exact colors of mana spent, accumulated by the payment (pay_mana_cost's spent-sink) as
-        // pips leave the pool: its size is the mana spent. Empty for a free / no-mana cast.
-        ManaValue spent_colors;
         // Snapshot of mana state taken as the payment first can activate a mana ability, restored when
         // it is reversed (mana_snap_taken).
         ManaPaymentSnapshot mana_snap;

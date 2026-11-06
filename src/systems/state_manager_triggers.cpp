@@ -1113,7 +1113,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                 if (!ev.HasParam(Params::ENTITY)) continue;
                 Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
                 if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
-                int spent = global_coordinator.GetComponent<Spell>(spell_e).chosen.mana_spent;
+                int spent = global_coordinator.GetComponent<Spell>(spell_e).chosen.mana_spent();
                 int bound = ab.trigger_mana_spent_val;
                 const std::string &op = ab.trigger_mana_spent_op;
                 bool ok = (op == "EQ") ? (spent == bound)

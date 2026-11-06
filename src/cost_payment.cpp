@@ -78,7 +78,6 @@ struct CostStep {
             TAP,             // {T}: the source taps
             OWE_ACTIVATION,  // what an activation owes
             FLOAT_LEAVING,   // CR 601.2g: mana from a permanent about to leave to pay the cost
-            RECORD_MANA_SPENT,
             PAY_MANA,
             CHECK_RESOURCES,  // the life and energy can still be paid
             COUNT_TAP,
@@ -217,7 +216,6 @@ static const CostStep kCastSteps[] = {
     {CostStep::SNAPSHOT},
     {CostStep::FLOAT_LEAVING},
     {CostStep::PAY_MANA},
-    {CostStep::RECORD_MANA_SPENT},
     {CostStep::CHECK_RESOURCES},
     {CostStep::LIFE},
     {CostStep::LIFE_X},
@@ -422,11 +420,6 @@ static PayStatus pay_step(
             if (who.run->mana_pending)
                 for (const CostItem &item : who.run->items)
                     float_mana_before_cost_removal(item.entity, who.payer, orderer, who.run->mana, who.payee);
-            break;
-        case CostStep::RECORD_MANA_SPENT:
-            // What left the pool (CR 106, 601.2g), for a ValidSA$ Spell.ManaSpent trigger to read at
-            // cast time: a pip paid by a delve exile or a tap spends no mana.
-            who.chosen->mana_spent = static_cast<int>(who.run->spent_colors.size());
             break;
         case CostStep::PAY_MANA:
             return pay_mana(who, ctx, orderer);
@@ -794,7 +787,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
-        run.tap_to_pay, &run.spent_colors);
+        run.tap_to_pay, who.chosen ? &who.chosen->mana_paid : nullptr);
     if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA, path_form(who.path));
     return paid;
 }

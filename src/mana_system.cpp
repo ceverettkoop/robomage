@@ -46,22 +46,17 @@ extern Coordinator global_coordinator;
 extern Game cur_game;
 
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
-// Converge spent-color sink (CR 702.90): while a cast's mana payment is in flight this points at
-// the accumulator that records every color of mana actually removed from the REAL pool. Armed only
-// inside pay_mana_cost (via a RAII guard); dry-run affordability checks route through
-// pay_from_pool on POOL COPIES with a null `spent`, so they never pollute it.
-static ManaValue *s_mana_spent_sink = nullptr;
-
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
 static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost);
+static void spend_unit(ManaPool &pool, ManaPool::const_iterator unit, ManaPaid *spent);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true, TapToPay tap = TapToPay::NONE,
-                          Entity exclude_entity = 0, int life_reserve = 0);
+                          Entity exclude_entity = 0, int life_reserve = 0, ManaPaid *spent = nullptr);
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, TapToPay tap,
-                                  Entity exclude_entity, bool max_yield_only, int life_reserve);
+                                  Entity exclude_entity, bool max_yield_only, int life_reserve, ManaPaid *spent);
 static bool restricted_mana_matches(const std::string &chosen_type, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
@@ -119,7 +114,7 @@ bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost)
     return can_afford_pool(player.mana, cost);
 }
 
-void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost, Entity paid_for) {
+void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost, Entity paid_for, ManaPaid *spent) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -129,7 +124,7 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
         dump_entity(paid_for);
         #endif
     }
-    pay_from_pool(player.mana, cost, s_mana_spent_sink);
+    pay_from_pool(player.mana, cost, spent);
 }
 
 ManaUnit mana_unit_from(const Ability &ab, Colors color, Entity source, bool commit) {
@@ -155,10 +150,10 @@ void add_mana(Zone::Ownership player_owner, const ManaUnit &unit, size_t amount)
     }
 }
 
-ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost) {
+ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost, ManaPaid *spent) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-    return pay_from_pool(player.mana, cost, s_mana_spent_sink);
+    return pay_from_pool(player.mana, cost, spent);
 }
 
 void empty_mana_pool(Zone::Ownership player_owner) {
@@ -714,12 +709,8 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 // Pays `cost` out of `pool` (mutating it) and returns the portion that could NOT be
 // paid. can_afford_pool/spend_mana/pay_partial and the auto-payer all route through this,
 // so the spend rule (including generic color preference) lives in exactly one place.
-ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaValue *spent) {
+ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaPaid *spent) {
     ManaValue remaining;
-    auto erase_recording = [&](ManaPool::const_iterator it) {
-        if (spent) spent->insert(it->color);
-        pool.erase(it);
-    };
     // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, a colored
     // pip may be paid with mana of ANY type. Pay exact-color matches first (so on-color mana is
     // preferred and never wasted), then satisfy any still-unpaid colored pip from any remaining
@@ -729,19 +720,25 @@ ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaValue *spent)
     for (auto color : cost) {
         if (color == GENERIC) continue;
         auto it = pool.find(color);
-        if (it != pool.end()) erase_recording(it);
+        if (it != pool.end()) spend_unit(pool, it, spent);
         else unpaid_colored.push_back(color);
     }
     for (Colors color : unpaid_colored) {
-        if (any_color && !pool.empty()) erase_recording(pool.begin());
+        if (any_color && !pool.empty()) spend_unit(pool, pool.begin(), spent);
         else remaining.insert(color);
     }
     size_t generic_needed = cost.count(GENERIC);
     for (size_t i = 0; i < generic_needed; i++) {
-        if (!pool.empty()) erase_recording(pool.begin());
+        if (!pool.empty()) spend_unit(pool, pool.begin(), spent);
         else remaining.insert(GENERIC);
     }
     return remaining;
+}
+
+// `unit` leaves `pool`, recorded in `spent` when the pool is a real one being paid from.
+static void spend_unit(ManaPool &pool, ManaPool::const_iterator unit, ManaPaid *spent) {
+    if (spent) spent->push_back(*unit);
+    pool.erase(unit);
 }
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
@@ -1055,30 +1052,30 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit, TapToPay tap, Entity exclude_entity,
-                          int life_reserve) {
+                          int life_reserve, ManaPaid *spent) {
     ManaValue trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
                               /*commit=*/false, tap, exclude_entity,
-                              /*max_yield_only=*/false, life_reserve)) {
+                              /*max_yield_only=*/false, life_reserve, nullptr)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
                                      /*commit=*/true, tap, exclude_entity,
-                                     /*max_yield_only=*/false, life_reserve);
+                                     /*max_yield_only=*/false, life_reserve, spent);
     }
     trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
                               /*commit=*/false, tap, exclude_entity,
-                              /*max_yield_only=*/true, life_reserve)) {
+                              /*max_yield_only=*/true, life_reserve, nullptr)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
                                      /*commit=*/true, tap, exclude_entity,
-                                     /*max_yield_only=*/true, life_reserve);
+                                     /*max_yield_only=*/true, life_reserve, spent);
     }
     return false;
 }
@@ -1086,7 +1083,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, TapToPay tap,
-                                  Entity exclude_entity, bool max_yield_only, int life_reserve) {
+                                  Entity exclude_entity, bool max_yield_only, int life_reserve, ManaPaid *spent) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -1116,14 +1113,9 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         }
     }
 
-
-    // In commit mode `pool` IS the real mana pool, so record the colors it spends into the Converge
-    // sink; in simulate mode the sink stays null (no side effects, no spurious color counts).
-    ManaValue *spent_sink = commit ? s_mana_spent_sink : nullptr;
-
     // Check if pool covers remaining after delve
     if (can_afford_pool(pool, remaining)) {
-        pay_from_pool(pool, remaining, spent_sink);
+        pay_from_pool(pool, remaining, spent);
         return true;
     }
 
@@ -1362,15 +1354,12 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 
         // Check pool first: exact color, or — under ManaConvert — any mana already floating.
         if (pool.count(needed) > 0) {
-            auto pit = pool.find(needed);
-            if (spent_sink) spent_sink->insert(pit->color);
-            pool.erase(pit);
+            spend_unit(pool, pool.find(needed), spent);
             it = remaining.erase(it);
             continue;
         }
         if (any_color && !pool.empty()) {
-            if (spent_sink) spent_sink->insert(pool.begin()->color);
-            pool.erase(pool.begin());
+            spend_unit(pool, pool.begin(), spent);
             it = remaining.erase(it);
             continue;
         }
@@ -1396,15 +1385,12 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                 // only spent once can_afford_pool sees the color in the real pool. Under
                 // ManaConvert any produced mana counts, so spend the first available pip.
                 if (any_color && !pool.empty()) {
-                    if (spent_sink) spent_sink->insert(pool.begin()->color);
-                    pool.erase(pool.begin());
+                    spend_unit(pool, pool.begin(), spent);
                     it = remaining.erase(it);
                     return true;
                 }
                 if (!any_color && pool.count(needed) > 0) {
-                    auto pit = pool.find(needed);
-                    if (spent_sink) spent_sink->insert(pit->color);
-                    pool.erase(pit);
+                    spend_unit(pool, pool.find(needed), spent);
                     it = remaining.erase(it);
                     return true;
                 }
@@ -1427,8 +1413,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
     while (remaining.count(GENERIC) > 0) {
         if (pool.size() > 0) {
-            if (spent_sink) spent_sink->insert(pool.begin()->color);
-            pool.erase(pool.begin());
+            spend_unit(pool, pool.begin(), spent);
             auto git = remaining.find(GENERIC);
             remaining.erase(git);
             continue;
@@ -1444,8 +1429,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                 // Only pay a generic pip with mana the source actually produced; a 0-mana
                 // source erases nothing (consistent with the colored loop above).
                 if (pool.size() > 0) {
-                    if (spent_sink) spent_sink->insert(pool.begin()->color);
-                    pool.erase(pool.begin());
+                    spend_unit(pool, pool.begin(), spent);
                     auto git = remaining.find(GENERIC);
                     remaining.erase(git);
                     return true;
@@ -1593,36 +1577,25 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
 
 PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const ManaValue &cost,
                         ManaPayee paid_for, FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                        TapToPay tap, ManaValue *spent_out) {
+                        TapToPay tap, ManaPaid *spent_out) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-
-    // Arm the Converge spent-color sink for the duration of this payment (CR 702.90). The RAII
-    // guard restores the previous sink on every return path (nested payments — e.g. a mana-source
-    // activation cost paid mid-payment — correctly re-target their own sink). Dry-run affordability
-    // checks inside the payment route through pay_from_pool on pool COPIES, so the armed sink never
-    // sees a simulated spend.
-    struct SinkGuard {
-        ManaValue *prev;
-        ~SinkGuard() { s_mana_spent_sink = prev; }
-    } sink_guard{s_mana_spent_sink};
-    s_mana_spent_sink = spent_out;
 
     ManaValue &remaining = rt.remaining;
     if (!rt.prompting) {
         // If pool already covers it, just spend
         if (can_afford_pool(player.mana, cost)) {
-            spend_mana(controller, cost, paid_for.entity);
+            spend_mana(controller, cost, paid_for.entity, spent_out);
             return PayStatus::PAID;
         }
 
         // Drain existing pool toward the cost first
-        remaining = pay_partial(controller, cost);
+        remaining = pay_partial(controller, cost, spent_out);
 
         // Auto-mana: the greedy payer selects the mana sources (no decisions)
         if (auto_mana) {
             return auto_pay_mana(controller, remaining, paid_for, orderer, /*has_delve=*/false, /*commit=*/true,
-                                 tap)
+                                 tap, /*exclude_entity=*/0, /*life_reserve=*/0, spent_out)
                        ? PayStatus::PAID
                        : PayStatus::FAILED;
         }
@@ -1640,7 +1613,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
     while (!remaining.empty()) {
         // Check if pool now covers remaining cost (from prior mana activations)
         if (can_afford_pool(player.mana, remaining)) {
-            spend_mana(controller, remaining, paid_for.entity);
+            spend_mana(controller, remaining, paid_for.entity, spent_out);
             return PayStatus::PAID;
         }
 

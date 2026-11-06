@@ -2409,13 +2409,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 else if (card_data.alt_cost.is_impending) pc.chosen.mode = ChosenCost::Mode::IMPENDING;
                 else if (card_data.alt_cost.is_warp) pc.chosen.mode = ChosenCost::Mode::WARP;
             }
-            // Converge (CR 702.90): the distinct real colors of mana spent (colorless is not a
-            // color). Its size is the Converge count, taken by the resolution frame as it resolves
-            // and read by a Count$Converge bound (Prismatic Ending's cmcLEY exile threshold).
-            for (Colors c : pc.pay.spent_colors)
-                if (c == WHITE || c == BLUE || c == BLACK || c == RED || c == GREEN)
-                    pc.chosen.colors_spent.insert(c);
-            pc.chosen.mana_by_color = pc.pay.spent_colors;
             spell.chosen = pc.chosen;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;

@@ -584,12 +584,12 @@ static bool read_adamant(const std::string &rest, SvarExpr &x) {
 
 // Read off the source, or as it last existed: an evoked creature's trigger resolves after it is gone.
 static int ev_adamant(const SvarExpr &x, const SvarArgs &a) {
-    const ManaValue *spent = nullptr;
+    const ManaPaid *spent = nullptr;
     if (is_battlefield_permanent(a.source))
-        spent = &global_coordinator.GetComponent<Permanent>(a.source).cast_mana_by_color;
+        spent = &global_coordinator.GetComponent<Permanent>(a.source).cast_mana_paid;
     else if (const LastKnownInfo *lki = departed_lki_for(a.source))
-        spent = &lki->cast_mana_by_color;
-    return spent && static_cast<int>(spent->count(x.color)) >= x.literal ? x.high : x.low;
+        spent = &lki->cast_mana_paid;
+    return spent && static_cast<int>(mana_of_color(*spent, x.color)) >= x.literal ? x.high : x.low;
 }
 
 static bool read_no_dollar(const std::string &rest, SvarExpr &x) {
