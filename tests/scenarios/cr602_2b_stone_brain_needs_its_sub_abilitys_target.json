@@ -1,0 +1,42 @@
+{
+  "name": "cr602_2b_stone_brain_needs_its_sub_abilitys_target",
+  "why": "CR 601.2c, 602.2b: The Stone Brain's target is on its first sub-ability, so with the opponent protected from everything (The One Ring) it has no legal target and isn't offered; it was, and the target step was FATAL",
+  "hand_a": [
+    "The Stone Brain"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "The One Ring"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:The One Ring",
+    "A:cast:The Stone Brain"
+  ],
+  "max_decisions": 19,
+  "expect": [
+    "Player B gains protection from everything",
+    "Player A casts The Stone Brain"
+  ],
+  "expect_menu_not": [
+    "Activate The Stone Brain"
+  ]
+}

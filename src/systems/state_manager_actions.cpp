@@ -248,8 +248,10 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     if (!can_pay(ab.def->cost, check)) return false;
     // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
     // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
-    // against its own controller's nonbasic lands).
-    if (!has_legal_targets(cast_gate_probe(ab, source, activator), orderer)) return false;
+    // against its own controller's nonbasic lands), over the sub-abilities too: The Stone Brain's
+    // target is its first sub-ability's, and a spell's gate reads the same chain.
+    if (!spell_has_castable_targets(cast_gate_probe(ab, source, activator), orderer, activator, /*has_gift=*/false))
+        return false;
     return !payment_blocked(source);
 }
 
