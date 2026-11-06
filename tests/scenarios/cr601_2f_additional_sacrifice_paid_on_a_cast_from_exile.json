@@ -1,0 +1,42 @@
+{
+  "name": "cr601_2f_additional_sacrifice_paid_on_a_cast_from_exile",
+  "why": "CR 601.2f, 601.2h: with a green creature, Natural Order from exile is offered and sacrifices it",
+  "hand_a": [
+    "Light Up the Stage",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Natural Order",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Light Up the Stage",
+    "A:desc:Cast Natural Order"
+  ],
+  "max_decisions": 16,
+  "expect_order": [
+    "Player A sacrifices Grizzly Bears",
+    "Player A casts Natural Order"
+  ]
+}

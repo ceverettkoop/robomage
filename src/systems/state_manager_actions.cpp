@@ -63,7 +63,7 @@ static LegalAction cast_action(Entity card_entity, const std::string &desc, int 
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
-                                 const ManaValue &mana, uint16_t unchecked, std::shared_ptr<Orderer> orderer);
+                                 const ManaValue &mana, std::shared_ptr<Orderer> orderer);
 static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
     Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
@@ -117,12 +117,13 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer) {
     if (!ignore_timing && !spell_timing_ok(face, caster, sorcery_window)) return false;
-    // A mandatory additional cost with several forms: one of them must be payable (CR 601.2f), with
-    // the mana held to the cast's own gates.
-    if (!face.additional_choices.empty()) {
+    // A mandatory additional cost applies however the spell is cast (CR 118.9d, 601.2f): it must be
+    // payable, one of its forms if it has several, with the mana held to the cast's own gates.
+    {
         CostCheck check(caster, card_entity, orderer);
         check.unchecked = CostParts::kind_bit(CostPart::MANA);
-        if (payable_choices(face.additional_choices, check).empty()) return false;
+        if (!can_pay(spell_additional_cost(face), check)) return false;
+        if (!face.additional_choices.empty() && payable_choices(face.additional_choices, check).empty()) return false;
     }
     // Target legality (CR 601.2c), mode-aware: for a Gift spell the required target type switches
     // on the gift promise (Into the Flood Maw: a creature without the gift, a nonland permanent
@@ -167,19 +168,13 @@ static ManaValue regular_cast_cost(
     return cost;
 }
 
-// Only a cast from hand and a free cast hold the player to the spell's additional sacrifice; every
-// other cast for the card's mana cost (a back face, Offspring, a permission to cast it from a
-// graveyard or exile) is offered without it, and its pick then finds nothing to take.
-constexpr uint16_t kSpellSacrificeUnchecked = CostParts::kind_bit(CostPart::SACRIFICE);
-
 // Can `caster` cast `face` for its mana cost, `mana` after reductions, with the hybrid and Phyrexian
 // pips folded in (castable iff SOME assignment is payable), and pay its additional costs?
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
-                                 const ManaValue &mana, uint16_t unchecked, std::shared_ptr<Orderer> orderer) {
+                                 const ManaValue &mana, std::shared_ptr<Orderer> orderer) {
     CostCheck check(caster, card_entity, orderer);
     check.mana = &mana;
     check.spell = &face;
-    check.unchecked = unchecked;
     return can_pay(spell_additional_cost(face), check);
 }
 
@@ -276,8 +271,7 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
         // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
         // paid.
-        if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, orderer),
-                                  kSpellSacrificeUnchecked, orderer))
+        if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, orderer), orderer))
             return false;
     } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
@@ -691,8 +685,7 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
         if (can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
             regular_cast_payable(back, card_entity, priority_player,
-                                 regular_cast_cost(back, card_entity, priority_player, orderer),
-                                 kSpellSacrificeUnchecked, orderer))
+                                 regular_cast_cost(back, card_entity, priority_player, orderer), orderer))
             actions.push_back(la);
         offer_free_cast(actions, la, back, Zone::HAND, priority_player, sorcery_window, orderer);
     }
@@ -805,8 +798,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // sacrifice a green creature"): the spell can't be cast unless a matching permanent is
             // available to sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$
             // carries a Sac<...> token, matched (incl. color qualifier) like an activation cost.
-            bool can_regular = regular_cast_payable(card_data, card_entity, priority_player, effective_cost,
-                                                    /*unchecked=*/0, orderer);
+            bool can_regular = regular_cast_payable(card_data, card_entity, priority_player, effective_cost, orderer);
 
             bool can_alt = can_afford_alt(card_data, card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -828,8 +820,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost.mana()) offspring_total.insert(c);
-                if (regular_cast_payable(card_data, card_entity, priority_player, offspring_total,
-                                         kSpellSacrificeUnchecked, orderer)) {
+                if (regular_cast_payable(card_data, card_entity, priority_player, offspring_total, orderer)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.option_ordinal = 2;  // cast variant: 2 = offspring
@@ -918,8 +909,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
             regular_cast_payable(gcd, gy_entity, priority_player,
-                                 regular_cast_cost(gcd, gy_entity, priority_player, orderer),
-                                 kSpellSacrificeUnchecked, orderer))
+                                 regular_cast_cost(gcd, gy_entity, priority_player, orderer), orderer))
             actions.push_back(gy_la);
         offer_free_cast(actions, gy_la, gcd, Zone::GRAVEYARD, priority_player, sorcery_window, orderer);
     }
