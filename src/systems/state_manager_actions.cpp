@@ -454,9 +454,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         if (!found) return false;
     }
 
-    // Condition: not your turn (Force of Negation, Force of Vigor). A free alternative cost is not
-    // held to it.
-    if (alt_cost.condition_not_your_turn && !alt_cost.cost.is_free()) {
+    // Condition: not your turn (Force of Negation, Force of Vigor).
+    if (alt_cost.condition_not_your_turn) {
         bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.turn_state.player_a_turn
                                                               : !cur_game.turn_state.player_a_turn;
         if (is_my_turn) return false;
