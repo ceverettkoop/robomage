@@ -781,7 +781,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(z.is_face_down ? 1 : 0);
     const bool transformed =
         visible && ((perm && perm->transformed) || (global_coordinator.entity_has_component<Spell>(e) &&
-                                                       global_coordinator.GetComponent<Spell>(e).cast_back_face));
+                                                       global_coordinator.GetComponent<Spell>(e).chosen.back_face));
     r.u8(transformed ? 1 : 0);
     r.u16(visible && perm && perm->printed_card && cd ? card_or_none(card_name_to_index(cd->name)) : NONE16);
     // The phasing subsystem's flag is read directly: phased-out permanents are included and
@@ -1036,30 +1036,30 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         int x = -1;
         if (sp) {
             const CardData *cd = object_card_data(e);
-            if (cd && active_face(e, *cd).has_x_cost) x = sp->x_paid;
+            if (cd && active_face(e, *cd).has_x_cost) x = sp->chosen.x;
         } else if (ab) {
             x = ab->x_paid;
         }
         r.i16(std::max(-1, std::min(x, 32767))).u16(ab ? u16_count(static_cast<int64_t>(ab->def->amount)) : 0);
-        const int kicked = sp ? static_cast<int>(std::count(sp->kicked.begin(), sp->kicked.end(), true)) : 0;
-        r.u8(u8_count(kicked)).u8(sp ? u8_count(sp->replicate_count) : 0);
+        const int kicked = sp ? static_cast<int>(std::count(sp->chosen.kicked.begin(), sp->chosen.kicked.end(), true)) : 0;
+        r.u8(u8_count(kicked)).u8(sp ? u8_count(sp->chosen.replicate_count) : 0);
         uint32_t variant = 0;
         if (sp) {
             using rmstate::CastVariant;
             auto bit = [&variant](CastVariant v) { variant |= 1u << static_cast<int>(v); };
-            if (sp->cast_with_flashback) bit(CastVariant::FLASHBACK);
-            if (sp->cast_with_evoke) bit(CastVariant::EVOKE);
-            if (sp->cast_with_escape) bit(CastVariant::ESCAPE);
-            if (sp->cast_with_offspring) bit(CastVariant::OFFSPRING);
-            if (sp->cast_with_impending) bit(CastVariant::IMPENDING);
-            if (sp->cast_with_warp) bit(CastVariant::WARP);
-            if (sp->cast_back_face) bit(CastVariant::BACK_FACE);
+            if (sp->chosen.flashback()) bit(CastVariant::FLASHBACK);
+            if (sp->chosen.mode == ChosenCost::Mode::EVOKE) bit(CastVariant::EVOKE);
+            if (sp->chosen.escape()) bit(CastVariant::ESCAPE);
+            if (sp->chosen.offspring) bit(CastVariant::OFFSPRING);
+            if (sp->chosen.mode == ChosenCost::Mode::IMPENDING) bit(CastVariant::IMPENDING);
+            if (sp->chosen.mode == ChosenCost::Mode::WARP) bit(CastVariant::WARP);
+            if (sp->chosen.back_face) bit(CastVariant::BACK_FACE);
         }
         r.u16(variant)
             .u8(sp && sp->is_copy ? 1 : 0)
             .u8(sp && sp->cant_be_countered ? 1 : 0)
-            .u8(sp && sp->gift_promised ? 1 : 0);
-        r.u8(sp ? u8_count(sp->mana_spent) : 0).u8(sp ? color_mask(sp->colors_spent) : 0);
+            .u8(sp && sp->chosen.gift_promised ? 1 : 0);
+        r.u8(sp ? u8_count(sp->chosen.mana_spent) : 0).u8(sp ? color_mask(sp->chosen.colors_spent) : 0);
         r.u32(ab ? ab->delayed_link.seq : 0);
         if (!ab) continue;
         for (int mode : ab->charm_chosen) {

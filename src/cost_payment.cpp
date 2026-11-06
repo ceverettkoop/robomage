@@ -310,7 +310,7 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
             // The cost's pip count is the total mana paid, after any delve/improvise reduction
             // already removed pips from it, for a ValidSA$ Spell.ManaSpent trigger to read at cast
             // time. A no-mana alternative cost leaves the 0 that defer_alternate_cost recorded.
-            if (who.run->mana_pending) *who.mana_spent = static_cast<int>(who.run->mana.size());
+            if (who.run->mana_pending) who.chosen->mana_spent = static_cast<int>(who.run->mana.size());
             break;
         case CostStep::PAY_MANA:
             return pay_mana(who, ctx, orderer);
@@ -658,7 +658,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
-                                         /*has_delve=*/false, run.improvise, who.spent_colors);
+                                         /*has_delve=*/false, run.improvise, &run.spent_colors);
     if (paid == PayStatus::PAID) coverage_cost("Mana");
     return paid;
 }
@@ -705,6 +705,7 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
         if (item.delve) cur_game.delve_exiled.push_back(ObjectRef::of(item.entity));
+        if (who.chosen) who.chosen->paid.push_back({item.kind, ObjectRef::of(item.entity)});
     }
     run.items.clear();
 }

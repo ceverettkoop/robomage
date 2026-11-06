@@ -53,7 +53,7 @@ std::set<Colors> card_colors(const CardData &cd) {
 int object_mana_value(Entity e, const CardData &cd) {
     if (e != 0 && global_coordinator.entity_has_component<Spell>(e)) {
         const CardData &face = active_face(e, cd);
-        return card_mana_value(face) + face.x_pip_count * global_coordinator.GetComponent<Spell>(e).x_paid;
+        return card_mana_value(face) + face.x_pip_count * global_coordinator.GetComponent<Spell>(e).chosen.x;
     }
     if (e != 0 && cd.is_split && cd.backside) return card_mana_value(cd) + card_mana_value(*cd.backside);
     return card_mana_value(cd);

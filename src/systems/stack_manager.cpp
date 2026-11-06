@@ -75,8 +75,8 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab) {
     // stack with it (triggered, CR 107.3m/n), and no mana was spent to cast it.
     if (global_coordinator.entity_has_component<Spell>(top_entity)) {
         const Spell &spell = global_coordinator.GetComponent<Spell>(top_entity);
-        fr.x_paid = spell.x_paid;
-        fr.converge = static_cast<int>(spell.colors_spent.size());
+        fr.x_paid = spell.chosen.x;
+        fr.converge = static_cast<int>(spell.chosen.colors_spent.size());
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
     }
@@ -121,18 +121,18 @@ bool StackManager::aura_spell_target_illegal(Entity spell) {
 void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
-    if (spell.cast_with_evoke) entry.evoked = true;
+    if (spell.chosen.mode == ChosenCost::Mode::EVOKE) entry.evoked = true;
     // Offspring: its token-copy ETB trigger fires.
-    if (spell.cast_with_offspring) entry.offspring = true;
+    if (spell.chosen.offspring) entry.offspring = true;
     // Escape: Uro's "sacrifice it unless it escaped" reads it.
-    if (spell.cast_with_escape) entry.escaped = true;
+    if (spell.chosen.escape()) entry.escaped = true;
     // Impending (CR 702.175): it enters with time counters, a noncreature until they shed.
-    if (spell.cast_with_impending) entry.impending = true;
+    if (spell.chosen.mode == ChosenCost::Mode::IMPENDING) entry.impending = true;
     // Warp: its "exile at the next end step" delayed trigger is registered as it enters.
-    if (spell.cast_with_warp) entry.warp = true;
+    if (spell.chosen.mode == ChosenCost::Mode::WARP) entry.warp = true;
     // The X paid for an X-cost permanent, for an "enters with X counters" replacement (Chalice
     // of the Void).
-    if (spell.x_paid > 0) entry.x_paid = spell.x_paid;
+    if (spell.chosen.x > 0) entry.x_paid = spell.chosen.x;
 }
 
 void StackManager::init() {

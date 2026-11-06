@@ -22,7 +22,7 @@ struct CardData;
 // resolves or is countered. Single source for that "leaves-stack → exile" rule.
 inline bool spell_cast_with_flashback(Entity e) {
     return global_coordinator.entity_has_component<Spell>(e) &&
-           global_coordinator.GetComponent<Spell>(e).cast_with_flashback;
+           global_coordinator.GetComponent<Spell>(e).chosen.flashback();
 }
 
 // The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the

@@ -40,7 +40,7 @@ struct AltCost {
     // object is exiled (a delayed triggered ability, mirroring Unearth), and for as long as it
     // remains exiled this way its owner may cast it on a later turn for its NORMAL cost (a lasting
     // cast-from-exile permission). Cast for the normal cost, none of this applies. The end-step
-    // exile + recast permission are keyed off Spell::cast_with_warp; see effect_warp.cpp.
+    // exile + recast permission are keyed off ChosenCost::Mode::WARP; see effect_warp.cpp.
     bool is_warp = false;
     // K:Miracle:<cost> — Miracle (CR 702.94). An ALTERNATIVE casting cost: when a player draws
     // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
@@ -145,14 +145,14 @@ struct CardData{
     // cast. kicker_costs[i] is the mana paid for the (i+1)th kicker; the spell is "kicked
     // with its (i+1)th kicker" iff that cost was paid. The list is multikicker-ready (any
     // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
-    // kicker" triggers read the per-Spell kicked flags by index (see Spell::kicked).
+    // kicker" triggers read the per-Spell kicked flags by index (see ChosenCost::kicked).
     std::vector<CostParts> kicker_costs;
     // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost that may be paid ANY NUMBER OF TIMES as
     // the spell is cast (CR 702.x / Consign to Memory). Each payment increments the spell's
     // "replicate count"; when the spell is cast it is copied that many times, and the copies
     // may choose new targets (the copy mechanism, not a recast). has_replicate gates it; the
     // per-instance mana paid for each replication is replicate_cost. The chosen count is stored
-    // per-Spell (Spell::replicate_count) so the on-cast copy effect knows how many copies to make.
+    // per-Spell (ChosenCost::replicate_count) so the on-cast copy effect knows how many copies to make.
     bool has_replicate = false;
     CostParts replicate_cost;
     // K:Escalate:<cost> — "for each mode you choose beyond the first as you cast this spell, you

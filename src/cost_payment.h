@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "components/chosen_cost.h"
 #include "components/cost_part.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
@@ -57,6 +58,9 @@ struct CostRun {
     bool delve = false;      // the spell's Delve applies to `mana`
     bool improvise = false;  // the spell's Improvise applies to `mana`
     ManaPaymentRT mana_payment;
+    // The exact colors of mana spent, accumulated by the payment (pay_mana_cost's spent-sink) as
+    // pips leave the pool. Empty for a free / no-mana cast.
+    ManaValue spent_colors;
     // Snapshot of mana state taken as the payment first can activate a mana ability, restored when
     // it is reversed (mana_snap_taken).
     ManaPaymentSnapshot mana_snap;
@@ -105,8 +109,7 @@ struct CostPayer {
     const CostParts *flashback = nullptr;
     const CostParts *escape = nullptr;
     bool spell_has_delve = false;
-    int *mana_spent = nullptr;          // the pips the mana cost comes to (CR 106/601.2g)
-    ManaValue *spent_colors = nullptr;  // the colors spent, persisting with `run`
+    ChosenCost *chosen = nullptr;  // what the cast has committed to, recording what is paid
 
     // A mana ability paying through activate_mana_source: the pool and the player it pays from, the
     // real ones or a simulated payment's copies (commit false: no tap, no sacrifice, no narrative).

@@ -58,7 +58,7 @@ static StatePart cast_step_part(const Cast &pc) {
 static const CardData *cast_face(const Cast &pc) {
     if (pc.spell_entity == 0 || !global_coordinator.entity_has_component<CardData>(pc.spell_entity)) return nullptr;
     const CardData &cd = global_coordinator.GetComponent<CardData>(pc.spell_entity);
-    return pc.cast_back_face && cd.backside ? cd.backside.get() : &cd;
+    return pc.chosen.back_face ? cd.backside.get() : &cd;
 }
 
 static bool cast_cost(const Cast &pc, PendingCost &out) {
@@ -70,7 +70,7 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
     out.energy = pc.pay.energy;
     // Escalate's discards still to pick (CR 702.120a), owed once the modes are announced.
     if (const CardData *face = cast_face(pc))
-        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra - pc.pay.discards_chosen);
+        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.chosen.escalate_count - pc.pay.discards_chosen);
     // The regular cost branch folds X, hybrid and Phyrexian pips into cost_to_pay one step at a
     // time (KICKER through PHYREXIAN_PIP; the alternative branches skip them): the pips of the
     // steps not yet reached are still owed as printed.

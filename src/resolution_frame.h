@@ -378,7 +378,7 @@ struct ResolutionFrame {
     bool active = false;
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
-    // The resolving object's own X (CR 107.3a: the spell's Spell::x_paid, an ability's
+    // The resolving object's own X (CR 107.3a: the spell's ChosenCost::x, an ability's
     // Ability::x_paid) and, for a spell, its Converge count (CR 702.90: distinct colors of mana
     // spent to cast it); captured once as it starts resolving, read by Count$xPaid / cmcLEX /
     // Count$Converge through current_x_paid() / current_converge().

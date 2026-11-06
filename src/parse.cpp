@@ -1449,7 +1449,7 @@ static void kw_devoid(const std::string &, KeywordContext &ctx) {
 // receives the gift as the spell resolves, before its other effects. The gift effect is
 // held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
 // card.gift_abilities; the cast path (action_processor) offers the promise choice and the
-// resolving spell runs these when Spell::gift_promised is set (resolve_ability).
+// resolving spell runs these when ChosenCost::gift_promised is set (resolve_ability).
 static void kw_gift(const std::string &, KeywordContext &ctx) {
     ctx.card.has_gift = true;
     ctx.card.keywords.push_back("Gift");

@@ -201,8 +201,7 @@ static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
     // stack (CR 601.2a, 712.8f), so active_face reads them throughout the proposal.
     Spell spell;
     spell.caster = caster;
-    spell.cast_back_face = pc.cast_back_face &&
-                           global_coordinator.GetComponent<CardData>(pc.spell_entity).backside;
+    spell.chosen.back_face = pc.chosen.back_face;
     global_coordinator.AddComponent(pc.spell_entity, spell);
 }
 
@@ -229,15 +228,15 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 // The --coverage cast keys of a spell becoming cast: one per LegalAction flag the cast carries (a
 // split card's second half is its back face), or the zone of a cast with none.
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity) {
-    if (pc.use_flashback) coverage_cast("flashback");
-    if (pc.use_escape) coverage_cast("escape");
-    if (pc.use_alt_cost) coverage_cast("alt_cost");
-    if (pc.use_offspring) coverage_cast("offspring");
-    if (pc.impulse_cast) coverage_cast("impulse");
-    if (pc.without_mana_cost) coverage_cast("without_mana_cost");
-    if (pc.cast_back_face) coverage_cast(front.is_split ? "split_half" : "back_face");
-    if (pc.use_flashback || pc.use_escape || pc.use_alt_cost || pc.use_offspring || pc.impulse_cast ||
-        pc.without_mana_cost || pc.cast_back_face)
+    if (pc.chosen.flashback()) coverage_cast("flashback");
+    if (pc.chosen.escape()) coverage_cast("escape");
+    if (pc.chosen.alternative()) coverage_cast("alt_cost");
+    if (pc.chosen.offspring) coverage_cast("offspring");
+    if (pc.chosen.impulse) coverage_cast("impulse");
+    if (pc.chosen.without_mana_cost) coverage_cast("without_mana_cost");
+    if (pc.chosen.back_face) coverage_cast(front.is_split ? "split_half" : "back_face");
+    if (pc.chosen.flashback() || pc.chosen.escape() || pc.chosen.alternative() || pc.chosen.offspring || pc.chosen.impulse ||
+        pc.chosen.without_mana_cost || pc.chosen.back_face)
         return;
     const EntryInfo *entry = find_entry_info(spell_entity);
     coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
@@ -268,7 +267,7 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
     std::shared_ptr<Orderer> orderer) {
     if (card_data.escalate_cost.count(CostPart::DISCARD) > 0) {
         const int need = card_data.escalate_cost.count(CostPart::DISCARD) * extra;
-        const int pitch = pc.use_alt_cost ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
+        const int pitch = pc.chosen.alternative() ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
         int hand = 0;
         for (Entity e : orderer->get_hand(caster))
             if (e != pc.spell_entity) hand++;
@@ -307,18 +306,18 @@ static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &c
 
 // See forward declaration at top of file.
 static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
-    pc.escalate_extra = std::max(0, static_cast<int>(pc.ability.charm_chosen.size()) - 1);
-    if (pc.escalate_extra == 0) return;
+    pc.chosen.escalate_count = std::max(0, static_cast<int>(pc.ability.charm_chosen.size()) - 1);
+    if (pc.chosen.escalate_count == 0) return;
     if (!card_data.escalate_cost.mana().empty()) {
         if (!pc.pay.mana_pending) {
             pc.pay.mana.clear();
             pc.pay.mana_pending = true;
         }
-        for (int i = 0; i < pc.escalate_extra; i++)
+        for (int i = 0; i < pc.chosen.escalate_count; i++)
             for (Colors c : card_data.escalate_cost.mana()) pc.pay.mana.insert(c);
     }
     game_log("%s pays the escalate cost for %s (%d)\n", player_name(caster).c_str(), card_data.name.c_str(),
-        pc.escalate_extra);
+        pc.chosen.escalate_count);
 }
 
 // See forward declaration at top of file.
@@ -460,7 +459,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
     // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. The payment recomputes it
     // from the deferred cost when there IS one, so the two agree.
-    game.pending.cast.mana_spent = static_cast<int>(alt_mana.size());
+    game.pending.cast.chosen.mana_spent = static_cast<int>(alt_mana.size());
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.cost.is_free() && alt_mana.empty()) {
@@ -482,7 +481,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
 // cost (CR 118.9), the card's otherwise.
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data) {
     static const std::vector<HybridPip> kNone;
-    return pc.without_mana_cost ? kNone : card_data.hybrid_mana;
+    return pc.chosen.without_mana_cost ? kNone : card_data.hybrid_mana;
 }
 
 // Park a combat target sub-prompt (attack target / block target) as a loop-top
@@ -1007,7 +1006,7 @@ static std::vector<const Ability *> spell_targeting_abilities(const Ability &pri
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised) {
-    bool &gift_promised = cur_game.pending.cast.gift_promised;
+    bool &gift_promised = cur_game.pending.cast.chosen.gift_promised;
     bool saved = gift_promised;
     gift_promised = promised;
     bool ok = true;
@@ -1782,7 +1781,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
     // face, but the spell has only the BACK face's characteristics — pay the back's mana cost,
     // put the back's spell ability on the stack, and (if the back is a permanent) enter as the
     // back face. Every cast-path read of card_data comes from the back face for this cast.
-    const CardData &card_data = (pc.cast_back_face && front_data.backside)
+    const CardData &card_data = (pc.chosen.back_face && front_data.backside)
                                     ? *front_data.backside : front_data;
     Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
 
@@ -1793,13 +1792,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // and additional costs all apply (CR 601.2b, 601.2f).
             const Game::ImpulseCastPermission *grant_p =
                 cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
-            const bool impulse_normal = pc.impulse_cast && grant_p &&
+            const bool impulse_normal = pc.chosen.impulse && grant_p &&
                                         grant_p->resource == Game::ImpulseCastPermission::NORMAL;
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
             // chosen (601.2c before 601.2g/h; see CostRun). Paying
             // the sacrifice first leaked information and changed the board before the
             // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
-            if (pc.use_flashback) {
+            if (pc.chosen.flashback()) {
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
                 pc.pay.mana =
@@ -1812,7 +1811,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
             // cards covering >=N card types). The exile is a cost, paid as the spell is cast —
             // after targets are chosen, like every other cost (601.2c before 601.2g/h).
-            } else if (pc.use_escape) {
+            } else if (pc.chosen.escape()) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
                 pc.pay.mana =
                     floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
@@ -1827,7 +1826,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
             // for a spell cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light
             // Up the Stage, warp) pays the card's own costs, so it takes the regular branch below.
-            } else if (pc.impulse_cast && !impulse_normal) {
+            } else if (pc.chosen.impulse && !impulse_normal) {
                 if (grant_p) {
                     const auto &grant = *grant_p;
                     if (grant.resource == Game::ImpulseCastPermission::FREE)
@@ -1839,7 +1838,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pc.pay.life = grant.amount;
                 }
 
-                if (card_data.has_x_cost) pc.x_paid = 0;
+                if (card_data.has_x_cost) pc.chosen.x = 0;
 
                 // Cost-increase / SetCost-floor statics apply to alternative costs too
                 // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
@@ -1856,7 +1855,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
             // ALTERNATE COST — determined here, paid in the payment phase like every
             // other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
-            } else if (pc.use_alt_cost) {
+            } else if (pc.chosen.alternative()) {
                 defer_alternate_cost(game, card_data, caster);
                 pc.step = Game::PendingCast::GIFT;
 
@@ -1866,22 +1865,22 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
                 // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
                 // additional costs below are offered and paid as on any cast.
-                pc.cost_to_pay = pc.without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
+                pc.cost_to_pay = pc.chosen.without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
                                                       : effective_base_cost(card_data, caster);
                 // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
                 // once they are chosen (AURA_TARGET), the total cost being determined after them
                 // (CR 601.2c, 601.2f).
-                pc.target_cost_reduction = !pc.without_mana_cost && has_target_cost_reduction(card_data, caster);
-                if (pc.without_mana_cost)
+                pc.target_cost_reduction = !pc.chosen.without_mana_cost && has_target_cost_reduction(card_data, caster);
+                if (pc.chosen.without_mana_cost)
                     game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
                         card_data.name.c_str());
 
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
-                if (pc.use_offspring)
+                if (pc.chosen.offspring)
                     for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
 
                 if (!card_data.kicker_costs.empty())
-                    pc.kicked_flags.assign(card_data.kicker_costs.size(), false);
+                    pc.chosen.kicked.assign(card_data.kicker_costs.size(), false);
                 pc.step = Game::PendingCast::KICKER;
             }
             break;
@@ -1892,7 +1891,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // declared as the spell is cast. Offer one yes/no per kicker (only when its
             // extra mana is still affordable on top of everything chosen so far); an
             // accepted kicker's mana is folded into cost_to_pay and recorded in
-            // kicked_flags so the spell becomes "kicked with its Nth kicker". General over
+            // ChosenCost::kicked so the spell becomes "kicked with its Nth kicker". General over
             // any number of independent kicker costs (multikicker-ready data model).
             while (pc.kicker_idx < card_data.kicker_costs.size()) {
                 size_t ki = pc.kicker_idx;
@@ -1907,7 +1906,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     // Apply the latched y/n for THIS pip (the arm below returned on it).
                     if (resume_choice == 1) {
                         pc.cost_to_pay = with_kicker;
-                        pc.kicked_flags[ki] = true;
+                        pc.chosen.kicked[ki] = true;
                         game_log("%s pays the kicker %zu cost for %s\n",
                                  player_name(caster).c_str(), ki + 1, card_data.name.c_str());
                     }
@@ -1931,7 +1930,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // ANY NUMBER OF TIMES as the spell is cast. Offer a repeated yes/no — each "yes"
             // folds another replicate cost's mana into cost_to_pay and bumps the replicate
             // count — stopping once the next payment is unaffordable or declined. The count
-            // drives the on-cast copy effect (Spell::replicate_count).
+            // drives the on-cast copy effect (ChosenCost::replicate_count).
             if (card_data.has_replicate) {
                 while (true) {
                     ManaValue with_replicate = pc.cost_to_pay;
@@ -1944,14 +1943,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         resume_choice = -1;
                         if (!accepted) break;
                         pc.cost_to_pay = with_replicate;
-                        pc.replicate_count++;
+                        pc.chosen.replicate_count++;
                         game_log("%s pays the replicate cost for %s (%d)\n",
                                  player_name(caster).c_str(), card_data.name.c_str(),
-                                 pc.replicate_count);
+                                 pc.chosen.replicate_count);
                         continue;
                     }
                     std::string prompt = "pay replicate " + mana_value_text(card_data.replicate_cost.mana()) +
-                        " for " + card_data.name + " (paid " + std::to_string(pc.replicate_count) + ")";
+                        " for " + card_data.name + " (paid " + std::to_string(pc.chosen.replicate_count) + ")";
                     arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                     return;
                 }
@@ -1963,13 +1962,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         case Game::PendingCast::CHOOSE_X: {
             // X-COST: prompt player to choose X value, add X generic to cost. Cast without
             // paying its mana cost, the only legal X is 0 (CR 107.3b).
-            if (card_data.has_x_cost && pc.without_mana_cost) {
-                pc.x_paid = 0;
+            if (card_data.has_x_cost && pc.chosen.without_mana_cost) {
+                pc.chosen.x = 0;
             } else if (card_data.has_x_cost) {
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
-                    pc.x_paid = static_cast<int>(x_val);
+                    pc.chosen.x = static_cast<int>(x_val);
                     // Each {X} in the cost is paid with the one chosen value (CR 107.3a).
                     size_t x_pips = static_cast<size_t>(card_data.x_pip_count);
                     for (size_t i = 0; i < x_val * x_pips; i++) pc.cost_to_pay.insert(GENERIC);
@@ -2062,7 +2061,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         case Game::PendingCast::PHYREXIAN_PIP: {
             // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life (none when the
             // mana cost is not paid)
-            if (!card_data.phyrexian_mana.empty() && !pc.without_mana_cost) {
+            if (!card_data.phyrexian_mana.empty() && !pc.chosen.without_mana_cost) {
                 Entity caster_entity = get_player_entity(caster);
                 auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                 while (pc.phyrexian_idx < card_data.phyrexian_mana.size()) {
@@ -2161,7 +2160,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
-                    pc.x_paid = static_cast<int>(x_val);
+                    pc.chosen.x = static_cast<int>(x_val);
                     pc.pay.life_x = static_cast<int>(x_val);
                 } else {
                     size_t max_x = max_life_x(pc, caster, spell_entity, orderer);
@@ -2186,13 +2185,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // opponent. The promise is not a cost — it is decided here (before targets are chosen,
             // CR 601.2c) and it both (a) switches a Count$PromisedGift-driven effect via the
             // pending flag while targets are selected and (b) makes the opponent receive the gift
-            // on resolution (see Spell::gift_promised / resolve_ability). Optional yes/no.
+            // on resolution (see ChosenCost::gift_promised / resolve_ability). Optional yes/no.
             if (card_data.has_gift) {
                 if (resume_choice >= 0) {
                     bool accepted = (resume_choice == 1);
                     resume_choice = -1;
                     if (accepted) {
-                        pc.gift_promised = true;
+                        pc.chosen.gift_promised = true;
                         game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
                                  player_name(opponent_of(caster)).c_str());
                     }
@@ -2230,7 +2229,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     if (must_promise) {
                         // Forced promise: today's short-circuit never prompted here, so
                         // advance without arming — zero decisions, exactly as before.
-                        pc.gift_promised = true;
+                        pc.chosen.gift_promised = true;
                         game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
                                  player_name(opponent_of(caster)).c_str());
                     } else if (can_promise) {
@@ -2336,15 +2335,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // Targets are locked in (CR 601.2c); everything from here is cost payment (601.2f-h).
             FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
             CostPayer who(CostPath::CAST, caster, spell_entity, spell_entity, nullptr, &pc.pay);
-            if (pc.use_alt_cost) who.alternative = &card_data.alt_cost.cost;
+            if (pc.chosen.alternative()) who.alternative = &card_data.alt_cost.cost;
             who.additional = &spell_additional_cost(card_data);
             who.escalate = &card_data.escalate_cost;
-            who.escalate_times = pc.escalate_extra;
-            if (pc.use_flashback) who.flashback = &card_data.flashback_cost;
-            if (pc.use_escape) who.escape = &card_data.escape_cost;
+            who.escalate_times = pc.chosen.escalate_count;
+            if (pc.chosen.flashback()) who.flashback = &card_data.flashback_cost;
+            if (pc.chosen.escape()) who.escape = &card_data.escape_cost;
             who.spell_has_delve = card_data.has_delve;
-            who.mana_spent = &pc.mana_spent;
-            who.spent_colors = &pc.mana_spent_colors;
+            who.chosen = &pc.chosen;
             const PayStatus paid = run_cost_parts(who, ctx, orderer);
             if (paid == PayStatus::SUSPENDED) return;
             if (paid == PayStatus::FAILED) {
@@ -2376,30 +2374,18 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // as the card moved to the stack, begin_cast) now records how it was cast.
             Spell spell;
             spell.caster = caster;
-            spell.cast_with_flashback = pc.use_flashback;
-            spell.cast_with_evoke = pc.use_alt_cost && card_data.alt_cost.is_evoke;
-            spell.cast_with_escape = pc.use_escape;
-            spell.cast_with_offspring = pc.use_offspring;
-            spell.cast_with_impending = pc.use_alt_cost && card_data.alt_cost.is_impending;
-            spell.cast_with_warp = pc.use_alt_cost && card_data.alt_cost.is_warp;
-            spell.cast_back_face = pc.cast_back_face && front_data.backside;
-            spell.kicked = pc.kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
-            spell.replicate_count = pc.replicate_count;  // # of replicate payments (0 if none/no Replicate)
-            spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
-            spell.mana_spent = pc.mana_spent;  // total mana paid (CR 106); read by ValidSA$ Spell.ManaSpent triggers
+            if (pc.chosen.mode == ChosenCost::Mode::ALTERNATIVE) {
+                if (card_data.alt_cost.is_evoke) pc.chosen.mode = ChosenCost::Mode::EVOKE;
+                else if (card_data.alt_cost.is_impending) pc.chosen.mode = ChosenCost::Mode::IMPENDING;
+                else if (card_data.alt_cost.is_warp) pc.chosen.mode = ChosenCost::Mode::WARP;
+            }
             // Converge (CR 702.90): the distinct real colors of mana spent (colorless is not a
             // color). Its size is the Converge count, taken by the resolution frame as it resolves
             // and read by a Count$Converge bound (Prismatic Ending's cmcLEY exile threshold).
-            for (Colors c : pc.mana_spent_colors)
+            for (Colors c : pc.pay.spent_colors)
                 if (c == WHITE || c == BLUE || c == BLACK || c == RED || c == GREEN)
-                    spell.colors_spent.insert(c);
-            // Record the X value paid so an "enters with X counters" replacement can read
-            // it (Chalice of the Void: enters with X charge counters) and so the resolving
-            // spell's Count$xPaid amount reads the right X (the resolution frame takes it from
-            // here). A variable-life X spell (Toxic Deluge) has no mana X, so also key off its
-            // PayLife<X> cost.
-            if (card_data.has_x_cost || spell_has_variable_life_cost(card_data))
-                spell.x_paid = pc.x_paid;
+                    pc.chosen.colors_spent.insert(c);
+            spell.chosen = pc.chosen;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;
@@ -2421,7 +2407,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             count_cast_modes(pc, front_data, spell_entity);
             // A play permission is consumed by the cast it allowed (it lapses once the card
             // has left exile).
-            if (pc.impulse_cast) cur_game.resolved_effects.impulse_cast_permission.erase(spell_entity);
+            if (pc.chosen.impulse) cur_game.resolved_effects.impulse_cast_permission.erase(spell_entity);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells
             {
@@ -2488,7 +2474,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // suspend as loop-top pending decisions, and a resume must not re-run this step's
             // cast events. A copy is not cast, so it replicates nothing.
             if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
-                int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
+                int rc = global_coordinator.GetComponent<Spell>(spell_entity).chosen.replicate_count;
                 if (rc > 0) copy_spell_begin(pc.copy_rt, spell_entity, rc, caster);
             }
             pc.step = Game::PendingCast::COPY_TARGETS;
@@ -2681,13 +2667,14 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             pc.active = true;
             pc.spell_entity = spell_entity;
             pc.caster_is_a = (caster == Zone::PLAYER_A);
-            pc.use_flashback = action.use_flashback;
-            pc.use_escape = action.use_escape;
-            pc.use_alt_cost = action.use_alt_cost;
-            pc.use_offspring = action.use_offspring;
-            pc.impulse_cast = action.impulse_cast;
-            pc.cast_back_face = action.cast_back_face;
-            pc.without_mana_cost = action.without_mana_cost;
+            pc.chosen.mode = action.use_flashback ? ChosenCost::Mode::FLASHBACK
+                             : action.use_escape  ? ChosenCost::Mode::ESCAPE
+                             : action.use_alt_cost ? ChosenCost::Mode::ALTERNATIVE
+                                                   : ChosenCost::Mode::REGULAR;
+            pc.chosen.offspring = action.use_offspring;
+            pc.chosen.impulse = action.impulse_cast;
+            pc.chosen.back_face = action.cast_back_face && front_data.backside;
+            pc.chosen.without_mana_cost = action.without_mana_cost;
             begin_cast(pc, caster, orderer);
             run_cast_flow(pc, game, orderer, -1);
             break;

@@ -76,7 +76,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // spell): copy its resolving Ability and Spell flags directly.
         const Spell &orig_spell = global_coordinator.GetComponent<Spell>(rt.original);
         cant_be_countered = orig_spell.cant_be_countered;
-        x_paid = orig_spell.x_paid;  // copies copy the X chosen for the original (CR 707.10b)
+        x_paid = orig_spell.chosen.x;  // copies copy the X chosen for the original (CR 707.10b)
         if (global_coordinator.entity_has_component<Ability>(rt.original))
             orig_ability = &stack_object_ability(rt.original);
     } else {
@@ -108,7 +108,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
             Spell copy_spell;
             copy_spell.caster = controller;
             copy_spell.cant_be_countered = cant_be_countered;
-            copy_spell.x_paid = x_paid;
+            copy_spell.chosen.x = x_paid;
             copy_spell.is_copy = true;               // ceases to exist when it leaves the stack
             // A copy is not cast: it has no replicate count of its own and copies no further.
             global_coordinator.AddComponent(copy, copy_spell);

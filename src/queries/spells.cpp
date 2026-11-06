@@ -34,7 +34,7 @@ bool spell_has_variable_life_cost(const CardData &cd) {
 }
 
 int current_x_paid() {
-    if (cur_game.pending.cast.active) return cur_game.pending.cast.x_paid;
+    if (cur_game.pending.cast.active) return cur_game.pending.cast.chosen.x;
     if (cur_game.pending.activation.active) {
         const int x = cur_game.pending.activation.stack_ab.x_paid;
         return x < 0 ? 0 : x;
@@ -44,7 +44,7 @@ int current_x_paid() {
 
 int current_converge() { return cur_game.resolution.active ? cur_game.resolution.converge : 0; }
 
-bool current_gift_promised() { return cur_game.pending.cast.gift_promised; }
+bool current_gift_promised() { return cur_game.pending.cast.chosen.gift_promised; }
 
 const Ability &stack_object_ability(Entity stack_object) {
     const ResolutionFrame &fr = cur_game.resolution;

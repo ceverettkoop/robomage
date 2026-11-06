@@ -31,7 +31,7 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
         global_coordinator.GetComponent<Permanent>(e).transformed)
         return *cd.backside;
     if (global_coordinator.entity_has_component<Spell>(e) &&
-        global_coordinator.GetComponent<Spell>(e).cast_back_face)
+        global_coordinator.GetComponent<Spell>(e).chosen.back_face)
         return *cd.backside;
     return cd;
 }

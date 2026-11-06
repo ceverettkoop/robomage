@@ -405,14 +405,14 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
         // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
         // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
-        // ability; run them first when Spell::gift_promised is set on the source spell. The token's
+        // ability; run them first when ChosenCost::gift_promised is set on the source spell. The token's
         // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
         // Each gift resolves as a persisted GIFT FrameLevel (next_sub is the loop cursor — free
         // until phase 4 resets it for the phase 5 sub chain) so a prompt inside a gift suspends.
         const Entity spell_src = ab.source.get();
         if (!ab.gift_abilities.empty() && spell_src != 0 &&
             global_coordinator.entity_has_component<Spell>(spell_src) &&
-            global_coordinator.GetComponent<Spell>(spell_src).gift_promised) {
+            global_coordinator.GetComponent<Spell>(spell_src).chosen.gift_promised) {
             for (; next_sub < static_cast<int>(ab.gift_abilities.size()); ++next_sub) {
                 const Ability &gift_template = ab.gift_abilities[static_cast<size_t>(next_sub)];
                 if (ctx.can_suspend()) {

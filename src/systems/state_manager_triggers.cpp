@@ -717,7 +717,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // above never sees it. The source is the cast spell entity (the event's ENTITY); read its
     // own CardData abilities for a trigger_only_self SPELL_CAST trigger and, when the trigger
     // names a kicker (trigger_kicked_index > 0), gate it on that kicker having been paid
-    // (Spell::kicked). General over any self-cast / kicked-N SpellCast trigger.
+    // (ChosenCost::kicked). General over any self-cast / kicked-N SpellCast trigger.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::SPELL_CAST) continue;
         if (!ev.HasParam(Params::ENTITY)) continue;
@@ -734,7 +734,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
             if (ab->trigger_kicked_index > 0) {
                 size_t idx = static_cast<size_t>(ab->trigger_kicked_index - 1);
-                if (idx >= spell.kicked.size() || !spell.kicked[idx]) continue;
+                if (idx >= spell.chosen.kicked.size() || !spell.chosen.kicked[idx]) continue;
             }
 
             Ability trigger_ab(ab);
@@ -1107,13 +1107,13 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
 
             // ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent
             // to cast that spell" = ManaSpent EQ0). Compare the cast spell's recorded
-            // Spell::mana_spent (CR 106/601.2g) to the trigger's bound. The spell is still on
+            // ChosenCost::mana_spent (CR 106/601.2g) to the trigger's bound. The spell is still on
             // the stack when SPELL_CAST fires, so its Spell component is present.
             if (!ab.trigger_mana_spent_op.empty() && ev.GetType() == Events::SPELL_CAST) {
                 if (!ev.HasParam(Params::ENTITY)) continue;
                 Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
                 if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
-                int spent = global_coordinator.GetComponent<Spell>(spell_e).mana_spent;
+                int spent = global_coordinator.GetComponent<Spell>(spell_e).chosen.mana_spent;
                 int bound = ab.trigger_mana_spent_val;
                 const std::string &op = ab.trigger_mana_spent_op;
                 bool ok = (op == "EQ") ? (spent == bound)

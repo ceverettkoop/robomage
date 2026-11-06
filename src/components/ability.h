@@ -420,7 +420,7 @@ struct AbilityDef {
     // "When you cast this spell, if it was kicked with its [N] kicker, ..." trigger.
     // ValidCard$ Card.Self+kicked N — fires on SPELL_CAST of the source spell itself only
     // when its (N)th kicker was paid. 0 = no kicker requirement; N >= 1 requires the spell's
-    // kicked[N-1] flag. Matched against the cast spell's Spell::kicked in the dedicated
+    // kicked[N-1] flag. Matched against the cast spell's ChosenCost::kicked in the dedicated
     // self-cast trigger scan (the spell is on the stack, not the battlefield, when it fires).
     int trigger_kicked_index = 0;
 
@@ -432,7 +432,7 @@ struct AbilityDef {
     std::string trigger_cmc_op = "";
 
     // SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was
-    // spent to cast that spell" = ManaSpent EQ0). The cast spell's recorded Spell::mana_spent
+    // spent to cast that spell" = ManaSpent EQ0). The cast spell's recorded ChosenCost::mana_spent
     // (CR 106/601.2g) is compared to trigger_mana_spent_val with trigger_mana_spent_op
     // ("EQ"/"NE"/"LE"/"GE"/"LT"/"GT"). Empty op = no such filter. General over any
     // Spell.ManaSpent-gated SpellCast trigger (shared with Lavinia, Azorius Renegade).
@@ -904,7 +904,7 @@ struct Ability {
 
     // Gift (CR 702.176): the gift effect(s) of a spell cast with the Gift keyword (Into the
     // Flood Maw: DB$ Token making a tapped 1/1 Fish for the promised opponent). Copied onto the
-    // resolving spell's primary ability at cast; if the gift was promised (Spell::gift_promised),
+    // resolving spell's primary ability at cast; if the gift was promised (ChosenCost::gift_promised),
     // these resolve at the START of resolution — the opponent gets the gift "before its other
     // effects" (CR 702.176c) — and are skipped otherwise. Empty for a non-gift ability.
     std::vector<Ability> gift_abilities;

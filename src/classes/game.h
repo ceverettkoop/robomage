@@ -37,6 +37,7 @@ typedef enum Step {
 #include <vector>
 
 #include "../components/ability.h"
+#include "../components/chosen_cost.h"
 #include "../cost_payment.h"
 #include "../ecs/entity.h"
 #include "../ecs/entity_set.h"
@@ -374,49 +375,18 @@ struct Game {
             // suspension gap.
             Entity spell_entity = 0;
             bool caster_is_a = true;
-            bool use_flashback = false;
-            bool use_escape = false;
-            bool use_alt_cost = false;
-            bool use_offspring = false;
-            bool impulse_cast = false;
-            bool cast_back_face = false;
-            // Cast without paying its mana cost under a free-cast static (CR 118.9): the regular
-            // branch with a {0} mana cost — additional costs, cost increases and the SetCost floor
-            // still apply, X is 0 (CR 107.3b), the mana cost's hybrid and Phyrexian pips unpaid.
-            bool without_mana_cost = false;
+            ChosenCost chosen;  // how it is being cast and what it has committed to
             // The card's Zone before the cast moved it to the stack (CR 601.2a):
             // where a reversed proposal returns it (Orderer::rewind_cast_move) and
             // the origin of the zone change reported once it becomes cast.
             Zone cast_origin;
-            // The X announced for this spell (CR 601.2b / 107.3a; a variable life cost's X
-            // too), recorded on its Spell as the cast finishes.
-            int x_paid = 0;
             // The regular-cost accumulation (base + offspring/kicker/replicate/
             // X/hybrid/phyrexian folds), moved to pay.mana once the cost is fully
             // resolved.
             ManaValue cost_to_pay;
-            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
-            // branch and copied onto the Spell so linked "if it was kicked with its [N]
-            // kicker" triggers can read them. Empty unless the card has K:Kicker.
-            std::vector<bool> kicked_flags;
             size_t kicker_idx = 0;     // next kicker pip to offer/apply
-            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
-            // the regular-cost branch. Drives the on-cast copy effect. 0 unless the card
-            // has K:Replicate and the caster chose to pay it.
-            int replicate_count = 0;
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
             size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
-            bool gift_promised = false;
-            // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
-            // pay.mana as the payment reaches it (after any delve/improvise reduction) and
-            // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
-            // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
-            int mana_spent = 0;
-            // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
-            // accumulated by the payment (pay_mana_cost's spent-sink) as pips leave the pool.
-            // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
-            // whose size the resolution frame reads as Converge. Empty for a free / no-mana cast.
-            ManaValue mana_spent_colors;
             // Life paid for Phyrexian pips (CR 107.4f). Paid as each pip is announced, so the
             // choice shows in the life total at the prompts that follow; a rewind gives it back.
             int phyrexian_life_paid = 0;
@@ -448,9 +418,6 @@ struct Game {
             // Replicate copies' retargeting machine (COPY_TARGETS; see
             // CopySpellRT / effect_copy_spell.cpp).
             CopySpellRT copy_rt;
-            // Escalate (CR 702.120a): the modes chosen beyond the first, each paying the escalate
-            // cost (its mana folded into pay.mana as the modes are announced).
-            int escalate_extra = 0;
         };
         // Activated-ability suspension state (pending.query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY
