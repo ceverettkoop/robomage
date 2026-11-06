@@ -180,6 +180,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     // CR 702.44b: only a resolving spell's entry holds the mana spent on it.
                     if (const EntryInfo *entry = find_entry_info(ev.entity))
                         n = static_cast<int>(colors_of(entry->mana_paid).size());
+                    if (n > 0 && !ev.simulation) coverage_row("sunburst");
                 }
                 else n = sa.counter_count;  // literal count (etbCounter:M1M1:6 → 6)
                 if (n <= 0) continue;
