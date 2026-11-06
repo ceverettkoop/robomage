@@ -166,6 +166,14 @@ static const CastSection kCastSections[] = {
         {"exile_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
         {"exile_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from exile) without paying its mana cost (offspring)", Zone::GRAVEYARD, exile_free_offspring_offered},
     }},
+    // The grant covers the card, so either half of a split card and either face of a modal one may
+    // be cast under it (CR 709.3, 712.8f).
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_from_back, nullptr, {
+        {"exile_back_mana_cost", CastCost::MANA_COST, false, 7, " (from exile)",       Zone::GRAVEYARD, exile_mana_cost_offered},
+        {"exile_back_resource",  CastCost::GRANT,     false, 7, " (from exile)",       Zone::GRAVEYARD, exile_resource_offered},
+        {"exile_back_no_cost",   CastCost::GRANT,     false, 7, " (from exile, no cost)", Zone::GRAVEYARD, exile_no_cost_offered},
+        {"exile_back_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
+    }},
 };
 
 // The casts a resolution offers (CR 608.2g), not priority: miracle_castable and exile_grant_castable

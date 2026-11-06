@@ -1,0 +1,13 @@
+{
+  "name": "cr709_3_a_second_half_cast_from_exile",
+  "why": "CR 709.3: a player chooses which half they cast wherever the card is cast from: Dead/Gone exiled by Light Up the Stage may be cast as either half under its permission.",
+  "hand_a": ["Light Up the Stage", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_a": ["Dead Gone", "Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Light Up the Stage", "A:desc:Cast Gone (from exile)", "A:target:Grizzly Bears"],
+  "max_decisions": 12,
+  "expect_menu": ["Cast Dead \\(from exile\\)", "Cast Gone \\(from exile\\)"],
+  "expect": ["Player A casts Gone targeting Grizzly Bears", "Grizzly Bears is moved to hand"]
+}
