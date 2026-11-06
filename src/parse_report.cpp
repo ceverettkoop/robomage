@@ -2,7 +2,6 @@
 
 #include <cctype>
 #include <cstdio>
-#include <cstring>
 #include <fstream>
 #include <set>
 #include <sstream>
@@ -40,7 +39,6 @@ static void scan_token_scripts(const std::string &script_text, std::set<std::str
 static void filter_findings(const std::string &script_text, std::vector<ParseFinding> &findings);
 static void check_filter(
     const std::string &spec, const std::string &where, const std::string &line, std::vector<ParseFinding> &findings);
-static bool filter_token_read_elsewhere(const std::string &token);
 static void check_cmc_bounds(const std::string &spec, const std::string &key, const std::string &body,
                              const std::string &line, std::vector<ParseFinding> &findings);
 static bool cmc_bound_supplied(const std::string &op, const std::string &bound, const std::string &key,
@@ -280,7 +278,7 @@ static void check_filter(
     }
     if (objects.empty()) return;
     for (const std::string &token : filter_unknown_qualifiers(objects))
-        if (!filter_token_read_elsewhere(token)) findings.push_back({"filter", token, where + " " + spec, line});
+        findings.push_back({"filter", token, where + " " + spec, line});
 }
 
 // A cmc qualifier naming an SVar (cmcEQY) passes any object unless the filter's reader supplies the
@@ -302,26 +300,6 @@ static bool cmc_bound_supplied(const std::string &op, const std::string &bound, 
     if (key == "ValidCard") return body.find("Mode$ SpellCast") != std::string::npos;
     if (key == "ValidCards") return body.find("$ DestroyAll") != std::string::npos && bound != "X";
     return op == "LE" && (key == "ConditionPresent" || key == "ChangeValid");
-}
-
-// Filter tokens the shared matcher has no reading for that the engine reads where the filter is
-// used, in the forms its cards use them: the attachment qualifiers (EquippedBy, EnchantedBy), left to
-// the filter table (docs/mechanics_plan.md M3), targeting (Emblem, YouDontCtrl, targeting.cpp), the cards exiled with
-// a source (ExiledWithSource), the sameName / Remembered / TargetedCard / NotDefinedTargeted /
-// sharesNameWith movers (effect_change_zone*.cpp), chosen cards and types (effect_choose_card.cpp),
-// the player-relative counts (RememberedPlayerCtrl, TargetedPlayerCtrl, svar_eval.cpp), cast history
-// (!wasCast, wasCastFromYourHandByYou), kicker-linked triggers ("kicked N"), delayed-trigger memory
-// (IsTriggerRemembered), Animate Dead's StrictlySelf, Eldrazi Temple's Activated mana restriction and
-// Sylvan Library's DrawnThisTurn (its own SylvanLibrary resolution, parse_one_trigger).
-// The same token in another param is a gap this list hides; the parse report does not prove a card.
-static bool filter_token_read_elsewhere(const std::string &token) {
-    static const char *const kTokens[] = {"EquippedBy", "EnchantedBy", "Emblem", "YouDontCtrl", "ExiledWithSource",
-        "sameName", "Remembered", "TargetedCard", "NotDefinedTargeted", "sharesNameWith Targeted", "ChosenCard",
-        "ChosenType", "RememberedPlayerCtrl", "TargetedPlayerCtrl", "!wasCast", "wasCastFromYourHandByYou",
-        "IsTriggerRemembered", "StrictlySelf", "Activated", "DrawnThisTurn"};
-    for (const char *t : kTokens)
-        if (token == t) return true;
-    return token.rfind("kicked", 0) == 0;
 }
 
 // The count expressions of a script's SVar: lines — a body that is no ability, trigger, static or

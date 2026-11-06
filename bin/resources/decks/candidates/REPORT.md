@@ -26,12 +26,12 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | maverick | Maverick | 1.0 | aggro | 38 | 6 | 6 | 19 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 9 | 6 | 21 | capability |
 | dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 9 | 10 | 22 | capability |
-| stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 2 | 23 | capability |
+| stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 3 | 24 | capability |
 | aluren | Aluren | 4.0 | combo | 32 | 5 | 4 | 27 | capability |
 | storm | Storm | 3.0 | combo | 30 | 15 | 12 | 29 | capability |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 5 | 8 | 30 | capability |
 | hogaak | Hogaak | 2.0 | combo | 28 | 9 | 11 | 33 | capability |
-| welder_cam | Welder Cam | 2.0 | combo | 33 | 11 | 9 | 43 | capability |
+| welder_cam | Welder Cam | 2.0 | combo | 33 | 11 | 10 | 44 | capability |
 | painter | Painter | 1.0 | combo | 41 | 18 | 17 | 60 | capability |
 
 ## Mechanics ranked by the decks that need them
@@ -53,6 +53,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Hogaak casting | L | 3 | - | Gaea's Will, Hogaak, Arisen Necropolis | `static_form:MayPlay.Graveyard`, `static_mode:ManaRestriction`, `static_param:EffectZone`, `static_param:InvertValidSource`, `static_param:ValidSource` | cast from the graveyard (EffectZone$ Graveyard MayPlay); S:Mode$ ManaRestriction: only convoke / delve can pay |
 | AnimateAll power, toughness and types | S | 2 | - | Allosaurus Shepherd | `ability_param:AnimateAll.Power`, `ability_param:AnimateAll.Toughness`, `ability_param:AnimateAll.Types` | Allosaurus Shepherd's elves become 5/5 Dinosaurs |
 | Damage dealt by another object (DamageSource$) | S | 2 | - | Hawkeye's Bow, Pyrogoyf | `ability_param:DealDamage.DamageSource`, `svar_expr:TriggeredCard$CardPower` | Pyrogoyf, Hawkeye's Bow |
+| Equipped creature filter (EquippedBy) | S | 2 | - | Cryptic Coat, Hawkeye's Bow | `filter:EquippedBy` | the creature this Equipment is attached to: Cryptic Coat's can't-be-blocked, Hawkeye's Bow's trigger |
 | Hybrid pips in costs | S | 2 | - | Fiend Artisan, Vibrance | `cost:Hybrid` | a hybrid pip outside a printed ManaCost: (Fiend Artisan's {B/G}, Vibrance's evoke): the cost parsers pay plain symbols only |
 | Mana value bound from an SVar | S | 2 | - | Lazotep Quarry, Powder Keg | `filter:cmcEQX` | cmcEQX in ValidTgts$ (Lazotep Quarry) or a DestroyAll (Powder Keg): no reader supplies the bound, so the qualifier passes every object |
 | TapOrUntap effect | S | 2 | - | Sewer-veillance Cam | `category:TapOrUntap` | Sewer-veillance Cam |
@@ -142,10 +143,10 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 19 | dragon_stompy | Boast (CR 702.142); Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Effect with a continuous static; Fable of the Mirror-Breaker; Self-or-other zone triggers (Pyrogoyf) | 14 | 130 | 19 |
 | 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Repeat effect (DB$ Repeat); Revolt trigger condition | 16 | 146 | 20 |
 | 21 | cradle_control | Bestow (CR 702.103) | 8 | 154 | 21 |
-| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 174 | 22 |
-| 23 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 193 | 23 |
-| 24 | aluren | Cost statics by player (Defense Grid); Dungeons and venture (CR 309, 701.49) | 21 | 214 | 24 |
-| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 240 | 25 |
+| 22 | aluren | Cost statics by player (Defense Grid); Dungeons and venture (CR 309, 701.49) | 21 | 175 | 22 |
+| 23 | stoneblade | Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708) | 21 | 196 | 23 |
+| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; TapOrUntap effect; Taps trigger | 19 | 215 | 24 |
+| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Mana with riders and Exert (Arena of Glory); Meld (CR 712); Random choice (AtRandom) | 26 | 241 | 25 |
 
 ## Per deck
 
@@ -292,7 +293,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 38 cards, 1 new; clean: -
 
-- Cryptic Coat: Can't-block restrictions (CantBlockBy); Face-down permanents (Morph, Cloak; CR 708)
+- Cryptic Coat: Can't-block restrictions (CantBlockBy); Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708)
 
 ### aluren — Aluren (4.0%, combo)
 
@@ -344,7 +345,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Agatha's Soul Cauldron: Agatha's Soul Cauldron
 - Aphetto Alchemist: Face-down permanents (Morph, Cloak; CR 708)
 - Goblin Welder: Branch effect (DB$ Branch); Goblin Welder swap
-- Hawkeye's Bow: Damage dealt by another object (DamageSource$); Taps trigger
+- Hawkeye's Bow: Damage dealt by another object (DamageSource$); Equipped creature filter (EquippedBy); Taps trigger
 - Melded Moxite: Discard-a-card activation cost
 - Sewer-veillance Cam: TapOrUntap effect
 - Wear/Tear: Fuse (CR 702.102)

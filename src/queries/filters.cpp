@@ -103,6 +103,7 @@ struct Qualifier {
     Zone::ZoneValue zone = Zone::SIDEBOARD;  // inZone<Zone>; `known_zone` says it names one
     bool known_zone = false;
     bool has_reading = true;     // false: the matcher fails it closed (--parse-report's finding)
+    bool read_elsewhere = false; // its filter's reader reads it, whatever the matcher makes of it
     bool reads_type_name = false;  // `text` is a type-line name it requires or excludes; it has a
                                    // reading only if the type exists
     ObjectSpec set;              // the row's set
@@ -172,6 +173,7 @@ static bool parse_with_keyword(const std::string &token, Qualifier &q);
 static bool parse_in_zone(const std::string &token, Qualifier &q);
 static bool parse_mana_cost(const std::string &token, Qualifier &q);
 static bool parse_color(const std::string &token, Qualifier &q);
+static bool parse_read_elsewhere(const std::string &token, Qualifier &q);
 static bool parse_type_line_name(const std::string &token, Qualifier &q);
 static bool parse_unknown(const std::string &token, Qualifier &q);
 
@@ -235,6 +237,11 @@ static constexpr QualifierRow parsed_row(const char *name, NameForm form, ParseF
 }
 static constexpr QualifierRow parsed_relative_row(const char *name, NameForm form, ParseFn parse, RelativeFn fn) {
     return {name, form, parse, nullptr, fn, nullptr, ObjectSpec::DEFAULT};
+}
+// A token the matcher has no reading for, which the code a filter reaches reads itself. It evaluates
+// as the catch-all rows make it.
+static constexpr QualifierRow elsewhere_row(const char *name) {
+    return {name, NameForm::EXACT, parse_read_elsewhere, nullptr, nullptr, nullptr, ObjectSpec::DEFAULT};
 }
 // A row decided over a candidate set (select_matching); a single object has no reading of it.
 static constexpr QualifierRow population_row(const char *name, PopulationFn fn) {
@@ -355,6 +362,34 @@ static const QualifierRow kQualifierRows[] = {
     // from the cmc family above (which carries a comparator); ManaCostN is the equality form Forge
     // emits as a bare property. A P/T-less / costless object reads mana value 0.
     parsed_row("ManaCost", NameForm::PREFIX, parse_mana_cost, ev_mana_cost),
+    // Read where the filter is used, in the forms its cards use them: targeting (Emblem, YouDontCtrl,
+    // targeting.cpp), the cards exiled with a source (ExiledWithSource), the sameName / Remembered /
+    // TargetedCard / NotDefinedTargeted / sharesNameWith movers (effect_change_zone*.cpp), chosen
+    // cards and types (effect_choose_card.cpp), the player-relative counts (RememberedPlayerCtrl,
+    // TargetedPlayerCtrl, svar_eval.cpp), cast history (!wasCast, wasCastFromYourHandByYou),
+    // kicker-linked triggers ("kicked N"), delayed-trigger memory (IsTriggerRemembered), Animate
+    // Dead's StrictlySelf, Eldrazi Temple's Activated mana restriction and Sylvan Library's
+    // DrawnThisTurn (its own SylvanLibrary resolution, parse_one_trigger). The same token in another
+    // param is a gap these rows hide; the parse report does not prove a card.
+    elsewhere_row("Emblem"),
+    elsewhere_row("YouDontCtrl"),
+    elsewhere_row("ExiledWithSource"),
+    elsewhere_row("sameName"),
+    elsewhere_row("Remembered"),
+    elsewhere_row("TargetedCard"),
+    elsewhere_row("NotDefinedTargeted"),
+    elsewhere_row("sharesNameWith Targeted"),
+    elsewhere_row("ChosenCard"),
+    elsewhere_row("ChosenType"),
+    elsewhere_row("RememberedPlayerCtrl"),
+    elsewhere_row("TargetedPlayerCtrl"),
+    elsewhere_row("wasCast"),
+    elsewhere_row("wasCastFromYourHandByYou"),
+    elsewhere_row("IsTriggerRemembered"),
+    elsewhere_row("StrictlySelf"),
+    elsewhere_row("Activated"),
+    elsewhere_row("DrawnThisTurn"),
+    {"kicked", NameForm::PREFIX, parse_read_elsewhere, nullptr, nullptr, nullptr, ObjectSpec::DEFAULT},
     // leftover: a PascalCase token is a type-line (type/supertype/subtype) name to require;
     // anything else is a qualifier we don't implement → fail closed and warn once.
     parsed_row("", NameForm::ANY, parse_type_line_name, ev_type_line),
@@ -585,6 +620,12 @@ static bool parse_mana_cost(const std::string &token, Qualifier &q) {
     if (token.size() <= 8 || !all_digits(token, 8)) return false;
     q.number = std::stoi(token.substr(8));
     return true;
+}
+
+// Notes it and leaves the token to the rows after it.
+static bool parse_read_elsewhere(const std::string &, Qualifier &q) {
+    q.read_elsewhere = true;
+    return false;
 }
 
 static bool parse_type_line_name(const std::string &token, Qualifier &q) {
@@ -1049,10 +1090,11 @@ std::vector<std::string> filter_unknown_qualifiers(const std::string &spec) {
     for (const Alternative &alt : filter.compiled()->alternatives) {
         const std::string &head = alt.head;
         if (!(head == "Card" || head == "Permanent" || head == "Spell" || head == "Self" || head == "Other" ||
-                known_type_name(head)))
+                known_type_name(head) || compile_qualifier(head).read_elsewhere))
             unknown.push_back(head);
         for (size_t i = alt.head_qualifiers; i < alt.qualifiers.size(); i++) {
             const Qualifier &q = alt.qualifiers[i];
+            if (q.read_elsewhere) continue;
             if (!q.has_reading || (q.reads_type_name && !known_type_name(q.text))) unknown.push_back(q.token);
         }
     }

@@ -30,6 +30,15 @@
       ],
       "size": "M"
      },
+     "Equipped creature filter (EquippedBy)": {
+      "cards": [
+       "Cryptic Coat"
+      ],
+      "findings": [
+       "filter:EquippedBy"
+      ],
+      "size": "S"
+     },
      "Face-down permanents (Morph, Cloak; CR 708)": {
       "cards": [
        "Cryptic Coat"
@@ -45,25 +54,26 @@
     "needs": {
      "Cryptic Coat": [
       "Can't-block restrictions (CantBlockBy)",
+      "Equipped creature filter (EquippedBy)",
       "Face-down permanents (Morph, Cloak; CR 708)"
      ]
     },
     "new_cards": [
      "Cryptic Coat"
     ],
-    "size_points": 23
+    "size_points": 24
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
-    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
+    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (23 points)",
-   "time": "2026-11-05T14:52:45"
+   "summary": "1 new card(s): 0 clean, 1 need 3 mechanic(s) (24 points)",
+   "time": "2026-11-05T17:03:23"
   },
   "diff": {
    "detail": {
@@ -87,20 +97,21 @@
    "detail": {
     "mechanics": [
      "Can't-block restrictions (CantBlockBy)",
+     "Equipped creature filter (EquippedBy)",
      "Face-down permanents (Morph, Cloak; CR 708)"
     ]
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
-    "sizes": "a9e8f5662f6749b9d6ea34b79f4e8483e452b74d6a51c49a71c9bc05cd7be5d1",
+    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Can't-block restrictions (CantBlockBy), Face-down permanents (Morph, Cloak; CR 708)",
-   "time": "2026-11-05T14:52:45"
+   "summary": "3 mechanic(s) to implement: Can't-block restrictions (CantBlockBy), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708)",
+   "time": "2026-11-05T17:03:23"
   },
   "parse": {
    "detail": {
@@ -140,6 +151,12 @@
         "kind": "static_mode",
         "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.EquippedBy | Secondary$ True | Description$ Equipped creature gets +1/+0 and can't be blocked.",
         "name": "CantBlockBy"
+       },
+       {
+        "detail": "ValidAttacker$ Creature.EquippedBy",
+        "kind": "filter",
+        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.EquippedBy | Secondary$ True | Description$ Equipped creature gets +1/+0 and can't be blocked.",
+        "name": "EquippedBy"
        }
       ],
       "layout": "normal",
@@ -154,14 +171,14 @@
    },
    "inputs": {
     "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
-    "engine": "8edc50e44ae1a67a12df382a9526f9b28ef7b6fd5e32d9ec793cd4ebf315088d",
+    "engine": "9367b6c1e3074141e83e50486c6ccbac7336cae2e828d15914534a010b5d63d9",
     "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (5 findings), 0 without a script",
-   "time": "2026-11-05T14:52:45"
+   "summary": "1 new card(s), 1 with findings (6 findings), 0 without a script",
+   "time": "2026-11-05T17:03:23"
   },
   "provision": {
    "detail": {

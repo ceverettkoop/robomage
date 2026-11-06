@@ -6,7 +6,7 @@ becoming playable is an output of this plan (Appendix C), never a reason to reor
 
 `candidates/REPORT.md` remains the source of *what* is missing. It ranks by deck unlock and sizes
 each mechanic alone, so it is the wrong source for *how* to build them. This plan groups the same
-173 parse-report findings (76 mechanics, 71 cards) under 11 engine primitives. Most findings are
+174 parse-report findings (77 mechanics, 71 cards) under 11 engine primitives. Most findings are
 one more row in a table once the primitive exists; built one at a time, each would be one more
 special case.
 
@@ -241,6 +241,29 @@ explore games byte-identical, `bench` flat (139.7 to 140.6 us). Appendix A and B
 findings under M2; the table above says when each lands.
 
 ### M3. Filter and SVar tables (L)
+
+**Progress.** The two tables and the inert migration are done (2026-11-05). Every qualifier is a row of
+the table in `src/queries/filters.cpp`, and a spec compiles once to a `CompiledFilter`, interned by text
+behind the `FilterSpec` a definition holds (`src/components/filter_spec.h`); no matcher takes a string.
+`IsRemembered`, `IsImprinted`, `nonChosenCard`, `targetedBy` and `ControlledBy ParentTarget` are
+set-relative through an `ObjectSpec` and `MatchCtx::resolve`. `cmc<OP><SVar>` enforces its own bound.
+Every expression is a row of the tables in `src/svar_eval.cpp`: its own value, or a set, a property and
+an aggregate, with `<Set>$<Property>` a row of neither, plus the suffix table. `filter_unknown_qualifiers`
+and `svar_expr_recognized` read those tables; the tokens only a filter's reader reads are rows too, and
+`EquippedBy`, which nothing reads, is now a finding (Cryptic Coat, Hawkeye's Bow).
+
+No existing qualifier is population-relative, so that shape is defined and unused: `select_matching`
+and `population_row` wait for `leastPower`. Still hand-kept, because none is a question either table
+answers: `is_runtime_amount_expr` and `svar_expr_read_at_parse` (the forms the parser resolves),
+`cmc_bound_supplied` (which reader supplies a bound), `trigger_valid_card_read` (M9's binder), and
+TargetType$'s own reader (`stack_spell_alt_matches`). The legacy `evaluate_svar` callers that pass source
+0 stay as they are: moving them to `ResolveCtx` gives them a source, which is a behaviour change.
+
+`replay` stayed byte-identical at each commit, `make registry` a no-op, parse reports unchanged over
+all 430 scripts but for that finding; 6,144 explore games byte-identical; `bench` faster (137.4 to
+128.6 us, median of 11 alternating release runs).
+
+Still to do in M3: the new qualifiers and expressions below, and their cards.
 
 **Today.** `eval_qualifier` and the SVar evaluator are if-chains; parametrised forms are prefix-parsed
 by hand; `<Set>$<Property>` exists per name; sets reach the matcher by reading
@@ -504,13 +527,13 @@ None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12
 justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
 ## Appendix A. Every finding, by stage
 
-Generated from the status files at pin `f62f8048`: 173 findings, none unmapped. `onboard.py`'s mechanics are the report's grouping; this is the plan's.
+Generated from the status files at pin `f62f8048`: 174 findings, none unmapped. `onboard.py`'s mechanics are the report's grouping; this is the plan's.
 
 | stage | findings |
 |---|---|
 | M0 | `static_param:AffectedDefined` |
 | M2 | `ability_param:Animate.Defined`, `ability_param:ChooseCard.Defined`, `ability_param:CopyPermanent.Defined`, `ability_param:DealDamage.DamageSource`, `ability_param:Destroy.Defined`, `ability_param:Discard.Defined`, `ability_param:Draw.Defined`, `ability_param:PutCounter.Defined`, `ability_param:Reveal.Defined`, `ability_param:Reveal.RevealDefined` |
-| M3 | `amount_svar:All`, `filter:!wasCastFromYourHand`, `filter:AttachedTo Creature`, `filter:ControlledBy Remembered`, `filter:Defined`, `filter:ExiledWithSourceLKI`, `filter:Imprinted`, `filter:SharesColorWithOther`, `filter:TargetedPlayerOwn`, `filter:TopGraveyardCreature`, `filter:TopLibrary`, `filter:cmcEQX`, `filter:leastPower`, `filter:lowestRememberedCMC`, `filter:sharesControllerWith`, `filter:withoutFlying`, `filter:withoutIndestructible`, `svar_expr:Count$ValidExile`, `svar_expr:Count$ValidGraveyard`, `svar_expr:Count$xPaid/Twice`, `svar_expr:Imprinted$Amount`, `svar_expr:Imprinted$Valid`, `svar_expr:PlayerCountOpponents$HighestValid`, `svar_expr:Sacrificed$CardManaCost/Plus.2`, `svar_expr:TargetedPlayer$CardsInLibrary/HalfUp`, `svar_expr:TargetedPlayer$CardsInLibrary`, `svar_expr:TargetedPlayer$LifeTotal/HalfUp`, `svar_expr:TriggeredCard$CardPower` |
+| M3 | `amount_svar:All`, `filter:!wasCastFromYourHand`, `filter:AttachedTo Creature`, `filter:ControlledBy Remembered`, `filter:Defined`, `filter:EquippedBy`, `filter:ExiledWithSourceLKI`, `filter:Imprinted`, `filter:SharesColorWithOther`, `filter:TargetedPlayerOwn`, `filter:TopGraveyardCreature`, `filter:TopLibrary`, `filter:cmcEQX`, `filter:leastPower`, `filter:lowestRememberedCMC`, `filter:sharesControllerWith`, `filter:withoutFlying`, `filter:withoutIndestructible`, `svar_expr:Count$ValidExile`, `svar_expr:Count$ValidGraveyard`, `svar_expr:Count$xPaid/Twice`, `svar_expr:Imprinted$Amount`, `svar_expr:Imprinted$Valid`, `svar_expr:PlayerCountOpponents$HighestValid`, `svar_expr:Sacrificed$CardManaCost/Plus.2`, `svar_expr:TargetedPlayer$CardsInLibrary/HalfUp`, `svar_expr:TargetedPlayer$CardsInLibrary`, `svar_expr:TargetedPlayer$LifeTotal/HalfUp`, `svar_expr:TriggeredCard$CardPower` |
 | M4 | `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `ability_param:ChangeZone.Imprint`, `ability_param:ChangeZone.NoShuffle`, `ability_param:ChangeZoneAll.UseAllOriginZones`, `ability_param:ChooseCard.AtRandom`, `ability_param:Cleanup.ClearNamedCard`, `ability_param:CopyPermanent.UnlessCost`, `ability_param:CopyPermanent.UnlessCost`, `ability_param:CopyPermanent.UnlessResolveSubs`, `ability_param:DealDamage.UnlessCost`, `ability_param:DealDamage.UnlessCost`, `ability_param:Discard.Mode`, `ability_param:Discard.RememberDiscarded`, `ability_param:ImmediateTrigger.ConditionDefined`, `ability_param:ImmediateTrigger.TriggerAmount`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:Pump.ForgetImprinted`, `ability_param:Pump.ForgetObjects`, `ability_param:Pump.ImprintCards`, `ability_param:Repeat.MaxRepeat`, `ability_param:Repeat.RepeatCheckSVar`, `ability_param:Repeat.RepeatSVarCompare`, `ability_param:Token.UnlessCost`, `ability_param:Token.UnlessCost`, `category:Branch`, `category:Repeat`, `category:Shuffle`, `category:TapOrUntap` |
 | M5 | `ability_param:Discard.ActivationZone`, `ability_param:Play.Condition`, `cost:Discard`, `cost:Exert`, `cost:ExileFromGrave`, `cost:ExileFromHand`, `cost:Exile`, `cost:Hybrid`, `cost:Mana`, `cost:Waterbend`, `keyword:AlternateAdditionalCost`, `keyword:Bargain`, `keyword:Convoke`, `keyword:Crew`, `static_param:Activator` |
 | M6 | `ability_param:AddMana.AddsKeywordsUntil`, `ability_param:AddMana.AddsKeywordsValid`, `ability_param:AddMana.AddsKeywords`, `ability_param:AddMana.Produced`, `keyword:Sunburst`, `static_mode:ManaRestriction`, `static_param:InvertValidSource`, `static_param:ValidCard`, `static_param:ValidPlayer`, `static_param:ValidSA`, `static_param:ValidSource`, `svar_expr:Count$CastTotalManaSpent`, `trigger_param:ValidSA` |
@@ -535,9 +558,9 @@ A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py 
 | M6 | Arena of Glory (M5 M6); Engineered Explosives |
 | M7 | Beseech the Mirror (M3 M5 M7); Bilbo, Thief in the Night (M3 M7); Carnivorous Cultivator; Cyclonic Rift; Hogaak, Arisen Necropolis (M5 M6 M7); Massacre; Springheart Nantuko (M2 M3 M4 M7); Wear/Tear |
 | M8 | Agatha's Soul Cauldron (M4 M6 M8); Allosaurus Shepherd; Brazen Borrower (M3 M7 M8); Fable of the Mirror-Breaker (M4 M8); Frenzied Baloth; Ghost Vacuum; Grist, the Hunger Tide (M4 M8); Lazotep Quarry (M3 M8); Mockingbird (M6 M8); Painter's Servant; Shallow Grave (M3 M8) |
-| M9 | Chrome Mox (M3 M4 M9); Gaea's Will (M7 M9); Hawkeye's Bow (M2 M9); Hullbreacher; Pyrogoyf (M2 M3 M9); Renegade Rallier; Sand Scout (M3 M9); Sundering Eruption (M3 M9); Tezzeret, Cruel Captain (M2 M9); The Everflowing Well (M6 M8 M9) |
+| M9 | Chrome Mox (M3 M4 M9); Gaea's Will (M7 M9); Hawkeye's Bow (M2 M3 M9); Hullbreacher; Pyrogoyf (M2 M3 M9); Renegade Rallier; Sand Scout (M3 M9); Sundering Eruption (M3 M9); Tezzeret, Cruel Captain (M2 M9); The Everflowing Well (M6 M8 M9) |
 | M10 | Broadside Bombardiers (M3 M10); Fury; Goblin Welder (M3 M4 M10); Invasion Submersible (M5 M10); Shatterskull Smashing (M3 M10); Sink into Stupor; Unlicensed Hearse (M3 M5 M10); Untimely Malfunction (M8 M10) |
-| M11 | Aphetto Alchemist; Cryptic Coat (M8 M11); Mystic Forge (M3 M7 M11) |
+| M11 | Aphetto Alchemist; Cryptic Coat (M3 M8 M11); Mystic Forge (M3 M7 M11) |
 | M12 | Acererak the Archlich (M4 M12); Perilous Snare; Phyrexian Dragon Engine (M5 M12); Theorist's Proxy (M9 M12) |
 
 ## Appendix C. Deck readiness (an output, not a goal)

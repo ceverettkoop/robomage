@@ -85,8 +85,8 @@ bool zone_change_object_matches(Entity e, Zone::ZoneValue origin, Zone::ZoneValu
 // The tokens of filter spec `spec` (its ','/';' alternatives) the matcher has no reading for: a
 // head that is no card type, subtype or supertype (nor Card / Permanent / Spell / Self / Other), a
 // lowercase qualifier with no row in the table (it fails closed and warns at runtime), a PascalCase
-// qualifier that is no type name (read as a type-line name no object has). Reads no game state
-// (--parse-report, parse_report.h).
+// qualifier that is no type name (read as a type-line name no object has), unless its row says the
+// code the filter reaches reads it. Reads no game state (--parse-report, parse_report.h).
 std::vector<std::string> filter_unknown_qualifiers(const std::string &spec);
 
 // A "cmc<OP><bound>" qualifier of a filter (read at parse time, not for matching an object).

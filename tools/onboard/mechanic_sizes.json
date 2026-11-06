@@ -91,6 +91,7 @@
   "Boast (CR 702.142)": {"size": "M", "keys": ["ability_param:DealDamage.Boast", "svar_expr:Sacrificed$CardManaCost/Plus.2"], "note": "Broadside Bombardiers: activate only if it attacked this turn, once"},
   "A creature card in every other zone (Grist)": {"size": "M", "keys": ["static_param:ExcludeZone"], "note": "Grist is a 1/1 Insect creature card outside the battlefield"},
   "Least power (Drop of Honey)": {"size": "S", "keys": ["filter:leastPower"], "note": "the creature with the least power, ties chosen"},
+  "Equipped creature filter (EquippedBy)": {"size": "S", "keys": ["filter:EquippedBy"], "note": "the creature this Equipment is attached to: Cryptic Coat's can't-be-blocked, Hawkeye's Bow's trigger"},
   "Hybrid pips in costs": {"size": "S", "keys": ["cost:Hybrid"], "note": "a hybrid pip outside a printed ManaCost: (Fiend Artisan's {B/G}, Vibrance's evoke): the cost parsers pay plain symbols only"},
   "Mana cost on a triggered ability": {"size": "S", "keys": ["cost:Mana"], "note": "Nihil Spellbomb: \"you may pay {B}. If you do\": resolve_ability pays only Sac<1/CARDNAME> and an ImmediateTrigger's energy"},
   "UnlessCost on more effects": {"size": "M", "keys": ["ability_param:CopyPermanent.UnlessCost", "ability_param:DealDamage.UnlessCost", "ability_param:ImmediateTrigger.UnlessCost", "ability_param:Token.UnlessCost"], "note": "run_unless_loop runs on Counter, Destroy, Sacrifice, CopySpellAbility and DestroyAll; any other effect happens unconditionally"},
