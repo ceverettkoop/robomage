@@ -1,0 +1,48 @@
+{
+  "name": "cr702_34a_faithless_looting_flashback_needs_its_cost",
+  "why": "CR 702.34a: with two lands left Faithless Looting's {2}{R} flashback can't be paid, so it isn't offered",
+  "hand_a": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Plains",
+    "Swamp",
+    "Forest",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Faithless Looting"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Cast Faithless Looting"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "expect_menu": [
+    "Play Mountain"
+  ]
+}

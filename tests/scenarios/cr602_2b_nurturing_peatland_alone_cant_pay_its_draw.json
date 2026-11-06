@@ -1,0 +1,42 @@
+{
+  "name": "cr602_2b_nurturing_peatland_alone_cant_pay_its_draw",
+  "why": "CR 601.2g-h, 602.2b: alone, Nurturing Peatland can't both tap for the {1} and tap as a cost, so its draw is not offered",
+  "hand_a": [
+    "Island",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Nurturing Peatland"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate Nurturing Peatland"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "expect_menu": [
+    "Play Mountain"
+  ]
+}

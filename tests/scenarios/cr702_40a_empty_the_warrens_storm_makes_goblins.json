@@ -1,0 +1,50 @@
+{
+  "name": "cr702_40a_empty_the_warrens_storm_makes_goblins",
+  "why": "CR 702.40a: Empty the Warrens with two spells before it resolves three times: six Goblins, two from each object",
+  "hand_a": [
+    "Empty the Warrens",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Empty the Warrens"
+  ],
+  "max_decisions": 7,
+  "expect_count": {
+    "^Token created: 1/1 Goblin": 6,
+    "^Player A copies Empty the Warrens": 2
+  },
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

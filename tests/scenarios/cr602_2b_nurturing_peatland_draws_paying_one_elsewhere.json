@@ -1,0 +1,42 @@
+{
+  "name": "cr602_2b_nurturing_peatland_draws_paying_one_elsewhere",
+  "why": "CR 601.2g-h, 602.2b: Nurturing Peatland's {1}, {T}, sacrifice ability needs {1} from another source (its own {T} is the cost) and draws a card",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Nurturing Peatland"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Mountain",
+    "A:activate:Nurturing Peatland"
+  ],
+  "max_decisions": 4,
+  "expect_order": [
+    "^Player A sacrifices Nurturing Peatland",
+    "^Player A draws "
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

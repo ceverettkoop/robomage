@@ -1,0 +1,48 @@
+{
+  "name": "cr614_12_watery_grave_declined_enters_tapped",
+  "why": "CR 614.12: declining Watery Grave's payment costs no life and it enters tapped",
+  "hand_a": [
+    "Watery Grave",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Watery Grave",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 5,
+  "expect_not": [
+    "pays 2 life"
+  ],
+  "expect_menu": [
+    "Decline: pay 2 life",
+    "Play Forest"
+  ],
+  "expect_menu_not": [
+    "Tap Watery Grave for"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

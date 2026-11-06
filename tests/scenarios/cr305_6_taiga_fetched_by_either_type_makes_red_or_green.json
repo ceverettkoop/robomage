@@ -1,0 +1,49 @@
+{
+  "name": "cr305_6_taiga_fetched_by_either_type_makes_red_or_green",
+  "why": "CR 305.6, 305.7: Taiga has the Mountain and Forest subtypes and no text of its own: a Mountain-or-Forest fetch finds it and it taps for {R} or {G}",
+  "hand_a": [
+    "Wooded Foothills",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Taiga",
+    "Island",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Wooded Foothills",
+    "A:activate:Wooded Foothills",
+    "A:search:Taiga"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player A puts Taiga to the battlefield"
+  ],
+  "expect_menu": [
+    "Tap Taiga for \\(R\\)",
+    "Tap Taiga for \\(G\\)"
+  ],
+  "expect_menu_not": [
+    "^Island$"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

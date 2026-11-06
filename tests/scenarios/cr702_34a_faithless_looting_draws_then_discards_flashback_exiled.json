@@ -1,0 +1,61 @@
+{
+  "name": "cr702_34a_faithless_looting_draws_then_discards_flashback_exiled",
+  "why": "CR 702.34a, 608.2c: Faithless Looting draws two, then discards two of the caster's choice, and from the graveyard costs {2}{R} and is then exiled",
+  "hand_a": [
+    "Faithless Looting",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Plains",
+    "Swamp",
+    "Forest",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Faithless Looting",
+    "A:discard:Grizzly Bears",
+    "A:discard:Island",
+    "A:cast:Faithless Looting",
+    "A:discard:Swamp",
+    "A:discard:Forest"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "^Player A casts Faithless Looting",
+    "^Player A draws ",
+    "^Player A draws ",
+    "^Player A discards Grizzly Bears",
+    "^Player A discards Island",
+    "^Player A casts Faithless Looting",
+    "^Player A discards Swamp",
+    "^Player A discards Forest",
+    "Faithless Looting is exiled \\(flashback\\)"
+  ],
+  "expect_menu": [
+    "Cast Faithless Looting \\(flashback\\)"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "cr302_6_mana_elves_summoning_sick_cant_tap",
+  "why": "CR 302.6: a creature's {T} ability can't be activated unless it has been controlled since the turn began, so a mana elf cast this turn is no mana source",
+  "hand_a": [
+    "Elvish Mystic",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Elvish Mystic",
+    "A:tap:Forest"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "enters the battlefield"
+  ],
+  "expect_same": [
+    "^-------- TURN"
+  ],
+  "expect_menu_not": [
+    "Tap (Elvish Mystic|Fyndhorn Elves|Llanowar Elves) for"
+  ],
+  "variants": [
+    {
+      "hand_a": [
+        "Fyndhorn Elves",
+        "Mountain"
+      ],
+      "play": [
+        "A:keep",
+        "B:keep",
+        "A:desc:Cast Fyndhorn Elves",
+        "A:tap:Forest"
+      ]
+    },
+    {
+      "hand_a": [
+        "Llanowar Elves",
+        "Mountain"
+      ],
+      "play": [
+        "A:keep",
+        "B:keep",
+        "A:desc:Cast Llanowar Elves",
+        "A:tap:Forest"
+      ]
+    }
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

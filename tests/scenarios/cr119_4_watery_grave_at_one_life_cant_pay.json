@@ -1,0 +1,48 @@
+{
+  "name": "cr119_4_watery_grave_at_one_life_cant_pay",
+  "why": "CR 119.4: a player can pay life only up to their life total, so at 1 life Watery Grave offers no payment and enters tapped",
+  "hand_a": [
+    "Watery Grave",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "life_a": 1,
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Watery Grave"
+  ],
+  "max_decisions": 4,
+  "expect_not": [
+    "pays 2 life"
+  ],
+  "expect_menu_not": [
+    "pay 2 life",
+    "Tap Watery Grave for"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "expect_menu": [
+    "Play Forest"
+  ]
+}

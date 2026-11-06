@@ -303,6 +303,23 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Stronghold Gambit", 380},
     {"Temur Sabertooth", 381},
     {"Burning Wish", 382},
+    {"Elvish Mystic", 383},
+    {"Elvish Visionary", 384},
+    {"Empty the Warrens", 385},
+    {"Faithless Looting", 386},
+    {"Fyndhorn Elves", 387},
+    {"Great Furnace", 388},
+    {"Llanowar Elves", 389},
+    {"Lush Portico", 390},
+    {"Nurturing Peatland", 391},
+    {"Quirion Ranger", 392},
+    {"Raucous Theater", 393},
+    {"Stitcher's Supplier", 394},
+    {"Taiga", 395},
+    {"Tendrils of Agony", 396},
+    {"Unmask", 397},
+    {"Watery Grave", 398},
+    {"Wirewood Symbiote", 399},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -344,6 +361,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"w_1_1_monk_prowess", "Monk", 915},                             // Cori-Steel Cutter
     {"w_4_4_angel_flying", "Angel", 916},                            // Geist of Saint Traft
     {"c_1_1_eldrazi_scion_sac", "Eldrazi Scion", 917},               // Eldrazi Confluence
+    {"r_1_1_goblin", "Goblin", 918},                                 // Empty the Warrens
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

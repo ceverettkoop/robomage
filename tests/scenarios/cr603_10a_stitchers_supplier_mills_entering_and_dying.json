@@ -1,0 +1,62 @@
+{
+  "name": "cr603_10a_stitchers_supplier_mills_entering_and_dying",
+  "why": "CR 603.6a, 603.10a, 701.17a: Stitcher's Supplier mills three when it enters and three more when it dies, a leaves-the-battlefield trigger that looks back",
+  "hand_a": [
+    "Stitcher's Supplier",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stitcher's Supplier",
+    "A:land:Mountain",
+    "B:cast:Lightning Bolt",
+    "B:target:Stitcher's Supplier@opp"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Stitcher's Supplier enters the battlefield",
+    "^Player A mills Mountain",
+    "^Player A mills Mountain",
+    "^Player A mills Mountain",
+    "Stitcher's Supplier is destroyed",
+    "^Player A mills Mountain",
+    "^Player A mills Mountain",
+    "^Player A mills Mountain"
+  ],
+  "expect_count": {
+    "^Player A mills Mountain": 6
+  },
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}
