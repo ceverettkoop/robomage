@@ -1,0 +1,14 @@
+{
+  "name": "cr601_2h_phyrexian_life_is_paid_after_the_mana",
+  "why": "CR 601.2c, 601.2g, 601.2h: a Phyrexian pip announced as life is paid with the rest of the cost, after the targets and the mana abilities",
+  "engine_flags": ["--no-auto-mana"],
+  "hand_a": ["Dismember"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Dismember", "A:desc:Pay 2 life", "A:desc:Pay 2 life", "A:target:Grizzly Bears", "A:tap:Swamp"],
+  "max_decisions": 12,
+  "expect_order": ["Player A activated Swamp", "Player A pays 4 life", "Player A casts Dismember targeting Grizzly Bears"],
+  "expect_count": {"Player A pays": 1}
+}

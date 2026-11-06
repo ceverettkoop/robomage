@@ -15,13 +15,6 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 
 ## 1. Intentional deviations (design decisions)
 
-### 1.1 Phyrexian life is paid when the pip is chosen
-- **CR** 601.2h, 601.5, 733.1
-- **Rules:** the total cost, Phyrexian life included, is paid together at 601.2h.
-- **Engine:** the 2 life is paid as each Phyrexian pip is chosen, during cost determination. A cancelled or rewound cast refunds it (`phyrexian_life_paid`).
-- **Effect:** none visible, since nothing can happen between the pip choice and the payment. The early payment keeps each decision observable (the archived Python snapshot tier's "choice has an observable effect" invariant) without adding a "committed life" observation field.
-- **Code:** `src/action_processor.cpp`: `run_cast_flow` (PHYREXIAN_PIP step), `rewind_cast`.
-
 ### 1.2 Name-a-card offers a limited candidate set
 - **CR** 201.4
 - **Rules:** the player may name any card in the Oracle card reference.

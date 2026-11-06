@@ -389,9 +389,6 @@ struct Game {
             size_t kicker_idx = 0;     // next kicker pip to offer/apply
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
             size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
-            // Life paid for Phyrexian pips (CR 107.4f). Paid as each pip is announced, so the
-            // choice shows in the life total at the prompts that follow; a rewind gives it back.
-            int phyrexian_life_paid = 0;
             // The regular cost is reduced by a ValidTarget$-conditioned ReduceCost static once
             // the targets are chosen (Mystical Dispute; CR 601.2c before 601.2f): the target
             // picks are limited to those whose cost is payable, and the reduction comes off

@@ -216,11 +216,6 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
     Entity spell_entity = pc.spell_entity;
     Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
     if (pc.pay.mana_snap_taken) restore_mana_state(caster, pc.pay.mana_snap, orderer);
-    if (pc.phyrexian_life_paid > 0) {
-        auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-        player.life_total += pc.phyrexian_life_paid;
-        player.life_lost_this_turn -= pc.phyrexian_life_paid;
-    }
     if (pc.pay.delve_seat_held) cur_game.priority.player_a_has_priority = pc.pay.delve_prev_priority_a;
     if (global_coordinator.entity_has_component<Ability>(spell_entity))
         global_coordinator.RemoveComponent<Ability>(spell_entity);
@@ -2074,14 +2069,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     std::string color_name = mana_symbol_str(phyrex_color);
                     // CR 119.4 / 118.3: a player can't pay 2 life they don't have. Only offer
                     // the life option when life >= 2 (paying down to exactly 0 is legal — they
-                    // die to SBAs afterward). Re-checked per pip against the running life total,
-                    // since an earlier pip's life payment lowers what's left for the next.
-                    // The life is paid as the pip is announced rather than with the other
-                    // costs (CR 601.2h lets costs be paid in any order), so the choice shows in
-                    // the life total at the prompts that follow; a reversed cast gives it back
-                    // (phyrexian_life_paid). Between this pip's arm and its apply nothing runs,
-                    // so the recompute at apply matches the armed menu's option layout.
-                    bool life_payable = can_pay_life(phyrex_player, 2);
+                    // die to SBAs afterward). Re-checked per pip against the life the cast owes
+                    // so far, since an earlier pip's life leaves less for the next. The life is
+                    // announced here and owed with the rest of the cost, paid after the targets
+                    // and the mana (CR 601.2c, 601.2g-h). Between this pip's arm and its apply
+                    // nothing runs, so the recompute at apply matches the armed menu's option
+                    // layout.
+                    bool life_payable = can_pay_life(phyrex_player, pc.pay.life + 2);
                     if (resume_choice >= 0) {
                         int phyrex_choice = resume_choice;
                         resume_choice = -1;
@@ -2091,10 +2085,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         // is always index 0 when present — so only life_payable is recomputed
                         // here.
                         if (life_payable && phyrex_choice == 0) {
-                            pay_life(phyrex_player, 2);
+                            pc.pay.life += 2;
                             coverage_cost(CostPart::LIFE, "phyrexian");
-                            pc.phyrexian_life_paid += 2;
-                            game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {
                             pc.cost_to_pay.insert(phyrex_color);
                         }
@@ -2111,8 +2103,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     ManaValue with_pip = pc.cost_to_pay;
                     with_pip.insert(phyrex_color);
                     bool can_pay_colored =
-                        can_pay_mana(caster, with_pip, spell_entity, orderer,
-                                     card_data.has_delve, card_data.tap_to_pay);
+                        can_pay_mana(caster, with_pip, spell_entity, orderer, card_data.has_delve,
+                                     card_data.tap_to_pay, /*exclude_entity=*/0, /*life_reserve=*/pc.pay.life);
                     // Never arm an empty menu. Neither half payable means the cast should not
                     // have been offered (life < 2 AND no source); keep the mana option so the
                     // payment fails through the normal path instead of vanishing here.
