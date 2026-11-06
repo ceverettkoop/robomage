@@ -252,6 +252,7 @@ static const CostStep kManaAbilitySteps[] = {
     {CostStep::MANA_ABILITY_POOL},
     {CostStep::TAP},
     {CostStep::MANA_ABILITY_SACRIFICE},
+    {CostStep::EXILE_SELF},
     {CostStep::MANA_ABILITY_LIFE},
 };
 
@@ -803,9 +804,11 @@ static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> 
 }
 
 // The source exiles itself: from the battlefield (Exile<1/CARDNAME>: The Echoverse Fulcrum) or the
-// graveyard it is activated in (ExileFromGrave<1/CARDNAME>: Runehorn Hellkite).
+// zone it is activated in (ExileFromGrave<1/CARDNAME>: Runehorn Hellkite; ExileFromHand<1/CARDNAME>:
+// Simian Spirit Guide, a mana ability).
 static void exile_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
-    for (CostPart::Kind kind : {CostPart::EXILE, CostPart::EXILE_FROM_GRAVEYARD}) {
+    if (!who.commit) return;
+    for (CostPart::Kind kind : {CostPart::EXILE, CostPart::EXILE_FROM_HAND, CostPart::EXILE_FROM_GRAVEYARD}) {
         if (!who.cost->self(kind)) continue;
         const std::string name = entity_name(who.source);
         orderer->add_to_zone(false, who.source, Zone::EXILE);

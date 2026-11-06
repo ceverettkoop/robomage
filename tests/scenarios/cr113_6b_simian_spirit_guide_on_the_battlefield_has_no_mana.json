@@ -1,0 +1,30 @@
+{
+  "name": "cr113_6b_simian_spirit_guide_on_the_battlefield_has_no_mana",
+  "why": "CR 113.6b: the ability functions only from the hand: a Simian Spirit Guide on the battlefield can't exile itself, is no mana source, and can't pay for Lightning Bolt",
+  "hand_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Simian Spirit Guide"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Simian Spirit Guide for",
+    "Cast Lightning Bolt"
+  ]
+}

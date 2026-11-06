@@ -341,6 +341,7 @@ static void offer_zone_activations(std::vector<LegalAction> &actions, const std:
             ++ability_index;
             if (ab->ability_type != AbilityDef::ACTIVATED || ab->activation_zone != zone) continue;
             const Ability zone_ab(ab);
+            if (ability_is_mana(zone_ab)) continue;  // collect_mana_legal_actions offers these
             if (!can_activate_now(zone_ab, card, player, sorcery_window, orderer)) continue;
             actions.push_back(
                 activate_action(card, zone_ab, zone_activation_label(*ab, card_data.name, zone), ability_index));
@@ -1011,11 +1012,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     if (auto_mana && !legal_mana_abilities.empty()) removal_tgts = stack_removal_targets(orderer);
     for (auto &ma : legal_mana_abilities) {
         // With auto-mana on, normal mana sources stay hidden and are auto-paid during cost
-        // payment, with two exceptions offered at priority so mana can still be floated:
-        // instant-speed sources (e.g. LED, only activatable here), and any source that is
+        // payment, with three exceptions offered at priority so mana can still be floated:
+        // instant-speed sources (e.g. LED, only activatable here), a card's ability from the hand
+        // (Simian Spirit Guide, which the auto-payer doesn't spend), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield).
-        if (auto_mana && !ma.ability.def->instant_speed &&
+        if (auto_mana && !ma.ability.def->instant_speed && ma.ability.def->activation_zone == -1 &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

@@ -1,0 +1,38 @@
+{
+  "name": "cr605_3a_simian_spirit_guide_floats_red_from_hand",
+  "why": "CR 605.3a/b, 113.6b: Simian Spirit Guide: Exile it from your hand: Add {R}. A mana ability activated from the hand: no Permanent, no stack; the {R} pays for Lightning Bolt with no land in play",
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:mana:r",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A exiles Simian Spirit Guide",
+    "Player A adds 1\\(R\\)",
+    "Player A casts Lightning Bolt"
+  ],
+  "expect_menu": [
+    "Exile Simian Spirit Guide for \\(R\\)"
+  ],
+  "expect_not": [
+    "Simian Spirit Guide ability is on the stack",
+    "Player A discards Simian"
+  ]
+}

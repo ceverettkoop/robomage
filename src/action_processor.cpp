@@ -1681,6 +1681,20 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         }
 
         case Game::PendingActivation::FINISH: {
+            // MANA ABILITY
+            if (is_mana_ability) {
+                // Costs were already paid above (PAY_COSTS). The shared production core handles the rest: amount eval
+                // (dynamic amounts like Gaea's Cradle / Urza's Workshop), ProduceMana
+                // replacement, pool insert, TapsForMana triggers, uncounterability flag,
+                // narrative, SubAbility$ riders (Ancient Tomb's damage), and the activation
+                // counter.
+                auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+                produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
+                                          /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
+                // priority does not pass
+                pa = Game::PendingActivation{};
+                return;
+            }
             if (pa.zone_path) {
                 // Auto-consume the activated card to the graveyard, unless the ability
                 // relocates it itself (Defined$ Self) or it was already moved as an explicit cost
@@ -1711,20 +1725,6 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                              cd.name.c_str(), from_zone);
                 }
                 game.take_action();
-                pa = Game::PendingActivation{};
-                return;
-            }
-            // MANA ABILITY
-            if (is_mana_ability) {
-                // Costs were already paid above (PAY_COSTS). The shared production core handles the rest: amount eval
-                // (dynamic amounts like Gaea's Cradle / Urza's Workshop), ProduceMana
-                // replacement, pool insert, TapsForMana triggers, uncounterability flag,
-                // narrative, SubAbility$ riders (Ancient Tomb's damage), and the activation
-                // counter.
-                auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-                produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
-                                          /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
-                // priority does not pass
                 pa = Game::PendingActivation{};
                 return;
             }

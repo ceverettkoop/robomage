@@ -69,6 +69,7 @@ static bool controls_enough(const CostPart &part, const CostCheck &check, Entity
 // Enough cards matching the pitch's filter in the payer's hand, the spell itself left out of its
 // .Other.
 static bool pitch_covers(const CostPart &part, const CostCheck &check) {
+    if (part.is_self()) return true;
     MatchCtx ctx;
     ctx.source = check.source;
     int matching = 0;

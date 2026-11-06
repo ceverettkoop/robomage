@@ -77,6 +77,8 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 // Can `player` pay a mana ability's own mana cost (Talon Gates' {1}{T})? The physical gate
 // (mana_ability_available_now) has held its {T} and its life. Nothing holds it to the rest: a
 // Sac<1/Type>, Return or energy in a mana ability's cost is offered whether or not it can be paid.
+static void append_hand_mana_actions(Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for,
+                                     std::vector<LegalAction> &actions);
 static bool mana_source_affordable(Zone::Ownership player, Entity source, const Ability &ab,
                                    std::shared_ptr<Orderer> orderer);
 static bool mana_ability_is_painful(const Ability &ab);
@@ -314,6 +316,8 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
 // produce" summary can never disagree with the menu about which sources are available.
 static bool mana_ability_available_now(Entity e, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
     bool include_instant_speed, int life_reserve) {
+    // A permanent's copy of an ability that functions from another zone does nothing here (CR 113.6b).
+    if (ab.def->activation_zone != -1) return false;
     // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
     // mid-cost-payment. Callers listing actions for a player who holds priority pass
     // include_instant_speed; the affordability/payment callers leave it false.
@@ -456,7 +460,26 @@ std::vector<LegalAction> collect_mana_legal_actions(
         la.category = mana_action_category(ab.color);
         actions.push_back(la);
     }
+    append_hand_mana_actions(player, orderer, paid_for, actions);
     return actions;
+}
+
+// CR 605.3a allows a mana ability wherever mana is paid, and these rows go wherever the
+// battlefield's do. The auto-payer doesn't spend them: a card is no land to tap, so it is the
+// player's to exile, at priority or at a row.
+static void append_hand_mana_actions(Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for,
+                                     std::vector<LegalAction> &actions) {
+    for (Entity card : orderer->get_hand(player)) {
+        const CardData &cd = global_coordinator.GetComponent<CardData>(card);
+        for (const AbilityDef *def : cd.abilities) {
+            if (def->activation_zone != Zone::HAND) continue;
+            const Ability ab(def);
+            if (!ability_is_mana(ab) || !mana_source_usable_for(ab, card, paid_for)) continue;
+            LegalAction la(ACTIVATE_ABILITY, card, ab, "Exile " + cd.name + " for (" + mana_symbol_str(ab.color) + ")");
+            la.category = mana_action_category(ab.color);
+            actions.push_back(la);
+        }
+    }
 }
 
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
@@ -771,7 +794,10 @@ void increment_activation_count(Permanent &perm, const Ability &ability) {
 void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                bool commit, ManaLogStyle log_style) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(source);
+    // A card activated from the hand is no permanent: nothing taps, and it holds no activation count.
+    Permanent *perm = global_coordinator.entity_has_component<Permanent>(source)
+                          ? &global_coordinator.GetComponent<Permanent>(source)
+                          : nullptr;
     size_t amount = eval_mana_amount(ab, controller);
     // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
     // produces that much {C} instead. Consult active replacements before the produced mana enters
@@ -795,21 +821,23 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
     // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
     // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
     // emitted only on the real activation (commit).
-    fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
+    if (perm) fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
     if (commit && ab.def->adds_no_counter) cur_game.pending_cant_be_countered = true;
-    if (commit) {
+    if (commit && !perm) {
+        game_log("%s adds %zu(%s)\n", player_name(controller).c_str(), amount, mana_symbol_str(produced_color));
+    } else if (commit) {
         switch (log_style) {
             case ManaLogStyle::ACTIVATED:
                 game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                         perm->name.c_str(), amount, mana_symbol_str(produced_color));
                 break;
             case ManaLogStyle::TAPPED_AMOUNT:
                 game_log("%s tapped %s for %zu(%s)\n", player_name(controller).c_str(),
-                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                         perm->name.c_str(), amount, mana_symbol_str(produced_color));
                 break;
             case ManaLogStyle::TAPPED_SYMBOL:
                 game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
-                         perm.name.c_str(), mana_symbol(produced_color).c_str());
+                         perm->name.c_str(), mana_symbol(produced_color).c_str());
                 break;
         }
     }
@@ -823,7 +851,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
             resolve_ability(sub_ab, orderer);
         }
     }
-    if (commit) increment_activation_count(perm, ab);
+    if (commit && perm) increment_activation_count(*perm, ab);
 }
 
 // Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half is
