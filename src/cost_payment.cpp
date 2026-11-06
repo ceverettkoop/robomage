@@ -33,76 +33,89 @@ extern Game cur_game;
 namespace {
 
 // The cost a pick reads, for a path that pays more than one.
-enum class CostSlot { COST, ALTERNATIVE, ADDITIONAL, ESCALATE, FLASHBACK, ESCAPE };
+enum class CostSlot {
+    COST,
+    ALTERNATIVE,
+    ADDITIONAL,
+    ESCALATE,
+    FLASHBACK,
+    ESCAPE
+};
 
 // How one choice of what a part moves is asked and recorded.
 struct PickRule {
-    CostSlot slot;
-    CostPart::Kind kind;
-    const char *label;       // the menu row: label + name + label_tail
-    const char *label_tail;
-    ActionCategory category;
-    Zone::ZoneValue dest;
-    const char *log;  // the narrative line: player + log + name + log_tail
-    const char *log_tail;
-    // How many it takes. ONE_IF_ANY: a single pick when the filter names any and a candidate exists,
-    // whatever the part's count. BY_COUNT: the part's count. BY_TYPES: until the cards chosen cover
-    // its distinct card types.
-    enum Amount { ONE_IF_ANY, BY_COUNT, BY_TYPES } amount;
-    bool repeats_chosen;    // what is already chosen stays in the pool
-    bool stops_when_empty;  // no candidate left ends the picks (a cost legality guaranteed)
-    bool takes_forced;      // nothing is asked when every candidate must be taken
+        CostSlot slot;
+        CostPart::Kind kind;
+        const char *label;  // the menu row: label + name + label_tail
+        const char *label_tail;
+        ActionCategory category;
+        Zone::ZoneValue dest;
+        const char *log;  // the narrative line: player + log + name + log_tail
+        const char *log_tail;
+        // How many it takes. ONE_IF_ANY: a single pick when the filter names any and a candidate exists,
+        // whatever the part's count. BY_COUNT: the part's count. BY_TYPES: until the cards chosen cover
+        // its distinct card types.
+        enum Amount {
+            ONE_IF_ANY,
+            BY_COUNT,
+            BY_TYPES
+        } amount;
+        bool repeats_chosen;    // what is already chosen stays in the pool
+        bool stops_when_empty;  // no candidate left ends the picks (a cost legality guaranteed)
+        bool takes_forced;      // nothing is asked when every candidate must be taken
 };
 
 // One step of a payment path.
 struct CostStep {
-    enum Op {
-        PICK,               // choose what `pick` moves; the move waits for the mana
-        DELVE_COUNT,        // how many cards Delve exiles
-        DELVE_PICK,         // which ones
-        SNAPSHOT,           // the snapshot a reversed payment restores
-        TAP,                // {T}: the source taps
-        OWE_ACTIVATION,     // what an activation owes
-        FLOAT_LEAVING,      // CR 601.2g: mana from a permanent about to leave to pay the cost
-        RECORD_MANA_SPENT,
-        PAY_MANA,
-        CHECK_RESOURCES,    // the life and energy can still be paid
-        COUNT_TAP,
-        LOYALTY,
-        LIFE,
-        LIFE_X,
-        ENERGY,
-        SACRIFICE_SELF,
-        MOVE_ITEMS,         // what the picks chose moves
-        DISCARD_SELF,
-        DISCARD_HAND,
-        // A mana ability paying through activate_mana_source, from its working pool and player.
-        MANA_ABILITY_GATE,  // the life it costs and loses can be paid
-        MANA_ABILITY_POOL,  // its activation mana, from the pool alone
-        MANA_ABILITY_SACRIFICE,
-        MANA_ABILITY_LIFE,
-        TRIGGER_SACRIFICE,  // a triggered ability's Sac<1/CARDNAME>, paid as it resolves
-        TRIGGER_ENERGY,     // an ImmediateTrigger's optional PayEnergy<N>
-        UNLESS_OFFER,       // an unless-cost, offered to its payer
-    };
-    Op op;
-    const PickRule *pick = nullptr;
+        enum Op {
+            PICK,            // choose what `pick` moves; the move waits for the mana
+            DELVE_COUNT,     // how many cards Delve exiles
+            DELVE_PICK,      // which ones
+            SNAPSHOT,        // the snapshot a reversed payment restores
+            TAP,             // {T}: the source taps
+            OWE_ACTIVATION,  // what an activation owes
+            FLOAT_LEAVING,   // CR 601.2g: mana from a permanent about to leave to pay the cost
+            RECORD_MANA_SPENT,
+            PAY_MANA,
+            CHECK_RESOURCES,  // the life and energy can still be paid
+            COUNT_TAP,
+            LOYALTY,
+            LIFE,
+            LIFE_X,
+            ENERGY,
+            SACRIFICE_SELF,
+            MOVE_ITEMS,  // what the picks chose moves
+            DISCARD_SELF,
+            DISCARD_HAND,
+            // A mana ability paying through activate_mana_source, from its working pool and player.
+            MANA_ABILITY_GATE,  // the life it costs and loses can be paid
+            MANA_ABILITY_POOL,  // its activation mana, from the pool alone
+            MANA_ABILITY_SACRIFICE,
+            MANA_ABILITY_LIFE,
+            TRIGGER_SACRIFICE,  // a triggered ability's Sac<1/CARDNAME>, paid as it resolves
+            TRIGGER_ENERGY,     // an ImmediateTrigger's optional PayEnergy<N>
+            UNLESS_OFFER,       // an unless-cost, offered to its payer
+        };
+        Op op;
+        const PickRule *pick = nullptr;
 };
 
 struct CostSteps {
-    const CostStep *rows;
-    size_t size;
+        const CostStep *rows;
+        size_t size;
 };
 
 }  // namespace
 
+template <size_t N>
+static constexpr CostSteps table(const CostStep (&rows)[N]);
 static CostSteps path_steps(CostPath path);
-static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &ctx,
-                          const std::shared_ptr<Orderer> &orderer);
-static PayStatus pick_items(const PickRule &rule, const CostPayer &who, FrameCtx &ctx,
-                            const std::shared_ptr<Orderer> &orderer);
-static std::vector<Entity> pick_pool(const PickRule &rule, const CostPayer &who,
-                                     const std::shared_ptr<Orderer> &orderer);
+static PayStatus pay_step(
+    const CostStep &step, const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus pick_items(
+    const PickRule &rule, const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static std::vector<Entity> pick_pool(
+    const PickRule &rule, const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static const CostParts *pick_cost(const PickRule &rule, const CostPayer &who);
 static int picks_owed(const PickRule &rule, const CostParts &cost, const CostPayer &who);
 static std::string item_name(const PickRule &rule, Entity e);
@@ -160,10 +173,12 @@ static const PickRule kFlashbackSacrifice = {CostSlot::FLASHBACK, CostPart::SACR
 // Escape's ExileFromGrave (CR 702.139 / 601.2f), mandatory until met: OTHER cards of the graveyard
 // until the set collectively has at least min_types distinct card types (CR 205.2), or exactly
 // `count` of them (Uro: "Exile five other cards from your graveyard").
-static const PickRule kEscapeExileTypes = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ", " from graveyard",
-    ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard", PickRule::BY_TYPES, false, true, false};
-static const PickRule kEscapeExileCount = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ", " from graveyard",
-    ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard", PickRule::BY_COUNT, false, true, false};
+static const PickRule kEscapeExileTypes = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",
+    " from graveyard", ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard",
+    PickRule::BY_TYPES, false, true, false};
+static const PickRule kEscapeExileCount = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",
+    " from graveyard", ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard",
+    PickRule::BY_COUNT, false, true, false};
 
 // ── The paths ────────────────────────────────────────────────────────────────────────────────
 // CR 601.2f-h, after the targets: first every non-mana cost item is chosen, then the mana is paid,
@@ -279,8 +294,8 @@ PayStatus run_cost_parts(const CostPayer &who, FrameCtx &ctx, const std::shared_
     return PayStatus::PAID;
 }
 
-static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &ctx,
-                          const std::shared_ptr<Orderer> &orderer) {
+static PayStatus pay_step(
+    const CostStep &step, const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     switch (step.op) {
         case CostStep::PICK:
             return pick_items(*step.pick, who, ctx, orderer);
@@ -363,7 +378,7 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
         case CostStep::MANA_ABILITY_SACRIFICE:
             if (who.commit && who.cost->self(CostPart::SACRIFICE)) {
                 game_log("%s sacrifices %s\n", player_name(who.payer).c_str(),
-                         global_coordinator.GetComponent<Permanent>(who.source).name.c_str());
+                    global_coordinator.GetComponent<Permanent>(who.source).name.c_str());
                 orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
             }
             break;
@@ -396,8 +411,8 @@ static PayStatus pay_step(const CostStep &step, const CostPayer &who, FrameCtx &
 
 // Choose what `rule`'s part moves, one pick at a time, the menu re-derived from the live zones at
 // each pass: a pick stays where it is until the mana has committed.
-static PayStatus pick_items(const PickRule &rule, const CostPayer &who, FrameCtx &ctx,
-                            const std::shared_ptr<Orderer> &orderer) {
+static PayStatus pick_items(
+    const PickRule &rule, const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     CostRun &run = *who.run;
     const CostParts *cost = pick_cost(rule, who);
     if (!cost) return PayStatus::PAID;
@@ -457,8 +472,8 @@ static int picks_owed(const PickRule &rule, const CostParts &cost, const CostPay
 }
 
 // The candidates of the next pick, in zone order.
-static std::vector<Entity> pick_pool(const PickRule &rule, const CostPayer &who,
-                                     const std::shared_ptr<Orderer> &orderer) {
+static std::vector<Entity> pick_pool(
+    const PickRule &rule, const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
     const CostParts &cost = *pick_cost(rule, who);
     const CostRun &run = *who.run;
     std::vector<Entity> pool;
@@ -492,8 +507,8 @@ static std::vector<Entity> pick_pool(const PickRule &rule, const CostPayer &who,
             break;
     }
     if (!rule.repeats_chosen)
-        pool.erase(std::remove_if(pool.begin(), pool.end(), [&run](Entity e) { return chosen_as_cost(run, e); }),
-                   pool.end());
+        pool.erase(
+            std::remove_if(pool.begin(), pool.end(), [&run](Entity e) { return chosen_as_cost(run, e); }), pool.end());
     return pool;
 }
 
@@ -572,14 +587,13 @@ static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const s
     std::vector<LegalAction> count_menu;
     for (size_t n = min_needed; n <= max_exiles; n++) {
         LegalAction la(PASS_PRIORITY, who.source,
-                       "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") + " from graveyard (Delve)");
+            "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") + " from graveyard (Delve)");
         la.category = ActionCategory::CHOOSE_X;
         la.option_ordinal = static_cast<int>(n);  // the delve exile count
-        la.card_is_public = true;  // the spell being cast is public
+        la.card_is_public = true;                 // the spell being cast is public
         count_menu.push_back(la);
     }
-    if (!ctx.resuming())
-        game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed, max_exiles);
+    if (!ctx.resuming()) game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed, max_exiles);
     const int choice = ctx.ask(std::move(count_menu), who.payer, who.source);
     if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
     run.delve_count = min_needed + static_cast<size_t>(choice);
@@ -657,7 +671,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
-                                         /*has_delve=*/false, run.improvise, &run.spent_colors);
+        /*has_delve=*/false, run.improvise, &run.spent_colors);
     if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA);
     return paid;
 }
@@ -686,7 +700,7 @@ static void pay_loyalty(const CostPayer &who) {
     const int loyalty = add_counters(who.source, "LOYALTY", loyalty_delta);
     perm.loyalty_ability_activated_this_turn = true;
     game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n", entity_name(who.source).c_str(), loyalty_delta,
-             loyalty);
+        loyalty);
     coverage_cost(CostPart::LOYALTY);
 }
 
@@ -842,8 +856,8 @@ static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const
         if (dchoice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
         const Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
         game_log("%s discards %s — %s\n", player_name(who.payer).c_str(),
-                 global_coordinator.GetComponent<CardData>(chosen).name.c_str(),
-                 unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+            global_coordinator.GetComponent<CardData>(chosen).name.c_str(),
+            unless_outcome_text(terms.subject, /*paid=*/true).c_str());
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
     }
     return PayStatus::PAID;
@@ -871,7 +885,7 @@ static PayStatus offer_unless_resource(const CostPayer &who, FrameCtx &ctx) {
     else
         pay_energy(payer, amount);
     game_log("%s pays %zu %s — %s\n", player_name(who.payer).c_str(), terms.amount, life ? "life" : "energy",
-             unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+        unless_outcome_text(terms.subject, /*paid=*/true).c_str());
     return PayStatus::PAID;
 }
 
@@ -898,12 +912,11 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
         // produce free mana or (refused) re-offer the same menu forever to a deterministic
         // machine-mode agent. The menu is rebuilt each iteration, so the source reappears
         // as soon as enough mana has been floated.
-        unless_actions.erase(
-            std::remove_if(unless_actions.begin(), unless_actions.end(),
-                [&](const LegalAction &la) {
-                    return !la.ability.def->cost.mana().empty() &&
-                           !can_afford(who.payer, la.ability.def->cost.mana());
-                }),
+        unless_actions.erase(std::remove_if(unless_actions.begin(), unless_actions.end(),
+                                 [&](const LegalAction &la) {
+                                     return !la.ability.def->cost.mana().empty() &&
+                                            !can_afford(who.payer, la.ability.def->cost.mana());
+                                 }),
             unless_actions.end());
 
         const bool payable = can_afford(who.payer, cond_cost);
@@ -922,8 +935,8 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
         if (payable && choice == static_cast<int>(pay_idx)) {
             spend_mana(who.payer, cond_cost, who.payee.entity);
             game_log("%s pays %s — %s\n", player_name(who.payer).c_str(),
-                     unless_cost_text(terms.kind, terms.amount, terms.pips).c_str(),
-                     unless_outcome_text(terms.subject, /*paid=*/true).c_str());
+                unless_cost_text(terms.kind, terms.amount, terms.pips).c_str(),
+                unless_outcome_text(terms.subject, /*paid=*/true).c_str());
             return PayStatus::PAID;
         }
 
@@ -938,7 +951,7 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
             // (Lotus Petal), life costs, dynamic amounts, SubAbility$ riders (Ancient
             // Tomb's damage), ProduceMana replacements, and activation counters.
             if (!activate_mana_source(chosen.source_entity, chosen.ability, who.payer, orderer, pl.mana, pl,
-                                      /*commit=*/true, ManaLogStyle::TAPPED_SYMBOL))
+                    /*commit=*/true, ManaLogStyle::TAPPED_SYMBOL))
                 game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
         }
     }
