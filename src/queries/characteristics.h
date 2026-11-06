@@ -16,23 +16,35 @@
 // An object's characteristics as the rules read them: the face that's up, its colors, mana
 // value, effective power/toughness, and its display name.
 
+// The characteristics `cd` has when `overlay` is applied to it; null when it has none of its own.
+inline const CardData *overlay_face(const CardData &cd, SpellOverlay overlay) {
+    for (const OverlayFace &o : cd.overlay_faces)
+        if (o.kind == overlay) return o.face.get();
+    return nullptr;
+}
+
+// The characteristics a spell of `cd` cast by `how` has on the stack: those of its overlay, else of
+// the face it is cast as (CR 712.8f, 709.3).
+inline const CardData &cast_face(const CardData &cd, const CastOption &how) {
+    if (const CardData *overlaid = overlay_face(cd, how.overlay)) return *overlaid;
+    return how.face == CastFace::BACK && cd.backside ? *cd.backside : cd;
+}
+
 // The CardData face a permanent entity is currently showing: the back face while the
 // permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
-// else the front. A spell cast as its modal back face or as a split card's second half has only
-// that face's characteristics on the stack (CR 712.8f, 709.3). Falls back to the front face for
-// single-faced cards and any other object.
+// else the front. A spell has the characteristics it was cast with (cast_face). Falls back to the
+// front face for single-faced cards and any other object.
 // Use this instead of reading GetComponent<CardData>(e) directly wherever a transformed
 // permanent's PRINTED characteristics (colors, types, P/T) matter; note that MANA VALUE is
 // the one characteristic that does NOT follow the active face for a nonmodal DFC (712.8e
 // computes it from the front face's cost; only a MODAL back face carries its own, 712.8d).
 inline const CardData &active_face(Entity e, const CardData &cd) {
-    if (!cd.backside) return cd;
-    if (global_coordinator.entity_has_component<Permanent>(e) &&
+    if (!cd.backside && cd.overlay_faces.empty()) return cd;
+    if (cd.backside && global_coordinator.entity_has_component<Permanent>(e) &&
         global_coordinator.GetComponent<Permanent>(e).transformed)
         return *cd.backside;
-    if (global_coordinator.entity_has_component<Spell>(e) &&
-        global_coordinator.GetComponent<Spell>(e).chosen.back_face())
-        return *cd.backside;
+    if (global_coordinator.entity_has_component<Spell>(e))
+        return cast_face(cd, global_coordinator.GetComponent<Spell>(e).chosen.option);
     return cd;
 }
 

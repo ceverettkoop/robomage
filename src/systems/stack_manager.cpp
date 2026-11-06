@@ -250,7 +250,8 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
                 game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
             } else if (to.zone == Zone::EXILE) {
-                game_log("%s is exiled%s\n", card_data.name.c_str(), to.by_cast ? " (flashback)" : "");
+                game_log("%s is exiled%s\n", card_data.name.c_str(),
+                         to.by_cast ? (" (" + std::string(to.by_cast) + ")").c_str() : "");
             }
         }
     }

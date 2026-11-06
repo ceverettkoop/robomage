@@ -31,6 +31,10 @@ enum class CastCost : uint8_t {
                    // for its normal cost
 };
 
+// What a cast changes on the spell beyond its face and its cost: a kind and a row of
+// kSpellOverlayRows (queries/overlays.cpp), and a column of the cast table.
+enum class SpellOverlay : uint8_t { NONE };
+
 // One way of casting a card: a row of a menu holds it, and the cast proceeds from it. The rows are
 // cast_options.cpp's table; a row that is no cast holds the default, and PLAY_LAND rows their face.
 struct CastOption {
@@ -43,11 +47,12 @@ struct CastOption {
         // spell_destination; GRAVEYARD leaves that to what moves it.
         Zone::ZoneValue destination = Zone::GRAVEYARD;
         const char *row = nullptr;  // the name of its row, its --coverage key
+        SpellOverlay overlay = SpellOverlay::NONE;  // what it changes on the spell, read through cast_face
 
         bool alternative() const { return cost >= CastCost::ALTERNATIVE; }
         bool operator==(const CastOption &o) const {
             return face == o.face && zone == o.zone && cost == o.cost && permission == o.permission &&
-                   offspring == o.offspring && destination == o.destination;
+                   offspring == o.offspring && destination == o.destination && overlay == o.overlay;
         }
 };
 

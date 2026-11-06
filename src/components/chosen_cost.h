@@ -13,7 +13,7 @@
 
 // What a cast committed to (CR 601.2b-h): how the spell was cast and what was paid. Built on
 // Game::PendingCast as the cast is proposed, and recorded on the Spell as it becomes cast
-// (CR 601.2i) for as long as it is on the stack; until then a Spell holds only the face of its option.
+// (CR 601.2i) for as long as it is on the stack; until then a Spell holds only the face and overlay of its option.
 struct ChosenCost {
         CastOption option;  // how it is cast
         // The X announced (CR 601.2b / 107.3a; a variable life cost's X too): Chalice of the Void enters

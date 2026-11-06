@@ -25,7 +25,9 @@ enum class SpellExit { RESOLVED, REMOVED };
 struct SpellDestination {
     Zone::ZoneValue zone = Zone::GRAVEYARD;
     bool shuffled = false;  // into its owner's library, which is then shuffled (Green Sun's Zenith)
-    bool by_cast = false;   // how it was cast decided it, whatever was proposed (flashback, CR 702.34a)
+    // What about how it was cast decided it, whatever was proposed (flashback, CR 702.34a); null when
+    // nothing did.
+    const char *by_cast = nullptr;
 };
 
 // The one answer to where `spell` goes: `proposed` is where the spell's own instructions

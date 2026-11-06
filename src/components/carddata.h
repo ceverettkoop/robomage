@@ -10,8 +10,17 @@
 #include "../components/types.h"
 #include "../classes/colors.h"
 #include "ability.h"
+#include "cast_option.h"
 #include "effect.h"
 #include "static_ability.h"
+
+struct CardData;
+
+// The characteristics a SpellOverlay gives a card that has it, built as the card is parsed.
+struct OverlayFace {
+    SpellOverlay kind;
+    std::shared_ptr<const CardData> face;
+};
 
 struct AltCost {
     bool has_alt_cost = false;
@@ -71,6 +80,7 @@ struct CardData{
     std::vector<StaticAbility> static_abilities;
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
+    std::vector<OverlayFace> overlay_faces;  // one per SpellOverlay that changes its characteristics
     // AlternateMode:Modal — a MODAL double-faced card (MDFC, CR 712.x): the player chooses,
     // when playing it from hand, which face to cast/play (front spell OR back face). Unlike a
     // transform DFC (Delver/Ajani), an MDFC is not a transforming permanent — the chosen face

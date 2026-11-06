@@ -9,6 +9,7 @@
 #include "battlefield.h"
 #include "characteristics.h"
 #include "filters.h"
+#include "overlays.h"
 
 static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
@@ -22,10 +23,14 @@ SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, Spell
         to.zone = Zone::LIBRARY;
         to.shuffled = true;
     } else if (global_coordinator.entity_has_component<Spell>(spell)) {
-        const Zone::ZoneValue by_cast = global_coordinator.GetComponent<Spell>(spell).chosen.option.destination;
-        if (by_cast != Zone::GRAVEYARD) {
-            to.zone = by_cast;
-            to.by_cast = true;
+        const CastOption &how = global_coordinator.GetComponent<Spell>(spell).chosen.option;
+        const SpellOverlayRow &overlay = spell_overlay(how.overlay);
+        if (how.destination != Zone::GRAVEYARD) {
+            to.zone = how.destination;
+            to.by_cast = how.row;
+        } else if (exit == SpellExit::RESOLVED && overlay.resolved_to != Zone::GRAVEYARD) {
+            to.zone = overlay.resolved_to;
+            to.by_cast = overlay.name;
         }
     }
     return to;

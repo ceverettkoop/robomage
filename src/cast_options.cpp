@@ -36,7 +36,8 @@ struct CastOffer {
 };
 
 // A way of casting: its coverage name, what it pays, what labels it (LegalAction::option_ordinal
-// and what follows "Cast <face>" in the menu), where it sends the spell, and whether it is offered.
+// and what follows "Cast <face>" in the menu), where it sends the spell, whether it is offered, and
+// what it changes on the spell.
 struct CastRow {
         const char *name;
         CastCost cost;
@@ -45,6 +46,7 @@ struct CastRow {
         const char *label;
         Zone::ZoneValue destination;
         bool (*offered)(CastOffer &offer);
+        SpellOverlay overlay = SpellOverlay::NONE;
 };
 
 // The rows of one zone, permission and face, offered to each card that has the permission. `covers`
@@ -626,7 +628,7 @@ static LegalAction row_action(const CastRow &row, const CastSection &section, En
     LegalAction la(CAST_SPELL, card, desc);
     la.category = ActionCategory::CAST_SPELL;
     la.option_ordinal = row.ordinal;
-    la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination, row.name};
+    la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination, row.name, row.overlay};
     return la;
 }
 
@@ -635,13 +637,21 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
                                    std::vector<LegalAction> &actions) {
     const CardData &printed = global_coordinator.GetComponent<CardData>(card);
     const bool covered = !section.covers || section.covers(printed);
-    CastOffer offer{card, covered && section.face == CastFace::BACK ? *printed.backside : printed, section.zone, window};
+    CastOption how;
+    how.face = covered ? section.face : CastFace::FRONT;
+    CastOffer offer{card, cast_face(printed, how), section.zone, window};
     if (covered)
-        for (const CastRow &row : section.rows)
-            if (row.offered(offer)) {
-                actions.push_back(row_action(row, section, card, "Cast " + offer.face.name + row.label));
+        for (const CastRow &row : section.rows) {
+            // A row that overlays the spell asks about the spell it makes (CR 702.103d), which the
+            // rows without one don't share.
+            how.overlay = row.overlay;
+            CastOffer overlaid{card, cast_face(printed, how), section.zone, window};
+            CastOffer &asked = row.overlay == SpellOverlay::NONE ? offer : overlaid;
+            if (row.offered(asked)) {
+                actions.push_back(row_action(row, section, card, "Cast " + asked.face.name + row.label));
                 coverage_cast_offer(row.name);
             }
+        }
     if (section.beside) section.beside(offer, actions);
 }
 

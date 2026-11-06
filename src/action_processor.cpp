@@ -234,6 +234,7 @@ static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
     Spell spell;
     spell.caster = caster;
     spell.chosen.option.face = pc.chosen.option.face;
+    spell.chosen.option.overlay = pc.chosen.option.overlay;
     global_coordinator.AddComponent(pc.spell_entity, spell);
 }
 
@@ -1925,8 +1926,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
     // face, but the spell has only the BACK face's characteristics — pay the back's mana cost,
     // put the back's spell ability on the stack, and (if the back is a permanent) enter as the
     // back face. Every cast-path read of card_data comes from the back face for this cast.
-    const CardData &card_data = (pc.chosen.back_face() && front_data.backside)
-                                    ? *front_data.backside : front_data;
+    const CardData &card_data = cast_face(front_data, pc.chosen.option);
     Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
 
     for (;;) switch (pc.step) {

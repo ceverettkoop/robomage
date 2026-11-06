@@ -5,6 +5,7 @@
 #include "../components/ability.h"
 #include "../ecs/coordinator.h"
 #include "../mana_system.h"
+#include "characteristics.h"
 
 using Cast = Game::PendingCast;
 using Activation = Game::PendingActivation;
@@ -14,7 +15,7 @@ static bool cast_cost(const Cast &pc, PendingCost &out);
 static bool activation_cost(const Activation &pa, PendingCost &out);
 static bool cast_step_is_payment(Cast::Step step);
 static StatePart cast_step_part(const Cast &pc);
-static const CardData *cast_face(const Cast &pc);
+static const CardData *face_being_cast(const Cast &pc);
 
 // The steps of the cast flow that decide or pay a cost (CR 601.2b's cost announcements and
 // 601.2f-h's payment); the mode/target announcement steps and the copy retargeting are not.
@@ -57,11 +58,11 @@ static StatePart cast_step_part(const Cast &pc) {
     }
 }
 
-// The face being cast (a modal DFC's back face or a split card's second half when cast as such).
-static const CardData *cast_face(const Cast &pc) {
+// The characteristics of the spell being cast.
+static const CardData *face_being_cast(const Cast &pc) {
     if (pc.spell_entity == 0 || !global_coordinator.entity_has_component<CardData>(pc.spell_entity)) return nullptr;
     const CardData &cd = global_coordinator.GetComponent<CardData>(pc.spell_entity);
-    return pc.chosen.back_face() ? cd.backside.get() : &cd;
+    return &cast_face(cd, pc.chosen.option);
 }
 
 static bool cast_cost(const Cast &pc, PendingCost &out) {
@@ -73,7 +74,7 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
     out.energy = pc.pay.energy;
     // The discards still to pick: Escalate's (CR 702.120a), owed once the modes are announced, and
     // those of the form of an additional cost announced.
-    if (const CardData *face = cast_face(pc)) {
+    if (const CardData *face = face_being_cast(pc)) {
         int discards = face->escalate_cost.count(CostPart::DISCARD) * pc.chosen.escalate_count;
         if (pc.chosen.additional_choice >= 0)
             discards += face->additional_choices[static_cast<size_t>(pc.chosen.additional_choice)].count(CostPart::DISCARD);
@@ -82,7 +83,7 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
     // A cast that pays its mana cost folds X, hybrid and Phyrexian pips into cost_to_pay one step at
     // a time (KICKER through PHYREXIAN_PIP): the pips of the steps not yet reached are still owed as
     // printed.
-    const CardData *face = cast_face(pc);
+    const CardData *face = face_being_cast(pc);
     const bool regular = !pc.mana_cost_replaced && pc.step >= Cast::KICKER && pc.step <= Cast::PHYREXIAN_PIP;
     if (face && regular) {
         if (pc.step <= Cast::CHOOSE_X && face->has_x_cost) out.x_pips = face->x_pip_count;
