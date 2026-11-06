@@ -20,26 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Adventure (CR 715)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "layout:Adventure"
-      ],
-      "size": "L"
-     },
-     "Can't-block restrictions (CantBlockBy)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "static_mode:CantBlockBy",
-       "static_param:ValidAttacker",
-       "static_param:ValidBlocker"
-      ],
-      "size": "M"
-     },
      "Convoke (CR 702.51)": {
       "cards": [
        "Hogaak, Arisen Necropolis"
@@ -79,28 +59,12 @@
        "svar_expr:Count$CastTotalManaSpent"
       ],
       "size": "S"
-     },
-     "Two-condition alternative cost (Massacre)": {
-      "cards": [
-       "Massacre"
-      ],
-      "findings": [
-       "static_param:CheckSecondSVar"
-      ],
-      "size": "S"
      }
     },
     "needs": {
-     "Brazen Borrower": [
-      "Adventure (CR 715)",
-      "Can't-block restrictions (CantBlockBy)"
-     ],
      "Hogaak, Arisen Necropolis": [
       "Convoke (CR 702.51)",
       "Hogaak casting"
-     ],
-     "Massacre": [
-      "Two-condition alternative cost (Massacre)"
      ],
      "Mockingbird": [
       "Enters as a copy (Mockingbird)",
@@ -108,114 +72,66 @@
      ]
     },
     "new_cards": [
-     "Brazen Borrower",
      "Hogaak, Arisen Necropolis",
-     "Massacre",
      "Mockingbird"
     ],
-    "size_points": 27
+    "size_points": 15
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s): 0 clean, 4 need 7 mechanic(s) (27 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (15 points)",
+   "time": "2026-11-06T11:12:52"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 24,
+    "in_vocab": 26,
     "no_script": [],
     "not_in_vocab": [
-     "Brazen Borrower",
      "Hogaak, Arisen Necropolis",
-     "Massacre",
      "Mockingbird"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "28 cards: 24 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "28 cards: 26 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-06T11:12:52"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Adventure (CR 715)",
-     "Can't-block restrictions (CantBlockBy)",
      "Convoke (CR 702.51)",
      "Enters as a copy (Mockingbird)",
      "Hogaak casting",
-     "Mana spent on casting (Count$CastTotalManaSpent)",
-     "Sunburst (CR 702.44)",
-     "Two-condition alternative cost (Massacre)"
+     "Mana spent on casting (Count$CastTotalManaSpent)"
     ]
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "4 mechanic(s) to implement: Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent)",
+   "time": "2026-11-06T11:12:52"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Brazen Borrower": {
-      "card": "Brazen Borrower",
-      "faces": [
-       "Brazen Borrower",
-       "Petty Theft"
-      ],
-      "findings": [
-       {
-        "detail": "AlternateMode:Adventure is read as a transforming card",
-        "kind": "layout",
-        "line": "",
-        "name": "Adventure"
-       },
-       {
-        "detail": "CantBlockBy ValidAttacker$ Creature.withoutFlying",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidAttacker"
-       },
-       {
-        "detail": "CantBlockBy ValidBlocker$ Creature.Self",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidBlocker"
-       },
-       {
-        "detail": "the engine applies no such static",
-        "kind": "static_mode",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "CantBlockBy"
-       }
-      ],
-      "layout": "transform",
-      "script": "cardsfolder/b/brazen_borrower_petty_theft.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
-     },
      "Hogaak, Arisen Necropolis": {
       "card": "Hogaak, Arisen Necropolis",
       "faces": [
@@ -272,26 +188,6 @@
        -1
       ]
      },
-     "Massacre": {
-      "card": "Massacre",
-      "faces": [
-       "Massacre"
-      ],
-      "findings": [
-       {
-        "detail": "AlternativeCost CheckSecondSVar$ Y",
-        "kind": "static_param",
-        "line": "S:Mode$ AlternativeCost | ValidSA$ Spell | ValidCard$ Card.Self | ValidPlayer$ You | Cost$ 0 | EffectZone$ All | CheckSVar$ X | CheckSecondSVar$ Y | Description$ If an opponent controls a Plains and you control a Swamp, you may cast this spell without paying its mana cost.",
-        "name": "CheckSecondSVar"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/m/massacre.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Mockingbird": {
       "card": "Mockingbird",
       "faces": [
@@ -323,14 +219,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s), 4 with findings (14 findings), 0 without a script",
-   "time": "2026-11-06T06:52:44"
+   "summary": "2 new card(s), 2 with findings (9 findings), 0 without a script",
+   "time": "2026-11-06T11:12:52"
   },
   "provision": {
    "detail": {
@@ -344,11 +240,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:44"
+   "time": "2026-11-06T11:12:52"
   },
   "scrape": {
    "detail": {

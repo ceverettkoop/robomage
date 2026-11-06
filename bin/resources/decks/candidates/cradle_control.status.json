@@ -40,43 +40,11 @@
       ],
       "size": "S"
      },
-     "Bestow (CR 702.103)": {
-      "cards": [
-       "Springheart Nantuko"
-      ],
-      "findings": [
-       "ability_param:CopyPermanent.UnlessResolveSubs",
-       "filter:AttachedTo Creature",
-       "keyword:Bestow"
-      ],
-      "size": "L"
-     },
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Springheart Nantuko"
-      ],
-      "findings": [
-       "ability_param:CopyPermanent.Defined"
-      ],
-      "size": "M"
-     },
-     "Prepare (CR 722)": {
-      "cards": [
-       "Carnivorous Cultivator"
-      ],
-      "findings": [
-       "keyword:ETBReplacement:DBPrepare",
-       "layout:Prepare"
-      ],
-      "size": "L"
-     },
      "UnlessCost on more effects": {
       "cards": [
-       "Grist, the Hunger Tide",
-       "Springheart Nantuko"
+       "Grist, the Hunger Tide"
       ],
       "findings": [
-       "ability_param:CopyPermanent.UnlessCost",
        "ability_param:ImmediateTrigger.UnlessCost"
       ],
       "size": "M"
@@ -86,82 +54,67 @@
      "Allosaurus Shepherd": [
       "AnimateAll power, toughness and types"
      ],
-     "Carnivorous Cultivator": [
-      "Prepare (CR 722)"
-     ],
      "Grist, the Hunger Tide": [
       "A creature card in every other zone (Grist)",
-      "UnlessCost on more effects"
-     ],
-     "Springheart Nantuko": [
-      "Bestow (CR 702.103)",
-      "Defined$ names no reader acts on",
       "UnlessCost on more effects"
      ]
     },
     "new_cards": [
      "Allosaurus Shepherd",
-     "Carnivorous Cultivator",
-     "Grist, the Hunger Tide",
-     "Springheart Nantuko"
+     "Grist, the Hunger Tide"
     ],
-    "size_points": 26
+    "size_points": 7
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s): 0 clean, 4 need 6 mechanic(s) (26 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (7 points)",
+   "time": "2026-11-06T11:12:51"
   },
   "diff": {
    "detail": {
     "distinct": 34,
-    "in_vocab": 30,
+    "in_vocab": 32,
     "no_script": [],
     "not_in_vocab": [
      "Allosaurus Shepherd",
-     "Carnivorous Cultivator",
-     "Grist, the Hunger Tide",
-     "Springheart Nantuko"
+     "Grist, the Hunger Tide"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "34 cards: 30 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "34 cards: 32 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-06T11:12:51"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "A creature card in every other zone (Grist)",
      "AnimateAll power, toughness and types",
-     "Bestow (CR 702.103)",
-     "Defined$ names no reader acts on",
-     "Prepare (CR 722)",
      "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "6 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), Defined$ names no reader acts on, Prepare (CR 722), UnlessCost on more effects",
-   "time": "2026-11-06T02:52:32"
+   "summary": "3 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, UnlessCost on more effects",
+   "time": "2026-11-06T11:12:51"
   },
   "parse": {
    "detail": {
@@ -198,34 +151,6 @@
        -1
       ]
      },
-     "Carnivorous Cultivator": {
-      "card": "Carnivorous Cultivator",
-      "faces": [
-       "Carnivorous Cultivator",
-       "Enroot"
-      ],
-      "findings": [
-       {
-        "detail": "AlternateMode:Prepare is read as a transforming card",
-        "kind": "layout",
-        "line": "",
-        "name": "Prepare"
-       },
-       {
-        "detail": "ETBReplacement:Other:DBPrepare",
-        "kind": "keyword",
-        "line": "K:ETBReplacement:Other:DBPrepare",
-        "name": "ETBReplacement:DBPrepare"
-       }
-      ],
-      "layout": "transform",
-      "script": "cardsfolder/c/carnivorous_cultivator_enroot.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
-     },
      "Grist, the Hunger Tide": {
       "card": "Grist, the Hunger Tide",
       "faces": [
@@ -256,77 +181,27 @@
       "vocab": [
        -1
       ]
-     },
-     "Springheart Nantuko": {
-      "card": "Springheart Nantuko",
-      "faces": [
-       "Springheart Nantuko"
-      ],
-      "findings": [
-       {
-        "detail": "UnlessCost$ 1 G is not offered",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Land.YouCtrl | TriggerZones$ Battlefield | Execute$ TrigCopy | TriggerDescription$ Landfall — Whenever a land you control enters, you may pay {1}{G} if CARDNAME is attached to a creature you control. If you do, create a token that's a copy of that creature. If you didn't create a token this way, create a 1/1 green Insect creature token.",
-        "name": "CopyPermanent.UnlessCost"
-       },
-       {
-        "detail": "CopyPermanent UnlessResolveSubs$ WhenNotPaid",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Land.YouCtrl | TriggerZones$ Battlefield | Execute$ TrigCopy | TriggerDescription$ Landfall — Whenever a land you control enters, you may pay {1}{G} if CARDNAME is attached to a creature you control. If you do, create a token that's a copy of that creature. If you didn't create a token this way, create a 1/1 green Insect creature token.",
-        "name": "CopyPermanent.UnlessResolveSubs"
-       },
-       {
-        "detail": "CopyPermanent Defined$ Enchanted",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Land.YouCtrl | TriggerZones$ Battlefield | Execute$ TrigCopy | TriggerDescription$ Landfall — Whenever a land you control enters, you may pay {1}{G} if CARDNAME is attached to a creature you control. If you do, create a token that's a copy of that creature. If you didn't create a token this way, create a 1/1 green Insect creature token.",
-        "name": "CopyPermanent.Defined"
-       },
-       {
-        "detail": "Bestow:1 G",
-        "kind": "keyword",
-        "line": "K:Bestow:1 G",
-        "name": "Bestow"
-       },
-       {
-        "detail": "ConditionPresent$ Card.Self+AttachedTo Creature.YouCtrl",
-        "kind": "filter",
-        "line": "SVar:TrigCopy:DB$ CopyPermanent | ConditionPresent$ Card.Self+AttachedTo Creature.YouCtrl | ConditionCompare$ GE1 | UnlessCost$ 1 G | UnlessPayer$ You | UnlessSwitched$ True | UnlessResolveSubs$ WhenNotPaid | SubAbility$ DBToken | Defined$ Enchanted",
-        "name": "AttachedTo Creature"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/springheart_nantuko.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "g_1_1_insect"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s), 4 with findings (12 findings), 0 without a script",
-   "time": "2026-11-06T06:52:44"
+   "summary": "2 new card(s), 2 with findings (5 findings), 0 without a script",
+   "time": "2026-11-06T11:12:51"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
     "tokens": [
-     "bg_1_1_insect",
-     "g_1_1_insect"
+     "bg_1_1_insect"
     ],
     "tokens_fetched": [],
     "tokens_missing": [],
@@ -335,11 +210,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:44"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T11:12:51"
   },
   "scrape": {
    "detail": {

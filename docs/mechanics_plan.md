@@ -413,7 +413,7 @@ so none landed. The stage is when the card's own last need is met:
 |---|---|---|---|
 | `ClearNamedCard`, `Imprint$`, `Imprinted$Amount` | The Stone Brain | M5 | landed in (c1), in the resolution's memory: the source has exiled itself, and what outlives a resolution is Chrome Mox's |
 | `Discard Defined$ Player` (`Mode$ Hand`) | Runehorn Hellkite | M5 | landed in (c1); Echo of Eons has no Discard, despite M2's table |
-| `UnlessCost$` on CopyPermanent, `UnlessResolveSubs$` | Springheart Nantuko | M7 | generic `UnlessCost` through `unless_payment` |
+| `UnlessCost$` on CopyPermanent, `UnlessResolveSubs$` | Springheart Nantuko | M7 | landed in (b), through `run_unless_loop` in `copy_permanent`; a step of `resolve_ability` waits for a second card |
 | `RememberDiscarded$` | Fable of the Mirror-Breaker | M8 | a row reported from `discard`. Mox Diamond's script names it but never reaches `discard`: the replacement dispatcher takes its R: line whole, so it can't test the row |
 | `ImmediateTrigger ConditionDefined$` | Agatha's Soul Cauldron | M8 | the condition read through the `Defined$` table, not the battlefield scan |
 | `ImmediateTrigger UnlessCost$ Sac<…>`, `Repeat` with no `MaxRepeat$` | Grist, the Hunger Tide | M8 | the cost through `unless_payment`; a bound for CR 732 if a loop can go on with no library to run out |
@@ -897,12 +897,42 @@ Beside them: 704 suspends, 437 companions, 560 land back faces.
 
 No game reached these. `graveyard_cast`: Emry is in no deck, and a `--play` line through both binaries is identical. `back_face_free`: the same, Gone under Omniscience. With no vocab card or script to reach them, so unproved beyond the code: a modal DFC's nonland back face (`back_face`'s other half; Witch Enchanter's back is a land), `back_face_free_offspring`, `graveyard_free`, `graveyard_free_offspring` (no free-cast static covers the graveyard, no Offspring card is an artifact), `exile_resource` and a grant's life (nothing grants energy or life at priority, and no `PlayCost$` pays life).
 
+**Progress (2026-11-06).** Unit (b), spells that become something else when cast.
+
+- **`SpellOverlay`** (`src/components/cast_option.h`) is a column of `CastRow` and a field of `CastOption`, compared by `operator==`. A kind is a row of `kSpellOverlayRows` (`src/queries/overlays.{h,cpp}`): its name, its `cast_variant` bit, where it goes as it finishes resolving, the face it builds at parse (`has`, `change`), what follows its resolution, and whether the permanent keeps it or the object is a copy. `CardData::overlay_faces` holds the built faces, and **`cast_face(card, option)`** is the one reader, through `active_face`: a new overlay is a kind, a row, and a row of the cast table. A derived definition names its printed one (`AbilityDef::printed_as`), so a frame's ability reference survives.
+- **Overload** (`overload_spell`): `ValidTgts$` reads as `Defined$ Valid`, no target, so hexproof doesn't matter and ward never triggers. **Fuse:** `CastFace::BOTH` reads `CardData::combined`, a split card's halves as one face, built at parse for every split card.
+- **Split cards against CR 709.** 709.3b: `entity_name` and the stack's logs read the active face. 709.4, 709.4b: `card_characteristics` is the filter's and `effective_colors`' reader, the cast face on the stack and both halves combined anywhere else; Wear/Tear is white and red in a hand, Tear white on the stack, and Blue Elemental Blast, Solitude's pitch and the object rows agree. 709.4a: `card_names`, a row per name, and an object has either. 709.3: a grant's rows cover the back face from exile.
+- **Adventure:** its own layout, `SpellOverlay::ADVENTURE` on a back-face section. `spell_destination` reads the overlay's `resolved_to` only at `SpellExit::RESOLVED`, and a stack object that fizzled exits as `REMOVED` now (`ResolutionFrame::fizzled`), so a countered or targetless Adventure goes to the graveyard. `on_an_adventure` leaves the exile grant, which lasts while it stays exiled. Another effect's mana-cost grant may cast it as an Adventure again. `S:Mode$ CantBlockBy` is a general static, `rules_mod::block_prohibited` over `ValidAttacker$` and `ValidBlocker$`: M8's blocking still has its other hard-coded checks to absorb.
+- **Bestow:** an alternative cost whose face is an Aura, kept on `Permanent::overlay` through `EntryInfo`. `aura_spell_target_illegal` reads the active face; an illegal target ends the overlay and it resolves as a creature (CR 702.103e); `ends_overlay` is the state-based exception to 704.5m (702.103f, g), summoning sick the turn it entered. `CopyPermanent` reads `Defined$ Enchanted`, `UnlessCost$`, `UnlessSwitched$`, `UnlessResolveSubs$ WhenNotPaid`, the offer `run_unless_loop` in its own handler; a filter's `AttachedTo <filter>` runs to the next `+`.
+- **Prepare** (`src/queries/prepared.{h,cpp}`): `K:ETBReplacement` reads the `AlterAttribute` SVar; `sync_prepared_copies`, with the state-based pass, makes the copy in exile (a `PreparedCopy` component, the prepare spell's `CardData` alone) and removes it with its permanent (phased out too, and made again as it phases in). `Permission::PREPARED` and a section with `SpellOverlay::PREPARE`: a copy, not a card, so it ceases to exist off the stack; `prepared_copy_cast` takes the designation as the spell becomes cast. To a frame it is the preparation card's back face, token-flagged, so the sidecar holds no unit for it.
+- **Also:** a stack object fizzles only with every target illegal (CR 608.2b): a shared fix, for Fuse. Massacre's `CheckSecondSVar$`. `cast_variant` is 32 bits, with OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED; `layout` ADVENTURE, PREPARE; `permission_kind` PREPARED; object columns `bestowed`, `prepared`. `cast` keys `overload`, `fused`, `adventure`, `bestow`, `prepared`.
+
+What stayed, and why:
+
+- **`CastCost` has no new row.** Overload and Bestow ride `ALTERNATIVE` and the card's one `AltCost`: a card with both, or with either and another alternative cost, has none provisioned.
+- **`spell_destination`'s order:** no card has both a shuffle and a flashback, so the swap waits with its note.
+- **A resolution's cast** (`kResolutionGrantCast`, Amped Raptor, suspend) offers the front: it is `cast_during_resolution`'s, and (c) reworks it. A free or resource grant offers no Adventure.
+- **Overload and Bestow from another zone:** rows of the hand, as every alternative cost is.
+- **`CantBlockBy`** arrived ahead of M8 only for Brazen Borrower. **`UnlessCost$`** isn't a step of `resolve_ability`: `CopyPermanent` is one more handler with its own offer, and `Token`'s (Acererak, M12) would be the next.
+
+**(c) must:**
+
+- Library: a row of `kPermissionRows` and a section, before `NONE` and appended to `permission_kind` after `PREPARED`; `encode.cpp`'s loop ends at `PREPARED`; `Orderer::begin_cast_move` is fatal on a library cast.
+- `DB$ Play` over any zone: `kResolutionGrantCast` is exile's and the front's, `effects::play` stops anywhere else, `impulse_cast_permission` is the only store a cast reads its resource from. A split card or an Adventure cast there needs the back rows the priority sections have.
+- `ReplaceGraveyard` in `spell_destination`: it belongs to a resolution, and the hook reads the overlay and the option now, at both exits.
+- A permission lost mid-cast: the row is decided at the offer, and `determine_grant_cost` reads the grant after the card has moved.
+- Convoke, Bargain, `ManaRestriction`: `TapToPay` and cost rows, as (a) left them.
+
+Evidence. `c825d039`, the inert commit: `replay` byte-identical, `make registry` a no-op, `--parse-report @vocab` unchanged. Every fix fails with it removed, by reverting the file or mutating the line: the half's name, the combined colors, the half's name for name-a-card, the second half from exile, the second condition, the chained target, `SpellExit` at a counter and a fizzle, `block_prohibited`, the overlay's end at resolution and in the state-based pass, the paid `UnlessResolveSubs$`, `AttachedTo`'s filter, the prepared designation and the copy leaving with its permanent. 46 scenario files, each card and each ability; a scenario that could only look at the log was given a line that tells the two apart. The corpus moved once, `eb1a31cc`: one `.replay` menu of `lg_burn__wrb_energy` gains `Name card: Gone`, its decision log unchanged. `tests/cli` never moved. `decks/tests/mech_cast` is the fixture, every key hit at 16 games under three seeds: `--fuzz-games 100` in `explore` and `explore:patient`, no error, no draw, `cast:fused` the rarest key at 19 and 20. Its name put it first among the fixtures, and fixture k's seeds moved every other's: `mech_mana` lost its rare key's one hit and `mech_clean_cards` met a 35,000-decision Basalt Monolith game. A fixture's seeds come from its name now. 120 games at `--selfcheck-knowledge --selfcheck-state-sample 1`, a third each of `explore`, `--no-auto-mana` and random under `--offer-cancel`: no error; twelve explore games of them, counted, reached every overlay (adventure 39, prepared 38, bestow 16, overload 11, fused 2). `scripted` and Python `explore`: six bo1 games each, `scripted` bo3 three matches. No new prompt: the rows are `CAST_SPELL`, the target `SELECT_TARGET`, the offer `PAY_UNLESS`, and `state`'s snapshots run through each scenario. `play_spec`'s `name:` reads the row, since a split card's names ground to one card. The debug `bench` tier: engine alone 1605.6 us per decision before the unit, 1686.5 after, the actor loop 245 decisions/s and 241.
+
+Unproved. Release `bench` wasn't compared; the debug numbers are one run each. A token copy of a preparation card (`Token::prepare_spell`, Nantuko copying a Cultivator) and a prepared permanent phasing out and in are code with no scenario. The `actor` tier's torch part was skipped, for want of `$ROBOMAGE_TORCH_PYTHON`. Reading a modal back face's characteristics on the stack through `card_characteristics` has no vocab card. A copy of an overloaded or fused spell has no card to make one.
+
 ### M8. A characteristics view across zones (L)
 
 **Today.** Continuous effects come from battlefield permanents and emblems and mostly reach the
 battlefield. Only `SetColor` reaches other zones. No `effective_types` exists; layer 4 writes
 `Permanent.types`. `static_targets` ignores `AffectedZone$`, and five readers bypass it. The filter's
-`card_view` reads printed colours. Blocking is hard-coded and nothing models `CantBlockBy`.
+`card_view` reads printed colours. Blocking is hard-coded but for `CantBlockBy`, which M7 (b) brought for Brazen Borrower.
 
 **Build.**
 
@@ -917,7 +947,7 @@ battlefield. Only `SetColor` reaches other zones. No `effective_types` exists; l
   (today parsed with none).
 - `rules_mod::block_prohibited` absorbing the hard-coded checks; `CantPreventDamage` in `damage_prevented`.
 
-**Lands here.** Painter's Servant, Grist off the battlefield, Agatha's grants, `CantBlockBy`, Lazotep
+**Lands here.** Painter's Servant, Grist off the battlefield, Agatha's grants, Lazotep
 Quarry, Fable's copies, The Everflowing Well, Allosaurus Shepherd.
 
 **Test.** Painter's Servant: colour in hand, library and on the stack, and protection or Blue Elemental
@@ -1074,6 +1104,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **M5 (c1) (2026-11-06).** All eleven of the M5 row entered, ids 418 to 428, the Robot token 920: Defense Grid, Formidable Speaker, Melded Moxite, Nihil Spellbomb, The Echoverse Fulcrum, The Stone Brain, Runehorn Hellkite, Simian Spirit Guide, Bitter Triumph, Fiend Artisan, Vibrance. None was placed elsewhere. No other candidate card's findings reached zero: the nearest have one finding each, of a later stage (Aphetto Alchemist, Cyclonic Rift, Engineered Explosives, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Two had parts that reported clean and played wrong until fixed: Vibrance and The Stone Brain (M5's Unit (c1)).
 
 **M6 (b) (2026-11-06).** Both of the M6 row entered: Engineered Explosives 429, Arena of Glory 430. None was placed elsewhere. No other candidate card's findings reached zero: the 44 left outside the vocab of the 330 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Cyclonic Rift, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Next free card id 431, token 921.
+
+**M7 (b) (2026-11-06).** Six of the M7 row and Brazen Borrower entered: Massacre 431, Cyclonic Rift 432, Wear/Tear 433 (three names, one id), Brazen Borrower 434 with Petty Theft 435, Springheart Nantuko 436 with the Insect token 921, Carnivorous Cultivator 437 with Enroot 438. Brazen Borrower is the only Adventure card among the provisioned scripts, so `S:Mode$ CantBlockBy` came with it from M8; the only other scripts with that mode are Kappa Cannoneer, Manifold Key's effect and Cryptic Coat, which needs M11. None of the six was placed elsewhere. No other candidate card's findings reached zero: the 38 names left outside the vocab of the 330 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Hullbreacher, Renegade Rallier, Sink into Stupor, Sundering Eruption). Unit (c) has Hogaak, Bilbo and Beseech the Mirror left of the M7 row. Next free card id 439, token 922.
 
 | last stage | cards (all stages needed) |
 |---|---|

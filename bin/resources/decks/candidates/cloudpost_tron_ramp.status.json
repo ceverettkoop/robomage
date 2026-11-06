@@ -39,15 +39,6 @@
       ],
       "size": "M"
      },
-     "Overload (CR 702.96)": {
-      "cards": [
-       "Cyclonic Rift"
-      ],
-      "findings": [
-       "keyword:Overload"
-      ],
-      "size": "M"
-     },
      "Targets in several zones": {
       "cards": [
        "Sink into Stupor"
@@ -59,9 +50,6 @@
      }
     },
     "needs": {
-     "Cyclonic Rift": [
-      "Overload (CR 702.96)"
-     ],
      "Hullbreacher": [
       "Opponent's-draw replacement (Hullbreacher)"
      ],
@@ -73,32 +61,30 @@
      ]
     },
     "new_cards": [
-     "Cyclonic Rift",
      "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
     ],
-    "size_points": 10
+    "size_points": 7
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s): 0 clean, 4 need 4 mechanic(s) (10 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "3 new card(s): 0 clean, 3 need 3 mechanic(s) (7 points)",
+   "time": "2026-11-06T11:12:51"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 25,
+    "in_vocab": 26,
     "no_script": [],
     "not_in_vocab": [
-     "Cyclonic Rift",
      "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
@@ -107,57 +93,35 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "29 cards: 25 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "29 cards: 26 in vocab, 3 new (0 without a script)",
+   "time": "2026-11-06T11:12:51"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Exhaust and Waterbend (Avatar)",
      "Opponent's-draw replacement (Hullbreacher)",
-     "Overload (CR 702.96)",
-     "Sunburst (CR 702.44)",
      "Targets in several zones"
     ]
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Overload (CR 702.96), Sunburst (CR 702.44), Targets in several zones",
-   "time": "2026-11-06T02:52:32"
+   "summary": "3 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Targets in several zones",
+   "time": "2026-11-06T11:12:51"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Cyclonic Rift": {
-      "card": "Cyclonic Rift",
-      "faces": [
-       "Cyclonic Rift"
-      ],
-      "findings": [
-       {
-        "detail": "Overload:6 U",
-        "kind": "keyword",
-        "line": "K:Overload:6 U",
-        "name": "Overload"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/c/cyclonic_rift.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Hullbreacher": {
       "card": "Hullbreacher",
       "faces": [
@@ -236,14 +200,14 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "4 new card(s), 4 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T06:52:44"
+   "summary": "3 new card(s), 3 with findings (4 findings), 0 without a script",
+   "time": "2026-11-06T11:12:51"
   },
   "provision": {
    "detail": {
@@ -259,11 +223,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:44"
+   "time": "2026-11-06T11:12:51"
   },
   "scrape": {
    "detail": {

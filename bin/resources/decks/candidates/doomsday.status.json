@@ -20,26 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Adventure (CR 715)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "layout:Adventure"
-      ],
-      "size": "L"
-     },
-     "Can't-block restrictions (CantBlockBy)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "static_mode:CantBlockBy",
-       "static_param:ValidAttacker",
-       "static_param:ValidBlocker"
-      ],
-      "size": "M"
-     },
      "Empower": {
       "cards": [
        "Theorist's Proxy"
@@ -65,116 +45,68 @@
      }
     },
     "needs": {
-     "Brazen Borrower": [
-      "Adventure (CR 715)",
-      "Can't-block restrictions (CantBlockBy)"
-     ],
      "Theorist's Proxy": [
       "Empower",
       "Next-spell effect (Theorist's Proxy)"
      ]
     },
     "new_cards": [
-     "Brazen Borrower",
      "Theorist's Proxy"
     ],
-    "size_points": 17
+    "size_points": 6
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (17 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (6 points)",
+   "time": "2026-11-06T11:12:52"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 31,
+    "in_vocab": 32,
     "no_script": [],
     "not_in_vocab": [
-     "Brazen Borrower",
      "Theorist's Proxy"
     ]
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "33 cards: 31 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T11:12:52"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Adventure (CR 715)",
-     "Can't-block restrictions (CantBlockBy)",
      "Empower",
      "Next-spell effect (Theorist's Proxy)"
     ]
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Empower, Next-spell effect (Theorist's Proxy)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "2 mechanic(s) to implement: Empower, Next-spell effect (Theorist's Proxy)",
+   "time": "2026-11-06T11:12:52"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Brazen Borrower": {
-      "card": "Brazen Borrower",
-      "faces": [
-       "Brazen Borrower",
-       "Petty Theft"
-      ],
-      "findings": [
-       {
-        "detail": "AlternateMode:Adventure is read as a transforming card",
-        "kind": "layout",
-        "line": "",
-        "name": "Adventure"
-       },
-       {
-        "detail": "CantBlockBy ValidAttacker$ Creature.withoutFlying",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidAttacker"
-       },
-       {
-        "detail": "CantBlockBy ValidBlocker$ Creature.Self",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidBlocker"
-       },
-       {
-        "detail": "the engine applies no such static",
-        "kind": "static_mode",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "CantBlockBy"
-       }
-      ],
-      "layout": "transform",
-      "script": "cardsfolder/b/brazen_borrower_petty_theft.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
-     },
      "Theorist's Proxy": {
       "card": "Theorist's Proxy",
       "faces": [
@@ -236,14 +168,14 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (11 findings), 0 without a script",
-   "time": "2026-11-06T06:52:44"
+   "summary": "1 new card(s), 1 with findings (7 findings), 0 without a script",
+   "time": "2026-11-06T11:12:52"
   },
   "provision": {
    "detail": {
@@ -257,11 +189,11 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:44"
+   "time": "2026-11-06T11:12:52"
   },
   "scrape": {
    "detail": {

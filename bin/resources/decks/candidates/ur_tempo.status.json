@@ -20,26 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Adventure (CR 715)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "layout:Adventure"
-      ],
-      "size": "L"
-     },
-     "Can't-block restrictions (CantBlockBy)": {
-      "cards": [
-       "Brazen Borrower"
-      ],
-      "findings": [
-       "static_mode:CantBlockBy",
-       "static_param:ValidAttacker",
-       "static_param:ValidBlocker"
-      ],
-      "size": "M"
-     },
      "Play from a zone with replacement (Bilbo)": {
       "cards": [
        "Bilbo, Thief in the Night"
@@ -57,68 +37,60 @@
     "needs": {
      "Bilbo, Thief in the Night": [
       "Play from a zone with replacement (Bilbo)"
-     ],
-     "Brazen Borrower": [
-      "Adventure (CR 715)",
-      "Can't-block restrictions (CantBlockBy)"
      ]
     },
     "new_cards": [
-     "Bilbo, Thief in the Night",
-     "Brazen Borrower"
+     "Bilbo, Thief in the Night"
     ],
-    "size_points": 14
+    "size_points": 3
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (14 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
+   "time": "2026-11-06T11:12:52"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 30,
+    "in_vocab": 31,
     "no_script": [],
     "not_in_vocab": [
-     "Bilbo, Thief in the Night",
-     "Brazen Borrower"
+     "Bilbo, Thief in the Night"
     ]
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "32 cards: 31 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T11:12:52"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Adventure (CR 715)",
-     "Can't-block restrictions (CantBlockBy)",
      "Play from a zone with replacement (Bilbo)"
     ]
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Play from a zone with replacement (Bilbo)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "1 mechanic(s) to implement: Play from a zone with replacement (Bilbo)",
+   "time": "2026-11-06T11:12:52"
   },
   "parse": {
    "detail": {
@@ -166,60 +138,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Brazen Borrower": {
-      "card": "Brazen Borrower",
-      "faces": [
-       "Brazen Borrower",
-       "Petty Theft"
-      ],
-      "findings": [
-       {
-        "detail": "AlternateMode:Adventure is read as a transforming card",
-        "kind": "layout",
-        "line": "",
-        "name": "Adventure"
-       },
-       {
-        "detail": "CantBlockBy ValidAttacker$ Creature.withoutFlying",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidAttacker"
-       },
-       {
-        "detail": "CantBlockBy ValidBlocker$ Creature.Self",
-        "kind": "static_param",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "ValidBlocker"
-       },
-       {
-        "detail": "the engine applies no such static",
-        "kind": "static_mode",
-        "line": "S:Mode$ CantBlockBy | ValidAttacker$ Creature.withoutFlying | ValidBlocker$ Creature.Self | Description$ CARDNAME can block only creatures with flying.",
-        "name": "CantBlockBy"
-       }
-      ],
-      "layout": "transform",
-      "script": "cardsfolder/b/brazen_borrower_petty_theft.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (9 findings), 0 without a script",
-   "time": "2026-11-06T06:52:45"
+   "summary": "1 new card(s), 1 with findings (5 findings), 0 without a script",
+   "time": "2026-11-06T11:12:52"
   },
   "provision": {
    "detail": {
@@ -233,11 +165,11 @@
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:44"
+   "time": "2026-11-06T11:12:52"
   },
   "scrape": {
    "detail": {

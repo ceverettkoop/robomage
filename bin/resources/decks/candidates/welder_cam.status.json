@@ -75,15 +75,6 @@
       ],
       "size": "XL"
      },
-     "Fuse (CR 702.102)": {
-      "cards": [
-       "Wear/Tear"
-      ],
-      "findings": [
-       "keyword:Fuse"
-      ],
-      "size": "M"
-     },
      "Goblin Welder swap": {
       "cards": [
        "Goblin Welder"
@@ -131,53 +122,48 @@
       "Damage dealt by another object (DamageSource$)",
       "Equipped creature filter (EquippedBy)",
       "Taps trigger"
-     ],
-     "Wear/Tear": [
-      "Fuse (CR 702.102)"
      ]
     },
     "new_cards": [
      "Agatha's Soul Cauldron",
      "Aphetto Alchemist",
      "Goblin Welder",
-     "Hawkeye's Bow",
-     "Wear/Tear"
+     "Hawkeye's Bow"
     ],
-    "size_points": 41
+    "size_points": 38
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (41 points)",
-   "time": "2026-11-06T06:52:45"
+   "summary": "4 new card(s): 0 clean, 4 need 8 mechanic(s) (38 points)",
+   "time": "2026-11-06T11:12:52"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 28,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
      "Aphetto Alchemist",
      "Goblin Welder",
-     "Hawkeye's Bow",
-     "Wear/Tear"
+     "Hawkeye's Bow"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "33 cards: 28 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-06T06:52:43"
+   "summary": "33 cards: 29 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-06T11:12:52"
   },
   "implement": {
    "detail": {
@@ -187,7 +173,6 @@
      "Damage dealt by another object (DamageSource$)",
      "Equipped creature filter (EquippedBy)",
      "Face-down permanents (Morph, Cloak; CR 708)",
-     "Fuse (CR 702.102)",
      "Goblin Welder swap",
      "Taps trigger",
      "filter:sharesControllerWith Remembered"
@@ -195,15 +180,15 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "pending",
-   "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, Taps trigger, filter:sharesControllerWith Remembered",
-   "time": "2026-11-06T02:52:33"
+   "summary": "8 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Goblin Welder swap, Taps trigger, filter:sharesControllerWith Remembered",
+   "time": "2026-11-06T11:12:52"
   },
   "parse": {
    "detail": {
@@ -389,42 +374,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Wear/Tear": {
-      "card": "Wear",
-      "faces": [
-       "Wear",
-       "Tear"
-      ],
-      "findings": [
-       {
-        "detail": "Fuse",
-        "kind": "keyword",
-        "line": "K:Fuse",
-        "name": "Fuse"
-       }
-      ],
-      "layout": "split",
-      "script": "cardsfolder/w/wear_tear.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
+    "engine": "5e3bcbab7c92e46929d3b996b779aa85bf79f24c13effaed76048ee006c1407f",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (22 findings), 0 without a script",
-   "time": "2026-11-06T06:52:45"
+   "summary": "4 new card(s), 4 with findings (21 findings), 0 without a script",
+   "time": "2026-11-06T11:12:52"
   },
   "provision": {
    "detail": {
@@ -438,11 +401,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
+    "vocab": "4b349e2c8508298c85ea484f70fd3ab18012759b55f1e9534657392d8dbac613"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T06:52:45"
+   "time": "2026-11-06T11:12:52"
   },
   "scrape": {
    "detail": {
