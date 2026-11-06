@@ -18,12 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Archive Arbiter",
-     "Basalt Monolith",
-     "Mishra's Research Desk",
-     "Portable Hole"
-    ],
+    "clean": [],
     "mechanics": {
      "Defined$ names no reader acts on": {
       "cards": [
@@ -104,13 +99,9 @@
      ]
     },
     "new_cards": [
-     "Archive Arbiter",
-     "Basalt Monolith",
      "Engineered Explosives",
-     "Mishra's Research Desk",
      "Mystic Forge",
      "Perilous Snare",
-     "Portable Hole",
      "Tezzeret, Cruel Captain",
      "The Echoverse Fulcrum"
     ],
@@ -118,29 +109,25 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "9 new card(s): 4 clean, 5 need 6 mechanic(s) (21 points)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "5 new card(s): 0 clean, 5 need 6 mechanic(s) (21 points)",
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 23,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
-     "Archive Arbiter",
-     "Basalt Monolith",
      "Engineered Explosives",
-     "Mishra's Research Desk",
      "Mystic Forge",
      "Perilous Snare",
-     "Portable Hole",
      "Tezzeret, Cruel Captain",
      "The Echoverse Fulcrum"
     ]
@@ -148,11 +135,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "32 cards: 23 in vocab, 9 new (0 without a script)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "32 cards: 27 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-05T22:01:58"
   },
   "implement": {
    "detail": {
@@ -167,45 +154,19 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "6 mechanic(s) to implement: Defined$ names no reader acts on, Emblem with a trigger (Tezzeret), Exile-the-card-itself costs, Play from the top of the library (Mystic Forge), Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Archive Arbiter": {
-      "card": "Archive Arbiter",
-      "faces": [
-       "Archive Arbiter"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/a/archive_arbiter.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Basalt Monolith": {
-      "card": "Basalt Monolith",
-      "faces": [
-       "Basalt Monolith"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/b/basalt_monolith.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Engineered Explosives": {
       "card": "Engineered Explosives",
       "faces": [
@@ -221,19 +182,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/e/engineered_explosives.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Mishra's Research Desk": {
-      "card": "Mishra's Research Desk",
-      "faces": [
-       "Mishra's Research Desk"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/m/mishras_research_desk.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -309,19 +257,6 @@
        -1
       ]
      },
-     "Portable Hole": {
-      "card": "Portable Hole",
-      "faces": [
-       "Portable Hole"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/p/portable_hole.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Tezzeret, Cruel Captain": {
       "card": "Tezzeret, Cruel Captain",
       "faces": [
@@ -385,14 +320,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "9 new card(s), 5 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T21:18:39"
+   "summary": "5 new card(s), 5 with findings (13 findings), 0 without a script",
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -406,11 +341,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "scrape": {
    "detail": {

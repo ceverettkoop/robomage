@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Displacer Kitten",
-     "Thought Monitor"
-    ],
+    "clean": [],
     "mechanics": {
      "Cast with this mana (The Everflowing Well)": {
       "cards": [
@@ -119,49 +116,45 @@
      ]
     },
     "new_cards": [
-     "Displacer Kitten",
      "Ghost Vacuum",
      "Sink into Stupor",
      "The Everflowing Well",
-     "The Stone Brain",
-     "Thought Monitor"
+     "The Stone Brain"
     ],
     "size_points": 14
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 8 mechanic(s) (14 points)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "4 new card(s): 0 clean, 4 need 8 mechanic(s) (14 points)",
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 27,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
-     "Displacer Kitten",
      "Ghost Vacuum",
      "Sink into Stupor",
      "The Everflowing Well",
-     "The Stone Brain",
-     "Thought Monitor"
+     "The Stone Brain"
     ]
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "33 cards: 27 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "33 cards: 29 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-05T22:01:58"
   },
   "implement": {
    "detail": {
@@ -178,32 +171,19 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Cast with this mana (The Everflowing Well), Clone a target (CloneTarget), Exile-the-card-itself costs, Ghost Vacuum return, Imprint past the resolution, Spell-cast filters, Targets in several zones, The Stone Brain",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Displacer Kitten": {
-      "card": "Displacer Kitten",
-      "faces": [
-       "Displacer Kitten"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/d/displacer_kitten.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Ghost Vacuum": {
       "card": "Ghost Vacuum",
       "faces": [
@@ -335,33 +315,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Thought Monitor": {
-      "card": "Thought Monitor",
-      "faces": [
-       "Thought Monitor"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/thought_monitor.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (12 findings), 0 without a script",
-   "time": "2026-11-05T21:18:38"
+   "summary": "4 new card(s), 4 with findings (12 findings), 0 without a script",
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -375,11 +342,11 @@
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "scrape": {
    "detail": {

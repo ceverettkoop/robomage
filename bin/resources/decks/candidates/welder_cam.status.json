@@ -18,12 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Goblin Engineer",
-     "Legion Extruder",
-     "Mishra's Research Desk",
-     "Soul-Guide Lantern"
-    ],
+    "clean": [],
     "mechanics": {
      "Agatha's Soul Cauldron": {
       "cards": [
@@ -147,55 +142,47 @@
     "new_cards": [
      "Agatha's Soul Cauldron",
      "Aphetto Alchemist",
-     "Goblin Engineer",
      "Goblin Welder",
      "Hawkeye's Bow",
-     "Legion Extruder",
      "Melded Moxite",
-     "Mishra's Research Desk",
-     "Soul-Guide Lantern",
      "Wear/Tear"
     ],
     "size_points": 43
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "10 new card(s): 4 clean, 6 need 9 mechanic(s) (43 points)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "6 new card(s): 0 clean, 6 need 9 mechanic(s) (43 points)",
+   "time": "2026-11-05T22:01:59"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 23,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
      "Aphetto Alchemist",
-     "Goblin Engineer",
      "Goblin Welder",
      "Hawkeye's Bow",
-     "Legion Extruder",
      "Melded Moxite",
-     "Mishra's Research Desk",
-     "Soul-Guide Lantern",
      "Wear/Tear"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "33 cards: 23 in vocab, 10 new (0 without a script)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "33 cards: 27 in vocab, 6 new (0 without a script)",
+   "time": "2026-11-05T22:01:59"
   },
   "implement": {
    "detail": {
@@ -213,15 +200,15 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, Taps trigger",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:59"
   },
   "parse": {
    "detail": {
@@ -297,19 +284,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/a/aphetto_alchemist.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Goblin Engineer": {
-      "card": "Goblin Engineer",
-      "faces": [
-       "Goblin Engineer"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/g/goblin_engineer.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -421,24 +395,6 @@
        -1
       ]
      },
-     "Legion Extruder": {
-      "card": "Legion Extruder",
-      "faces": [
-       "Legion Extruder"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/l/legion_extruder.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "c_3_3_a_golem"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     },
      "Melded Moxite": {
       "card": "Melded Moxite",
       "faces": [
@@ -460,32 +416,6 @@
         "script": "c_2_2_a_robot"
        }
       ],
-      "vocab": [
-       -1
-      ]
-     },
-     "Mishra's Research Desk": {
-      "card": "Mishra's Research Desk",
-      "faces": [
-       "Mishra's Research Desk"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/m/mishras_research_desk.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Soul-Guide Lantern": {
-      "card": "Soul-Guide Lantern",
-      "faces": [
-       "Soul-Guide Lantern"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/s/soul_guide_lantern.txt",
-      "tokens": [],
       "vocab": [
        -1
       ]
@@ -517,22 +447,21 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "10 new card(s), 6 with findings (23 findings), 0 without a script",
-   "time": "2026-11-05T21:18:39"
+   "summary": "6 new card(s), 6 with findings (23 findings), 0 without a script",
+   "time": "2026-11-05T22:01:59"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
     "tokens": [
-     "c_2_2_a_robot",
-     "c_3_3_a_golem"
+     "c_2_2_a_robot"
     ],
     "tokens_fetched": [],
     "tokens_missing": [],
@@ -541,11 +470,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-05T22:01:59"
   },
   "scrape": {
    "detail": {

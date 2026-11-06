@@ -97,15 +97,15 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "4 new card(s): 0 clean, 4 need 5 mechanic(s) (16 points)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
@@ -122,11 +122,11 @@
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "32 cards: 28 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "implement": {
    "detail": {
@@ -140,15 +140,15 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting, Hybrid pips in costs",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
@@ -292,14 +292,14 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "4 new card(s), 4 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -313,11 +313,11 @@
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:58"
   },
   "scrape": {
    "detail": {

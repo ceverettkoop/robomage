@@ -701,6 +701,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 
 **Clean-card batch (2026-11-05).** Nineteen cards entered with no later stage needed, ids 381 to 399: Temur Sabertooth; Burning Wish; Elvish Mystic, Fyndhorn Elves, Llanowar Elves, Elvish Visionary, Quirion Ranger, Wirewood Symbiote, Stitcher's Supplier; Taiga, Watery Grave, Great Furnace, Lush Portico, Nurturing Peatland, Raucous Theater; Faithless Looting, Tendrils of Agony, Empty the Warrens, Unmask. None was placed. Three reported clean and played wrong until fixed: a numeric `ChangeNum$` on the battlefield multi-select, an untargeted Pump's `Defined$`, and a bare `Origin$ Stack` move.
 
+**Second clean-card batch (2026-11-05).** Eighteen cards entered, ids 400 to 417: Aluren, Archive Arbiter, Basalt Monolith, Chromatic Star, Collective Brutality, Crucible of Worlds, Cursed Totem, Displacer Kitten, Fiery Confluence, Giant's Boulder, Goblin Engineer, Haywire Mite, Legion Extruder, Mishra's Research Desk, Portable Hole, Soul-Guide Lantern, Thought Monitor, Thundertrap Trainer. None was placed: Aluren needed nothing from M7, its free cast and flash already read through `free_cast_grant`. Two reported clean and played wrong until fixed: an unearth offered on the battlefield (Mishra's Research Desk, and Cityscape Leveler before it) and a token returning from a same-resolution exile (Displacer Kitten, and Eldrazi Confluence before it). One gap stays, in `docs/rules_deviations.md`: the return of an "until" exile uses the stack, against CR 610.3.
+
 | last stage | cards (all stages needed) |
 |---|---|
 | M3 | Dark Matter Manipulator; Drop of Honey (M2 M3); Peer into the Abyss; Powder Keg; Rough/Tumble; Strategic Betrayal |

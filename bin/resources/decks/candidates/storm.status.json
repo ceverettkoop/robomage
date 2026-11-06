@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Giant's Boulder",
-     "Haywire Mite"
-    ],
+    "clean": [],
     "mechanics": {
      "Abilities activated from any zone": {
       "cards": [
@@ -126,46 +123,42 @@
      "Beseech the Mirror",
      "Chrome Mox",
      "Gaea's Will",
-     "Giant's Boulder",
-     "Haywire Mite",
      "Runehorn Hellkite"
     ],
     "size_points": 25
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 8 mechanic(s) (25 points)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "4 new card(s): 0 clean, 4 need 8 mechanic(s) (25 points)",
+   "time": "2026-11-05T22:01:59"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 24,
+    "in_vocab": 26,
     "no_script": [],
     "not_in_vocab": [
      "Beseech the Mirror",
      "Chrome Mox",
      "Gaea's Will",
-     "Giant's Boulder",
-     "Haywire Mite",
      "Runehorn Hellkite"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "30 cards: 24 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T21:18:39"
+   "summary": "30 cards: 26 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-05T22:01:59"
   },
   "implement": {
    "detail": {
@@ -182,15 +175,15 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:59"
   },
   "parse": {
    "detail": {
@@ -315,32 +308,6 @@
        -1
       ]
      },
-     "Giant's Boulder": {
-      "card": "Giant's Boulder",
-      "faces": [
-       "Giant's Boulder"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/g/giants_boulder.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Haywire Mite": {
-      "card": "Haywire Mite",
-      "faces": [
-       "Haywire Mite"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/h/haywire_mite.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Runehorn Hellkite": {
       "card": "Runehorn Hellkite",
       "faces": [
@@ -378,14 +345,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (16 findings), 0 without a script",
-   "time": "2026-11-05T21:18:39"
+   "summary": "4 new card(s), 4 with findings (16 findings), 0 without a script",
+   "time": "2026-11-05T22:01:59"
   },
   "provision": {
    "detail": {
@@ -399,11 +366,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:39"
+   "time": "2026-11-05T22:01:59"
   },
   "scrape": {
    "detail": {

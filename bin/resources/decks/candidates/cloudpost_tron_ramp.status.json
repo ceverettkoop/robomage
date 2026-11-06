@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Giant's Boulder",
-     "Thundertrap Trainer"
-    ],
+    "clean": [],
     "mechanics": {
      "Exhaust and Waterbend (Avatar)": {
       "cards": [
@@ -90,49 +87,45 @@
     "new_cards": [
      "Cyclonic Rift",
      "Engineered Explosives",
-     "Giant's Boulder",
      "Hullbreacher",
      "Invasion Submersible",
-     "Sink into Stupor",
-     "Thundertrap Trainer"
+     "Sink into Stupor"
     ],
     "size_points": 13
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "7 new card(s): 2 clean, 5 need 5 mechanic(s) (13 points)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "5 new card(s): 0 clean, 5 need 5 mechanic(s) (13 points)",
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 22,
+    "in_vocab": 24,
     "no_script": [],
     "not_in_vocab": [
      "Cyclonic Rift",
      "Engineered Explosives",
-     "Giant's Boulder",
      "Hullbreacher",
      "Invasion Submersible",
-     "Sink into Stupor",
-     "Thundertrap Trainer"
+     "Sink into Stupor"
     ]
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "29 cards: 22 in vocab, 7 new (0 without a script)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "29 cards: 24 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-05T22:01:58"
   },
   "implement": {
    "detail": {
@@ -146,15 +139,15 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Overload (CR 702.96), Sunburst (CR 702.44), Targets in several zones",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
@@ -194,19 +187,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/e/engineered_explosives.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Giant's Boulder": {
-      "card": "Giant's Boulder",
-      "faces": [
-       "Giant's Boulder"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/g/giants_boulder.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -284,33 +264,20 @@
        -1,
        -1
       ]
-     },
-     "Thundertrap Trainer": {
-      "card": "Thundertrap Trainer",
-      "faces": [
-       "Thundertrap Trainer"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/thundertrap_trainer.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "7 new card(s), 5 with findings (6 findings), 0 without a script",
-   "time": "2026-11-05T21:18:38"
+   "summary": "5 new card(s), 5 with findings (6 findings), 0 without a script",
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -326,11 +293,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "scrape": {
    "detail": {

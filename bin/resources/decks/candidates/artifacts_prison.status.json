@@ -18,9 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Giant's Boulder"
-    ],
+    "clean": [],
     "mechanics": {
      "Start your engines! (speed)": {
       "cards": [
@@ -52,42 +50,40 @@
     },
     "new_cards": [
      "Engineered Explosives",
-     "Giant's Boulder",
      "Perilous Snare"
     ],
     "size_points": 6
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "3 new card(s): 1 clean, 2 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (6 points)",
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 27,
+    "in_vocab": 28,
     "no_script": [],
     "not_in_vocab": [
      "Engineered Explosives",
-     "Giant's Boulder",
      "Perilous Snare"
     ]
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "30 cards: 27 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "30 cards: 28 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-05T22:01:58"
   },
   "implement": {
    "detail": {
@@ -98,15 +94,15 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Start your engines! (speed), Sunburst (CR 702.44)",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
@@ -126,19 +122,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/e/engineered_explosives.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Giant's Boulder": {
-      "card": "Giant's Boulder",
-      "faces": [
-       "Giant's Boulder"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/g/giants_boulder.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -175,14 +158,14 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "3 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T21:18:38"
+   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -196,11 +179,11 @@
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "scrape": {
    "detail": {

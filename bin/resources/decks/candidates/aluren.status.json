@@ -18,10 +18,7 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Aluren",
-     "Cursed Totem"
-    ],
+    "clean": [],
     "mechanics": {
      "Cost statics by player (Defense Grid)": {
       "cards": [
@@ -75,8 +72,6 @@
     },
     "new_cards": [
      "Acererak the Archlich",
-     "Aluren",
-     "Cursed Totem",
      "Defense Grid",
      "Formidable Speaker"
     ],
@@ -84,25 +79,23 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "5 new card(s): 2 clean, 3 need 4 mechanic(s) (27 points)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (27 points)",
+   "time": "2026-11-05T22:01:58"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 27,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
      "Acererak the Archlich",
-     "Aluren",
-     "Cursed Totem",
      "Defense Grid",
      "Formidable Speaker"
     ]
@@ -110,11 +103,11 @@
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "32 cards: 27 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-05T21:18:38"
+   "summary": "32 cards: 29 in vocab, 3 new (0 without a script)",
+   "time": "2026-11-05T22:01:57"
   },
   "implement": {
    "detail": {
@@ -127,15 +120,15 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Cost statics by player (Defense Grid), Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49), UnlessCost on more effects",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:58"
   },
   "parse": {
    "detail": {
@@ -173,32 +166,6 @@
         "script": "b_2_2_zombie"
        }
       ],
-      "vocab": [
-       -1
-      ]
-     },
-     "Aluren": {
-      "card": "Aluren",
-      "faces": [
-       "Aluren"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/a/aluren.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Cursed Totem": {
-      "card": "Cursed Totem",
-      "faces": [
-       "Cursed Totem"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/c/cursed_totem.txt",
-      "tokens": [],
       "vocab": [
        -1
       ]
@@ -248,14 +215,14 @@
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "1c726ab246adc141ef9fb1d6ba40cf6f256f9832215241f004703eab7ff5272d",
+    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
-   "summary": "5 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-05T21:18:38"
+   "summary": "3 new card(s), 3 with findings (5 findings), 0 without a script",
+   "time": "2026-11-05T22:01:58"
   },
   "provision": {
    "detail": {
@@ -271,11 +238,11 @@
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "vocab": "061266c016dd19fea89fc9263ec471a3f243bec1b42744765fa8db555a55db5a"
+    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T21:18:38"
+   "time": "2026-11-05T22:01:57"
   },
   "scrape": {
    "detail": {
