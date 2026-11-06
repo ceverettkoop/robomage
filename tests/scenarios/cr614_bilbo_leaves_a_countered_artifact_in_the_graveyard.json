@@ -1,0 +1,57 @@
+{
+  "name": "cr614_bilbo_leaves_a_countered_artifact_in_the_graveyard",
+  "why": "ReplaceGraveyardValid$ Instant,Sorcery: only an instant or sorcery is exiled; a countered artifact spell cast this way goes to its owner's graveyard, and the next attack offers it again.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Haywire Mite"
+  ],
+  "hand_b": [
+    "Counterspell",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Haywire Mite (from graveyard)",
+    "B:cast:Counterspell",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Haywire Mite (from graveyard)"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "Haywire Mite is countered"
+  ],
+  "expect_count": {
+    "Player A casts Haywire Mite": 2
+  },
+  "expect_not": [
+    "Haywire Mite is exiled"
+  ]
+}

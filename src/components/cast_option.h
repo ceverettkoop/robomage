@@ -6,6 +6,8 @@
 #include "../queries/permissions.h"
 #include "zone.h"
 
+struct AbilityDef;
+
 // Which face of the card is cast or played. BACK is a modal DFC's back face or a split card's
 // second half: the entity's CardData is the front face, but on the stack the spell has only that
 // face's characteristics (CR 712.8f, 709.3; read through active_face). A land played as its back
@@ -67,12 +69,15 @@ struct CastOption {
         const char *row = nullptr;  // the name of its row, its --coverage key
         SpellOverlay overlay = SpellOverlay::NONE;  // what it changes on the spell, read through cast_face
         CastGrant grant;  // what CastCost::GRANT pays, decided as the row is offered
+        // The effect whose resolution cast it (CR 608.2g); null for any other cast. What it says about
+        // the spell lasts as long as the spell: spell_destination reads its ReplaceGraveyard$.
+        const AbilityDef *cast_by = nullptr;
 
         bool alternative() const { return cost >= CastCost::ALTERNATIVE; }
         bool operator==(const CastOption &o) const {
             return face == o.face && zone == o.zone && cost == o.cost && permission == o.permission &&
                    offspring == o.offspring && destination == o.destination && overlay == o.overlay &&
-                   grant == o.grant;
+                   grant == o.grant && cast_by == o.cast_by;
         }
 };
 

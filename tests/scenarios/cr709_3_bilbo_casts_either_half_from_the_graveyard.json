@@ -1,0 +1,44 @@
+{
+  "name": "cr709_3_bilbo_casts_either_half_from_the_graveyard",
+  "why": "CR 709.3, 608.2g: either half of a split card in the graveyard may be cast by Bilbo's trigger.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain",
+    "Plains"
+  ],
+  "graveyard_a": [
+    "Wear/Tear"
+  ],
+  "battlefield_b": [
+    "Sylvan Library",
+    "Mishra's Bauble"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Tear (from graveyard)",
+    "A:target:Sylvan Library"
+  ],
+  "max_decisions": 20,
+  "expect": [
+    "Player A casts Tear",
+    "Sylvan Library is destroyed"
+  ],
+  "expect_menu": [
+    "Cast Wear \\(from graveyard\\)",
+    "Cast Tear \\(from graveyard\\)"
+  ]
+}

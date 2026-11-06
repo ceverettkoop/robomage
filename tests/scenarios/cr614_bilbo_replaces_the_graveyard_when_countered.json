@@ -1,0 +1,52 @@
+{
+  "name": "cr614_bilbo_replaces_the_graveyard_when_countered",
+  "why": "ReplaceGraveyard$: Bilbo's replacement applies however the spell would reach the graveyard: a countered Lightning Bolt cast this way is exiled.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Counterspell",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Lightning Bolt (from graveyard)",
+    "A:target:Player B",
+    "B:cast:Counterspell"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Lightning Bolt is countered",
+    "Lightning Bolt is exiled"
+  ],
+  "expect_not": [
+    "Lightning Bolt deals"
+  ]
+}

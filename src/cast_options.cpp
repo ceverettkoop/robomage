@@ -68,8 +68,8 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
 static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
-static ManaValue regular_cast_cost(
-    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static ManaValue regular_cast_cost(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                   Zone::ZoneValue from, std::shared_ptr<Orderer> orderer);
 static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                   const std::shared_ptr<Orderer> &orderer);
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
@@ -215,6 +215,16 @@ static const CastSection kResolutionCasts[] = {
     {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_as_adventure, nullptr, {
         {"exile_resolution_adventure", CastCost::GRANT, false, -1, "",                 Zone::GRAVEYARD, resolution_grant_offered, SpellOverlay::ADVENTURE},
     }},
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::FRONT, cast_from_exile, nullptr, {
+        {"graveyard_resolution", CastCost::MANA_COST, false, -1, " (from graveyard)",  Zone::GRAVEYARD, mana_cost_offered},
+        {"graveyard_resolution_free", CastCost::NO_MANA_COST, false, -1, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
+    }},
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::BACK, cast_from_back, nullptr, {
+        {"graveyard_resolution_back", CastCost::MANA_COST, false, -1, " (from graveyard)", Zone::GRAVEYARD, mana_cost_offered},
+    }},
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::BACK, cast_as_adventure, nullptr, {
+        {"graveyard_resolution_adventure", CastCost::MANA_COST, false, -1, " (from graveyard)", Zone::GRAVEYARD, mana_cost_offered, SpellOverlay::ADVENTURE},
+    }},
 };
 
 // May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
@@ -275,9 +285,9 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
 // check: effective_base_cost, less the most a ValidTarget$-conditioned reduction takes off for one
 // of the spell's legal targets (best_target_cost_reduction; Mystical Dispute targeting a blue
 // spell). The cast then offers only the targets whose cost can be paid.
-static ManaValue regular_cast_cost(
-    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
-    ManaValue cost = effective_base_cost(face, caster);
+static ManaValue regular_cast_cost(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                   Zone::ZoneValue from, std::shared_ptr<Orderer> orderer) {
+    ManaValue cost = effective_base_cost(face, caster, from);
     reduce_generic_cost(cost, best_target_cost_reduction(face, card_entity, caster, orderer), face);
     return cost;
 }
@@ -317,7 +327,7 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
         // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
         // paid.
-        if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, orderer), orderer))
+        if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, Zone::EXILE, orderer), orderer))
             return false;
     } else if (perm_grant.resource == GrantResource::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
@@ -435,8 +445,9 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     return can_pay(alt_cost.cost, check);
 }
 
-// The spell's timing, once.
+// The spell's timing, once. A resolution's cast ignores it (CR 608.2g).
 static bool offer_timing_ok(CastOffer &offer) {
+    if (offer.window.resolution) return true;
     if (offer.timing < 0)
         offer.timing = spell_timing_ok(offer.face, offer.window.caster, offer.window.sorcery_window);
     return offer.timing != 0;
@@ -462,7 +473,7 @@ static bool mana_cost_offered(CastOffer &offer) {
     const CastWindow &w = offer.window;
     return offer_castable(offer) &&
            regular_cast_payable(offer.face, offer.card, w.caster,
-                                regular_cast_cost(offer.face, offer.card, w.caster, w.orderer), w.orderer);
+                                regular_cast_cost(offer.face, offer.card, w.caster, offer.zone, w.orderer), w.orderer);
 }
 
 static bool alternative_offered(CastOffer &offer) {
@@ -509,7 +520,7 @@ static bool plain_alternative_offered(CastOffer &offer) {
 static bool offspring_offered(CastOffer &offer) {
     if (!offer.face.has_offspring || !offer_castable(offer)) return false;
     const CastWindow &w = offer.window;
-    ManaValue offspring_total = regular_cast_cost(offer.face, offer.card, w.caster, w.orderer);
+    ManaValue offspring_total = regular_cast_cost(offer.face, offer.card, w.caster, offer.zone, w.orderer);
     for (Colors c : offer.face.offspring_cost.mana()) offspring_total.insert(c);
     return regular_cast_payable(offer.face, offer.card, w.caster, offspring_total, w.orderer);
 }
@@ -525,8 +536,8 @@ static bool free_cast_offered(CastOffer &offer) {
     const CastWindow &w = offer.window;
     const rules_mod::FreeCastGrant grant = rules_mod::free_cast_grant(offer.card, offer.face, w.caster);
     if (!grant.granted) return false;
-    const bool timing_ok = grant.with_flash ? w.sorcery_window || !rules_mod::opponent_sorcery_speed_locked(w.caster)
-                                            : offer_timing_ok(offer);
+    const bool timing_ok = offer_timing_ok(offer) ||
+                           (grant.with_flash && (w.sorcery_window || !rules_mod::opponent_sorcery_speed_locked(w.caster)));
     if (!timing_ok || !offer_gates_ok(offer)) return false;
     const ManaValue mana = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster);
     CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
@@ -597,9 +608,8 @@ static CastGrant resolution_grant(const ResolutionCastTerms &terms, const CardDa
     return grant;
 }
 
-// A resolution's cast ignores the card's type-based timing (CR 608.2g).
 static bool resolution_grant_offered(CastOffer &offer) {
-    return offer_gates_ok(offer) && grant_cost_payable(offer.card, offer.face, resolution_grant(*offer.window.resolution, offer.face),
+    return offer_castable(offer) && grant_cost_payable(offer.card, offer.face, resolution_grant(*offer.window.resolution, offer.face),
                                                        offer.window.caster, offer.window.orderer);
 }
 
@@ -721,6 +731,7 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
                 if (row.cost == CastCost::GRANT)
                     actions.back().option.grant =
                         window.resolution ? resolution_grant(*window.resolution, asked.face) : offer_grant(asked).grant();
+                if (window.resolution) actions.back().option.cast_by = window.resolution->cast_by;
                 coverage_cast_offer(row.name);
             }
         }

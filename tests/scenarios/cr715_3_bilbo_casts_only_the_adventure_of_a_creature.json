@@ -1,0 +1,41 @@
+{
+  "name": "cr715_3_bilbo_casts_only_the_adventure_of_a_creature",
+  "why": "CR 715.3a: only the Adventure's characteristics are evaluated: Petty Theft is an instant, so Bilbo may cast it from the graveyard, and Brazen Borrower, a creature, not. It resolves and is exiled on an adventure, castable from exile.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Island",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Brazen Borrower"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Petty Theft (from graveyard)"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Player A casts Petty Theft",
+    "Petty Theft is exiled"
+  ],
+  "expect_menu_not": [
+    "Cast Brazen Borrower \\(from graveyard\\)"
+  ]
+}

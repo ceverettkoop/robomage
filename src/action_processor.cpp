@@ -1846,7 +1846,7 @@ static void determine_mana_cost(Game::PendingCast &pc, const CardData &card_data
     // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
     // additional costs below are offered and paid as on any cast.
     pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
-                                       : effective_base_cost(card_data, caster);
+                                       : effective_base_cost(card_data, caster, pc.chosen.option.zone);
     // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
     // once they are chosen (AURA_TARGET), the total cost being determined after them
     // (CR 601.2c, 601.2f).

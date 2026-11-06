@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "../classes/colors.h"
+#include "cast_option.h"
 #include "filter_spec.h"
 #include "object_spec.h"
+#include "zone.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -161,11 +163,22 @@ struct AmassParams {
 // optional_choice (Optional$ True).
 struct PlayParams {
     // PlayCost$: what is paid rather than the card's mana cost, and how much: a literal int (as a
-    // string) or "ConvertedManaCost" (the spell's mana value). Amped Raptor pays energy.
-    enum CostResource { ENERGY, LIFE };
-    CostResource cost_resource = ENERGY;
+    // string) or "ConvertedManaCost" (the spell's mana value). Amped Raptor pays energy. NORMAL:
+    // the card's own cost (Bilbo).
+    GrantResource cost_resource = GrantResource::NORMAL;
     std::string cost_expr = "";
     FilterSpec valid_sa;  // ValidSA$: the spells it may be cast as, read as the face it would be
+    // ValidZone$ + Valid$: the cards it may cast are those of the zone the filter matches, rather
+    // than Defined$'s.
+    bool from_zone = false;
+    Zone::ZoneValue zone = Zone::GRAVEYARD;
+    FilterSpec valid;
+    // ReplaceGraveyard$ + ReplaceGraveyardValid$: where a spell cast this way goes if it would be put
+    // into a graveyard, and which spells that is. Bilbo: "If an instant or sorcery spell cast this
+    // way would be put into your graveyard, exile it instead."
+    bool replaces_graveyard = false;
+    Zone::ZoneValue graveyard_replaced_by = Zone::EXILE;
+    FilterSpec graveyard_replaced_valid;
 };
 
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the

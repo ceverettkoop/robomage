@@ -94,7 +94,7 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster = Zo
 // it as it is cast (CR 113.6d); a ValidTarget$-conditioned one is target_cost_reduction_for's.
 // The generic portion is clamped at zero and colored pips are never reduced (CR 118.7 /
 // 601.2f); applied in effective_base_cost.
-int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from);
 
 // The generic mana the ReduceCost statics with a ValidTarget$ condition remove from the cost of
 // casting `card_data` for `caster` when the spell targets `targets` (Mystical Dispute's own "costs
@@ -147,8 +147,8 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 // casting player's board — currently Affinity for artifacts (CR 702.41): the generic
 // portion is reduced by {1} per artifact the caster controls. CR 601.2f applies all
 // such reductions after additions; the generic total never drops below zero.
-ManaValue effective_base_cost(const CardData &card_data,
-                              Zone::Ownership caster = Zone::UNKNOWN);
+// `from` is the zone the spell is cast from, which a reduction can ask about.
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from);
 
 // Drive the persisted APNAP trigger placement (Game::pending.trigger_placement) to
 // completion: each ordering pick / trigger target selection is parked as a

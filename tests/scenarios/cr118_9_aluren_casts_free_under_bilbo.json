@@ -1,0 +1,34 @@
+{
+  "name": "cr118_9_aluren_casts_free_under_bilbo",
+  "why": "CR 118.9a: an effect that lets a card be cast leaves a free-cast static's alternative cost open: under Aluren, Bilbo may cast Haywire Mite from the graveyard without paying its mana cost.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Aluren"
+  ],
+  "graveyard_a": [
+    "Haywire Mite"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:without paying its mana cost"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Player A casts Haywire Mite",
+    "Haywire Mite enters the battlefield"
+  ]
+}

@@ -56,6 +56,9 @@ struct MatchCtx {
     // "they" is the opponent TrigRevealHand targeted). Null: only `controller` and `source`, and
     // such a qualifier fails closed.
     const ResolveCtx *resolve = nullptr;
+    // The zone a spell is being cast from, for a cost static's wasCastFromYourHand: the spell isn't
+    // cast yet, so only the caller knows.
+    Zone::ZoneValue cast_from = Zone::HAND;
 };
 
 bool card_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});

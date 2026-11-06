@@ -19,6 +19,7 @@ struct ResolutionCastTerms {
         // `grant`'s amount is the mana value of the spell, whichever face is cast.
         bool amount_is_mana_value = false;
         const FilterSpec *valid_sa = nullptr;  // the spells it may be cast as; null: any
+        const AbilityDef *cast_by = nullptr;   // CastOption::cast_by
 };
 
 // Who is being offered casts, and whether this is their sorcery window (CR 307.1). `resolution` says

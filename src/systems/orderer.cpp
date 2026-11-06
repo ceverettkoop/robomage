@@ -394,7 +394,9 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
     bool is_copy = global_coordinator.entity_has_component<Spell>(target) &&
                    global_coordinator.GetComponent<Spell>(target).is_copy;
     bool is_card = global_coordinator.entity_has_component<CardData>(target) && !is_copy;
-    destination = spell_destination(target, destination, SpellExit::REMOVED).zone;
+    const SpellDestination to = spell_destination(target, destination, SpellExit::REMOVED);
+    destination = to.zone;
+    if (to.graveyard_replaced) game_log("%s is exiled (%s)\n", entity_name(target).c_str(), to.by_cast);
     if (global_coordinator.entity_has_component<Ability>(target)) {
         decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(target));
         global_coordinator.RemoveComponent<Ability>(target);

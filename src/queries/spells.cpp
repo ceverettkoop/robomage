@@ -32,8 +32,20 @@ SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, Spell
             to.zone = overlay.resolved_to;
             to.by_cast = overlay.name;
         }
+        if (to.zone == Zone::GRAVEYARD && spell_graveyard_replaced(spell)) {
+            to.zone = std::get<PlayParams>(how.cast_by->params).graveyard_replaced_by;
+            to.by_cast = "cast this way";
+            to.graveyard_replaced = true;
+        }
     }
     return to;
+}
+
+bool spell_graveyard_replaced(Entity spell) {
+    const AbilityDef *cast_by = global_coordinator.GetComponent<Spell>(spell).chosen.option.cast_by;
+    if (cast_by == nullptr) return false;
+    const PlayParams &pp = std::get<PlayParams>(cast_by->params);
+    return pp.replaces_graveyard && card_matches_filter(spell, pp.graveyard_replaced_valid);
 }
 
 FilterSpec spell_additional_sac_spec(const CardData &cd) {

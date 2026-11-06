@@ -286,9 +286,11 @@ static int artifacts_controlled_by(Zone::Ownership caster) {
 // `card_data` for player `caster`, its ValidTarget$ condition aside: the active battlefield statics
 // whose Activator$ and ValidCard$ admit the spell (Eye of Ugin; an Activator$ You static only
 // reduces spells cast by its own controller), and the card's own Card.Self statics (Mystical
-// Dispute), controlled by its caster.
+// Dispute), controlled by its caster. `from` is the zone the spell is cast from.
 template <typename Fn>
-static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn) {
+static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from, Fn &&fn) {
+    MatchCtx cast_ctx;
+    cast_ctx.cast_from = from;
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         const StaticAbility &sa = *as.sa();
@@ -296,7 +298,7 @@ static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership c
         if (!cost_static_reaches(sa, as.controller, caster)) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
         if (!sa.reduce_cost_filter.empty()) {
-            if (!card_matches_filter(card_data, sa.reduce_cost_filter, MatchCtx{})) continue;
+            if (!card_matches_filter(card_data, sa.reduce_cost_filter, cast_ctx)) continue;
         }
         fn(sa, as.controller);
     }
@@ -318,9 +320,9 @@ static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership co
 // static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f). A static
 // with a ValidTarget$ condition is left to target_cost_reduction_for. The caller clamps
 // the generic portion at zero and never reduces colored pips.
-int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from) {
     int total = 0;
-    for_each_cost_reduction(card_data, caster, [&total](const StaticAbility &sa, Zone::Ownership) {
+    for_each_cost_reduction(card_data, caster, from, [&total](const StaticAbility &sa, Zone::Ownership) {
         if (sa.reduce_cost_valid_target.empty()) total += sa.reduce_cost;
     });
     return total;
@@ -328,7 +330,8 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
 
 int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster, const std::vector<Entity> &targets) {
     int total = 0;
-    for_each_cost_reduction(card_data, caster, [&](const StaticAbility &sa, Zone::Ownership controller) {
+    // The one static with a ValidTarget$ doesn't ask where its spell is cast from.
+    for_each_cost_reduction(card_data, caster, Zone::HAND, [&](const StaticAbility &sa, Zone::Ownership controller) {
         if (sa.reduce_cost_valid_target.empty()) return;
         for (Entity t : targets)
             if (reduction_target_matches(sa, controller, t)) {
@@ -341,7 +344,7 @@ int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster,
 
 bool has_target_cost_reduction(const CardData &card_data, Zone::Ownership caster) {
     bool any = false;
-    for_each_cost_reduction(card_data, caster, [&any](const StaticAbility &sa, Zone::Ownership) {
+    for_each_cost_reduction(card_data, caster, Zone::HAND, [&any](const StaticAbility &sa, Zone::Ownership) {
         if (!sa.reduce_cost_valid_target.empty()) any = true;
     });
     return any;
@@ -565,7 +568,7 @@ bool any_mana_as_any_color_active() {
     return false;
 }
 
-ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from) {
     ManaValue cost = card_data.mana_cost;
     int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
@@ -573,7 +576,7 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     // static. Applied after additions (CR 601.2f); only generic pips removed (never a colored
     // pip — CR 118.7), never below 0. Caster-gated for Activator$ You statics.
     if (caster != Zone::UNKNOWN) {
-        int reduce_total = active_reduce_cost_for(card_data, caster);
+        int reduce_total = active_reduce_cost_for(card_data, caster, from);
         while (reduce_total-- > 0) {
             auto it = cost.find(GENERIC);
             if (it == cost.end()) break;

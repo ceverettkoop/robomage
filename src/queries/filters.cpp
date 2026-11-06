@@ -207,6 +207,7 @@ static bool ev_non_token(const CharView &v, const Qualifier &q);
 static bool ev_entered_this_turn(const CharView &v, const Qualifier &q);
 static bool ev_least_power(const CharView &v, const Qualifier &q);
 static bool ev_was_cast_by_you(const CharView &v, const Qualifier &q);
+static bool ev_cast_from_your_hand(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attacking(const CharView &v, const Qualifier &q);
 static bool ev_blocking(const CharView &v, const Qualifier &q);
 static bool ev_unblocked(const CharView &v, const Qualifier &q);
@@ -333,6 +334,9 @@ static const QualifierRow kQualifierRows[] = {
     // wasCastByYou — the permanent entered by being cast (The One Ring's "if you cast it"); its
     // controller cast it, since a permanent spell enters under its caster's control (CR 608.3a).
     local_row("wasCastByYou", ev_was_cast_by_you),
+    // wasCastFromYourHand — a spell being cast from its caster's hand (Bilbo's "from anywhere other
+    // than your hand"); a cost static reads it, and only the cast knows the zone.
+    relative_row("wasCastFromYourHand", ev_cast_from_your_hand),
     // live combat / tap state (e.g. Guide of Souls' ValidTgts$ Creature.attacking) — only a
     // battlefield permanent can be in these states; a card view leaves them false.
     local_row("attacking", ev_attacking),
@@ -878,6 +882,10 @@ static bool ev_you_own(const CharView &v, const Qualifier &, const MatchCtx &ctx
 
 static bool ev_opp_own(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
     return ctx.controller == Zone::UNKNOWN || v.owner == Zone::UNKNOWN || v.owner != ctx.controller;
+}
+
+static bool ev_cast_from_your_hand(const CharView &, const Qualifier &, const MatchCtx &ctx) {
+    return ctx.cast_from == Zone::HAND;
 }
 
 static bool ev_token(const CharView &v, const Qualifier &) { return v.is_token; }

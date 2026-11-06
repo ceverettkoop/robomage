@@ -28,12 +28,17 @@ struct SpellDestination {
     // What about how it was cast decided it, whatever was proposed (flashback, CR 702.34a); null when
     // nothing did.
     const char *by_cast = nullptr;
+    bool graveyard_replaced = false;  // the effect that cast it sent it here instead (spell_graveyard_replaced)
 };
 
 // The one answer to where `spell` goes: `proposed` is where the spell's own instructions
 // (Spell::resolves_to) or the effect moving it send it. A stack object that isn't a spell goes
 // where it is proposed.
 SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, SpellExit exit);
+
+// Does the effect that cast `spell` send it elsewhere if it would be put into a graveyard, whichever
+// way it leaves the stack (DB$ Play's ReplaceGraveyard$)?
+bool spell_graveyard_replaced(Entity spell);
 
 // The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the
 // card's SPELL ability `Cost$` (e.g. Natural Order's "Sac<1/Creature.Green>" →
