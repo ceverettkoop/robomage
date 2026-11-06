@@ -68,6 +68,12 @@ void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 // becomes activated + game.take_action()).
 void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Loop-top dispatcher entry for a parked prompt of a special action's mana payment (PendingQuery
+// tag SPECIAL_ACTION): consumes the latched answer and re-enters the payment. The resume may arm
+// its next prompt (the caller must loop back to the pending-query branch while pending.query.active),
+// fail it, or complete the action.
+void resume_special_action(Game& game, std::shared_ptr<Orderer> orderer);
+
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
 // attacker persisted in Game::pending.damage, then either arms the next pick's

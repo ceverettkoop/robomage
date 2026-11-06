@@ -12,6 +12,7 @@
 #include "components/ability.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "pending_query.h"
 
 class Orderer;
 
@@ -390,16 +391,25 @@ struct ResolutionFrame {
     std::deque<FrameLevel> levels;
 };
 
+// What a decision asked through a flow context is. MID_PAYMENT: a step of paying a chosen cost's
+// mana, whose menu carries any cancelling of its own (PendingQuery::mid_payment).
+enum class AskKind { CHOICE, MID_PAYMENT };
+
 // Handler-facing context threaded through resolve()/effect handlers. root()
 // binds to cur_game.resolution and may suspend (per-site opt-in, later
 // batches); blocking() reproduces today's inline get_input for every
 // non-stack caller (sub-ability recursion, triggers resolved off-stack, ...).
+// flow() serves a state machine that keeps its own progress on Game (the cast,
+// activation and special-action flows): an ask parks with the flow's tag and its
+// answer comes back through `resume_choice`, the latched answer the flow was
+// re-entered with, so rt() and resolve_child have no level to bind to there.
 // Converted and unconverted sites coexist: an unconverted prompt under a
 // converted frame just blocks mid-iteration exactly like today.
 class FrameCtx {
     public:
         static FrameCtx root();
         static FrameCtx blocking();
+        static FrameCtx flow(PendingQuery::Tag tag, int &resume_choice);
         bool is_root() const { return root_mode; }
         // The resolving stack object's own level (the ROOT at depth 0), not a sub-ability, gift
         // or other child level beneath it.
@@ -415,7 +425,8 @@ class FrameCtx {
         // suspend path parks the query and returns -1 (the caller returns
         // SUSPENDED mutating nothing — check decision_suspended() to tell a
         // suspension apart from a CLI flag value).
-        int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source);
+        int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source,
+                AskKind kind = AskKind::CHOICE);
         // THIS ctx's level of the persisted frame (levels[depth] — the ROOT at
         // depth 0, a resolve_child copy at depth > 0). The phase-tagged
         // resolve() persists its resume point (phase/next_sub) here. Only
@@ -453,6 +464,8 @@ class FrameCtx {
         FrameLevel &current_level();  // fatal_error outside an armed root frame
         bool root_mode = false;
         size_t depth_ = 0;  // which FrameLevel this ctx binds to (root() = 0)
+        PendingQuery::Tag flow_tag_ = PendingQuery::NONE;  // flow(): the tag its asks park with
+        int *resume_choice_ = nullptr;                     // flow(): the latched answer; < 0 for none
 };
 
 // TargetAsker with the RESOLUTION family tag (Batch 8): the suspendable form

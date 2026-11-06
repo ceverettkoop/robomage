@@ -15,6 +15,7 @@
 #include "ecs/entity_set.h"
 #include "object_ref.h"
 
+class FrameCtx;
 class Orderer;
 struct Permanent;
 struct Ability;
@@ -255,15 +256,28 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
                                     const ManaValue& unpaid_cost, ManaPayee paid_for);
 
-// Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
-// On false, caller must restore from snapshot.
+// How paying a cost, or a part of one, stands: all of it paid, the payer declined an optional cost,
+// it can't be paid, or a choice is parked and the caller returns until it is answered.
+enum class PayStatus { PAID, DECLINED, FAILED, SUSPENDED };
+
+// How far an interactive mana payment has got, persisted by the flow paying it: the prompts park
+// between its steps. Value type, so a snapshot of a parked payment covers it.
+struct ManaPaymentRT {
+    bool prompting = false;  // the pool is drained and the source prompts are under way
+    ManaValue remaining;     // what the pool and the sources have not yet paid
+};
+
+// Pay `cost` for `paid_for`: from the pool, then the auto-payer, or under --no-auto-mana by asking
+// `ctx` for one source at a time, which may suspend (re-enter with the same `rt` and `cost`). On
+// FAILED the caller must restore from snapshot.
 // If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
 // `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
-// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90).
-bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
-                         ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve = false, bool has_improvise = false,
-                         ManaValue* spent_out = nullptr);
+// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90). It
+// must persist with `rt`.
+PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const ManaValue& cost,
+                        ManaPayee paid_for, FrameCtx& ctx, std::shared_ptr<Orderer> orderer,
+                        bool has_delve = false, bool has_improvise = false,
+                        ManaValue* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from

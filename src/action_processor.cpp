@@ -136,8 +136,6 @@ static std::vector<const Ability *> spell_targeting_abilities(const Ability &pri
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised);
-static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
-                           Zone::Ownership chooser, Entity decision_source);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
                            Entity decision_source);
 // Choose graveyard card `e` as one delve exile (CR 702.66a): it pays one GENERIC pip of the
@@ -158,6 +156,12 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
 static const char *cost_removal_part(const Game::PendingCast::CostRemoval &item);
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
+// Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
+// drive it: its payment, then the move, or on a failed payment nothing.
+static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
+                                 std::shared_ptr<Orderer> orderer);
+static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::shared_ptr<Orderer> orderer,
+                               int resume_choice);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
 // The cards in `caster`'s hand the escalate discard of the spell `pc` is casting may discard
@@ -1543,27 +1547,9 @@ void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller) {
 // cast flow's prompts (cost choices, X ladders, announce-stage modes and
 // targets) pass the spell being cast, the activation flow's pass the activated
 // card.
-static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
-                           Zone::Ownership chooser, Entity decision_source) {
-    PendingQuery &pq = game.pending.query;
-    pq.tag = tag;
-    pq.menu = std::move(menu);
-    if (offer_cast_cancel) {
-        LegalAction cancel(PASS_PRIORITY, "Cancel");
-        cancel.category = ActionCategory::PAYING_COSTS;
-        cancel.cancel_proposal = true;
-        pq.menu.push_back(cancel);
-    }
-    pq.chooser_is_a = (chooser == Zone::PLAYER_A);
-    pq.decision_source = decision_source;
-    pq.answered = false;
-    pq.answer = -1;
-    pq.active = true;
-}
-
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
                            Entity decision_source) {
-    arm_flow_query(game, PendingQuery::CAST, std::move(menu), chooser, decision_source);
+    arm_flow_query(PendingQuery::CAST, std::move(menu), chooser, decision_source);
 }
 
 namespace {
@@ -1594,7 +1580,7 @@ class FlowTargetAsker final : public TargetAsker {
                 return choice;
             }
             if (source_override != 0) decision_source = source_override;
-            arm_flow_query(game, tag, std::vector<LegalAction>(menu), chooser, decision_source);
+            arm_flow_query(tag, std::vector<LegalAction>(menu), chooser, decision_source);
             return -1;
         }
         bool resuming() const override { return resume_choice >= 0; }
@@ -1627,6 +1613,17 @@ void resume_cast_flow(Game &game, std::shared_ptr<Orderer> orderer) {
     run_cast_flow(game.pending.cast, game, orderer, answer);
 }
 
+// Loop-top dispatcher entry (game_driver.cpp) for a parked prompt of a special action's payment:
+// consume the latched answer and re-enter the payment with it.
+void resume_special_action(Game &game, std::shared_ptr<Orderer> orderer) {
+    PendingQuery &pq = game.pending.query;
+    if (!game.pending.special_action.active || pq.tag != PendingQuery::SPECIAL_ACTION || !pq.answered)
+        fatal_error("resume_special_action without a parked special-action query");
+    int answer = pq.answer;
+    pq = PendingQuery{};
+    run_special_action(game.pending.special_action, game, orderer, answer);
+}
+
 // Loop-top dispatcher entry (game_driver.cpp) for a parked activation prompt:
 // consume the latched answer and re-enter the flow with it. The resume may arm
 // the NEXT activation prompt (the caller loops back to the pending branch) or
@@ -1651,10 +1648,8 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 // >= 0 = the latched answer for the prompt pa.step armed. A step distinguishes
 // arm from apply by whether a latched answer is pending (the arm always returns,
 // so re-entry lands on the very step that armed it, and its arm-time gates/menus
-// re-derive identically — nothing runs between arm and resume). The interactive
-// mana payment is the only prompt left blocking (a deliberate non-conversion —
-// machine mode auto-pays with zero decisions), so every payment step is
-// synchronous here; a failed payment reverses the activation (rewind_activation).
+// re-derive identically — nothing runs between arm and resume). A failed payment
+// reverses the activation (rewind_activation).
 //
 // Every prompt of the flow (the X ladders, the target selections, and the
 // sacrifice/return cost picks, including ninjutsu's return) arms with the activated card (pa.source_entity) as the pending-decision
@@ -1717,7 +1712,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
-                    arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
+                    arm_flow_query(PendingQuery::ACTIVATION, std::move(x_actions),
                                    controller, permanent_entity);
                     return;
                 }
@@ -1749,7 +1744,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
-                    arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
+                    arm_flow_query(PendingQuery::ACTIVATION, std::move(x_actions),
                                    controller, permanent_entity);
                     return;
                 }
@@ -1780,7 +1775,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     controller, ability.def->cost.filter(CostPart::SACRIFICE), orderer->mEntities, permanent_entity);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
-                        arm_flow_query(game, PendingQuery::ACTIVATION,
+                        arm_flow_query(PendingQuery::ACTIVATION,
                                        permanent_choice_menu(choices, "Sacrifice ", "",
                                                              ActionCategory::SACRIFICE_PERMANENT),
                                        controller, permanent_entity);
@@ -1802,7 +1797,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     controller, ability.def->cost.filter(CostPart::RETURN), orderer->mEntities);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
-                        arm_flow_query(game, PendingQuery::ACTIVATION,
+                        arm_flow_query(PendingQuery::ACTIVATION,
                                        permanent_choice_menu(choices, "Return ", " to hand",
                                                              ActionCategory::RETURN_PERMANENT),
                                        controller, permanent_entity);
@@ -1822,29 +1817,34 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         }
 
         case Game::PendingActivation::PAY: {
-            // The first step that pays anything, so the snapshot a failed payment restores is
-            // taken here (CR 733.1): it records the source untapped, so the rewind also undoes
-            // the tap cost.
-            pa.mana_snap = snapshot_mana_state(controller, orderer);
-            pa.mana_snap_taken = true;
-            // Tap cost
-            if (ability.def->cost.taps() && global_coordinator.entity_has_component<Permanent>(permanent_entity))
-                global_coordinator.GetComponent<Permanent>(permanent_entity).is_tapped = true;
-            // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's Channel
-            // is cheaper per legendary creature). For an X-cost ability the chosen X is added as
-            // generic mana on top of the base cost — once per {X} pip in the cost, so Blast
-            // Zone's {X}{X} charges 2X, not X.
-            ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
-            size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
-            for (size_t i = 0; i < pa.x_activation * x_pips; i++) activate_cost.insert(GENERIC);
-            // CR 601.2g: a permanent about to be sacrificed or returned for this cost is still on
-            // the battlefield, so it may be tapped for mana on its way out.
-            for (Entity leaving : {pa.sac_choice, pa.return_choice})
-                if (leaving != 0)
-                    float_mana_before_cost_removal(leaving, controller, orderer, activate_cost,
-                                                   ability_payee);
-            if (!activate_cost.empty()) {
-                if (!prompt_mana_payment(controller, activate_cost, ability_payee, orderer)) {
+            if (!pa.mana_snap_taken) {
+                // The first step that pays anything, so the snapshot a failed payment restores
+                // is taken here (CR 733.1): it records the source untapped, so the rewind also
+                // undoes the tap cost.
+                pa.mana_snap = snapshot_mana_state(controller, orderer);
+                pa.mana_snap_taken = true;
+                // Tap cost
+                if (ability.def->cost.taps() && global_coordinator.entity_has_component<Permanent>(permanent_entity))
+                    global_coordinator.GetComponent<Permanent>(permanent_entity).is_tapped = true;
+                // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's Channel
+                // is cheaper per legendary creature). For an X-cost ability the chosen X is added as
+                // generic mana on top of the base cost — once per {X} pip in the cost, so Blast
+                // Zone's {X}{X} charges 2X, not X.
+                pa.mana_owed = effective_activation_mana_cost(ability, controller, orderer);
+                size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
+                for (size_t i = 0; i < pa.x_activation * x_pips; i++) pa.mana_owed.insert(GENERIC);
+                // CR 601.2g: a permanent about to be sacrificed or returned for this cost is still
+                // on the battlefield, so it may be tapped for mana on its way out.
+                for (Entity leaving : {pa.sac_choice, pa.return_choice})
+                    if (leaving != 0)
+                        float_mana_before_cost_removal(leaving, controller, orderer, pa.mana_owed,
+                                                       ability_payee);
+            }
+            if (!pa.mana_owed.empty()) {
+                FrameCtx ctx = FrameCtx::flow(PendingQuery::ACTIVATION, resume_choice);
+                const PayStatus paid = pay_mana_cost(pa.mana, controller, pa.mana_owed, ability_payee, ctx, orderer);
+                if (paid == PayStatus::SUSPENDED) return;
+                if (paid == PayStatus::FAILED) {
                     fail_activation_payment(pa, orderer);
                     return;
                 }
@@ -2032,9 +2032,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
 // with an answer lands on the very step/pip that armed it, and its
 // arm-time gates/menus re-derive identically — nothing runs between arm and
 // resume). Machine-mode auto-resolve paths (the hybrid branch, the deferred
-// mana auto-payment) keep their inline calls; the interactive mana payment and
-// interactive hybrid pips are the only prompts left blocking (deliberate
-// non-conversions — machine mode resolves both with zero decisions).
+// mana auto-payment) keep their inline calls.
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice) {
     Entity spell_entity = pc.spell_entity;
@@ -2382,8 +2380,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // before the colored/generic payment runs below. Auto-mana picks the first payable
             // assignment (shared with the cast-legality gate via resolve_hybrid_cost); with
             // auto-mana off the player is prompted per pip, like the Phyrexian block below.
-            // (Auto-mana resolves with ZERO decisions; the per-pip menu is a deliberate blocking
-            // non-conversion, not a loop-safe snapshot point.)
             if (!mana_cost_hybrid_pips(pc, card_data).empty()) {
                 if (auto_mana) {
                     ManaValue resolved;
@@ -2401,7 +2397,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         }
                     }
                 } else {
-                    for (const auto &pip : card_data.hybrid_mana) {
+                    for (; pc.hybrid_idx < card_data.hybrid_mana.size(); ++pc.hybrid_idx) {
+                        const HybridPip &pip = card_data.hybrid_mana[pc.hybrid_idx];
                         std::vector<LegalAction> hybrid_actions;
                         for (Colors c : pip.colors) {
                             LegalAction a(PASS_PRIORITY,
@@ -2415,11 +2412,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                             a.category = ActionCategory::PAYING_COSTS;
                             hybrid_actions.push_back(a);
                         }
-                        int hc;
-                        {
-                            PendingDecisionScope pending(spell_entity);
-                            hc = InputLogger::instance().get_input(hybrid_actions);
-                        }
+                        FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
+                        int hc = ctx.ask(std::move(hybrid_actions), caster, spell_entity, AskKind::MID_PAYMENT);
+                        if (hc < 0 && decision_suspended()) return;
                         size_t uc = static_cast<size_t>(hc);
                         if (uc < pip.colors.size()) {
                             pc.cost_to_pay.insert(pip.colors[uc]);
@@ -2900,32 +2895,34 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // (601.2c) and every non-mana cost item has been CHOSEN but not yet applied,
             // which is what makes this step safely failable: nothing irreversible has
             // happened, so the cancel path below is a complete rewind.
-            // (The interactive payment stays BLOCKING inside this step — a deliberate
-            // non-conversion; machine mode auto-pays with zero decisions.)
-            //
-            // This is the first step that can activate a mana ability, so the snapshot a
-            // reversed proposal restores them from is taken here (CR 733.1).
-            pc.mana_snap = snapshot_mana_state(caster, orderer);
-            pc.mana_snap_taken = true;
-            // CR 601.2g first: a permanent that is about to leave to pay one of those
-            // costs is still on the battlefield right now, so tap it for mana on its way
-            // out. Without this a Crop Rotation cast off a lone Savannah would sacrifice
-            // the land and then be unable to pay {G}.
-            if (pc.deferred_mana_pending)
-                for (const auto &r : pc.cost_removals)
-                    float_mana_before_cost_removal(r.entity, caster, orderer,
-                                                   pc.deferred_mana_cost, spell_entity);
-            // Record the mana actually spent (CR 106/601.2g) for a ValidSA$ Spell.ManaSpent
-            // trigger to read at cast time. The deferred cost's pip count is the total mana paid,
-            // after any delve/improvise reduction already removed pips from it. A no-mana
-            // alternative cost leaves deferred_mana_pending false, and the 0 that
-            // defer_alternate_cost recorded stands.
-            if (pc.deferred_mana_pending)
-                pc.mana_spent = static_cast<int>(pc.deferred_mana_cost.size());
+            if (!pc.mana_snap_taken) {
+                // This is the first step that can activate a mana ability, so the snapshot a
+                // reversed proposal restores them from is taken here (CR 733.1).
+                pc.mana_snap = snapshot_mana_state(caster, orderer);
+                pc.mana_snap_taken = true;
+                // CR 601.2g first: a permanent that is about to leave to pay one of those
+                // costs is still on the battlefield right now, so tap it for mana on its way
+                // out. Without this a Crop Rotation cast off a lone Savannah would sacrifice
+                // the land and then be unable to pay {G}.
+                if (pc.deferred_mana_pending)
+                    for (const auto &r : pc.cost_removals)
+                        float_mana_before_cost_removal(r.entity, caster, orderer,
+                                                       pc.deferred_mana_cost, spell_entity);
+                // Record the mana actually spent (CR 106/601.2g) for a ValidSA$ Spell.ManaSpent
+                // trigger to read at cast time. The deferred cost's pip count is the total mana paid,
+                // after any delve/improvise reduction already removed pips from it. A no-mana
+                // alternative cost leaves deferred_mana_pending false, and the 0 that
+                // defer_alternate_cost recorded stands.
+                if (pc.deferred_mana_pending)
+                    pc.mana_spent = static_cast<int>(pc.deferred_mana_cost.size());
+            }
             if (pc.deferred_mana_pending) {
-                if (!prompt_mana_payment(caster, pc.deferred_mana_cost, spell_entity, orderer,
-                                         /*has_delve=*/false, pc.deferred_improvise,
-                                         &pc.mana_spent_colors)) {
+                FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
+                const PayStatus paid = pay_mana_cost(pc.mana, caster, pc.deferred_mana_cost, spell_entity, ctx, orderer,
+                                                     /*has_delve=*/false, pc.deferred_improvise,
+                                                     &pc.mana_spent_colors);
+                if (paid == PayStatus::SUSPENDED) return;
+                if (paid == PayStatus::FAILED) {
                     // Payment cancelled (interactive), or a machine-mode payment the gate
                     // wrongly offered: the proposal is reversed (CR 601.5 / 733.1).
                     fail_cast_payment(pc, orderer);
@@ -3255,6 +3252,56 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
     }
 }
 
+// See forward declaration at top of file.
+static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
+                                 std::shared_ptr<Orderer> orderer) {
+    Game::PendingSpecialAction &sa = game.pending.special_action;
+    if (sa.active) fatal_error("SPECIAL_ACTION with a special action already being paid for");
+    sa = Game::PendingSpecialAction{};
+    sa.active = true;
+    sa.card = card;
+    sa.companion = companion;
+    sa.owner = global_coordinator.GetComponent<Zone>(card).owner;
+    sa.cost = cost;
+    sa.mana_snap = snapshot_mana_state(sa.owner, orderer);
+    run_special_action(sa, game, orderer, -1);
+}
+
+// See forward declaration at top of file.
+static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::shared_ptr<Orderer> orderer,
+                               int resume_choice) {
+    const Entity card = sa.card;
+    const Zone::Ownership owner = sa.owner;
+    FrameCtx ctx = FrameCtx::flow(PendingQuery::SPECIAL_ACTION, resume_choice);
+    const PayStatus paid = pay_mana_cost(sa.mana, owner, sa.cost, ManaPayee(card, ManaPurpose::OTHER), ctx, orderer);
+    if (paid == PayStatus::SUSPENDED) return;
+    if (paid == PayStatus::FAILED) {
+        restore_mana_state(owner, sa.mana_snap, orderer);
+        game_log("Payment cancelled.\n");
+        cur_game.priority.payment_fail_counts[card]++;
+        sa = Game::PendingSpecialAction{};
+        return;
+    }
+    if (sa.companion) {
+        std::string cname = global_coordinator.GetComponent<CardData>(card).name;
+        orderer->add_to_zone(false, card, Zone::HAND);
+        auto &player = global_coordinator.GetComponent<Player>(get_player_entity(owner));
+        player.companion_brought_to_hand = true;
+        game_log("%s pays {3} and puts %s into their hand from outside the game\n",
+                 player_name(owner).c_str(), cname.c_str());
+        coverage_cast("companion");
+    } else {
+        auto &cd = global_coordinator.GetComponent<CardData>(card);
+        orderer->add_to_zone(false, card, Zone::EXILE);
+        global_coordinator.GetComponent<Zone>(card).counters["TIME"] = cd.suspend_count;
+        game_log("%s suspends %s (exiled with %d time counter(s)).\n",
+                 player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
+        coverage_cast("suspend");
+    }
+    sa = Game::PendingSpecialAction{};
+    game.take_action();
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -3269,23 +3316,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // permanent, so its counters can't live in Permanent::counters).
             if (action.suspend_action) {
                 Entity card = action.source_entity;
-                auto &zone = global_coordinator.GetComponent<Zone>(card);
-                auto &cd = global_coordinator.GetComponent<CardData>(card);
-                Zone::Ownership owner = zone.owner;
-                auto mana_snap = snapshot_mana_state(owner, orderer);
-                ManaValue cost = cd.suspend_cost.mana();  // copy (prompt_mana_payment takes a mutable ref)
-                if (!prompt_mana_payment(owner, cost, ManaPayee(card, ManaPurpose::OTHER), orderer)) {
-                    restore_mana_state(owner, mana_snap, orderer);
-                    game_log("Payment cancelled.\n");
-                    cur_game.priority.payment_fail_counts[card]++;
-                    break;
-                }
-                orderer->add_to_zone(false, card, Zone::EXILE);
-                zone.counters["TIME"] = cd.suspend_count;
-                game_log("%s suspends %s (exiled with %d time counter(s)).\n",
-                         player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
-                coverage_cast("suspend");
-                game.take_action();
+                begin_special_action(game, card, /*companion=*/false,
+                                     global_coordinator.GetComponent<CardData>(card).suspend_cost.mana(), orderer);
                 break;
             }
 
@@ -3293,25 +3325,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // its owner's hand, once per game. The legal-action gate already verified the companion
             // is in the sideboard, unused this game, and that {3} is affordable.
             if (action.companion_to_hand) {
-                Entity comp = action.source_entity;
-                auto &zone = global_coordinator.GetComponent<Zone>(comp);
-                Zone::Ownership owner = zone.owner;
-                auto mana_snap = snapshot_mana_state(owner, orderer);
-                ManaValue three = {GENERIC, GENERIC, GENERIC};
-                if (!prompt_mana_payment(owner, three, ManaPayee(comp, ManaPurpose::OTHER), orderer)) {
-                    restore_mana_state(owner, mana_snap, orderer);
-                    game_log("Payment cancelled.\n");
-                    cur_game.priority.payment_fail_counts[comp]++;
-                    break;
-                }
-                std::string cname = global_coordinator.GetComponent<CardData>(comp).name;
-                orderer->add_to_zone(false, comp, Zone::HAND);
-                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(owner));
-                player.companion_brought_to_hand = true;
-                game_log("%s pays {3} and puts %s into their hand from outside the game\n",
-                         player_name(owner).c_str(), cname.c_str());
-                coverage_cast("companion");
-                game.take_action();
+                begin_special_action(game, action.source_entity, /*companion=*/true,
+                                     ManaValue{GENERIC, GENERIC, GENERIC}, orderer);
                 break;
             }
 

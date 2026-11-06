@@ -47,7 +47,7 @@ extern Game cur_game;
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // Converge spent-color sink (CR 702.90): while a cast's mana payment is in flight this points at
 // the accumulator that records every color of mana actually removed from the REAL pool. Armed only
-// inside prompt_mana_payment (via a RAII guard); dry-run affordability checks route through
+// inside pay_mana_cost (via a RAII guard); dry-run affordability checks route through
 // pay_from_pool on POOL COPIES with a null `spent`, so they never pollute it.
 static ManaValue *s_mana_spent_sink = nullptr;
 
@@ -1564,9 +1564,9 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
     return false;
 }
 
-bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
-                         ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve, bool has_improvise, ManaValue *spent_out) {
+PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const ManaValue &cost,
+                        ManaPayee paid_for, FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
+                        bool has_delve, bool has_improvise, ManaValue *spent_out) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -1581,32 +1581,40 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
     } sink_guard{s_mana_spent_sink};
     s_mana_spent_sink = spent_out;
 
-    // If pool already covers it, just spend
-    if (can_afford_pool(player.mana, cost)) {
-        spend_mana(controller, cost, paid_for.entity);
-        return true;
+    ManaValue &remaining = rt.remaining;
+    if (!rt.prompting) {
+        // If pool already covers it, just spend
+        if (can_afford_pool(player.mana, cost)) {
+            spend_mana(controller, cost, paid_for.entity);
+            return PayStatus::PAID;
+        }
+
+        // Drain existing pool toward the cost first
+        remaining = pay_partial(controller, cost);
+
+        // Auto-mana: the greedy payer selects the mana sources (no decisions)
+        if (auto_mana) {
+            return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
+                                 has_improvise)
+                       ? PayStatus::PAID
+                       : PayStatus::FAILED;
+        }
+        rt.prompting = true;
     }
 
-    // Drain existing pool toward the cost first
-    ManaValue remaining = pay_partial(controller, cost);
-
-    // Auto-mana: the greedy payer selects the mana sources (no decisions)
-    if (auto_mana) {
-        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
-                             has_improvise);
-    }
-
-    // The payment in progress, for the state format's pending_cost (queries/pending_cost.h).
+    // The payment in progress, for the state format's pending_cost (queries/pending_cost.h); it
+    // stays published while a prompt is parked.
     Game::PendingDecisions::CostPayment payment;
     payment.paid_for = paid_for.entity;
-    CostPaymentScope payment_scope(payment);
+    bool parked = false;
+    CostPaymentScope payment_scope(payment, &parked);
 
     // Payment loop: prompt player to tap sources or delve until cost is paid
     while (!remaining.empty()) {
         // Check if pool now covers remaining cost (from prior mana activations or delve)
         if (can_afford_pool(player.mana, remaining)) {
             spend_mana(controller, remaining, paid_for.entity);
-            return true;
+            return PayStatus::PAID;
         }
 
         // Build list of available payment options
@@ -1648,7 +1656,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         }
 
         if (pay_actions.empty()) {
-            return false;
+            return PayStatus::FAILED;
         }
 
         // The last row cancels the payment, for every consumer: the sources chosen so far may
@@ -1660,14 +1668,16 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         pay_actions.push_back(cancel);
 
         // Show remaining cost
-        game_log("Pay mana costs (");
-        bool first = true;
-        for (auto it = remaining.begin(); it != remaining.end(); ++it) {
-            if (!first) game_log(",");
-            game_log("(%s)", mana_symbol_str(*it));
-            first = false;
+        if (!ctx.resuming()) {
+            game_log("Pay mana costs (");
+            bool first = true;
+            for (auto it = remaining.begin(); it != remaining.end(); ++it) {
+                if (!first) game_log(",");
+                game_log("(%s)", mana_symbol_str(*it));
+                first = false;
+            }
+            game_log(" remaining):\n");
         }
-        game_log(" remaining):\n");
 
         // The card being paid for is the pending-decision source. The mana floating in the pool
         // is spent on the cost once it covers all of it (CR 601.2g-h: mana abilities first, then
@@ -1675,15 +1685,15 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         // the pool does not cover.
         const ManaValue owed = pool_shortfall(player.mana, remaining);
         payment_scope.set_remaining(owed, static_cast<int>(cost.size()) - static_cast<int>(owed.size()));
-        int choice;
-        {
-            PendingDecisionScope pending(paid_for.entity);
-            choice = InputLogger::instance().get_input(pay_actions);
+        int choice = ctx.ask(pay_actions, controller, paid_for.entity, AskKind::MID_PAYMENT);
+        if (choice < 0 && decision_suspended()) {
+            parked = true;
+            return PayStatus::SUSPENDED;
         }
 
         // Check for cancel
         if (choice == static_cast<int>(pay_actions.size()) - 1) {
-            return false;
+            return PayStatus::FAILED;
         }
 
         auto &chosen = pay_actions[static_cast<size_t>(choice)];
@@ -1709,7 +1719,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         }
     }
 
-    return true;
+    return PayStatus::PAID;
 }
 
 // (The old blocking prompt_delve_exiles lived here. Batch 11 moved the interactive

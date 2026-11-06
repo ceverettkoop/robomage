@@ -556,6 +556,12 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // iteration after today's blocking process_action returned.
                     if (cur_game.pending.query.active) continue;
                     break;
+                case PendingQuery::SPECIAL_ACTION:
+                    resume_special_action(cur_game, sys.orderer);
+                    // The resume may arm the payment's next prompt; when the payment completes or
+                    // fails, fall through to the normal flow, as for an activation.
+                    if (cur_game.pending.query.active) continue;
+                    break;
                 case PendingQuery::CAST:
                     resume_cast_flow(cur_game, sys.orderer);
                     // The resume may arm the NEXT cast prompt (the following
@@ -721,10 +727,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // the game-end invariant check.
         if (!cur_game.pending.query.active &&
             (cur_game.pending.cast.active || cur_game.pending.activation.active ||
-             cur_game.pending.draw.active)) {
+             cur_game.pending.special_action.active || cur_game.pending.draw.active)) {
             std::string which;
             if (cur_game.pending.cast.active) which += " pending.cast";
             if (cur_game.pending.activation.active) which += " pending.activation";
+            if (cur_game.pending.special_action.active) which += " pending.special_action";
             if (cur_game.pending.draw.active) which += " pending.draw";
             fatal_error("stranded suspended-flow flag at quiescent loop point:" + which +
                         " (turn=" + std::to_string(cur_game.turn_state.turn) +
@@ -763,7 +770,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // resume_pending_draws is on the stack (an ended game mid-batch clears it).
     if (cur_game.resolution.active || cur_game.pending.query.active ||
         cur_game.pending.cast.active || cur_game.pending.activation.active ||
-        cur_game.pending.draw.active ||
+        cur_game.pending.special_action.active || cur_game.pending.draw.active ||
         cur_game.pregame.stage != Game::PregameState::DONE) {
         std::string which;
         if (cur_game.resolution.active) which += " resolution";
@@ -771,6 +778,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             which += " pending.query(tag=" + std::to_string(static_cast<int>(cur_game.pending.query.tag)) + ")";
         if (cur_game.pending.cast.active) which += " pending.cast";
         if (cur_game.pending.activation.active) which += " pending.activation";
+        if (cur_game.pending.special_action.active) which += " pending.special_action";
         if (cur_game.pending.draw.active) which += " pending.draw";
         if (cur_game.pregame.stage != Game::PregameState::DONE) which += " pregame";
         fatal_error("game ended with a suspended resolution/pending query still parked:" + which);

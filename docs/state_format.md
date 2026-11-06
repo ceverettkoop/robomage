@@ -913,7 +913,7 @@ computes neither outside its legal-action enumeration.
 | | `window` | u8 | `enum:window_kind` | reveal, look, face-down look (CR 406.3), continuous reveal |
 | | `until` | u8 | `enum:window_end` | end of the resolution, its stack object leaving the stack, or only the card leaving its zone |
 | | `to` | seat | | none = all players |
-| `pending` (43): when a query is parked or a decision source is set | `tag` | u8 | `enum:pending_tag` | `PendingQuery::Tag`; NONE for a blocking prompt |
+| `pending` (43): when a query is parked or a decision source is set | `tag` | u8 | `enum:pending_tag` | `PendingQuery::Tag`; NONE for a blocking prompt and for a step of a mana payment (a row of the interactive payment, a hybrid pip) |
 | | `chooser` | seat | | the parked query's chooser, else the deciding seat |
 | | `source` | u32 | `handle` | `Game::pending.decision_source` (else the query's) |
 | | `source_card` | u16 | `card` | |

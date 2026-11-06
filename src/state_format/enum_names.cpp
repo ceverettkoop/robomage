@@ -215,6 +215,8 @@ static const char *pending_tag_name(PendingQuery::Tag v) {
         C(BLOCK_TARGET)
         C(DAMAGE_ASSIGN)
         C(TRIGGER_PLACE)
+        case PendingQuery::SPECIAL_ACTION:
+            break;  // never in a frame: a mid-payment prompt reports no paused flow
     }
 #undef C
     return nullptr;

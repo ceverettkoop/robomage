@@ -1297,7 +1297,7 @@ static void write_pending(const Ctx &c, Zone::Ownership decider) {
         pd.decision_source != 0 ? pd.decision_source : (pd.query.active ? pd.query.decision_source : 0);
     if (!pd.query.active && source == 0) return;
     Row r = c.w.row(TableId::PENDING);
-    r.u8(static_cast<uint64_t>(pd.query.active ? pd.query.tag : PendingQuery::NONE));
+    r.u8(static_cast<uint64_t>(pd.query.active && !pd.query.mid_payment ? pd.query.tag : PendingQuery::NONE));
     put_seat(r, pd.query.active ? (pd.query.chooser_is_a ? Zone::PLAYER_A : Zone::PLAYER_B) : decider, c.self);
     r.u32(handle(c, source)).u16(card_or_none(visible_card_id(source, c.viewer)));
     put_seat(r,

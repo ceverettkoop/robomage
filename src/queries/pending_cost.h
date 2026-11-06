@@ -36,7 +36,7 @@ bool pending_cost(PendingCost &out);
 
 // Publishes a payment that keeps no state machine of its own as Game::pending.cost_payment for
 // the span of the scope, restoring what was there before when it ends. A payment that parks its
-// decision (a suspended unless offer, `*parked` set as the scope ends) leaves the state in place
+// decision (`*parked` set as the scope ends) leaves the state in place
 // for the decision the main loop emits, and the resumed payment's scope takes it over.
 class CostPaymentScope {
     public:

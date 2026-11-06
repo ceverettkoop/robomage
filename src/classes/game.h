@@ -333,9 +333,9 @@ struct Game {
         // primary/sub/aura targets — via the shared TargetSelectRT machine and
         // the CAST-tag asker) and the replicate copy retargeting (CopySpellRT);
         // Batch 11 the deferred-payment picks (delve count/picks, flashback
-        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); only
-        // the interactive mana payment and the interactive hybrid pips remain
-        // blocking (machine mode auto-resolves both with zero decisions).
+        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); the
+        // interactive mana payment and the interactive hybrid pips park as well
+        // (machine mode auto-resolves both with zero decisions).
         // active == true from the CAST_SPELL action until the spell becomes
         // cast (COPY_TARGETS end) or the proposal is reversed (rewind_cast).
         // The card is on the stack for that whole span (CR 601.2a).
@@ -354,7 +354,7 @@ struct Game {
                 KICKER,           // per-kicker optional-additional-cost y/n
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
-                HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
+                HYBRID,           // hybrid pips (auto-mana resolves them; otherwise one prompt per pip)
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
                                   // CR 601.2b announces the value, the life is paid at PAY_APPLY)
@@ -374,7 +374,7 @@ struct Game {
                 DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
                 DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
                 DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
-                MANA_PAY,         // float doomed permanents, then pay mana (interactive payer stays blocking)
+                MANA_PAY,         // float doomed permanents, then pay mana
                 PAY_APPLY,        // apply the chosen cost items + life + energy, once the mana committed
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // the spell becomes cast (CR 601.2i): cast events; seeds COPY_TARGETS
@@ -421,6 +421,7 @@ struct Game {
             // has K:Replicate and the caster chose to pay it.
             int replicate_count = 0;
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
+            size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
             bool gift_promised = false;
             // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
             // mana payment is therefore captured here and deferred until after targets are chosen.
@@ -432,13 +433,14 @@ struct Game {
             // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
             ManaValue deferred_mana_cost;
             bool deferred_mana_pending = false;
+            ManaPaymentRT mana;  // the MANA_PAY step's payment
             // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
             // deferred_mana_cost at the MANA_PAY step (after any delve/improvise reduction) and
             // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
             // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
             int mana_spent = 0;
             // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
-            // accumulated by the payment (prompt_mana_payment's spent-sink) as pips leave the pool.
+            // accumulated by the payment (pay_mana_cost's spent-sink) as pips leave the pool.
             // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
             // whose size the resolution frame reads as Converge. Empty for a free / no-mana cast.
             ManaValue mana_spent_colors;
@@ -548,8 +550,8 @@ struct Game {
         // loop-top pending decision: the X-activation and loyalty-X ladders,
         // the pre-cost target selection (battlefield and hand/graveyard
         // activation zones), and the sacrifice/return cost picks (including
-        // ninjutsu's return-an-attacker pick). The interactive mana payment
-        // stays blocking (machine mode auto-pays with zero decisions).
+        // ninjutsu's return-an-attacker pick) and the interactive mana
+        // payment (machine mode auto-pays with zero decisions).
         // active == true from the ACTIVATE_ABILITY action until the ability
         // resolves off-stack (mana ability), becomes activated, or the
         // proposal is reversed (rewind_activation). A non-mana ability is on
@@ -567,7 +569,7 @@ struct Game {
                 TARGET,            // battlefield pre-cost modes/targets (run_announce)
                 COST_SAC,          // type-based sacrifice-cost pick (chosen, not yet moved)
                 COST_RETURN,       // return-to-hand-cost pick (chosen, not yet moved)
-                PAY,               // tap cost + mana payment (failure rewinds; sync)
+                PAY,               // tap cost + mana payment (failure rewinds)
                 PAY_APPLY,         // loyalty/life/energy/sacrifice/return/discard costs (sync)
                 FINISH             // mana production, or the ability becomes activated + take_action
             };
@@ -602,10 +604,25 @@ struct Game {
             // fails (mana_snap_taken).
             ManaPaymentSnapshot mana_snap;
             bool mana_snap_taken = false;
+            ManaValue mana_owed;  // the mana PAY pays, fixed as it begins
+            ManaPaymentRT mana;   // the PAY step's payment
             // The modes-and-targets announcement (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).
             AnnounceRT announce;
+        };
+        // A special action paid for in mana (pending.query tag SPECIAL_ACTION): suspending a card
+        // (CR 702.62a) or bringing a companion to hand. Taken at priority and off the stack, so
+        // nothing has moved until its mana is paid. active == true from the action until the card
+        // moves or the payment fails.
+        struct PendingSpecialAction {
+            bool active = false;
+            Entity card = 0;
+            bool companion = false;  // otherwise it suspends the card
+            Zone::Ownership owner = Zone::UNKNOWN;
+            ManaValue cost;
+            ManaPaymentSnapshot mana_snap;  // restored when the payment fails
+            ManaPaymentRT mana;
         };
         // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
         // actions run as loop-top decisions driven by the main loop's pregame
@@ -705,6 +722,7 @@ struct Game {
             TriggerPlacementRT trigger_placement;
             PendingCast cast;  // pending.query tag CAST
             PendingActivation activation;  // pending.query tag ACTIVATION
+            PendingSpecialAction special_action;  // pending.query tag SPECIAL_ACTION
             PendingDrawRT draw;  // pending.query tag TURN_DRAW
             // Miracle (CR 702.94): miracle_reveal is a first-of-turn miracle card just drawn,
             // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
@@ -717,11 +735,11 @@ struct Game {
             // priority-menu cast (can_afford_alt returns false for it).
             Entity miracle_reveal = 0;
             // A cost being paid at a decision that neither the cast nor the activation state
-            // machine holds: the interactive mana payment loop (prompt_mana_payment) and an
+            // machine holds: the interactive mana payment loop (pay_mana_cost) and an
             // unless-cost offer (run_unless_loop, CR 118.12). Set for the span of the payment
             // (CostPaymentScope, queries/pending_cost.h) and read only by the state format's
             // pending_cost; nothing in the game decides on it. Value member, so a snapshot of a
-            // parked unless-offer keeps it.
+            // parked payment keeps it.
             struct CostPayment {
                 bool active = false;
                 bool unless = false;  // an unless-cost offered to its payer
