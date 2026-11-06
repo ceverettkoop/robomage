@@ -37,6 +37,7 @@ typedef enum Step {
 #include <vector>
 
 #include "../components/ability.h"
+#include "../cost_payment.h"
 #include "../ecs/entity.h"
 #include "../ecs/entity_set.h"
 #include "../mana_system.h"
@@ -557,20 +558,15 @@ struct Game {
         // proposal is reversed (rewind_activation). A non-mana ability is on
         // the stack for that whole span (CR 602.2a).
         struct PendingActivation {
-            // Where the flow resumes, in CR 602.2 order: announce and choose (X,
-            // targets, the cost items to sacrifice/return), then pay every cost
-            // (602.2b -> 601.2g-h). Nothing is paid before PAY, and PAY_APPLY applies
-            // the non-mana costs only once the mana committed, so a proposal reversed
-            // at any step before PAY_APPLY (CR 733.1) leaves no trace.
+            // Where the flow resumes, in CR 602.2 order: announce (X, targets), then
+            // pay every cost (602.2b -> 601.2g-h). Nothing moves until the mana has
+            // committed, so a proposal reversed before then (CR 733.1) leaves no trace.
             enum Step {
                 ZONE_TARGET,       // hand/graveyard activation: pre-cost modes/targets
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
                 TARGET,            // battlefield pre-cost modes/targets (run_announce)
-                COST_SAC,          // type-based sacrifice-cost pick (chosen, not yet moved)
-                COST_RETURN,       // return-to-hand-cost pick (chosen, not yet moved)
-                PAY,               // tap cost + mana payment (failure rewinds)
-                PAY_APPLY,         // loyalty/life/energy/sacrifice/return/discard costs (sync)
+                PAY_COSTS,         // the cost's parts, through run_cost_parts (failure rewinds)
                 FINISH             // mana production, or the ability becomes activated + take_action
             };
             bool active = false;
@@ -594,18 +590,9 @@ struct Game {
             // activation is proposed; 0 for a mana ability (CR 605.3b).
             Entity stack_entity = 0;
             // X chosen at the X_LADDER step (added as generic pips to the
-            // PAY cost). Every announced X (a loyalty X too) is stack_ab.x_paid.
+            // cost's mana). Every announced X (a loyalty X too) is stack_ab.x_paid.
             size_t x_activation = 0;
-            // The permanents chosen at COST_SAC / COST_RETURN, moved at PAY_APPLY
-            // (0 = none).
-            Entity sac_choice = 0;
-            Entity return_choice = 0;
-            // Snapshot of mana state taken as PAY begins, restored when the payment
-            // fails (mana_snap_taken).
-            ManaPaymentSnapshot mana_snap;
-            bool mana_snap_taken = false;
-            ManaValue mana_owed;  // the mana PAY pays, fixed as it begins
-            ManaPaymentRT mana;   // the PAY step's payment
+            CostRun pay;  // the PAY_COSTS step's payment
             // The modes-and-targets announcement (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).

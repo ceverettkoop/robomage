@@ -50,9 +50,6 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> &choices,
-                                                      const char *verb, const char *suffix,
-                                                      ActionCategory category);
 static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                 bool allow_done, TargetAsker &asker);
 static std::string chosen_targets_display(const Ability &ab);
@@ -71,7 +68,7 @@ static void begin_activation(Game::PendingActivation &pa, Zone::Ownership contro
                              std::shared_ptr<Orderer> orderer);
 static void finish_activated_ability(Game::PendingActivation &pa, Zone::Ownership controller,
                                      std::shared_ptr<Orderer> orderer);
-// CR 733.1: reverse the activation in flight, at any step before PAY_APPLY applies a cost: the
+// CR 733.1: reverse the activation in flight, at any point before its mana commits: the
 // ability leaves the stack without a trace, every mana ability the payment activated (and the
 // source's tap cost) is reversed (mana_snap), and the chosen-but-unapplied cost items are
 // dropped. Clears pa; the player keeps priority (CR 733.2).
@@ -180,25 +177,6 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
-
-// Build the menu of permanents for a choose-one cost pick. `verb` and `suffix`
-// frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand"). menu[i]
-// carries choices[i] as its source_entity, so a latched answer indexes straight
-// back into the candidate list. (The menu-building half of the old blocking
-// prompt_permanent_choice — the get_input half is now a parked ACTIVATION
-// pending decision at each of its former call sites.)
-static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> &choices,
-                                                      const char *verb, const char *suffix,
-                                                      ActionCategory category) {
-    std::vector<LegalAction> menu;
-    for (auto e : choices) {
-        std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
-        LegalAction la(PASS_PRIORITY, e, std::string(verb) + nm + suffix);
-        la.category = category;
-        menu.push_back(la);
-    }
-    return menu;
-}
 
 // Largest X the payer will actually accept. max_available_mana is a deliberately coarse
 // upper bound — it counts ONE ability per source at face value — but the payer may take a
@@ -472,7 +450,7 @@ static void finish_activated_ability(Game::PendingActivation &pa, Zone::Ownershi
 // See forward declaration at top of file.
 static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
-    if (pa.mana_snap_taken) restore_mana_state(controller, pa.mana_snap, orderer);
+    if (pa.pay.mana_snap_taken) restore_mana_state(controller, pa.pay.mana_snap, orderer);
     if (pa.stack_entity != 0) orderer->remove_from_stack(pa.stack_entity, Zone::GRAVEYARD);
     pa = Game::PendingActivation{};
 }
@@ -1651,8 +1629,8 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 // re-derive identically — nothing runs between arm and resume). A failed payment
 // reverses the activation (rewind_activation).
 //
-// Every prompt of the flow (the X ladders, the target selections, and the
-// sacrifice/return cost picks, including ninjutsu's return) arms with the activated card (pa.source_entity) as the pending-decision
+// Every prompt of the flow (the X ladders, the target selections, and the cost's)
+// arms with the activated card (pa.source_entity) as the pending-decision
 // source — also for a hand/graveyard-activated ability, whose template
 // ability.source is not yet bound to the card.
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
@@ -1673,7 +1651,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (run_announce(pa.stack_ab, pa.announce, asker, orderer, controller, false) ==
                 AnnounceStatus::SUSPENDED)
                 return;
-            pa.step = Game::PendingActivation::COST_SAC;
+            pa.step = Game::PendingActivation::PAY_COSTS;
             break;
         }
 
@@ -1762,182 +1740,23 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     AnnounceStatus::SUSPENDED)
                     return;
             }
-            pa.step = Game::PendingActivation::COST_SAC;
+            pa.step = Game::PendingActivation::PAY_COSTS;
             break;
         }
 
-        case Game::PendingActivation::COST_SAC: {
-            // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary): CHOOSE
-            // the permanent now; it is sacrificed at PAY_APPLY, once the mana committed. The
-            // pool re-derives identically at apply — nothing runs between arm and resume.
-            if (!ability.def->cost.filter(CostPart::SACRIFICE).empty()) {
-                std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.def->cost.filter(CostPart::SACRIFICE), orderer->mEntities, permanent_entity);
-                if (!choices.empty()) {
-                    if (resume_choice < 0) {
-                        arm_flow_query(PendingQuery::ACTIVATION,
-                                       permanent_choice_menu(choices, "Sacrifice ", "",
-                                                             ActionCategory::SACRIFICE_PERMANENT),
-                                       controller, permanent_entity);
-                        return;
-                    }
-                    pa.sac_choice = choices[static_cast<size_t>(resume_choice)];
-                    resume_choice = -1;
-                }
-            }
-            pa.step = Game::PendingActivation::COST_RETURN;
-            break;
-        }
-
-        case Game::PendingActivation::COST_RETURN: {
-            // Return-to-hand cost (Scryb Ranger: return a Forest to hand) — chosen now, returned
-            // at PAY_APPLY, like the sacrifice pick above.
-            if (!ability.def->cost.filter(CostPart::RETURN).empty()) {
-                std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.def->cost.filter(CostPart::RETURN), orderer->mEntities);
-                if (!choices.empty()) {
-                    if (resume_choice < 0) {
-                        arm_flow_query(PendingQuery::ACTIVATION,
-                                       permanent_choice_menu(choices, "Return ", " to hand",
-                                                             ActionCategory::RETURN_PERMANENT),
-                                       controller, permanent_entity);
-                        return;
-                    }
-                    pa.return_choice = choices[static_cast<size_t>(resume_choice)];
-                    resume_choice = -1;
-                    // Ninjutsu's ninja attacks what the returned creature was attacking (CR
-                    // 702.49c), read while the creature is still in combat.
-                    if (ability.def->is_ninjutsu)
-                        pa.stack_ab.ninjutsu_attack_target =
-                            global_coordinator.GetComponent<Creature>(pa.return_choice).attack_target;
-                }
-            }
-            pa.step = Game::PendingActivation::PAY;
-            break;
-        }
-
-        case Game::PendingActivation::PAY: {
-            if (!pa.mana_snap_taken) {
-                // The first step that pays anything, so the snapshot a failed payment restores
-                // is taken here (CR 733.1): it records the source untapped, so the rewind also
-                // undoes the tap cost.
-                pa.mana_snap = snapshot_mana_state(controller, orderer);
-                pa.mana_snap_taken = true;
-                // Tap cost
-                if (ability.def->cost.taps() && global_coordinator.entity_has_component<Permanent>(permanent_entity))
-                    global_coordinator.GetComponent<Permanent>(permanent_entity).is_tapped = true;
-                // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's Channel
-                // is cheaper per legendary creature). For an X-cost ability the chosen X is added as
-                // generic mana on top of the base cost — once per {X} pip in the cost, so Blast
-                // Zone's {X}{X} charges 2X, not X.
-                pa.mana_owed = effective_activation_mana_cost(ability, controller, orderer);
-                size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
-                for (size_t i = 0; i < pa.x_activation * x_pips; i++) pa.mana_owed.insert(GENERIC);
-                // CR 601.2g: a permanent about to be sacrificed or returned for this cost is still
-                // on the battlefield, so it may be tapped for mana on its way out.
-                for (Entity leaving : {pa.sac_choice, pa.return_choice})
-                    if (leaving != 0)
-                        float_mana_before_cost_removal(leaving, controller, orderer, pa.mana_owed,
-                                                       ability_payee);
-            }
-            if (!pa.mana_owed.empty()) {
-                FrameCtx ctx = FrameCtx::flow(PendingQuery::ACTIVATION, resume_choice);
-                const PayStatus paid = pay_mana_cost(pa.mana, controller, pa.mana_owed, ability_payee, ctx, orderer);
-                if (paid == PayStatus::SUSPENDED) return;
-                if (paid == PayStatus::FAILED) {
-                    fail_activation_payment(pa, orderer);
-                    return;
-                }
-                coverage_cost("Mana");
-            }
-            pa.step = Game::PendingActivation::PAY_APPLY;
-            break;
-        }
-
-        case Game::PendingActivation::PAY_APPLY: {
-            // The mana committed, so the rest of the cost is now paid (CR 602.2b / 601.2h): the
-            // life and energy first — checked before anything of this step happens, since a
-            // painful mana source can have left too little life (only for an activation the gate
-            // wrongly offered), and then the whole cost can't be paid and the activation is
-            // reversed — then the loyalty, sacrifice, return and discard costs.
-            auto &activating_player =
-                global_coordinator.GetComponent<Player>(get_player_entity(controller));
-            if (!can_pay_life(activating_player, ability.def->cost.life()) ||
-                player_energy(activating_player) < ability.def->cost.energy()) {
+        case Game::PendingActivation::PAY_COSTS: {
+            // The cost, in CR 602.2b's order: nothing moves until the mana has committed, so a
+            // failed payment reverses the activation with no trace (rewind_activation).
+            FrameCtx ctx = FrameCtx::flow(PendingQuery::ACTIVATION, resume_choice);
+            CostPayer who(CostPath::ACTIVATION, controller, permanent_entity, ability_payee, &ability.def->cost, &pa.pay);
+            who.ability = &ability;
+            who.announced = &pa.stack_ab;
+            who.x = pa.x_activation;
+            const PayStatus paid = run_cost_parts(who, ctx, orderer);
+            if (paid == PayStatus::SUSPENDED) return;
+            if (paid == PayStatus::FAILED) {
                 fail_activation_payment(pa, orderer);
                 return;
-            }
-            if (ability.def->cost.taps()) coverage_cost("Tap");
-            // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
-            // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability
-            // still goes on the stack and resolves later; the loyalty change is the cost, paid
-            // now.
-            if (ability.def->is_loyalty_ability &&
-                global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
-                auto &perm = global_coordinator.GetComponent<Permanent>(permanent_entity);
-                // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at
-                // activation (pa.stack_ab.x_paid); the part carries only the sign. A fixed
-                // cost uses its count as-is.
-                int loyalty_delta = ability.def->cost.loyalty_is_x()
-                    ? (ability.def->cost.loyalty() < 0 ? -pa.stack_ab.x_paid : pa.stack_ab.x_paid)
-                    : ability.def->cost.loyalty();
-                int loyalty = add_counters(permanent_entity, "LOYALTY", loyalty_delta);
-                perm.loyalty_ability_activated_this_turn = true;
-                game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
-                         entity_name(permanent_entity).c_str(), loyalty_delta, loyalty);
-                coverage_cost("Loyalty");
-            }
-            // Life cost
-            if (ability.def->cost.life() > 0) {
-                pay_life(activating_player, ability.def->cost.life());
-                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.def->cost.life());
-                coverage_cost("PayLife");
-            }
-            // Energy cost (PayEnergy<N>, CR 122.1c).
-            if (ability.def->cost.energy() > 0) {
-                pay_energy(activating_player, ability.def->cost.energy());
-                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.def->cost.energy());
-                coverage_cost("PayEnergy");
-            }
-            // Sacrifice self: move to graveyard; apply_permanent_components SBA removes
-            // Permanent next pass
-            if (ability.def->cost.self(CostPart::SACRIFICE)) {
-                std::string sname = entity_name(permanent_entity);
-                orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
-                coverage_cost("SacSelf");
-            }
-            if (pa.sac_choice != 0) {
-                std::string sac_name = global_coordinator.GetComponent<Permanent>(pa.sac_choice).name;
-                orderer->add_to_zone(false, pa.sac_choice, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
-                coverage_cost("Sac");
-            }
-            if (pa.return_choice != 0) {
-                std::string ret_name =
-                    global_coordinator.GetComponent<Permanent>(pa.return_choice).name;
-                orderer->add_to_zone(false, pa.return_choice, Zone::HAND);
-                game_log("%s returns %s to hand\n", player_name(controller).c_str(),
-                         ret_name.c_str());
-                coverage_cost("Return");
-            }
-            // Discard self from hand cost (Faerie Macabre)
-            if (ability.def->cost.self(CostPart::DISCARD)) {
-                std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
-                    ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
-                orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-                game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-                coverage_cost("DiscardSelf");
-            }
-            // Discard hand cost (Lion's Eye Diamond)
-            if (ability.def->cost.discards_hand()) {
-                coverage_cost("DiscardHand");
-                for (auto card : orderer->get_hand(controller)) {
-                    std::string cname = global_coordinator.entity_has_component<CardData>(card)
-                        ? global_coordinator.GetComponent<CardData>(card).name : "card";
-                    orderer->add_to_zone(false, card, Zone::GRAVEYARD);
-                    game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-                }
             }
             pa.step = Game::PendingActivation::FINISH;
             break;
@@ -1978,8 +1797,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             }
             // MANA ABILITY
             if (is_mana_ability) {
-                // Costs were already paid above: tap and activation mana at PAY, life/sacrifice/
-                // discard at PAY_APPLY. The shared production core handles the rest: amount eval
+                // Costs were already paid above (PAY_COSTS). The shared production core handles the rest: amount eval
                 // (dynamic amounts like Gaea's Cradle / Urza's Workshop), ProduceMana
                 // replacement, pool insert, TapsForMana triggers, uncounterability flag,
                 // narrative, SubAbility$ riders (Ancient Tomb's damage), and the activation

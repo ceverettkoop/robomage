@@ -951,10 +951,9 @@ static int life_reserved_for_pending_payment(Zone::Ownership seat) {
     const auto &pc = cur_game.pending.cast;
     if (pc.active && pc.caster_is_a == seat_is_a)
         return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
-    // An activation pays its mana before its life (PAY_APPLY pays the life).
+    // An activation pays its mana before its life.
     const auto &pa = cur_game.pending.activation;
-    if (pa.active && pa.activator_is_a == seat_is_a &&
-        pa.step < Game::PendingActivation::PAY_APPLY)
+    if (pa.active && pa.activator_is_a == seat_is_a && !pa.pay.committed)
         return pa.ability.def->cost.life();
     return 0;
 }
