@@ -987,6 +987,9 @@ Meld with one half missing; each new field across a snapshot.
 
 None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12's Dungeons: whether Acererak alone
 justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
+
+Open, blocking nothing in M7 to M12: how `learn/open_vocab_acceptance.py` treats cards whose table rows moved on purpose, which decides when `spell_reads_colors_spent` can go (M6, "What stops `spent_w` to `spent_g`").
+
 ## Appendix A. Every finding, by stage
 
 Generated from the status files at pin `f62f8048`: 174 findings, none unmapped. `onboard.py`'s mechanics are the report's grouping; this is the plan's.
