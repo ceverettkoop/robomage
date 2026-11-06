@@ -175,7 +175,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot& snap,
 // The activation mana cost of `ab` AFTER applying its ReduceCost$ (CR 601.2f). When the
 // ability declares a ReduceCost$ (a literal integer or a Count$/SVar expression such as
 // Eiganjo's "Count$Valid Creature.Legendary+YouCtrl"), the resolved amount is subtracted from
-// the GENERIC portion of activation_mana_cost (floored at 0); colored pips are never reduced.
+// the GENERIC portion of its cost's mana (floored at 0); colored pips are never reduced.
 // `controller` is the counting "you" for the dynamic reduction. Returns the unmodified cost
 // when no ReduceCost$ is set. The single source of truth used by BOTH the affordability check
 // and the actual payment so legality and payment can never diverge.
@@ -187,7 +187,7 @@ ActionCategory mana_action_category(Colors color);
 
 // Collect legal actions for all activatable mana sources a player controls.
 // Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
-// Sources with activation_mana_cost are included only if the cost is affordable.
+// Sources with a mana cost of their own are included only if the cost is affordable.
 // at_priority includes instant-speed mana abilities (e.g. Lion's Eye Diamond), which may
 // only be activated when their controller holds priority — never mid-cost-payment.
 std::vector<LegalAction> collect_mana_legal_actions(

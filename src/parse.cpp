@@ -42,6 +42,14 @@ struct FindingLine {
     explicit FindingLine(const std::string &line) : saved(g_finding_line) { g_finding_line = line; }
     ~FindingLine() { g_finding_line = saved; }
 };
+// Where a cost string is written, which fixes what the engine pays of it (cost_form_pays).
+enum class CostForm {
+    ACTIVATED,          // an activated ability's Cost$, and a keyword that makes one
+    SPELL,              // a spell's Cost$: its mana cost again, and its additional costs
+    TRIGGERED,          // a triggered ability's Cost$, paid as it resolves
+    IMMEDIATE_TRIGGER,  // the same on an ImmediateTrigger
+    FLASHBACK,          // what the cast path pays of an ACTIVATED-form K:Flashback cost
+};
 static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
 static bool is_mana_cost_token(const std::string &tok);
 static bool is_plain_mana_token(const std::string &tok);
@@ -49,8 +57,14 @@ static std::string cost_finding_name(const std::string &tok);
 static std::vector<std::string> cost_tokens(const std::string &cost_str);
 static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts);
 static bool read_cost_count(const std::string &text, int &count);
-static bool read_activation_cost_token(const std::string &tok, AbilityDef &ability);
-static bool cost_token_paid(const std::string &tok, const AbilityDef &ability);
+static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context);
+static bool read_cost_token(const std::string &tok, CostPart &part);
+static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part);
+static bool read_loyalty_cost_token(const std::string &tok, CostPart &part);
+static bool read_exile_from_grave_token(const std::string &tok, CostPart &part);
+static bool cost_form_pays(CostForm form, const CostPart &part);
+static CostForm ability_cost_form(const AbilityDef &ability);
+static void read_ability_cost(const std::string &cost_str, AbilityDef &ability);
 static bool read_alt_cost_token(const std::string &tok, AltCost &ac);
 static std::multiset<Colors> keyword_mana_cost(const std::string &cost, const std::string &keyword);
 static void ward_cost_findings(const std::string &arg);
@@ -568,22 +582,25 @@ static bool read_alt_cost_token(const std::string &tok, AltCost &ac) {
     return false;
 }
 
-// Parses a space-separated activation-cost string (the value after Cost$, or after a
-// Cycling:/Flashback: keyword) into the cost fields of `ability`, the one grammar for every
-// cost-bearing keyword. A token the engine has no payment for (read_activation_cost_token), or
-// does not pay on an ability of this type (cost_token_paid), is a parse finding and adds nothing.
-static void parse_activation_cost(const std::string &cost_str, AbilityDef &ability) {
-    for (const std::string &tok : cost_tokens(cost_str))
-        if (!cost_token_paid(tok, ability) || !read_activation_cost_token(tok, ability))
-            parse_finding("cost", cost_finding_name(tok), "Cost$ " + cost_str);
+// Parses a cost string (a Cost$ value, the argument of a cost-bearing keyword) into its parts, the
+// one grammar for every cost: read_cost_token says what a token is, cost_form_pays whether `form`
+// pays it. A token neither can place is a parse finding, with `context`, and adds nothing.
+static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context) {
+    CostParts cost;
+    for (const std::string &tok : cost_tokens(cost_str)) {
+        CostPart part;
+        if (read_cost_token(tok, part) && cost_form_pays(form, part))
+            cost.add(part);
+        else
+            parse_finding("cost", cost_finding_name(tok), context);
+    }
+    return cost;
 }
 
-// Reads one Cost$ token onto `ability`: the tap symbol `T`, mana, PayLife<N>, PayEnergy<N>,
-// Sac<1/...> (CARDNAME → sacrifice self), Discard<0/Hand> and Discard<1/CARDNAME>, Return<1/Type>
-// and a loyalty counter change. False, recording nothing, for any other token or form.
-static bool read_activation_cost_token(const std::string &tok, AbilityDef &ability) {
+// Reads one cost token. False for a token, or a form of one, that names no cost part.
+static bool read_cost_token(const std::string &tok, CostPart &part) {
     if (tok == "T") {
-        ability.tap_cost = true;
+        part = CostPart::of(CostPart::TAP);
         return true;
     }
     if (tok == "Mandatory") {
@@ -591,105 +608,152 @@ static bool read_activation_cost_token(const std::string &tok, AbilityDef &abili
         // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
         // triggered ability's resolution, not an optional cost the controller may decline.
         // CR 603.8 / the card's "sacrifice it. If you do, ...".
-        ability.mandatory = true;
+        part = CostPart::of(CostPart::MANDATORY);
         return true;
     }
     if (tok == "X") {
-        // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
-        // drops X (it has no fixed value); record that the activator chooses X, so the cost
-        // path can prompt for it and add X generic mana. X = Count$xPaid.
-        // COUNT the pips: a cost may repeat X (Blast Zone's "Cost$ X X T" = {X}{X}), and the
-        // one chosen X is then owed once per pip.
-        ability.activation_has_x = true;
-        ability.activation_x_count++;
+        // A bare {X} (Candelabra of Tawnos: Cost$ X T). parse_mana_cost drops X (it has no fixed
+        // value); the activator chooses it, and owes X generic mana per pip: a cost may repeat X
+        // (Blast Zone's "Cost$ X X T" = {X}{X}). X = Count$xPaid.
+        part = CostPart::of(CostPart::X_MANA, 1);
         return true;
     }
     if (is_plain_mana_token(tok)) {
-        auto mana = parse_mana_cost(tok);
-        ability.activation_mana_cost.insert(mana.begin(), mana.end());
+        part = CostPart::of(CostPart::MANA);
+        part.mana = parse_mana_cost(tok);
         return true;
     }
-    std::vector<std::string> parts;
-    if (cost_token_arg(tok, "PayLife", parts)) {
+    std::vector<std::string> args;
+    if (cost_token_arg(tok, "PayLife", args)) {
         // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid), chosen as an
         // additional cost while casting (Toxic Deluge).
-        if (parts.size() != 1) return false;
-        if (parts[0] != "X") return read_cost_count(parts[0], ability.life_cost);
-        ability.life_cost_is_x = true;
-        return true;
+        if (args.size() != 1) return false;
+        part = CostPart::of(CostPart::LIFE);
+        part.count_is_x = args[0] == "X";
+        return part.count_is_x || read_cost_count(args[0], part.count);
     }
-    if (cost_token_arg(tok, "PayEnergy", parts)) {
+    if (cost_token_arg(tok, "PayEnergy", args)) {
         // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
         // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
-        return parts.size() == 1 && read_cost_count(parts[0], ability.energy_cost);
+        part = CostPart::of(CostPart::ENERGY);
+        return args.size() == 1 && read_cost_count(args[0], part.count);
     }
-    if (cost_token_arg(tok, "Sac", parts)) {
-        // The cost path sacrifices one permanent; a third part is the prompt's label
-        // ("Forest;Plains/Forest or Plains").
-        int count = 0;
-        if (parts.size() < 2 || !read_cost_count(parts[0], count) || count != 1) return false;
-        if (parts[1] == "CARDNAME")
-            ability.sac_self = true;
-        else
-            ability.sac_cost_spec = parts[1];
+    return read_cost_filter_token(tok, "Sac", CostPart::SACRIFICE, part) ||
+           read_cost_filter_token(tok, "Discard", CostPart::DISCARD, part) ||
+           read_cost_filter_token(tok, "Return", CostPart::RETURN, part) ||
+           read_cost_filter_token(tok, "ExileFromHand", CostPart::EXILE_FROM_HAND, part) ||
+           read_exile_from_grave_token(tok, part) || read_loyalty_cost_token(tok, part);
+}
+
+// <name><N/Filter[/label]>: N objects matching Filter; CARDNAME for the filter is the source, and
+// Discard's Hand the whole hand (Discard<0/Hand>, Lion's Eye Diamond). ExileFromHand's pitch filter
+// Card.<Color>+Other (CR 118.9, Force of Will) names `color`, the Other being the spell on its way
+// out of the hand.
+static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part) {
+    std::vector<std::string> args;
+    if (!cost_token_arg(tok, name, args) || args.size() < 2) return false;
+    part = CostPart::of(kind);
+    if (!read_cost_count(args[0], part.count)) return false;
+    if (args[1] == "CARDNAME")
+        part.object = ObjectSpec(ObjectSpec::SELF);
+    else if (kind == CostPart::DISCARD && args[1] == "Hand")
+        part.whole_hand = true;
+    else
+        part.filter = args[1];
+    if (kind != CostPart::EXILE_FROM_HAND) return true;
+    const Colors color = filter_color(args[1]);
+    for (const auto &cn : kColorNames)
+        if (cn.color == color && args[1] == std::string("Card.") + cn.word + "+Other") part.color = color;
+    return true;
+}
+
+// ExileFromGrave<N/Card.Other/<label>> (Escape: Uro — "Exile five other cards from your graveyard"):
+// the fixed number of OTHER graveyard cards to exile. ExileFromGrave<X/Card.Other+withTypesGE<N>/
+// <label>> (Escape: Nethergoyf): any number of them, constrained so the chosen set collectively has
+// at least N distinct card types (CR 702.139).
+static bool read_exile_from_grave_token(const std::string &tok, CostPart &part) {
+    std::vector<std::string> args;
+    if (!cost_token_arg(tok, "ExileFromGrave", args) || args.size() < 2) return false;
+    part = CostPart::of(CostPart::EXILE_FROM_GRAVEYARD);
+    static const std::string kTypesFilter = "Card.Other+withTypesGE";
+    if (args[0] == "X" && args[1].rfind(kTypesFilter, 0) == 0) {
+        part.count_is_x = true;
+        part.filter = "Card.Other";
+        return read_cost_count(args[1].substr(kTypesFilter.size()), part.min_types);
+    }
+    part.filter = args[1];
+    return args[1] == "Card.Other" && read_cost_count(args[0], part.count);
+}
+
+// Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
+// SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X] ultimate). The amount
+// X is chosen at activation; the count holds only the sign.
+static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
+    std::vector<std::string> args;
+    const bool add_counter = cost_token_arg(tok, "AddCounter", args);
+    if (!add_counter && !cost_token_arg(tok, "SubCounter", args)) return false;
+    if (args.size() != 2 || args[1] != "LOYALTY") return false;
+    part = CostPart::of(CostPart::LOYALTY);
+    if (read_cost_count(args[0], part.count)) {
+        part.count = add_counter ? part.count : -part.count;
         return true;
     }
-    if (cost_token_arg(tok, "Discard", parts)) {
-        // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-        if (parts.size() < 2) return false;
-        if (parts[0] == "0" && parts[1] == "Hand")
-            ability.discard_hand_cost = true;
-        else if (parts[0] == "1" && parts[1] == "CARDNAME")
-            ability.discard_self_cost = true;
-        else
-            return false;
-        return true;
-    }
-    if (cost_token_arg(tok, "Return", parts)) {
-        // Return<1/Forest> — bounce a permanent of the given type (the cost path returns one).
-        int count = 0;
-        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count) || count != 1) return false;
-        ability.return_cost_count = count;
-        ability.return_cost_type = parts[1];
-        return true;
-    }
-    const bool add_counter = cost_token_arg(tok, "AddCounter", parts);
-    if (add_counter || cost_token_arg(tok, "SubCounter", parts)) {
-        // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
-        if (parts.size() != 2 || parts[1] != "LOYALTY") return false;
-        int n = 0;
-        if (read_cost_count(parts[0], n)) {
-            ability.loyalty_cost = add_counter ? n : -n;
-            return true;
-        }
-        // SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X] ultimate).
-        // The amount X is chosen at activation; loyalty_cost holds only the sign.
-        if (parts[0] != "X") return false;
-        ability.loyalty_cost_is_x = true;
-        ability.loyalty_cost = add_counter ? 1 : -1;
-        return true;
+    if (args[0] != "X") return false;
+    part.count_is_x = true;
+    part.count = add_counter ? 1 : -1;
+    return true;
+}
+
+// Does the engine pay `part` of a cost written in `form`? An activated ability pays its whole cost
+// as it is activated, one sacrifice or return at most, and of a discard only the whole hand or
+// itself; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
+// Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
+// (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
+// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>.
+static bool cost_form_pays(CostForm form, const CostPart &part) {
+    const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
+    switch (form) {
+        case CostForm::ACTIVATED:
+            switch (part.kind) {
+                case CostPart::LIFE: return !part.count_is_x;
+                case CostPart::SACRIFICE: return sacrifices_one;
+                case CostPart::RETURN: return part.count == 1 && !part.is_self();
+                case CostPart::DISCARD:
+                    return (part.whole_hand && part.count == 0) || (part.is_self() && part.count == 1);
+                case CostPart::EXILE_FROM_HAND:
+                case CostPart::EXILE_FROM_GRAVEYARD: return false;
+                default: return true;
+            }
+        case CostForm::SPELL:
+            return part.kind == CostPart::X_MANA || part.kind == CostPart::MANA ||
+                   (part.kind == CostPart::LIFE && part.count_is_x) || (sacrifices_one && !part.is_self());
+        case CostForm::IMMEDIATE_TRIGGER:
+            if (part.kind == CostPart::ENERGY) return true;
+            [[fallthrough]];
+        case CostForm::TRIGGERED:
+            return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self());
+        case CostForm::FLASHBACK:
+            return part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x) ||
+                   (part.kind == CostPart::SACRIFICE && !part.is_self());
     }
     return false;
 }
 
-// Does the engine pay cost token `tok` on `ability`? An activated ability pays its whole cost as
-// it is activated, but a variable life cost only exists as a spell's (spell_has_variable_life_cost).
-// A spell's Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another
-// permanent (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
-// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>.
-static bool cost_token_paid(const std::string &tok, const AbilityDef &ability) {
-    std::vector<std::string> parts;
-    const bool sacrifice = cost_token_arg(tok, "Sac", parts);
-    const bool sacrifices_self = sacrifice && parts.size() >= 2 && parts[1] == "CARDNAME";
+static CostForm ability_cost_form(const AbilityDef &ability) {
     switch (ability.ability_type) {
         case AbilityDef::SPELL:
-            return tok == "X" || tok == "PayLife<X>" || is_plain_mana_token(tok) || (sacrifice && !sacrifices_self);
+            return CostForm::SPELL;
         case AbilityDef::TRIGGERED:
-            return tok == "Mandatory" || sacrifices_self ||
-                   (ability.category == "ImmediateTrigger" && cost_token_arg(tok, "PayEnergy", parts));
+            return ability.category == "ImmediateTrigger" ? CostForm::IMMEDIATE_TRIGGER : CostForm::TRIGGERED;
         default:
-            return tok != "PayLife<X>";
+            return CostForm::ACTIVATED;
     }
+}
+
+// `ability`'s Cost$ (or the cost a keyword gives the ability it makes).
+static void read_ability_cost(const std::string &cost_str, AbilityDef &ability) {
+    ability.cost = parse_cost(cost_str, ability_cost_form(ability), "Cost$ " + cost_str);
+    if (ability.cost.has(CostPart::MANDATORY)) ability.mandatory = true;
 }
 
 // One of the sorcery-speed activated abilities an equip-style keyword line (K:Equip:<cost>,
@@ -712,7 +776,7 @@ static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::s
         ab.activation_condition = "Attached";
     }
     size_t colon = kw_line.find(':');
-    if (colon != std::string::npos) parse_activation_cost(kw_line.substr(colon + 1), ab);
+    if (colon != std::string::npos) read_ability_cost(kw_line.substr(colon + 1), ab);
     return ab;
 }
 
@@ -1012,7 +1076,7 @@ static AbilityDef keyword_activated_ability(const std::string &category, Zone::Z
     ab.ability_type = AbilityDef::ACTIVATED;
     ab.category = category;
     ab.activation_zone = zone;
-    parse_activation_cost(cost, ab);
+    read_ability_cost(cost, ab);
     return ab;
 }
 
@@ -1309,20 +1373,19 @@ static void kw_type_cycling(const std::string &kw_line, KeywordContext &ctx) {
 // K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
 static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.has_flashback = true;
-    // Shared Cost$ token grammar, then map onto the flashback cost fields the
-    // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
-    // mana and life — which the token-by-token grammar handles in one pass.
-    AbilityDef fb;
-    fb.ability_type = AbilityDef::ACTIVATED;
-    parse_activation_cost(kw_line.substr(strlen("Flashback:")), fb);
-    if (fb.tap_cost || fb.activation_has_x || fb.energy_cost > 0 || fb.sac_self || fb.discard_hand_cost ||
-        fb.discard_self_cost || fb.return_cost_count > 0)
-        parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
-    ctx.card.flashback_mana_cost = fb.activation_mana_cost;
-    ctx.card.flashback_alt_cost.life_cost = fb.life_cost;
-    // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
-    // flashback cost. Carry the sac filter so the cast path pays it.
-    ctx.card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
+    // The cost reads as an activated ability's, then the cast path pays what it can of it. Deep
+    // Analysis is "1 U PayLife<3>" — both mana and life — and Cabal Therapy's Flashback—Sacrifice a
+    // creature is Sac<1/Creature>.
+    const std::string cost_str = kw_line.substr(strlen("Flashback:"));
+    const CostParts cost = parse_cost(cost_str, CostForm::ACTIVATED, "Cost$ " + cost_str);
+    bool unpaid = false;
+    for (const CostPart &part : cost.parts()) {
+        unpaid = unpaid || !cost_form_pays(CostForm::FLASHBACK, part);
+        if (part.kind == CostPart::MANA) ctx.card.flashback_mana_cost = part.mana;
+        if (part.kind == CostPart::LIFE) ctx.card.flashback_alt_cost.life_cost = part.count;
+        if (part.kind == CostPart::SACRIFICE && !part.is_self()) ctx.card.flashback_alt_cost.sac_cost_spec = part.filter;
+    }
+    if (unpaid) parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
     ctx.card.keywords.push_back("Flashback");
 }
 
@@ -2171,7 +2234,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
     } else if (key == "Cost") {
-        parse_activation_cost(value, ability);
+        read_ability_cost(value, ability);
     } else if (key == "ConditionCheckSVar") {
         // ConditionCheckSVar$ <SVar> (Veil of Summer's SP$ Draw gate). Store the raw SVar name;
         // resolve_condition_svars resolves it to its Count$ expression and defaults the

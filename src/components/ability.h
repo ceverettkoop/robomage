@@ -6,6 +6,7 @@
 #include "../effects/effect_kind.h"
 #include "../object_ref.h"
 #include "ability_params.h"
+#include "cost_part.h"
 #include "memory_ops.h"
 #include "object_spec.h"
 #include "static_ability.h"
@@ -119,29 +120,12 @@ struct AbilityDef {
     std::string trigger_mode = "";
 
 
-    // Activated ability costs
-    bool tap_cost = false;              // {T} is part of the activation cost
-    bool activation_has_x = false;      // Cost$ contains {X}: choose X at activation, add X generic to the
-                                        // activation mana cost; X = Count$xPaid (Candelabra of Tawnos)
-    int activation_x_count = 0;         // how MANY {X} pips the Cost$ carries. Almost always 1, but
-                                        // Blast Zone is "{X}{X}, {T}: put X charge counters" — one X is
-                                        // chosen (CR 601.2b) and paid once PER PIP, so the mana owed is
-                                        // X * activation_x_count. A bool alone silently charged {X}.
-    ManaValue activation_mana_cost;     // Mana that must be paid to activate
-    int life_cost = 0;                  // PayLife<N> — life paid at activation
-    bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),
-                                        // chosen as an additional cost while casting (Toxic Deluge)
-    int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
-    bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
-    FilterSpec sac_cost_spec;           // Sac<1/Type;Type/> — type-based sac cost; empty = none
+    // Cost$: what the ability costs (a spell's repeats its mana cost, beyond its additional costs).
+    CostParts cost;
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
-    // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
+    // sac_valid (Birthing Ritual). Distinct from a Sac<> part of `cost`.
     FilterSpec sac_valid;         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
-    FilterSpec return_cost_type;        // Return<N/Type> — bounce a land of this subtype as cost
-    int return_cost_count = 0;          // number of lands to return
-    bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-    bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
     bool sorcery_speed_only = false;    // SorcerySpeed$ True — activated only as a sorcery (CR 605.x / earthbend); gated in the legal-action enumeration
     // Activation$ <condition> — a named "activate only if <condition>" gate (CR 602.5). The
@@ -158,7 +142,7 @@ struct AbilityDef {
     // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
     bool is_monstrosity = false;
     // K:Ninjutsu:<cost> (CR 702.49a): a hand-activated ability whose cost is the ninjutsu mana
-    // plus returning an unblocked attacker you control to its owner's hand (return_cost_type), so
+    // plus returning an unblocked attacker you control to its owner's hand (a Return<> part), so
     // it is activatable whenever such an attacker exists. On the stack it puts THIS card onto the
     // battlefield tapped and attacking (effects::ninjutsu).
     bool is_ninjutsu = false;
@@ -166,21 +150,17 @@ struct AbilityDef {
     // ("Equip", "Reconfigure", "Unattach"); empty for an ability from an A: line.
     std::string keyword_label = "";
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
-    // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
-    // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
-    // never infer loyalty-ness from loyalty_cost. Cost$ AddCounter<N/LOYALTY> → +N,
-    // SubCounter<N/LOYALTY> → -N. Paid by modifying the source's own loyalty at activation.
+    // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag; a loyalty
+    // cost of 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so never infer
+    // loyalty-ness from the cost. Paid by modifying the source's own loyalty at activation. An X
+    // loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate) has its
+    // magnitude chosen at activation (X, bounded by current loyalty for a minus ability) and
+    // recorded as the activation's x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it.
     bool is_loyalty_ability = false;    // Planeswalker$ True
-    int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
-    // X loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate). The
-    // magnitude is chosen at activation (X, bounded by current loyalty for a minus ability) and
-    // recorded as the activation's x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
-    // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
-    bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
     // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
-    // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —
+    // cost's mana is reduced by this amount at activation time (CR 601.2f —
     // cost reductions reduce only generic mana, colored pips are never reduced). Either a
     // literal integer (stored verbatim, e.g. "1") or a runtime Count$/SVar expression
     // resolved via evaluate_amount with the activating controller as "you". Empty

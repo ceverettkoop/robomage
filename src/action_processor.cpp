@@ -1693,7 +1693,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // available beyond the rest of the cost), record it as x_paid, and add X generic
             // to the mana cost paid at PAY. Arms with the activated card as the
             // pending-decision source.
-            if (!is_mana_ability && ability.def->activation_has_x) {
+            if (!is_mana_ability && ability.def->cost.has(CostPart::X_MANA)) {
                 if (resume_choice >= 0) {
                     pa.x_activation = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
@@ -1706,9 +1706,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
                     // counting its own {C}). Each {X} in the cost is paid separately, so a
                     // {X}{X} ability can only afford half the budget (CR 601.2b).
-                    Entity x_exclude = ability.def->tap_cost ? permanent_entity : 0;
+                    Entity x_exclude = ability.def->cost.taps() ? permanent_entity : 0;
                     size_t max_x = max_available_mana(controller, base_cost, orderer, x_exclude);
-                    size_t x_pips = std::max<size_t>(1, ability.def->activation_x_count);
+                    size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
                     max_x /= x_pips;
                     max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
                                           x_exclude, orderer, /*has_delve=*/false,
@@ -1736,14 +1736,14 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // than it has, 606.5). Recorded as x_paid, so the loyalty cost (PAY_APPLY) and the
             // effect's Count$xPaid (NumDmg$ X) both read it. This is a loyalty cost, not mana —
             // it never touches the PAY cost.
-            if (ability.def->loyalty_cost_is_x) {
+            if (ability.def->cost.loyalty_is_x()) {
                 if (resume_choice >= 0) {
                     int x_choice = resume_choice;
                     resume_choice = -1;
                     pa.stack_ab.x_paid = x_choice;
                     game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
                 } else {
-                    int max_x = (ability.def->loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
+                    int max_x = (ability.def->cost.loyalty() < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
                     if (max_x < 0) max_x = 0;
                     game_log("Choose X value (0-%d):\n", max_x);
                     std::vector<LegalAction> x_actions;
@@ -1779,9 +1779,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary): CHOOSE
             // the permanent now; it is sacrificed at PAY_APPLY, once the mana committed. The
             // pool re-derives identically at apply — nothing runs between arm and resume.
-            if (!ability.def->sac_cost_spec.empty()) {
+            if (!ability.def->cost.filter(CostPart::SACRIFICE).empty()) {
                 std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.def->sac_cost_spec, orderer->mEntities, permanent_entity);
+                    controller, ability.def->cost.filter(CostPart::SACRIFICE), orderer->mEntities, permanent_entity);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
                         arm_flow_query(game, PendingQuery::ACTIVATION,
@@ -1801,9 +1801,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::COST_RETURN: {
             // Return-to-hand cost (Scryb Ranger: return a Forest to hand) — chosen now, returned
             // at PAY_APPLY, like the sacrifice pick above.
-            if (!ability.def->return_cost_type.empty()) {
+            if (!ability.def->cost.filter(CostPart::RETURN).empty()) {
                 std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.def->return_cost_type, orderer->mEntities);
+                    controller, ability.def->cost.filter(CostPart::RETURN), orderer->mEntities);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
                         arm_flow_query(game, PendingQuery::ACTIVATION,
@@ -1832,14 +1832,14 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             pa.mana_snap = snapshot_mana_state(controller, orderer);
             pa.mana_snap_taken = true;
             // Tap cost
-            if (ability.def->tap_cost && global_coordinator.entity_has_component<Permanent>(permanent_entity))
+            if (ability.def->cost.taps() && global_coordinator.entity_has_component<Permanent>(permanent_entity))
                 global_coordinator.GetComponent<Permanent>(permanent_entity).is_tapped = true;
             // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's Channel
             // is cheaper per legendary creature). For an X-cost ability the chosen X is added as
             // generic mana on top of the base cost — once per {X} pip in the cost, so Blast
             // Zone's {X}{X} charges 2X, not X.
             ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
-            size_t x_pips = std::max<size_t>(1, ability.def->activation_x_count);
+            size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
             for (size_t i = 0; i < pa.x_activation * x_pips; i++) activate_cost.insert(GENERIC);
             // CR 601.2g: a permanent about to be sacrificed or returned for this cost is still on
             // the battlefield, so it may be tapped for mana on its way out.
@@ -1866,12 +1866,12 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // reversed — then the loyalty, sacrifice, return and discard costs.
             auto &activating_player =
                 global_coordinator.GetComponent<Player>(get_player_entity(controller));
-            if (!can_pay_life(activating_player, ability.def->life_cost) ||
-                player_energy(activating_player) < ability.def->energy_cost) {
+            if (!can_pay_life(activating_player, ability.def->cost.life()) ||
+                player_energy(activating_player) < ability.def->cost.energy()) {
                 fail_activation_payment(pa, orderer);
                 return;
             }
-            if (ability.def->tap_cost) coverage_cost("Tap");
+            if (ability.def->cost.taps()) coverage_cost("Tap");
             // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
             // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability
             // still goes on the stack and resolves later; the loyalty change is the cost, paid
@@ -1880,11 +1880,11 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
                 auto &perm = global_coordinator.GetComponent<Permanent>(permanent_entity);
                 // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at
-                // activation (pa.stack_ab.x_paid); loyalty_cost carries only the sign. A fixed
-                // cost uses loyalty_cost as-is.
-                int loyalty_delta = ability.def->loyalty_cost_is_x
-                    ? (ability.def->loyalty_cost < 0 ? -pa.stack_ab.x_paid : pa.stack_ab.x_paid)
-                    : ability.def->loyalty_cost;
+                // activation (pa.stack_ab.x_paid); the part carries only the sign. A fixed
+                // cost uses its count as-is.
+                int loyalty_delta = ability.def->cost.loyalty_is_x()
+                    ? (ability.def->cost.loyalty() < 0 ? -pa.stack_ab.x_paid : pa.stack_ab.x_paid)
+                    : ability.def->cost.loyalty();
                 int loyalty = add_counters(permanent_entity, "LOYALTY", loyalty_delta);
                 perm.loyalty_ability_activated_this_turn = true;
                 game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
@@ -1892,20 +1892,20 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 coverage_cost("Loyalty");
             }
             // Life cost
-            if (ability.def->life_cost > 0) {
-                pay_life(activating_player, ability.def->life_cost);
-                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.def->life_cost);
+            if (ability.def->cost.life() > 0) {
+                pay_life(activating_player, ability.def->cost.life());
+                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.def->cost.life());
                 coverage_cost("PayLife");
             }
             // Energy cost (PayEnergy<N>, CR 122.1c).
-            if (ability.def->energy_cost > 0) {
-                pay_energy(activating_player, ability.def->energy_cost);
-                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.def->energy_cost);
+            if (ability.def->cost.energy() > 0) {
+                pay_energy(activating_player, ability.def->cost.energy());
+                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.def->cost.energy());
                 coverage_cost("PayEnergy");
             }
             // Sacrifice self: move to graveyard; apply_permanent_components SBA removes
             // Permanent next pass
-            if (ability.def->sac_self) {
+            if (ability.def->cost.self(CostPart::SACRIFICE)) {
                 std::string sname = entity_name(permanent_entity);
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
@@ -1926,7 +1926,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 coverage_cost("Return");
             }
             // Discard self from hand cost (Faerie Macabre)
-            if (ability.def->discard_self_cost) {
+            if (ability.def->cost.self(CostPart::DISCARD)) {
                 std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
                     ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
@@ -1934,7 +1934,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 coverage_cost("DiscardSelf");
             }
             // Discard hand cost (Lion's Eye Diamond)
-            if (ability.def->discard_hand_cost) {
+            if (ability.def->cost.discards_hand()) {
                 coverage_cost("DiscardHand");
                 for (auto card : orderer->get_hand(controller)) {
                     std::string cname = global_coordinator.entity_has_component<CardData>(card)
@@ -1951,9 +1951,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (pa.zone_path) {
                 // Auto-consume the activated card to the graveyard, unless the ability
                 // relocates it itself (Defined$ Self) or it was already discarded as an
-                // explicit cost (discard_self_cost, paid above) — guarding against a double
+                // explicit cost (its Discard<1/CARDNAME>, paid above) — guarding against a double
                 // move.
-                if (!ability.def->defined.is(ObjectSpec::SELF) && !ability.def->discard_self_cost) {
+                if (!ability.def->defined.is(ObjectSpec::SELF) && !ability.def->cost.self(CostPart::DISCARD)) {
                     orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 }
 

@@ -56,22 +56,22 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
 
         // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to
         // pay and has the energy to do so (CR 122.1c). Decline / insufficient ⇒ skip Execute.
-        if (fire && ab.def->energy_cost > 0) {
+        if (fire && ab.def->cost.energy() > 0) {
             Entity ctrl_entity = get_player_entity(ab.controller);
             auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-            if (player_energy(pl) < ab.def->energy_cost) {
+            if (player_energy(pl) < ab.def->cost.energy()) {
                 fire = false;  // can't pay — not offered
             } else {
                 // The request_optional_yesno menu, asked through ctx so it can
                 // suspend (same "Decline:/Accept:" entries, same chooser
                 // repoint-and-restore), with the ability's source as the
                 // pending-decision source.
-                std::string prompt = "Pay " + std::to_string(ab.def->energy_cost) + " energy";
+                std::string prompt = "Pay " + std::to_string(ab.def->cost.energy()) + " energy";
                 std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                 int yc = ctx.ask(std::move(yn), ab.controller, ab.source.lki_entity());
                 if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-                if (yc == 1 && pay_energy(pl, ab.def->energy_cost)) {
-                    game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.def->energy_cost);
+                if (yc == 1 && pay_energy(pl, ab.def->cost.energy())) {
+                    game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.def->cost.energy());
                 } else {
                     fire = false;  // declined
                 }

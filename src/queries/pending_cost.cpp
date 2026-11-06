@@ -8,12 +8,12 @@
 
 using Cast = Game::PendingCast;
 using Activation = Game::PendingActivation;
-using rmstate::CostPart;
+using StatePart = rmstate::CostPart;
 
 static bool cast_cost(const Cast &pc, PendingCost &out);
 static bool activation_cost(const Activation &pa, PendingCost &out);
 static bool cast_step_is_payment(Cast::Step step);
-static CostPart cast_step_part(Cast::Step step);
+static StatePart cast_step_part(Cast::Step step);
 static const CardData *cast_face(const Cast &pc);
 
 // The steps of the cast flow that decide or pay a cost (CR 601.2b's cost announcements and
@@ -31,12 +31,12 @@ static bool cast_step_is_payment(Cast::Step step) {
     }
 }
 
-static CostPart cast_step_part(Cast::Step step) {
+static StatePart cast_step_part(Cast::Step step) {
     switch (step) {
         case Cast::ALT_PITCH:
         case Cast::ALT_RETURN:
         case Cast::ALT_SAC:
-            return CostPart::ALTERNATIVE;
+            return StatePart::ALTERNATIVE;
         case Cast::KICKER:
         case Cast::REPLICATE:
         case Cast::GIFT:
@@ -47,12 +47,12 @@ static CostPart cast_step_part(Cast::Step step) {
         case Cast::DEF_SAC:
         case Cast::DEF_EXILE_TYPES:
         case Cast::DEF_EXILE_COUNT:
-            return CostPart::ADDITIONAL;
+            return StatePart::ADDITIONAL;
         case Cast::CHOOSE_X:
         case Cast::LIFE_X:
-            return CostPart::X;
+            return StatePart::X;
         default:
-            return CostPart::MANA;
+            return StatePart::MANA;
     }
 }
 
@@ -93,17 +93,17 @@ static bool activation_cost(const Activation &pa, PendingCost &out) {
         return false;
     out.paid_for = pa.stack_entity != 0 ? pa.stack_entity : pa.source_entity;
     out.part =
-        (pa.step == Activation::X_LADDER || pa.step == Activation::LOYALTY_X) ? CostPart::X : CostPart::ACTIVATION;
+        (pa.step == Activation::X_LADDER || pa.step == Activation::LOYALTY_X) ? StatePart::X : StatePart::ACTIVATION;
     const AbilityDef &def = *pa.ability.def;
     const Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
     out.remaining = effective_activation_mana_cost(pa.ability, controller, nullptr);
-    if (pa.step == Activation::X_LADDER && def.activation_has_x)
-        out.x_pips = std::max(1, def.activation_x_count);
+    if (pa.step == Activation::X_LADDER && def.cost.has(CostPart::X_MANA))
+        out.x_pips = std::max(1, def.cost.x_pips());
     else
-        for (size_t i = 0; i < pa.x_activation * static_cast<size_t>(std::max(1, def.activation_x_count)); ++i)
+        for (size_t i = 0; i < pa.x_activation * static_cast<size_t>(std::max(1, def.cost.x_pips())); ++i)
             out.remaining.insert(GENERIC);
-    out.life = def.life_cost;
-    out.energy = def.energy_cost;
+    out.life = def.cost.life();
+    out.energy = def.cost.energy();
     return true;
 }
 
@@ -113,7 +113,7 @@ bool pending_cost(PendingCost &out) {
     if (pd.cost_payment.active) {
         const Game::PendingDecisions::CostPayment &cp = pd.cost_payment;
         out.paid_for = cp.paid_for;
-        out.part = cp.unless ? CostPart::UNLESS : CostPart::MANA;
+        out.part = cp.unless ? StatePart::UNLESS : StatePart::MANA;
         out.remaining = cp.remaining;
         out.life = cp.life;
         out.energy = cp.energy;

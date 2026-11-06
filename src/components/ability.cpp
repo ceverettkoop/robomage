@@ -33,9 +33,9 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->activation_condition != def->activation_condition) return false;
     if (other->dynamic_amount_expr != def->dynamic_amount_expr) return false;
     if (other->trigger_mode != def->trigger_mode) return false;
-    if (other->tap_cost != def->tap_cost) return false;
-    if (other->activation_mana_cost != def->activation_mana_cost) return false;
-    if (other->sac_self != def->sac_self) return false;
+    if (other->cost.taps() != def->cost.taps()) return false;
+    if (other->cost.mana() != def->cost.mana()) return false;
+    if (other->cost.self(CostPart::SACRIFICE) != def->cost.self(CostPart::SACRIFICE)) return false;
     if (other->change_type != def->change_type) return false;
     if (other->origin != def->origin) return false;
     if (other->origin_any != def->origin_any) return false;

@@ -312,7 +312,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
         // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
         // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
-        if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->sac_self) {
+        if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->cost.self(CostPart::SACRIFICE)) {
             const Entity src = ab.source.get();
             std::string sname = global_coordinator.entity_has_component<Permanent>(src)
                                     ? global_coordinator.GetComponent<Permanent>(src).name

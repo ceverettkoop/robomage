@@ -68,7 +68,7 @@ bool activation_condition_met(const Ability &ab, Zone::Ownership controller, con
 
 bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities) {
     if (!activation_condition_met(ab, controller, entities, source)) return false;
-    if (ab.def->tap_cost) {
+    if (ab.def->cost.taps()) {
         if (!global_coordinator.entity_has_component<Permanent>(source)) return false;
         if (global_coordinator.GetComponent<Permanent>(source).is_tapped) return false;
         if (is_summoning_sick(source)) return false;

@@ -150,7 +150,7 @@ void dump_entity(Entity e) {
                 owner_str(a.controller));
         fprintf(stderr, "    amount=%zu  color=%s\n", a.def->amount, mana_symbol(a.color).c_str());
         fprintf(stderr, "    valid_tgts=%s  tap_cost=%d  sac_self=%d  life_cost=%d\n",
-                a.def->valid_tgts.text().c_str(), a.def->tap_cost, a.def->sac_self, a.def->life_cost);
+                a.def->valid_tgts.text().c_str(), a.def->cost.taps(), a.def->cost.self(CostPart::SACRIFICE), a.def->cost.life());
         fprintf(stderr, "    subabilities: %zu\n", a.subabilities.size());
     }
 

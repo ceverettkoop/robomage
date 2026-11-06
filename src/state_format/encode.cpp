@@ -492,7 +492,7 @@ static void write_card_abilities(
             if (a.def) {
                 const CardData *face = cd && a.face == rmstate::Face::BACK && cd->backside ? cd->backside.get() : cd;
                 r.u8(static_cast<uint64_t>(a.def->kind)).text(a.def->ref_key).text(cost_text(a.def->script_line));
-                r.u8(a.def->tap_cost ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
+                r.u8(a.def->cost.taps() ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
                 r.u8(u8_count(a.def->activation_limit)).text(a.def->script_line);
             } else {
                 const uint32_t line = a.stat ? a.stat->script_line : a.repl->script_line;

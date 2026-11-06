@@ -210,24 +210,24 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
     if (!cost.empty() &&
         !can_pay_mana(activator, cost, ManaPayee(source, ManaPurpose::ACTIVATE), orderer, /*has_delve=*/false,
-                      /*has_improvise=*/false, /*exclude_entity=*/ab.def->tap_cost ? source : 0,
-                      /*life_reserve=*/ab.def->life_cost))
+                      /*has_improvise=*/false, /*exclude_entity=*/ab.def->cost.taps() ? source : 0,
+                      /*life_reserve=*/ab.def->cost.life()))
         return false;
     const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
     // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-    if (ab.def->energy_cost > 0 && player_energy(player) < ab.def->energy_cost) return false;
+    if (ab.def->cost.energy() > 0 && player_energy(player) < ab.def->cost.energy()) return false;
     // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A fetch land
     // (Pay 1 life) at 1 life is still legal (you pay down to 0, then die); only an ability
     // costing MORE life than you have is filtered out here.
-    if (!can_pay_life(player, ab.def->life_cost)) return false;
+    if (!can_pay_life(player, ab.def->cost.life())) return false;
     // sac_cost_spec: require controller has a permanent matching type (honouring a .Other
     // self-exclusion against the ability's source — "another creature").
-    if (!ab.def->sac_cost_spec.empty() &&
-        controlled_permanents_matching(activator, ab.def->sac_cost_spec, orderer->mEntities, source).empty())
+    if (!ab.def->cost.filter(CostPart::SACRIFICE).empty() &&
+        controlled_permanents_matching(activator, ab.def->cost.filter(CostPart::SACRIFICE), orderer->mEntities, source).empty())
         return false;
     // Return cost: require controller has a land of given subtype
-    if (!ab.def->return_cost_type.empty() &&
-        controlled_permanents_matching(activator, ab.def->return_cost_type, orderer->mEntities).empty())
+    if (!ab.def->cost.filter(CostPart::RETURN).empty() &&
+        controlled_permanents_matching(activator, ab.def->cost.filter(CostPart::RETURN), orderer->mEntities).empty())
         return false;
     // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
     // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
@@ -364,10 +364,10 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 // effect category.
 static std::string loyalty_cost_label(const Ability &ab) {
     if (!ab.def->is_loyalty_ability) return "";
-    if (ab.def->loyalty_cost_is_x) return ab.def->loyalty_cost < 0 ? " [-X]" : " [+X]";
-    if (ab.def->loyalty_cost == 0) return " [0]";
-    int magnitude = ab.def->loyalty_cost < 0 ? -ab.def->loyalty_cost : ab.def->loyalty_cost;
-    std::string sign = ab.def->loyalty_cost < 0 ? "-" : "+";
+    if (ab.def->cost.loyalty_is_x()) return ab.def->cost.loyalty() < 0 ? " [-X]" : " [+X]";
+    if (ab.def->cost.loyalty() == 0) return " [0]";
+    int magnitude = ab.def->cost.loyalty() < 0 ? -ab.def->cost.loyalty() : ab.def->cost.loyalty();
+    std::string sign = ab.def->cost.loyalty() < 0 ? "-" : "+";
     return " [" + sign + std::to_string(magnitude) + "]";
 }
 
@@ -1039,8 +1039,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
                 // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
-                if (!ab.def->loyalty_cost_is_x && ab.def->loyalty_cost < 0 &&
-                    get_counters(entity, "LOYALTY") < -ab.def->loyalty_cost) continue;
+                if (!ab.def->cost.loyalty_is_x() && ab.def->cost.loyalty() < 0 &&
+                    get_counters(entity, "LOYALTY") < -ab.def->cost.loyalty()) continue;
             }
             // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
             // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve

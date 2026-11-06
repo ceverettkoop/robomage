@@ -1264,7 +1264,7 @@ void StateManager::apply_land_abilities(Entity entity) {
                 d.category = "AddMana";
                 d.color = required_color;
                 d.amount = 1;
-                d.tap_cost = true;
+                d.cost.add(CostPart::of(CostPart::TAP));
                 d.subtype_derived = true;
                 return d;
             }));

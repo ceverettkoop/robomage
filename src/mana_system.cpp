@@ -156,10 +156,10 @@ void empty_mana_pool(Zone::Ownership player_owner) {
 // the affordability gate and the payment so the two never diverge.
 ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
                                          std::shared_ptr<Orderer> orderer) {
-    if (ab.def->reduce_cost_expr.empty()) return ab.def->activation_mana_cost;
+    if (ab.def->reduce_cost_expr.empty()) return ab.def->cost.mana();
     size_t reduction = evaluate_amount(ab.def->reduce_cost_expr, controller, 0, ab.target.get());
-    if (reduction == 0) return ab.def->activation_mana_cost;
-    ManaValue cost = ab.def->activation_mana_cost;
+    if (reduction == 0) return ab.def->cost.mana();
+    ManaValue cost = ab.def->cost.mana();
     // Remove up to `reduction` generic ({1}) symbols; never below zero, never a colored pip.
     auto it = cost.find(GENERIC);
     while (reduction > 0 && it != cost.end()) {
@@ -335,7 +335,7 @@ static bool mana_ability_available_now(Entity e, const Ability &ab, Zone::Owners
 
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
-// summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
+// summoning sickness, activation limits) but NOT the ability's mana cost — callers handle that
 // to avoid circularity with can_afford_with_sources.
 static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
     Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false,
@@ -442,9 +442,9 @@ std::vector<LegalAction> collect_mana_legal_actions(
         // hide a source whose spending restriction doesn't match the spell being paid for.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         // Sources with activation mana cost: check affordability
-        if (!ab.def->activation_mana_cost.empty()) {
-            Entity exclude = ab.def->tap_cost ? entity : 0;
-            if (!can_afford_with_sources(player, ab.def->activation_mana_cost, orderer, exclude))
+        if (!ab.def->cost.mana().empty()) {
+            Entity exclude = ab.def->cost.taps() ? entity : 0;
+            if (!can_afford_with_sources(player, ab.def->cost.mana(), orderer, exclude))
                 continue;
         }
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
@@ -487,7 +487,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     for (auto &[entity, ab] : sources) {
         if (entity == exclude_entity) continue;
         if (counted_entities.count(entity)) continue;
-        if (!ab.def->activation_mana_cost.empty()) continue;
+        if (!ab.def->cost.mana().empty()) continue;
         size_t amount = eval_mana_amount(ab, player_owner);
         // A permanent can only be tapped once, so when it offers several same-color mana
         // abilities of differing yield (Eldrazi Temple: {C} vs {C}{C}), the player picks the
@@ -495,7 +495,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         // same-color abilities so affordability reflects the best single activation.
         for (auto &[e2, ab2] : sources) {
             if (e2 != entity || &ab2 == &ab) continue;
-            if (!ab2.def->activation_mana_cost.empty()) continue;
+            if (!ab2.def->cost.mana().empty()) continue;
             if (ab2.color != ab.color) continue;
             amount = std::max(amount, eval_mana_amount(ab2, player_owner));
         }
@@ -525,11 +525,11 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     for (auto &[entity, ab] : sources) {
         if (entity == exclude_entity) continue;
         if (counted_entities.count(entity)) continue;
-        if (ab.def->activation_mana_cost.empty()) continue;
+        if (ab.def->cost.mana().empty()) continue;
         // Build pool snapshot to check activation affordability
         auto check_pool = hypothetical;
         for (size_t i = 0; i < flexible_count; i++) check_pool.insert(GENERIC);
-        if (!can_afford_pool(check_pool, ab.def->activation_mana_cost)) continue;
+        if (!can_afford_pool(check_pool, ab.def->cost.mana())) continue;
         size_t amount = eval_mana_amount(ab, player_owner);
         bool is_multi_color = false;
         for (auto &[e2, ab2] : sources) {
@@ -544,13 +544,13 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
             for (size_t i = 0; i < amount; i++) hypothetical.insert(ab.color);
         }
         // Subtract the activation cost from the hypothetical pool
-        for (auto c : ab.def->activation_mana_cost) {
+        for (auto c : ab.def->cost.mana()) {
             if (c == GENERIC) continue;
             auto it = hypothetical.find(c);
             if (it != hypothetical.end()) hypothetical.erase(it);
             else if (flexible_count > 0) flexible_count--;
         }
-        size_t generic_activation = ab.def->activation_mana_cost.count(GENERIC);
+        size_t generic_activation = ab.def->cost.mana().count(GENERIC);
         for (size_t i = 0; i < generic_activation; i++) {
             if (!hypothetical.empty()) {
                 hypothetical.erase(hypothetical.begin());
@@ -599,7 +599,7 @@ size_t max_available_mana(Zone::Ownership player_owner, const ManaValue &base_co
     std::set<Entity> counted;
     auto sources = collect_available_mana_sources(player_owner, orderer);
     for (auto &[entity, ab] : sources) {
-        if (entity == exclude_entity && ab.def->tap_cost) continue;  // its tap is the ability's own cost
+        if (entity == exclude_entity && ab.def->cost.taps()) continue;  // its tap is the ability's own cost
         if (counted.count(entity)) continue;
         total += eval_mana_amount(ab, player_owner);
         counted.insert(entity);
@@ -753,8 +753,8 @@ void increment_activation_count(Permanent &perm, const Ability &ability) {
         if (perm_ab.def->kind != ability.def->kind) continue;
         // Mana abilities are keyed by tap/color; other activated abilities by return cost.
         bool match = (ability.def->kind == EffectKind::AddMana)
-                         ? (perm_ab.def->tap_cost == ability.def->tap_cost && perm_ab.color == ability.color)
-                         : (perm_ab.def->return_cost_type == ability.def->return_cost_type);
+                         ? (perm_ab.def->cost.taps() == ability.def->cost.taps() && perm_ab.color == ability.color)
+                         : (perm_ab.def->cost.filter(CostPart::RETURN) == ability.def->cost.filter(CostPart::RETURN));
         if (match) {
             perm_ab.activations_this_turn++;
             break;
@@ -835,26 +835,26 @@ bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership cont
     auto &perm = global_coordinator.GetComponent<Permanent>(source);
     // A life cost the player can't pay (CR 119.4) refuses the activation before any effect.
     if (!mana_ability_life_payable(player, controller, ab, life_reserve)) return false;
-    if (!ab.def->activation_mana_cost.empty()) {
+    if (!ab.def->cost.mana().empty()) {
         // pay_from_pool returns the unpayable remainder and drains the pool even on a
         // partial payment, so snapshot the pool and restore it when the cost bounces.
         ManaValue pool_before = pool;
-        ManaValue unpaid = pay_from_pool(pool, ab.def->activation_mana_cost);
+        ManaValue unpaid = pay_from_pool(pool, ab.def->cost.mana());
         if (!unpaid.empty()) {
             pool = pool_before;
             return false;
         }
     }
-    if (commit && ab.def->tap_cost) perm.is_tapped = true;
-    if (commit && ab.def->sac_self) {
+    if (commit && ab.def->cost.taps()) perm.is_tapped = true;
+    if (commit && ab.def->cost.self(CostPart::SACRIFICE)) {
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
         orderer->add_to_zone(false, source, Zone::GRAVEYARD);
     }
     // Paid on the working player in both modes: a simulated payment (auto_pay_mana_attempt)
     // pays from a copy, so a second life-costing source sees the life already spent.
-    if (ab.def->life_cost > 0) {
-        pay_life(player, ab.def->life_cost);
-        if (commit) game_log("%s pays %d life\n", player_name(controller).c_str(), ab.def->life_cost);
+    if (ab.def->cost.life() > 0) {
+        pay_life(player, ab.def->cost.life());
+        if (commit) game_log("%s pays %d life\n", player_name(controller).c_str(), ab.def->cost.life());
     }
     produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);
     return true;
@@ -910,7 +910,7 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 // 2 damage to you", a DealDamage sub-ability with Defined$ You). Derived from the ability's
 // structure, not a card-name list, so any pain source scripted the same way is covered.
 static bool mana_ability_is_painful(const Ability &ab) {
-    if (ab.def->life_cost > 0) return true;
+    if (ab.def->cost.life() > 0) return true;
     for (const auto &sub : ab.subabilities)
         if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) &&
             sub.def->defined.is(ObjectSpec::YOU))
@@ -925,7 +925,7 @@ static bool mana_ability_is_painful(const Ability &ab) {
 // if a planeswalker ever taps for mana — also a "save it for its other ability" case.
 // See forward declaration at top of file.
 static int mana_ability_life_loss(const Ability &ab) {
-    int loss = ab.def->life_cost;
+    int loss = ab.def->cost.life();
     for (const auto &sub : ab.subabilities)
         if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) &&
             sub.def->defined.is(ObjectSpec::YOU))
@@ -943,14 +943,14 @@ static int life_reserved_for_pending_payment(Zone::Ownership seat) {
     const auto &pa = cur_game.pending.activation;
     if (pa.active && pa.activator_is_a == seat_is_a &&
         pa.step < Game::PendingActivation::PAY_APPLY)
-        return pa.ability.def->life_cost;
+        return pa.ability.def->cost.life();
     return 0;
 }
 
 // See forward declaration at top of file.
 static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab,
                                       int life_reserve) {
-    if (!can_pay_life(pl, ab.def->life_cost)) return false;
+    if (!can_pay_life(pl, ab.def->cost.life())) return false;
     int loss = mana_ability_life_loss(ab);
     int reserve = std::max(life_reserve, life_reserved_for_pending_payment(seat));
     return loss <= 0 || pl.life_total - loss >= reserve;
@@ -1105,12 +1105,12 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         // permanent's TAP-requiring mana abilities are already spoken for. A mana ability
         // on the same permanent that needs no tap is still usable, so scope the exclusion
         // to the tap (see can_pay_mana's exclude_entity).
-        if (entity == exclude_entity && ab.def->tap_cost) continue;
+        if (entity == exclude_entity && ab.def->cost.taps()) continue;
         // Restricted mana check (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
         // same gate as collect_mana_legal_actions so a listed source is always spendable here.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
-        if (!ab.def->activation_mana_cost.empty()) {
-            if (!can_afford_with_sources(controller, ab.def->activation_mana_cost, orderer, ab.def->tap_cost ? entity : 0))
+        if (!ab.def->cost.mana().empty()) {
+            if (!can_afford_with_sources(controller, ab.def->cost.mana(), orderer, ab.def->cost.taps() ? entity : 0))
                 continue;
         }
         bool is_multi = false;
@@ -1213,7 +1213,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // then paid inside activate_mana_source. This preserves the invariant that total mana
     // produced minus activation costs paid equals the amount credited toward `remaining`.
     auto cover_activation_cost = [&](const SourceInfo &si) -> bool {
-        const ManaValue &act = si.ability.def->activation_mana_cost;
+        const ManaValue &act = si.ability.def->cost.mana();
         if (act.empty() || can_afford_pool(pool, act)) return true;
         ManaValue trial = pool;
         std::set<Entity> planned = tapped_entities;
@@ -1235,7 +1235,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                     auto &cand = valid_sources[i];
                     if (planned.count(cand.entity)) continue;
                     // Payers must themselves be cost-free — no recursive cost chains.
-                    if (!cand.ability.def->activation_mana_cost.empty()) continue;
+                    if (!cand.ability.def->cost.mana().empty()) continue;
                     if (pass == 0 && mana_ability_is_painful(cand.ability)) continue;
                     if (pip != GENERIC && !any_color && cand.color != pip) continue;
                     size_t amt = eval_mana_amount(cand.ability, controller);
@@ -1258,12 +1258,12 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 
     // Cost-bearing sources net less mana than they produce (their activation cost consumes
     // other sources' output), so every priority tier below prefers cost-free candidates.
-    auto cost_free = [](const SourceInfo &s) { return s.ability.def->activation_mana_cost.empty(); };
+    auto cost_free = [](const SourceInfo &s) { return s.ability.def->cost.mana().empty(); };
 
     // Life is a resource too: a painful source (Ancient Tomb's self-damage rider, a pain
     // land's PayLife cost) is engaged only when the cost cannot be covered painlessly —
     // every regular tier below requires painless, and painful sources sit in their own
-    // tier just above the sac_self last resort. Efficiency (Tomb's 2-for-1 tap) never
+    // tier just above the self-sacrifice last resort. Efficiency (Tomb's 2-for-1 tap) never
     // outranks life; only necessity (no painless way to finish the payment, including a
     // colored pip only a painful source produces) does.
     auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
@@ -1358,13 +1358,13 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_source([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_source([&](const SourceInfo &s) { return !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_source([](const SourceInfo &s) { return !s.ability.def->sac_self; })) continue;  // painful, if needed
-        if (try_source([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        if (try_source([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_source([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
+        if (try_source([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
         return false;
     }
 
@@ -1397,11 +1397,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             }
             return false;
         };
-        if (try_generic([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_generic([&](const SourceInfo &s) { return !s.ability.def->sac_self && painless(s); })) continue;
-        if (try_generic([](const SourceInfo &s) { return !s.ability.def->sac_self; })) continue;  // painful, if needed
-        if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        if (try_generic([&](const SourceInfo &s) { return s.ability.def->adds_no_counter && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
+        if (try_generic([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
+        if (try_generic([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
         // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
         // Tried after mana sources so colored pips (paid above) keep their producers; an
         // artifact already tapped for mana is excluded via tapped_entities.
@@ -1463,9 +1463,9 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
     for (auto &[entity, ab] : collect_available_mana_sources(controller, orderer)) {
         if (entity != leaving) continue;
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
-        if (!ab.def->activation_mana_cost.empty()) continue;
-        if (ab.def->sac_self || ab.def->discard_hand_cost || ab.def->discard_self_cost ||
-            ab.def->return_cost_count > 0)
+        if (!ab.def->cost.mana().empty()) continue;
+        if (ab.def->cost.self(CostPart::SACRIFICE) || ab.def->cost.discards_hand() || ab.def->cost.self(CostPart::DISCARD) ||
+            ab.def->cost.count(CostPart::RETURN) > 0)
             continue;
         candidates.push_back(ab);
     }
@@ -1609,7 +1609,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             // A cost-bearing source (Talon Gates' {1}{T}) is offered only while the pool covers
             // its activation cost, so every offered row makes progress and an agent that keeps
             // picking the same row can't spin here.
-            if (!can_afford_pool(player.mana, la.ability.def->activation_mana_cost)) continue;
+            if (!can_afford_pool(player.mana, la.ability.def->cost.mana())) continue;
             la.category = ActionCategory::PAYING_COSTS;
             pay_actions.push_back(la);
         }

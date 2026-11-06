@@ -226,8 +226,8 @@ bool run_unless_loop(
         unless_actions.erase(
             std::remove_if(unless_actions.begin(), unless_actions.end(),
                 [&](const LegalAction &la) {
-                    return !la.ability.def->activation_mana_cost.empty() &&
-                           !can_afford(controller, la.ability.def->activation_mana_cost);
+                    return !la.ability.def->cost.mana().empty() &&
+                           !can_afford(controller, la.ability.def->cost.mana());
                 }),
             unless_actions.end());
 
@@ -265,7 +265,7 @@ bool run_unless_loop(
             // cost-bearing source's activation cost (Talon Gates' {1}{T}) from the pool —
             // refusing cleanly (no tap, no mana) while the pool can't cover it, so the
             // re-prompt lets the player float mana from a cost-free source first — and
-            // applies the full mana-ability semantics: tap only tap-cost sources, sac_self
+            // applies the full mana-ability semantics: tap only tap-cost sources, a self-sacrifice
             // (Lotus Petal), life costs, dynamic amounts, SubAbility$ riders (Ancient
             // Tomb's damage), ProduceMana replacements, and activation counters.
             if (!activate_mana_source(land, chosen.ability, controller, orderer, pl.mana, pl,
