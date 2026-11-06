@@ -725,6 +725,51 @@ carry units.
 **Test.** Rollback restores units; a rider survives payment across a suspension; the pool's frame stays
 identical for unrestricted mana, and restricted mana is distinguishable in the seat's frame.
 
+**Progress (2026-11-06).** Unit (a), the inert migration, and the two rules fixes it uncovered. Unit (b) is next.
+
+What moved. `Player::mana` is a `ManaPool` (`src/components/mana_unit.h`): `ManaUnit`s sorted by color, oldest first within one, so with nothing restricted it
+spends as the multiset did. A unit has its `color`, `source`, `riders` and `restriction`. `AbilityDef::mana_restriction` replaces the six `restrict_*` bools, and
+a chosen type is read off the source as the mana is made, then interned (`intern_mana_restriction`, append-only like the ability definitions), so it outlives the
+source and a snapshot holds a pointer. `ChosenCost::paid` is now `moved`; `ChosenCost::mana_paid` is the units that left the pool, in order. `mana_spent()`,
+`colors_spent()` (Converge), `mana_of_color` (Vibrance, through `EntryInfo` and `Permanent::cast_mana_paid` to last-known information) and `mana_from` are views of it.
+`s_mana_spent_sink`, `CostRun::spent_colors` and the `RECORD_MANA_SPENT` step are gone; the list is a parameter. `mana_snap` and the snapshot carry units with no
+further edit.
+
+Carrying the data alone changes nothing; reading it does, for vocab cards, so each read is a commit after the inert ones:
+
+| commit | fix | vocab cards that move | scenario, failing on the commit before |
+|---|---|---|---|
+| `Mana: floating mana keeps its restriction` | CR 106.6: a unit is spendable only on what its restriction allows, everywhere the pool pays or is counted; a mana ability's own cost is paid as an activation | Eldrazi Temple's surplus {C}; Cityscape Leveler's Powerstone floated at priority; Cavern of Souls and Secluded Courtyard under `--no-auto-mana` | `cr106_6_surplus_restricted_mana_keeps_its_restriction`, `cr106_6_floating_powerstone_mana_keeps_its_restriction`, `cr106_6_cancelled_payment_restores_restricted_mana` (the rollback) |
+| `Mana: a rider goes with the mana that carries it` | CR 106.6: the spell the mana is spent on, not the next one cast; `pending_cant_be_countered` is gone | Cavern of Souls under `--no-auto-mana` | `cr106_6_cavern_rider_goes_with_the_mana` (the rider across parked rows) |
+
+The pool has no choice of unit: `spendable_unit` takes restricted or rider mana first, else the pool's order (`docs/rules_deviations.md` §1.4).
+
+What stayed, and why. `Permanent::cast_mana_paid` is still filled only for a card that reads it (`spell_reads_colors_spent`), and the pool's frame is colors only: both move
+frames. Simian Spirit Guide's mana is still unseen by the payer: a behaviour change. `adds_no_counter` stays on the definition, for the auto-payer's preference. An activation
+or a trigger records no list: nothing reads one. `max_available_mana` still counts a restricted unit, a coarse bound whose overestimate the X menu's trial absorbs.
+`mana_source_affordable`'s estimate still asks as "no particular payment", so a mana ability's cost can't count mana restricted to activations of it; no card has both.
+`identical_activated_ability` now compares the Eldrazi restriction too, which it skipped; no two abilities differ only there.
+
+(b) must:
+
+- Let `collect_available_mana_sources`, the auto-payer and `can_pay_mana` see a hand mana ability (the unit's source already can be one), and close `docs/rules_deviations.md` §1.4's last sentence. Menus move.
+- Drop `spell_reads_colors_spent` from `record_cast_entry`, so `spent_w` to `spent_g` fill for every cast, and expect the frames and `make regen`.
+- Make restricted mana distinguishable in the seat's frame, the pool's frame unchanged for unrestricted mana: today a seat sees mana it can't spend as ordinary, and `pl.mana.size()` in the player row counts it. Schema, encoder, `make registry`, `docs/state_format.md`.
+- Give `ManaFromCard` a reader: `mana_from` has none yet, and `ValidSA$ Spell.ManaFromCard.StrictlySelf` is unparsed. `Count$CastTotalManaSpent` (Mockingbird) is `mana_spent()` and needs its row.
+- Riders are a bit each, which `AddsKeywords` outgrows: it needs a keyword and a duration, so the field becomes a pointer to interned data, as `restriction` is.
+- `S:Mode$ ManaRestriction` (Hogaak) restricts the spell, not the mana: a check of each unit's `source` against the spell in `unit_spendable_on`, so `source` must then be stamped in a simulated payment too (it is empty there).
+- Sunburst reads `colors_of` at entry, so it needs the entry's list whatever `spell_reads_colors_spent` says. `ManaConvert` (Agatha's Soul Cauldron) goes through `spendable_unit`'s `NO_COLOR` read as Mycosynth Lattice does.
+
+Evidence. Inert tip `bd862230` against the starting commit, release builds, 22 decks over all 484 ordered pairs: 3,200 games each of bo1, `explore:patient` bo3 and
+`--no-auto-mana`, under `--narrative --trace-decisions`, 5.5 GB byte-identical (Cavern of Souls tapped 9,247 times, Eldrazi Temple 4,330, Secluded Courtyard 4,046, Vibrance cast 789, Prismatic
+Ending 905); `--rmstate-dump` frames of 300 games, 2.1 GB identical; 120 random-agent games under `--offer-cancel` identical; 240 games under `--selfcheck-state`, no error; `make registry`
+a no-op, `--parse-report @vocab` and `--cards-frame` identical, `tests/corpus`, `tests/cli` and `src/featurize` untouched. No game has a Powerstone or Abundant Countryside: the token is proved by scenario.
+Release bench, median of 9 alternating runs, the actor loop: 2,476 decisions/s before, 2,480 at the inert tip; 2,481 before, 2,474 after the fixes (0.3%, inside the runs' spread); engine alone
+136 us either way.
+
+The fixes against the inert tip, the same 9,600: floating restriction moves 24 games (4 bo1, 16 `explore:patient`, 4 `--no-auto-mana`), 23 with `eldrazi_aggro`. Every first difference read: 22 follow a Temple's {C}{C} that turn, the other two a Cavern's or Courtyard's mana floating under `--no-auto-mana`. The rider moves none, so it rests on its scenario. After both, 240 games under `--selfcheck-state`, no error. `tests/corpus` and `tests/cli` never moved, so no `make regen`.
+The `actor` tier's torch part was skipped, as it is without `$ROBOMAGE_TORCH_PYTHON`: `robomage_nn` was not rebuilt.
+
 ### M7. Cast options (XL)
 
 **Today.** Separate loops for hand, faces, flashback, escape, graveyard and exile grants; `LegalAction`
