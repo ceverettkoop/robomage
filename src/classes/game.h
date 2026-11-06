@@ -297,7 +297,6 @@ struct Game {
         };
         // Per source object; a new object (CR 400.7) starts with none. Cleared each turn.
         ObjectMap<std::vector<LimitedResolution>> limited_resolution_counts;
-        bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         // The persisted resolve() continuation of the resolving spell or ability
         // (resolution_frame.h): a resolution that parked a decision resumes from it.
         ResolutionFrame resolution;

@@ -79,8 +79,8 @@ enum class ManaLogStyle {
 // The production half of a mana-ability activation, assuming ALL costs are already
 // paid: evaluate the produced amount (dynamic amounts included), apply ProduceMana
 // replacement effects, add the mana to `pool`, resolve TapsForMana mana-additional
-// triggers, set the uncounterable flag for adds_no_counter sources, log (commit only),
-// resolve SubAbility$ riders (commit only), and bump the activation counter.
+// triggers, log (commit only), resolve SubAbility$ riders (commit only), and bump the
+// activation counter.
 // Replacements and triggers run in simulate mode (!commit) too, so affordability
 // (can_pay_mana) and the real payment always agree on the mana produced.
 void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership controller,

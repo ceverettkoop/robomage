@@ -1716,9 +1716,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (is_mana_ability) {
                 // Costs were already paid above (PAY_COSTS). The shared production core handles the rest: amount eval
                 // (dynamic amounts like Gaea's Cradle / Urza's Workshop), ProduceMana
-                // replacement, pool insert, TapsForMana triggers, uncounterability flag,
-                // narrative, SubAbility$ riders (Ancient Tomb's damage), and the activation
-                // counter.
+                // replacement, pool insert, TapsForMana triggers, narrative, SubAbility$ riders
+                // (Ancient Tomb's damage), and the activation counter.
                 auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
                 produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
                                           /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
@@ -2410,10 +2409,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 else if (card_data.alt_cost.is_warp) pc.chosen.mode = ChosenCost::Mode::WARP;
             }
             spell.chosen = pc.chosen;
-            if (cur_game.pending_cant_be_countered) {
-                spell.cant_be_countered = true;
-                cur_game.pending_cant_be_countered = false;
-            }
+            // Mana spent on it may say it can't be countered (Cavern of Souls).
+            if (mana_carried(pc.chosen.mana_paid, MANA_RIDER_CANT_BE_COUNTERED)) spell.cant_be_countered = true;
             // Check card's own replacement effects for "can't be countered" (Long Goodbye).
             // Only the UNCONDITIONAL SELF form ("This spell can't be countered") stamps the spell
             // at cast; the battlefield form (Hexing Squelcher's "Spells you control can't be

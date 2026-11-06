@@ -25,6 +25,10 @@ size_t mana_from(const ManaPaid &paid, Entity source) {
         paid.begin(), paid.end(), [source](const ManaUnit &unit) { return unit.source.lki_entity() == source; }));
 }
 
+bool mana_carried(const ManaPaid &paid, ManaRider rider) {
+    return std::any_of(paid.begin(), paid.end(), [rider](const ManaUnit &unit) { return (unit.riders & rider) != 0; });
+}
+
 size_t ManaPool::count(Colors color) const {
     return static_cast<size_t>(std::count_if(
         units.begin(), units.end(), [color](const ManaUnit &unit) { return unit.color == color; }));

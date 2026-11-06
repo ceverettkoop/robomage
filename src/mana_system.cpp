@@ -733,7 +733,6 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
             permanent.abilities[idx].activations_this_turn = old_count;
         }
     }
-    cur_game.pending_cant_be_countered = false;
 }
 
 // The single "pay colored pips first, then generic from any remaining mana" primitive.
@@ -883,7 +882,6 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
     // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
     // emitted only on the real activation (commit).
     if (perm) fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
-    if (commit && ab.def->adds_no_counter) cur_game.pending_cant_be_countered = true;
     if (commit && !perm) {
         game_log("%s adds %zu(%s)\n", player_name(controller).c_str(), amount, mana_symbol_str(produced_color));
     } else if (commit) {
@@ -1070,7 +1068,7 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // instants/sorceries to reduce generic costs first.
 //
 // When commit==false the write-only side effects (tap, sacrifice, life payment, delve
-// zone moves, activation counters, uncounterable flag) are skipped. None of these are
+// zone moves, activation counters) are skipped. None of these are
 // re-read to drive the payment decision — reuse is gated by the local `tapped_entities`
 // set — so the decision sequence is identical to a real payment.
 // The greedy payer runs pain-averse by default: painless sources engage before painful

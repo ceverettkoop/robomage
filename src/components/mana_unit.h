@@ -71,6 +71,9 @@ std::set<Colors> colors_of(const ManaPaid &paid);
 // moving, so a source that spent itself to make the mana still counts.
 size_t mana_from(const ManaPaid &paid, Entity source);
 
+// Did any of it carry `rider`?
+bool mana_carried(const ManaPaid &paid, ManaRider rider);
+
 // A player's mana pool (CR 106.4), or the copy a simulated payment works on. Its units stay in Colors
 // order, oldest first within a color: what the pool spends first is what a multiset of colors would.
 class ManaPool {
