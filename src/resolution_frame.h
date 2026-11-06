@@ -117,15 +117,15 @@ struct ChangeZoneSearchRt {
 // ── Batch 7: live-menu loops (Shape C) ──────────────────────────────────────
 // change_zone's Defined$ Remembered bounded/optional selection (Cloak and
 // Dagger's DBChangeZone: "you may exile up to one of the remembered
-// candidates"): the candidate pool — and hence the menu — is rebuilt from the
-// remembered set's CURRENT zones at every arm and every consume (a card
-// already exiled left the eligible zones), so only the count of picks already
-// made persists; it caps the remaining picks after a resume. The other two
-// Shape C loops (change_zone's Yorion battlefield multi-select and
-// run_unless_loop's MANA kind) persist nothing at all: their loops carry no
-// counter — every pass is fully re-derived from live components (battlefield
-// contents / floated mana), so a resume just rebuilds the identical menu.
-struct ChangeZoneRememberedRt {
+// candidates") and its battlefield multi-select (Yorion, Temur Sabertooth): the
+// candidate pool — and hence the menu — is rebuilt from the remembered set's
+// or the battlefield's CURRENT contents at every arm and every consume (a card
+// already moved left the eligible zones), so only the count of picks already
+// made persists; it caps the remaining picks after a resume. The other Shape C
+// loop (run_unless_loop's MANA kind) persists nothing at all: it carries no
+// counter — every pass is fully re-derived from floated mana, so a resume just
+// rebuilds the identical menu.
+struct ChangeZonePicksRt {
     int picked = 0;               // picks completed so far (bounds the cap)
 };
 // ── Shared target-selection sub-machine (Batch 5) ───────────────────────────
@@ -257,7 +257,7 @@ struct ResolutionCastRt {
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
-                                   ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
+                                   ChangeZonePicksRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
                                    ResolutionCastRt, RepeatLoopRt>;
 

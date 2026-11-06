@@ -55,6 +55,13 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
                                                FrameCtx &fctx);
 // The one object `ab`'s Defined$ names, or 0 when it is gone (CR 400.7).
 static Entity defined_object(const Ability &ab);
+// The words a battlefield multi-select's menu and log use for moving a pick to `destination`.
+struct PickVerb {
+    const char *imperative;
+    const char *bare;
+    const char *third_person;
+};
+static PickVerb battlefield_pick_verb(Zone::ZoneValue destination);
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
@@ -236,6 +243,13 @@ static bool search_reveals_card(const Ability &ab) {
     }
     bool specific_type = !ab.def->change_type.empty() && ab.def->change_type != "Card";
     return from_hidden && specific_type;
+}
+
+// See forward declaration at top of file.
+static PickVerb battlefield_pick_verb(Zone::ZoneValue destination) {
+    if (destination == Zone::HAND) return {"Return", "return", "returns"};
+    if (destination == Zone::EXILE) return {"Exile", "exile", "exiles"};
+    return {"Move", "move", "moves"};
 }
 
 // See forward declaration at top of file.
@@ -576,9 +590,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // is what maps the latched answer back to an entity; ask's size assert
         // guards drift). The asks are seated on the controller through
         // fctx.ask, replacing the old manual seat swap around the whole loop.
-        ChangeZoneRememberedRt local_rt;
-        ChangeZoneRememberedRt &rt =
-            fctx.can_suspend() ? fctx.rt<ChangeZoneRememberedRt>() : local_rt;
+        ChangeZonePicksRt local_rt;
+        ChangeZonePicksRt &rt = fctx.can_suspend() ? fctx.rt<ChangeZonePicksRt>() : local_rt;
         for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
@@ -687,27 +700,31 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
 
     // Non-targeted player-driven battlefield multi-select (Yorion, Sky Nomad's blink: "exile any
-    // number of OTHER nonland permanents you own and control"). The ability has no ValidTgts$
-    // (selection is not targeting, CR 701.x) — it filters the battlefield by ChangeType$ and lets
-    // the controller pick how many to move. ChangeNum$ X here is just Count$ of the matching set
-    // ("any number"), so the cap is effectively "all matching": re-derive candidates after each
-    // pick and offer a "done" to stop early. RememberChanged$ records the moved cards for a paired
-    // delayed-return SubAbility (DelTrig → return at the next end step). Distinct from the
-    // empty-filter self-move branch above and from ChangeZoneAll (which moves the whole set with no
-    // choice).
+    // number of OTHER nonland permanents you own and control"; Temur Sabertooth: "you may return
+    // another creature you control"). The ability has no ValidTgts$ (selection is not targeting,
+    // CR 701.x) — it filters the battlefield by ChangeType$ and lets the controller pick how many
+    // to move. A numeric ChangeNum$ caps the picks; a count-SVar ChangeNum$ X is just Count$ of the
+    // matching set ("any number"), so the cap is effectively "all matching": re-derive candidates
+    // after each pick and offer a "done" to stop early. RememberChanged$ records the moved cards
+    // for a later instruction (Yorion's DelTrig → return at the next end step, Sabertooth's "if you
+    // do"). Distinct from the empty-filter self-move branch above and from ChangeZoneAll (which
+    // moves the whole set with no choice).
     if (ab.def->origin == Zone::BATTLEFIELD && !ab.def->change_type.empty()) {
         MatchCtx ctx;
         ctx.controller = owner;
         ctx.source = ab.source.lki_entity();
-        // Live-menu loop (Shape C) with no persisted progress at all: the
+        // Live-menu loop (Shape C): only the pick counter persists. The
         // candidate pool is the live battlefield filtered by ChangeType$, so
         // every pass — arm, consume, and post-pick re-arm alike — re-derives it
-        // from components (each exile removes its pick; the loop runs until
-        // "done" or the pool empties). The consume-side rebuild maps the
-        // latched answer back to an entity; ask's size assert guards drift.
+        // from components (each move removes its pick; the loop runs until
+        // the cap, "done" or the pool empties). The consume-side rebuild maps
+        // the latched answer back to an entity; ask's size assert guards drift.
         // Asks are seated on `owner` (the selecting player) through fctx.ask,
         // replacing the old manual seat swap around the whole loop.
-        while (true) {
+        const PickVerb verb = battlefield_pick_verb(ab.def->destination);
+        ChangeZonePicksRt local_rt;
+        ChangeZonePicksRt &rt = fctx.can_suspend() ? fctx.rt<ChangeZonePicksRt>() : local_rt;
+        for (; ab.def->change_num < 0 || rt.picked < ab.def->change_num; rt.picked++) {
             std::vector<Entity> cands;
             for (auto e : battlefield_permanents(orderer->mEntities)) {
                 if (permanent_matches_filter(e, ab.def->change_type, ctx)) cands.push_back(e);
@@ -717,12 +734,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             for (auto e : cands) {
                 // A token among the candidates (e.g. an Orc Army you control when Yorion blinks)
                 // has no CardData — name it from its Permanent instead of crashing.
-                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + object_display_name(e));
+                LegalAction la(PASS_PRIORITY, e, std::string(verb.imperative) + " " + object_display_name(e));
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
             }
-            LegalAction done(PASS_PRIORITY, "Done (exile no more)");
+            LegalAction done(PASS_PRIORITY, std::string("Done (") + verb.bare + " no more)");
             done.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(done);
             int choice = fctx.ask(std::move(picks), owner, ab.source.lki_entity());
@@ -732,7 +749,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             std::string cname = object_display_name(chosen);
             change_zone_move(orderer, FrameCtx::blocking(), ab, chosen, ab.def->destination);
             report_object(ab, EffectObjects::MOVED, chosen);
-            game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
+            game_log("%s %s %s\n", player_name(owner).c_str(), verb.third_person, cname.c_str());
         }
         return HandlerResult::DONE_RUN_SUBS;
     }
