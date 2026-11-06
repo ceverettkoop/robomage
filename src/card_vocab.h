@@ -302,6 +302,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Chaos Defiler", 379},
     {"Stronghold Gambit", 380},
     {"Temur Sabertooth", 381},
+    {"Burning Wish", 382},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

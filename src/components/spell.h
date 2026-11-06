@@ -52,6 +52,9 @@ struct Spell {
     // colors; its size is the Converge count, taken by the resolution frame as it resolves and read
     // by a Count$Converge amount/condition bound (Prismatic Ending). Empty for a free / no-mana cast.
     std::set<Colors> colors_spent;
+    // Where the spell goes when it finishes resolving (CR 608.2n): its graveyard, unless an
+    // instruction of its own moves it elsewhere (Burning Wish: "Exile Burning Wish").
+    Zone::ZoneValue resolves_to = Zone::GRAVEYARD;
 };
 
 #endif /* SPELL_H */

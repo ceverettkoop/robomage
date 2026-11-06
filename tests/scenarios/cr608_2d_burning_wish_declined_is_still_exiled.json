@@ -1,0 +1,46 @@
+{
+  "name": "cr608_2d_burning_wish_declined_is_still_exiled",
+  "why": "CR 608.2d, 608.2c: the \"may\" covers only the reveal, so a Burning Wish that fetches nothing is exiled all the same",
+  "hand_a": [
+    "Burning Wish",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "sideboard_a": [
+    "Reanimate"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Burning Wish",
+    "A:search:fail"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "^Player A fails to find",
+    "^Burning Wish is exiled"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

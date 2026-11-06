@@ -230,6 +230,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // rather than going to any zone. Capture before the Spell component is removed.
             bool was_copy = global_coordinator.entity_has_component<Spell>(top_entity) &&
                             global_coordinator.GetComponent<Spell>(top_entity).is_copy;
+            const Zone::ZoneValue resolves_to =
+                global_coordinator.entity_has_component<Spell>(top_entity)
+                    ? global_coordinator.GetComponent<Spell>(top_entity).resolves_to
+                    : Zone::GRAVEYARD;
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
                 game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
@@ -246,7 +250,8 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 orderer->add_to_zone(false, top_entity, Zone::EXILE);
                 game_log("%s is exiled (flashback)\n", card_data.name.c_str());
             } else {
-                orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
+                orderer->add_to_zone(false, top_entity, resolves_to);
+                if (resolves_to == Zone::EXILE) game_log("%s is exiled\n", card_data.name.c_str());
             }
         }
     }

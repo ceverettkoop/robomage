@@ -137,7 +137,7 @@ Two cards are recognised by a fingerprint of their script and handled by special
   - **CR** 608.2c, 608.2n
   - **Rules:** "Shuffle Green Sun's Zenith into its owner's library" is part of the spell's resolution: the script's `DB$ ChangeZone | Origin$ Stack | Destination$ Library | Shuffle$ True | Defined$ Parent` sub-ability moves the resolving spell itself.
   - **Engine:** any SVar containing `DB$ ChangeZone`, `Origin$ Stack`, `Destination$ Library` and `Defined$ Parent` sets `CardData::shuffle_into_library` and strips that sub-ability from the card's spell abilities. When the spell finishes resolving, the stack manager puts the card into its owner's library and shuffles, instead of putting it into the graveyard.
-  - **Effect:** none for Green Sun's Zenith. The proper fix is to support ChangeZone of the resolving spell itself from the stack (`Defined$ Parent`) as a step of its resolution, shuffling as the script says, then delete the flag and the strip.
+  - **Effect:** none for Green Sun's Zenith. The proper fix is to support ChangeZone of the resolving spell itself from the stack (`Defined$ Parent`) as a step of its resolution, shuffling as the script says, then delete the flag and the strip. `Spell::resolves_to` already carries a resolving spell's own destination (Burning Wish's bare `Origin$ Stack`), so what remains is reading `Defined$ Parent` and the shuffle.
   - **Code:** `src/parse.cpp`: `parse_card_face_body` (the fingerprint scan after `parse_abilities`); `src/systems/stack_manager.cpp`: the spell's final move in `resolve_top`.
 
 ### 2.8 Script params of vocab cards the parser does not read

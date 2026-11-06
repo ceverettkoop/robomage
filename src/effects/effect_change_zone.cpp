@@ -677,6 +677,17 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // Origin$ Stack with no target, no filter and no Defined$ (Burning Wish's "Exile Burning
+    // Wish"): the resolving spell moves itself. A spell is on the stack until its resolution ends
+    // (CR 608.2n), so this names where it then goes; a copy still ceases to exist (CR 707.10a).
+    if (ab.def->origin == Zone::STACK && ab.def->change_type.empty() &&
+        ab.def->defined.is(ObjectSpec::DEFAULT)) {
+        const Entity spell = ab.source.get();
+        if (spell != 0 && global_coordinator.entity_has_component<Spell>(spell))
+            global_coordinator.GetComponent<Spell>(spell).resolves_to = ab.def->destination;
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // A ChangeZone leaving the battlefield with no target and no search filter operates
     // on the ability's own source (Forge's Defined$ Self default; e.g. Ajani's TrigExile
     // exiles himself). With no filter there is nothing to search the battlefield for, so a
