@@ -14,6 +14,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
+#include "../queries/affected.h"
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
 #include "../resolution_memory.h"
@@ -24,6 +25,10 @@ extern Coordinator global_coordinator;
 extern Game cur_game;
 
 namespace effects {
+
+// What a Pump acts on: its chosen or inherited target, or the objects an untargeted Defined$ names
+// (Temur Sabertooth's Defined$ Self).
+static std::vector<Entity> pumped_objects(const Ability &ab);
 
 // Apply a single creature's "until end of turn" Pump: the +P/+T from `pump_att`/`pump_def`
 // and any granted keyword(s) in `pp->grant_keywords`. The bonus goes in the EOT bonus bucket
@@ -148,18 +153,28 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Entwined), which apply nothing.
     Zone::Ownership ctrl = ab.controller;
 
-    // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
-    // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
-    // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
-    if (ab.target.get() != 0) report_object(ab, EffectObjects::PUMPED, ab.target.get());
-    // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
-    // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
-    // evaluated now against the ability's controller.
     const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
-    int pump_att = 0, pump_def = 0;
-    resolve_pump_amounts(pp, ctrl, orderer, ab.target.get(), pump_att, pump_def);
-    apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
+    for (Entity pumped : pumped_objects(ab)) {
+        // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
+        // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
+        // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
+        report_object(ab, EffectObjects::PUMPED, pumped);
+        // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
+        // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
+        // evaluated now against the ability's controller.
+        int pump_att = 0, pump_def = 0;
+        resolve_pump_amounts(pp, ctrl, orderer, pumped, pump_att, pump_def);
+        apply_pump_to_creature(pumped, pump_att, pump_def, pp);
+    }
     return HandlerResult::DONE_RUN_SUBS;
+}
+
+// See forward declaration at top of namespace.
+static std::vector<Entity> pumped_objects(const Ability &ab) {
+    if (ab.def->valid_tgts == "N_A" && !ab.def->defined.is(ObjectSpec::DEFAULT))
+        return resolve_objects(ab.def->defined, ResolveCtx::of(ab));
+    if (Entity target = ab.target.get()) return {target};
+    return {};
 }
 
 // Parse a NumAtt$/NumDef$ value that is either a literal integer (e.g. "2", "-1")
