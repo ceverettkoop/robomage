@@ -595,12 +595,15 @@ Meld with one half missing; each new field across a snapshot.
 
 - Verify the 45 candidate cards that report clean, as scenarios, including the ones M1 reclassified. Defense
   Grid shows why this cannot be skipped.
+  Temur Sabertooth is one to check first: reading the ChangeZone branch it reaches, `ChangeNum$ 1` looks
+  unenforced, so it may return more than one creature. Not run, since the card is outside the vocab.
 - Finish the vocab, then run `onboard.py` stages 8–11 for every deck: checks, the fuzz campaign, designation,
   baseline. Run `death_and_taxes` and `uwx_control` here too; they need no engine work and can go earlier.
 - Designation needs the user: which decks go to `league/` and which to `heldout/`. At least one fair and one combo
   deck stay held out.
 - Fuzz all playable decks, `--matchups all --fuzz-games 100`, bo1 and `explore:patient`.
-- Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`.
+- Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`. Known so far: its
+  key files omit `src/resolution_memory.{h,cpp}`, and its `src/coverage` line omits the `row` kind.
 
 ## 6. Risks
 
