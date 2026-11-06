@@ -318,6 +318,12 @@ static const KeywordEntry kKeywordTable[] = {
          add_keyword_alt_cost(kw_line, "Miracle", &AltCost::is_miracle, ctx.card);
      }},
     {"Overload", KeywordEntry::PREFIX, kw_overload},
+    // K:Fuse (CR 702.102): a split card's two halves may be cast together from the hand.
+    {"Fuse", KeywordEntry::EXACT,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.has_fuse = true;
+         ctx.card.keywords.push_back("Fuse");
+     }},
     {"Chapter:", KeywordEntry::PREFIX, kw_chapter},
     // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
     {"Prowess", KeywordEntry::PREFIX,

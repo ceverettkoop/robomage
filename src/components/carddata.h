@@ -99,6 +99,11 @@ struct CardData{
     // half's characteristics are used while the spell is on the stack. Distinct from is_modal_dfc
     // so split cards never pick up MDFC permanent-entering logic.
     bool is_split = false;
+    // A split card's two halves as one object (CR 709.4): both names joined, the combined mana cost,
+    // both halves' types, keywords and abilities, the right half's spell ability following the
+    // left's. What it is in every zone but the stack, and on the stack when fused (CR 702.102b).
+    std::shared_ptr<const CardData> combined;
+    bool has_fuse = false;               // K:Fuse: both halves may be cast from the hand (CR 702.102a)
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     TapToPay tap_to_pay = TapToPay::NONE;  // K:Improvise — what may be tapped toward this spell's mana
     CostParts ward_cost;                 // K:Ward:N / K:Ward:PayLife<N> — opponent's spell/ability targeting this is countered unless they pay it (CR 702.21)

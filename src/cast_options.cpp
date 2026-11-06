@@ -106,6 +106,7 @@ static bool cast_from_exile(const CardData &card);
 static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions);
 static bool cast_from_front(const CardData &card);
 static bool cast_from_back(const CardData &front);
+static bool cast_fused(const CardData &front);
 static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc);
 static void enumerate_cast_options(Entity card, const CastSection &section, const CastWindow &window,
@@ -131,6 +132,11 @@ static const CastSection kCastSections[] = {
         {"back_face",       CastCost::MANA_COST,    false, 3, "",                      Zone::GRAVEYARD, mana_cost_offered},
         {"back_face_free",  CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"back_face_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
+    }},
+    // CR 702.102a: fuse is the hand's only.
+    {Zone::HAND, Permission::NONE, CastFace::BOTH, cast_fused, nullptr, {
+        {"fuse",            CastCost::MANA_COST,    false, 9, " (fused)",              Zone::GRAVEYARD, mana_cost_offered},
+        {"fuse_free",       CastCost::NO_MANA_COST, false, 8, " (fused) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
     }},
     {Zone::GRAVEYARD, Permission::FLASHBACK, CastFace::FRONT, nullptr, nullptr, {
         {"flashback",       CastCost::FLASHBACK,    false, 4, " (flashback)",          Zone::EXILE,     flashback_offered},
@@ -606,6 +612,8 @@ static bool cast_from_back(const CardData &front) {
     return !is_land_card(*front.backside);  // land back is a PLAY_LAND
 }
 
+static bool cast_fused(const CardData &front) { return front.has_fuse && front.combined; }
+
 // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
 // the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
 // suspend cost and exile it with N time counters. This is a special action (doesn't use the
@@ -631,7 +639,7 @@ static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions) {
 // The menu row of `row`, offered for `card`. The ordinal tells the cast variants apart (0 normal,
 // 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback, 5 escape,
 // 6 cast-from-graveyard permission, 7 impulse / free cast from exile, 8 without paying its mana cost
-// under a free-cast static).
+// under a free-cast static, 9 fused).
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc) {
     LegalAction la(CAST_SPELL, card, desc);
     la.category = ActionCategory::CAST_SPELL;

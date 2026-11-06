@@ -1,0 +1,13 @@
+{
+  "name": "cr702_102c_fuse_pays_both_mana_costs",
+  "why": "CR 702.102c: the total cost of a fused split spell includes the mana cost of each half: {1}{R} alone casts Wear, and no white source means no fused row while Tear's {W} can't be paid.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Chalice of the Void", "Sylvan Library"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu": ["Cast Wear$"],
+  "expect_menu_not": ["Cast Tear", "fused"]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "cr709_3a_wear_and_tear_cast_alone",
+  "why": "CR 709.3a: a player casting one half pays and targets only for that half: Tear for {W} destroys an enchantment and goes to its owner's graveyard as one card.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Plains"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Tear", "A:target:Sylvan Library"],
+  "max_decisions": 6,
+  "expect": ["Player A casts Tear targeting Sylvan Library", "Sylvan Library is destroyed"]
+}

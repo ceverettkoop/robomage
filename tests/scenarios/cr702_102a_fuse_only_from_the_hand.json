@@ -1,0 +1,13 @@
+{
+  "name": "cr702_102a_fuse_only_from_the_hand",
+  "why": "CR 702.102a: fuse applies while the card is in a player's hand: cast from exile under Light Up the Stage's grant, only the card's own cast is offered, never the fused one.",
+  "hand_a": ["Light Up the Stage", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_a": ["Wear Tear", "Mountain", "Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Plains", "Plains"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Chalice of the Void", "Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:cast:Light Up the Stage"],
+  "max_decisions": 9,
+  "expect_menu": ["Cast Wear \\(from exile\\)"],
+  "expect_menu_not": ["fused"]
+}

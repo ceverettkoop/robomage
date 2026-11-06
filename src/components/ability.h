@@ -52,6 +52,9 @@ struct DelayedTriggerLink {
 // never changed by play; every per-instance fact (source, controller, targets, X, ...) lives on
 // the runtime Ability that refers to it.
 struct AbilityDef {
+    // The printed definition a cast's characteristics derived this one from (overloaded, fused):
+    // what a state frame names it by. Null for a printed one.
+    const AbilityDef *printed_as = nullptr;
 
 
     enum AbilityType{

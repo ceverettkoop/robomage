@@ -27,6 +27,7 @@ inline const CardData *overlay_face(const CardData &cd, SpellOverlay overlay) {
 // the face it is cast as (CR 712.8f, 709.3).
 inline const CardData &cast_face(const CardData &cd, const CastOption &how) {
     if (const CardData *overlaid = overlay_face(cd, how.overlay)) return *overlaid;
+    if (how.face == CastFace::BOTH && cd.combined) return *cd.combined;
     return how.face == CastFace::BACK && cd.backside ? *cd.backside : cd;
 }
 

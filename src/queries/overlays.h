@@ -29,7 +29,8 @@ const SpellOverlayRow &spell_overlay(SpellOverlay kind);
 // The cast_variant bit `kind` sets on a menu row and a stack row; 0 for none.
 uint32_t spell_overlay_variant_mask(SpellOverlay kind);
 
-// Gives the parsed `card` the faces of the overlays it has.
+// Gives the parsed `card` the faces of the overlays it has, and a split card its combined
+// characteristics.
 void build_overlay_faces(CardData &card);
 
 #endif /* QUERIES_OVERLAYS_H */

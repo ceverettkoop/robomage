@@ -353,6 +353,9 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Arena of Glory", 430},
     {"Massacre", 431},
     {"Cyclonic Rift", 432},
+    {"Wear", 433},
+    {"Tear", 433},
+    {"Wear/Tear", 433},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

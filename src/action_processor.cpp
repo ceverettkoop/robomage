@@ -32,6 +32,7 @@
 #include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/keywords.h"
+#include "queries/overlays.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "queries/spells.h"
@@ -267,7 +268,9 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     if (impulse) coverage_cast("impulse");
     if (how.cost == CastCost::NO_MANA_COST) coverage_cast("without_mana_cost");
     if (pc.chosen.back_face()) coverage_cast(front.is_split ? "split_half" : "back_face");
-    if (how.cost != CastCost::MANA_COST || how.offspring || impulse || pc.chosen.back_face()) return;
+    if (how.face == CastFace::BOTH) coverage_cast("fused");
+    if (how.overlay != SpellOverlay::NONE) coverage_cast(spell_overlay(how.overlay).name);
+    if (how.cost != CastCost::MANA_COST || how.offspring || impulse || how.face != CastFace::FRONT) return;
     const EntryInfo *entry = find_entry_info(spell_entity);
     coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
 }

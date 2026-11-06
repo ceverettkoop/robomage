@@ -384,8 +384,9 @@ static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_o
     else if (card_id >= TOKEN_VOCAB_BASE && token_object != 0 &&
              global_coordinator.entity_has_component<Token>(token_object))
         list = token_ability_list(global_coordinator.GetComponent<Token>(token_object));
+    const AbilityDef *printed = def->printed_as ? def->printed_as : def;
     for (size_t i = 0; i < list.size(); ++i) {
-        if (list[i].def != def) continue;
+        if (list[i].def != printed) continue;
         r.u16(card_or_none(card_id)).u16(i).text(def->ref_key);
         return;
     }
@@ -1064,6 +1065,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             if (sp->chosen.option.cost == CastCost::IMPENDING) bit(CastVariant::IMPENDING);
             if (sp->chosen.option.cost == CastCost::WARP) bit(CastVariant::WARP);
             if (sp->chosen.back_face()) bit(CastVariant::BACK_FACE);
+            if (sp->chosen.option.face == CastFace::BOTH) bit(CastVariant::FUSED);
             variant |= spell_overlay_variant_mask(sp->chosen.option.overlay);
         }
         r.u32(variant)
@@ -1405,6 +1407,7 @@ static uint32_t cast_variant_mask(const LegalAction &la) {
     bit(how.cost == CastCost::ESCAPE, CastVariant::ESCAPE);
     bit(how.offspring, CastVariant::OFFSPRING);
     bit(how.face == CastFace::BACK, CastVariant::BACK_FACE);
+    bit(how.face == CastFace::BOTH, CastVariant::FUSED);
     bit(how.alternative(), CastVariant::ALT_COST);
     bit(how.permission == Permission::EXILE_GRANT, CastVariant::IMPULSE);
     bit(how.cost == CastCost::NO_MANA_COST, CastVariant::WITHOUT_MANA_COST);

@@ -9,8 +9,9 @@
 // Which face of the card is cast or played. BACK is a modal DFC's back face or a split card's
 // second half: the entity's CardData is the front face, but on the stack the spell has only that
 // face's characteristics (CR 712.8f, 709.3; read through active_face). A land played as its back
-// face enters showing it (EntryInfo::enters_transformed).
-enum class CastFace : uint8_t { FRONT, BACK };
+// face enters showing it (EntryInfo::enters_transformed). BOTH is a fused split spell: the two
+// halves' combined characteristics (CR 702.102b, CardData::combined).
+enum class CastFace : uint8_t { FRONT, BACK, BOTH };
 
 // What a cast pays as its cost, each a row of kCastCostRows (action_processor.cpp), in this order. From
 // ALTERNATIVE on, an alternative cost (CR 118.9).

@@ -7,11 +7,13 @@
 #include "../components/carddata.h"
 #include "../state_format/schema.h"
 #include "affected.h"
+#include "characteristics.h"
 #include "filters.h"
 
 static bool has_overload(const CardData &card);
 static void target_reads_each(AbilityDef &ability);
 static void overload_spell(CardData &face);
+static std::shared_ptr<const CardData> combined_halves(const CardData &left, const CardData &right);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
     // kind                  name        variant                                            resolved_to      has           change
@@ -35,7 +37,41 @@ static void target_reads_each(AbilityDef &ability) {
 static void overload_spell(CardData &face) {
     for (const AbilityDef *&ability : face.abilities)
         if (ability->ability_type == AbilityDef::SPELL)
-            ability = derived_ability_def(ability, "overload", 0, target_reads_each);
+            ability = derived_ability_def(ability, "overload", 0, [ability](AbilityDef &d) {
+                target_reads_each(d);
+                d.printed_as = ability;
+            });
+}
+
+// CR 709.4: the left half with what the right half adds, one spell ability doing the left half's
+// instructions and then the right's (CR 702.102d).
+static std::shared_ptr<const CardData> combined_halves(const CardData &left, const CardData &right) {
+    auto both = std::make_shared<CardData>(left);
+    both->name = whole_card_name(left);
+    both->backside = nullptr;
+    both->is_split = false;
+    both->mana_cost.insert(right.mana_cost.begin(), right.mana_cost.end());
+    both->phyrexian_mana.insert(both->phyrexian_mana.end(), right.phyrexian_mana.begin(), right.phyrexian_mana.end());
+    both->hybrid_mana.insert(both->hybrid_mana.end(), right.hybrid_mana.begin(), right.hybrid_mana.end());
+    both->types.insert(right.types.begin(), right.types.end());
+    both->keywords.insert(both->keywords.end(), right.keywords.begin(), right.keywords.end());
+    const AbilityDef *right_spell = nullptr;
+    for (const AbilityDef *ability : right.abilities) {
+        if (ability->ability_type == AbilityDef::SPELL && !right_spell)
+            right_spell = ability;
+        else
+            both->abilities.push_back(ability);
+    }
+    for (const AbilityDef *&ability : both->abilities)
+        if (ability->ability_type == AbilityDef::SPELL && right_spell) {
+            const AbilityDef *left_spell = ability;
+            ability = derived_ability_def(left_spell, "fused", 0, [left_spell, right_spell](AbilityDef &d) {
+                d.subabilities.push_back(*right_spell);
+                d.printed_as = left_spell;
+            });
+            break;
+        }
+    return both;
 }
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }
@@ -52,4 +88,5 @@ void build_overlay_faces(CardData &card) {
         row.change(*face);
         card.overlay_faces.push_back({row.kind, face});
     }
+    if (card.is_split && card.backside) card.combined = combined_halves(card, *card.backside);
 }

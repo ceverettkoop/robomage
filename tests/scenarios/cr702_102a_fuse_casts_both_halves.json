@@ -1,0 +1,14 @@
+{
+  "name": "cr702_102a_fuse_casts_both_halves",
+  "why": "CR 702.102a, c, d: cast from the hand, Wear/Tear may be cast fused for the mana cost of each half ({1}{R} and {W}), a target chosen for each half; the left half's instruction resolves, then the right's.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Plains"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Chalice of the Void", "Ensnaring Bridge", "Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Wear // Tear (fused)", "A:target:Chalice of the Void", "A:target:Sylvan Library"],
+  "max_decisions": 8,
+  "expect_menu": ["Cast Wear$", "Cast Tear$", "Cast Wear // Tear \\(fused\\)"],
+  "expect_order": ["Player A casts Wear // Tear", "Chalice of the Void is destroyed", "Sylvan Library is destroyed"],
+  "expect_not": ["Ensnaring Bridge is destroyed"]
+}
