@@ -9,7 +9,7 @@ must stop moving first, since a run's actors load them on every restart.
 - History is on: `FeatureOptions::history_events` (`docs/featurizer.md` §3.7), the events of this turn and the
   previous one, newest first, at most 32, each with up to 8 cards. "Previous" is one turn back, which is the
   opponent's last turn from your own. That is the window wanted, so `EventHistory` doesn't change.
-- A short paired run comes first: 5k steps on the ten-deck league with the three replacement lists (§3), from one seed,
+- A short paired run comes first: 5k steps on the nine decks left of the old league with `ur_tempo`, `lands_top8` and `death_and_taxes` among them (§3; `maverick` isn't playable until M9), from one seed,
   history on against off, judged by `value_mse_gap`, held-out value MSE and a paired bench. It needs §2's items 1 to 3 and
   nothing from M13's decks. It runs after M7 from a frozen copy of the build, since actors reload their binaries on restart.
 - Old episodes are gone (`runs/*/episodes`, `runs/bc1/corpus/episodes`, 280 GB). The run needs none: R-NaD
@@ -53,9 +53,9 @@ tokens on some 120). Step 3 of §2 measures that shift.
 
 ## 3. The league
 
-31 decks, 27 in training and 4 held out, after the consolidation of 2026-11-06: `aluren` is gone, and the newer list of each
-near copy replaces the older (`ur_tempo` for `ur_delver`, `lands_top8` for `lands`, `death_and_taxes` for `bw_dnt`). That is 351
-pairs against the 45 of the last run. `add-decks`' mean weight doesn't scale that far, and pilotA's fair/combo weights name
+30 decks, 26 in training and 4 held out, after the consolidation of 2026-11-06: `aluren` is gone, and the newer list of each
+near copy replaces the older (`ur_tempo` for `ur_delver`, `lands_top8` for `lands`, `death_and_taxes` for `bw_dnt`, `maverick` for
+`gw_maverick`). The overlapping white-blue decks stay. That is 325 pairs against the 45 of the last run. `add-decks`' mean weight doesn't scale that far, and pilotA's fair/combo weights name
 decks by hand.
 
 **Held out:** `bant_control`, `show_and_tell`, `storm` (combo, at most 14 cards shared with any deck) and `dragon_stompy` (fair, at most 11).
@@ -71,15 +71,15 @@ only for benchmarks against it.
 
 - **Before training:** `rmtrain bench --decks league,heldout` on `m11`, the zero-shot baseline for every new deck.
 - **During:** at fixed points, the same bench on a sampled schedule. 78 pairs take about 7 minutes a policy, so
-  351 pairs need sampling: every held-out pair, every pair of the seven remaining original decks, a seeded sample of the rest,
+  325 pairs need sampling: every held-out pair, every pair of the six remaining original decks, a seeded sample of the rest,
   the same sample each time so the common random numbers hold.
 - **Generalisation** (`docs/open_vocab_plan.md` S8): `plays:heldout` and `faces:heldout`, paired against `m11`.
   Head-to-head ladders over `scripted:hard`, which pilots new decks with generic heuristics.
 - **Memorisation:** `value_mse_gap`, with held-out value MSE.
-- **No regression:** the seven remaining original decks against `m11`, among themselves.
+- **No regression:** the six remaining original decks against `m11`, among themselves.
 
 **Budget and stopping.** `league24h-sb` took 14,300 learner steps and 700k games in 24 hours, and needed about 13k
-steps for +0.04. S8's minimum to see anything is 5k steps. With eight times the pairs and a quarter more cost per step,
+steps for +0.04. S8's minimum to see anything is 5k steps. With seven times the pairs and a quarter more cost per step,
 plan on at least 20k steps, about two days, with a review at each 5k. Stop on a regression beyond two SEs in
 the original decks with no gain on the held-out decks, or when held-out gains stay inside two SEs over two
 reviews.
