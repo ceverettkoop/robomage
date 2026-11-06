@@ -2687,7 +2687,8 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
 }
 
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
-// "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE) and an energy UnlessCost SVar into
+// "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE; its first, for alternatives all naming
+// the one SVar: Powder Keg's "Artifact.cmcEQX,Creature.cmcEQX") and an energy UnlessCost SVar into
 // their runtime Count$ expressions + comparator on DestroyAllParams, so effect_destroy_all can
 // gate candidates by mana value at resolution.
 static void resolve_destroyall_svars(AbilityDef &ability,
@@ -2695,10 +2696,10 @@ static void resolve_destroyall_svars(AbilityDef &ability,
     if (ability.category != "DestroyAll") return;
     auto &dp = effect_params<DestroyAllParams>(ability);
     std::string op, bound;
-    // A pure-numeric or "X" bound stays on the legacy path (handled at resolution); only a named
-    // SVar resolving to a Count$ expression routes here.
+    // A pure-numeric bound is its qualifier's own and cmcLEX reads the X paid (Meltdown); any other
+    // named SVar resolving to a Count$ expression routes here (Powder Keg's cmcEQX).
     if (dp.cmc_expr.empty() && find_cmc_bound(ability.valid_cards_filter, nullptr, op, bound) &&
-        bound != "X") {
+        !(op == "LE" && bound == "X")) {
         auto it = svars.find(bound);
         if (it != svars.end()) {
             dp.cmc_expr = it->second;

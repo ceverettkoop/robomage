@@ -298,7 +298,7 @@ static bool cmc_bound_supplied(const std::string &op, const std::string &bound, 
     if (op == "LE" && bound == "X") return true;
     if (key == "ChangeType") return true;
     if (key == "ValidCard") return body.find("Mode$ SpellCast") != std::string::npos;
-    if (key == "ValidCards") return body.find("$ DestroyAll") != std::string::npos && bound != "X";
+    if (key == "ValidCards") return body.find("$ DestroyAll") != std::string::npos;
     return op == "LE" && (key == "ConditionPresent" || key == "ChangeValid");
 }
 
