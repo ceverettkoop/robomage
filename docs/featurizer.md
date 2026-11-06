@@ -503,7 +503,7 @@ sections, every entry matched by name:
 The file was generated from the S1 layout in its order (so every slot keeps its order within its
 type, every relation type and key row its index, every enum value its index; only offsets and widths
 moved); layout version 2 widened the type enums' blocks in place (`docs/open_vocab_plan.md` S7's
-Done). It uses 856 of G's 1408 columns, 4914 of 6144 categorical ids, 38 of 64 relation types, 35 of
+Done). It uses 872 of G's 1408 columns, 5090 of 6144 categorical ids, 38 of 64 relation types, 36 of
 64 type ids, 73 of 256 key rows, and the card, ability and part tables' 1241, 340 and 320 columns.
 `build_spec` and `build_card_tables` place every slot, column and row at its registry position,
 leave reserved positions 0 (-1 for card and ability slots) and **fail**, naming the entry and `make

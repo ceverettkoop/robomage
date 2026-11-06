@@ -29,61 +29,47 @@
        "static_param:Condition"
       ],
       "size": "M"
-     },
-     "Sunburst (CR 702.44)": {
-      "cards": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       "keyword:Sunburst"
-      ],
-      "size": "M"
      }
     },
     "needs": {
-     "Engineered Explosives": [
-      "Sunburst (CR 702.44)"
-     ],
      "Perilous Snare": [
       "Start your engines! (speed)"
      ]
     },
     "new_cards": [
-     "Engineered Explosives",
      "Perilous Snare"
     ],
-    "size_points": 6
+    "size_points": 3
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-06T02:52:31"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
+   "time": "2026-11-06T06:52:45"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 28,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
-     "Engineered Explosives",
      "Perilous Snare"
     ]
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "30 cards: 28 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T02:52:31"
+   "summary": "30 cards: 29 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T06:52:43"
   },
   "implement": {
    "detail": {
@@ -107,26 +93,6 @@
   "parse": {
    "detail": {
     "cards": {
-     "Engineered Explosives": {
-      "card": "Engineered Explosives",
-      "faces": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       {
-        "detail": "Sunburst",
-        "kind": "keyword",
-        "line": "K:Sunburst",
-        "name": "Sunburst"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/e/engineered_explosives.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Perilous Snare": {
       "card": "Perilous Snare",
       "faces": [
@@ -158,14 +124,14 @@
    },
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-06T02:52:31"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-06T06:52:44"
   },
   "provision": {
    "detail": {
@@ -179,11 +145,11 @@
    "inputs": {
     "deck": "51f0cc3137c2ac45213cc1942fdd549fc5edcb0a974c03280c79b61c34cf1572",
     "scripts": "0f5cb51461452381231a498dcc1c871bfaea52a9a57addb5a18e963c8c1eeb0a",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T02:52:31"
+   "time": "2026-11-06T06:52:44"
   },
   "scrape": {
    "detail": {

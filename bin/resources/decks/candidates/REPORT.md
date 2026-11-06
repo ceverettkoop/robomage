@@ -15,24 +15,24 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 1 | 1 | 1 | capability |
+| artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 2 | 3 | 5 | capability |
-| artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 2 | 2 | 6 | capability |
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 3 | 5 | 7 | capability |
+| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 4 | 4 | 10 | capability |
 | elves | Elves | 2.0 | combo | 32 | 2 | 3 | 12 | capability |
-| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 5 | 5 | 13 | capability |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 2 | 3 | 14 | capability |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 3 | 4 | 15 | capability |
 | maverick | Maverick | 1.0 | aggro | 38 | 4 | 5 | 16 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 2 | 4 | 17 | capability |
+| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 3 | 4 | 17 | capability |
 | storm | Storm | 3.0 | combo | 30 | 3 | 4 | 17 | capability |
 | dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 7 | 7 | 17 | capability |
-| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 4 | 5 | 20 | capability |
 | aluren | Aluren | 4.0 | combo | 32 | 1 | 2 | 23 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 3 | 24 | capability |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 4 | 6 | 26 | capability |
-| hogaak | Hogaak | 2.0 | combo | 28 | 5 | 8 | 30 | capability |
+| hogaak | Hogaak | 2.0 | combo | 28 | 4 | 7 | 27 | capability |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 5 | 9 | 41 | capability |
-| painter | Painter | 1.0 | combo | 41 | 9 | 13 | 52 | capability |
+| painter | Painter | 1.0 | combo | 41 | 8 | 12 | 49 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -41,7 +41,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
 | Can't-block restrictions (CantBlockBy) | M | 6 | - | Brazen Borrower, Cryptic Coat, Untimely Malfunction | `keyword:HIDDEN CARDNAME can't block.`, `static_mode:CantBlockBy`, `static_param:ValidAttacker`, `static_param:ValidBlocker` | Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack |
-| Sunburst (CR 702.44) | M | 4 | - | Engineered Explosives | `keyword:Sunburst` | Engineered Explosives: counters by colours spent (converge is tracked) |
 | Adventure (CR 715) | L | 4 | - | Brazen Borrower | `layout:Adventure` | Brazen Borrower: cast the Adventure half, exile, cast the creature later; a layout like split / MDFC plus the exile permission |
 | UnlessCost on more effects | M | 3 | - | Acererak the Archlich, Grist, the Hunger Tide, Springheart Nantuko | `ability_param:CopyPermanent.UnlessCost`, `ability_param:ImmediateTrigger.UnlessCost`, `ability_param:Token.UnlessCost` | run_unless_loop runs on Counter, Destroy, Sacrifice, CopySpellAbility and DestroyAll; any other effect happens unconditionally |
 | Hogaak casting | L | 3 | - | Gaea's Will, Hogaak, Arisen Necropolis | `static_form:MayPlay.Graveyard`, `static_mode:ManaRestriction`, `static_param:EffectZone`, `static_param:InvertValidSource`, `static_param:ValidSource` | cast from the graveyard (EffectZone$ Graveyard MayPlay); S:Mode$ ManaRestriction: only convoke / delve can pay |
@@ -60,7 +59,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Fable of the Mirror-Breaker | M | 2 | - | Fable of the Mirror-Breaker | `ability_param:CopyPermanent.AddKeywords`, `ability_param:CopyPermanent.AtEOT`, `ability_param:Discard.RememberDiscarded` | Kiki's copies gain haste; the chapter II rummage counts discards |
 | Goblin Welder swap | M | 2 | - | Goblin Welder | `ability_param:Pump.ImprintCards`, `ability_param:Pump.PumpZone`, `ability_param:Pump.TargetsWithDefinedController`, `filter:sharesControllerWith Imprinted` | targets in a graveyard and on the battlefield with the same controller, swapped at resolution |
 | Play from a zone with replacement (Bilbo) | M | 2 | - | Bilbo, Thief in the Night | `ability_param:Play.ReplaceGraveyard`, `ability_param:Play.ReplaceGraveyardValid`, `ability_param:Play.Valid`, `ability_param:Play.ValidZone`, `filter:!wasCastFromYourHand` | Bilbo, Thief in the Night: cast a card from a graveyard, exiled instead of going to the graveyard |
-| Start your engines! (speed) | M | 2 | - | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
+| Start your engines! (speed) | M | 2 | artifacts_prison | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
 | Agatha's Soul Cauldron | L | 2 | - | Agatha's Soul Cauldron | `ability_param:ImmediateTrigger.ConditionDefined`, `static_form:Affected.Counters`, `static_param:GainsAbilitiesOf`, `static_param:GainsAbilitiesOfZones`, `static_param:ValidCard`, `static_param:ValidPlayer`, `static_param:ValidSA` | creatures with +1/+1 counters gain the activated abilities of exiled creature cards; mana spent as any type |
 | Prepare (CR 722) | L | 2 | - | Carnivorous Cultivator | `keyword:ETBReplacement:DBPrepare`, `layout:Prepare` | Carnivorous Cultivator: a prepared permanent may cast a copy of its prepare spell; a designation plus a cast option |
 | Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | - | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
@@ -89,7 +88,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Fuse (CR 702.102) | M | 1 | - | Wear/Tear | `keyword:Fuse` | Wear/Tear: cast both halves together |
 | Gaea's Will | M | 1 | - | Gaea's Will | `replacement:Effect:Moved` | play from the graveyard this turn, cards exiled instead of going there |
 | Ghost Vacuum return | M | 1 | - | Ghost Vacuum | `ability_param:ChangeZoneAll.GainControl`, `ability_param:ChangeZoneAll.StaticEffect`, `ability_param:ChangeZoneAll.WithCountersType` | return exiled creatures with a flying counter and as Spirits |
-| Mana with riders and Exert (Arena of Glory) | M | 1 | - | Arena of Glory | `ability_param:AddMana.AddsKeywords`, `ability_param:AddMana.AddsKeywordsUntil`, `ability_param:AddMana.AddsKeywordsValid`, `ability_param:AddMana.Produced`, `cost:Exert` | mana that gives the creature spell haste; Exert (CR 701.43) as a cost |
 | Next-spell effect (Theorist's Proxy) | M | 1 | - | Theorist's Proxy | `ability_param:DelayedTrigger.Static`, `ability_param:DelayedTrigger.ValidActivatingPlayer`, `ability_param:Effect.ForgetOnMoved`, `ability_param:Effect.RememberObjects`, `replacement:Effect:Counter` | a delayed SpellCast trigger creating an Effect with an Event$ Counter replacement |
 | Opponent's-draw replacement (Hullbreacher) | M | 1 | - | Hullbreacher | `replacement:Draw` | an opponent's draws beyond the first become Treasures for you |
 | Overload (CR 702.96) | M | 1 | - | Cyclonic Rift | `keyword:Overload` | Cyclonic Rift: an alternative cost replacing 'target' with 'each' |
@@ -110,24 +108,24 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 5 | show_and_tell | - | 0 | 0 | 5 |
 | 6 | uwx_control | - | 0 | 0 | 6 |
 | 7 | reanimator_top8 | Top creature of a graveyard (Shallow Grave) | 1 | 1 | 7 |
-| 8 | boros_aggro | Copy with exceptions (CopyPermanent Set*); Mana value bound from an SVar; Sand Scout | 5 | 6 | 8 |
-| 9 | artifacts_prison | Start your engines! (speed); Sunburst (CR 702.44) | 6 | 12 | 9 |
-| 10 | artifacts_blue | Cast with this mana (The Everflowing Well); Clone a target (CloneTarget); Ghost Vacuum return; Spell-cast filters; Targets in several zones | 7 | 19 | 10 |
-| 11 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 28 | 11 |
-| 12 | elves | AnimateAll power, toughness and types; Convoke (CR 702.51); Hogaak casting | 12 | 40 | 12 |
-| 13 | storm | Bargain and free casting (Beseech the Mirror); Chrome Mox imprint; Gaea's Will | 9 | 49 | 13 |
-| 14 | dragon_stompy | Boast (CR 702.142); Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Effect with a continuous static; Fable of the Mirror-Breaker; Self-or-other zone triggers (Pyrogoyf) | 14 | 63 | 14 |
-| 15 | mystic_forge | Defined$ names no reader acts on; Emblem with a trigger (Tezzeret); Play from the top of the library (Mystic Forge) | 14 | 77 | 15 |
-| 16 | ur_tempo | Adventure (CR 715); Can't-block restrictions (CantBlockBy); Play from a zone with replacement (Bilbo) | 14 | 91 | 16 |
-| 17 | dimir_tempo | Two-condition alternative cost (Massacre) | 1 | 92 | 17 |
-| 18 | hogaak | Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent) | 4 | 96 | 18 |
-| 19 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 102 | 19 |
-| 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Revolt trigger condition; UnlessCost on more effects | 16 | 118 | 20 |
-| 21 | cradle_control | Bestow (CR 702.103) | 8 | 126 | 21 |
-| 22 | aluren | Dungeons and venture (CR 309, 701.49) | 20 | 146 | 22 |
-| 23 | stoneblade | Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708) | 21 | 167 | 23 |
-| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; Taps trigger; filter:sharesControllerWith Remembered | 19 | 186 | 24 |
-| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Mana with riders and Exert (Arena of Glory); Meld (CR 712) | 28 | 214 | 25 |
+| 8 | artifacts_prison | Start your engines! (speed) | 3 | 4 | 8 |
+| 9 | boros_aggro | Copy with exceptions (CopyPermanent Set*); Mana value bound from an SVar; Sand Scout | 5 | 9 | 9 |
+| 10 | artifacts_blue | Cast with this mana (The Everflowing Well); Clone a target (CloneTarget); Ghost Vacuum return; Spell-cast filters; Targets in several zones | 7 | 16 | 10 |
+| 11 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher); Overload (CR 702.96) | 9 | 25 | 11 |
+| 12 | elves | AnimateAll power, toughness and types; Convoke (CR 702.51); Hogaak casting | 12 | 37 | 12 |
+| 13 | storm | Bargain and free casting (Beseech the Mirror); Chrome Mox imprint; Gaea's Will | 9 | 46 | 13 |
+| 14 | dragon_stompy | Boast (CR 702.142); Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Effect with a continuous static; Fable of the Mirror-Breaker; Self-or-other zone triggers (Pyrogoyf) | 14 | 60 | 14 |
+| 15 | mystic_forge | Defined$ names no reader acts on; Emblem with a trigger (Tezzeret); Play from the top of the library (Mystic Forge) | 14 | 74 | 15 |
+| 16 | ur_tempo | Adventure (CR 715); Can't-block restrictions (CantBlockBy); Play from a zone with replacement (Bilbo) | 14 | 88 | 16 |
+| 17 | dimir_tempo | Two-condition alternative cost (Massacre) | 1 | 89 | 17 |
+| 18 | hogaak | Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent) | 4 | 93 | 18 |
+| 19 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 99 | 19 |
+| 20 | maverick | A creature card in every other zone (Grist); CantPreventDamage static; Prepare (CR 722); Revolt trigger condition; UnlessCost on more effects | 16 | 115 | 20 |
+| 21 | cradle_control | Bestow (CR 702.103) | 8 | 123 | 21 |
+| 22 | aluren | Dungeons and venture (CR 309, 701.49) | 20 | 143 | 22 |
+| 23 | stoneblade | Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708) | 21 | 164 | 23 |
+| 24 | welder_cam | Agatha's Soul Cauldron; Branch effect (DB$ Branch); Fuse (CR 702.102); Goblin Welder swap; Taps trigger; filter:sharesControllerWith Remembered | 19 | 183 | 24 |
+| 25 | painter | Change targets (CR 115.7); Colour-adding static everywhere (Painter's Servant); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 25 | 208 | 25 |
 
 ## Per deck
 
@@ -167,19 +165,18 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 - Shallow Grave: Top creature of a graveyard (Shallow Grave)
 
+### artifacts_prison — Artifacts Prison (2.0%, control)
+
+30 cards, 1 new; clean: -
+
+- Perilous Snare: Start your engines! (speed)
+
 ### boros_aggro — Boros Aggro (6.0%, aggro)
 
 31 cards, 2 new; clean: -
 
 - Lazotep Quarry: Copy with exceptions (CopyPermanent Set*); Mana value bound from an SVar
 - Sand Scout: Sand Scout
-
-### artifacts_prison — Artifacts Prison (2.0%, control)
-
-30 cards, 2 new; clean: -
-
-- Engineered Explosives: Sunburst (CR 702.44)
-- Perilous Snare: Start your engines! (speed)
 
 ### artifacts_blue — Artifacts Blue (2.0%, aggro)
 
@@ -189,22 +186,21 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Sink into Stupor: Targets in several zones
 - The Everflowing Well: Cast with this mana (The Everflowing Well); Clone a target (CloneTarget); Spell-cast filters
 
+### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
+
+29 cards, 4 new; clean: -
+
+- Cyclonic Rift: Overload (CR 702.96)
+- Hullbreacher: Opponent's-draw replacement (Hullbreacher)
+- Invasion Submersible: Exhaust and Waterbend (Avatar)
+- Sink into Stupor: Targets in several zones
+
 ### elves — Elves (2.0%, combo)
 
 32 cards, 2 new; clean: -
 
 - Allosaurus Shepherd: AnimateAll power, toughness and types
 - Hogaak, Arisen Necropolis: Convoke (CR 702.51); Hogaak casting
-
-### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
-
-29 cards, 5 new; clean: -
-
-- Cyclonic Rift: Overload (CR 702.96)
-- Engineered Explosives: Sunburst (CR 702.44)
-- Hullbreacher: Opponent's-draw replacement (Hullbreacher)
-- Invasion Submersible: Exhaust and Waterbend (Avatar)
-- Sink into Stupor: Targets in several zones
 
 ### ur_tempo — UR Tempo (4.0%, aggro)
 
@@ -237,6 +233,14 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Brazen Borrower: Adventure (CR 715); Can't-block restrictions (CantBlockBy)
 - Theorist's Proxy: Empower; Next-spell effect (Theorist's Proxy)
 
+### mystic_forge — Mystic Forge (2.0%, combo)
+
+32 cards, 3 new; clean: -
+
+- Mystic Forge: Play from the top of the library (Mystic Forge)
+- Perilous Snare: Start your engines! (speed)
+- Tezzeret, Cruel Captain: Defined$ names no reader acts on; Emblem with a trigger (Tezzeret)
+
 ### storm — Storm (3.0%, combo)
 
 30 cards, 3 new; clean: -
@@ -256,15 +260,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Pyrogoyf: Damage dealt by another object (DamageSource$); Self-or-other zone triggers (Pyrogoyf)
 - Shatterskull Smashing: Divided damage (CR 601.2d)
 - Sundering Eruption: Effect with a continuous static
-
-### mystic_forge — Mystic Forge (2.0%, combo)
-
-32 cards, 4 new; clean: -
-
-- Engineered Explosives: Sunburst (CR 702.44)
-- Mystic Forge: Play from the top of the library (Mystic Forge)
-- Perilous Snare: Start your engines! (speed)
-- Tezzeret, Cruel Captain: Defined$ names no reader acts on; Emblem with a trigger (Tezzeret)
 
 ### aluren — Aluren (4.0%, combo)
 
@@ -289,10 +284,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### hogaak — Hogaak (2.0%, combo)
 
-28 cards, 5 new; clean: -
+28 cards, 4 new; clean: -
 
 - Brazen Borrower: Adventure (CR 715); Can't-block restrictions (CantBlockBy)
-- Engineered Explosives: Sunburst (CR 702.44)
 - Hogaak, Arisen Necropolis: Convoke (CR 702.51); Hogaak casting
 - Massacre: Two-condition alternative cost (Massacre)
 - Mockingbird: Enters as a copy (Mockingbird); Mana spent on casting (Count$CastTotalManaSpent)
@@ -309,10 +303,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### painter — Painter (1.0%, combo)
 
-41 cards, 9 new; clean: -
+41 cards, 8 new; clean: -
 
 - Agatha's Soul Cauldron: Agatha's Soul Cauldron
-- Arena of Glory: Mana with riders and Exert (Arena of Glory)
 - Fable of the Mirror-Breaker: Fable of the Mirror-Breaker
 - Fury: Divided damage (CR 601.2d)
 - Goblin Welder: Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered

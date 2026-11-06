@@ -80,15 +80,6 @@
       ],
       "size": "S"
      },
-     "Sunburst (CR 702.44)": {
-      "cards": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       "keyword:Sunburst"
-      ],
-      "size": "M"
-     },
      "Two-condition alternative cost (Massacre)": {
       "cards": [
        "Massacre"
@@ -104,9 +95,6 @@
       "Adventure (CR 715)",
       "Can't-block restrictions (CantBlockBy)"
      ],
-     "Engineered Explosives": [
-      "Sunburst (CR 702.44)"
-     ],
      "Hogaak, Arisen Necropolis": [
       "Convoke (CR 702.51)",
       "Hogaak casting"
@@ -121,33 +109,31 @@
     },
     "new_cards": [
      "Brazen Borrower",
-     "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
      "Mockingbird"
     ],
-    "size_points": 30
+    "size_points": 27
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 8 mechanic(s) (30 points)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "4 new card(s): 0 clean, 4 need 7 mechanic(s) (27 points)",
+   "time": "2026-11-06T06:52:45"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 23,
+    "in_vocab": 24,
     "no_script": [],
     "not_in_vocab": [
      "Brazen Borrower",
-     "Engineered Explosives",
      "Hogaak, Arisen Necropolis",
      "Massacre",
      "Mockingbird"
@@ -156,11 +142,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "28 cards: 23 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "28 cards: 24 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-06T06:52:43"
   },
   "implement": {
    "detail": {
@@ -227,26 +213,6 @@
       "tokens": [],
       "vocab": [
        -1,
-       -1
-      ]
-     },
-     "Engineered Explosives": {
-      "card": "Engineered Explosives",
-      "faces": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       {
-        "detail": "Sunburst",
-        "kind": "keyword",
-        "line": "K:Sunburst",
-        "name": "Sunburst"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/e/engineered_explosives.txt",
-      "tokens": [],
-      "vocab": [
        -1
       ]
      },
@@ -357,14 +323,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (15 findings), 0 without a script",
-   "time": "2026-11-06T02:52:32"
+   "summary": "4 new card(s), 4 with findings (14 findings), 0 without a script",
+   "time": "2026-11-06T06:52:44"
   },
   "provision": {
    "detail": {
@@ -378,11 +344,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T02:52:32"
+   "time": "2026-11-06T06:52:44"
   },
   "scrape": {
    "detail": {

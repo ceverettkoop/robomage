@@ -128,19 +128,6 @@
       ],
       "size": "M"
      },
-     "Mana with riders and Exert (Arena of Glory)": {
-      "cards": [
-       "Arena of Glory"
-      ],
-      "findings": [
-       "ability_param:AddMana.AddsKeywords",
-       "ability_param:AddMana.AddsKeywordsUntil",
-       "ability_param:AddMana.AddsKeywordsValid",
-       "ability_param:AddMana.Produced",
-       "cost:Exert"
-      ],
-      "size": "M"
-     },
      "Meld (CR 712)": {
       "cards": [
        "Phyrexian Dragon Engine"
@@ -163,9 +150,6 @@
     "needs": {
      "Agatha's Soul Cauldron": [
       "Agatha's Soul Cauldron"
-     ],
-     "Arena of Glory": [
-      "Mana with riders and Exert (Arena of Glory)"
      ],
      "Fable of the Mirror-Breaker": [
       "Fable of the Mirror-Breaker"
@@ -195,7 +179,6 @@
     },
     "new_cards": [
      "Agatha's Soul Cauldron",
-     "Arena of Glory",
      "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Welder",
@@ -204,28 +187,27 @@
      "Unlicensed Hearse",
      "Untimely Malfunction"
     ],
-    "size_points": 52
+    "size_points": 49
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "9 new card(s): 0 clean, 9 need 13 mechanic(s) (52 points)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "8 new card(s): 0 clean, 8 need 12 mechanic(s) (49 points)",
+   "time": "2026-11-06T06:52:45"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 32,
+    "in_vocab": 33,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
-     "Arena of Glory",
      "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Welder",
@@ -238,11 +220,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "41 cards: 32 in vocab, 9 new (0 without a script)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "41 cards: 33 in vocab, 8 new (0 without a script)",
+   "time": "2026-11-06T06:52:43"
   },
   "implement": {
    "detail": {
@@ -328,50 +310,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/a/agathas_soul_cauldron.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Arena of Glory": {
-      "card": "Arena of Glory",
-      "faces": [
-       "Arena of Glory"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ R T Exert<1/CARDNAME/this land>",
-        "kind": "cost",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
-        "name": "Exert"
-       },
-       {
-        "detail": "AddMana AddsKeywords$ Haste",
-        "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
-        "name": "AddMana.AddsKeywords"
-       },
-       {
-        "detail": "AddMana AddsKeywordsValid$ Spell.Creature",
-        "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
-        "name": "AddMana.AddsKeywordsValid"
-       },
-       {
-        "detail": "AddMana AddsKeywordsUntil$ UntilEOT",
-        "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
-        "name": "AddMana.AddsKeywordsUntil"
-       },
-       {
-        "detail": "AddMana Produced$ R R",
-        "kind": "ability_param",
-        "line": "A:AB$ Mana | Cost$ R T Exert<1/CARDNAME/this land> | Produced$ R R | AddsKeywords$ Haste | AddsKeywordsValid$ Spell.Creature | AddsKeywordsUntil$ UntilEOT | SpellDescription$ Add {R}{R}. If any of that mana is spent on a creature spell, it gains haste until end of turn. (An exerted permanent won't untap during your next untap step.)",
-        "name": "AddMana.Produced"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/a/arena_of_glory.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -625,14 +563,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "9 new card(s), 9 with findings (35 findings), 0 without a script",
-   "time": "2026-11-06T02:52:32"
+   "summary": "8 new card(s), 8 with findings (30 findings), 0 without a script",
+   "time": "2026-11-06T06:52:44"
   },
   "provision": {
    "detail": {
@@ -648,11 +586,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T02:52:32"
+   "time": "2026-11-06T06:52:44"
   },
   "scrape": {
    "detail": {

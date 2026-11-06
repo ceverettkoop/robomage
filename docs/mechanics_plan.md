@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M5 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M6 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -618,7 +618,7 @@ What stayed of (c1), and why:
 
 | item | first testable card | stage | what it must build |
 |---|---|---|---|
-| `Exert` (CR 701.43) | Arena of Glory | M6 | a part, and the skipped untap; it also needs `AddsKeywords` and `Produced$ R R` |
+| `Exert` (CR 701.43) | Arena of Glory | M6 | done (M6's Done) |
 | Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | a `TapToPay` row, `GENERIC_OR_OWN_COLOR`; it also needs M6's restriction and M7's graveyard cast |
 | Bargain (CR 702.166) | Beseech the Mirror | M7 | an optional additional cost, read through `ChosenCost::paid` |
 | Waterbend (CR 701.67) | Invasion Submersible | M10 | a `TapToPay` row and a cost token calling `set_tap_to_pay`, with `Exhaust$`. CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: this card's whole cost is it |
@@ -725,7 +725,7 @@ carry units.
 **Test.** Rollback restores units; a rider survives payment across a suspension; the pool's frame stays
 identical for unrestricted mana, and restricted mana is distinguishable in the seat's frame.
 
-**Progress (2026-11-06).** Unit (a), the inert migration, and the two rules fixes it uncovered. Unit (b) is next.
+**Progress (2026-11-06).** Unit (a), the inert migration, and the two rules fixes it uncovered. Unit (b) closes the stage: see **Done**.
 
 What moved. `Player::mana` is a `ManaPool` (`src/components/mana_unit.h`): `ManaUnit`s sorted by color, oldest first within one, so with nothing restricted it
 spends as the multiset did. A unit has its `color`, `source`, `riders` and `restriction`. `AbilityDef::mana_restriction` replaces the six `restrict_*` bools, and
@@ -769,6 +769,48 @@ Release bench, median of 9 alternating runs, the actor loop: 2,476 decisions/s b
 
 The fixes against the inert tip, the same 9,600: floating restriction moves 24 games (4 bo1, 16 `explore:patient`, 4 `--no-auto-mana`), 23 with `eldrazi_aggro`. Every first difference read: 22 follow a Temple's {C}{C} that turn, the other two a Cavern's or Courtyard's mana floating under `--no-auto-mana`. The rider moves none, so it rests on its scenario. After both, 240 games under `--selfcheck-state`, no error. `tests/corpus` and `tests/cli` never moved, so no `make regen`.
 The `actor` tier's torch part was skipped, as it is without `$ROBOMAGE_TORCH_PYTHON`: `robomage_nn` was not rebuilt.
+
+**Done (2026-11-06).** Unit (b), and with it M6.
+
+- **The hand's mana.** `collect_available_mana_sources` lists the hand's mana abilities after the battlefield's, so the auto-payer and `can_pay_mana` see them. A card spent is a card given up: it goes last, after a self-sacrificing source. Three holds keep one card from paying two things (CR 118.3): it is no source of its own cast or activation, `ManaPayee::chosen` (the run's picks, set in `CostPayer`) keeps a chosen discard out, and `ManaPayee::hand_reserved` holds an offer to the cards the rest of the cost takes, `fewest_hand_cards` for a form of an additional cost. The row at priority stays, since the player may want the mana for nothing that asks. `docs/rules_deviations.md` §1.4's last sentence is closed. `tests/corpus` and `tests/cli` did not move: only `mech_cost_kinds` holds Simian Spirit Guide.
+- **Riders.** `ManaUnit::rider` and `AbilityDef::mana_rider` are one pointer to an interned `ManaRider`: `cant_be_countered`, and a `keyword` with `valid`, the spells it goes to, and `until`. `adds_no_counter` went into it. A unit whose rider matches the spell gives `Spell::keywords_until_eot`, which `EntryInfo` hands to `Creature::eot_keywords` (CR 400.7a). `spendable_unit` takes such a unit first, and one whose rider would be wasted after plain mana.
+- **`pool_mana` (49).** A row per color, restriction and rider of floating mana that has one, for both players, all three viewers. The player row is untouched and counts it all, so plain mana adds no row. Token type 35. `chosen_type` and `keyword_valid` are text and dropped by the featurizer: a subtype column costs 1,025 categorical ids, and the plan's "no layout bump" needs them. 5,090 of 6,144 are used. The CLI notes it beside the pool; `--selfcheck-state`'s complete check holds its rows to the pools; `expect_dump` reads `mana` and `mana_unit`.
+- **Sunburst (CR 702.44).** An `EtbCounter` whose count is `colors_of` the entry's list and whose kind follows the printed types, so what wasn't cast has no list and gets none. `spell_reads_colors_spent` holds it. A creature with Sunburst takes the same line with +1/+1 counters; no provisioned script is one, so that arm has no scenario.
+- **Exert (CR 701.43).** `CostPart::EXERT`, `CostStep::EXERT` on the activation and mana ability paths, `Permanent::exerted_by`, read in the untap step and restored by `ManaPaymentSnapshot`. `exerted` is a bool column of `object`, numeric so that its 0 leaves the recorded inputs alone: a categorical slot's none is not 0. A control change is the one thing a bool can't say, and no card does both.
+- **`Produced$ R R`** is two mana. A payment compares a permanent's abilities by what they add net of their own mana cost, or Arena of Glory's second ability would always replace its first. So the payer never chooses that ability, and it is offered at priority, the mana floats and the rider goes with the first spell it matches (§1.4).
+
+Against the (b) list: `ManaFromCard`, `Count$CastTotalManaSpent`, `S:Mode$ ManaRestriction` and `ManaConvert`'s scoped form are the table below; `spell_reads_colors_spent` stays, under **What stops `spent_w` to `spent_g`**.
+
+**Rows with no card now.** Checked over all the provisioned scripts: each name appears in the one script given, none of them in the vocab or this unit's cards, so none was built.
+
+| item | first testable card | stage | what it must build |
+|---|---|---|---|
+| `S:Mode$ ManaRestriction` | Hogaak, Arisen Necropolis | M7 | `ValidSource$ Card,Emblem`, `InvertValidSource$`, `EffectZone$ All`: a check of each unit's `source` against the spell in `unit_spendable_on`, so a simulated payment must stamp `source` too. It also needs Convoke and M7's graveyard cast |
+| `ManaConvert` with `ValidPlayer$`, `ValidCard$`, `ValidSA$` | Agatha's Soul Cauldron | M8 | `any_mana_as_any_color_active` taking the payee, read through `spendable_unit`'s `NO_COLOR` as Mycosynth Lattice is; it also needs `GainsAbilitiesOf$` |
+| `Count$CastTotalManaSpent` | Mockingbird | M8 | a row reading the entry's `mana_paid`, which `spell_reads_colors_spent` must then hold while it stands; it also needs `K:ETBReplacement:Copy` |
+| `ManaFromCard`, `ValidSA$ Spell.ManaFromCard.StrictlySelf` | The Myriad Pools (The Everflowing Well's back) | M9 | `mana_from` as the reader, on a `SpellCast` trigger's `ValidSA$`; it also needs `Clone`'s `CloneTarget$` and `Duration$` and `ValidCard$ Permanent` |
+
+**What stops `spent_w` to `spent_g`.** `spell_reads_colors_spent` stays in `record_cast_entry`, and `tests/open_vocab/` was left alone, because the acceptance does not hold, and did not before this unit. For the user to decide.
+
+`learn/.venv/bin/python` runs both here (torch 2.10; the S0 originals are in `ckpt.v1/`). `open_vocab_acceptance.py gate` **fails at `e71d7e71`, where this unit started, and at this tip, with the same numbers**: 8 failures, max |Δ logit| 0.145 against `TOL` 1e-4 over 614 decisions; `full`, 72 failures over 35 networks and 8,735 decisions. So nothing here broke it, and the check is red with or without the flag.
+
+The cause is the Forge pin bump `ec57222a`. For one network over all 8,735 decisions, 1,813 fail, every one holding Voice of Victory (`card_subtype` Soldier to Bard: 1,050) or Urza's Saga (its oracle-text row: 876 of 1,062); the 6,736 with neither stay within 9.8e-06. `inputs.json` can't see that: it digests a decision's tensors, and a card's table rows aren't in them, so the `featurize` tier stays green. The `actor` tier, which would see it, has been skipped since, for want of `$ROBOMAGE_TORCH_PYTHON`.
+
+The flag itself turned out harmless to the networks. In a throwaway build with it dropped, 467 of the gate's 614 digests moved, and the acceptance's numbers and its 150 failing decisions didn't change at all, the 462 without those two cards staying within 5.7e-06. `spent_w` to `spent_g` arrived in `d52df694`, after every S0 checkpoint, so `rmlearn.migrate` left them at zero: `num_proj.weight` reads exactly 0 at those five columns in the latest checkpoint of all ten runs read. A network trained from now on learns them from 0.
+
+To decide, in order. (1) What the acceptance means after a card's table rows move on purpose: re-baseline S0's outputs for those two cards, or have `gate` and `full` leave out decisions holding them, as `--skip-cards` does for `--expanded`. Either changes the check, so neither was done. (2) Then the flag can go, in its own commit, and the digests can be re-recorded. `inputs --drop-moved` would drop 467 decisions the networks don't feel, which shrinks the check; plain `inputs` would bring back the 96 dropped earlier, which moved for real. Keeping the file's decisions with today's digests needs a small mode of `write_inputs`.
+
+What stayed, and why:
+
+- **Which sources pay a generic pip** stays the auto-payer's, so Engineered Explosives' count can't be aimed under auto-mana; `--no-auto-mana` aims it, and a scenario proves that (§1.4). A card that reads colors spent paying by rows under auto-mana would close this, and Vibrance's half with it, but moves Vibrance's frames.
+- **The form of an additional cost** is offered with its mana unchecked: with one card and one form, a discard the mana needs fails the payment and reverses the cast (CR 733.1). The offer of the spell holds the whole of it.
+- **A card exiled for mana** isn't given back by a reversed payment, as a sacrificed source isn't (§2.5).
+- **`mana_potential`** counts the battlefield alone, so the frame's source counts don't show a hand's mana. It is hidden from the opponent, and the column is every frame's.
+- **A rider's keyword on a spell** shows in `object_keyword`, with no `object_provenance` row: that table is read for permanents.
+
+Evidence. Every new behaviour's scenario failed on removal: own payment, chosen discard, reserved hand, the card last, the entry's list, net yield, the rider's filter, the plain-before-wasted order, the exert restored. 31 scenario files, naming each card and each ability. `tests/corpus` and `tests/cli` never moved but for the new `tests/cli/restricted_mana`, so no `make regen`. `decks/tests/mech_mana` is the fixture: `--fuzz-games 100` in `explore` and `explore:patient`, every key hit, no error, no draw. 120 games at `--selfcheck-knowledge --selfcheck-state-sample 1`, a third each of `explore`, `--no-auto-mana` and random under `--offer-cancel`: no error. `scripted` and Python `explore` each six games of it. No new prompt: the rows are existing kinds. The rider's scenarios run in the `state` tier; a payment parked with rider mana is among the 40 `--no-auto-mana` games, but no snapshot was counted landing on one. Release `bench` against `e71d7e71`, median of 7 alternating runs: engine alone 137.6 us per decision before, 135.6 after; the actor loop 2,483 decisions/s before, 2,481 after, inside the runs' spread. All seven `mech_*` fixtures at `--fuzz-games 100`: every key hit, no error; `mech_cost_kinds`' three draws are Runehorn Hellkite's draw seven decking both players (CR 104.4a), each read in its log.
+
+Unproved. The `actor` tier's torch part was skipped, as it is without `$ROBOMAGE_TORCH_PYTHON`, and `robomage_nn` was not rebuilt; the acceptance was run by hand, as above. No game of the fixture was read for how often a rider's mana reaches a creature: 3 to 6 hits a hundred games, by scenario otherwise. A Sunburst creature and a rider with another duration have no card. No candidate entered but these two: the parse report over the 330 candidate cards leaves 44 outside the vocab, none at zero.
 
 ### M7. Cast options (XL)
 
@@ -975,6 +1017,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **Second clean-card batch (2026-11-05).** Eighteen cards entered, ids 400 to 417: Aluren, Archive Arbiter, Basalt Monolith, Chromatic Star, Collective Brutality, Crucible of Worlds, Cursed Totem, Displacer Kitten, Fiery Confluence, Giant's Boulder, Goblin Engineer, Haywire Mite, Legion Extruder, Mishra's Research Desk, Portable Hole, Soul-Guide Lantern, Thought Monitor, Thundertrap Trainer. None was placed: Aluren needed nothing from M7, its free cast and flash already read through `free_cast_grant`. Two reported clean and played wrong until fixed: an unearth offered on the battlefield (Mishra's Research Desk, and Cityscape Leveler before it) and a token returning from a same-resolution exile (Displacer Kitten, and Eldrazi Confluence before it). One gap stays, in `docs/rules_deviations.md`: the return of an "until" exile uses the stack, against CR 610.3.
 
 **M5 (c1) (2026-11-06).** All eleven of the M5 row entered, ids 418 to 428, the Robot token 920: Defense Grid, Formidable Speaker, Melded Moxite, Nihil Spellbomb, The Echoverse Fulcrum, The Stone Brain, Runehorn Hellkite, Simian Spirit Guide, Bitter Triumph, Fiend Artisan, Vibrance. None was placed elsewhere. No other candidate card's findings reached zero: the nearest have one finding each, of a later stage (Aphetto Alchemist, Cyclonic Rift, Engineered Explosives, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Two had parts that reported clean and played wrong until fixed: Vibrance and The Stone Brain (M5's Unit (c1)).
+
+**M6 (b) (2026-11-06).** Both of the M6 row entered: Engineered Explosives 429, Arena of Glory 430. None was placed elsewhere. No other candidate card's findings reached zero: the 44 left outside the vocab of the 330 candidate cards hold one finding at best, each another stage's (Aphetto Alchemist, Cyclonic Rift, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Next free card id 431, token 921.
 
 | last stage | cards (all stages needed) |
 |---|---|

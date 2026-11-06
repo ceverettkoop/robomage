@@ -48,15 +48,6 @@
       ],
       "size": "M"
      },
-     "Sunburst (CR 702.44)": {
-      "cards": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       "keyword:Sunburst"
-      ],
-      "size": "M"
-     },
      "Targets in several zones": {
       "cards": [
        "Sink into Stupor"
@@ -71,9 +62,6 @@
      "Cyclonic Rift": [
       "Overload (CR 702.96)"
      ],
-     "Engineered Explosives": [
-      "Sunburst (CR 702.44)"
-     ],
      "Hullbreacher": [
       "Opponent's-draw replacement (Hullbreacher)"
      ],
@@ -86,33 +74,31 @@
     },
     "new_cards": [
      "Cyclonic Rift",
-     "Engineered Explosives",
      "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
     ],
-    "size_points": 13
+    "size_points": 10
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 5 mechanic(s) (13 points)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "4 new card(s): 0 clean, 4 need 4 mechanic(s) (10 points)",
+   "time": "2026-11-06T06:52:45"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 24,
+    "in_vocab": 25,
     "no_script": [],
     "not_in_vocab": [
      "Cyclonic Rift",
-     "Engineered Explosives",
      "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
@@ -121,11 +107,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "29 cards: 24 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-06T02:52:32"
+   "summary": "29 cards: 25 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-06T06:52:43"
   },
   "implement": {
    "detail": {
@@ -167,26 +153,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/c/cyclonic_rift.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Engineered Explosives": {
-      "card": "Engineered Explosives",
-      "faces": [
-       "Engineered Explosives"
-      ],
-      "findings": [
-       {
-        "detail": "Sunburst",
-        "kind": "keyword",
-        "line": "K:Sunburst",
-        "name": "Sunburst"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/e/engineered_explosives.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -270,14 +236,14 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
+    "engine": "a6c7757f7c2b444647158752e3a9d32fd4c8ae10482dc1856f41692e58dd4fee",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (6 findings), 0 without a script",
-   "time": "2026-11-06T02:52:32"
+   "summary": "4 new card(s), 4 with findings (5 findings), 0 without a script",
+   "time": "2026-11-06T06:52:44"
   },
   "provision": {
    "detail": {
@@ -293,11 +259,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
+    "vocab": "cba1dab72d2a54d6a40675b1a44c1f4ee68c666d9192eb9aca35362f71f37b78"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T02:52:32"
+   "time": "2026-11-06T06:52:44"
   },
   "scrape": {
    "detail": {
