@@ -88,18 +88,15 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // and true when declined / unaffordable. Handled for the single-target / Defined$ Self form. The
     // MANA kind may suspend on a payment decision (checked before the return value); the arm-only
     // announcement is resume-guarded so a resume never re-logs it.
-    if (ab.def->unless_generic_cost > 0) {
+    if (unless_amount(ab.def->unless_cost) > 0) {
         Entity tgt = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
         Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
-        UnlessPayKind kind = ab.def->unless_cost_is_energy   ? UnlessPayKind::ENERGY
-                           : ab.def->unless_cost_is_discard  ? UnlessPayKind::DISCARD
-                           : ab.def->unless_cost_is_life      ? UnlessPayKind::LIFE
-                                                         : UnlessPayKind::MANA;
+        UnlessPayKind kind = unless_pay_kind(ab.def->unless_cost);
         if (!ctx.resuming())
             game_log("%s may pay to prevent %s from being destroyed:\n",
                      player_name(payer).c_str(), entity_name(tgt).c_str());
         bool suspended = false;
-        bool do_destroy = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+        bool do_destroy = run_unless_loop(unless_amount(ab.def->unless_cost), payer, orderer, tgt, ab.source.lki_entity(), ctx,
                                           suspended, UnlessSubject{UnlessEffect::DESTROY, tgt, false}, kind);
         if (suspended) return HandlerResult::SUSPENDED;
         if (!do_destroy) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is destroyed

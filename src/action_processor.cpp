@@ -45,6 +45,7 @@
 #include "systems/state_manager_internal.h"
 #include "targeting.h"
 #include "svar_eval.h"
+#include "unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -104,18 +105,14 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer);
 // A land was played (CR 305.1): fires LAND_PLAYED for Mode$ LandPlayed triggers, after the
 // land's own zone-change event. `origin` is the zone it was played from.
 static void fire_land_played(Entity land, Zone::Ownership player, Zone::ZoneValue origin);
-// One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
-// amount, or a life amount when is_life) the targeting player must pay or have the spell/
-// ability countered. Collected from the printed ward (CardData::ward_cost) and from any
-// granted "Ward:N" / "Ward:PayLife<N>" in the effective keyword list.
-struct WardInstance {
-    int cost;
-    bool is_life;
-};
-static std::vector<WardInstance> collect_ward_instances(Entity e);
+// The Ward abilities a permanent currently has (CR 702.21), each an unless-cost (generic mana, or
+// life) the targeting player must pay or have the spell/ability countered. Collected from the
+// printed ward (CardData::ward_cost) and from any granted "Ward:N" / "Ward:PayLife<N>" in the
+// effective keyword list.
+static std::vector<CostParts> collect_ward_costs(Entity e);
 // The Ward triggered ability's definition for one ward cost (CR 702.21a): "counter that spell or
 // ability unless its controller pays [cost]".
-static const AbilityDef *ward_trigger_def(const WardInstance &w);
+static const AbilityDef *ward_trigger_def(const CostParts &ward);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets);
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
@@ -1365,7 +1362,7 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // after a spell/ability with chosen targets is put on the stack. For each target that is a
 // battlefield permanent with a Ward cost, controlled by an opponent of the targeting object's
 // controller, push a Ward trigger onto the stack ABOVE the targeting object (so it resolves
-// first). The Ward trigger is a Counter ability whose unless_generic_cost is the ward cost —
+// first). The Ward trigger is a Counter ability whose unless_cost is the ward cost —
 // reusing the existing "counter unless pay {N}" resolution. `targets` holds each object the
 // spell/ability targets once (chosen_targets_of), so a permanent chosen by several of its
 // "target" instances (two modes, a mode and a sub-ability) became its target once and fires
@@ -1373,8 +1370,8 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // Collect every Ward ability a permanent currently HAS (CR 702.21), honoring ward that is
 // granted by a continuous effect (equipment/aura statics, Pump grants, keyword counters), not
 // just the printed ward. Two storage forms, kept distinct so they are not double-counted:
-//   - Printed ward: parse.cpp stores the numeric cost in CardData::ward_cost (with
-//     ward_is_life) and pushes the BARE string "Ward" onto CardData::keywords.
+//   - Printed ward: parse.cpp stores the cost in CardData::ward_cost and pushes the BARE
+//     string "Ward" onto CardData::keywords.
 //   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" or
 //     "Ward:PayLife<N>" (with a colon and cost arg) onto the effective keyword list — never
 //     the bare "Ward".
@@ -1384,14 +1381,14 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // each static grant once per granting source. A permanent whose abilities are removed in layer 6
 // (Humility, CR 613.1f — Permanent::abilities_removed) has no printed ward; the rebuilt keyword
 // list already omits the grants the removal erased.
-static std::vector<WardInstance> collect_ward_instances(Entity e) {
-    std::vector<WardInstance> wards;
+static std::vector<CostParts> collect_ward_costs(Entity e) {
+    std::vector<CostParts> wards;
     bool abilities_removed = global_coordinator.entity_has_component<Permanent>(e) &&
                              global_coordinator.GetComponent<Permanent>(e).abilities_removed;
     // Printed ward.
     if (!abilities_removed && global_coordinator.entity_has_component<CardData>(e)) {
         const auto &cd = active_face(e, global_coordinator.GetComponent<CardData>(e));
-        if (cd.ward_cost > 0) wards.push_back({cd.ward_cost, cd.ward_is_life});
+        if (unless_amount(cd.ward_cost) > 0) wards.push_back(cd.ward_cost);
     }
     // Granted ward(s) from the effective keyword list. Use the same effective-keyword view as
     // permanent_has_keyword: a creature's rebuilt Creature::keywords, else printed keywords.
@@ -1409,22 +1406,19 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
             if (kw.rfind("Ward:", 0) != 0) continue;
             // Same cost grammar as the printed K:Ward parse — "Ward:N" is a generic-mana
             // cost, "Ward:PayLife<N>" a life payment (Hexing Squelcher's grant).
-            WardInstance inst{1, false};
-            parse_ward_cost(kw.substr(5), inst.cost, inst.is_life);
-            wards.push_back(inst);
+            wards.push_back(parse_ward_cost(kw.substr(5)));
         }
     }
     return wards;
 }
 
-static const AbilityDef *ward_trigger_def(const WardInstance &w) {
-    std::string key = "ward:" + std::to_string(w.cost) + (w.is_life ? ":life" : ":mana");
-    return keyed_ability_def(key, [&w] {
+static const AbilityDef *ward_trigger_def(const CostParts &ward) {
+    std::string key = "ward:" + std::to_string(unless_amount(ward)) + (ward.has(CostPart::LIFE) ? ":life" : ":mana");
+    return keyed_ability_def(key, [&ward] {
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "Counter";
-        d.unless_generic_cost = static_cast<size_t>(w.cost);
-        d.unless_cost_is_life = w.is_life;  // Ward—Pay N life pays life, not mana
+        d.unless_cost = ward;  // Ward—Pay N life pays life, not mana
         return d;
     });
 }
@@ -1437,10 +1431,12 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         // The Ward permanent must be controlled by an opponent of the targeting player.
         if (!is_battlefield_permanent(tgt, opp)) continue;
 
-        std::vector<WardInstance> wards = collect_ward_instances(tgt);
+        std::vector<CostParts> wards = collect_ward_costs(tgt);
         std::string nm = entity_name(tgt);
-        for (const WardInstance &w : wards) {
-            if (w.cost <= 0) continue;
+        for (const CostParts &w : wards) {
+            const int amount = static_cast<int>(unless_amount(w));
+            if (amount <= 0) continue;
+            const bool is_life = w.has(CostPart::LIFE);
             Ability ward(ward_trigger_def(w));
             ward.source = ObjectRef::of(tgt);
             ward.controller = opp;            // the Ward permanent's controller
@@ -1452,7 +1448,7 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
             char line[256];
             snprintf(line, sizeof line,
                      "Ward %s%d%s: %s's controller may pay to counter the spell or ability "
-                     "targeting %s", w.is_life ? "—Pay " : "{", w.cost, w.is_life ? " life" : "}",
+                     "targeting %s", is_life ? "—Pay " : "{", amount, is_life ? " life" : "}",
                      nm.c_str(), nm.c_str());
             cur_game.queue_trigger(ward, line);
         }

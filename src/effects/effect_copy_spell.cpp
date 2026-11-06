@@ -252,15 +252,15 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
 
         // Offer the optional unless-cost. UnlessSwitched inverts the meaning of "paid".
         bool do_copy;
-        if (ab.def->unless_generic_cost > 0) {
+        if (unless_amount(ab.def->unless_cost) > 0) {
             if (!ctx.resuming())
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
                          entity_name(ab.source.lki_entity()).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
+            bool prevented = run_unless_loop(unless_amount(ab.def->unless_cost), payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                              suspended,
                                              UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.def->unless_switched},
-                                             UnlessPayKind::MANA, &ab.def->unless_cost_pips);
+                                             UnlessPayKind::MANA, &ab.def->unless_cost.mana());
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.

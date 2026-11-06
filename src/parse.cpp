@@ -53,6 +53,8 @@ enum class CostForm {
     ESCAPE,             // K:Escape
     MANA_ONLY,          // a keyword the engine pays in mana alone
     ESCALATE,           // K:Escalate
+    WARD,               // K:Ward and a granted Ward:
+    UNLESS,             // UnlessCost$
 };
 static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
 static bool is_mana_cost_token(const std::string &tok);
@@ -70,7 +72,7 @@ static bool cost_form_pays(CostForm form, const CostPart &part);
 static CostForm ability_cost_form(const AbilityDef &ability);
 static void read_ability_cost(const std::string &cost_str, AbilityDef &ability);
 static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword);
-static void ward_cost_findings(const std::string &arg);
+static bool read_ward_cost(const std::string &arg, CostPart &part);
 static void read_unless_cost(AbilityDef &ability, const std::string &value);
 static bool unless_cost_read_by(const std::string &category);
 static bool plain_keyword_modelled(const std::string &keyword);
@@ -448,34 +450,21 @@ static std::string svar_key_param(const std::string& line, const std::string& wa
     return value;
 }
 
-// Parse a Ward cost argument (the text after "Ward:") into its amount and payment kind
-// (CR 702.21). "PayLife<N>" is a life payment; a plain numeric arg is {N} generic mana.
-// Parse the amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
-// non-numeric body would abort, so validate digits first and degrade to a {1} mana ward
-// on a malformed or missing arg rather than crashing card load.
-void parse_ward_cost(const std::string &arg, int &cost, bool &is_life) {
-    cost = 1;
-    is_life = false;
-    if (arg.rfind("PayLife<", 0) == 0) {
-        size_t close = arg.find('>');
-        std::string n = (close != std::string::npos && close > 8) ? arg.substr(8, close - 8)
-                                                                  : std::string();
-        if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
-            cost = std::stoi(n);
-            is_life = true;
-        }
-    } else if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos) {
-        cost = std::stoi(arg);
-    }
+// A Ward cost is one token, PayLife<N> or N. See parse.h.
+static bool read_ward_cost(const std::string &arg, CostPart &part) {
+    return read_cost_token(arg, part) && cost_form_pays(CostForm::WARD, part);
 }
 
-// A Ward cost parse_ward_cost cannot express is a parse finding: it reads as a {1} ward.
-static void ward_cost_findings(const std::string &arg) {
-    std::vector<std::string> parts;
-    int count = 0;
-    const bool life = cost_token_arg(arg, "PayLife", parts) && parts.size() == 1 && read_cost_count(parts[0], count);
-    if (!arg.empty() && !life && !read_cost_count(arg, count))
-        parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
+// See parse.h.
+CostParts parse_ward_cost(const std::string &arg) {
+    CostParts cost;
+    CostPart part;
+    if (!read_ward_cost(arg, part)) {
+        part = CostPart::of(CostPart::MANA);
+        part.mana.insert(GENERIC);
+    }
+    cost.add(part);
+    return cost;
 }
 
 // all to lowercase, spaces to underscores, other characters removed
@@ -657,7 +646,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>. An alternative cost
 // pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
 // fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
-// Escalate mana and a discard of N matching cards.
+// Escalate mana and a discard of N matching cards. A Ward cost is {N} or fixed life; an unless-cost
+// mana, energy or a discard of N cards of the payer's choice (run_discard_unless takes any card).
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
     const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
@@ -694,6 +684,12 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
         case CostForm::ESCALATE:
             return part.kind == CostPart::MANA ||
                    (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
+        case CostForm::WARD:
+            return (part.kind == CostPart::LIFE && !part.count_is_x) ||
+                   (part.kind == CostPart::MANA && part.mana.count(GENERIC) == part.mana.size());
+        case CostForm::UNLESS:
+            return part.kind == CostPart::MANA || part.kind == CostPart::ENERGY ||
+                   (part.kind == CostPart::DISCARD && part.filter == "Card");
     }
     return false;
 }
@@ -1084,9 +1080,12 @@ static CostParts keyword_mana_cost(const std::string &cost, const std::string &k
 // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
 // is synthesized when a targeting spell/ability is put on the stack.
 static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
-    // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
-    parse_ward_cost(keyword_arg(kw_line), ctx.card.ward_cost, ctx.card.ward_is_life);
-    ward_cost_findings(keyword_arg(kw_line));
+    // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost. A cost it cannot
+    // express is a parse finding: it reads as a {1} ward.
+    const std::string arg = keyword_arg(kw_line);
+    ctx.card.ward_cost = parse_ward_cost(arg);
+    CostPart part;
+    if (!arg.empty() && !read_ward_cost(arg, part)) parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
     ctx.card.keywords.push_back("Ward");
 }
 
@@ -1920,57 +1919,19 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
         return;
     }
     std::vector<std::string> parts;
-    if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1) {
+    if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1 &&
+        (ability.category == "DestroyAll" || ability.category == "DealDamage")) {
         // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
         // not the generic {N} mana unless-cost: the energy amount is an SVar read as it resolves.
         // Galvanic Discharge's DealDamage pays the same way.
-        if (ability.category == "DestroyAll" || ability.category == "DealDamage") {
-            ability.unless_energy_expr = parts[0];  // SVar token; resolved post-parse
-            return;
-        }
-        // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice): pay N
-        // energy ({E}) to prevent the effect. The count is a literal here; route it through the
-        // generic unless-cost count + an energy flag so run_unless_loop pays it.
-        int n = 0;
-        if (read_cost_count(parts[0], n)) {
-            ability.unless_cost_is_energy = true;
-            ability.unless_generic_cost = static_cast<size_t>(n);
-        } else {
-            parse_finding("cost", "PayEnergy", "UnlessCost$ " + value);
-        }
+        ability.unless_energy_expr = parts[0];  // SVar token; resolved post-parse
         return;
     }
     if (ability.category == "DealDamage") {
         parse_finding("ability_param", "DealDamage.UnlessCost", "UnlessCost$ " + value + " is not offered");
         return;
     }
-    if (cost_token_arg(value, "Discard", parts)) {
-        // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from hand to
-        // prevent the counter. The N count rides on unless_generic_cost; the discard flag selects
-        // the discard payment path in run_unless_loop. run_discard_unless takes any card.
-        int n = 0;
-        if (parts.size() >= 2 && parts[1] == "Card" && read_cost_count(parts[0], n)) {
-            ability.unless_generic_cost = static_cast<size_t>(n);
-            ability.unless_cost_is_discard = true;
-        } else {
-            parse_finding("cost", "Discard", "UnlessCost$ " + value);
-        }
-        return;
-    }
-    int generic = 0;
-    if (read_cost_count(value, generic)) {
-        ability.unless_generic_cost = static_cast<size_t>(generic);
-        return;
-    }
-    // A colored/mixed unless-cost (Chain Lightning: UnlessCost$ R R = {R}{R}). Parse the exact
-    // pips; the pip count drives the >0 gate and logging, the pips drive payment.
-    for (const std::string &tok : cost_tokens(value)) {
-        if (is_plain_mana_token(tok)) continue;
-        parse_finding("cost", cost_finding_name(tok), "UnlessCost$ " + value);
-        return;
-    }
-    ability.unless_cost_pips = parse_mana_cost(value);
-    ability.unless_generic_cost = ability.unless_cost_pips.size();
+    ability.unless_cost = parse_cost(value, CostForm::UNLESS, "UnlessCost$ " + value);
 }
 
 // Applies a single key/value parameter to an ability struct.
@@ -4286,13 +4247,12 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                             tapped_cond_filter = f;
                         } else if (k == "ConditionCompare") {
                             tapped_cond_compare = v;
-                        } else if (k == "UnlessCost" && v.rfind("PayLife<", 0) == 0) {
+                        } else if (k == "UnlessCost") {
                             // "...unless you pay N life" — the controller may pay N life as the
                             // permanent enters to have it enter untapped (Witch-Blessed Meadow,
-                            // shock lands). Parse the N out of PayLife<N>.
-                            size_t lt = v.find('<'), gt = v.find('>');
-                            if (lt != std::string::npos && gt != std::string::npos && gt > lt + 1)
-                                tapped_unless_life = std::stoi(v.substr(lt + 1, gt - lt - 1));
+                            // shock lands).
+                            CostPart part;
+                            if (read_cost_token(v, part) && part.kind == CostPart::LIFE) tapped_unless_life = part.count;
                         }
                     }
                 }

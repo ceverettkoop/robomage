@@ -47,13 +47,11 @@ const AbilityDef *parse_granted_trigger(const std::string &trigger_line,
                                         const std::string &svar_body);
 
 // Parse a Ward cost argument — the text after "Ward:" in a K: line or a granted keyword
-// (CR 702.21). Sets `cost` and `is_life` for the two supported shapes: "PayLife<N>"
-// (Ward—Pay N life) and a plain numeric "N" ({N} generic mana). A missing or malformed arg
-// degrades to a {1} mana ward rather than crashing card load (with -fno-exceptions a stray
-// std::stoi would abort). Shared by the printed-ward K: parse (parse.cpp) and the
-// granted-ward keyword scan (collect_ward_instances in action_processor.cpp) so both paths
-// enforce the same cost shapes.
-void parse_ward_cost(const std::string &arg, int &cost, bool &is_life);
+// (CR 702.21), in its two supported shapes: "PayLife<N>" (Ward—Pay N life) and a plain numeric
+// "N" ({N} generic mana). A missing or malformed arg degrades to a {1} mana ward. Shared by the
+// printed-ward K: parse (parse.cpp) and the granted-ward keyword scan (collect_ward_costs in
+// action_processor.cpp) so both paths enforce the same cost shapes.
+CostParts parse_ward_cost(const std::string &arg);
 
 // ── Parser findings (--parse-report, parse_report.h) ─────────────────────────────────────────
 //

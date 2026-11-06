@@ -96,29 +96,28 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 game_log("%s is not the required color — not countered\n", tname.c_str());
                 do_counter = false;
             }
-            if (do_counter && ab.def->unless_generic_cost > 0) {
+            const size_t unless_cost = unless_amount(ab.def->unless_cost);
+            if (do_counter && unless_cost > 0) {
                 std::string tname = entity_name(tgt);
                 // UnlessPayer$ (Reality Smasher: TriggeredSourceSAController) selects WHO pays —
                 // the controller of the spell that targeted the source. When unset, default to the
                 // countered spell's controller (Ward / Mana Leak / Daze).
                 Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer
                                                                           : target_controller;
-                UnlessPayKind kind = ab.def->unless_cost_is_discard ? UnlessPayKind::DISCARD
-                                   : ab.def->unless_cost_is_life     ? UnlessPayKind::LIFE
-                                                                : UnlessPayKind::MANA;
+                UnlessPayKind kind = unless_pay_kind(ab.def->unless_cost);
                 // Arm-only log: a resume re-enters the suspended unless prompt
                 // without re-announcing it.
                 if (!ctx.resuming()) {
                     if (kind == UnlessPayKind::DISCARD)
                         game_log("%s may discard %zu card%s to save %s:\n", player_name(payer).c_str(),
-                                 ab.def->unless_generic_cost, ab.def->unless_generic_cost == 1 ? "" : "s", tname.c_str());
+                                 unless_cost, unless_cost == 1 ? "" : "s", tname.c_str());
                     else if (kind == UnlessPayKind::LIFE)
-                        game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.def->unless_generic_cost);
+                        game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), unless_cost);
                     else
-                        game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.def->unless_generic_cost);
+                        game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), unless_cost);
                 }
                 bool suspended = false;
-                do_counter = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+                do_counter = run_unless_loop(unless_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
                                              suspended, UnlessSubject{UnlessEffect::COUNTER, tgt, false},
                                              kind);
                 if (suspended) return HandlerResult::SUSPENDED;

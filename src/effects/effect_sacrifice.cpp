@@ -115,13 +115,13 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         // returns false when paid (don't sacrifice) and true when declined / unaffordable (sacrifice).
         // The yes-no may suspend (checked before the return value); the arm-only announcement is
         // resuming-guarded so a resume never re-logs it.
-        if (ab.def->unless_cost_is_energy) {
+        if (ab.def->unless_cost.has(CostPart::ENERGY)) {
             Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
             if (!ctx.resuming())
                 game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
-                         ab.def->unless_generic_cost);
+                         unless_amount(ab.def->unless_cost));
             bool suspended = false;
-            bool unpaid = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
+            bool unpaid = run_unless_loop(unless_amount(ab.def->unless_cost), payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                           suspended, UnlessSubject{UnlessEffect::SACRIFICE, ab.source.lki_entity(), false},
                                           UnlessPayKind::ENERGY);
             if (suspended) return HandlerResult::SUSPENDED;

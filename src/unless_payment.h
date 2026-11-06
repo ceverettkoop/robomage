@@ -6,12 +6,17 @@
 
 #include "choice_labels.h"
 #include "classes/colors.h"
+#include "components/cost_part.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 
 class Orderer;
 class FrameCtx;
 struct Ability;
+
+// An UnlessCost$ as run_unless_loop takes it: how it is paid, and how much of that (0 for no cost).
+UnlessPayKind unless_pay_kind(const CostParts &cost);
+size_t unless_amount(const CostParts &cost);
 
 // Offer an unless-cost (CR 118.12) to `controller`: pay `cost` of `kind` — {cost} generic mana or
 // the exact `cost_pips` (Chain Lightning: {R}{R}), `cost` life (Ward—Pay life, CR 702.21), discard

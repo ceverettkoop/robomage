@@ -102,6 +102,25 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // meaningless (check it FIRST). The MANA kind is a live-menu loop (Shape C): its pay/decline menu
 // interleaves per-source tap-for-mana actions rebuilt from live state each pass, so a chosen tap
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
+UnlessPayKind unless_pay_kind(const CostParts &cost) {
+    if (cost.has(CostPart::ENERGY)) return UnlessPayKind::ENERGY;
+    if (cost.has(CostPart::DISCARD)) return UnlessPayKind::DISCARD;
+    return cost.has(CostPart::LIFE) ? UnlessPayKind::LIFE : UnlessPayKind::MANA;
+}
+
+size_t unless_amount(const CostParts &cost) {
+    switch (unless_pay_kind(cost)) {
+        case UnlessPayKind::ENERGY:
+            return static_cast<size_t>(cost.energy());
+        case UnlessPayKind::DISCARD:
+            return static_cast<size_t>(cost.count(CostPart::DISCARD));
+        case UnlessPayKind::LIFE:
+            return static_cast<size_t>(cost.life());
+        default:
+            return cost.mana().size();
+    }
+}
+
 bool pay_switched_energy(const Ability &ab) {
     const int n = static_cast<int>(evaluate_amount(ab.def->unless_energy_expr, ab.controller, 0, ab.target.get()));
     auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(ab.controller));

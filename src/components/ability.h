@@ -230,18 +230,12 @@ struct AbilityDef {
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     bool shuffle_non_mandatory = false;  // ShuffleNonMandatory$ True — no shuffle when the search finds nothing
     bool no_shuffle = false;             // NoShuffle$ True — a library search doesn't shuffle; a later instruction does
-    size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
-    bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
-    // UnlessCost$ Discard<N/Card> (Reality Smasher: "counter ... unless its controller discards a
-    // card"). The payer discards `unless_generic_cost` card(s) of their choice from hand to prevent
-    // the counter; if they can't (or decline) the spell is countered. General "counter unless
-    // discard" path (CR 701.8 discard); reuses the same run_unless_loop choice machinery.
-    bool unless_cost_is_discard = false;
-    // UnlessCost$ PayEnergy<N> on a non-DestroyAll effect (Static Prison: "sacrifice CARDNAME
-    // unless you pay {E}"). The payer may pay `unless_generic_cost` energy ({E}, CR 122.1c) to
-    // prevent the effect; if they can't or decline, the effect happens. (An amount read as it
-    // resolves rides on unless_energy_expr instead — see parse.cpp.)
-    bool unless_cost_is_energy = false;
+    // UnlessCost$: {N} or exact pips (Chain Lightning's {R}{R}), N life (Ward—Pay life, CR 702.21),
+    // N cards of the payer's choice (Reality Smasher: "counter ... unless its controller discards a
+    // card"), or N energy (Static Prison: "sacrifice CARDNAME unless you pay {E}", CR 122.1c). Read
+    // through unless_pay_kind and unless_amount, which run_unless_loop takes. (An energy amount
+    // read as it resolves rides on unless_energy_expr instead — see parse.cpp.)
+    CostParts unless_cost;
     // UnlessCost$ PayEnergy<SVar> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies'
     // DestroyAll): the controller pays that much energy ({E}) and the effect happens ONLY IF it is
     // paid. The runtime Count$ expression of the amount (Count$ChosenNumber).
@@ -256,10 +250,6 @@ struct AbilityDef {
     // at resolution from the (inherited) target, not bound at trigger time. General "then that player
     // or that permanent's controller may pay ...".
     bool unless_payer_is_targeted_or_controller = false;
-    // UnlessCost$ with COLORED pips (Chain Lightning: UnlessCost$ R R = {R}{R}). Empty ⇒ the cost is
-    // the generic {unless_generic_cost} count. When non-empty these exact pips are the mana the payer
-    // must produce; unless_generic_cost still holds the pip count for the >0 gate and logging.
-    ManaValue unless_cost_pips;
     // UnlessSwitched$ True on a NON-DestroyAll effect (Chain Lightning's DB$ CopySpellAbility):
     // invert the normal "do the effect UNLESS the cost is paid" into "do the effect ONLY IF the cost
     // is paid" (paying {R}{R} ENABLES the copy).
