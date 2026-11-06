@@ -8,6 +8,7 @@
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/player.h"
+#include "coverage.h"
 #include "ecs/coordinator.h"
 #include "mana_system.h"
 #include "queries/battlefield.h"
@@ -578,6 +579,7 @@ static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions
     LegalAction land_la(SPECIAL_ACTION, offer.card, "Play " + offer.face.name + " (from exile)");
     land_la.category = ActionCategory::PLAY_LAND;
     actions.push_back(land_la);
+    coverage_cast_offer("exile_land");
 }
 
 // A land isn't cast (CR 601.1).
@@ -624,7 +626,7 @@ static LegalAction row_action(const CastRow &row, const CastSection &section, En
     LegalAction la(CAST_SPELL, card, desc);
     la.category = ActionCategory::CAST_SPELL;
     la.option_ordinal = row.ordinal;
-    la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination};
+    la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination, row.name};
     return la;
 }
 
@@ -636,8 +638,10 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
     CastOffer offer{card, covered && section.face == CastFace::BACK ? *printed.backside : printed, section.zone, window};
     if (covered)
         for (const CastRow &row : section.rows)
-            if (row.offered(offer))
+            if (row.offered(offer)) {
                 actions.push_back(row_action(row, section, card, "Cast " + offer.face.name + row.label));
+                coverage_cast_offer(row.name);
+            }
     if (section.beside) section.beside(offer, actions);
 }
 

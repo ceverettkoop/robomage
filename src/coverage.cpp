@@ -111,3 +111,11 @@ void coverage_cost(CostPart::Kind kind, const char *form) {
 void coverage_cast(const char *mode) {
     if (counting) count_hit("cast", mode);
 }
+
+void coverage_cast_offer(const char *row) {
+    if (counting) count_hit("cast_offer", row);
+}
+
+void coverage_cast_row(const char *row) {
+    if (counting) count_hit("cast_row", row);
+}

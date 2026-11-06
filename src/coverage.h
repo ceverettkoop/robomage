@@ -46,5 +46,10 @@ void coverage_cost(CostPart::Kind kind, const char *form = nullptr);
 // cast <mode>: a spell became cast with this LegalAction flag set (one hit per flag), or a special
 // action of that kind was taken.
 void coverage_cast(const char *mode);
+// cast_offer <row>: a row of the cast table (cast_options.cpp) was offered at priority.
+void coverage_cast_offer(const char *row);
+// cast_row <row>: a spell became cast by that row, or a land was played from another zone.
+// An exile grant's cast counts its resource too (`grant_free`, `grant_energy`, `grant_life`).
+void coverage_cast_row(const char *row);
 
 #endif /* COVERAGE_H */

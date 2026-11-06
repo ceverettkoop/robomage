@@ -151,6 +151,7 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 // payment_blocked guard and reverse the cast.
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
+static const char *grant_row(Entity spell_entity);
 // Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
 // drive it: its payment, then the move, or on a failed payment nothing.
 static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
@@ -259,6 +260,8 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     if (pc.chosen.alternative()) coverage_cast("alt_cost");
     const CastOption &how = pc.chosen.option;
     const bool impulse = how.permission == Permission::EXILE_GRANT;
+    coverage_cast_row(how.row);
+    if (how.cost == CastCost::GRANT) coverage_cast_row(grant_row(spell_entity));
     if (how.offspring) coverage_cast("offspring");
     if (impulse) coverage_cast("impulse");
     if (how.cost == CastCost::NO_MANA_COST) coverage_cast("without_mana_cost");
@@ -266,6 +269,14 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     if (how.cost != CastCost::MANA_COST || how.offspring || impulse || pc.chosen.back_face()) return;
     const EntryInfo *entry = find_entry_info(spell_entity);
     coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
+}
+
+// The --coverage row of what `spell_entity`'s exile grant put in place of its mana cost.
+static const char *grant_row(Entity spell_entity) {
+    const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
+    if (grant && grant->resource == Game::ImpulseCastPermission::FREE) return "grant_free";
+    if (grant && grant->resource == Game::ImpulseCastPermission::ENERGY) return "grant_energy";
+    return "grant_life";
 }
 
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer) {
@@ -2650,6 +2661,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // exile under a play permission).
             Zone::Ownership land_player = priority_seat();
             const Zone::ZoneValue played_from = zone.location;
+            if (played_from != Zone::HAND) coverage_cast_row(played_from == Zone::EXILE ? "exile_land" : "graveyard_land");
             orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
             zone.controller = land_player;
             // ForgetOnMoved$ Exile: a land played from exile under a Light Up the Stage play

@@ -42,6 +42,7 @@ struct CastOption {
         // Where it goes as it leaves the stack whatever else would send it elsewhere, read by
         // spell_destination; GRAVEYARD leaves that to what moves it.
         Zone::ZoneValue destination = Zone::GRAVEYARD;
+        const char *row = nullptr;  // the name of its row, its --coverage key
 
         bool alternative() const { return cost >= CastCost::ALTERNATIVE; }
         bool operator==(const CastOption &o) const {

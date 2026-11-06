@@ -351,10 +351,11 @@ cannot rewind them.
 | `category` | a decision is asked and answered, so their sum is the decision log's length less its concessions (a one-row menu is never asked) | the taken row's `ActionCategory`, by its SCHEMA name (`SACRIFICE_PERMANENT`) |
 | `cost` | a cast or activation pays this part at its pay step | the part's kind (`CostPart::Kind`): `MANA`, `TAP`, `LOYALTY`, `LIFE`, `ENERGY`, `SACRIFICE`, `RETURN`, `DISCARD`, `EXILE`, `EXILE_FROM_HAND`, `EXILE_FROM_GRAVEYARD`; with a form, `LIFE.x`, `LIFE.phyrexian`, `SACRIFICE.self`, `DISCARD.self`, `DISCARD.hand`, `EXILE_FROM_GRAVEYARD.delve`, `MANA.tap_to_pay` (a pip paid by tapping a permanent, once per tap); `DISCARD.trigger` and `MANA.trigger` (a triggered ability's offered cost), `EXILE.self`, `EXILE_FROM_HAND.self`, `EXILE_FROM_GRAVEYARD.self` (the source exiling itself), `LIFE.additional`, `DISCARD.additional` (the form of an additional cost announced), `MANA.hybrid` (hybrid pips announced); a mana ability the payer taps by itself, unless costs and costs of special actions are not counted |
 | `row` | a filter or SVar table row is read that no other kind tells from its neighbours | `leastPower`, `without`, `TargetedPlayerOwn`, `TargetedPlayer`, `DivideEvenlyDown`, `sunburst` (a Sunburst entry that counted a color), `mana_rider_keyword` (a spell gained a rider's keyword) |
-| `cast` | a spell becomes cast, once per `LegalAction` flag it carries | `flashback`, `escape`, `alt_cost`, `offspring`, `impulse`, `without_mana_cost`, `back_face`, `split_half`; with no flag, `hand` or `graveyard_permission`. The special actions too: `suspend`, `companion`, `land_back_face` |
+| `cast` | a spell becomes cast, once per way its `CastOption` departs from a cast of the mana cost | `flashback`, `escape`, `alt_cost`, `offspring`, `impulse`, `without_mana_cost`, `back_face`, `split_half`; with none, `hand` or `graveyard_permission`. The special actions too: `suspend`, `companion`, `land_back_face` |
+| `cast_offer` | a row of the cast table (`src/cast_options.cpp`) is offered at priority | the row's name (`hand`, `evoke`, `graveyard_free`, `exile_land`) |
+| `cast_row` | a spell becomes cast by that row, or a land is played from another zone | the row's name, `graveyard_land`, `exile_land`; an exile grant's cast also `grant_free`, `grant_energy` or `grant_life` |
 
-The `cast` names mirror today's ad-hoc fields; `docs/mechanics_plan.md` M7 replaces them with typed
-cast options. The `fuzz` tier uses the counts to prove that a fixture
+The `fuzz` tier uses the counts to prove that a fixture
 deck's games reached their paths (`docs/ci.md`).
 
 ## Checking decks and card scripts (no game)
