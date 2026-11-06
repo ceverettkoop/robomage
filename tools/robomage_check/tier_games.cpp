@@ -390,8 +390,9 @@ namespace rmcheck {
 // games per ring matchup under --no-auto-mana (ring matchup k's game i: seed + 700000 + 1000k + i).
 // The ring is the playable decks' ring, or the matchups themselves when --matchups is an explicit
 // list ("candidates/x:*", a deck's onboarding campaign: every leg plays the deck). Then the
-// fixture decks (coverage_check.h): each one's mirror, bo1 <mode> games under --coverage (fixture k's
-// game i: seed + 800000 + 1000k + i), their counts summed and its .expect keys checked. Only the
+// fixture decks (coverage_check.h): each one's mirror, bo1 <mode> games under --coverage (fixture
+// f's game i: seed + 800000 + 1000 fixture_seed_slot(f) + i), their counts summed and its .expect
+// keys checked. Only the
 // mirror's counts prove a key: an opponent's deck hitting it would prove nothing about the fixture.
 void tier_fuzz(const Options &opt, Report &rep) {
     const std::vector<std::pair<std::string, std::string>> pairs =
@@ -437,7 +438,7 @@ void tier_fuzz(const Options &opt, Report &rep) {
         for (int i = 0; i < fixture_games; ++i) {
             GameJob j;
             j.deck_a = j.deck_b = fixtures[k];
-            j.seed = opt.seed + 800000 + 1000 * static_cast<long>(k) + i;
+            j.seed = opt.seed + 800000 + 1000 * fixture_seed_slot(fixtures[k]) + i;
             j.mode = opt.mode;
             j.coverage = path_join(coverage_dir, std::to_string(k) + "_" + std::to_string(i) + ".txt");
             fixture_jobs.push_back(j);

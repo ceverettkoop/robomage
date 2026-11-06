@@ -19,6 +19,9 @@ namespace rmcheck {
 // the fixtures it names.
 std::vector<std::string> fuzz_fixtures(const Options &opt);
 
+// The block of seeds `fixture`'s games take, from its name: a new fixture moves no other's games.
+long fixture_seed_slot(const std::string &fixture);
+
 // `fixture`'s verdict: its deck checked by the engine's --check-decks, the coverage files of its
 // `games` games (each a --coverage output) summed into <out>/coverage/<stem>.txt, and an error for
 // each key of its .expect with no hits, for a game that wrote no file, and for an .expect that

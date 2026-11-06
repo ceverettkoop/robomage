@@ -72,6 +72,12 @@ static std::string render_counts(const CoverageCounts &counts) {
 
 namespace rmcheck {
 
+long fixture_seed_slot(const std::string &fixture) {
+    uint64_t hash = 0xcbf29ce484222325ULL;  // FNV-1a
+    for (unsigned char c : fixture) hash = (hash ^ c) * 0x100000001b3ULL;
+    return static_cast<long>(hash % 1000);
+}
+
 std::vector<std::string> fuzz_fixtures(const Options &opt) {
     std::vector<std::string> out;
     if (!opt.matchups.empty() && matchups_explicit(opt.matchups)) {
