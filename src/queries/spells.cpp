@@ -19,6 +19,13 @@ FilterSpec spell_additional_sac_spec(const CardData &cd) {
     return FilterSpec();
 }
 
+const CostParts &spell_additional_cost(const CardData &cd) {
+    static const CostParts kNoCost;
+    for (const auto &ab : cd.abilities)
+        if (ab->ability_type == AbilityDef::SPELL && !ab->cost.filter(CostPart::SACRIFICE).empty()) return ab->cost;
+    return kNoCost;
+}
+
 bool spell_has_variable_life_cost(const CardData &cd) {
     for (const auto &ab : cd.abilities)
         if (ab->ability_type == AbilityDef::SPELL && ab->cost.life_is_x())

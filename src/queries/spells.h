@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 
+#include "../components/cost_part.h"
 #include "../components/filter_spec.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
@@ -32,6 +33,10 @@ inline bool spell_cast_with_flashback(Entity e) {
 // it with the same SACRIFICE_PERMANENT machinery activated abilities use, and cast
 // legality requires a matching permanent (CR 601.2f).
 FilterSpec spell_additional_sac_spec(const CardData &cd);
+
+// The Cost$ of the spell ability carrying that additional sacrifice (no parts when it has none),
+// what can_pay holds a cast to beyond its mana.
+const CostParts &spell_additional_cost(const CardData &cd);
 
 // True if the spell's SPELL ability carries a VARIABLE life cost (Cost$ ... PayLife<X>): the
 // amount of life paid IS the spell's X (Count$xPaid), chosen as an additional cost while casting

@@ -28,6 +28,7 @@
 #include "../queries/activation.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/costs.h"
 #include "../queries/counters.h"
 #include "../queries/filters.h"
 #include "../queries/lki.h"
@@ -61,6 +62,8 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                 const ManaValue &mana, uint16_t unchecked, std::shared_ptr<Orderer> orderer);
 static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction &cast, const CardData &face,
     Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
@@ -152,6 +155,22 @@ static ManaValue regular_cast_cost(
     return cost;
 }
 
+// Only a cast from hand and a free cast hold the player to the spell's additional sacrifice; every
+// other cast for the card's mana cost (a back face, Offspring, a permission to cast it from a
+// graveyard or exile) is offered without it, and SPELL_SAC then finds nothing to take.
+constexpr uint16_t kSpellSacrificeUnchecked = CostParts::kind_bit(CostPart::SACRIFICE);
+
+// Can `caster` cast `face` for its mana cost, `mana` after reductions, with the hybrid and Phyrexian
+// pips folded in (castable iff SOME assignment is payable), and pay its additional costs?
+static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                                 const ManaValue &mana, uint16_t unchecked, std::shared_ptr<Orderer> orderer) {
+    CostCheck check(caster, card_entity, orderer);
+    check.mana = &mana;
+    check.spell = &face;
+    check.unchecked = unchecked;
+    return can_pay(spell_additional_cost(face), check);
+}
+
 // Free-cast statics (Omniscience, Aluren; rules_mod::free_cast_grant): beside `cast`, the card's
 // cast from `from_zone` for its own costs, offer the cast without paying its mana cost — the
 // alternative cost of CR 118.9, so never combined with another one (118.9a). It keeps the
@@ -168,10 +187,13 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
                                             : spell_timing_ok(face, caster, sorcery_window);
     if (!timing_ok || !can_cast_now(face, card, caster, from_zone, sorcery_window, /*ignore_timing=*/true, orderer))
         return;
-    const FilterSpec sac_spec = spell_additional_sac_spec(face);
-    if (!sac_spec.empty() && controlled_permanents_matching(caster, sac_spec, orderer->mEntities, card).empty()) return;
     const ManaValue mana = floored_alt_mana_cost(face, ManaValue{}, caster);
-    if (!mana.empty() && !can_pay_mana(caster, mana, card, orderer, face.has_delve, face.has_improvise)) return;
+    CostCheck check(caster, card, orderer);
+    check.mana = &mana;
+    check.delve = face.has_delve;
+    check.improvise = face.has_improvise;
+    const CostParts &additional = spell_additional_cost(face);
+    if (!can_pay(additional, check)) return;
     LegalAction free_la = cast;
     free_la.without_mana_cost = true;
     free_la.option_ordinal = 8;
@@ -180,7 +202,8 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     if (!face.has_offspring) return;
     ManaValue with_offspring = mana;
     for (Colors c : face.offspring_cost.mana()) with_offspring.insert(c);
-    if (!can_pay_mana(caster, with_offspring, card, orderer, face.has_delve, face.has_improvise)) return;
+    check.mana = &with_offspring;
+    if (!can_pay(additional, check)) return;
     free_la.use_offspring = true;
     free_la.description += " (offspring)";
     actions.push_back(free_la);
@@ -188,9 +211,8 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
 
 // The activation-legality gates every non-mana activated-ability offer shares (CR 602.2, 602.5):
 // no CantBeActivated prohibition on the source, "activate only as a sorcery" timing, the source's
-// state (Activation$ condition, {T} readiness, activation limit), the mana cost after ReduceCost$,
-// the energy and life costs, the sacrifice and return-to-hand costs, a legal target for every
-// required target, and the payment-failure guard. `source` is the object the ability is activated
+// state (Activation$ condition, activation limit), the cost with its mana after ReduceCost$ (can_pay),
+// a legal target for every required target, and the payment-failure guard. `source` is the object the ability is activated
 // from: a battlefield permanent, or a card in hand (channel, ninjutsu) or graveyard (unearth).
 // Loyalty and ninjutsu windows stay with their callers.
 static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
@@ -201,34 +223,12 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     if (ab.def->sorcery_speed_only && !sorcery_window) return false;
     if (!activation_source_ready(ab, source, activator, orderer->mEntities)) return false;
     // Gate on the post-ReduceCost$ cost (Eiganjo's Channel is cheaper per legendary creature you
-    // control) so legality matches what payment will charge. A {T} in the ability's own cost
-    // spends the source's tap, so its mana ability is NOT also available to pay with — exclude
-    // it, or a Blast Zone whose only other land is an Ancient Tomb reads as able to pay {3} off 2
-    // mana plus its own {C}.
-    // The mana is paid before the PayLife cost, so a painful source may not spend the life that
-    // cost needs (life_reserve).
-    ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
-    if (!cost.empty() &&
-        !can_pay_mana(activator, cost, ManaPayee(source, ManaPurpose::ACTIVATE), orderer, /*has_delve=*/false,
-                      /*has_improvise=*/false, /*exclude_entity=*/ab.def->cost.taps() ? source : 0,
-                      /*life_reserve=*/ab.def->cost.life()))
-        return false;
-    const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
-    // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-    if (ab.def->cost.energy() > 0 && player_energy(player) < ab.def->cost.energy()) return false;
-    // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A fetch land
-    // (Pay 1 life) at 1 life is still legal (you pay down to 0, then die); only an ability
-    // costing MORE life than you have is filtered out here.
-    if (!can_pay_life(player, ab.def->cost.life())) return false;
-    // sac_cost_spec: require controller has a permanent matching type (honouring a .Other
-    // self-exclusion against the ability's source — "another creature").
-    if (!ab.def->cost.filter(CostPart::SACRIFICE).empty() &&
-        controlled_permanents_matching(activator, ab.def->cost.filter(CostPart::SACRIFICE), orderer->mEntities, source).empty())
-        return false;
-    // Return cost: require controller has a land of given subtype
-    if (!ab.def->cost.filter(CostPart::RETURN).empty() &&
-        controlled_permanents_matching(activator, ab.def->cost.filter(CostPart::RETURN), orderer->mEntities).empty())
-        return false;
+    // control) so legality matches what payment will charge.
+    const ManaValue mana = effective_activation_mana_cost(ab, activator, orderer);
+    CostCheck check(activator, source, orderer);
+    check.payee = ManaPayee(source, ManaPurpose::ACTIVATE);
+    check.mana = &mana;
+    if (!can_pay(ab.def->cost, check)) return false;
     // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
     // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
     // against its own controller's nonbasic lands).
@@ -264,7 +264,8 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
         // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
         // paid.
-        if (!can_pay_spell_mana(caster, regular_cast_cost(ecd, card, caster, orderer), ecd, card, orderer))
+        if (!regular_cast_payable(ecd, card, caster, regular_cast_cost(ecd, card, caster, orderer),
+                                  kSpellSacrificeUnchecked, orderer))
             return false;
     } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
@@ -305,8 +306,11 @@ bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Ordere
     if (!can_cast_now(cd, card, owner, Zone::HAND, /*sorcery_window=*/false,
                       /*ignore_timing=*/true, orderer))
         return false;
-    ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner);
-    return alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
+    const ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner);
+    CostCheck check(owner, card, orderer);
+    check.mana = &alt_mana;
+    check.unchecked = kAllButMana;
+    return can_pay(cd.alt_cost.cost, check);
 }
 
 // An ACTIVATE_ABILITY action for `ab` of `source`. `ability_index` is the ability's stable
@@ -419,67 +423,21 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         if (!found) return false;
     }
 
-    // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
-    // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
-    // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player);
-
-    // Free alt cost: castable iff any floor imposed on it is payable
-    if (alt_cost.cost.is_free())
-        return alt_mana.empty() || can_pay_mana(priority_player, alt_mana, card_entity, orderer);
-
-    if (alt_cost.cost.count(CostPart::RETURN) > 0) {
-        size_t matching = controlled_permanents_matching(priority_player, alt_cost.cost.filter(CostPart::RETURN),
-                                                         orderer->mEntities).size();
-        // Fall through (don't return true here): a pitch-style cost (Daze) still has to
-        // cover the floored mana portion checked below when a SetCost floor is active.
-        if (matching < static_cast<size_t>(alt_cost.cost.count(CostPart::RETURN))) return false;
-    }
-
-    if (alt_cost.cost.life() > 0) {
-        Entity pp_entity = get_player_entity(priority_player);
-        if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity), alt_cost.cost.life()))
-            return false;
-    }
-
-    // Sac<N/Type> alt cost (CR 118.9, Fireblast): the caster must control at least N permanents
-    // matching the filter to sacrifice. (Fall through — a floored mana portion is still checked below.)
-    if (alt_cost.cost.count(CostPart::SACRIFICE) > 0) {
-        if (static_cast<int>(controlled_permanents_matching(priority_player, alt_cost.cost.filter(CostPart::SACRIFICE),
-                                                            orderer->mEntities, card_entity).size()) <
-            alt_cost.cost.count(CostPart::SACRIFICE))
-            return false;
-    }
-
-    // Condition: not your turn (Force of Negation, Force of Vigor)
-    if (alt_cost.condition_not_your_turn) {
+    // Condition: not your turn (Force of Negation, Force of Vigor). A free alternative cost is not
+    // held to it.
+    if (alt_cost.condition_not_your_turn && !alt_cost.cost.is_free()) {
         bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.turn_state.player_a_turn
                                                               : !cur_game.turn_state.player_a_turn;
         if (is_my_turn) return false;
     }
 
-    if (alt_cost.cost.count(CostPart::EXILE_FROM_HAND) > 0) {
-        Colors required_color = alt_cost.cost.pitch_color();
-        bool has_match = false;
-        for (auto e : orderer->get_hand(priority_player)) {
-            if (e == card_entity) continue;
-            if (required_color != NO_COLOR && effective_colors(e).count(required_color)) {
-                has_match = true; break;
-            }
-        }
-        if (!has_match) return false;
-    }
-
-    // Floored mana portion of the alt cost (computed above). The alternative life cost (Force of
-    // Will's 1 life) is paid after the mana, so a painful source may not spend it.
-    if (!alt_mana.empty()) {
-        if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer, /*has_delve=*/false,
-                          /*has_improvise=*/false, /*exclude_entity=*/0,
-                          /*life_reserve=*/alt_cost.cost.life()))
-            return false;
-    }
-
-    return true;
+    // The mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
+    // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
+    // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
+    const ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player);
+    CostCheck check(priority_player, card_entity, orderer);
+    check.mana = &alt_mana;
+    return can_pay(alt_cost.cost, check);
 }
 
 // Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if and the
@@ -694,8 +652,9 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
         // Timing, targets and prohibitions are the back face's own (Gone is an instant).
         if (can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
-            can_pay_spell_mana(priority_player, regular_cast_cost(back, card_entity, priority_player, orderer), back,
-                card_entity, orderer))
+            regular_cast_payable(back, card_entity, priority_player,
+                                 regular_cast_cost(back, card_entity, priority_player, orderer),
+                                 kSpellSacrificeUnchecked, orderer))
             actions.push_back(la);
         offer_free_cast(actions, la, back, Zone::HAND, priority_player, sorcery_window, orderer);
     }
@@ -803,23 +762,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ManaValue effective_cost = regular_cast_cost(card_data, card_entity, priority_player, orderer);
 
             // X-cost spells: base cost (without X) is enough to be castable;
-            // X value is chosen at cast time in action_processor. Hybrid pips ({W/U}, {2/W})
-            // and Phyrexian pips ({B/P}: its mana or 2 life) are folded in via
-            // can_pay_spell_mana (castable iff SOME assignment is payable); with neither this is
-            // exactly can_pay_mana.
-            bool can_regular = can_pay_spell_mana(priority_player, effective_cost, card_data,
-                                                  card_entity, orderer);
-
-            // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
-            // "As an additional cost to cast this spell, sacrifice a green creature").
-            // The spell can't be cast unless a matching permanent is available to
-            // sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$ carries
-            // a Sac<...> token, matched (incl. color qualifier) like an activation cost.
-            const FilterSpec spell_sac_spec = spell_additional_sac_spec(card_data);
-            if (!spell_sac_spec.empty() &&
-                controlled_permanents_matching(priority_player, spell_sac_spec,
-                                               orderer->mEntities, card_entity).empty())
-                can_regular = false;
+            // X value is chosen at cast time in action_processor. Additional Sacrifice-a-<type>
+            // cost on the spell itself (Natural Order: "As an additional cost to cast this spell,
+            // sacrifice a green creature"): the spell can't be cast unless a matching permanent is
+            // available to sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$
+            // carries a Sac<...> token, matched (incl. color qualifier) like an activation cost.
+            bool can_regular = regular_cast_payable(card_data, card_entity, priority_player, effective_cost,
+                                                    /*unchecked=*/0, orderer);
 
             bool can_alt = can_afford_alt(card_data, card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -841,8 +790,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost.mana()) offspring_total.insert(c);
-                if (can_pay_spell_mana(priority_player, offspring_total, card_data, card_entity,
-                                       orderer)) {
+                if (regular_cast_payable(card_data, card_entity, priority_player, offspring_total,
+                                         kSpellSacrificeUnchecked, orderer)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.option_ordinal = 2;  // cast variant: 2 = offspring
@@ -860,10 +809,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // for free, so no legal target is required now (702.62 casts it then, not here); the card
         // just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
+        CostCheck suspend_check(priority_player, card_entity, orderer);
+        suspend_check.payee = ManaPayee(card_entity, ManaPurpose::OTHER);
         if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
-            can_pay_mana(priority_player, card_data.suspend_cost.mana(), ManaPayee(card_entity, ManaPurpose::OTHER),
-                         orderer) &&
+            can_pay(card_data.suspend_cost, suspend_check) &&
             !payment_blocked(card_entity)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
             sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action
@@ -883,24 +833,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                           /*ignore_timing=*/false, orderer))
             continue;
 
-        // Check affordability: flashback mana cost (floored — flashback is an alternative
-        // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost (Deep
-        // Analysis: 3 life), paid after the mana, so a painful source may not spend that life.
-        int fb_life = gcd.flashback_cost.life();
-        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), fb_life))
-            continue;
-        if (!can_pay_mana(priority_player,
-                          floored_alt_mana_cost(gcd, gcd.flashback_cost.mana(), priority_player),
-                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
-                          /*exclude_entity=*/0, /*life_reserve=*/fb_life))
-            continue;
-
-        // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
-        // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
-        if (!gcd.flashback_cost.filter(CostPart::SACRIFICE).empty() &&
-            controlled_permanents_matching(priority_player, gcd.flashback_cost.filter(CostPart::SACRIFICE),
-                                           orderer->mEntities, gy_entity).empty())
-            continue;
+        // Check affordability: the cost with its mana floored — flashback is an alternative cost
+        // (CR 702.34a), so an active SetCost floor applies to it too. Cabal Therapy's Flashback—
+        // Sacrifice a creature can't be cast unless a matching permanent is available to sacrifice
+        // (CR 601.2f / 601.3a).
+        const ManaValue fb_mana = floored_alt_mana_cost(gcd, gcd.flashback_cost.mana(), priority_player);
+        CostCheck fb_check(priority_player, gy_entity, orderer);
+        fb_check.mana = &fb_mana;
+        if (!can_pay(gcd.flashback_cost, fb_check)) continue;
 
         LegalAction fb_la = cast_action(gy_entity, "Cast " + gcd.name + " (flashback)", 4);
         fb_la.use_flashback = true;
@@ -919,32 +859,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                           /*ignore_timing=*/false, orderer))
             continue;
 
-        // An escape life cost must be payable (CR 119.4), and it is paid after the mana, so a
-        // painful source may not spend it.
-        int esc_life = gcd.escape_cost.life();
-        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), esc_life))
-            continue;
-
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        if (!can_pay_mana(priority_player,
-                          floored_alt_mana_cost(gcd, gcd.escape_cost.mana(), priority_player),
-                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
-                          /*exclude_entity=*/0, /*life_reserve=*/esc_life))
-            continue;
-
-        // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
-        // to collectively reach the required number of distinct card types (CR 601.2f).
-        if (gcd.escape_cost.exile_min_types() > 0 &&
-            graveyard_card_types(priority_player, orderer->mEntities, gy_entity) <
-                gcd.escape_cost.exile_min_types())
-            continue;
-
-        // ExileFromGrave literal-count constraint (Uro: exile FIVE other cards): enough OTHER
-        // graveyard cards must exist to pay the cost (CR 601.2f).
-        if (gcd.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD) > 0 &&
-            graveyard_card_count(priority_player, orderer->mEntities, gy_entity) <
-                gcd.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD))
-            continue;
+        const ManaValue esc_mana = floored_alt_mana_cost(gcd, gcd.escape_cost.mana(), priority_player);
+        CostCheck esc_check(priority_player, gy_entity, orderer);
+        esc_check.mana = &esc_mana;
+        if (!can_pay(gcd.escape_cost, esc_check)) continue;
 
         LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);
         esc_la.use_escape = true;
@@ -960,8 +879,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         const LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
         if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
-            can_pay_spell_mana(
-                priority_player, regular_cast_cost(gcd, gy_entity, priority_player, orderer), gcd, gy_entity, orderer))
+            regular_cast_payable(gcd, gy_entity, priority_player,
+                                 regular_cast_cost(gcd, gy_entity, priority_player, orderer),
+                                 kSpellSacrificeUnchecked, orderer))
             actions.push_back(gy_la);
         offer_free_cast(actions, gy_la, gcd, Zone::GRAVEYARD, priority_player, sorcery_window, orderer);
     }
@@ -1032,15 +952,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.def->ability_type != AbilityDef::ACTIVATED) continue;
             if (ab.def->activation_zone != -1) continue;  // functions from another zone (CR 113.6b): hand, graveyard
             // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
-            // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
-            // is legal — may go to exactly 0 and die to the SBA).
+            // all its loyalty abilities.
             if (ab.def->is_loyalty_ability) {
                 if (!sorcery_window) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
-                // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
-                // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
-                if (!ab.def->cost.loyalty_is_x() && ab.def->cost.loyalty() < 0 &&
-                    get_counters(entity, "LOYALTY") < -ab.def->cost.loyalty()) continue;
             }
             // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
             // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve

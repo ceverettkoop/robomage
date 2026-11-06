@@ -65,9 +65,13 @@ bool activation_condition_met(
     const Ability &ab, Zone::Ownership controller, const EntitySet &entities, Entity source = 0);
 
 // The state `source` must be in for `controller` to activate its ability `ab` (CR 602.5): the
-// Activation$ condition holds, a {T} in the cost finds an untapped permanent free of summoning
-// sickness (CR 302.6), and the per-turn activation limit isn't reached. Shared by the mana-source
-// enumeration and the non-mana activated-ability offers, whichever zone the source is in.
+// Activation$ condition holds and the per-turn activation limit isn't reached. Shared by the
+// mana-source enumeration and the non-mana activated-ability offers, whichever zone the source is
+// in; a {T} in the cost is source_can_tap's.
 bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities);
+
+// Can a {T} in a cost be paid by `source`: an untapped permanent free of summoning sickness
+// (CR 302.6)?
+bool source_can_tap(Entity source);
 
 #endif /* QUERIES_ACTIVATION_H */

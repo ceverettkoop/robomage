@@ -10,6 +10,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../queries/characteristics.h"
+#include "../queries/costs.h"
 #include "../queries/filters.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
@@ -59,7 +60,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         if (fire && ab.def->cost.energy() > 0) {
             Entity ctrl_entity = get_player_entity(ab.controller);
             auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-            if (player_energy(pl) < ab.def->cost.energy()) {
+            if (!can_pay(ab.def->cost, CostCheck(ab.controller, ab.source.lki_entity(), orderer))) {
                 fire = false;  // can't pay — not offered
             } else {
                 // The request_optional_yesno menu, asked through ctx so it can

@@ -28,6 +28,7 @@
 #include "queries/activation.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
+#include "queries/costs.h"
 #include "queries/filters.h"
 #include "queries/pending_cost.h"
 #include "queries/player_resources.h"
@@ -76,6 +77,11 @@ static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &r
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
+// Can `player` pay a mana ability's own mana cost (Talon Gates' {1}{T})? The physical gate
+// (mana_ability_available_now) has held its {T} and its life. Nothing holds it to the rest: a
+// Sac<1/Type>, Return or energy in a mana ability's cost is offered whether or not it can be paid.
+static bool mana_source_affordable(Zone::Ownership player, Entity source, const Ability &ab,
+                                   std::shared_ptr<Orderer> orderer);
 static bool mana_ability_is_painful(const Ability &ab);
 // Life a mana ability's activation takes from its controller: its PayLife cost plus any
 // self-damage / life-loss rider (Ancient Tomb's 2 damage).
@@ -325,12 +331,22 @@ static bool mana_ability_available_now(Entity e, const Ability &ab, Zone::Owners
     // Activation$ gate (CR 602.5; e.g. Mox Opal's Metalcraft), untapped and not summoning-sick
     // for a {T} cost, activation limit.
     if (!activation_source_ready(ab, e, player, entities)) return false;
+    if (ab.def->cost.taps() && !source_can_tap(e)) return false;
     Entity player_entity = get_player_entity(player);
     if (global_coordinator.entity_has_component<Player>(player_entity) &&
         !mana_ability_life_payable(global_coordinator.GetComponent<Player>(player_entity), player, ab,
                                    life_reserve))
         return false;
     return true;
+}
+
+// See forward declaration at top of file.
+static bool mana_source_affordable(Zone::Ownership player, Entity source, const Ability &ab,
+                                   std::shared_ptr<Orderer> orderer) {
+    CostCheck check(player, source, orderer);
+    check.estimate_mana = true;
+    check.unchecked = kAllButMana;
+    return can_pay(ab.def->cost, check);
 }
 
 // Collect all mana abilities a player could activate.
@@ -442,11 +458,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
         // hide a source whose spending restriction doesn't match the spell being paid for.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         // Sources with activation mana cost: check affordability
-        if (!ab.def->cost.mana().empty()) {
-            Entity exclude = ab.def->cost.taps() ? entity : 0;
-            if (!can_afford_with_sources(player, ab.def->cost.mana(), orderer, exclude))
-                continue;
-        }
+        if (!mana_source_affordable(player, entity, ab, orderer)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         std::string desc = "Tap " + perm.name + " for (" +
                            mana_symbol_str(ab.color) + ")";
@@ -1109,10 +1121,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         // Restricted mana check (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
         // same gate as collect_mana_legal_actions so a listed source is always spendable here.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
-        if (!ab.def->cost.mana().empty()) {
-            if (!can_afford_with_sources(controller, ab.def->cost.mana(), orderer, ab.def->cost.taps() ? entity : 0))
-                continue;
-        }
+        if (!mana_source_affordable(controller, entity, ab, orderer)) continue;
         bool is_multi = false;
         for (auto &[e2, ab2] : sources)
             if (e2 == entity && ab2.color != ab.color) { is_multi = true; break; }
