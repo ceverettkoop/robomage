@@ -2240,10 +2240,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
-    } else if (key == "RememberLKI") {
-        // RememberLKI$ True on a ChangeZone (Boomerang Basics) — stash the moved object so a
-        // paired ConditionDefined$ RememberedLKI gate can read its last-known controller.
-        ability.remember_lki = (value == "True");
     } else if (key == "RememberSacrificed") {
         ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {

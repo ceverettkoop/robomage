@@ -567,15 +567,6 @@ struct AbilityDef {
     // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
     FilterSpec vote_card_filter;
 
-    // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
-    bool remember_changed = false;
-
-    // RememberLKI$ — remember the moved object's last-known information (Boomerang Basics:
-    // remember the bounced permanent so a paired ConditionDefined$ RememberedLKI gate can
-    // read the controller it had as it left the battlefield, CR 608.2g). Like remember_changed
-    // it stashes the moved entity in cur_game.resolution.memory.remembered; the condition reads its LKI.
-    bool remember_lki = false;
-
     // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
     // stash every revealed card into cur_game.resolution.memory.remembered so a later Defined$ Remembered
     // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first

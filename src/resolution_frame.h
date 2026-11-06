@@ -103,7 +103,7 @@ struct DiscardRt {
 };
 // change_zone's search loop (fetch lands, Doomsday's 5-pick multi-zone tutor):
 // the outer pick count + the resolved dynamic bounds, computed once — earlier
-// picks mutate the counted state (cards moved, remembered grown), so a resume
+// picks mutate the counted state (cards moved), so a resume
 // must not re-evaluate them — plus the pre-repoint priority seat to restore in
 // the epilogue. The search menus themselves rebuild purely from the live zones
 // (the searchable pool IS the parked menu, so the menu pins cover it).

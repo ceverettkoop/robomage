@@ -23,6 +23,8 @@ struct MemoryRow {
 static const MemoryRow kMemoryRows[] = {
     {"RememberTargets", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
     {"RememberObjects", ParamForm::NAMES_TARGETED, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
+    {"RememberChanged", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED}},
+    {"RememberLKI", ParamForm::IS_TRUE, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED_LKI}},
 };
 
 // Adds `op` to `def`, into the op it shares a slot and an action with if there is one.

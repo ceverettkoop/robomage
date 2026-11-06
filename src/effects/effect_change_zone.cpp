@@ -29,6 +29,7 @@
 #include "../queries/types.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
+#include "../resolution_memory.h"
 #include "../mana_system.h"
 #include "../state_format/events.h"
 #include "../svar_eval.h"
@@ -448,7 +449,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
             // leaves-the-battlefield ability (TrigToken sizing/owning the Illusion) can read it.
-            if (ab.def->remember_changed || ab.def->remember_lki) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(tgt));
+            report_object(ab, EffectObjects::MOVED | EffectObjects::MOVED_LKI, tgt);
             if (landed == ab.def->destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
@@ -478,8 +479,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 global_coordinator.GetComponent<Zone>(enchanted).controller =
                     ab.def->gain_control ? ab.controller
                                     : global_coordinator.GetComponent<Zone>(enchanted).owner;
-            if (ab.def->remember_changed || ab.def->remember_lki)
-                cur_game.resolution.memory.remembered.push_back(ObjectRef::of(enchanted));
+            report_object(ab, EffectObjects::MOVED | EffectObjects::MOVED_LKI, enchanted);
             if (landed == ab.def->destination)
                 game_log("%s is moved to %s\n", ename.c_str(), dest_str);
         }
@@ -507,7 +507,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
         // it via Card.IsRemembered / Count$RememberedSize (Triumph of Saint Katherine's self-exile
         // head of its recursion pile, counted by the GE7 shuffle-back condition).
-        if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(self));
+        report_object(ab, EffectObjects::MOVED, self);
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -675,7 +675,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Zone::ZoneValue landed = change_zone_move(orderer, fctx, ab, self, ab.def->destination,
                                                   ab.def->enters_transformed);
         if (decision_suspended()) return HandlerResult::SUSPENDED;
-        if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(self));
+        report_object(ab, EffectObjects::MOVED, self);
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -731,7 +731,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             Entity chosen = cands[static_cast<size_t>(choice)];
             std::string cname = object_display_name(chosen);
             change_zone_move(orderer, FrameCtx::blocking(), ab, chosen, ab.def->destination);
-            if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
+            report_object(ab, EffectObjects::MOVED, chosen);
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -749,8 +749,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     bool reveal = search_reveals_card(ab);
 
     // The resolved pick count and dynamic filter bound persist in the frame rt:
-    // earlier picks mutate the state they were counted from (cards moved, the
-    // remembered set grown — Doomsday's ChangeNum$ 5 over a shrinking pool), so
+    // earlier picks mutate the state they were counted from (cards moved —
+    // Doomsday's ChangeNum$ 5 over a shrinking pool), so
     // a resume must NOT re-evaluate them. The loop index persists likewise so a
     // resume re-enters the suspended pick.
     ChangeZoneSearchRt local_rt;
@@ -804,6 +804,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // A multi-zone search picks its cards one at a time from pools the picks don't leave
     // (Doomsday), so a card already chosen is not offered again.
     search.exclude_remembered = multi_zone;
+    search.picking = &ab;
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
         Entity chosen = search_zones(orderer, search, fctx, ab.source.lki_entity(), suspended);
@@ -852,9 +853,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // stamped Zone::is_face_down for a face-down exile; this just mirrors the condition for
             // the private-vs-public logging below.
             bool face_down = (ab.def->exile_face_down && landed == Zone::EXILE);
-            if (ab.def->remember_changed) {
-                cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
-            }
+            report_object(ab, EffectObjects::MOVED, chosen);
             bool dest_public =
                 (ab.def->destination == Zone::BATTLEFIELD || ab.def->destination == Zone::GRAVEYARD || ab.def->destination == Zone::EXILE);
             if (landed != ab.def->destination) {
@@ -891,9 +890,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "ChangeType") {
         ab.change_type = value;
-        return true;
-    } else if (key == "RememberChanged") {
-        ab.remember_changed = (value == "True");
         return true;
     } else if (key == "Origin") {
         // Comma-separated origins (e.g. "Graveyard,Library"). "All"/"Any" means the mover acts

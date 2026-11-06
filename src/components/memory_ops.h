@@ -15,7 +15,9 @@
 // bit each, so a row can read several and one report can feed several rows.
 struct EffectObjects {
     enum : uint32_t {
-        TARGETS = 1u << 0,  // the ability's targets, as it starts to resolve
+        TARGETS = 1u << 0,    // the ability's targets, as it starts to resolve
+        MOVED = 1u << 1,      // the objects a ChangeZone, ChangeZoneAll or Dig moved
+        MOVED_LKI = 1u << 2,  // the same, on the ChangeZone branches that honour RememberLKI$
     };
 };
 

@@ -18,6 +18,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
+#include "../resolution_memory.h"
 #include "../stable_rng.h"
 #include "../state_format/events.h"
 #include "../systems/orderer.h"
@@ -242,7 +243,7 @@ static size_t move_all_cards(Ability &ab, std::shared_ptr<Orderer> orderer, cons
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each
         // artifact or land card exiled this way"); cleared by the paired DBCleanup ClearRemembered$.
-        if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(entity));
+        report_object(ab, EffectObjects::MOVED, entity);
         moved++;
     }
     if (batch) batch->close();
