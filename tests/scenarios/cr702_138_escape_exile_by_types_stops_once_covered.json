@@ -1,0 +1,14 @@
+{
+  "name": "cr702_138_escape_exile_by_types_stops_once_covered",
+  "why": "CR 702.138a: Nethergoyf's Escape exiles any number of other cards with four or more card types among them; each pick parks mid-payment and the picks end once the types are covered, a fifth card staying in the graveyard",
+  "hand_a": ["Mountain"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp"],
+  "graveyard_a": ["Nethergoyf", "Forest", "Grizzly Bears", "Lightning Bolt", "Ponder", "Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "A:cast:Nethergoyf", "exile:Forest", "exile:Grizzly Bears", "exile:Lightning Bolt", "exile:Mishra's Bauble"],
+  "max_decisions": 8,
+  "expect_order": ["Player A exiles Forest from their graveyard", "Player A exiles Grizzly Bears from their graveyard", "Player A exiles Lightning Bolt from their graveyard", "Player A exiles Mishra's Bauble from their graveyard", "Player A casts Nethergoyf"],
+  "expect_not": ["Player A exiles Ponder"]
+}

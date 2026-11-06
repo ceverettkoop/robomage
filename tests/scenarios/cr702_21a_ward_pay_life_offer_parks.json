@@ -1,0 +1,14 @@
+{
+  "name": "cr702_21a_ward_pay_life_offer_parks",
+  "why": "CR 702.21a: Ward—Pay 2 life is offered to the targeting player as the ward trigger resolves, a parked unless-cost offer; the life paid leaves the spell on the stack",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Mountain"],
+  "battlefield_b": ["Hexing Squelcher"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Hexing Squelcher@opp", "A:desc:Pay 2 life"],
+  "max_decisions": 8,
+  "expect": ["Player A pays 2 life"],
+  "expect_not": ["Lightning Bolt is countered"]
+}

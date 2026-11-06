@@ -1,0 +1,13 @@
+{
+  "name": "cr603_2_fantasticar_sacrifice_offer_parks",
+  "why": "CR 603.2: The Fantasticar's triggered ability pays its Sac<1/CARDNAME> as it resolves: the offer is a parked choice, and the fourth noncreature spell's tokens follow the sacrifice",
+  "hand_a": ["Lightning Bolt", "Lightning Bolt", "Lightning Bolt", "Lightning Bolt"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "The Fantasticar"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B", "A:cast:Lightning Bolt", "A:target:Player B", "A:cast:Lightning Bolt", "A:target:Player B", "A:cast:Lightning Bolt", "A:target:Player B", "#0", "#1"],
+  "max_decisions": 12,
+  "expect_menu": ["Don't sacrifice The Fantasticar"],
+  "expect_order": ["Player A sacrifices The Fantasticar\\.", "Construct"]
+}

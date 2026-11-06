@@ -1,0 +1,14 @@
+{
+  "name": "cr701_9_unless_discard_offer_then_pick_park",
+  "why": "CR 701.9: Reality Smasher counters the spell unless its controller discards a card: the offer and then the card are parked choices of one unless-cost, and the discard saves the spell",
+  "hand_a": ["Lightning Bolt", "Ponder", "Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Mountain"],
+  "battlefield_b": ["Reality Smasher"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Reality Smasher@opp", "A:desc:iscard", "A:desc:Ponder"],
+  "max_decisions": 9,
+  "expect": ["Player A discards Ponder"],
+  "expect_not": ["Lightning Bolt is countered"]
+}
