@@ -47,7 +47,10 @@ extern Game cur_game;
 
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
-static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost);
+static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost, ManaPayee paid_for);
+static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for);
+static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors color, ManaPayee paid_for);
+static ManaPool colors_spendable_on(const ManaPool &pool, ManaPayee paid_for);
 static void spend_unit(ManaPool &pool, ManaPool::const_iterator unit, ManaPaid *spent);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
@@ -96,35 +99,63 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // Non-mutating affordability check: the read-only counterpart of pay_from_pool.
 // Dry-runs the payment on a throwaway copy (pool_shortfall copies the pool)
 // so the spend rule is never duplicated.
-bool can_afford_pool(const ManaPool &pool, const std::multiset<Colors> &cost) {
-    return pool_shortfall(pool, cost).empty();
+bool can_afford_pool(const ManaPool &pool, const std::multiset<Colors> &cost, ManaPayee paid_for) {
+    return pool_shortfall(pool, cost, paid_for).empty();
 }
 
-static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost) {
+static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost, ManaPayee paid_for) {
     ManaPool copy = pool;
-    return pay_from_pool(copy, cost);
+    return pay_from_pool(copy, cost, paid_for);
 }
 
-bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
+// May `unit` be spent on `paid_for` (CR 106.6)? The restriction is the one it was made with, whatever
+// became of its source.
+static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for) {
+    return !unit.restriction || restriction_allows(*unit.restriction, unit.restriction->chosen_type, paid_for);
+}
+
+// The unit of `pool` a pip of `color` takes when paying for `paid_for`, any color with NO_COLOR, else
+// pool.end(). Mana that can be spent on little, or carries a rider, goes before mana that can be spent
+// on anything; among either the first in the pool's order.
+static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors color, ManaPayee paid_for) {
+    ManaPool::const_iterator plain = pool.end();
+    for (auto unit = pool.begin(); unit != pool.end(); ++unit) {
+        if (color != NO_COLOR && unit->color != color) continue;
+        if (!unit_spendable_on(*unit, paid_for)) continue;
+        if (unit->restriction || unit->riders) return unit;
+        if (plain == pool.end()) plain = unit;
+    }
+    return plain;
+}
+
+// The colors of what `pool` can spend on `paid_for`, for counting toward a hypothetical payment.
+static ManaPool colors_spendable_on(const ManaPool &pool, ManaPayee paid_for) {
+    ManaPool colors;
+    for (const ManaUnit &unit : pool)
+        if (unit_spendable_on(unit, paid_for)) colors.insert(unit.color);
+    return colors;
+}
+
+bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost, ManaPayee paid_for) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) {
         return false;
     }
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-    return can_afford_pool(player.mana, cost);
+    return can_afford_pool(player.mana, cost, paid_for);
 }
 
-void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost, Entity paid_for, ManaPaid *spent) {
+void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost, ManaPayee paid_for, ManaPaid *spent) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
-    if (!can_afford_pool(player.mana, cost)) {
+    if (!can_afford_pool(player.mana, cost, paid_for)) {
         non_fatal_error("spend_mana called with insufficient mana in pool");
         #ifndef NDEBUG
-        dump_entity(paid_for);
+        dump_entity(paid_for.entity);
         #endif
     }
-    pay_from_pool(player.mana, cost, spent);
+    pay_from_pool(player.mana, cost, paid_for, spent);
 }
 
 ManaUnit mana_unit_from(const Ability &ab, Colors color, Entity source, bool commit) {
@@ -150,10 +181,10 @@ void add_mana(Zone::Ownership player_owner, const ManaUnit &unit, size_t amount)
     }
 }
 
-ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost, ManaPaid *spent) {
+ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost, ManaPayee paid_for, ManaPaid *spent) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-    return pay_from_pool(player.mana, cost, spent);
+    return pay_from_pool(player.mana, cost, paid_for, spent);
 }
 
 void empty_mana_pool(Zone::Ownership player_owner) {
@@ -513,10 +544,10 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
     // Fast path: pool alone is enough
-    if (can_afford_pool(player.mana, cost)) return true;
+    if (can_afford_pool(player.mana, cost, paid_for)) return true;
 
-    // Build a hypothetical pool: current mana + all available sources
-    auto hypothetical = player.mana;
+    // Build a hypothetical pool: the current mana it can spend + all available sources
+    ManaPool hypothetical = colors_spendable_on(player.mana, paid_for);
     std::set<Entity> counted_entities;
     size_t flexible_count = 0;
 
@@ -577,7 +608,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         // Build pool snapshot to check activation affordability
         auto check_pool = hypothetical;
         for (size_t i = 0; i < flexible_count; i++) check_pool.insert(GENERIC);
-        if (!can_afford_pool(check_pool, ab.def->cost.mana())) continue;
+        if (!can_afford_pool(check_pool, ab.def->cost.mana(), paid_for)) continue;
         size_t amount = eval_mana_amount(ab, player_owner);
         bool is_multi_color = false;
         for (auto &[e2, ab2] : sources) {
@@ -709,7 +740,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 // Pays `cost` out of `pool` (mutating it) and returns the portion that could NOT be
 // paid. can_afford_pool/spend_mana/pay_partial and the auto-payer all route through this,
 // so the spend rule (including generic color preference) lives in exactly one place.
-ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaPaid *spent) {
+ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaPayee paid_for, ManaPaid *spent) {
     ManaValue remaining;
     // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, a colored
     // pip may be paid with mana of ANY type. Pay exact-color matches first (so on-color mana is
@@ -719,17 +750,19 @@ ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaPaid *spent) 
     std::vector<Colors> unpaid_colored;
     for (auto color : cost) {
         if (color == GENERIC) continue;
-        auto it = pool.find(color);
+        auto it = spendable_unit(pool, color, paid_for);
         if (it != pool.end()) spend_unit(pool, it, spent);
         else unpaid_colored.push_back(color);
     }
     for (Colors color : unpaid_colored) {
-        if (any_color && !pool.empty()) spend_unit(pool, pool.begin(), spent);
+        auto it = any_color ? spendable_unit(pool, NO_COLOR, paid_for) : pool.end();
+        if (it != pool.end()) spend_unit(pool, it, spent);
         else remaining.insert(color);
     }
     size_t generic_needed = cost.count(GENERIC);
     for (size_t i = 0; i < generic_needed; i++) {
-        if (!pool.empty()) spend_unit(pool, pool.begin(), spent);
+        auto it = spendable_unit(pool, NO_COLOR, paid_for);
+        if (it != pool.end()) spend_unit(pool, it, spent);
         else remaining.insert(GENERIC);
     }
     return remaining;
@@ -887,7 +920,8 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
 bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership controller,
                           std::shared_ptr<Orderer> orderer, ManaPool &pool,
                           Player &player, bool commit, ManaLogStyle log_style, int life_reserve) {
-    CostPayer who(CostPath::MANA_ABILITY, controller, source, source, &ab.def->cost, nullptr);
+    CostPayer who(CostPath::MANA_ABILITY, controller, source, ManaPayee(source, ManaPurpose::ACTIVATE), &ab.def->cost,
+                  nullptr);
     who.ability = &ab;
     who.pool = &pool;
     who.working = &player;
@@ -1114,8 +1148,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     }
 
     // Check if pool covers remaining after delve
-    if (can_afford_pool(pool, remaining)) {
-        pay_from_pool(pool, remaining, spent);
+    if (can_afford_pool(pool, remaining, paid_for)) {
+        pay_from_pool(pool, remaining, paid_for, spent);
         return true;
     }
 
@@ -1243,16 +1277,17 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // produced minus activation costs paid equals the amount credited toward `remaining`.
     auto cover_activation_cost = [&](const SourceInfo &si) -> bool {
         const ManaValue &act = si.ability.def->cost.mana();
-        if (act.empty() || can_afford_pool(pool, act)) return true;
+        const ManaPayee act_payee(si.entity, ManaPurpose::ACTIVATE);
+        if (act.empty() || can_afford_pool(pool, act, act_payee)) return true;
         ManaPool trial = pool;
         std::set<Entity> planned = tapped_entities;
         planned.insert(si.entity);
         std::vector<size_t> plan;  // indices into valid_sources to engage as payers
-        while (!can_afford_pool(trial, act)) {
+        while (!can_afford_pool(trial, act, act_payee)) {
             // The unpayable pips of the activation cost against the trial pool; pay a
             // colored pip first (it is the more constrained match), else a generic one.
             ManaPool trial_copy = trial;
-            ManaValue need = pay_from_pool(trial_copy, act);
+            ManaValue need = pay_from_pool(trial_copy, act, act_payee);
             Colors pip = GENERIC;
             for (Colors c : need)
                 if (c != GENERIC) { pip = c; break; }
@@ -1265,6 +1300,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                     if (planned.count(cand.entity)) continue;
                     // Payers must themselves be cost-free — no recursive cost chains.
                     if (!cand.ability.def->cost.mana().empty()) continue;
+                    if (!mana_source_usable_for(cand.ability, cand.entity, act_payee)) continue;
                     if (pass == 0 && mana_ability_is_painful(cand.ability)) continue;
                     if (pip != GENERIC && !any_color && cand.color != pip) continue;
                     size_t amt = eval_mana_amount(cand.ability, controller);
@@ -1282,7 +1318,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
             if (!activate_source(valid_sources[i])) return false;  // cost-free; can't bounce
             tapped_entities.insert(valid_sources[i].entity);
         }
-        return can_afford_pool(pool, act);
+        return can_afford_pool(pool, act, act_payee);
     };
 
     // Cost-bearing sources net less mana than they produce (their activation cost consumes
@@ -1296,6 +1332,15 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // outranks life; only necessity (no painless way to finish the payment, including a
     // colored pip only a painful source produces) does.
     auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
+
+    // A pip of `color` (any, with NO_COLOR) paid from the working pool, if it holds mana that can be
+    // spent on this payment.
+    auto pay_pip_from_pool = [&](Colors color) {
+        auto unit = spendable_unit(pool, color, paid_for);
+        if (unit == pool.end()) return false;
+        spend_unit(pool, unit, spent);
+        return true;
+    };
 
     // Pay colored costs first. Pay the MOST color-constrained pip first: the greedy per-pip
     // payer below has no lookahead, so if it spends a shared dual (e.g. a Tropical Island that
@@ -1353,13 +1398,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         Colors needed = *it;
 
         // Check pool first: exact color, or — under ManaConvert — any mana already floating.
-        if (pool.count(needed) > 0) {
-            spend_unit(pool, pool.find(needed), spent);
-            it = remaining.erase(it);
-            continue;
-        }
-        if (any_color && !pool.empty()) {
-            spend_unit(pool, pool.begin(), spent);
+        if (pay_pip_from_pool(needed) || (any_color && pay_pip_from_pool(NO_COLOR))) {
             it = remaining.erase(it);
             continue;
         }
@@ -1384,13 +1423,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                 // we keep scanning. This mirrors the interactive payer, where the pip is
                 // only spent once can_afford_pool sees the color in the real pool. Under
                 // ManaConvert any produced mana counts, so spend the first available pip.
-                if (any_color && !pool.empty()) {
-                    spend_unit(pool, pool.begin(), spent);
-                    it = remaining.erase(it);
-                    return true;
-                }
-                if (!any_color && pool.count(needed) > 0) {
-                    spend_unit(pool, pool.find(needed), spent);
+                if (pay_pip_from_pool(any_color ? NO_COLOR : needed)) {
                     it = remaining.erase(it);
                     return true;
                 }
@@ -1412,8 +1445,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 
     // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
     while (remaining.count(GENERIC) > 0) {
-        if (pool.size() > 0) {
-            spend_unit(pool, pool.begin(), spent);
+        if (pay_pip_from_pool(NO_COLOR)) {
             auto git = remaining.find(GENERIC);
             remaining.erase(git);
             continue;
@@ -1428,8 +1460,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                 tapped_entities.insert(si.entity);
                 // Only pay a generic pip with mana the source actually produced; a 0-mana
                 // source erases nothing (consistent with the colored loop above).
-                if (pool.size() > 0) {
-                    spend_unit(pool, pool.begin(), spent);
+                if (pay_pip_from_pool(NO_COLOR)) {
                     auto git = remaining.find(GENERIC);
                     remaining.erase(git);
                     return true;
@@ -1472,7 +1503,7 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
     // Floating mana the payment does not need would only empty away at end of step —
     // and a painful source would charge life for it. Nothing owed, nothing tapped.
-    if (can_afford_pool(player.mana, unpaid_cost)) return false;
+    if (can_afford_pool(player.mana, unpaid_cost, paid_for)) return false;
 
     // Candidates: this permanent's mana abilities that are usable for THIS payment (same
     // restricted-mana gate the payer applies) and whose activation costs nothing but the
@@ -1584,13 +1615,13 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
     ManaValue &remaining = rt.remaining;
     if (!rt.prompting) {
         // If pool already covers it, just spend
-        if (can_afford_pool(player.mana, cost)) {
-            spend_mana(controller, cost, paid_for.entity, spent_out);
+        if (can_afford_pool(player.mana, cost, paid_for)) {
+            spend_mana(controller, cost, paid_for, spent_out);
             return PayStatus::PAID;
         }
 
         // Drain existing pool toward the cost first
-        remaining = pay_partial(controller, cost, spent_out);
+        remaining = pay_partial(controller, cost, paid_for, spent_out);
 
         // Auto-mana: the greedy payer selects the mana sources (no decisions)
         if (auto_mana) {
@@ -1612,8 +1643,8 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
     // Payment loop: prompt player to tap sources until cost is paid
     while (!remaining.empty()) {
         // Check if pool now covers remaining cost (from prior mana activations)
-        if (can_afford_pool(player.mana, remaining)) {
-            spend_mana(controller, remaining, paid_for.entity, spent_out);
+        if (can_afford_pool(player.mana, remaining, paid_for)) {
+            spend_mana(controller, remaining, paid_for, spent_out);
             return PayStatus::PAID;
         }
 
@@ -1626,7 +1657,9 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             // A cost-bearing source (Talon Gates' {1}{T}) is offered only while the pool covers
             // its activation cost, so every offered row makes progress and an agent that keeps
             // picking the same row can't spin here.
-            if (!can_afford_pool(player.mana, la.ability.def->cost.mana())) continue;
+            if (!can_afford_pool(player.mana, la.ability.def->cost.mana(),
+                                 ManaPayee(la.source_entity, ManaPurpose::ACTIVATE)))
+                continue;
             la.category = ActionCategory::PAYING_COSTS;
             pay_actions.push_back(la);
         }
@@ -1673,7 +1706,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
         // is spent on the cost once it covers all of it (CR 601.2g-h: mana abilities first, then
         // the payment); the frame reports it as applied already, so what is left to pay is what
         // the pool does not cover.
-        const ManaValue owed = pool_shortfall(player.mana, remaining);
+        const ManaValue owed = pool_shortfall(player.mana, remaining, paid_for);
         payment_scope.set_remaining(owed, static_cast<int>(cost.size()) - static_cast<int>(owed.size()));
         int choice = ctx.ask(pay_actions, controller, paid_for.entity, AskKind::MID_PAYMENT);
         if (choice < 0 && decision_suspended()) {

@@ -897,7 +897,7 @@ static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &o
 static PayStatus pay_from_working_pool(const CostPayer &who) {
     if (who.cost->mana().empty()) return PayStatus::PAID;
     ManaPool pool_before = *who.pool;
-    ManaValue unpaid = pay_from_pool(*who.pool, who.cost->mana());
+    ManaValue unpaid = pay_from_pool(*who.pool, who.cost->mana(), who.payee);
     if (unpaid.empty()) return PayStatus::PAID;
     *who.pool = pool_before;
     return PayStatus::FAILED;
@@ -1085,11 +1085,12 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
         unless_actions.erase(std::remove_if(unless_actions.begin(), unless_actions.end(),
                                  [&](const LegalAction &la) {
                                      return !la.ability.def->cost.mana().empty() &&
-                                            !can_afford(who.payer, la.ability.def->cost.mana());
+                                            !can_afford(who.payer, la.ability.def->cost.mana(),
+                                                ManaPayee(la.source_entity, ManaPurpose::ACTIVATE));
                                  }),
             unless_actions.end());
 
-        const bool payable = can_afford(who.payer, cond_cost);
+        const bool payable = can_afford(who.payer, cond_cost, who.payee);
         const size_t pay_idx = unless_actions.size();
         if (payable) unless_actions.push_back(unless_pay_action(terms.subject, terms.kind, terms.amount, terms.pips));
         const size_t decline_idx = unless_actions.size();
@@ -1103,7 +1104,7 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
         if (choice == static_cast<int>(decline_idx)) return PayStatus::DECLINED;
 
         if (payable && choice == static_cast<int>(pay_idx)) {
-            spend_mana(who.payer, cond_cost, who.payee.entity);
+            spend_mana(who.payer, cond_cost, who.payee);
             game_log("%s pays %s — %s\n", player_name(who.payer).c_str(),
                 unless_cost_text(terms.kind, terms.amount, terms.pips).c_str(),
                 unless_outcome_text(terms.subject, /*paid=*/true).c_str());

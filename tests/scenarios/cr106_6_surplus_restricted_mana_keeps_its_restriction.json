@@ -1,0 +1,13 @@
+{
+  "name": "cr106_6_surplus_restricted_mana_keeps_its_restriction",
+  "why": "CR 106.6: three Eldrazi Temples make six mana for Reality Smasher's five, and the {C} left floating can still be spent only on a colorless Eldrazi: with a Mountain it pays Wastescape Battlemage and not Lightning Strike, offered by no earlier menu for want of red",
+  "hand_a": ["Reality Smasher", "Mountain", "Lightning Strike", "Wastescape Battlemage"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Eldrazi Temple", "Eldrazi Temple", "Eldrazi Temple"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Reality Smasher", "A:land:Mountain", "A:cast:Wastescape Battlemage"],
+  "max_decisions": 6,
+  "expect": ["Player A casts Reality Smasher", "Player A casts Wastescape Battlemage"],
+  "expect_menu_not": ["Cast Lightning Strike"]
+}

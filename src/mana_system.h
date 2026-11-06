@@ -129,11 +129,12 @@ struct ManaPotential {
 // player's permanents are excluded here rather than at the call site.
 ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities);
 
-// Check if a given mana pool can afford a cost (does not read player state)
-bool can_afford_pool(const ManaPool& pool, const std::multiset<Colors>& cost);
+// Check if a given mana pool can afford a cost, paying for `paid_for`: a unit its restriction keeps
+// from that counts for nothing (does not read player state)
+bool can_afford_pool(const ManaPool& pool, const std::multiset<Colors>& cost, ManaPayee paid_for);
 
 // Check if player can afford a mana cost
-bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
+bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost, ManaPayee paid_for);
 
 // Check if player can afford a cost considering current pool plus all activatable mana sources
 // exclude_entity: if nonzero, skip this entity when counting available sources (used when
@@ -158,9 +159,9 @@ size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
                           std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
 // Spend mana from player's pool (assumes can_afford was checked)
-// paid_for: the entity being paid for (used for diagnostics on insufficient mana)
+// paid_for: what is being paid for
 // spent: when non-null, collects each unit spent
-void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for,
+void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, ManaPayee paid_for,
                 ManaPaid* spent = nullptr);
 
 // One mana of `color` as `ab`, activated or resolving from `source`, makes it: the restriction and
@@ -172,7 +173,8 @@ ManaUnit mana_unit_from(const Ability& ab, Colors color, Entity source, bool com
 void add_mana(Zone::Ownership player, const ManaUnit& unit, size_t amount);
 
 // Pay as much of cost as possible from player's pool, return the unpaid remainder
-ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost, ManaPaid* spent = nullptr);
+ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost, ManaPayee paid_for,
+                      ManaPaid* spent = nullptr);
 
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
@@ -275,10 +277,11 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
                                     const ManaValue& unpaid_cost, ManaPayee paid_for);
 
-// Pays `cost` out of `pool` and returns the portion that could not be paid. `spent` (when non-null)
+// Pays `cost` for `paid_for` out of `pool` and returns the portion that could not be paid: a unit
+// whose restriction keeps it from `paid_for` stays in the pool (CR 106.6). `spent` (when non-null)
 // collects each unit erased from `pool` — so a REAL-pool consumer can report the mana it spent.
 // Dry-run callers (can_afford_pool, activation-cost trials) pass nullptr and are unaffected.
-ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaPaid* spent = nullptr);
+ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaPayee paid_for, ManaPaid* spent = nullptr);
 
 // Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
 // payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
