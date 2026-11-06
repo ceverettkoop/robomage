@@ -92,7 +92,7 @@ std::set<Colors> effective_colors(Entity e) {
         return card_colors(active_face(e, global_coordinator.GetComponent<CardData>(e)));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
-        return card_colors(global_coordinator.GetComponent<CardData>(e));
+        return card_colors(card_characteristics(e, global_coordinator.GetComponent<CardData>(e)));
     // A token (no CardData) is colored by its color indicator (Token::explicit_colors, CR 111.4),
     // not a mana cost. With no active SetColor override (checked first, above) this is its
     // effective color — so a colored token reads correctly to the .Red/.Blue filter qualifiers

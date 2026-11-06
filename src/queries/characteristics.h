@@ -49,6 +49,13 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
     return cd;
 }
 
+// The characteristics of the card `e` while it isn't a permanent: on the stack those it was cast
+// with, in any other zone a split card's two halves combined (CR 709.3b, 709.4).
+inline const CardData &card_characteristics(Entity e, const CardData &cd) {
+    if (global_coordinator.entity_has_component<Spell>(e)) return active_face(e, cd);
+    return cd.combined ? *cd.combined : cd;
+}
+
 // The replacement effects permanent `e` generates (CR 614): those of a card's face that's up
 // (CR 712.8e), or a token's (a token copy has the copied card's, CR 707.2). Empty otherwise.
 const std::vector<Effect::Replacement> &permanent_replacement_effects(Entity e);

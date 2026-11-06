@@ -944,15 +944,16 @@ static bool ev_unknown(const CharView &, const Qualifier &q) {
 }
 
 static CharView printed_view(Entity e, const CardData &cd) {
+    const CardData &face = e != 0 ? card_characteristics(e, cd) : cd;
     CharView v;
     v.entity = e;
-    v.types = &cd.types;
-    v.colors = card_colors(cd);
+    v.types = &face.types;
+    v.colors = card_colors(face);
     v.cmc = object_mana_value(e, cd);
     v.has_pt = true;  // printed P/T (a head type guard keeps P/T filters scoped to creatures)
-    v.power = static_cast<int>(cd.power);
-    v.toughness = static_cast<int>(cd.toughness);
-    v.has_x_cost = cd.has_x_cost;
+    v.power = static_cast<int>(face.power);
+    v.toughness = static_cast<int>(face.toughness);
+    v.has_x_cost = face.has_x_cost;
     if (e != 0 && global_coordinator.entity_has_component<Zone>(e))
         v.owner = global_coordinator.GetComponent<Zone>(e).owner;
     return v;

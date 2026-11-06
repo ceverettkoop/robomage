@@ -1,0 +1,14 @@
+{
+  "name": "cr709_3b_the_left_half_is_red_on_the_stack",
+  "why": "CR 709.3b: the same half cast as Wear is red, and Blue Elemental Blast counters it; a fused Wear // Tear is white and red (CR 709.4d) and is countered too.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Plains"],
+  "hand_b": ["Blue Elemental Blast"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Chalice of the Void", "Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Wear // Tear (fused)", "A:target:Chalice of the Void", "A:target:Sylvan Library", "B:cast:Blue Elemental Blast"],
+  "max_decisions": 10,
+  "expect_menu": ["Cast Blue Elemental Blast"],
+  "expect_not": ["Sylvan Library is destroyed"]
+}

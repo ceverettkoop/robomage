@@ -121,6 +121,7 @@ static void append_defs(std::vector<CardAbility> &out, const std::vector<const A
 static rmstate::AbilityKind def_kind(const AbilityDef &def);
 static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_object);
 static const CardData *object_card_data(Entity e);
+static const CardData &object_face(Entity e, const CardData &cd);
 static const CardData *card_definition(int card_id);
 static void collect_card_tokens(const CardData &cd, std::set<std::string> &out);
 static bool token_script_exists(const std::string &stem);
@@ -258,6 +259,11 @@ static std::string cost_text(const std::string &script_line) {
     if (end == std::string::npos) end = script_line.size();
     while (end > start && script_line[end - 1] == ' ') --end;
     return script_line.substr(start, end - start);
+}
+
+// The characteristics an object's row shows: a permanent's face, a card's as it is in its zone.
+static const CardData &object_face(Entity e, const CardData &cd) {
+    return global_coordinator.entity_has_component<Permanent>(e) ? active_face(e, cd) : card_characteristics(e, cd);
 }
 
 static rmstate::Layout card_layout(const CardData &cd) {
@@ -802,7 +808,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     if (visible) {
         const Token *tok =
             global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
-        const CardData *face = cd ? &active_face(e, *cd) : nullptr;
+        const CardData *face = cd ? &object_face(e, *cd) : nullptr;
         int power = face ? static_cast<int>(face->power) : tok ? static_cast<int>(tok->power) : 0;
         int toughness = face ? static_cast<int>(face->toughness) : tok ? static_cast<int>(tok->toughness) : 0;
         // A battlefield creature's post-layer P/T (a phased-out one's too: effective_power treats
@@ -862,7 +868,7 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
     const CardData *cd = object_card_data(e);
     const Token *tok =
         global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
-    const CardData *face = cd ? &active_face(e, *cd) : nullptr;
+    const CardData *face = cd ? &object_face(e, *cd) : nullptr;
     const std::set<Type> empty_types;
     const std::set<Type> &types = perm ? perm->types : face ? face->types : tok ? tok->types : empty_types;
     for (int st : subtype_indices(types)) c.w.row(TableId::OBJECT_SUBTYPE).u32(h).u16(static_cast<uint64_t>(st));
