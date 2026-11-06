@@ -65,9 +65,7 @@ struct PickRule {
             BY_COUNT,
             BY_TYPES
         } amount;
-        bool repeats_chosen;    // what is already chosen stays in the pool
-        bool stops_when_empty;  // no candidate left ends the picks (a cost legality guaranteed)
-        bool takes_forced;      // nothing is asked when every candidate must be taken
+        bool takes_forced;  // nothing is asked when every candidate must be taken
 };
 
 // One step of a payment path.
@@ -157,48 +155,48 @@ static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const st
 // ── What a pick chooses ──────────────────────────────────────────────────────────────────────
 // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary).
 static const PickRule kActivationSacrifice = {CostSlot::COST, CostPart::SACRIFICE, "Sacrifice ", "",
-    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, true, true, false};
+    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, false};
 // Return-to-hand cost (Scryb Ranger: return a Forest to hand).
 static const PickRule kActivationReturn = {CostSlot::COST, CostPart::RETURN, "Return ", " to hand",
-    ActionCategory::RETURN_PERMANENT, Zone::HAND, " returns ", " to hand", PickRule::ONE_IF_ANY, true, true, false};
+    ActionCategory::RETURN_PERMANENT, Zone::HAND, " returns ", " to hand", PickRule::ONE_IF_ANY, false};
 // Alt-cost pitch (Force of Will: "exile a blue card from your hand"). The alternative cost's picks
 // are skipped entirely on a normal cast of the same card (CR 601.2b): Daze cast for {1}{U} does not
 // also return an Island.
 static const PickRule kAltPitch = {CostSlot::ALTERNATIVE, CostPart::EXILE_FROM_HAND, "Exile ", "",
-    ActionCategory::PAYING_COSTS, Zone::EXILE, " exiles ", "", PickRule::BY_COUNT, false, false, false};
+    ActionCategory::PAYING_COSTS, Zone::EXILE, " exiles ", "", PickRule::BY_COUNT, false};
 // Alt-cost return-to-hand (Daze: "return an Island you control to its owner's hand").
 static const PickRule kAltReturn = {CostSlot::ALTERNATIVE, CostPart::RETURN, "Return ", "",
-    ActionCategory::RETURN_PERMANENT, Zone::HAND, " returns ", " to hand", PickRule::BY_COUNT, false, false, false};
+    ActionCategory::RETURN_PERMANENT, Zone::HAND, " returns ", " to hand", PickRule::BY_COUNT, false};
 // Alt-cost sacrifice (Fireblast: "sacrifice two Mountains rather than pay this spell's mana cost",
 // CR 118.9).
 static const PickRule kAltSacrifice = {CostSlot::ALTERNATIVE, CostPart::SACRIFICE, "Sacrifice ", "",
-    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::BY_COUNT, false, true, false};
+    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::BY_COUNT, false};
 // Additional sacrifice on the spell itself (CR 601.2f / 118.x): Natural Order — "As an additional
 // cost to cast this spell, sacrifice a green creature."
 static const PickRule kAdditionalSacrifice = {CostSlot::ADDITIONAL, CostPart::SACRIFICE, "Sacrifice ", "",
-    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, true, true, false};
+    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, false};
 // The discard of an additional cost announced in that form (Bitter Triumph, CR 601.2b, 601.2h).
 static const PickRule kAdditionalDiscard = {CostSlot::ADDITIONAL_CHOICE, CostPart::DISCARD, "Discard ", "",
-    ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false, true, false};
+    ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false};
 // Escalate's discards (CR 702.120a / 601.2h): the cost's N cards for each mode beyond the first. The
 // mode menu offered each extra mode only while enough cards were left.
 static const PickRule kEscalateDiscard = {CostSlot::ESCALATE, CostPart::DISCARD, "Discard ", "",
-    ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", " (escalate)", PickRule::BY_COUNT, false, true, true};
+    ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", " (escalate)", PickRule::BY_COUNT, true};
 // Flashback's sacrifice (CR 702.34, Cabal Therapy).
 static const PickRule kFlashbackSacrifice = {CostSlot::FLASHBACK, CostPart::SACRIFICE, "Sacrifice ", "",
-    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, true, true, false};
+    ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, false};
 // Escape's ExileFromGrave (CR 702.138 / 601.2f), mandatory until met: OTHER cards of the graveyard
 // until the set collectively has at least min_types distinct card types (CR 205.2), or exactly
 // `count` of them (Uro: "Exile five other cards from your graveyard").
 static const PickRule kEscapeExileTypes = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",
     " from graveyard", ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard",
-    PickRule::BY_TYPES, false, true, false};
+    PickRule::BY_TYPES, false};
 static const PickRule kEscapeExileCount = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",
     " from graveyard", ActionCategory::EXILE_FROM_YARD, Zone::EXILE, " exiles ", " from their graveyard",
-    PickRule::BY_COUNT, false, true, false};
+    PickRule::BY_COUNT, false};
 // A triggered ability's discard ("you may discard a card. If you do, ...": Formidable Speaker).
 static const PickRule kTriggerDiscard = {CostSlot::COST, CostPart::DISCARD, "Discard ", "", ActionCategory::DISCARD,
-    Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false, true, false};
+    Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false};
 
 // ── The paths ────────────────────────────────────────────────────────────────────────────────
 // CR 601.2f-h, after the targets: first every non-mana cost item is chosen, then the mana is paid,
@@ -534,7 +532,9 @@ static PayStatus pick_items(
     if (!cost) return PayStatus::PAID;
     for (int left = picks_owed(rule, *cost, who); left > 0; left = picks_owed(rule, *cost, who)) {
         const std::vector<Entity> pool = pick_pool(rule, who, orderer);
-        if (pool.empty() && rule.stops_when_empty) break;
+        // The offer held the player to the whole cost; a pick with nothing left to take means the cost
+        // can't be paid in full, and a partial payment isn't allowed (CR 118.3, 601.2h).
+        if (pool.empty()) return PayStatus::FAILED;
         size_t pick = 0;
         if (!rule.takes_forced || pool.size() > static_cast<size_t>(left)) {
             std::vector<LegalAction> menu;
@@ -624,9 +624,9 @@ static std::vector<Entity> pick_pool(
             }
             break;
     }
-    if (!rule.repeats_chosen)
-        pool.erase(
-            std::remove_if(pool.begin(), pool.end(), [&run](Entity e) { return chosen_as_cost(run, e); }), pool.end());
+    // One object pays one cost (CR 118.3): what an earlier pick chose is spoken for.
+    pool.erase(
+        std::remove_if(pool.begin(), pool.end(), [&run](Entity e) { return chosen_as_cost(run, e); }), pool.end());
     return pool;
 }
 
