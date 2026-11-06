@@ -57,6 +57,7 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     ResolutionCastTerms terms;
     terms.grant.resource =
         (ab.def->play_cost_resource == AbilityDef::PLAY_COST_LIFE) ? GrantResource::LIFE : GrantResource::ENERGY;
+    terms.amount_is_mana_value = ab.def->play_cost_expr == "ConvertedManaCost";
     terms.grant.amount = play_cost_amount(ab, card);
     if (rt.stage == ResolutionCastRt::OFFER && !ctx.resuming()) {
         const char *res = (terms.grant.resource == GrantResource::LIFE) ? "life" : "energy";
@@ -96,10 +97,11 @@ bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value
 
 }  // namespace effects
 
-// The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost", else the literal.
+// The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost" (of the face cast, once
+// it is known), else the literal.
 static int play_cost_amount(const Ability &ab, Entity card) {
     if (ab.def->play_cost_expr == "ConvertedManaCost")
-        return object_mana_value(card, global_coordinator.GetComponent<CardData>(card));
+        return card_mana_value(global_coordinator.GetComponent<CardData>(card));
     if (!ab.def->play_cost_expr.empty()) return std::atoi(ab.def->play_cost_expr.c_str());
     return 0;
 }

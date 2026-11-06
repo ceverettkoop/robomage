@@ -1,0 +1,46 @@
+{
+  "name": "cr715_3_a_resolution_casts_an_adventure",
+  "why": "CR 715.3, 608.2g: an effect that lets an adventurer card be cast offers the Adventure, at the Adventure's own mana value: two energy pays for Petty Theft and not for Brazen Borrower.",
+  "hand_a": [
+    "Amped Raptor",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Brazen Borrower",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "library_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Amped Raptor",
+    "A:desc:Cast Petty Theft"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A pays 2 energy",
+    "Player A casts Petty Theft"
+  ],
+  "expect_menu": [
+    "Cast Petty Theft"
+  ],
+  "expect_menu_not": [
+    "Cast Brazen Borrower"
+  ]
+}

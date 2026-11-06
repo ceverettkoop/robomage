@@ -16,6 +16,8 @@ class Orderer;
 // What a resolving effect lets its controller cast a card for, as part of that resolution (CR 608.2g).
 struct ResolutionCastTerms {
         CastGrant grant;
+        // `grant`'s amount is the mana value of the spell, whichever face is cast.
+        bool amount_is_mana_value = false;
 };
 
 // Who is being offered casts, and whether this is their sorcery window (CR 307.1). `resolution` says

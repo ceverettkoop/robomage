@@ -98,6 +98,7 @@ static bool grant_cost_payable(Entity card, const CardData &ecd, const CastGrant
                                std::shared_ptr<Orderer> orderer);
 static const Game::ImpulseCastPermission &offer_grant(const CastOffer &offer);
 static bool grant_offered(CastOffer &offer);
+static CastGrant resolution_grant(const ResolutionCastTerms &terms, const CardData &face);
 static bool resolution_grant_offered(CastOffer &offer);
 static bool exile_mana_cost_offered(CastOffer &offer);
 static bool exile_resource_offered(CastOffer &offer);
@@ -205,6 +206,12 @@ static const CastSection kMiracleCast = {Zone::HAND, Permission::NONE, CastFace:
 static const CastSection kResolutionCasts[] = {
     {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, cast_from_exile, nullptr, {
         {"exile_resolution", CastCost::GRANT,       false, -1, "",                     Zone::GRAVEYARD, resolution_grant_offered},
+    }},
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_from_back, nullptr, {
+        {"exile_resolution_back", CastCost::GRANT,  false, -1, "",                     Zone::GRAVEYARD, resolution_grant_offered},
+    }},
+    {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_as_adventure, nullptr, {
+        {"exile_resolution_adventure", CastCost::GRANT, false, -1, "",                 Zone::GRAVEYARD, resolution_grant_offered, SpellOverlay::ADVENTURE},
     }},
 };
 
@@ -571,9 +578,16 @@ static bool grant_offered(CastOffer &offer) {
                               offer.window.orderer);
 }
 
+// What `terms` puts in place of the mana cost of `face`.
+static CastGrant resolution_grant(const ResolutionCastTerms &terms, const CardData &face) {
+    CastGrant grant = terms.grant;
+    if (terms.amount_is_mana_value) grant.amount = card_mana_value(face);
+    return grant;
+}
+
 // A resolution's cast ignores the card's type-based timing (CR 608.2g).
 static bool resolution_grant_offered(CastOffer &offer) {
-    return offer_gates_ok(offer) && grant_cost_payable(offer.card, offer.face, offer.window.resolution->grant,
+    return offer_gates_ok(offer) && grant_cost_payable(offer.card, offer.face, resolution_grant(*offer.window.resolution, offer.face),
                                                        offer.window.caster, offer.window.orderer);
 }
 
@@ -693,7 +707,8 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
             if (row.offered(asked)) {
                 actions.push_back(row_action(row, section, card, "Cast " + asked.face.name + row.label));
                 if (row.cost == CastCost::GRANT)
-                    actions.back().option.grant = window.resolution ? window.resolution->grant : offer_grant(asked).grant();
+                    actions.back().option.grant =
+                        window.resolution ? resolution_grant(*window.resolution, asked.face) : offer_grant(asked).grant();
                 coverage_cast_offer(row.name);
             }
         }

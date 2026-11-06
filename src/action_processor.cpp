@@ -3052,6 +3052,11 @@ static std::vector<LegalAction> resolution_offer_menu(const std::vector<Resoluti
         menu.back().description = offers[i].label;
         menu.back().option_ordinal = static_cast<int>(i) + 1;
     }
+    // A row says which of the card's faces it casts; the offer itself is no cast.
+    for (size_t i = 0; i < offers.size(); i++) {
+        menu[i + 1].option.face = offers[i].cast.option.face;
+        menu[i + 1].option.overlay = offers[i].cast.option.overlay;
+    }
     return menu;
 }
 
