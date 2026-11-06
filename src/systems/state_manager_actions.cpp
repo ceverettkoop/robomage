@@ -32,6 +32,7 @@
 #include "../queries/counters.h"
 #include "../queries/filters.h"
 #include "../queries/lki.h"
+#include "../queries/permissions.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
@@ -714,14 +715,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     bool sorcery_window = sorcery_timing_ok(game, priority_player, stack_empty);
 
     // Graveyard / exile cards the priority player has some play route for (the shared
-    // card_play_permission predicate, which ignores timing and cost), in ascending entity
+    // play_permissions predicate, which ignores timing and cost), in ascending entity
     // order, with their route bits. Every graveyard / exile play loop below walks this list
     // and applies its own timing, cost and target gates.
-    std::vector<std::pair<Entity, unsigned>> zone_play_routes;
-    for (auto e : orderer->mEntities) {
-        unsigned routes = card_play_permission(e, priority_player).sources;
-        if (routes) zone_play_routes.emplace_back(e, routes);
-    }
+    const std::vector<std::pair<Entity, unsigned>> zone_play_routes = play_routes(orderer->mEntities, priority_player);
 
     // PASS PRIORITY
     LegalAction la(PASS_PRIORITY, "Pass priority");
@@ -755,7 +752,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // Lands in the graveyard while a play-lands-from-graveyard static applies
             // (the GRAVEYARD_LAND route).
             for (const auto &[gy_e, routes] : zone_play_routes) {
-                if (!(routes & CardPlayPermission::GRAVEYARD_LAND)) continue;
+                if (!(routes & permission_bit(Permission::GRAVEYARD_LAND))) continue;
                 auto &gcd = global_coordinator.GetComponent<CardData>(gy_e);
                 std::string desc = "Play " + gcd.name + " (from graveyard)";
                 LegalAction la(SPECIAL_ACTION, gy_e, desc);
@@ -867,7 +864,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     offer_modal_back_face_casts(actions, priority_player, orderer, sorcery_window);
     // checking graveyard for flashback spells (the FLASHBACK route)
     for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & CardPlayPermission::FLASHBACK)) continue;
+        if (!(routes & permission_bit(Permission::FLASHBACK))) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
         // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
         if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
@@ -894,7 +891,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
     // The permission itself is the ESCAPE route.
     for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & CardPlayPermission::ESCAPE)) continue;
+        if (!(routes & permission_bit(Permission::ESCAPE))) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
         if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
                           /*ignore_timing=*/false, orderer))
@@ -915,7 +912,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // for its normal cost, at the timing its type allows. The GRAVEYARD_CAST route covers
     // only the graveyard owner and never a land (601.1).
     for (const auto &[gy_entity, routes] : zone_play_routes) {
-        if (!(routes & CardPlayPermission::GRAVEYARD_CAST)) continue;
+        if (!(routes & permission_bit(Permission::GRAVEYARD_CAST))) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
         const LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
         if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
@@ -932,14 +929,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // EXILE_GRANT route covers a card still in exile whose grant names this player (and a land
     // only under a "play" grant that allows lands).
     for (const auto &[ex_entity, routes] : zone_play_routes) {
-        if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
+        if (!(routes & permission_bit(Permission::EXILE_GRANT))) continue;
         const auto &perm_grant = *cur_game.resolved_effects.impulse_cast_permission.find(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
         // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may
         // PLAY those cards", Dauthi Voidwalker's "you may play it") may play it — a land play,
         // sorcery-timing, own main phase, empty stack, and a land drop remaining (CR 305.1 /
-        // 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and card_play_permission
+        // 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and play_permissions
         // reports no route for a land under one.
         if (is_land_card(ecd)) {
             if (!sorcery_window) continue;

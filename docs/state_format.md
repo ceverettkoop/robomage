@@ -895,7 +895,7 @@ computes neither outside its legal-action enumeration.
 | | `filter` | text | `text` | a cast-as-though-it-had-flash permission's filter |
 | `play_permission` (39): per graveyard / exile object and player | `obj` | u32 | `handle` | |
 | | `player` | seat | | who may play it |
-| | `kind` | u8 | `enum:permission_kind` | one row per source of `card_play_permission` (`CardPlayPermission::Source`) |
+| | `kind` | u8 | `enum:permission_kind` | one row per source of `play_permissions` (`Permission`) |
 | | `resource` | u8 | `enum:permission_resource` | an exile grant's resource (`ImpulseCastPermission`: NORMAL → MANA); MANA otherwise |
 | | `amount` | u16 | `count` | an exile grant's amount |
 | | `expires_turn` | u8 | `bool` | lapses at this turn's cleanup |
@@ -1046,7 +1046,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
 | `link_kind` | EXILED_WITH, RETURNABLE |
 | `player_effect_kind` | PROTECTION_FROM_EVERYTHING, CANT_GAIN_LIFE, HEXPROOF_FROM, SPELLS_CANT_BE_COUNTERED, CAST_AS_FLASH, SORCERY_SPEED_ONLY, FLOATING_TRIGGER |
-| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT (the `CardPlayPermission::Source` bits, in bit order) |
+| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
 | `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST |

@@ -2397,7 +2397,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage, Dauthi
     // Voidwalker): tells Forge to drop a remembered object from the effect once it leaves the named
     // zone. The exile-play permission already covers a card only while it stays in exile
-    // (card_play_permission).
+    // (play_permissions).
     if (key == "ForgetOnMoved") return ability.effect_may_play_from_exile && value == "Exile";
     // ExileOnMoved$ <zone>: the Effect ends when its object leaves that zone. Each grant of
     // grant_cast is kept on the object's own state or by identity, and ends with it: the

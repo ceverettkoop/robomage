@@ -32,6 +32,7 @@
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
 #include "../queries/pending_cost.h"
+#include "../queries/permissions.h"
 #include "../queries/player_effects.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
@@ -1276,7 +1277,7 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
     write_player_effects(c, opponent_of(c.self));
     for (Entity e : zone_cards) {
         for (Zone::Ownership p : {c.self, opponent_of(c.self)}) {
-            const CardPlayPermission perm = card_play_permission(e, p);
+            const PlayPermissions perm = play_permissions(e, p);
             if (!perm.playable()) continue;
             for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::EXILE_GRANT); ++bit) {
                 if (!(perm.sources & (1u << bit))) continue;

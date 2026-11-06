@@ -53,48 +53,9 @@ inline bool check_delirium(Zone::Ownership owner, const EntitySet &entities) {
 // cards") legality check and payment loop.
 int graveyard_card_count(Zone::Ownership owner, const EntitySet &entities, Entity except = 0);
 
-// ── Play permissions from the graveyard and exile ────────────────────────────
-// Whether `player` has a permission to play (cast, or play as a land) the card `card`
-// from the zone it is in, IGNORING timing, cost affordability, targets and cast
-// prohibitions: those stay in the legal-action enumeration. The single source for
-// "which play routes exist for this card": the enumeration's graveyard/exile loops gate on
-// its `sources` bits, and the ML observation's graveyard/exile playable flags read it, so
-// the two cannot disagree about which cards are playable from those zones.
-// Sources covered:
-//   FLASHBACK         a graveyard card its owner may cast with flashback (CR 702.34)
-//   ESCAPE            a graveyard card its owner may cast with escape (CR 702.139)
-//   GRAVEYARD_CAST    a nonland graveyard card in Game::resolved_effects.may_cast_this_turn (Emry's grant;
-//                     the owner, this turn)
-//   GRAVEYARD_LAND    a land card in its owner's graveyard while a static lets the owner play
-//                     lands from the graveyard (Icetill Explorer, Mole Man)
-//   EXILE_GRANT       an exiled card with a Game::resolved_effects.impulse_cast_permission whose caster is
-//                     `player` (Light Up the Stage, Ugin's -11, Dauthi Voidwalker, warp); a land
-//                     only under a "play" grant that allows lands
-// Not covered: a suspended card still carrying time counters (no permission until the last
-// counter is removed), a card cast during a resolution (Amped Raptor, suspend's last counter:
-// no standing permission exists), graveyard-activated abilities such as unearth (they activate
-// an ability, not play the card), and hand casts.
-// expires_this_turn is true when the card is playable and EVERY source covering it lapses at
-// this turn's cleanup (Emry's grant, a "this turn" exile grant, or a Light Up the Stage grant
-// during the caster's next turn); false for a static or keyword source or a grant that
-// outlives this turn. Defined in zones.cpp (needs cur_game and rules_mod).
-struct CardPlayPermission {
-    enum Source : unsigned {
-        FLASHBACK      = 1u << 0,
-        ESCAPE         = 1u << 1,
-        GRAVEYARD_CAST = 1u << 2,
-        GRAVEYARD_LAND = 1u << 3,
-        EXILE_GRANT    = 1u << 4,
-    };
-    unsigned sources = 0;
-    bool expires_this_turn = false;
-    bool playable() const { return sources != 0; }
-};
-CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
-
 // Whether `a` and `b` are interchangeable cards to choose between: two copies of the same card in
 // the same player's graveyard, playable from there by the same players on the same terms
-// (card_play_permission), or in the same player's library (a search, a Doomsday pile) where each
+// (play_permissions), or in the same player's library (a search, a Doomsday pile) where each
 // seat sees both of them or neither right now (identity_visible, queries/visibility.h: a reveal
 // window still open). A seat that sees only one of them, such as an opponent looking at one
 // in a reveal window, could tell the choices apart; what a seat remembers of a window that has
