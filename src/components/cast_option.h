@@ -12,7 +12,8 @@
 // face enters showing it (EntryInfo::enters_transformed).
 enum class CastFace : uint8_t { FRONT, BACK };
 
-// What a cast pays as its cost. From ALTERNATIVE on, an alternative cost (CR 118.9).
+// What a cast pays as its cost, each a row of kCastCostRows (action_processor.cpp), in this order. From
+// ALTERNATIVE on, an alternative cost (CR 118.9).
 enum class CastCost : uint8_t {
     MANA_COST,     // its mana cost, wherever it is cast from
     // Without paying its mana cost under a free-cast static (CR 118.9): the regular branch

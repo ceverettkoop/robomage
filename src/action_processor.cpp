@@ -158,6 +158,30 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
                                int resume_choice);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
+// How a cast's cost is determined as it is proposed (CR 601.2f), a row per CastCost in its order: what
+// it owes, and the step that goes on from there.
+struct CastCostRow {
+        void (*determine)(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+        Game::PendingCast::Step next;
+};
+static void determine_mana_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static void determine_flashback_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static void determine_escape_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static void determine_alternative_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static const CastCostRow kCastCostRows[] = {
+    {determine_mana_cost, Game::PendingCast::KICKER},            // MANA_COST
+    {determine_mana_cost, Game::PendingCast::KICKER},            // NO_MANA_COST
+    {determine_grant_cost, Game::PendingCast::KICKER},           // GRANT
+    {determine_flashback_cost, Game::PendingCast::KICKER},       // FLASHBACK
+    {determine_escape_cost, Game::PendingCast::KICKER},          // ESCAPE
+    {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // ALTERNATIVE
+    {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // EVOKE
+    {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // IMPENDING
+    {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // WARP
+};
+static_assert(sizeof(kCastCostRows) / sizeof(kCastCostRows[0]) == static_cast<size_t>(CastCost::WARP) + 1,
+              "a row per CastCost");
 // Can `caster` pay `extra`, an optional additional cost (CR 601.2b), on top of what the spell `pc` is
 // casting has committed to? `with_extra` is the mana the cast comes to with it.
 static bool additional_cost_payable(const Game::PendingCast &pc, const CardData &card_data, const CostParts &extra,
@@ -1791,6 +1815,87 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
     }
 }
 
+// REGULAR COST + DELVE, for a cast of its mana cost or without paying it. A NORMAL play-from-exile
+// grant (Light Up the Stage, warp) casts the card for its own costs, so it comes here too: kicker,
+// X, hybrid and Phyrexian pips and additional costs all apply (CR 601.2b, 601.2f).
+static void determine_mana_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    const bool without_mana_cost = pc.chosen.option.cost == CastCost::NO_MANA_COST;
+    // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
+    // caster passed so Affinity for artifacts reduces the generic cost (702.41).
+    // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
+    // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
+    // additional costs below are offered and paid as on any cast.
+    pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
+                                       : effective_base_cost(card_data, caster);
+    // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
+    // once they are chosen (AURA_TARGET), the total cost being determined after them
+    // (CR 601.2c, 601.2f).
+    pc.target_cost_reduction = !without_mana_cost && has_target_cost_reduction(card_data, caster);
+    if (without_mana_cost)
+        game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
+            card_data.name.c_str());
+
+    // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
+    if (pc.chosen.option.offspring)
+        for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
+}
+
+// CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
+// (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
+// resource (ENERGY / LIFE: Amped Raptor's DB$ Play) of the permission's resolved
+// amount, determined here (CR 601.2f) and paid with the other costs at PAY_COSTS
+// (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
+// for a spell cast without paying its mana cost (CR 107.3b).
+static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    const Game::ImpulseCastPermission *grant_p =
+        cur_game.resolved_effects.impulse_cast_permission.find(pc.spell_entity);
+    if (grant_p) {
+        const auto &grant = *grant_p;
+        if (grant.resource == Game::ImpulseCastPermission::FREE)
+            game_log("%s casts %s without paying its mana cost\n",
+                     player_name(caster).c_str(), card_data.name.c_str());
+        else if (grant.resource == Game::ImpulseCastPermission::ENERGY)
+            pc.pay.energy = grant.amount;
+        else
+            pc.pay.life = grant.amount;
+    }
+
+    // Cost-increase / SetCost-floor statics apply to alternative costs too
+    // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
+    // Trinisphere floor pads it up to its minimum ({3}) and Thalia adds its surcharge
+    // — paid ON TOP of the resource cost (energy/life). Deferred until after targets
+    // like every other cost. Empty (no floor / increase applies) leaves the cast free
+    // of mana.
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+}
+
+// FLASHBACK COST — determined here (601.2f), but PAID after targets are
+// chosen (601.2c before 601.2g/h; see CostRun). Paying
+// the sacrifice first leaked information and changed the board before the
+// target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
+static void determine_flashback_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
+    // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
+    pc.pay.life = card_data.flashback_cost.life();
+}
+
+// ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
+// escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
+// cards covering >=N card types). The exile is a cost, paid as the spell is cast —
+// after targets are chosen, like every other cost (601.2c before 601.2g/h).
+static void determine_escape_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
+    pc.pay.life = card_data.escape_cost.life();
+}
+
+// ALTERNATE COST — determined here, paid in the payment phase like every
+// other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
+static void determine_alternative_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership) {
+    pc.cost_to_pay = card_data.alt_cost.cost.mana();
+}
+
 // Drive the persisted cast to its next prompt, cancellation, or completion.
 // resume_choice < 0 = fresh entry from process_action; >= 0 = the latched
 // answer for the prompt pc.step armed. Every statement keeps the blocking
@@ -1814,95 +1919,15 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
     for (;;) switch (pc.step) {
         case Game::PendingCast::COST: {
-            // A NORMAL play-from-exile grant (Light Up the Stage, warp) casts the card for its
-            // own costs, so it follows the regular branch: kicker, X, hybrid and Phyrexian pips
-            // and additional costs all apply (CR 601.2b, 601.2f).
-            const CastOption &how = pc.chosen.option;
-            pc.mana_cost_replaced = how.cost != CastCost::MANA_COST;
+            const CastCost cost = pc.chosen.option.cost;
+            pc.mana_cost_replaced = cost != CastCost::MANA_COST;
             // Delve and TapToPay act on the total cost, whichever cost it was made from.
             pc.pay.delve = card_data.has_delve;
             pc.pay.tap_to_pay = card_data.tap_to_pay;
             if (!card_data.kicker_costs.empty()) pc.chosen.kicked.assign(card_data.kicker_costs.size(), false);
-            // FLASHBACK COST — determined here (601.2f), but PAID after targets are
-            // chosen (601.2c before 601.2g/h; see CostRun). Paying
-            // the sacrifice first leaked information and changed the board before the
-            // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
-            if (pc.chosen.flashback()) {
-                // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
-                // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
-                pc.pay.life = card_data.flashback_cost.life();
-                pc.step = Game::PendingCast::KICKER;
-
-            // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
-            // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
-            // cards covering >=N card types). The exile is a cost, paid as the spell is cast —
-            // after targets are chosen, like every other cost (601.2c before 601.2g/h).
-            } else if (pc.chosen.escape()) {
-                // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                pc.cost_to_pay = floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
-                pc.pay.life = card_data.escape_cost.life();
-                pc.step = Game::PendingCast::KICKER;
-
-            // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
-            // (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
-            // resource (ENERGY / LIFE: Amped Raptor's DB$ Play) of the permission's resolved
-            // amount, determined here (CR 601.2f) and paid with the other costs at PAY_COSTS
-            // (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
-            // for a spell cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light
-            // Up the Stage, warp) pays the card's own costs, so it takes the regular branch below.
-            } else if (how.cost == CastCost::GRANT) {
-                const Game::ImpulseCastPermission *grant_p =
-                    cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
-                if (grant_p) {
-                    const auto &grant = *grant_p;
-                    if (grant.resource == Game::ImpulseCastPermission::FREE)
-                        game_log("%s casts %s without paying its mana cost\n",
-                                 player_name(caster).c_str(), card_data.name.c_str());
-                    else if (grant.resource == Game::ImpulseCastPermission::ENERGY)
-                        pc.pay.energy = grant.amount;
-                    else
-                        pc.pay.life = grant.amount;
-                }
-
-                // Cost-increase / SetCost-floor statics apply to alternative costs too
-                // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
-                // Trinisphere floor pads it up to its minimum ({3}) and Thalia adds its surcharge
-                // — paid ON TOP of the resource cost (energy/life). Deferred until after targets
-                // like every other cost. Empty (no floor / increase applies) leaves the cast free
-                // of mana.
-                pc.cost_to_pay = floored_alt_mana_cost(card_data, ManaValue{}, caster);
-                pc.step = Game::PendingCast::KICKER;
-
-            // ALTERNATE COST — determined here, paid in the payment phase like every
-            // other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
-            } else if (pc.chosen.alternative()) {
-                pc.cost_to_pay = card_data.alt_cost.cost.mana();
-                pc.step = Game::PendingCast::ALT_HYBRID;
-
-            } else {  // REGULAR COST + DELVE (also a NORMAL play-from-exile grant)
-                // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
-                // caster passed so Affinity for artifacts reduces the generic cost (702.41).
-                // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
-                // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
-                // additional costs below are offered and paid as on any cast.
-                const bool without_mana_cost = how.cost == CastCost::NO_MANA_COST;
-                pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
-                                                   : effective_base_cost(card_data, caster);
-                // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
-                // once they are chosen (AURA_TARGET), the total cost being determined after them
-                // (CR 601.2c, 601.2f).
-                pc.target_cost_reduction = !without_mana_cost && has_target_cost_reduction(card_data, caster);
-                if (without_mana_cost)
-                    game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
-                        card_data.name.c_str());
-
-                // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
-                if (how.offspring)
-                    for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
-
-                pc.step = Game::PendingCast::KICKER;
-            }
+            const CastCostRow &row = kCastCostRows[static_cast<size_t>(cost)];
+            row.determine(pc, card_data, caster);
+            pc.step = row.next;
             break;
         }
 
