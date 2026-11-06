@@ -449,6 +449,66 @@ library that stops the repeat, and one that empties. `AtRandom` replays identica
 
 ### M5. Typed costs and one payer (XL)
 
+**Progress.** Unit (a), typed parts from one parser and `can_pay`, is done (2026-11-05) and inert. Units (b)
+(`run_cost_parts`, `ChosenCost`) and (c) (the new cost kinds, `TapToPay`, `ActivationZone$`, the cards) are not
+started; everything under Today, Build and Lands here below stands for them.
+
+A definition holds `CostParts`, a list of `CostPart {kind, count, count_is_x, filter, object, ...}`
+(`src/components/cost_part.h`): `MANA`, `X_MANA`, `TAP`, `LIFE`, `ENERGY`, `LOYALTY`, `SACRIFICE`, `DISCARD`, `RETURN`,
+`EXILE_FROM_HAND`, `EXILE_FROM_GRAVEYARD`, and `MANDATORY`, which pays nothing. Filters are `FilterSpec`s, CARDNAME an
+`ObjectSpec` SELF. `parse_cost` is the one parser: `read_cost_token` says what a token is, `cost_form_pays` whether a
+`CostForm` pays it (activated, spell, triggered, ImmediateTrigger, alternative, flashback, escape, mana-only keyword,
+Escalate, Ward, unless), and what no form pays is a `cost` finding, as before. Activations, `AltCost`, Flashback, Escape,
+Kicker, Offspring, Replicate, Suspend, Impending, Escalate, Ward and `UnlessCost$` all read through it.
+`parse_alt_cost_tokens`, `read_alt_cost_token`, `read_activation_cost_token`, `cost_token_paid`, Escalate's token loop,
+Escape's split at `ExileFromGrave`, Ward's digit scan and the replacement line's `stoi` are gone, with every cost field
+they filled: 15 on `AbilityDef`, 5 `unless_*` ones, 11 on `AltCost`, and on `CardData` the mana and `AltCost` pairs of
+Flashback and Escape, Escalate's three and Ward's two.
+
+`can_pay(parts, CostCheck)` (`src/queries/costs.h`) is the affordability check of activations, loyalty, mana abilities,
+alternative, flashback and escape casts, a regular cast's additional sacrifice, free casts, suspend, miracle and an
+ImmediateTrigger's energy. The caller supplies the mana after reductions and floors and the payee; the {T} exclusion and
+the life reserve come off the parts. A path's own leniency is named at its call site in `CostCheck::unchecked`.
+
+What stayed, and why:
+
+- **Paying code.** It reads the parts through typed reads, keeping its order, and pays nothing new, so no field survives
+  for (b) on either side of a definition. `mech_cost_paths.expect`'s `cost:` keys are still counted at the pay steps.
+- **`unless_energy_expr`.** Galvanic Discharge's and Wrath of the Skies' amount is an SVar read as the effect resolves, not
+  a count a part can hold. `Effect::Replacement::tapped_unless_life` is an int, read from its token, because its payment
+  sits in `replacement_effects.cpp`. `AbilityDef::mandatory` is not a cost: `Mandatory$` writes it too.
+- **`PlayCost$`.** `parse_play` still reads `PayEnergy<ConvertedManaCost>` by hand; the amount is no count. M7's.
+- **Offers that don't call `can_pay`.** Kicker, Replicate and Escalate's mode menu test their cost on top of the cost being
+  built, which only the cast in flight holds; `run_unless_loop` tests the pool, life or energy inside its live menu;
+  `prompt_mana_payment` and that loop filter sources by the floating pool. A play permission's resource and the
+  companion's {3} are no parsed cost.
+- **The pitch.** `EXILE_FROM_HAND` reads `color` through `effective_colors`: its compiled filter would match printed colors
+  in `card_view`, which a color-setting static doesn't reach. (c) must settle that before `ExileFromHand` generalises.
+
+Leniency kept, and in `docs/rules_deviations.md` §2.5: a mana ability's Sac, Return and energy are unchecked (Lazotep
+Quarry, a candidate: `activate_mana_source` pays only a self-sacrifice, so the auto-payer never charges it); a spell's
+additional sacrifice is checked only from hand and on a free cast; `ExileFromHand<N>` asks for one card; `NotPlayerTurn`
+isn't read on `Cost$ 0`.
+
+**(b) must:** give `run_cost_parts` the parts as they stand, moving the steps of `run_cast_flow`, `run_activation_flow`,
+`activate_mana_source` and `run_unless_loop` onto it; bring Kicker, Replicate and Escalate onto `can_pay` once
+`ChosenCost` holds what the cast has committed; rename the `cost:` keys with the parts; extend `cost_part`, the state
+format's enum, only when a part has a new view. `pending_cost.cpp` calls that enum `StatePart`, since `rmstate::CostPart`
+and `CostPart` are different things.
+
+Inert: `replay` byte-identical and `make check` green at each of the four commits, `make registry` a no-op, parse reports
+(all 430 provisioned cards) and `--cards-frame` unchanged. Every provisioned card's parsed cost, each of its 838 interned
+definitions and each keyword cost, dumped before and after: identical. 9,600 explore games over the 20 top-level, `league/`,
+`heldout/` and `tests/mech_*` decks, 3,200 each of bo1, `explore:patient` bo3 and `--no-auto-mana`, under `--trace-decisions`
+so that every menu is compared: 5.4 GB byte-identical. 240 games under `--selfcheck-state` clean. Over 675 games every kind
+`can_pay` can refuse was seen both ways. Release `bench`, median of 9 alternating runs:
+129.8 us per decision before, 131.0 after, inside the runs' 126.7 to 133.1 spread.
+
+The parsed form differs from the old readers in cases no script has: a mana token after `ExileFromGrave` now counts; `Sac`,
+`Return` and `ExileFromHand` on Escape and `ExileFromGrave` on an alternative cost are findings, where they were accepted
+and dropped; several bad tokens in one `UnlessCost$` give a finding each and keep the rest; a Counter's `PayEnergy<N>`
+would pay energy, not {N}.
+
 **Today.** No cost type: ad-hoc `AbilityDef` fields from `parse_activation_cost`, `AltCost` from a second
 parser, and per-keyword reductions of both (Flashback mana/life/sac, Escape exile only, Kicker mana
 only). Payment is spread across `run_cast_flow`, `run_activation_flow`, `activate_mana_source`, resolution

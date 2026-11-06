@@ -434,7 +434,8 @@ demand by `load_card` (`src/card_db.cpp`) into the `card_db` map and parsed by
 `Loyalty`, `K:` keywords, `A:` spell/activated abilities (`SP$`/`AB$ <category>`; `Mana` →
 `AddMana`), `T:` triggers, `S:` statics, `R:` replacements, `SVar:` bodies (`DB$` sub-abilities
 chained by `SubAbility$`). Per-ability `Key$ Value` params land in `apply_param_to_ability`
-(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
+(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). Every cost string
+goes through `parse_cost` into `CostParts`, a `CostForm` saying what that path pays of it. `name_to_uid`
 lowercases, maps space/`-`/`/` to `_`, drops other characters, collapses `__`. Basic land types
 get their mana ability from `StateManager::apply_land_abilities`, not the script.
 Decks (`.dk`, `bin/resources/decks/`) are `<quantity> <card name>` lines, then an optional
@@ -569,7 +570,8 @@ sections above are not repeated here.
   exile, `interchangeable_cards`), `lki` (object identity stamp, last-known info), `entry`
   (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal
   windows, `individually_identifiable`, `canonical_object_order`, and `visible_card_id` /
-  `card_identity`, the state format's one identity read), `pending_cost` (the cost being paid at a
+  `card_identity`, the state format's one identity read), `costs` (`can_pay`, the one affordability
+  check over `CostParts`, `src/components/cost_part.h`), `pending_cost` (the cost being paid at a
   decision, `CostPaymentScope`), `tokens` (the token scripts a card's abilities and keywords make)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
