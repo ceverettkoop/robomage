@@ -15,6 +15,12 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 
 ## 1. Intentional deviations (design decisions)
 
+### 1.1 A cost's moved cards are narrated on different sides of the move
+- **CR** none (the narrative only)
+- **Engine:** a cast logs each card its cost moves just before the move, and an activation or a triggered ability's cost just after it, so a line a replacement prints during the move lands on different sides of the two.
+- **Effect:** none on the game: the moves, their order and every frame are the same. No rule orders a log, so this is left as it is.
+- **Code:** `src/cost_payment.cpp`: `move_items`.
+
 ### 1.2 Name-a-card offers a limited candidate set
 - **CR** 201.4
 - **Rules:** the player may name any card in the Oracle card reference.
@@ -31,7 +37,7 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 ### 1.4 Automatic mana payment (auto-mana)
 - **CR** 601.2g–h, 605, 107.4e
 - **Rules:** the player chooses which mana abilities to activate, which pool mana to spend, and how each hybrid symbol is paid.
-- **Engine:** with auto-mana on (the default, for every consumer), the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision, unless the card reads which colors were spent (Vibrance: `spell_reads_colors_spent`): those pips are asked, among the payable colors, while the payer still picks what pays the generic part, so its {R}{R} and {G}{G} can't be aimed through a generic pip. Ordinary mana abilities are not offered at priority; instant-speed sources and sources targeted by removal on the stack are, so mana can still be floated. `--no-auto-mana` turns all of this off for the match: every mana ability is offered at priority, and costs and hybrid pips are paid by the player's choices. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first.
+- **Engine:** with auto-mana on (the default, for every consumer), the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision, unless the card reads which colors were spent (Vibrance: `spell_reads_colors_spent`): those pips are asked, among the payable colors, while the payer still picks what pays the generic part, so its {R}{R} and {G}{G} can't be aimed through a generic pip. Ordinary mana abilities are not offered at priority; instant-speed sources and sources targeted by removal on the stack are, so mana can still be floated. `--no-auto-mana` turns all of this off for the match: every mana ability is offered at priority, and costs and hybrid pips are paid by the player's choices. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first. A TapToPay payment (Improvise) taps only for what the mana sources can't pay, in entity order, where the rules let the player tap first and keep the mana; under `--no-auto-mana` the eligible permanents are rows of the payment.
 - **Effect:** with auto-mana on there are no tapping decisions. With {W}{C} floating, paying {1} spends the {W}, which can strand a later {W} spell in the same step. A mana ability activated from the hand (Simian Spirit Guide) is offered at priority and at a payment's rows, never auto-spent and never counted as mana a cast could pay: the card is the player's to exile first, so a spell it alone would pay for is offered once the mana floats (CR 605.3a allows it during the payment too; the mana is the same).
 - **Code:** `src/mana_system.cpp`: `auto_pay_mana`, `auto_pay_mana_attempt`, `pay_from_pool`; `src/action_processor.cpp`: `run_cast_flow` (HYBRID step, `resolve_hybrid_cost`).
 

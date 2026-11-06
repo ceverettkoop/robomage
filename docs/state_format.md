@@ -861,7 +861,7 @@ computes neither outside its legal-action enumeration.
 | | `kicked`, `replicate` | u8 | `count` | |
 | | `variant` | u16 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face |
 | | `copy`, `cant_be_countered`, `gift_promised` | u8 | `bool` | |
-| | `mana_spent` | u8 | `count` | |
+| | `mana_spent` | u8 | `count` | the mana that left the pool: a pip a delve exile or a tap paid is none |
 | | `colors_spent` | u8 | `mask:color` | |
 | | `delayed` | u32 | `index` | `delayed_trigger.seq`; 0 none |
 | `stack_mode` (33) | `stack`, `mode` | u32, u8 | `handle`, `index` | chosen modes |

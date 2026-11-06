@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M4 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M5 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -451,7 +451,7 @@ library that stops the repeat, and one that empties. `AtRandom` replays identica
 
 **Progress.** Units (a), typed parts from one parser and `can_pay`, and (b), one suspendable `run_cost_parts` and
 `ChosenCost`, are done (2026-11-05, 06) and inert. Unit (c1), the new cost kinds and the cards they finish, is done (2026-11-06): the eleven M5 cards are in the vocab, ids 418 to
-428. Unit (c2), `TapToPay` and the oddities, is not started; what it owes is under **(c2) must**.
+428. Unit (c2), `TapToPay` and the oddities, is done (2026-11-06), which closes M5: see **Done**.
 
 A definition holds `CostParts`, a list of `CostPart {kind, count, count_is_x, filter, object, ...}`
 (`src/components/cost_part.h`): `MANA`, `X_MANA`, `TAP`, `LIFE`, `ENERGY`, `LOYALTY`, `SACRIFICE`, `DISCARD`, `RETURN`,
@@ -541,24 +541,10 @@ What stayed of (b), and why:
 - **`EntryInfo::cast_from_hand`** is set before any cost, belongs to the card's next entry and has its own lifetime rules
   (cleared on a move off the stack elsewhere, dropped by a rewind); moving it would change a permanent spell put onto the
   battlefield by an effect, so it isn't part of `ChosenCost`.
-- **`cur_game.delve_exiled`** keeps its reader. It outlives the spell and is read at any later entry; `ChosenCost::paid` holds the
-  same objects but has no reader yet, which is deliberate for M6's `paid` list and Bargain.
-- **`mana_spent`** keeps its value: it counts tapped pips.
 - **A mana ability's `SubAbility$`** resolves through a blocking context. No vocab rider asks.
 
-Oddities kept as they are, for (c2) to judge:
-
-- Phyrexian life is paid as the pip is announced, before the targets; CR 601.2h pays costs after CR 601.2c. `rewind_cast` gives
-  it back by hand, not through the snapshot.
-- An activation's picks log after they move and a cast's before, so a replacement's line lands on different sides (`move_items`).
-- A sacrifice of a cast's additional or flashback cost is offered what an earlier pick already chose (`repeats_chosen`), so an
-  alternative and an additional sacrifice could name one permanent.
-- The alternative cost's pitch and return don't stop on an empty pool. `can_pay` now asks for all N cards of a pitch, so no menu
-  comes up empty, but a card moved between the offer and the pick still could.
-- `delve_exiled` goes stale, a rules bug found here and left in: Murktide Regent cast with three delve exiles, countered and
-  reanimated by Animate Dead enters with three +1/+1 counters. It should enter with none. `ChosenCost::paid` is the fix's input.
-- A mid-payment prompt reporting no paused flow, and the concession running a payment out, are kept only so the frames hold. A
-  commit that drops them changes frames.
+A mid-payment prompt reporting no paused flow, and the concession running a payment out, are kept only so the frames hold. A commit
+that drops them changes frames. The other oddities (b) kept are judged under **Done**.
 
 (b) inert: `replay` byte-identical and `make check` green at every commit, `make registry` a no-op, parse reports (all 430
 provisioned cards) and `--cards-frame` unchanged, `onboard.py check` 0 stale, `tests/corpus`, `tests/cli` and `src/featurize`
@@ -622,7 +608,6 @@ What differs from the plan as written, and why:
 
 What stayed of (c1), and why:
 
-- **`ChosenCost::paid`** still has no reader: no card here reads what a cost moved. Bargain and M6 will.
 - **The cast's hybrid prompts are unfiltered under `--no-auto-mana`**, and `pending_cost` lists a cast's pips whole at each prompt. Both
   are frames, kept so `--no-auto-mana` games don't move. Under auto-mana a card that reads spent colors filters its rows.
 - **Which sources pay Vibrance's generic mana** is the auto-payer's, so {R}{R} can't be aimed through a generic pip (§1.4).
@@ -634,9 +619,9 @@ What stayed of (c1), and why:
 | item | first testable card | stage | what it must build |
 |---|---|---|---|
 | `Exert` (CR 701.43) | Arena of Glory | M6 | a part, and the skipped untap; it also needs `AddsKeywords` and `Produced$ R R` |
-| Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | through (c2)'s `TapToPay`; it also needs M6's restriction and M7's graveyard cast |
+| Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | a `TapToPay` row, `GENERIC_OR_OWN_COLOR`; it also needs M6's restriction and M7's graveyard cast |
 | Bargain (CR 702.166) | Beseech the Mirror | M7 | an optional additional cost, read through `ChosenCost::paid` |
-| Waterbend (CR 701.67) | Invasion Submersible | M10 | through `TapToPay`, with `Exhaust$` |
+| Waterbend (CR 701.67) | Invasion Submersible | M10 | a `TapToPay` row and a cost token calling `set_tap_to_pay`, with `Exhaust$`. CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: this card's whole cost is it |
 | Crew (CR 301.7) | Unlicensed Hearse | M10 | an activation whose cost taps other creatures |
 | `Imprint$` that outlives the resolution, an `ObjectSet` on the permanent | Chrome Mox | M9 | the slot on the source, with `ForgetImprinted$` |
 | `Discard<1/Hand>` on a trigger | Phyrexian Dragon Engine | M12 | `whole_hand` in `TRIGGER`'s table |
@@ -652,32 +637,78 @@ Hellkite's draw seven (CR 104.4a), read in each log. 96 games under `--selfcheck
 resolutions among them), and 40 random-agent games under `--offer-cancel`: no error. `scripted` and Python `explore` each play six
 games of it. No candidate deck holding one of these cards is wholly in the vocab yet, so the fixture is the only deck that plays them.
 
-**(c2) must:** put `TapToPay` at `PAY_MANA` and `pay_mana_cost`, and fix `mana_spent` there (Improvise is greedy; a real Convoke choice
-is a deliberate-change commit with `make regen`); judge the oddities above; and read `ChosenCost::paid` or say why not. A new prompt
-keeps `AskKind::CHOICE` unless it is a step of paying mana.
+**Done (2026-11-06).** Unit (c2), and with it M5.
 
-**Today.** Flashback, escape and alt casts skip the X, phyrexian and delve steps. Eligibility for tapping to pay is hard-coded to
-artifacts, only generic is paid, activations pass no improvise, and `mana_spent` counts tapped pips.
+- **`TapToPay`** (`src/components/tap_to_pay.h`, the rule table in `mana_system.cpp`). A kind on the card or the cost, and a row: `keyword`,
+  `eligible` (a `FilterSpec`) and `pips`. `CostRun::tap_to_pay` carries it, so `PAY_MANA` and `pay_mana_cost` serve a cast, an activation and
+  a triggered ability alike; `CostParts::set_tap_to_pay` has no caller until `Waterbend<` is a token. A row is the kind, the table line and
+  the keyword (or cost token). `GENERIC_OR_OWN_COLOR` is Convoke's and no row uses it: proved by a throwaway row, Improvise switched to it,
+  a blue artifact paying {U} under both payers and colorless ones refused. A real Convoke choice is still the deliberate change of M7, since
+  the payer taps only for what mana can't pay (`docs/rules_deviations.md` §1.4).
+- **`mana_spent`** is what left the pool. Vocab cards that move: Kappa Cannoneer and Metallic Rebuke. Roiling Vortex's and Lavinia's outcome
+  moves only for a cost of generic mana alone (cast without paying its mana cost, Thalia or Trinisphere adding it).
+- **`delve_exiled`** is gone. `ChosenCost::paid` rides `EntryInfo::paid` to the entry, so it has its reader, and an object that wasn't cast has
+  none. `pay_mana_cost` was only ever called with `has_delve` false, so its Delve rows, `delve_exile_one` and the snapshot's undo went too.
+  `EntryInfo::paid` is not in the frames, as `delve_exiled` wasn't: nothing decides on it between a spell resolving and it entering.
 
-**Build.**
+The oddities, against the rules:
 
-- `TapToPay`: Improvise, Convoke and Waterbend as one payment modifier with an eligibility filter and a pip rule. Fix the
-  `mana_spent` count: Sunburst and Converge depend on it.
-- Extend the state format's `cost_part` enum, the pending-cost table's view, when a new part has one.
+| oddity | verdict | outcome |
+|---|---|---|
+| Phyrexian life paid as the pip is announced | Bug by order (CR 601.2c, 601.2g-h), though neither Phyrexian card (Dismember, Surgical Extraction) reads life while announcing, so no game outcome moved | Fixed: owed in `CostRun::life`, paid at `LIFE`; §1.1 and `rewind_cast`'s refund gone |
+| Activation's picks log after they move, a cast's before | Not a rule: a log | `docs/rules_deviations.md` §1.1 |
+| `repeats_chosen` | Bug (CR 118.3): one object can't pay two costs | Fixed, the row removed. No script reaches it |
+| Pitch and return not stopping on an empty pool | Bug (CR 118.3, 601.2h), as was `stops_when_empty` paying short | Fixed: a pick with no candidate fails the payment. Every offer now holds the whole cost, so nothing reaches it |
+| Flashback, escape, alt casts skip X, Phyrexian, Delve | Half right. An alternative cost replaces the mana cost, so its {X} is 0 and its pips aren't owed (CR 118.9, 107.3b); additional costs, Delve and TapToPay act on the total (CR 118.9d, 702.66a) | Fixed: one flow, `PendingCast::mana_cost_replaced` skipping only the mana cost's own steps. Reachable by the exile grants only. Offspring stays a row of two casts, §2.5 |
+| A spell's additional sacrifice checked only from hand and on a free cast | Bug (CR 118.3, 601.2f): Natural Order from exile cost nothing | Fixed at `can_cast_now` |
+| `NotPlayerTurn` not read on `Cost$ 0` | Bug, no script | Fixed |
+| A mana ability's Sac, Return and energy unchecked | Gap | Stays for Lazotep Quarry, M8 |
 
-**Migrate.** Improvise is greedy with no prompt in machine mode; giving Convoke a real choice changes
-decisions, so that is a deliberate-change commit with `make regen`.
+Found on the way, and fixed: The Stone Brain's target sits on a sub-ability, which `can_activate_now` didn't read, so an opponent with protection
+from everything made it FATAL (`explore:patient` bo3 seed 210, which a comparison caught and the gate did not).
 
-**Lands here.** `TapToPay`; the rest landed in (c1) or has its stage in the table above.
+**Test.** Each (path, part) a provisioned script has, with a scenario naming a card that has it, was listed from the scripts. What was unproved
+got a scenario, 14 in all; hybrid, trigger and unless parts were (c1)'s. Payment order, CR 601.2h: a cast's life after its mana, an activation's
+sacrifice after its mana, delve's exile after the mana, a land tapped then sacrificed. Can't pay hides it: cast, activation, alternative, pitch evoke,
+flashback, escape, kicker, replicate, suspend, Improvise, a trigger's offer, an unless offer. A mid-payment suspension for every chooser: (b) and (c1)
+counted theirs; a throwaway instrumented build at `--selfcheck-state-sample 1` over 240 fixture and `ur_delver` games, half `--no-auto-mana`, 24,088
+snapshots and no error, landed on an Improvise row 140 times, delve 44, a Phyrexian pip 12. A kicker asked on a free cast is the same step as any
+kicker's, and its scenario passes the `state` tier; no snapshot was seen to land on it.
 
-**Test.** Each part paid from each path (cast, activate, mana ability, trigger, unless); cost-payment
-order CR 601.2h; a mid-payment suspension for every chooser; can't-pay hides the option.
+No script has these, so each stays out of the scenarios:
+
+| combination | what it would need |
+|---|---|
+| Two sacrifices on one cast, or a Sac and a Return on an activation | a card; a second pick already finds the first gone |
+| A pick reaching an empty pool | a gate that lies; the payment fails |
+| `Condition$ NotPlayerTurn` on `Cost$ 0` | a card |
+| X, Phyrexian pips, Delve or Improvise with a card's own flashback, escape or alternative cost; kicker or replicate with one | a card; the one flow carries it |
+| {X} in an alternative cost | `cost_form_pays` refuses it, a finding |
+| `TapToPay` on an activation or a trigger | Waterbend (M10) |
+| A colored pip paid by a tap | Convoke (M7) |
+| A mana ability's Sac, Return, energy | Lazotep Quarry (M8) |
+| Sacrifice as an unless cost | Acererak, Grist (candidates, their own stages) |
+
+Evidence. Migration: 3,300 explore games over `mech_tap_to_pay` and `mech_cost_kinds`, a third each of bo1, `explore:patient` bo3 and
+`--no-auto-mana`, under `--trace-decisions`: 2.4 GB byte-identical with 12,927 Improvise taps; `make registry` a no-op. Debug `bench`, engine alone,
+three alternating pairs: 1,577 us per decision before, 1,595 after, 1.1% in all three; release was not measured. `mana_spent`: `--rmstate-dump`
+frames of 450 games with no Improvise card, 3.9 GB byte-identical. Pick cleanup and one flow: 900 games each, identical. `tests/corpus` and `tests/cli`
+never moved, so no `make regen`: no corpus game pays Phyrexian life or casts an Improvise card. After the last behaviour commit: 126 games
+under `--selfcheck-state`, 4,947 snapshots, no error, and each of the six `mech_*` fixtures at `--fuzz-games 100`, every key hit, no error. One draw, `mech_cost_kinds`
+`--no-auto-mana`: Runehorn Hellkite's draw seven decking both players, read in the log (CR 104.4a).
+
+No candidate entered: the parse report over the 46 candidate cards outside the vocab finds none at zero. Ten stand at one finding, each another
+stage's: Morph, Overload, Sunburst, Fuse, `DividedAsYouChoose`, a `Draw` replacement, `CheckSecondSVar` (Massacre), `Revolt`, `TgtZone`, `Effect.Continuous`.
 
 ### M6. Mana with provenance (L)
 
 **Today.** The pool is `multiset<Colors>`, so mana carries nothing. Spells record a pip count and colours
 only. Restrictions are three bools on the source; the only rider is a global,
 `pending_cant_be_countered`.
+
+**Left to this stage by M5.** `spent_w` to `spent_g` are filled only for a card that reads them (`spell_reads_colors_spent`): generalise them here, as `paid`
+makes the fact free, and expect the frames to move. A mana ability from the hand (Simian Spirit Guide) is one the auto-payer doesn't spend and
+`can_pay_mana` doesn't count (`docs/rules_deviations.md` §1.4): a `ManaUnit` source should close that too.
 
 **Starting point.** `ManaPayee` (`src/mana_system.h`): every payment already says what it pays for and
 why (`ManaPurpose`: cast, activate, other), and `mana_source_usable_for` reads it. Restrictions still
