@@ -49,6 +49,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
 static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost, ManaPayee paid_for);
 static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for);
+static bool rider_applies(const ManaRider &rider, Entity spell);
 static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors color, ManaPayee paid_for);
 static ManaPool colors_spendable_on(const ManaPool &pool, ManaPayee paid_for);
 static void spend_unit(ManaPool &pool, ManaPool::const_iterator unit, ManaPaid *spent);
@@ -90,6 +91,7 @@ static bool chosen_to_pay(Entity card, ManaPayee paid_for);
 static void push_hand_mana_sources(const std::vector<Entity> &hand, Zone::Ownership player, ManaPayee paid_for,
                                    const EntitySet &entities, bool include_instant_speed, int life_reserve,
                                    std::vector<std::pair<Entity, Ability>> &sources);
+static long mana_net_yield(const Ability &ab, Zone::Ownership controller);
 static bool mana_ability_is_painful(const Ability &ab);
 // Life a mana ability's activation takes from its controller: its PayLife cost plus any
 // self-damage / life-loss rider (Ancient Tomb's 2 damage).
@@ -120,18 +122,30 @@ static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for) {
     return !unit.restriction || restriction_allows(*unit.restriction, unit.restriction->chosen_type, paid_for);
 }
 
+// Does `rider` do anything to `spell`? One that names its spells needs a spell that matches.
+static bool rider_applies(const ManaRider &rider, Entity spell) {
+    return rider.valid.empty() || (spell != 0 && card_matches_filter(spell, rider.valid));
+}
+
 // The unit of `pool` a pip of `color` takes when paying for `paid_for`, any color with NO_COLOR, else
-// pool.end(). Mana that can be spent on little, or carries a rider, goes before mana that can be spent
-// on anything; among either the first in the pool's order.
+// pool.end(). Mana that can be spent on little, or whose rider applies here, goes first, then plain
+// mana, then mana whose rider would be wasted here; among each the first in the pool's order.
 static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors color, ManaPayee paid_for) {
     ManaPool::const_iterator plain = pool.end();
+    ManaPool::const_iterator rider_wasted = pool.end();
     for (auto unit = pool.begin(); unit != pool.end(); ++unit) {
         if (color != NO_COLOR && unit->color != color) continue;
         if (!unit_spendable_on(*unit, paid_for)) continue;
-        if (unit->restriction || unit->rider) return unit;
-        if (plain == pool.end()) plain = unit;
+        if (unit->restriction) return unit;
+        if (!unit->rider) {
+            if (plain == pool.end()) plain = unit;
+        } else if (paid_for.purpose == ManaPurpose::CAST && rider_applies(*unit->rider, paid_for.entity)) {
+            return unit;
+        } else if (rider_wasted == pool.end()) {
+            rider_wasted = unit;
+        }
     }
-    return plain;
+    return plain != pool.end() ? plain : rider_wasted;
 }
 
 // The colors of what `pool` can spend on `paid_for`, for counting toward a hypothetical payment.
@@ -177,6 +191,16 @@ ManaUnit mana_unit_from(const Ability &ab, Colors color, Entity source, bool com
         unit.restriction = &restriction;
     }
     return unit;
+}
+
+std::vector<std::string> keywords_from_mana(const ManaPaid &paid, Entity spell) {
+    std::vector<std::string> keywords;
+    for (const ManaUnit &unit : paid) {
+        if (!unit.rider || unit.rider->keyword.empty() || !rider_applies(*unit.rider, spell)) continue;
+        if (std::find(keywords.begin(), keywords.end(), unit.rider->keyword) == keywords.end())
+            keywords.push_back(unit.rider->keyword);
+    }
+    return keywords;
 }
 
 void add_mana(Zone::Ownership player_owner, const ManaUnit &unit, size_t amount) {
@@ -558,6 +582,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
         std::string desc = global_coordinator.entity_has_component<Permanent>(entity)
                                ? "Tap " + global_coordinator.GetComponent<Permanent>(entity).name + mana
                                : "Exile " + global_coordinator.GetComponent<CardData>(entity).name + mana;
+        if (ab.def->cost.has(CostPart::EXERT)) desc = "Tap and exert" + desc.substr(3) + " x" + std::to_string(ab.def->amount);
         LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
         la.category = mana_action_category(ab.color);
         actions.push_back(la);
@@ -734,6 +759,7 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
     for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         snap.tapped_state.push_back({entity, permanent.is_tapped});
+        snap.exerted_state.push_back({entity, permanent.exerted_by});
         for (size_t i = 0; i < permanent.abilities.size(); i++) {
             if (permanent.abilities[i].def->kind == EffectKind::AddMana) {
                 snap.activation_counts.push_back({entity, i, permanent.abilities[i].activations_this_turn});
@@ -754,6 +780,10 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
     for (auto &[entity, was_tapped] : snap.tapped_state) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         global_coordinator.GetComponent<Permanent>(entity).is_tapped = was_tapped;
+    }
+    for (auto &[entity, exerter] : snap.exerted_state) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        global_coordinator.GetComponent<Permanent>(entity).exerted_by = exerter;
     }
     for (auto &[entity, idx, old_count] : snap.activation_counts) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -1007,6 +1037,12 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
     }
 }
 
+// What an activation adds to a payment: its mana less its own mana cost. Arena of Glory's {R}, {T},
+// exert for {R}{R} adds what its {T}: {R} does, so the plain ability is the one a payment taps.
+static long mana_net_yield(const Ability &ab, Zone::Ownership controller) {
+    return static_cast<long>(eval_mana_amount(ab, controller)) - static_cast<long>(ab.def->cost.mana().size());
+}
+
 // A mana ability is "painful" when activating it costs its controller life beyond the tap:
 // either an explicit PayLife activation cost (Horizon Canopy's "{T}, Pay 1 life") or a
 // self-damage / life-loss rider that resolves with the mana ability (Ancient Tomb's "deals
@@ -1217,8 +1253,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         bool replaced = false;
         for (auto &existing : valid_sources) {
             if (existing.entity != entity || existing.color != ab.color) continue;
-            if (eval_mana_amount(ab, controller) >
-                eval_mana_amount(existing.ability, controller)) {
+            if (mana_net_yield(ab, controller) > mana_net_yield(existing.ability, controller)) {
                 existing.ability = ab;
             }
             replaced = true;
@@ -1236,11 +1271,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     if (max_yield_only) {
         std::vector<SourceInfo> best;
         for (auto &si : valid_sources) {
-            size_t amt = eval_mana_amount(si.ability, controller);
+            const long amt = mana_net_yield(si.ability, controller);
             bool merged = false;
             for (auto &existing : best) {
                 if (existing.entity != si.entity) continue;
-                if (amt > eval_mana_amount(existing.ability, controller)) {
+                if (amt > mana_net_yield(existing.ability, controller)) {
                     existing.ability = si.ability;
                     existing.color = si.color;
                 }

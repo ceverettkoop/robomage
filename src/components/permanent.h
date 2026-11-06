@@ -95,6 +95,8 @@ struct Permanent {
     // The mana spent to cast the spell that became this permanent, for a card that reads it
     // (Count$Adamant_: Vibrance's "if {R}{R} was spent to cast it"); empty for any other.
     ManaPaid cast_mana_paid;
+    // Who exerted it (CR 701.43): it won't untap during that player's next untap step.
+    Zone::Ownership exerted_by = Zone::UNKNOWN;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,

@@ -10,6 +10,7 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "filter_spec.h"
 #include "../object_ref.h"
 
 // What a mana ability says its mana may be spent on (CR 106.6), from its RestrictValid$. On a
@@ -43,9 +44,21 @@ const ManaRestriction *intern_mana_restriction(const ManaRestriction &r);
 
 // What mana does to what it is spent on, by the ability that made it.
 struct ManaRider {
+        enum Until : uint8_t {
+            NO_DURATION,
+            END_OF_TURN,  // AddsKeywordsUntil$ UntilEOT
+        };
         bool cant_be_countered = false;  // AddsNoCounter$ True (Cavern of Souls)
+        std::string keyword;             // AddsKeywords$: a spell it is spent on gains it (Arena of Glory)
+        FilterSpec valid;                // AddsKeywordsValid$: the spells that keyword goes to
+        Until until = NO_DURATION;
 
-        bool operator<(const ManaRider &o) const { return cant_be_countered < o.cant_be_countered; }
+        bool operator<(const ManaRider &o) const { return key() < o.key(); }
+
+    private:
+        std::tuple<bool, const std::string &, const std::string &, Until> key() const {
+            return std::tie(cant_be_countered, keyword, valid.text(), until);
+        }
 };
 
 // `r` in the same kind of store as a restriction's: a definition and every unit it makes hold one pointer.

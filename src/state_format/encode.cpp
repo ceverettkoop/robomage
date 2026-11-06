@@ -842,6 +842,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
     for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
         r.u8(perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
+    r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.
@@ -870,6 +871,10 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
         keywords = face->keywords;
     else if (tok)
         keywords = tok->keywords;
+    if (global_coordinator.entity_has_component<Spell>(e)) {
+        const auto &gained = global_coordinator.GetComponent<Spell>(e).keywords_until_eot;
+        keywords.insert(keywords.end(), gained.begin(), gained.end());
+    }
     for (const std::string &kw : keywords) {
         const int k = keyword_index(kw);
         c.w.row(TableId::OBJECT_KEYWORD).u32(h).u8(k < 0 ? NONE8 : static_cast<uint64_t>(k)).text(kw);
@@ -1200,6 +1205,10 @@ static void write_pool_mana(const Ctx &c, Zone::Ownership p) {
         r.u8(restriction && restriction->allows_activated ? 1 : 0)
             .u8(restriction && restriction->activated_on_battlefield ? 1 : 0);
         r.u8(rider && rider->cant_be_countered ? 1 : 0);
+        const bool gives_keyword = rider && !rider->keyword.empty();
+        const int keyword = gives_keyword ? keyword_index(rider->keyword) : -1;
+        r.u8(keyword < 0 ? NONE8 : static_cast<uint64_t>(keyword)).text(gives_keyword ? rider->valid.text() : "");
+        r.u8(gives_keyword ? static_cast<uint64_t>(rmstate::Duration::END_OF_TURN) : NONE8);
     }
 }
 

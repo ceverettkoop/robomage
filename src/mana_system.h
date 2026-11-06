@@ -174,6 +174,10 @@ void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, ManaP
 // in the restriction is `source`'s now.
 ManaUnit mana_unit_from(const Ability& ab, Colors color, Entity source, bool commit);
 
+// The keywords the mana `spell` was cast with gives it, each once: a unit's rider whose spells it
+// matches (CR 106.6).
+std::vector<std::string> keywords_from_mana(const ManaPaid &paid, Entity spell);
+
 // Add `amount` of `unit` to player's pool
 void add_mana(Zone::Ownership player, const ManaUnit& unit, size_t amount);
 
@@ -192,6 +196,7 @@ struct ManaPaymentSnapshot {
     int32_t life_total = 0;
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
+    std::vector<std::pair<Entity, Zone::Ownership>> exerted_state;  // entity, who had exerted it
     std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
 };
 

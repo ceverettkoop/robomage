@@ -590,6 +590,7 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
            read_cost_filter_token(tok, "Return", CostPart::RETURN, part) ||
            read_cost_filter_token(tok, "ExileFromHand", CostPart::EXILE_FROM_HAND, part) ||
            read_cost_filter_token(tok, "Exile", CostPart::EXILE, part) ||
+           read_cost_filter_token(tok, "Exert", CostPart::EXERT, part) ||
            read_exile_from_grave_token(tok, part) || read_loyalty_cost_token(tok, part);
 }
 
@@ -676,7 +677,8 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
                 case CostPart::RETURN: return part.count == 1 && !part.is_self();
                 case CostPart::DISCARD:
                     return (part.whole_hand && part.count == 0) || (part.is_self() && part.count == 1);
-                case CostPart::EXILE: return part.is_self() && part.count == 1;
+                case CostPart::EXILE:
+                case CostPart::EXERT: return part.is_self() && part.count == 1;
                 case CostPart::EXILE_FROM_HAND:
                 case CostPart::EXILE_FROM_GRAVEYARD: return part.is_self() && part.count == 1;
                 default: return true;
@@ -2136,10 +2138,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // A Powerstone's mana: spendable on anything but casting a nonartifact spell.
             ability.mana_restriction.kind = ManaRestriction::NO_NONARTIFACT_SPELLS;
         }
-    } else if (key == "AddsNoCounter") {
-        ManaRider rider;
-        rider.cant_be_countered = (value == "True");
-        ability.mana_rider = intern_mana_rider(rider);
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
     } else if (key == "SorcerySpeed") {
@@ -2490,7 +2488,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "ColorOrType") return value == "Color";
     if (key == "ReflectProperty") return value == "Is";
     if (key == "Produced")
-        return value == "Any" || value.rfind("Combo", 0) == 0 || (value.size() == 1 && is_plain_mana_token(value));
+        return value == "Any" || value.rfind("Combo", 0) == 0 || effects::produced_pips(value) > 0;
     if (key == "AtEOT") return category == "Animate" || (category == "Token" && value == "ExileCombat");
     if (key == "GainControl") return category == "ChangeZone";
     return true;

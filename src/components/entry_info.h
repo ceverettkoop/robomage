@@ -44,6 +44,8 @@ struct EntryInfo {
     int x_paid = 0;
     // The mana its spell was cast with → Permanent::cast_mana_paid.
     ManaPaid mana_paid;
+    // What that mana gave the spell until end of turn → Creature::eot_keywords.
+    std::vector<std::string> keywords_until_eot;
     // What its spell's cost moved (ChosenCost::moved), read as it enters: Murktide Regent's "exiled
     // with it". An object that wasn't cast has none, whatever an earlier cast of the card paid.
     std::vector<ChosenCost::Moved> moved;
@@ -64,7 +66,7 @@ struct EntryInfo {
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
-               x_paid == 0 && mana_paid.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
+               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
     }
 };
 

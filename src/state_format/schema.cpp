@@ -325,6 +325,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(o, "unearthed");
     col_bool(o, "cast_from_hand");
     for (const char *c : {"spent_w", "spent_u", "spent_b", "spent_r", "spent_g"}) col_count(o, c, Storage::U8);
+    col_bool(o, "exerted");
 
     add_table(out, TableId::OBJECT_SUBTYPE, "object_subtype", FrameKind::STATE);
     col_handle(out.back(), "obj");
@@ -528,6 +529,9 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(pm, "activated");
     col_bool(pm, "activated_on_battlefield");
     col_bool(pm, "cant_be_countered");
+    col_enum(pm, "keyword", Storage::U8, "keyword");
+    col_text(pm, "keyword_valid");
+    col_enum(pm, "keyword_until", Storage::U8, "duration");
 }
 
 static void define_event_tables(std::vector<TableDef> &out) {

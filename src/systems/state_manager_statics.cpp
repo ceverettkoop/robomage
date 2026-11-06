@@ -65,6 +65,7 @@ static std::vector<Entity> permanents_matching_static_filter(
     const ActiveStatic &as, const FilterSpec &aff, const EntitySet &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
+static void keep_spell_keywords(Creature &creature, const std::vector<std::string> &keywords);
 static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm);
 static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm);
 static void enter_attacking_if_recorded(Entity entity);
@@ -709,6 +710,16 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
+// What the spell gained until end of turn, on the creature it became (CR 400.7a).
+static void keep_spell_keywords(Creature &creature, const std::vector<std::string> &keywords) {
+    if (keywords.empty()) return;
+    creature.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
+    for (const std::string &keyword : keywords) {
+        add_keyword_instance(creature.eot_keywords, keyword);
+        add_keyword_instance(creature.keywords, keyword);
+    }
+}
+
 // Hand the facts recorded about a card's battlefield entry (EntryInfo) to the Permanent `perm`
 // being built for it, and narrate how it enters. Each fact is consumed, so a later entry of the
 // same card starts with none of them; the entry's attachments are made by attach_on_entry.
@@ -878,6 +889,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (reconfigured_attached) is_creature = false;
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
+            std::vector<std::string> entry_keywords;  // what its spell gained until end of turn
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -926,6 +938,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (EntryInfo *entry = find_entry_info(entity)) {
                     attach_on_entry(entity, *entry, perm);
                     entry_animates.swap(entry->animates);
+                    entry_keywords.swap(entry->keywords_until_eot);
                 }
                 drop_entry_info_if_consumed(entity);
                 global_coordinator.AddComponent(entity, perm);
@@ -993,6 +1006,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 creature.base_toughness = static_cast<int>(face->toughness);
                 creature.keywords = face->keywords;
                 recompute_pt(creature);
+                keep_spell_keywords(creature, entry_keywords);
                 global_coordinator.AddComponent(entity, creature);
                 // damage component
                 Damage damage;

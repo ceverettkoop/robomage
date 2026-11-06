@@ -1026,8 +1026,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // instant-speed sources (e.g. LED, only activatable here), a card's ability from the hand
         // (Simian Spirit Guide, a card the player may spend whether or not a payment needs it), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
-        // removal, e.g. Wasteland, before the source leaves the battlefield).
+        // removal, e.g. Wasteland, before the source leaves the battlefield). A rider that gives
+        // a keyword is a fourth: the payer never chooses it, its mana being no more than the tap's
+        // (Arena of Glory).
+        const ManaRider *rider = ma.ability.def->mana_rider;
         if (auto_mana && !ma.ability.def->instant_speed && ma.ability.def->activation_zone == -1 &&
+            !(rider && !rider->keyword.empty()) &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

@@ -137,7 +137,8 @@ static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s,
                        (pm.text(r, pm.col("chosen_type")).empty() ? "" : " type=" + pm.text(r, pm.col("chosen_type"))) +
                        " activated=" + std::to_string(pm.u(r, pm.col("activated"))) +
                        " on_battlefield=" + std::to_string(pm.u(r, pm.col("activated_on_battlefield"))) +
-                       " cant_be_countered=" + std::to_string(pm.u(r, pm.col("cant_be_countered"))));
+                       " cant_be_countered=" + std::to_string(pm.u(r, pm.col("cant_be_countered"))) +
+                       (pm.null(r, pm.col("keyword")) ? "" : " keyword=" + pm.name(r, pm.col("keyword"))));
 }
 
 static void stack_target_facts(

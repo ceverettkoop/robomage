@@ -295,7 +295,8 @@
 {"type":"pool_mana","name":"count","kind":"scalar","at":0},
 {"type":"pool_mana","name":"activated","kind":"scalar","at":1},
 {"type":"pool_mana","name":"activated_on_battlefield","kind":"scalar","at":2},
-{"type":"pool_mana","name":"cant_be_countered","kind":"scalar","at":3}
+{"type":"pool_mana","name":"cant_be_countered","kind":"scalar","at":3},
+{"type":"object","name":"exerted","kind":"scalar","at":86}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},
@@ -377,7 +378,9 @@
 {"type":"hist_card","name":"hand_subset","source":"enum:hand_subset","col":2,"offset":4905,"size":9},
 {"type":"pool_mana","name":"player_rel","source":"player-rel","col":0,"offset":4914,"size":4},
 {"type":"pool_mana","name":"color","source":"enum:color","col":1,"offset":4918,"size":9},
-{"type":"pool_mana","name":"restriction","source":"enum:mana_restriction","col":2,"offset":4927,"size":17}
+{"type":"pool_mana","name":"restriction","source":"enum:mana_restriction","col":2,"offset":4927,"size":17},
+{"type":"pool_mana","name":"keyword","source":"enum:keyword","col":3,"offset":4944,"size":129},
+{"type":"pool_mana","name":"keyword_until","source":"enum:duration","col":4,"offset":5073,"size":17}
 ],
 "cards":[
 {"type":"object","name":"card","col":0},

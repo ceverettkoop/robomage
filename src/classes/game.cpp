@@ -384,6 +384,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
                         reset_permanent_activations_this_turn(permanent);
+                        // Exert (CR 701.43a) ends with the untap step of the player who exerted it.
+                        const bool exerted = permanent.exerted_by == active_player;
+                        if (exerted) permanent.exerted_by = Zone::UNKNOWN;
                         if (permanent.controller == active_player) {
                             // Untap-prevention (Choke; rule 614.1d) is a replacement effect:
                             // dispatch an UNTAP event and skip untapping if it is replaced.
@@ -396,7 +399,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // become untapped, instead remove a stun counter from it." A tapped
                             // permanent with one or more STUN counters stays tapped and sheds one
                             // counter rather than untapping; otherwise it untaps normally.
-                            if (!rev.skip_untap) {
+                            if (exerted) {
+                                game_log("%s doesn't untap: it was exerted.\n", permanent.name.c_str());
+                            } else if (!rev.skip_untap) {
                                 // Counter type is stored verbatim from the script's CounterType$
                                 // (Forge writes "STUN", CR 122.1d), so match that exact key.
                                 if (permanent.is_tapped && get_counters(entity, "STUN") > 0) {

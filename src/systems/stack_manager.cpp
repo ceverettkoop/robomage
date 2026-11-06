@@ -126,6 +126,7 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     // record is a column of every object's row, which no other card's should move.
     if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
         entry.mana_paid = spell.chosen.mana_paid;
+    entry.keywords_until_eot = spell.keywords_until_eot;
     entry.moved = spell.chosen.moved;
     // Offspring: its token-copy ETB trigger fires.
     if (spell.chosen.offspring) entry.offspring = true;

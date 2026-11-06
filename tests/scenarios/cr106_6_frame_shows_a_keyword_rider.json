@@ -1,0 +1,39 @@
+{
+  "name": "cr106_6_frame_shows_a_keyword_rider",
+  "why": "CR 106.6: Arena's {R}{R} floating is shown with the keyword it carries, in both seats' frames",
+  "hand_a": [
+    "Hexing Squelcher",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:desc:Tap and exert Arena"
+  ],
+  "max_decisions": 8,
+  "expect_dump": [
+    "^A .* mana self r=2$",
+    "^A .* mana_unit self RED x2 restriction=NONE activated=0 on_battlefield=0 cant_be_countered=0 keyword=Haste$",
+    "^B .* mana_unit opp RED x2"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "cr701_43a_exert_skips_the_next_untap",
+  "why": "CR 701.43a: Arena of Glory exerted on turn 1 doesn't untap on turn 3 and does on turn 5",
+  "hand_a": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:desc:Tap and exert Arena"
+  ],
+  "max_decisions": 40,
+  "expect_order": [
+    "Player A exerts Arena of Glory",
+    "TURN 3",
+    "Arena of Glory doesn't untap: it was exerted",
+    "TURN 5"
+  ],
+  "expect_count": {
+    "doesn't untap": 1
+  },
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

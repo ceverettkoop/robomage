@@ -1,0 +1,43 @@
+{
+  "name": "cr106_6_rider_mana_waits_for_a_spell_it_applies_to",
+  "why": "CR 106.6: with {R}{R} from Arena and a plain {R} floating, Lightning Strike spends the plain mana first, so {R} of Arena's is left and Dragon's Rage Channeler gains haste",
+  "hand_a": [
+    "Lightning Strike",
+    "Dragon's Rage Channeler",
+    "Simian Spirit Guide",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:desc:Tap and exert Arena",
+    "A:desc:Exile Simian Spirit Guide",
+    "A:cast:Lightning Strike",
+    "A:target:Player B",
+    "A:cast:Dragon's Rage Channeler"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Dragon's Rage Channeler gains Haste until end of turn"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

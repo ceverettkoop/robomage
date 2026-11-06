@@ -392,6 +392,8 @@ static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat) {
         if (!m.text(r, m.col("chosen_type")).empty()) note += " " + m.text(r, m.col("chosen_type"));
         if (m.u(r, m.col("activated"))) note += " or abilities";
         if (m.u(r, m.col("cant_be_countered"))) note += ", can't be countered";
+        if (!m.none(r, m.col("keyword")))
+            note += ", " + m.text(r, m.col("keyword_valid")) + " gains " + f.st.enum_name("keyword", m.u(r, m.col("keyword")));
         notes.push_back(note);
     }
     return notes;

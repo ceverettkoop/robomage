@@ -138,6 +138,8 @@ bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string
 bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_token(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &value);
+// How many pips a Produced$ of one color names ("R": 1, "R R": 2); 0 for any other value.
+size_t produced_pips(const std::string &value);
 bool parse_destroy_all(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string &value);

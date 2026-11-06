@@ -1,0 +1,41 @@
+{
+  "name": "cr605_3a_auto_payer_taps_arena_plainly",
+  "why": "CR 605.3a: the payer takes Arena of Glory's plain {R}: the second ability adds no more mana than its tap, so no payment exerts it",
+  "hand_a": [
+    "Hexing Squelcher",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:cast:Hexing Squelcher"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Hexing Squelcher"
+  ],
+  "expect_not": [
+    "exerts Arena of Glory",
+    "gains Haste"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

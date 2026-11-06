@@ -76,6 +76,7 @@ struct CostStep {
             DELVE_PICK,      // which ones
             SNAPSHOT,        // the snapshot a reversed payment restores
             TAP,             // {T}: the source taps
+            EXERT,           // the source is exerted
             OWE_ACTIVATION,  // what an activation owes
             FLOAT_LEAVING,   // CR 601.2g: mana from a permanent about to leave to pay the cost
             PAY_MANA,
@@ -130,6 +131,7 @@ static void record_pick(const PickRule &rule, Entity chosen, const CostPayer &wh
 static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static void choose_delve_exile(const CostPayer &who, Entity e);
+static void exert_source(const CostPayer &who);
 static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static const char *path_form(CostPath path);
@@ -231,6 +233,7 @@ static const CostStep kActivationSteps[] = {
     {CostStep::PICK, &kActivationReturn},
     {CostStep::SNAPSHOT},
     {CostStep::TAP},
+    {CostStep::EXERT},
     {CostStep::OWE_ACTIVATION},
     {CostStep::FLOAT_LEAVING},
     {CostStep::PAY_MANA},
@@ -254,6 +257,7 @@ static const CostStep kManaAbilitySteps[] = {
     {CostStep::MANA_ABILITY_GATE},
     {CostStep::MANA_ABILITY_POOL},
     {CostStep::TAP},
+    {CostStep::EXERT},
     {CostStep::MANA_ABILITY_SACRIFICE},
     {CostStep::EXILE_SELF},
     {CostStep::MANA_ABILITY_LIFE},
@@ -412,6 +416,9 @@ static PayStatus pay_step(
         case CostStep::TAP:
             if (who.commit && who.cost->taps() && global_coordinator.entity_has_component<Permanent>(who.source))
                 global_coordinator.GetComponent<Permanent>(who.source).is_tapped = true;
+            break;
+        case CostStep::EXERT:
+            exert_source(who);
             break;
         case CostStep::OWE_ACTIVATION:
             owe_activation(who, orderer);
@@ -760,6 +767,16 @@ static void choose_delve_exile(const CostPayer &who, Entity e) {
     item.delve = true;
     item.log = player_name(who.payer) + " exiles " + global_coordinator.GetComponent<CardData>(e).name + " via Delve.";
     run.items.push_back(std::move(item));
+}
+
+// Exert (CR 701.43a): the source passes the payer's next untap step by, however often it is exerted
+// before then (CR 701.43b). A reversed payment gets it back with the snapshot.
+static void exert_source(const CostPayer &who) {
+    if (!who.commit || !who.cost->has(CostPart::EXERT)) return;
+    auto &perm = global_coordinator.GetComponent<Permanent>(who.source);
+    perm.exerted_by = who.payer;
+    game_log("%s exerts %s\n", player_name(who.payer).c_str(), perm.name.c_str());
+    coverage_cost(CostPart::EXERT);
 }
 
 // The mana an activation owes (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's

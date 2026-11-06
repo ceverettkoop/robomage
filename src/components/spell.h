@@ -10,6 +10,9 @@ struct Spell {
     Zone::Ownership caster = Zone::UNKNOWN;
     ChosenCost chosen;  // how it was cast and what was paid
     bool cant_be_countered = false;
+    // What the mana spent on it gave it until end of turn; the permanent it becomes keeps that
+    // (CR 400.7a).
+    std::vector<std::string> keywords_until_eot;
     // A COPY of a spell on the stack (CR 707.10): a copy is not a card. When it resolves (or is
     // countered) it ceases to exist rather than moving to a graveyard/library — the stack
     // manager destroys it instead of sending it to a zone. Set by run_copy_spell.

@@ -1,0 +1,37 @@
+{
+  "name": "cr614_12_arena_of_glory_enters_untapped_with_a_mountain",
+  "why": "CR 614.12: with a land with the subtype Mountain out (Taiga) Arena of Glory enters untapped",
+  "hand_a": [
+    "Arena of Glory",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Taiga"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Arena of Glory"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A played Arena of Glory"
+  ],
+  "expect_not": [
+    "Arena of Glory enters tapped"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "cr118_3_exert_needs_its_red",
+  "why": "CR 118.3: with no other mana Arena of Glory's second ability, which costs {R}, isn't offered; the first is the payer's",
+  "hand_a": [
+    "Lightning Bolt",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass"
+  ],
+  "max_decisions": 6,
+  "expect_menu": [
+    "Cast Lightning Bolt"
+  ],
+  "expect_menu_not": [
+    "Tap and exert"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

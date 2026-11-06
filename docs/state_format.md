@@ -818,6 +818,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `chosen_type` | u16 | `enum:subtype` | 0xFFFF none |
 | | `entered_x` | u16 | `count` | |
 | | `monstrous`, `evoked`, `escaped`, `unearthed`, `cast_from_hand` | u8 | `bool` | |
+| | `exerted` | u8 | `bool` | it won't untap in the next untap step of the player who exerted it (CR 701.43) |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it, for a card that reads it (Vibrance); 0 for any other |
 
 A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,
@@ -956,6 +957,9 @@ computes neither outside its legal-action enumeration.
 | | `activated` | u8 | `bool` | the restriction also allows activating abilities |
 | | `activated_on_battlefield` | u8 | `bool` | of permanents only |
 | | `cant_be_countered` | u8 | `bool` | rider: a spell it is spent on can't be countered |
+| | `keyword` | u8 | `enum:keyword` | rider: a spell it is spent on gains it, none without one |
+| | `keyword_valid` | text | `text` | the spells that keyword goes to |
+| | `keyword_until` | u8 | `enum:duration` | how long the spell has it |
 
 ### A.6 Events and knowledge (`STATE` frame)
 
