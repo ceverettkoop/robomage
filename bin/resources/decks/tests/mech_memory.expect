@@ -1,0 +1,34 @@
+# The rows and categories M4 added, each behind the card that reads it, and the paths around them.
+# Grindstone: the repeat, its check and its bound, and the mill it repeats.
+effect:Repeat
+row:SharesColorWithOther
+row:TargetedPlayer
+effect:Mill
+# Chaos Defiler: the loop over the opponent, the random pick, the destroy.
+effect:RepeatEach
+row:ControlledByRemembered
+effect:ChooseCard
+category:CHOOSE_CARD
+row:AtRandom
+row:without
+effect:Destroy
+# Stronghold Gambit: the hidden choices, the reveal, the forgetting and the move.
+effect:Reveal
+effect:Pump
+row:lowestRememberedCMC
+effect:ChangeZoneAll
+# Sewer-veillance Cam's choice as it resolves.
+effect:TapOrUntap
+category:CHOOSE_MODE
+# Gamble's search, random discard and shuffle; Song of Creation's discard.
+effect:ChangeZone
+effect:Shuffle
+effect:Discard
+# Echo of Eons from the graveyard, and its seven each.
+cast:flashback
+effect:Draw
+# Galvanic Discharge: energy, the number, the paid damage.
+effect:PutCounter
+effect:ChooseNumber
+category:CHOOSE_X
+effect:DealDamage
