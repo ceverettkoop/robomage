@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "ecs/entity.h"
 #include "components/zone.h"
@@ -14,6 +15,11 @@ struct ResolveCtx;
 // (Count$..., Targeted$..., Remembered$..., PlayerCount...$..., integer literals) and the one
 // comparator for its "GE4"-style comparisons, shared by effect amounts, target counts, resolution
 // conditions, static abilities, alternative-cost conditions, replacement and trigger gates.
+//
+// An expression is compiled once, by text, through the tables of svar_eval.cpp: a base (a row of
+// its own, or a set, a property and an aggregate: <Set>$<Property>) and its trailing steps (the
+// suffix table). What --parse-report calls recognized is what these tables read, so a new
+// expression, set, property or suffix is one row.
 
 // A two-letter comparison operator, read once from a script (UNKNOWN: any other spelling).
 enum class SvarOp : uint8_t { EQ, NE, GE, LE, GT, LT, UNKNOWN };
@@ -40,12 +46,13 @@ int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity so
 // target of its ability instance (none for a static).
 int evaluate_svar(const std::string &expr, const ResolveCtx &ctx);
 
-// True when evaluate_svar has a reading for `expr` (it would not report it unrecognized): the same
-// grammar — literals, the /Plus.N /Times.N /HalfUp /LimitMax.N steps, the Count$ / Targeted$ /
-// Remembered$ / PlayerCount… forms — checked without a game (--parse-report, parse_report.h).
-// Keep it beside evaluate_base: the gate's parse report over the vocab fails when a vocab card's
-// expression evaluates but is not recognized here.
+// True when evaluate_svar has a reading for `expr` (it would not report it unrecognized), checked
+// without a game (--parse-report, parse_report.h).
 bool svar_expr_recognized(const std::string &expr);
+
+// How a script spells each expression that names a filter over a set, up to the filter
+// ("Count$Valid ", "Remembered$Valid "): what --parse-report checks against the filter matcher.
+std::vector<std::string> svar_filter_spellings();
 
 // evaluate_svar as an amount (a number of cards, counters, damage, ...): never below 0.
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source = 0,

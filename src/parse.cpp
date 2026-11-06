@@ -2221,7 +2221,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // SP$/DB$ NameCard ValidCards$ <filter> — the filter restricting the nameable card
         // set (Petrified Hamlet's Land, Cabal Therapy's Card.nonLand). The name_card handler
         // passes it to build_name_card_choices, which applies it to each candidate via the
-        // unified matcher (card_matches_any).
+        // unified matcher (card_matches_filter).
         ability.valid_cards_filter = value;
     } else if (key == "VoteCard") {
         // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote

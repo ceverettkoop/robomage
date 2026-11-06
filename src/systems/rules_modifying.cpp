@@ -32,7 +32,7 @@ static bool may_play_player_covers(
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
 // Conqueror, or "Artifact.OppCtrl" for Karn, the Great Creator)? Routed through the shared
-// permanent_matches_any so type qualifiers AND controller qualifiers (.YouCtrl/.OppCtrl) are
+// permanent_matches_filter so type qualifiers AND controller qualifiers (.YouCtrl/.OppCtrl) are
 // honored — the controller reference is the static's own controller, so Karn's ".OppCtrl"
 // correctly restricts the lock to the opponent's artifacts and never the controller's own.
 static bool cant_activate_filter_matches(Entity permanent_entity, const FilterSpec &filter,

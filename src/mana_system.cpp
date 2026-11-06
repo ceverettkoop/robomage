@@ -43,8 +43,7 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer);
+static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // Converge spent-color sink (CR 702.90): while a cast's mana payment is in flight this points at
 // the accumulator that records every color of mana actually removed from the REAL pool. Armed only
 // inside prompt_mana_payment (via a RAII guard); dry-run affordability checks route through
@@ -173,23 +172,12 @@ ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership cont
 
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
 // Evaluate the mana amount a source produces (handles dynamic amounts like Gaea's Cradle)
-static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer) {
+static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller) {
     // Dynamic mana amount of the form "Count$Valid <filter>" — count the controller's
     // battlefield permanents matching the Forge filter (Gaea's Cradle: Creature.YouCtrl;
-    // Urza's Workshop: Urza's.Land+YouCtrl). Routed through the shared permanent filter so
-    // the full qualifier grammar (subtype head, type/ownership qualifiers) is honored.
-    const std::string kPrefix = "Count$Valid ";
-    if (!ab.def->dynamic_amount_expr.empty() && ab.def->dynamic_amount_expr.rfind(kPrefix, 0) == 0) {
-        const FilterSpec filter(ab.def->dynamic_amount_expr.substr(kPrefix.size()));
-        MatchCtx ctx;
-        ctx.controller = controller;
-        ctx.source = ab.source.lki_entity();
-        size_t count = 0;
-        for (auto e : orderer->mEntities)
-            if (is_battlefield_permanent(e) && permanent_matches_filter(e, filter, ctx)) count++;
-        return count;
-    }
+    // Urza's Workshop: Urza's.Land+YouCtrl), relative to the mana ability's source.
+    if (ab.def->dynamic_amount_expr.rfind("Count$Valid ", 0) == 0)
+        return evaluate_amount(ab.def->dynamic_amount_expr, controller, ab.source.lki_entity(), ab.target.get());
     // Any other dynamic mana amount (e.g. Cabal Ritual's Count$Threshold.5.3) routes through the
     // shared runtime-amount evaluator, so mana production scales by the same Count$/Targeted$
     // grammar used for dynamic damage/draw/token counts rather than re-implementing each form here.
@@ -311,7 +299,7 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
     MatchCtx ctx;
     ctx.controller = player;
     // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention).
-    // permanent_matches_any matches each alternative (legendary creature / legendary
+    // permanent_matches_filter matches each alternative (legendary creature / legendary
     // planeswalker) independently, so the comma-OR is handled in one shared place.
     for (auto entity : battlefield_permanents(entities, player)) {
         if (!permanent_matches_filter(entity, ab.def->reflected_mana_filter, ctx)) continue;
@@ -500,7 +488,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         if (entity == exclude_entity) continue;
         if (counted_entities.count(entity)) continue;
         if (!ab.def->activation_mana_cost.empty()) continue;
-        size_t amount = eval_mana_amount(ab, player_owner, orderer);
+        size_t amount = eval_mana_amount(ab, player_owner);
         // A permanent can only be tapped once, so when it offers several same-color mana
         // abilities of differing yield (Eldrazi Temple: {C} vs {C}{C}), the player picks the
         // largest applicable one. Count the maximum amount among this entity's other free,
@@ -509,7 +497,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
             if (e2 != entity || &ab2 == &ab) continue;
             if (!ab2.def->activation_mana_cost.empty()) continue;
             if (ab2.color != ab.color) continue;
-            amount = std::max(amount, eval_mana_amount(ab2, player_owner, orderer));
+            amount = std::max(amount, eval_mana_amount(ab2, player_owner));
         }
         // Check if this entity has more entries (multi-color source)
         bool is_multi_color = false;
@@ -542,7 +530,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         auto check_pool = hypothetical;
         for (size_t i = 0; i < flexible_count; i++) check_pool.insert(GENERIC);
         if (!can_afford_pool(check_pool, ab.def->activation_mana_cost)) continue;
-        size_t amount = eval_mana_amount(ab, player_owner, orderer);
+        size_t amount = eval_mana_amount(ab, player_owner);
         bool is_multi_color = false;
         for (auto &[e2, ab2] : sources) {
             if (e2 == entity && ab2.color != ab.color) {
@@ -613,7 +601,7 @@ size_t max_available_mana(Zone::Ownership player_owner, const ManaValue &base_co
     for (auto &[entity, ab] : sources) {
         if (entity == exclude_entity && ab.def->tap_cost) continue;  // its tap is the ability's own cost
         if (counted.count(entity)) continue;
-        total += eval_mana_amount(ab, player_owner, orderer);
+        total += eval_mana_amount(ab, player_owner);
         counted.insert(entity);
     }
 
@@ -782,7 +770,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
                                std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                bool commit, ManaLogStyle log_style) {
     auto &perm = global_coordinator.GetComponent<Permanent>(source);
-    size_t amount = eval_mana_amount(ab, controller, orderer);
+    size_t amount = eval_mana_amount(ab, controller);
     // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
     // produces that much {C} instead. Consult active replacements before the produced mana enters
     // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
@@ -1136,8 +1124,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         bool replaced = false;
         for (auto &existing : valid_sources) {
             if (existing.entity != entity || existing.color != ab.color) continue;
-            if (eval_mana_amount(ab, controller, orderer) >
-                eval_mana_amount(existing.ability, controller, orderer)) {
+            if (eval_mana_amount(ab, controller) >
+                eval_mana_amount(existing.ability, controller)) {
                 existing.ability = ab;
             }
             replaced = true;
@@ -1154,11 +1142,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     if (max_yield_only) {
         std::vector<SourceInfo> best;
         for (auto &si : valid_sources) {
-            size_t amt = eval_mana_amount(si.ability, controller, orderer);
+            size_t amt = eval_mana_amount(si.ability, controller);
             bool merged = false;
             for (auto &existing : best) {
                 if (existing.entity != si.entity) continue;
-                if (amt > eval_mana_amount(existing.ability, controller, orderer)) {
+                if (amt > eval_mana_amount(existing.ability, controller)) {
                     existing.ability = si.ability;
                     existing.color = si.color;
                 }
@@ -1250,7 +1238,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                     if (!cand.ability.def->activation_mana_cost.empty()) continue;
                     if (pass == 0 && mana_ability_is_painful(cand.ability)) continue;
                     if (pip != GENERIC && !any_color && cand.color != pip) continue;
-                    size_t amt = eval_mana_amount(cand.ability, controller, orderer);
+                    size_t amt = eval_mana_amount(cand.ability, controller);
                     if (amt == 0) continue;
                     for (size_t k = 0; k < amt; k++) trial.insert(cand.color);
                     planned.insert(cand.entity);

@@ -557,11 +557,12 @@ sections above are not repeated here.
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
 - `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
   candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
-  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator;
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator, its expressions, sets, properties and suffixes one table each;
   `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
-  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
+  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher: its qualifier table, and specs compiled once into the
+  `FilterSpec` a definition holds, `src/components/filter_spec.h`), `players` (seats,
   controller), `affected` (the `Defined$` table, `ResolveCtx`, `resolve_objects` / `resolve_players`,
   and the objects / player an effect acts on: targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked

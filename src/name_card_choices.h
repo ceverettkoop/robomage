@@ -28,7 +28,7 @@
 //                   is ignored in this scope.
 //
 // `valid_filter` is the ability's ValidCards$ spec, applied to each candidate's
-// printed characteristics through the unified matcher (card_matches_any), so every
+// printed characteristics through the unified matcher (card_matches_filter), so every
 // filter token works uniformly — Cabal Therapy's `Card.nonLand` drops lands,
 // Petrified Hamlet's `Land` offers only lands. An empty filter offers everything
 // (Disruptor Flute's unfiltered "choose a card name").

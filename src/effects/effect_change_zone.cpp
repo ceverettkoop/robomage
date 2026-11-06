@@ -273,7 +273,7 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
             std::vector<Entity> cands;
             for (auto e : orderer->get_hand(p)) {
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-                // A hand card is matched by its PRINTED characteristics (card_matches_any), not the
+                // A hand card is matched by its PRINTED characteristics (card_matches_filter), not the
                 // battlefield-permanent matcher — the card is not on the battlefield yet.
                 if (card_matches_filter(e, ab.def->change_type, mctx)) cands.push_back(e);
             }

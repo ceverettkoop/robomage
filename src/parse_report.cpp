@@ -217,8 +217,7 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
         "SacValid", "DiscardValid", "ValidSource", "ValidTarget", "IsPresent", "ConditionPresent", "ValidBlocker",
         "ValidAttacker", "ValidCreature", "RestrictValid", "ValidLKI", "ValidDefined", "TgtValid", "ChangeValid",
         "Valid"};
-    static const char *const kCountPrefixes[] = {"Count$ValidGraveyard ", "Count$ValidLibrary ", "Count$ValidHand ",
-        "Count$ValidExile ", "Count$ValidStack ", "Count$Valid ", "Remembered$Valid "};
+    static const std::vector<std::string> kCountPrefixes = svar_filter_spellings();
     static const char *const kCostTokens[] = {
         "Sac<", "Discard<", "ExileFromGrave<", "ExileFromHand<", "Return<", "Exile<", "tapXType<"};
     for (const std::string &raw : split(script_text, '\n')) {
@@ -249,10 +248,10 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
             // A ChooseCard's Choices$ is a card filter (a Charm's names its modes' SVars).
             if (key == "Choices" && body.find("$ ChooseCard") != std::string::npos)
                 check_filter(value, key + "$", line, findings);
-            for (const char *prefix : kCountPrefixes) {
+            for (const std::string &prefix : kCountPrefixes) {
                 const size_t at = param.find(prefix);
                 if (at == std::string::npos) continue;
-                const std::string rest = param.substr(at + std::strlen(prefix));
+                const std::string rest = param.substr(at + prefix.size());
                 check_filter(trim(rest.substr(0, rest.find_first_of("$/ "))), trim(prefix), line, findings);
                 break;
             }
