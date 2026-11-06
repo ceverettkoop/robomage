@@ -575,6 +575,7 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
            read_cost_filter_token(tok, "Discard", CostPart::DISCARD, part) ||
            read_cost_filter_token(tok, "Return", CostPart::RETURN, part) ||
            read_cost_filter_token(tok, "ExileFromHand", CostPart::EXILE_FROM_HAND, part) ||
+           read_cost_filter_token(tok, "Exile", CostPart::EXILE, part) ||
            read_exile_from_grave_token(tok, part) || read_loyalty_cost_token(tok, part);
 }
 
@@ -632,8 +633,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 }
 
 // Does the engine pay `part` of a cost written in `form`? An activated ability pays its whole cost
-// as it is activated, one sacrifice or return at most, and of a discard only the whole hand or
-// itself; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
+// as it is activated, one sacrifice or return at most, of a discard only the whole hand or itself,
+// and of an exile only itself; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
 // Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
 // (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
 // Sac<1/CARDNAME>, mana and a discard of N matching cards (pay_trigger_cost); an ImmediateTrigger
@@ -653,6 +654,7 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
                 case CostPart::RETURN: return part.count == 1 && !part.is_self();
                 case CostPart::DISCARD:
                     return (part.whole_hand && part.count == 0) || (part.is_self() && part.count == 1);
+                case CostPart::EXILE: return part.is_self() && part.count == 1;
                 case CostPart::EXILE_FROM_HAND:
                 case CostPart::EXILE_FROM_GRAVEYARD: return false;
                 default: return true;

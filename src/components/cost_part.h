@@ -26,6 +26,7 @@ struct CostPart {
         EXILE_FROM_HAND,       // ExileFromHand<count/filter>
         EXILE_FROM_GRAVEYARD,  // ExileFromGrave<count/filter>; count_is_x: any number, covering `min_types`
         MANDATORY,             // not a payment: a triggered ability's cost is not optional (CR 603.8)
+        EXILE,                 // Exile<1/CARDNAME>: the source exiles itself from the battlefield
     };
 
     Kind kind = MANA;

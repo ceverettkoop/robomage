@@ -1,0 +1,33 @@
+{
+  "name": "cr603_echoverse_fulcrum_enters_loots",
+  "why": "CR 603.3: The Echoverse Fulcrum: when it enters, draw a card, then discard a card",
+  "hand_a": [
+    "The Echoverse Fulcrum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:The Echoverse Fulcrum",
+    "A:discard:Grizzly Bears"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A draws Grizzly Bears",
+    "Player A discards Grizzly Bears"
+  ]
+}

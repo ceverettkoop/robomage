@@ -1,0 +1,43 @@
+{
+  "name": "cr602_5d_echoverse_fulcrum_only_as_a_sorcery",
+  "why": "CR 602.5d: The Echoverse Fulcrum's ability is sorcery timed: not offered on the opponent's turn with its full cost available",
+  "hand_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "The Echoverse Fulcrum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate The Echoverse Fulcrum"
+  ]
+}

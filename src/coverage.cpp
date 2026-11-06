@@ -84,6 +84,8 @@ static const char *cost_kind_name(CostPart::Kind kind) {
             return "ENERGY";
         case CostPart::LOYALTY:
             return "LOYALTY";
+        case CostPart::EXILE:
+            return "EXILE";
         case CostPart::SACRIFICE:
             return "SACRIFICE";
         case CostPart::DISCARD:

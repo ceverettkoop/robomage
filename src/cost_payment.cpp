@@ -86,6 +86,7 @@ struct CostStep {
             LIFE_X,
             ENERGY,
             SACRIFICE_SELF,
+            EXILE_SELF,
             MOVE_ITEMS,  // what the picks chose moves
             DISCARD_SELF,
             DISCARD_HAND,
@@ -137,6 +138,7 @@ static void pay_loyalty(const CostPayer &who);
 static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void pay_life_x(const CostPayer &who);
 static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
+static void exile_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static PayStatus pay_from_working_pool(const CostPayer &who);
@@ -235,6 +237,7 @@ static const CostStep kActivationSteps[] = {
     {CostStep::LIFE},
     {CostStep::ENERGY},
     {CostStep::SACRIFICE_SELF},
+    {CostStep::EXILE_SELF},
     {CostStep::MOVE_ITEMS},
     {CostStep::DISCARD_SELF},
     {CostStep::DISCARD_HAND},
@@ -402,6 +405,9 @@ static PayStatus pay_step(
             break;
         case CostStep::SACRIFICE_SELF:
             sacrifice_self(who, orderer);
+            break;
+        case CostStep::EXILE_SELF:
+            exile_self(who, orderer);
             break;
         case CostStep::MOVE_ITEMS:
             move_items(who, orderer);
@@ -794,6 +800,15 @@ static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> 
     orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
     game_log("%s sacrifices %s\n", player_name(who.payer).c_str(), sname.c_str());
     coverage_cost(CostPart::SACRIFICE, "self");
+}
+
+// The source exiles itself (Exile<1/CARDNAME>: The Echoverse Fulcrum).
+static void exile_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
+    if (!who.cost->self(CostPart::EXILE)) return;
+    const std::string name = entity_name(who.source);
+    orderer->add_to_zone(false, who.source, Zone::EXILE);
+    game_log("%s exiles %s\n", player_name(who.payer).c_str(), name.c_str());
+    coverage_cost(CostPart::EXILE, "self");
 }
 
 // Discard self from hand cost (Faerie Macabre).
