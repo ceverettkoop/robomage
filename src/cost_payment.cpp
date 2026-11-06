@@ -808,6 +808,7 @@ static PayStatus choose_taps(const CostPayer &who, FrameCtx &ctx, const std::sha
         if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
         if (static_cast<size_t>(choice) >= taps) break;
         tap_to_pay_chosen(tappable[static_cast<size_t>(choice)], who.payer, run.mana, who.payee, run.tap_to_pay, orderer);
+        coverage_cost(CostPart::MANA, "tap_chosen");
     }
     run.tap_to_pay = TapToPay::NONE;
     return PayStatus::PAID;

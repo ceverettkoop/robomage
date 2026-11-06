@@ -1629,6 +1629,12 @@ def _greedy_action(v,
             return 1 if _resolution_cast_ok(v, card) else 0
         if _is_miracle_reveal(v):
             return 1
+    # A resolution's offer of several casts (DB$ Play): its faces, or the cards of a zone.
+    if v.n > 2 and all(c == _CAT_YESNO for c in v.cats):
+        for i in range(1, v.n):
+            if _resolution_cast_ok(v, v.card(i)):
+                return i
+        return 0
 
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell

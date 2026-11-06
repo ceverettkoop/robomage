@@ -6,6 +6,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../coverage.h"
 #include "battlefield.h"
 #include "characteristics.h"
 #include "filters.h"
@@ -36,6 +37,7 @@ SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, Spell
             to.zone = std::get<PlayParams>(how.cast_by->params).graveyard_replaced_by;
             to.by_cast = "cast this way";
             to.graveyard_replaced = true;
+            coverage_row("graveyard_replaced");
         }
     }
     return to;

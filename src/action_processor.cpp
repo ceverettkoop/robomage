@@ -269,6 +269,7 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
     coverage_cast_row(how.row);
     if (how.cost == CastCost::GRANT) coverage_cast_row(grant_row(how.grant));
     if (how.offspring) coverage_cast("offspring");
+    if (pc.bargaining) coverage_cast("bargained");
     if (impulse) coverage_cast("impulse");
     if (how.cost == CastCost::NO_MANA_COST) coverage_cast("without_mana_cost");
     if (pc.chosen.back_face()) coverage_cast(front.is_split ? "split_half" : "back_face");
