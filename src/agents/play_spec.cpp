@@ -269,6 +269,11 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
         return norm(a.description).find(intent.keyword) != std::string::npos;
     if (intent.verb == "desc" && intent.card && !intent.card->empty())
         return norm(a.description).find(*intent.card) != std::string::npos;
+    // Modes ground to one card, so a mode is named by its text.
+    if (intent.verb == "mode" && intent.card && !intent.card->empty()) {
+        const std::string text = norm(a.description);
+        return exact ? text == *intent.card : text.find(*intent.card) != std::string::npos;
+    }
     if (intent.card && !intent.card->empty()) return card_matches(*intent.card, a, exact);
     return true;
 }

@@ -1,0 +1,38 @@
+{
+  "name": "cr603_6c_sewer_veillance_cam_bounced_triggers",
+  "why": "CR 603.6c: Sewer-veillance Cam's trigger names any destination, so returning it to its owner's hand fires it as a sacrifice does, and its controller still chooses as it resolves",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Sewer-veillance Cam",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Echoing Truth"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "B:cast:Echoing Truth",
+    "B:target:Sewer-veillance Cam",
+    "A:desc:Accept",
+    "A:mode:Tap Grizzly Bears"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Sewer-veillance Cam returns to Player A's hand",
+    "Grizzly Bears is tapped"
+  ]
+}

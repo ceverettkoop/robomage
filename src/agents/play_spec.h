@@ -31,7 +31,8 @@
 //   shuffle:<text>  noshuffle:<text>                                       (SHUFFLE, DONT_SHUFFLE)
 //   sb-in:<card>  sb-out:<card>  sb-done                                   sideboarding (bo3)
 //   companion:<card>             companion to hand                         (COMPANION)
-//   sacrifice: return: x: discard: mode: color: name: exile:  <text>        the matching choice category
+//   sacrifice: return: x: discard: color: name: exile:  <text>        the matching choice category
+//   mode:<text>                  a mode by its text, a whole row's before a part of one  (CHOOSE_MODE)
 //   mode:done                    choose no further mode ("choose one or more")  (CONFIRM_MODES)
 //   desc:<text>                  any action, by description substring
 //   concede | concede:game | concede:match   the sentinels -2 / -3 (not a menu row)

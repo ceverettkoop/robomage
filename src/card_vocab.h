@@ -293,6 +293,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Powder Keg", 370},
     {"Drop of Honey", 371},
     {"Strategic Betrayal", 372},
+    {"Sewer-veillance Cam", 373},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

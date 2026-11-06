@@ -1,0 +1,13 @@
+{
+  "name": "cr603_6c_sewer_veillance_cam_leaves_untaps_attacker",
+  "why": "CR 603.6c / 603.10a: sacrificed for its own draw, Sewer-veillance Cam's leaves-the-battlefield trigger looks back and fires; its controller untaps the creature it targets, here the one that attacked",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Sewer-veillance Cam", "Island", "Island", "Island", "Island", "Grizzly Bears"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:attack:Grizzly Bears", "A:attack:done", "A:activate:Sewer-veillance Cam", "A:desc:Accept", "A:mode:Untap Grizzly Bears"],
+  "max_decisions": 12,
+  "expect_order": ["Grizzly Bears attacking Player B", "Sewer-veillance Cam", "Grizzly Bears untaps"],
+  "expect": ["Player A draws Island"]
+}

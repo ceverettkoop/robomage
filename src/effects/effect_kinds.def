@@ -199,5 +199,8 @@ EFFECT_KIND(SuspendCast, "SuspendCast", suspend_cast)
 // makes its mana as it is activated (CR 605.3a), in mana_system.
 EFFECT_KIND_ELSEWHERE(ManaReflected, "ManaReflected")
 
+// "Tap or untap target permanent": its controller chooses which, as it resolves (CR 608.2d).
+EFFECT_KIND(TapOrUntap, "TapOrUntap", tap_or_untap)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE
