@@ -80,6 +80,8 @@ static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer);
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster);
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data);
+// The menu of the forms of `card_data`'s additional cost that can be paid (CR 601.2b).
+static std::vector<LegalAction> additional_choice_menu(const CardData &card_data, const std::vector<size_t> &payable);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      std::vector<LegalAction> &&menu, bool chooser_is_a,
@@ -478,6 +480,18 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data) {
     static const std::vector<HybridPip> kNone;
     return pc.chosen.without_mana_cost ? kNone : card_data.hybrid_mana;
+}
+
+// See forward declaration at top of file.
+static std::vector<LegalAction> additional_choice_menu(const CardData &card_data, const std::vector<size_t> &payable) {
+    std::vector<LegalAction> menu;
+    for (size_t i : payable) {
+        LegalAction la(PASS_PRIORITY, cost_label(card_data.additional_choices[i]));
+        la.category = ActionCategory::PAYING_COSTS;
+        la.option_ordinal = static_cast<int>(i);
+        menu.push_back(la);
+    }
+    return menu;
 }
 
 // Park a combat target sub-prompt (attack target / block target) as a loop-top
@@ -1802,7 +1816,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
                 pc.pay.mana_pending = true;
                 pc.pay.life = card_data.flashback_cost.life();
-                pc.step = Game::PendingCast::GIFT;
+                pc.step = Game::PendingCast::ADDITIONAL;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
@@ -1814,7 +1828,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
                 pc.pay.mana_pending = true;
                 pc.pay.life = card_data.escape_cost.life();
-                pc.step = Game::PendingCast::GIFT;
+                pc.step = Game::PendingCast::ADDITIONAL;
 
             // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
             // (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
@@ -1848,13 +1862,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.pay.mana = floor_mana;
                     pc.pay.mana_pending = true;
                 }
-                pc.step = Game::PendingCast::GIFT;
+                pc.step = Game::PendingCast::ADDITIONAL;
 
             // ALTERNATE COST — determined here, paid in the payment phase like every
             // other cost branch (its pitch/return/sacrifice picks are the ALT_* steps).
             } else if (pc.chosen.alternative()) {
                 defer_alternate_cost(game, card_data, caster);
-                pc.step = Game::PendingCast::GIFT;
+                pc.step = Game::PendingCast::ADDITIONAL;
 
             } else {  // REGULAR COST + DELVE (also a NORMAL play-from-exile grant)
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
@@ -2171,6 +2185,34 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     return;
                 }
             }
+            pc.step = Game::PendingCast::ADDITIONAL;
+            break;
+        }
+
+        case Game::PendingCast::ADDITIONAL: {
+            // A mandatory additional cost with several forms (CR 118.8): the caster announces which
+            // it pays (CR 601.2b), among those that can be paid; it is paid with the rest of the
+            // cost (PAY_COSTS).
+            if (!card_data.additional_choices.empty()) {
+                CostCheck check(caster, spell_entity, orderer);
+                check.unchecked = CostParts::kind_bit(CostPart::MANA);
+                check.life_reserve = pc.pay.life + std::max(0, pc.pay.life_x);
+                const std::vector<size_t> payable = payable_choices(card_data.additional_choices, check);
+                if (payable.empty()) {
+                    fail_cast_payment(pc, orderer);
+                    return;
+                }
+                if (resume_choice < 0) {
+                    arm_cast_query(game, additional_choice_menu(card_data, payable), caster, spell_entity);
+                    return;
+                }
+                const size_t chosen = payable[static_cast<size_t>(resume_choice)];
+                resume_choice = -1;
+                pc.chosen.additional_choice = static_cast<int>(chosen);
+                pc.pay.life += card_data.additional_choices[chosen].life();
+                for (const CostPart &part : card_data.additional_choices[chosen].parts())
+                    coverage_cost(part.kind, "additional");
+            }
             pc.step = Game::PendingCast::GIFT;
             break;
         }
@@ -2332,6 +2374,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             CostPayer who(CostPath::CAST, caster, spell_entity, spell_entity, nullptr, &pc.pay);
             if (pc.chosen.alternative()) who.alternative = &card_data.alt_cost.cost;
             who.additional = &spell_additional_cost(card_data);
+            if (pc.chosen.additional_choice >= 0)
+                who.additional_choice = &card_data.additional_choices[static_cast<size_t>(pc.chosen.additional_choice)];
             who.escalate = &card_data.escalate_cost;
             who.escalate_times = pc.chosen.escalate_count;
             if (pc.chosen.flashback()) who.flashback = &card_data.flashback_cost;

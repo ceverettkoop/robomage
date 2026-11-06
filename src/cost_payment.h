@@ -113,6 +113,7 @@ struct CostPayer {
         // A cast: what it pays besides its mana, each null when this cast doesn't. `cost` is unused.
         const CostParts *alternative = nullptr;  // the alternative cost it was cast for
         const CostParts *additional = nullptr;   // a spell's additional sacrifice
+        const CostParts *additional_choice = nullptr;  // the form of its additional cost announced
         const CostParts *escalate = nullptr;     // the Escalate cost, paid `escalate_times` times
         int escalate_times = 0;
         const CostParts *flashback = nullptr;
@@ -135,6 +136,8 @@ struct CostPayer {
 // A triggered ability's cost, paid as it resolves (CR 603.2, 603.5). Its CostRun is the ability's resolving level's, so a parked question resumes there.
 // PAID: go on to the effect. DECLINED: the ability does nothing more. SUSPENDED: a choice is parked.
 PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+// A cost as a menu row names it: "Pay 3 life", "Discard a card".
+std::string cost_label(const CostParts &cost);
 // Is a triggered ability's cost put to its controller as an offer ("you may discard a card", "you
 // may pay {B}", CR 603.5)? That offer is the ability's one "may".
 bool trigger_cost_offered(const CostParts &cost);

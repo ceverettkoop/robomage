@@ -117,6 +117,13 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer) {
     if (!ignore_timing && !spell_timing_ok(face, caster, sorcery_window)) return false;
+    // A mandatory additional cost with several forms: one of them must be payable (CR 601.2f), with
+    // the mana held to the cast's own gates.
+    if (!face.additional_choices.empty()) {
+        CostCheck check(caster, card_entity, orderer);
+        check.unchecked = CostParts::kind_bit(CostPart::MANA);
+        if (payable_choices(face.additional_choices, check).empty()) return false;
+    }
     // Target legality (CR 601.2c), mode-aware: for a Gift spell the required target type switches
     // on the gift promise (Into the Flood Maw: a creature without the gift, a nonland permanent
     // with it) and a modal spell needs enough choosable modes, so the spell is castable iff a legal

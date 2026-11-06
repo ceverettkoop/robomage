@@ -1,0 +1,56 @@
+{
+  "name": "cr601_2f_bitter_triumph_alone_in_hand_pays_life",
+  "why": "CR 601.2f: at 4 life the same hand of one Bitter Triumph can pay: the card itself is no card to discard, so the life is the one form, taken with no menu of forms",
+  "hand_a": [
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph"
+  ],
+  "library_a": [
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:keep",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:cast:Bitter Triumph",
+    "A:target:Grizzly Bears"
+  ],
+  "life_a": 4,
+  "max_decisions": 20,
+  "expect": [
+    "Player A pays 3 life",
+    "Grizzly Bears is destroyed"
+  ],
+  "expect_menu_not": [
+    "Discard a card"
+  ]
+}

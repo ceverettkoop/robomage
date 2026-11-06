@@ -54,4 +54,7 @@ constexpr uint16_t kAllButMana = static_cast<uint16_t>(~CostParts::kind_bit(Cost
 //   ExileFromGrave<1/CARDNAME>.
 bool can_pay(const CostParts &cost, const CostCheck &check);
 
+// Which of a spell's additional-cost forms can be paid (CR 601.2b): their indices, in order.
+std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const CostCheck &check);
+
 #endif /* QUERIES_COSTS_H */

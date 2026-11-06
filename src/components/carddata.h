@@ -161,6 +161,10 @@ struct CardData{
     // other costs (CR 601.2f-h).
     bool has_escalate = false;
     CostParts escalate_cost;
+    // K:AlternateAdditionalCost:<cost>:<cost>...: a mandatory additional cost with several forms, of
+    // which the caster announces one (CR 118.8, 601.2b: Bitter Triumph's "discard a card or pay 3
+    // life"). Empty for a spell with none.
+    std::vector<CostParts> additional_choices;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
     // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). A card
     // with this keyword may begin the game in the sideboard ("outside the game"); if the chosen

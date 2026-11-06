@@ -1,0 +1,45 @@
+{
+  "name": "cr601_2b_bitter_triumph_pays_three_life",
+  "why": "CR 118.8 / 601.2b: Bitter Triumph: as an additional cost, discard a card or pay 3 life: the form is announced, before the target, and paid with the mana",
+  "hand_a": [
+    "Bitter Triumph",
+    "Island",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Bitter Triumph",
+    "A:pay:3 life",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A pays 3 life",
+    "Player A casts Bitter Triumph",
+    "Grizzly Bears is destroyed"
+  ],
+  "expect_menu": [
+    "Pay 3 life",
+    "Discard a card"
+  ],
+  "expect_not": [
+    "Player A discards"
+  ]
+}

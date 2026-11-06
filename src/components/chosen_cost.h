@@ -49,6 +49,8 @@ struct ChosenCost {
         int replicate_count = 0;
         // Escalate (CR 702.120a): the modes chosen beyond the first, each paying the escalate cost.
         int escalate_count = 0;
+        // Which of the card's additional_choices was announced (CR 601.2b); -1 with none.
+        int additional_choice = -1;
         // Gift (CR 702.176): true iff the spell's controller PROMISED the gift to the opponent as
         // this spell was cast (an optional choice, not a cost — CR 702.176b). Read at resolution to
         // give the opponent the gift, and (via current_gift_promised() at cast time) to switch

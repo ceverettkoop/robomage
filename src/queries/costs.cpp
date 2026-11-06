@@ -29,6 +29,13 @@ bool can_pay(const CostParts &cost, const CostCheck &check) {
     return mana_payable(cost, check);
 }
 
+std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const CostCheck &check) {
+    std::vector<size_t> payable;
+    for (size_t i = 0; i < choices.size(); ++i)
+        if (can_pay(choices[i], check)) payable.push_back(i);
+    return payable;
+}
+
 static bool part_payable(const CostPart &part, const CostCheck &check) {
     switch (part.kind) {
         case CostPart::TAP:
@@ -36,7 +43,8 @@ static bool part_payable(const CostPart &part, const CostCheck &check) {
         case CostPart::LIFE:
             // CR 119.4: you can't pay life you don't have. A fetch land (Pay 1 life) at 1 life is
             // still legal (you pay down to 0, then die); only a cost of MORE life than you have fails.
-            return can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(check.payer)), part.count);
+            return can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(check.payer)),
+                                part.count + check.life_reserve);
         case CostPart::ENERGY:
             // CR 122.1c: you can't pay {E} you don't have.
             return player_energy(global_coordinator.GetComponent<Player>(get_player_entity(check.payer))) >= part.count;

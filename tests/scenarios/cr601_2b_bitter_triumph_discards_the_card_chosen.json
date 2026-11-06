@@ -1,0 +1,42 @@
+{
+  "name": "cr601_2b_bitter_triumph_discards_the_card_chosen",
+  "why": "CR 118.8 / 601.2f: Bitter Triumph's discard, chosen among the hand after the target; no life is paid, and the choice can park mid-payment",
+  "hand_a": [
+    "Bitter Triumph",
+    "Island",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Bitter Triumph",
+    "A:pay:Discard",
+    "A:target:Grizzly Bears",
+    "A:discard:Island"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A discards Island",
+    "Player A casts Bitter Triumph",
+    "Grizzly Bears is destroyed"
+  ],
+  "expect_not": [
+    "Player A pays 3 life"
+  ]
+}

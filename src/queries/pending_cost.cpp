@@ -44,6 +44,7 @@ static StatePart cast_step_part(const Cast &pc) {
             }
         case Cast::KICKER:
         case Cast::REPLICATE:
+        case Cast::ADDITIONAL:
         case Cast::GIFT:
             return StatePart::ADDITIONAL;
         case Cast::CHOOSE_X:
@@ -68,9 +69,14 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
     out.remaining = pc.pay.mana_pending ? pc.pay.mana : pc.cost_to_pay;
     out.life = pc.pay.life + std::max(0, pc.pay.life_x);
     out.energy = pc.pay.energy;
-    // Escalate's discards still to pick (CR 702.120a), owed once the modes are announced.
-    if (const CardData *face = cast_face(pc))
-        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.chosen.escalate_count - pc.pay.discards_chosen);
+    // The discards still to pick: Escalate's (CR 702.120a), owed once the modes are announced, and
+    // those of the form of an additional cost announced.
+    if (const CardData *face = cast_face(pc)) {
+        int discards = face->escalate_cost.count(CostPart::DISCARD) * pc.chosen.escalate_count;
+        if (pc.chosen.additional_choice >= 0)
+            discards += face->additional_choices[static_cast<size_t>(pc.chosen.additional_choice)].count(CostPart::DISCARD);
+        out.discard = std::max(0, discards - pc.pay.discards_chosen);
+    }
     // The regular cost branch folds X, hybrid and Phyrexian pips into cost_to_pay one step at a
     // time (KICKER through PHYREXIAN_PIP; the alternative branches skip them): the pips of the
     // steps not yet reached are still owed as printed.

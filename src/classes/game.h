@@ -360,6 +360,7 @@ struct Game {
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
                                   // CR 601.2b announces the value, the life is paid with the cost)
+                ADDITIONAL,       // which form of a mandatory additional cost (CR 601.2b)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 MODES_TARGETS,    // modes (CR 601.2b) and every target (601.2c) via run_announce
                                   // (pc.announce; ends with AddComponent)

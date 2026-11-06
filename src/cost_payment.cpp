@@ -1,6 +1,7 @@
 #include "cost_payment.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <optional>
 #include <string>
@@ -39,6 +40,7 @@ enum class CostSlot {
     COST,
     ALTERNATIVE,
     ADDITIONAL,
+    ADDITIONAL_CHOICE,
     ESCALATE,
     FLASHBACK,
     ESCAPE
@@ -174,6 +176,9 @@ static const PickRule kAltSacrifice = {CostSlot::ALTERNATIVE, CostPart::SACRIFIC
 // cost to cast this spell, sacrifice a green creature."
 static const PickRule kAdditionalSacrifice = {CostSlot::ADDITIONAL, CostPart::SACRIFICE, "Sacrifice ", "",
     ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, true, true, false};
+// The discard of an additional cost announced in that form (Bitter Triumph, CR 601.2b, 601.2h).
+static const PickRule kAdditionalDiscard = {CostSlot::ADDITIONAL_CHOICE, CostPart::DISCARD, "Discard ", "",
+    ActionCategory::DISCARD, Zone::GRAVEYARD, " discards ", "", PickRule::BY_COUNT, false, true, false};
 // Escalate's discards (CR 702.120a / 601.2h): the cost's N cards for each mode beyond the first. The
 // mode menu offered each extra mode only while enough cards were left.
 static const PickRule kEscalateDiscard = {CostSlot::ESCALATE, CostPart::DISCARD, "Discard ", "",
@@ -203,6 +208,7 @@ static const CostStep kCastSteps[] = {
     {CostStep::PICK, &kAltReturn},
     {CostStep::PICK, &kAltSacrifice},
     {CostStep::PICK, &kAdditionalSacrifice},
+    {CostStep::PICK, &kAdditionalDiscard},
     {CostStep::PICK, &kEscalateDiscard},
     {CostStep::DELVE_COUNT},
     {CostStep::DELVE_PICK},
@@ -505,6 +511,8 @@ static const CostParts *pick_cost(const PickRule &rule, const CostPayer &who) {
             return who.alternative;
         case CostSlot::ADDITIONAL:
             return who.additional;
+        case CostSlot::ADDITIONAL_CHOICE:
+            return who.additional_choice;
         case CostSlot::ESCALATE:
             return who.escalate;
         case CostSlot::FLASHBACK:
@@ -897,15 +905,22 @@ static PayStatus offer_trigger_cost(const CostPayer &who, FrameCtx &ctx, const s
     return PayStatus::DECLINED;
 }
 
-// "discard a card", "pay {B}".
+// "discard a card", "pay {B}", "pay 3 life".
 static std::string cost_offer_text(const CostParts &cost) {
     std::string text;
     if (!cost.mana().empty()) text = "pay " + mana_value_text(cost.mana());
+    if (cost.life() > 0) text += (text.empty() ? "pay " : " and ") + std::to_string(cost.life()) + " life";
     const int discards = cost.count(CostPart::DISCARD);
     if (discards > 0) {
         if (!text.empty()) text += " and ";
         text += "discard " + (discards == 1 ? std::string("a card") : std::to_string(discards) + " cards");
     }
+    return text;
+}
+
+std::string cost_label(const CostParts &cost) {
+    std::string text = cost_offer_text(cost);
+    if (!text.empty()) text[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(text[0])));
     return text;
 }
 

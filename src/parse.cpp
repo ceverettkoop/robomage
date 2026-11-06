@@ -55,6 +55,7 @@ enum class CostForm {
     ESCALATE,           // K:Escalate
     WARD,               // K:Ward and a granted Ward:
     UNLESS,             // UnlessCost$
+    ADDITIONAL_CHOICE,  // one form of K:AlternateAdditionalCost
 };
 static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
 static bool is_mana_cost_token(const std::string &tok);
@@ -248,6 +249,7 @@ static void kw_ninjutsu(const std::string& kw_line, KeywordContext& ctx);
 static void kw_type_cycling(const std::string& kw_line, KeywordContext& ctx);
 static void kw_flashback(const std::string& kw_line, KeywordContext& ctx);
 static void kw_unearth(const std::string& kw_line, KeywordContext& ctx);
+static void kw_alternate_additional_cost(const std::string& kw_line, KeywordContext& ctx);
 static void kw_escape(const std::string& kw_line, KeywordContext& ctx);
 static void kw_evoke(const std::string& kw_line, KeywordContext& ctx);
 static void kw_offspring(const std::string& kw_line, KeywordContext& ctx);
@@ -327,6 +329,7 @@ static const KeywordEntry kKeywordTable[] = {
     {"Evoke", KeywordEntry::PREFIX, kw_evoke},
     {"Offspring", KeywordEntry::PREFIX, kw_offspring},
     {"Kicker:", KeywordEntry::PREFIX, kw_kicker},
+    {"AlternateAdditionalCost:", KeywordEntry::PREFIX, kw_alternate_additional_cost},
     {"Replicate:", KeywordEntry::PREFIX, kw_replicate},
     {"Devoid", KeywordEntry::EXACT, kw_devoid},
     {"Gift", KeywordEntry::PREFIX, kw_gift},
@@ -649,7 +652,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // Sac<1/CARDNAME> and PayEnergy<N>. An alternative cost
 // pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
 // fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
-// Escalate mana and a discard of N matching cards. A Ward cost is {N} or fixed life; an unless-cost
+// Escalate mana and a discard of N matching cards; a form of AlternateAdditionalCost fixed life or
+// a discard of N matching cards. A Ward cost is {N} or fixed life; an unless-cost
 // mana, energy or a discard of N cards of the payer's choice (run_discard_unless takes any card).
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
@@ -693,6 +697,9 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
         case CostForm::WARD:
             return (part.kind == CostPart::LIFE && !part.count_is_x) ||
                    (part.kind == CostPart::MANA && part.mana.count(GENERIC) == part.mana.size());
+        case CostForm::ADDITIONAL_CHOICE:
+            return (part.kind == CostPart::LIFE && !part.count_is_x) ||
+                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
         case CostForm::UNLESS:
             return part.kind == CostPart::MANA || part.kind == CostPart::ENERGY ||
                    (part.kind == CostPart::DISCARD && part.filter == "Card");
@@ -1366,6 +1373,15 @@ static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
     ab.is_unearth = true;
     ctx.face_defs.abilities.push_back(ab);
     ctx.card.keywords.push_back("Unearth");
+}
+
+// K:AlternateAdditionalCost:<cost>:<cost>... — an additional cost the caster pays in one of several
+// forms (CR 118.8, 601.2b).
+static void kw_alternate_additional_cost(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string forms = kw_line.substr(strlen("AlternateAdditionalCost:"));
+    for (const std::string &form : split(forms, ':'))
+        ctx.card.additional_choices.push_back(
+            parse_cost(form, CostForm::ADDITIONAL_CHOICE, "AlternateAdditionalCost:" + form));
 }
 
 // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
