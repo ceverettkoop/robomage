@@ -48,7 +48,11 @@ enum class CostForm {
     SPELL,              // a spell's Cost$: its mana cost again, and its additional costs
     TRIGGERED,          // a triggered ability's Cost$, paid as it resolves
     IMMEDIATE_TRIGGER,  // the same on an ImmediateTrigger
+    ALTERNATIVE,        // an alternative cost: S:Mode$ AlternativeCost, and a keyword that is one
     FLASHBACK,          // what the cast path pays of an ACTIVATED-form K:Flashback cost
+    ESCAPE,             // K:Escape
+    MANA_ONLY,          // a keyword the engine pays in mana alone
+    ESCALATE,           // K:Escalate
 };
 static void parse_finding(const char *kind, const std::string &name, const std::string &detail);
 static bool is_mana_cost_token(const std::string &tok);
@@ -65,8 +69,7 @@ static bool read_exile_from_grave_token(const std::string &tok, CostPart &part);
 static bool cost_form_pays(CostForm form, const CostPart &part);
 static CostForm ability_cost_form(const AbilityDef &ability);
 static void read_ability_cost(const std::string &cost_str, AbilityDef &ability);
-static bool read_alt_cost_token(const std::string &tok, AltCost &ac);
-static std::multiset<Colors> keyword_mana_cost(const std::string &cost, const std::string &keyword);
+static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword);
 static void ward_cost_findings(const std::string &arg);
 static void read_unless_cost(AbilityDef &ability, const std::string &value);
 static bool unless_cost_read_by(const std::string &category);
@@ -96,7 +99,7 @@ static std::string value_from_script(const std::string &script, const std::strin
 static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
                                              std::vector<HybridPip> *hybrid_out = nullptr);
-static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
+static void read_alternative_cost(const std::string &cost_str, AltCost &ac);
 static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken);
 static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
@@ -512,74 +515,11 @@ std::string name_to_uid(std::string name) {
     return collapsed;
 }
 
-// Parses the cost portion of an alternate cost string (the value after Cost$ / after "Evoke:")
-// into an AltCost: "0" (free), mana tokens, and read_alt_cost_token's other tokens. Anything else
-// is a parse finding and pays nothing. Condition fields (CheckSVar etc.) are parsed separately by
-// the caller.
-static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
+// An alternative cost's cost string (the value after Cost$ / after "Evoke:"). Condition fields
+// (CheckSVar etc.) are parsed separately by the caller.
+static void read_alternative_cost(const std::string &cost_str, AltCost &ac) {
     ac.has_alt_cost = true;
-    // Cost$ 0 means free
-    if (cost_str == "0") {
-        ac.is_free = true;
-        return;
-    }
-    std::string mana;
-    for (const std::string &tok : cost_tokens(cost_str)) {
-        if (is_plain_mana_token(tok))
-            mana += (mana.empty() ? "" : " ") + tok;
-        else if (!read_alt_cost_token(tok, ac))
-            parse_finding("cost", cost_finding_name(tok), "alternative cost " + cost_str);
-    }
-    if (!mana.empty()) ac.mana_cost = parse_mana_cost(mana);
-}
-
-// Reads one non-mana token of an alternative cost onto `ac`; false, recording nothing, for a token
-// or a form of one the cast path does not pay.
-static bool read_alt_cost_token(const std::string &tok, AltCost &ac) {
-    std::vector<std::string> parts;
-    if (cost_token_arg(tok, "PayLife", parts)) return parts.size() == 1 && read_cost_count(parts[0], ac.life_cost);
-    if (cost_token_arg(tok, "ExileFromHand", parts)) {
-        // The pitched card is matched by colour alone (CR 118.9, Force of Will): Card.<Color>+Other,
-        // the Other being the spell on its way out of the hand.
-        int count = 0;
-        if (parts.size() < 2 || !read_cost_count(parts[0], count)) return false;
-        const Colors color = filter_color(parts[1]);
-        if (color == NO_COLOR) return false;
-        for (const auto &cn : kColorNames)
-            if (cn.color == color && parts[1] != std::string("Card.") + cn.word + "+Other") return false;
-        ac.exile_from_hand_count = count;
-        ac.exile_from_hand_color = color;
-        return true;
-    }
-    if (cost_token_arg(tok, "Sac", parts)) {
-        // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
-        // (CR 118.9, Fireblast: "sacrifice two Mountains"); a third part is the prompt's label.
-        int count = 0;
-        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count)) return false;
-        ac.sac_cost_count = count;
-        ac.sac_cost_spec = parts[1];
-        return true;
-    }
-    if (cost_token_arg(tok, "Return", parts)) {
-        int count = 0;
-        if (parts.size() < 2 || parts[1] == "CARDNAME" || !read_cost_count(parts[0], count)) return false;
-        ac.return_to_hand_count = count;
-        ac.return_to_hand_type = parts[1];
-        return true;
-    }
-    if (cost_token_arg(tok, "ExileFromGrave", parts)) {
-        if (parts.size() < 2) return false;
-        // ExileFromGrave<X/Card.Other+withTypesGE<N>/<label>> (Escape: Nethergoyf): exile any number
-        // of other cards from your graveyard, constrained so the chosen set collectively has at
-        // least N distinct card types (CR 702.139).
-        static const std::string kTypesFilter = "Card.Other+withTypesGE";
-        if (parts[0] == "X" && parts[1].rfind(kTypesFilter, 0) == 0)
-            return read_cost_count(parts[1].substr(kTypesFilter.size()), ac.exile_grave_min_types);
-        // ExileFromGrave<N/Card.Other/<label>> (Escape: Uro — "Exile five other cards from your
-        // graveyard"): the fixed number of OTHER graveyard cards to exile.
-        return parts[1] == "Card.Other" && read_cost_count(parts[0], ac.exile_grave_count);
-    }
-    return false;
+    ac.cost = parse_cost(cost_str, CostForm::ALTERNATIVE, "alternative cost " + cost_str);
 }
 
 // Parses a cost string (a Cost$ value, the argument of a cost-bearing keyword) into its parts, the
@@ -587,6 +527,11 @@ static bool read_alt_cost_token(const std::string &tok, AltCost &ac) {
 // pays it. A token neither can place is a parse finding, with `context`, and adds nothing.
 static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context) {
     CostParts cost;
+    // Cost$ 0 means free
+    if (form == CostForm::ALTERNATIVE && cost_str == "0") {
+        cost.set_free();
+        return cost;
+    }
     for (const std::string &tok : cost_tokens(cost_str)) {
         CostPart part;
         if (read_cost_token(tok, part) && cost_form_pays(form, part))
@@ -709,9 +654,13 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // itself; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
 // Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
 // (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
-// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>.
+// Sac<1/CARDNAME> (resolve_ability) and, on an ImmediateTrigger, PayEnergy<N>. An alternative cost
+// pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
+// fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
+// Escalate mana and a discard of N matching cards.
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
+    const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
     switch (form) {
         case CostForm::ACTIVATED:
             switch (part.kind) {
@@ -732,9 +681,19 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
             [[fallthrough]];
         case CostForm::TRIGGERED:
             return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self());
+        case CostForm::ALTERNATIVE:
+            return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self()) ||
+                   (part.kind == CostPart::RETURN && !part.is_self()) ||
+                   (part.kind == CostPart::EXILE_FROM_HAND && part.color != NO_COLOR);
         case CostForm::FLASHBACK:
-            return part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x) ||
-                   (part.kind == CostPart::SACRIFICE && !part.is_self());
+            return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self());
+        case CostForm::ESCAPE:
+            return fixed_mana_or_life || part.kind == CostPart::EXILE_FROM_GRAVEYARD;
+        case CostForm::MANA_ONLY:
+            return part.kind == CostPart::MANA;
+        case CostForm::ESCALATE:
+            return part.kind == CostPart::MANA ||
+                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
     }
     return false;
 }
@@ -928,7 +887,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
         }
         alt_cost_read = true;
         AltCost ac;
-        parse_alt_cost_tokens(cost_str, ac);
+        read_alternative_cost(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
         size_t pp = 0;
         std::string key, value;
@@ -1062,7 +1021,7 @@ static std::string keyword_arg(const std::string &kw_line) {
 static void add_keyword_alt_cost(const std::string &kw_line, const char *name, bool AltCost::*flag,
                                  CardData &card) {
     AltCost ac;
-    parse_alt_cost_tokens(keyword_arg(kw_line), ac);
+    read_alternative_cost(keyword_arg(kw_line), ac);
     ac.*flag = true;
     card.alt_cost = ac;
     card.keywords.push_back(name);
@@ -1115,17 +1074,9 @@ static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.keywords.push_back("Enchant");
 }
 
-// The mana of a keyword's cost argument, for a keyword the engine pays in mana alone; any other
-// token is a parse finding and pays nothing.
-static std::multiset<Colors> keyword_mana_cost(const std::string &cost, const std::string &keyword) {
-    std::string mana;
-    for (const std::string &tok : cost_tokens(cost)) {
-        if (is_plain_mana_token(tok))
-            mana += (mana.empty() ? "" : " ") + tok;
-        else
-            parse_finding("cost", cost_finding_name(tok), keyword + ":" + cost);
-    }
-    return parse_mana_cost(mana);
+// A keyword's cost argument, for a keyword the engine pays in mana alone.
+static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword) {
+    return parse_cost(cost, CostForm::MANA_ONLY, keyword + ":" + cost);
 }
 
 // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
@@ -1251,7 +1202,7 @@ static void kw_reconfigure(const std::string &kw_line, KeywordContext &ctx) {
 // K:Impending:<N>:<mana> — Impending (CR 702.175). An alternative casting cost: the spell
 // may be cast for <mana> instead of its normal mana cost; if so the permanent enters with N
 // time counters and isn't a creature until the last is removed (CR 702.175d-e). Encoded on
-// the shared AltCost (mana portion = parse_mana_cost(<mana>), is_impending + impending_count
+// the shared AltCost (its cost = <mana>, is_impending + impending_count
 // flag the impending-specific entry/shed behaviour). The format mirrors Reconfigure's
 // colon-split (Equip/Reconfigure), with an extra leading count field: "Impending:5:1 B".
 static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
@@ -1263,7 +1214,7 @@ static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
         ac.has_alt_cost = true;
         ac.is_impending = true;
         ac.impending_count = std::stoi(rest.substr(0, colon));
-        ac.mana_cost = keyword_mana_cost(rest.substr(colon + 1), "Impending");
+        ac.cost = keyword_mana_cost(rest.substr(colon + 1), "Impending");
         ctx.card.alt_cost = ac;
     }
     ctx.card.keywords.push_back("Impending");
@@ -1380,10 +1331,10 @@ static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
     const CostParts cost = parse_cost(cost_str, CostForm::ACTIVATED, "Cost$ " + cost_str);
     bool unpaid = false;
     for (const CostPart &part : cost.parts()) {
-        unpaid = unpaid || !cost_form_pays(CostForm::FLASHBACK, part);
-        if (part.kind == CostPart::MANA) ctx.card.flashback_mana_cost = part.mana;
-        if (part.kind == CostPart::LIFE) ctx.card.flashback_alt_cost.life_cost = part.count;
-        if (part.kind == CostPart::SACRIFICE && !part.is_self()) ctx.card.flashback_alt_cost.sac_cost_spec = part.filter;
+        if (cost_form_pays(CostForm::FLASHBACK, part))
+            ctx.card.flashback_cost.add(part);
+        else
+            unpaid = true;
     }
     if (unpaid) parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
     ctx.card.keywords.push_back("Flashback");
@@ -1409,25 +1360,12 @@ static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
 }
 
 // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
-// escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
-// token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from
-// the leading mana symbols; the additional cost is parsed by the shared alt-cost grammar.
+// escape cost (CR 702.139): its mana (e.g. "2 B") and any additional cost token (e.g.
+// ExileFromGrave<.../withTypesGE4/...> for Nethergoyf).
 static void kw_escape(const std::string &kw_line, KeywordContext &ctx) {
-    std::string cost_str = kw_line.substr(strlen("Escape:"));
+    const std::string cost_str = kw_line.substr(strlen("Escape:"));
     ctx.card.has_escape = true;
-    // The mana portion runs up to the first additional-cost keyword (ExileFromGrave/
-    // PayLife/Sac/Return...); take the substring before "ExileFromGrave" (the only
-    // additional cost currently in the vocab) as mana, the remainder as the alt cost.
-    std::string mana_part = cost_str;
-    std::string alt_part;
-    size_t eg = cost_str.find("ExileFromGrave");
-    if (eg != std::string::npos) {
-        mana_part = cost_str.substr(0, eg);
-        alt_part = cost_str.substr(eg);
-    }
-    mana_part = trim(mana_part);
-    if (!mana_part.empty()) ctx.card.escape_mana_cost = keyword_mana_cost(mana_part, "Escape");
-    if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, ctx.card.escape_alt_cost);
+    ctx.card.escape_cost = parse_cost(cost_str, CostForm::ESCAPE, "Escape:" + cost_str);
     ctx.card.keywords.push_back("Escape");
 }
 
@@ -1490,27 +1428,7 @@ static void kw_replicate(const std::string &kw_line, KeywordContext &ctx) {
 // Filter from the hand. Any other cost token is a parse finding (paid as nothing).
 static void kw_escalate(const std::string &kw_line, KeywordContext &ctx) {
     const std::string cost = keyword_arg(kw_line);
-    std::string mana;
-    for (const std::string &tok : cost_tokens(cost)) {
-        if (is_plain_mana_token(tok)) {
-            mana += (mana.empty() ? "" : " ") + tok;
-        } else if (tok.rfind("Discard<", 0) == 0 && tok.back() == '>') {
-            const std::string arg = tok.substr(strlen("Discard<"), tok.size() - strlen("Discard<") - 1);
-            const std::vector<std::string> parts = split(arg, '/');
-            const bool numeric = !parts.empty() && !parts[0].empty() &&
-                                 std::all_of(parts[0].begin(), parts[0].end(),
-                                     [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
-            if (parts.size() < 2 || !numeric || parts[1] == "Hand" || parts[1] == "CARDNAME") {
-                parse_finding("cost", "Discard", "Escalate:" + cost);
-                continue;
-            }
-            ctx.card.escalate_discard += std::stoi(parts[0]);
-            ctx.card.escalate_discard_valid = parts[1];
-        } else {
-            parse_finding("cost", tok.substr(0, tok.find('<')), "Escalate:" + cost);
-        }
-    }
-    if (!mana.empty()) ctx.card.escalate_mana = parse_mana_cost(mana);
+    ctx.card.escalate_cost = parse_cost(cost, CostForm::ESCALATE, "Escalate:" + cost);
     ctx.card.has_escalate = true;
     ctx.card.keywords.push_back("Escalate");
 }

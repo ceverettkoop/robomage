@@ -73,6 +73,8 @@ class CostParts {
         int loyalty() const { return count(CostPart::LOYALTY); }
         bool loyalty_is_x() const { return variable(CostPart::LOYALTY); }
         bool discards_hand() const;
+        Colors pitch_color() const;  // the color of an ExileFromHand<N/Card.<Color>+Other>
+        int exile_min_types() const;  // the distinct card types an ExileFromGrave<X/...> must cover
 
         // The first part of `kind`'s count; 0 with none.
         int count(CostPart::Kind kind) const;

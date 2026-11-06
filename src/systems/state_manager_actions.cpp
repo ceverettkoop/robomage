@@ -179,7 +179,7 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     actions.push_back(free_la);
     if (!face.has_offspring) return;
     ManaValue with_offspring = mana;
-    for (Colors c : face.offspring_cost) with_offspring.insert(c);
+    for (Colors c : face.offspring_cost.mana()) with_offspring.insert(c);
     if (!can_pay_mana(caster, with_offspring, card, orderer, face.has_delve, face.has_improvise)) return;
     free_la.use_offspring = true;
     free_la.description += " (offspring)";
@@ -305,7 +305,7 @@ bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Ordere
     if (!can_cast_now(cd, card, owner, Zone::HAND, /*sorcery_window=*/false,
                       /*ignore_timing=*/true, orderer))
         return false;
-    ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.mana_cost, owner);
+    ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.cost.mana(), owner);
     return alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
 }
 
@@ -422,32 +422,32 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
     // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.mana_cost, priority_player);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.cost.mana(), priority_player);
 
     // Free alt cost: castable iff any floor imposed on it is payable
-    if (alt_cost.is_free)
+    if (alt_cost.cost.is_free())
         return alt_mana.empty() || can_pay_mana(priority_player, alt_mana, card_entity, orderer);
 
-    if (alt_cost.return_to_hand_count > 0) {
-        size_t matching = controlled_permanents_matching(priority_player, alt_cost.return_to_hand_type,
+    if (alt_cost.cost.count(CostPart::RETURN) > 0) {
+        size_t matching = controlled_permanents_matching(priority_player, alt_cost.cost.filter(CostPart::RETURN),
                                                          orderer->mEntities).size();
         // Fall through (don't return true here): a pitch-style cost (Daze) still has to
         // cover the floored mana portion checked below when a SetCost floor is active.
-        if (matching < static_cast<size_t>(alt_cost.return_to_hand_count)) return false;
+        if (matching < static_cast<size_t>(alt_cost.cost.count(CostPart::RETURN))) return false;
     }
 
-    if (alt_cost.life_cost > 0) {
+    if (alt_cost.cost.life() > 0) {
         Entity pp_entity = get_player_entity(priority_player);
-        if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity), alt_cost.life_cost))
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity), alt_cost.cost.life()))
             return false;
     }
 
     // Sac<N/Type> alt cost (CR 118.9, Fireblast): the caster must control at least N permanents
     // matching the filter to sacrifice. (Fall through — a floored mana portion is still checked below.)
-    if (alt_cost.sac_cost_count > 0) {
-        if (static_cast<int>(controlled_permanents_matching(priority_player, alt_cost.sac_cost_spec,
+    if (alt_cost.cost.count(CostPart::SACRIFICE) > 0) {
+        if (static_cast<int>(controlled_permanents_matching(priority_player, alt_cost.cost.filter(CostPart::SACRIFICE),
                                                             orderer->mEntities, card_entity).size()) <
-            alt_cost.sac_cost_count)
+            alt_cost.cost.count(CostPart::SACRIFICE))
             return false;
     }
 
@@ -458,8 +458,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         if (is_my_turn) return false;
     }
 
-    if (alt_cost.exile_from_hand_count > 0) {
-        Colors required_color = alt_cost.exile_from_hand_color;
+    if (alt_cost.cost.count(CostPart::EXILE_FROM_HAND) > 0) {
+        Colors required_color = alt_cost.cost.pitch_color();
         bool has_match = false;
         for (auto e : orderer->get_hand(priority_player)) {
             if (e == card_entity) continue;
@@ -475,7 +475,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     if (!alt_mana.empty()) {
         if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer, /*has_delve=*/false,
                           /*has_improvise=*/false, /*exclude_entity=*/0,
-                          /*life_reserve=*/alt_cost.life_cost))
+                          /*life_reserve=*/alt_cost.cost.life()))
             return false;
     }
 
@@ -840,7 +840,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // that must pay the base cost plus the offspring cost together.
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
-                for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
+                for (Colors c : card_data.offspring_cost.mana()) offspring_total.insert(c);
                 if (can_pay_spell_mana(priority_player, offspring_total, card_data, card_entity,
                                        orderer)) {
                     LegalAction off_la = la;
@@ -862,7 +862,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
         if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
-            can_pay_mana(priority_player, card_data.suspend_cost, ManaPayee(card_entity, ManaPurpose::OTHER),
+            can_pay_mana(priority_player, card_data.suspend_cost.mana(), ManaPayee(card_entity, ManaPurpose::OTHER),
                          orderer) &&
             !payment_blocked(card_entity)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
@@ -886,19 +886,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check affordability: flashback mana cost (floored — flashback is an alternative
         // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost (Deep
         // Analysis: 3 life), paid after the mana, so a painful source may not spend that life.
-        int fb_life = gcd.flashback_alt_cost.life_cost;
+        int fb_life = gcd.flashback_cost.life();
         if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), fb_life))
             continue;
         if (!can_pay_mana(priority_player,
-                          floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player),
+                          floored_alt_mana_cost(gcd, gcd.flashback_cost.mana(), priority_player),
                           gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
                           /*exclude_entity=*/0, /*life_reserve=*/fb_life))
             continue;
 
         // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
         // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
-        if (!gcd.flashback_alt_cost.sac_cost_spec.empty() &&
-            controlled_permanents_matching(priority_player, gcd.flashback_alt_cost.sac_cost_spec,
+        if (!gcd.flashback_cost.filter(CostPart::SACRIFICE).empty() &&
+            controlled_permanents_matching(priority_player, gcd.flashback_cost.filter(CostPart::SACRIFICE),
                                            orderer->mEntities, gy_entity).empty())
             continue;
 
@@ -921,29 +921,29 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         // An escape life cost must be payable (CR 119.4), and it is paid after the mana, so a
         // painful source may not spend it.
-        int esc_life = gcd.escape_alt_cost.life_cost;
+        int esc_life = gcd.escape_cost.life();
         if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), esc_life))
             continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
         if (!can_pay_mana(priority_player,
-                          floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
+                          floored_alt_mana_cost(gcd, gcd.escape_cost.mana(), priority_player),
                           gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
                           /*exclude_entity=*/0, /*life_reserve=*/esc_life))
             continue;
 
         // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
         // to collectively reach the required number of distinct card types (CR 601.2f).
-        if (gcd.escape_alt_cost.exile_grave_min_types > 0 &&
+        if (gcd.escape_cost.exile_min_types() > 0 &&
             graveyard_card_types(priority_player, orderer->mEntities, gy_entity) <
-                gcd.escape_alt_cost.exile_grave_min_types)
+                gcd.escape_cost.exile_min_types())
             continue;
 
         // ExileFromGrave literal-count constraint (Uro: exile FIVE other cards): enough OTHER
         // graveyard cards must exist to pay the cost (CR 601.2f).
-        if (gcd.escape_alt_cost.exile_grave_count > 0 &&
+        if (gcd.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD) > 0 &&
             graveyard_card_count(priority_player, orderer->mEntities, gy_entity) <
-                gcd.escape_alt_cost.exile_grave_count)
+                gcd.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD))
             continue;
 
         LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);

@@ -164,7 +164,7 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
 // The cards in `caster`'s hand the escalate discard of the spell `pc` is casting may discard
-// (escalate_discard_valid), less those already chosen as a cost.
+// (escalate_cost.filter(CostPart::DISCARD)), less those already chosen as a cost.
 static std::vector<Entity> escalate_discard_candidates(
     const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 // Can `caster` pay the escalate cost (CR 702.120a) of the spell `pc` is casting `extra` times, on
@@ -323,7 +323,7 @@ static std::vector<Entity> escalate_discard_candidates(
     std::vector<Entity> out;
     for (Entity e : orderer->get_hand(caster)) {
         if (e == pc.spell_entity || already_chosen_as_cost(pc, e)) continue;
-        if (!card_matches_filter(e, card_data.escalate_discard_valid)) continue;
+        if (!card_matches_filter(e, card_data.escalate_cost.filter(CostPart::DISCARD))) continue;
         out.push_back(e);
     }
     return out;
@@ -332,9 +332,9 @@ static std::vector<Entity> escalate_discard_candidates(
 // See forward declaration at top of file.
 static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, int extra,
     std::shared_ptr<Orderer> orderer) {
-    if (card_data.escalate_discard > 0) {
-        const int need = card_data.escalate_discard * extra;
-        const int pitch = pc.use_alt_cost ? card_data.alt_cost.exile_from_hand_count : 0;
+    if (card_data.escalate_cost.count(CostPart::DISCARD) > 0) {
+        const int need = card_data.escalate_cost.count(CostPart::DISCARD) * extra;
+        const int pitch = pc.use_alt_cost ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
         int hand = 0;
         for (Entity e : orderer->get_hand(caster))
             if (e != pc.spell_entity) hand++;
@@ -342,10 +342,10 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
             static_cast<int>(escalate_discard_candidates(pc, card_data, caster, orderer).size()) < need)
             return false;
     }
-    if (card_data.escalate_mana.empty()) return true;
+    if (card_data.escalate_cost.mana().empty()) return true;
     ManaValue total = pc.deferred_mana_pending ? pc.deferred_mana_cost : ManaValue{};
     for (int i = 0; i < extra; i++)
-        for (Colors c : card_data.escalate_mana) total.insert(c);
+        for (Colors c : card_data.escalate_cost.mana()) total.insert(c);
     return can_pay_mana(caster, total, pc.spell_entity, orderer, card_data.has_delve, card_data.has_improvise,
         /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
 }
@@ -375,13 +375,13 @@ static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &c
 static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
     pc.escalate_extra = std::max(0, static_cast<int>(pc.ability.charm_chosen.size()) - 1);
     if (pc.escalate_extra == 0) return;
-    if (!card_data.escalate_mana.empty()) {
+    if (!card_data.escalate_cost.mana().empty()) {
         if (!pc.deferred_mana_pending) {
             pc.deferred_mana_cost.clear();
             pc.deferred_mana_pending = true;
         }
         for (int i = 0; i < pc.escalate_extra; i++)
-            for (Colors c : card_data.escalate_mana) pc.deferred_mana_cost.insert(c);
+            for (Colors c : card_data.escalate_cost.mana()) pc.deferred_mana_cost.insert(c);
     }
     game_log("%s pays the escalate cost for %s (%d)\n", player_name(caster).c_str(), card_data.name.c_str(),
         pc.escalate_extra);
@@ -552,7 +552,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, caster);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.cost.mana(), caster);
 
     // Record the mana this alternative cost will pay (CR 106/601.2g). A pitch/life alt cost
     // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
@@ -561,7 +561,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     game.pending.cast.mana_spent = static_cast<int>(alt_mana.size());
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
-    if (card_data.alt_cost.is_free && alt_mana.empty()) {
+    if (card_data.alt_cost.cost.is_free() && alt_mana.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
         return;
     }
@@ -572,8 +572,8 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
         game.pending.cast.deferred_mana_cost = alt_mana;
         game.pending.cast.deferred_mana_pending = true;
     }
-    if (card_data.alt_cost.life_cost != 0)
-        game.pending.cast.deferred_life_cost += card_data.alt_cost.life_cost;
+    if (card_data.alt_cost.cost.life() != 0)
+        game.pending.cast.deferred_life_cost += card_data.alt_cost.cost.life();
 }
 
 // The hybrid pips of the mana cost this cast pays: none when it is cast without paying its mana
@@ -2068,13 +2068,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
                 pc.deferred_mana_cost =
-                    floored_alt_mana_cost(card_data, card_data.flashback_mana_cost, caster);
+                    floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
                 pc.deferred_mana_pending = true;
-                pc.deferred_life_cost = card_data.flashback_alt_cost.life_cost;
+                pc.deferred_life_cost = card_data.flashback_cost.life();
                 // Flashback sacrifice cost: the cast is only offered when a matching
                 // permanent exists (cast legality), so there is always something to
                 // sacrifice when the deferred payment runs.
-                pc.deferred_sac_spec = card_data.flashback_alt_cost.sac_cost_spec;
+                pc.deferred_sac_spec = card_data.flashback_cost.filter(CostPart::SACRIFICE);
                 pc.step = Game::PendingCast::GIFT;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
@@ -2084,11 +2084,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             } else if (pc.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
                 pc.deferred_mana_cost =
-                    floored_alt_mana_cost(card_data, card_data.escape_mana_cost, caster);
+                    floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
                 pc.deferred_mana_pending = true;
-                pc.deferred_life_cost = card_data.escape_alt_cost.life_cost;
-                pc.deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
-                pc.deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
+                pc.deferred_life_cost = card_data.escape_cost.life();
+                pc.deferred_exile_min_types = card_data.escape_cost.exile_min_types();
+                pc.deferred_exile_count = card_data.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD);
                 pc.step = Game::PendingCast::GIFT;
 
             // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
@@ -2149,7 +2149,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
                 if (pc.use_offspring)
-                    for (Colors c : card_data.offspring_cost) pc.cost_to_pay.insert(c);
+                    for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
 
                 if (!card_data.kicker_costs.empty())
                     pc.kicked_flags.assign(card_data.kicker_costs.size(), false);
@@ -2169,8 +2169,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 pc.step = Game::PendingCast::SPELL_SAC;
                 break;
             }
-            Colors pitch_color = card_data.alt_cost.exile_from_hand_color;
-            while (pc.alt_pitch_done < card_data.alt_cost.exile_from_hand_count) {
+            Colors pitch_color = card_data.alt_cost.cost.pitch_color();
+            while (pc.alt_pitch_done < card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND)) {
                 std::vector<LegalAction> exile_actions;
                 for (auto e : orderer->get_hand(caster)) {
                     if (e == spell_entity) continue;
@@ -2201,9 +2201,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // Alt-cost return-to-hand (Daze: "return an Island you control to its owner's
             // hand"): one pick per required permanent, menu re-derived from the live
             // battlefield each pass. pc.alt_return_done counts completed picks.
-            while (pc.alt_return_done < card_data.alt_cost.return_to_hand_count) {
+            while (pc.alt_return_done < card_data.alt_cost.cost.count(CostPart::RETURN)) {
                 std::vector<LegalAction> rth_actions;
-                const FilterSpec &type = card_data.alt_cost.return_to_hand_type;
+                const FilterSpec &type = card_data.alt_cost.cost.filter(CostPart::RETURN);
                 for (auto e : controlled_permanents_matching(caster, type, orderer->mEntities)) {
                     if (already_chosen_as_cost(pc, e)) continue;
                     LegalAction la(PASS_PRIORITY, e,
@@ -2235,9 +2235,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // left the battlefield, so it drops from the next menu). pc.alt_sac_done counts
             // completed sacrifices. Cast legality (can_afford_alt) already guaranteed enough
             // matching permanents exist.
-            while (pc.alt_sac_done < card_data.alt_cost.sac_cost_count) {
+            while (pc.alt_sac_done < card_data.alt_cost.cost.count(CostPart::SACRIFICE)) {
                 std::vector<Entity> choices = controlled_permanents_matching(
-                    caster, card_data.alt_cost.sac_cost_spec, orderer->mEntities, spell_entity);
+                    caster, card_data.alt_cost.cost.filter(CostPart::SACRIFICE), orderer->mEntities, spell_entity);
                 std::vector<LegalAction> sac_actions;
                 for (auto e : choices) {
                     std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
@@ -2273,7 +2273,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             while (pc.kicker_idx < card_data.kicker_costs.size()) {
                 size_t ki = pc.kicker_idx;
                 ManaValue with_kicker = pc.cost_to_pay;
-                for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
+                for (Colors c : card_data.kicker_costs[ki].mana()) with_kicker.insert(c);
                 if (!resolve_hybrid_cost(caster, with_kicker, mana_cost_hybrid_pips(pc, card_data), spell_entity,
                         orderer, card_data.has_delve, card_data.has_improvise)) {
                     pc.kicker_idx++;
@@ -2291,7 +2291,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.kicker_idx++;
                     continue;
                 }
-                std::string prompt = "pay kicker " + mana_value_text(card_data.kicker_costs[ki]) +
+                std::string prompt = "pay kicker " + mana_value_text(card_data.kicker_costs[ki].mana()) +
                     " for " + card_data.name;
                 if (card_data.kicker_costs.size() > 1)
                     prompt += " (kicker " + std::to_string(ki + 1) + ")";
@@ -2311,7 +2311,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             if (card_data.has_replicate) {
                 while (true) {
                     ManaValue with_replicate = pc.cost_to_pay;
-                    for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
+                    for (Colors c : card_data.replicate_cost.mana()) with_replicate.insert(c);
                     if (!resolve_hybrid_cost(caster, with_replicate, mana_cost_hybrid_pips(pc, card_data), spell_entity,
                             orderer, card_data.has_delve, card_data.has_improvise))
                         break;
@@ -2326,7 +2326,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                                  pc.replicate_count);
                         continue;
                     }
-                    std::string prompt = "pay replicate " + mana_value_text(card_data.replicate_cost) +
+                    std::string prompt = "pay replicate " + mana_value_text(card_data.replicate_cost.mana()) +
                         " for " + card_data.name + " (paid " + std::to_string(pc.replicate_count) + ")";
                     arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                     return;
@@ -2600,12 +2600,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::ESCALATE_DISCARD: {
-            // ESCALATE's discards (CR 702.120a / 601.2h): escalate_discard cards for each mode
+            // ESCALATE's discards (CR 702.120a / 601.2h): the cost's N cards for each mode
             // beyond the first, chosen one pick at a time from the live hand (less the picks so
             // far) and discarded at PAY_APPLY. The mode menu offered each extra mode only while
             // enough cards were left, so the candidates suffice. When every candidate left must
             // be discarded there is no choice, and they are taken without a prompt.
-            const int owed = card_data.escalate_discard * pc.escalate_extra;
+            const int owed = card_data.escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra;
             while (pc.escalate_discards_done < owed) {
                 std::vector<Entity> cands = escalate_discard_candidates(pc, card_data, caster, orderer);
                 if (cands.empty()) break;  // defensive: the mode menu checked the hand
@@ -3277,7 +3277,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 auto &cd = global_coordinator.GetComponent<CardData>(card);
                 Zone::Ownership owner = zone.owner;
                 auto mana_snap = snapshot_mana_state(owner, orderer);
-                ManaValue cost = cd.suspend_cost;  // copy (prompt_mana_payment takes a mutable ref)
+                ManaValue cost = cd.suspend_cost.mana();  // copy (prompt_mana_payment takes a mutable ref)
                 if (!prompt_mana_payment(owner, cost, ManaPayee(card, ManaPurpose::OTHER), orderer)) {
                     restore_mana_state(owner, mana_snap, orderer);
                     game_log("Payment cancelled.\n");

@@ -72,7 +72,7 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
     out.energy = pc.deferred_energy_cost;
     // Escalate's discards still to pick (CR 702.120a), owed once the modes are announced.
     if (const CardData *face = cast_face(pc))
-        out.discard = std::max(0, face->escalate_discard * pc.escalate_extra - pc.escalate_discards_done);
+        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra - pc.escalate_discards_done);
     // The regular cost branch folds X, hybrid and Phyrexian pips into cost_to_pay one step at a
     // time (KICKER through PHYREXIAN_PIP; the alternative branches skip them): the pips of the
     // steps not yet reached are still owed as printed.

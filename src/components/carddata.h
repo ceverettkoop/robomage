@@ -15,20 +15,14 @@
 
 struct AltCost {
     bool has_alt_cost = false;
-    int life_cost = 0;
-    int exile_from_hand_count = 0;
-    Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
-    int return_to_hand_count = 0;
-    FilterSpec return_to_hand_type;
-    ManaValue mana_cost;                // mana portion of the alt cost (e.g. Evoke:R)
+    CostParts cost;                     // what is paid instead of the mana cost (e.g. Evoke:R)
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
     FilterSpec condition_is_present;  // IsPresent$ <filter> — controller must control a matching permanent (e.g. "Swamp.YouCtrl" for Snuff Out)
-    bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
     // K:Impending:N:cost — Impending (CR 702.175, Duskmourn). An ALTERNATIVE casting cost: the
-    // spell may be cast for `mana_cost` instead of its normal mana cost. When cast this way the
+    // spell may be cast for `cost` instead of its normal mana cost. When cast this way the
     // permanent enters with `impending_count` time counters and ISN'T A CREATURE until the last
     // time counter is removed (it is on the battlefield only as its other types). At the
     // beginning of its controller's end step one time counter is removed (CR 702.175e); it
@@ -36,12 +30,12 @@ struct AltCost {
     bool is_impending = false;
     int impending_count = 0;            // N time counters the permanent enters with
     // K:Spectacle:<cost> — Spectacle (CR 702.107). An ALTERNATIVE casting cost: the spell may
-    // be cast for `mana_cost` (the spectacle cost) instead of its normal mana cost, but only if
+    // be cast for `cost` (the spectacle cost) instead of its normal mana cost, but only if
     // an opponent of the caster lost life this turn (CR 702.107a). Gated in can_afford_alt on
     // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
     bool is_spectacle = false;
     // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An ALTERNATIVE
-    // casting cost: the spell may be cast from hand for `mana_cost` (the warp cost) instead of its
+    // casting cost: the spell may be cast from hand for `cost` (the warp cost) instead of its
     // normal mana cost. When cast this way, at the beginning of the NEXT end step the resulting
     // object is exiled (a delayed triggered ability, mirroring Unearth), and for as long as it
     // remains exiled this way its owner may cast it on a later turn for its NORMAL cost (a lasting
@@ -50,26 +44,12 @@ struct AltCost {
     bool is_warp = false;
     // K:Miracle:<cost> — Miracle (CR 702.94). An ALTERNATIVE casting cost: when a player draws
     // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
-    // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
-    // AltCost (mana portion = <cost>) with the is_miracle flag. Unlike other alt costs it is NOT
+    // `cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
+    // AltCost with the is_miracle flag. Unlike other alt costs it is NOT
     // offered by can_afford_alt as a priority-menu cast — the qualifying draw offers a private
     // reveal (Game::pending.miracle_reveal), and the revealed card is cast, if at all, as its
     // miracle trigger resolves (effect_miracle.cpp).
     bool is_miracle = false;
-    FilterSpec sac_cost_spec;           // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
-    // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
-    // Mountains rather than pay this spell's mana cost"). sac_cost_spec holds the "Type" filter,
-    // this holds N. 0 = the alt cost has no sacrifice component. (The flashback sac path always
-    // sacrifices exactly one and doesn't read this; it's used only by the alt-cost cast path.)
-    int sac_cost_count = 0;
-    // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
-    // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively
-    // has at least `exile_grave_min_types` distinct card types (Escape: Nethergoyf). 0 = no such cost.
-    int exile_grave_min_types = 0;
-    // ExileFromGrave<N/<filter>/<label>> with a literal count N (no withTypesGE constraint):
-    // exile exactly N OTHER cards from the caster's graveyard as an additional cost (CR 601.2f),
-    // e.g. Escape: Uro "Exile five other cards from your graveyard" → 5. 0 = no such cost.
-    int exile_grave_count = 0;
 };
 
 // A hybrid mana pip (CR 107.4b/107.4e, 202.3f). Stored parallel to mana_cost (which holds only
@@ -131,11 +111,9 @@ struct CardData{
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
     bool has_etb_name_card = false;             // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
     int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
-    ManaValue flashback_mana_cost;       // mana portion of flashback cost
-    AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
+    CostParts flashback_cost;            // what the cast path pays of the flashback cost: its mana, PayLife<N> and Sac<1/Type>
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)
-    ManaValue escape_mana_cost;          // mana portion of the escape cost (e.g. {2}{B})
-    AltCost escape_alt_cost;             // additional escape costs (e.g. ExileFromGrave group-type cost)
+    CostParts escape_cost;               // the escape cost (e.g. {2}{B} and an ExileFromGrave group-type cost)
     bool is_equipment = false;           // has a K:Equip (or K:Reconfigure) line
     // Reconfigure (CR 702.151): an Equipment keyword on a creature card. Its attach and unattach
     // abilities are parsed onto `abilities` like Equip's; is_reconfigure additionally lets it
@@ -143,7 +121,7 @@ struct CardData{
     // while it is attached (CR 702.151b).
     bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
-    ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    CostParts offspring_cost;            // mana paid in addition to the spell's cost for Offspring
     // K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost; it is a special
     // action usable from HAND, at the timing you could begin to cast the card (sorcery speed for a
     // sorcery). Instead of casting, its owner may pay `suspend_cost` and exile the card with
@@ -153,7 +131,7 @@ struct CardData{
     // (effects::suspend_tick / suspend_cast). General over any Suspend card.
     bool has_suspend = false;
     int suspend_count = 0;               // N time counters the card is exiled with
-    ManaValue suspend_cost;              // mana paid to begin the suspend process
+    CostParts suspend_cost;              // mana paid to begin the suspend process
     // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the
     // gift to an opponent (an optional choice, not a cost); if promised, the opponent receives the
     // gift as the spell resolves, before its other effects. gift_abilities holds the parsed gift
@@ -169,7 +147,7 @@ struct CardData{
     // with its (i+1)th kicker" iff that cost was paid. The list is multikicker-ready (any
     // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
     // kicker" triggers read the per-Spell kicked flags by index (see Spell::kicked).
-    std::vector<ManaValue> kicker_costs;
+    std::vector<CostParts> kicker_costs;
     // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost that may be paid ANY NUMBER OF TIMES as
     // the spell is cast (CR 702.x / Consign to Memory). Each payment increments the spell's
     // "replicate count"; when the spell is cast it is copied that many times, and the copies
@@ -177,15 +155,13 @@ struct CardData{
     // per-instance mana paid for each replication is replicate_cost. The chosen count is stored
     // per-Spell (Spell::replicate_count) so the on-cast copy effect knows how many copies to make.
     bool has_replicate = false;
-    ManaValue replicate_cost;
+    CostParts replicate_cost;
     // K:Escalate:<cost> — "for each mode you choose beyond the first as you cast this spell, you
-    // pay an additional [cost]" (CR 702.120a): its mana, and its discard of escalate_discard cards
-    // matching escalate_discard_valid from the hand (Discard<N/Filter>), each paid once per extra
-    // mode with the spell's other costs (CR 601.2f-h).
+    // pay an additional [cost]" (CR 702.120a): its mana, and its discard of N cards matching
+    // Filter from the hand (Discard<N/Filter>), each paid once per extra mode with the spell's
+    // other costs (CR 601.2f-h).
     bool has_escalate = false;
-    ManaValue escalate_mana;
-    int escalate_discard = 0;
-    FilterSpec escalate_discard_valid;
+    CostParts escalate_cost;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
     // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). A card
     // with this keyword may begin the game in the sideboard ("outside the game"); if the chosen

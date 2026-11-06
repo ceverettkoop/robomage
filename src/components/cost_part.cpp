@@ -31,6 +31,16 @@ bool CostParts::discards_hand() const {
     return part && part->whole_hand;
 }
 
+Colors CostParts::pitch_color() const {
+    const CostPart *part = find(CostPart::EXILE_FROM_HAND);
+    return part ? part->color : NO_COLOR;
+}
+
+int CostParts::exile_min_types() const {
+    const CostPart *part = find(CostPart::EXILE_FROM_GRAVEYARD);
+    return part ? part->min_types : 0;
+}
+
 int CostParts::count(CostPart::Kind kind) const {
     const CostPart *part = find(kind);
     return part ? part->count : 0;
