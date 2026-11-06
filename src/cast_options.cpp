@@ -166,6 +166,10 @@ static const CastSection kCastSections[] = {
         {"graveyard_free",  CastCost::NO_MANA_COST, false, 8, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"graveyard_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from graveyard) without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
+    // A card whose own static lets it be cast from its owner's graveyard (Hogaak).
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_SELF, CastFace::FRONT, nullptr, nullptr, {
+        {"graveyard_self",  CastCost::MANA_COST,    false, 6, " (from graveyard)",     Zone::GRAVEYARD, mana_cost_offered},
+    }},
     // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
     // exiled card its grant lets this player play, for its normal cost, without paying its mana
     // cost, or for an alternative resource cost (CR 118.9). Cast from EXILE at the timing its type

@@ -117,7 +117,9 @@ struct CardData{
     std::shared_ptr<const CardData> combined;
     bool has_fuse = false;               // K:Fuse: both halves may be cast from the hand (CR 702.102a)
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
-    TapToPay tap_to_pay = TapToPay::NONE;  // K:Improvise — what may be tapped toward this spell's mana
+    TapToPay tap_to_pay = TapToPay::NONE;  // K:Improvise, K:Convoke — what may be tapped toward this spell's mana
+    bool may_cast_from_graveyard = false;  // a static of its own says so (StaticAbility::may_cast_self_from_graveyard)
+    bool restricts_mana_spent = false;     // S:Mode$ ManaRestriction: read as the spell is paid for
     CostParts ward_cost;                 // K:Ward:N / K:Ward:PayLife<N> — opponent's spell/ability targeting this is countered unless they pay it (CR 702.21)
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     FilterSpec enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution

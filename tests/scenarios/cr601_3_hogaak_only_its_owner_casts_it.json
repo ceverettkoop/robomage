@@ -1,0 +1,34 @@
+{
+  "name": "cr601_3_hogaak_only_its_owner_casts_it",
+  "why": "Hogaak's 'You may cast it from your graveyard' is its owner's alone: the opponent's Hogaak isn't offered.",
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "graveyard_b": [
+    "Hogaak Arisen Necropolis"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

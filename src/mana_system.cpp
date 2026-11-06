@@ -49,6 +49,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller);
 // The part of `cost` that `pool` would leave unpaid, the pool left untouched.
 static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost, ManaPayee paid_for);
 static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for);
+static bool spell_refuses_mana(ManaPayee paid_for, Entity source);
 static bool rider_applies(const ManaRider &rider, Entity spell);
 static ManaPool::const_iterator spendable_unit(const ManaPool &pool, Colors color, ManaPayee paid_for);
 static ManaPool colors_spendable_on(const ManaPool &pool, ManaPayee paid_for);
@@ -73,6 +74,9 @@ static const TapToPayRule &tap_to_pay_rule(TapToPay how);
 static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller, Entity paid_for);
 static bool tap_pays_pip(const TapToPayRule &rule, Entity e, Colors pip);
 static ManaValue::const_iterator pip_paid_by_tap(const TapToPayRule &rule, Entity e, const ManaValue &owed);
+static ManaValue::const_iterator pip_left_payable(const TapToPayRule &rule, Entity e, Zone::Ownership controller,
+                                                  const ManaValue &owed, ManaPayee paid_for, TapToPay how,
+                                                  std::shared_ptr<Orderer> orderer);
 static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership controller, ManaValue &remaining,
                            ManaValue::const_iterator pip);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
@@ -119,7 +123,23 @@ static ManaValue pool_shortfall(const ManaPool &pool, const ManaValue &cost, Man
 // May `unit` be spent on `paid_for` (CR 106.6)? The restriction is the one it was made with, whatever
 // became of its source.
 static bool unit_spendable_on(const ManaUnit &unit, ManaPayee paid_for) {
+    if (spell_refuses_mana(paid_for, unit.source.get())) return false;
     return !unit.restriction || restriction_allows(*unit.restriction, unit.restriction->chosen_type, paid_for);
+}
+
+// Does the spell being cast refuse mana made by `source` (S:Mode$ ManaRestriction, CR 106.6)? A source
+// gone from the game (a Treasure) was still an object of the kind its ValidSource$ names.
+static bool spell_refuses_mana(ManaPayee paid_for, Entity source) {
+    if (paid_for.entity == 0 || paid_for.purpose != ManaPurpose::CAST) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for.entity)) return false;
+    const CardData &card = global_coordinator.GetComponent<CardData>(paid_for.entity);
+    if (!card.restricts_mana_spent) return false;
+    for (const StaticAbility &sa : card.static_abilities) {
+        if (sa.category != "ManaRestriction") continue;
+        const bool valid = source == 0 || object_matches_filter(source, sa.mana_valid_source);
+        if (valid == sa.mana_invert_valid_source) return true;
+    }
+    return false;
 }
 
 // Does `rider` do anything to `spell`? One that names its spells needs a spell that matches.
@@ -180,7 +200,7 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
 
 ManaUnit mana_unit_from(const Ability &ab, Colors color, Entity source, bool commit) {
     ManaUnit unit(color);
-    if (commit) unit.source = ObjectRef::of(source);
+    unit.source = ObjectRef::of(source);
     unit.rider = ab.def->mana_rider;
     const ManaRestriction &restriction = ab.def->mana_restriction;
     if (restriction.kind == ManaRestriction::CHOSEN_TYPE_CREATURE) {
@@ -354,6 +374,7 @@ static const std::string &source_chosen_type(Entity source) {
 // never disagree on whether a source is spendable (the "offered legal then fails to pay"
 // divergence can_pay_mana exists to prevent).
 static bool mana_source_usable_for(const Ability &ab, Entity source_entity, ManaPayee paid_for) {
+    if (spell_refuses_mana(paid_for, source_entity)) return false;
     const ManaRestriction &restriction = ab.def->mana_restriction;
     if (restriction.kind == ManaRestriction::NONE) return true;
     return restriction_allows(restriction, source_chosen_type(source_entity), paid_for);
@@ -849,7 +870,9 @@ bool is_delve_eligible(Entity e, Zone::Ownership controller) {
 static const TapToPayRule &tap_to_pay_rule(TapToPay how) {
     static const TapToPayRule kRules[] = {
         // CR 702.126a: each artifact tapped pays for {1}.
-        {"Improvise", FilterSpec("Artifact"), TapToPayRule::GENERIC},
+        {"Improvise", FilterSpec("Artifact"), TapToPayRule::GENERIC, false},
+        // CR 702.51a: each creature tapped pays for {1} or one mana of its color.
+        {"Convoke", FilterSpec("Creature"), TapToPayRule::GENERIC_OR_OWN_COLOR, true},
     };
     return kRules[static_cast<size_t>(how) - 1];
 }
@@ -877,6 +900,44 @@ static ManaValue::const_iterator pip_paid_by_tap(const TapToPayRule &rule, Entit
     for (auto pip = owed.begin(); pip != owed.end(); ++pip)
         if (tap_pays_pip(rule, e, *pip)) return pip;
     return owed.end();
+}
+
+// The pip of `owed` a tap of `e` pays that leaves the rest payable without `e`; owed.end() when none does.
+static ManaValue::const_iterator pip_left_payable(const TapToPayRule &rule, Entity e, Zone::Ownership controller,
+                                                  const ManaValue &owed, ManaPayee paid_for, TapToPay how,
+                                                  std::shared_ptr<Orderer> orderer) {
+    for (auto pip = owed.begin(); pip != owed.end(); ++pip) {
+        if (!tap_pays_pip(rule, e, *pip)) continue;
+        ManaValue rest = owed;
+        rest.erase(rest.find(*pip));
+        if (can_pay_mana(controller, rest, paid_for, orderer, /*has_delve=*/false, how, /*exclude_entity=*/e)) return pip;
+    }
+    return owed.end();
+}
+
+bool tap_to_pay_asks(TapToPay how) { return how != TapToPay::NONE && tap_to_pay_rule(how).asks; }
+
+// See declaration in mana_system.h.
+std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaValue &owed, ManaPayee paid_for,
+                                         TapToPay how, std::shared_ptr<Orderer> orderer) {
+    const TapToPayRule &rule = tap_to_pay_rule(how);
+    std::vector<LegalAction> rows;
+    for (Entity e : orderer->mEntities) {
+        if (!can_tap_to_pay(rule, e, controller, paid_for.entity)) continue;
+        if (pip_left_payable(rule, e, controller, owed, paid_for, how, orderer) == owed.end()) continue;
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");
+        la.category = ActionCategory::PAYING_COSTS;
+        rows.push_back(la);
+    }
+    return rows;
+}
+
+// See declaration in mana_system.h.
+void tap_to_pay_chosen(Entity e, Zone::Ownership controller, ManaValue &owed, ManaPayee paid_for, TapToPay how,
+                       std::shared_ptr<Orderer> orderer) {
+    const TapToPayRule &rule = tap_to_pay_rule(how);
+    tap_to_pay_pip(rule, e, controller, owed, pip_left_payable(rule, e, controller, owed, paid_for, how, orderer));
 }
 
 // Tap `e` to pay `pip` of `remaining`. It is no mana ability and produces no mana: the pip is paid
@@ -1206,7 +1267,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     if (has_delve) {
         for (auto e : orderer->mEntities) {
             if (remaining.count(GENERIC) == 0) break;
-            if (!is_delve_eligible(e, controller)) continue;
+            // A spell cast from the graveyard won't be there to exile: it moves first (CR 601.2a).
+            if (e == paid_for.entity || !is_delve_eligible(e, controller)) continue;
             auto git = remaining.find(GENERIC);
             if (git != remaining.end()) remaining.erase(git);
         }
@@ -1451,16 +1513,23 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     auto tap_for_pip = [&](Colors pip) {
         if (tap == TapToPay::NONE) return false;
         const TapToPayRule &rule = tap_to_pay_rule(tap);
+        // Of those a colored pip could take, the one of fewest colors, which can pay the fewest others.
+        Entity chosen = 0;
+        size_t fewest = SIZE_MAX;
         for (auto e : orderer->mEntities) {
-            if (tapped_entities.count(e)) continue;
+            if (e == exclude_entity || tapped_entities.count(e)) continue;
             if (!can_tap_to_pay(rule, e, controller, paid_for.entity) || !tap_pays_pip(rule, e, pip)) continue;
-            auto owed = remaining.find(pip);
-            if (commit) tap_to_pay_pip(rule, e, controller, remaining, owed);
-            else remaining.erase(owed);
-            tapped_entities.insert(e);
-            return true;
+            const size_t colors = pip == GENERIC ? 0 : effective_colors(e).size();
+            if (colors >= fewest) continue;
+            chosen = e;
+            fewest = colors;
         }
-        return false;
+        if (chosen == 0) return false;
+        auto owed = remaining.find(pip);
+        if (commit) tap_to_pay_pip(rule, chosen, controller, remaining, owed);
+        else remaining.erase(owed);
+        tapped_entities.insert(chosen);
+        return true;
     };
 
     while (true) {

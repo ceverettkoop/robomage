@@ -155,6 +155,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"mulligan", {"MULLIGAN"}},
         {"keep", {"KEEP_HAND"}},
         {"pay", {"PAYING_COSTS"}},
+        {"convoke", {"PAYING_COSTS"}},
         {"choice", other},
         {"shuffle", {"SHUFFLE"}},
         {"noshuffle", {"DONT_SHUFFLE"}},
@@ -233,7 +234,7 @@ static bool parse_spec(const std::string &token, Intent *out, std::string *err) 
         out->sentinel = s->second;
     } else if (verb == "mulligan" || verb == "keep") {
         out->keyword = verb;
-    } else if ((verb == "attack" || verb == "block" || verb == "mode") &&
+    } else if ((verb == "attack" || verb == "block" || verb == "mode" || verb == "convoke") &&
                (low == "done" || low == "confirm" || low.empty())) {
         out->keyword = "done";
     } else if (verb == "search" && (low == "fail" || low == "none" || low.empty())) {
@@ -263,7 +264,8 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
     if (!intent.side.empty() && intent.side != controller_word(a.controller)) return false;
     if (!intent.color.empty() && a.category != intent.color) return false;
     if (intent.keyword == "done")
-        return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS" || a.category == "CONFIRM_MODES";
+        return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS" || a.category == "CONFIRM_MODES" ||
+               (a.category == "PAYING_COSTS" && !a.card.has_value());
     if (intent.keyword == "fail") return !a.card.has_value();
     if (intent.keyword == "keep" || intent.keyword == "mulligan")
         return norm(a.description).find(intent.keyword) != std::string::npos;

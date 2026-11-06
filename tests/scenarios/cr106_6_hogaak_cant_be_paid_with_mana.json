@@ -1,0 +1,46 @@
+{
+  "name": "cr106_6_hogaak_cant_be_paid_with_mana",
+  "why": "Hogaak's oracle: 'You can't spend mana to cast this spell.' Seven lands, two green creatures and a Lotus Petal leave it uncastable, from the hand or the graveyard.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Lotus Petal"
+  ],
+  "graveyard_a": [
+    "Hogaak Arisen Necropolis"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

@@ -55,7 +55,21 @@ struct TapToPayRule {
         GENERIC,               // one generic pip
         GENERIC_OR_OWN_COLOR,  // a generic pip, or a colored pip of a color of the permanent tapped
     } pips;
+    // The player is asked which to tap, before the mana is paid (cost_payment.cpp); otherwise they
+    // are rows of the interactive payment and the auto-payer's last resort.
+    bool asks;
 };
+
+// Does `how` ask its payer which permanents to tap?
+bool tap_to_pay_asks(TapToPay how);
+// The rows of a TapToPay that asks: a permanent it may tap toward `owed` that leaves the rest of it
+// payable, in entity order.
+std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaValue &owed, ManaPayee paid_for,
+                                         TapToPay how, std::shared_ptr<Orderer> orderer);
+// Taps `e`, a row of tap_to_pay_rows, paying a pip of `owed`: the first of them, colored before
+// generic, that leaves the rest payable.
+void tap_to_pay_chosen(Entity e, Zone::Ownership controller, ManaValue &owed, ManaPayee paid_for, TapToPay how,
+                       std::shared_ptr<Orderer> orderer);
 
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
 // without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected

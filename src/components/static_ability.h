@@ -126,6 +126,14 @@ struct StaticAbility {
     // MayPlay$ True over Land cards with AffectedZone$ Graveyard ("you may play lands from your
     // graveyard": Icetill Explorer, Mole Man, Crucible of Worlds).
     bool may_play_from_graveyard = false;
+    // MayPlay$ True over Card.Self with AffectedZone$ and EffectZone$ Graveyard (Hogaak: "You may cast
+    // CARDNAME from your graveyard"): read off the card itself as a Permission.
+    bool may_cast_self_from_graveyard = false;
+    // S:Mode$ ManaRestriction (Hogaak: "You can't spend mana to cast this spell"): the objects whose
+    // mana may be spent to cast the spell that has it, ValidSource$; with InvertValidSource$, those
+    // whose mana may not. EffectZone$ All: it functions as the spell is cast (CR 113.6d).
+    FilterSpec mana_valid_source;
+    bool mana_invert_valid_source = false;
     // MayPlay$ True with MayPlayWithoutManaCost$ True (Omniscience: "You may cast spells from your
     // hand without paying their mana costs"; Aluren): the cards Affected$ designates in its
     // AffectedZone$ zones may be cast for the alternative cost "without paying its mana cost"

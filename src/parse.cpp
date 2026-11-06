@@ -281,6 +281,12 @@ static const KeywordEntry kKeywordTable[] = {
          ctx.card.tap_to_pay = TapToPay::IMPROVISE;
          ctx.card.keywords.push_back("Improvise");
      }},
+    // K:Convoke (CR 702.51): each creature tapped pays for {1} or one mana of its color.
+    {"Convoke", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.tap_to_pay = TapToPay::CONVOKE;
+         ctx.card.keywords.push_back("Convoke");
+     }},
     {"Bargain", KeywordEntry::PREFIX,
      [](const std::string &, KeywordContext &ctx) {
          CostPart sacrifice = CostPart::of(CostPart::SACRIFICE, 1);
@@ -961,6 +967,10 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
 
     // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
     card.static_abilities = parse_static_abilities(front_script, svars);
+    for (const StaticAbility &sa : card.static_abilities) {
+        if (sa.may_cast_self_from_graveyard) card.may_cast_from_graveyard = true;
+        if (sa.category == "ManaRestriction") card.restricts_mana_spent = true;
+    }
 
     // Parse R: lines for replacement effects (e.g. enters tapped)
     card.replacement_effects = parse_replacement_effects(front_script, svars);
@@ -4104,6 +4114,10 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.reduce_cost_valid_target = value;
             } else if (key == "EffectZone") {
                 sa.effect_zone = value;
+            } else if (key == "ValidSource" && sa.category == "ManaRestriction") {
+                sa.mana_valid_source = value;
+            } else if (key == "InvertValidSource" && sa.category == "ManaRestriction") {
+                sa.mana_invert_valid_source = (value == "True");
             } else if (!static_param_assumed(sa.category, key, value)) {
                 unread_keys.insert(key);
                 static_value_finding(sa, key, value);
@@ -4124,9 +4138,9 @@ static StaticAbility parse_one_static_ability(const std::string &line,
         }
     }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
+    if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
     if (!static_effect_zone_modelled(sa))
         parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
-    if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
     static_form_findings(sa, line, svars);
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
@@ -4159,6 +4173,10 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
             if (z != "Hand" && !grants_no_zone_permission)
                 parse_finding(
                     "static_form", "MayPlay." + z, "a permission to cast from " + z + " without paying the mana cost");
+        return;
+    }
+    if (sa.affected == "Card.Self" && zones.size() == 1 && zones[0] == "Graveyard" && sa.effect_zone == "Graveyard") {
+        sa.may_cast_self_from_graveyard = true;
         return;
     }
     const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.text().find(',') == std::string::npos;
@@ -4663,7 +4681,8 @@ static bool alt_cost_param_assumed(const std::string &key, const std::string &va
 // etbCounter keyword's own). AlternativeCost lines are parsed apart (parse_card_face_body).
 static bool static_mode_modelled(const std::string &mode) {
     static const char *const kModes[] = {"Continuous", "CantBeActivated", "CantBeCast", "RaiseCost", "ReduceCost",
-        "SetCost", "MustAttack", "ManaConvert", "DisableTriggers", "CantAttack", "CantBlockBy", "EtbCounter"};
+        "SetCost", "MustAttack", "ManaConvert", "ManaRestriction", "DisableTriggers", "CantAttack", "CantBlockBy",
+        "EtbCounter"};
     for (const char *m : kModes)
         if (mode == m) return true;
     return false;
@@ -4693,6 +4712,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         {"MustAttack", true, "ValidCreature"},
         {"DisableTriggers", false, "ValidCause ValidMode Destination"},
         {"ManaConvert", false, "ManaConversion"},
+        {"ManaRestriction", false, "ValidSource InvertValidSource"},
     };
     if (key == "Mode" || key == "Description" || key == "Secondary" || key == "EffectZone") return true;
     for (const auto &row : kModeKeys) {
@@ -4792,7 +4812,8 @@ static bool granted_keyword_modelled(const std::string &keyword) {
 // battlefield (the default) for every static; a ReduceCost of the card's own cost (ValidCard$
 // Card.Self) also from the stack, where it functions as its card is cast (CR 113.6d).
 static bool static_effect_zone_modelled(const StaticAbility &sa) {
-    return sa.effect_zone.empty() || sa.effect_zone == "Battlefield" || sa.self_reduction_functions();
+    return sa.effect_zone.empty() || sa.effect_zone == "Battlefield" || sa.self_reduction_functions() ||
+           sa.may_cast_self_from_graveyard || (sa.category == "ManaRestriction" && sa.effect_zone == "All");
 }
 
 // A static param no branch of parse_one_static_ability reads, whose value is what the engine

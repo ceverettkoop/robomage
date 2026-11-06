@@ -75,6 +75,7 @@ struct CostStep {
             PICK,            // choose what `pick` moves; the move waits for the mana
             DELVE_COUNT,     // how many cards Delve exiles
             DELVE_PICK,      // which ones
+            TAP_TO_PAY,      // which permanents a TapToPay that asks taps
             SNAPSHOT,        // the snapshot a reversed payment restores
             TAP,             // {T}: the source taps
             EXERT,           // the source is exerted
@@ -132,6 +133,7 @@ static void record_pick(const PickRule &rule, Entity chosen, const CostPayer &wh
 static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static void choose_delve_exile(const CostPayer &who, Entity e);
+static PayStatus choose_taps(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static void exert_source(const CostPayer &who);
 static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
@@ -221,6 +223,7 @@ static const CostStep kCastSteps[] = {
     {CostStep::PICK, &kEscapeExileTypes},
     {CostStep::PICK, &kEscapeExileCount},
     {CostStep::SNAPSHOT},
+    {CostStep::TAP_TO_PAY},
     {CostStep::FLOAT_LEAVING},
     {CostStep::PAY_MANA},
     {CostStep::CHECK_RESOURCES},
@@ -413,6 +416,8 @@ static PayStatus pay_step(
             return choose_delve_count(who, ctx, orderer);
         case CostStep::DELVE_PICK:
             return choose_delve_cards(who, ctx, orderer);
+        case CostStep::TAP_TO_PAY:
+            return choose_taps(who, ctx, orderer);
         case CostStep::SNAPSHOT:
             // The first step that can activate a mana ability (CR 733.1).
             who.run->mana_snap = snapshot_mana_state(who.payer, orderer);
@@ -774,6 +779,38 @@ static void choose_delve_exile(const CostPayer &who, Entity e) {
     item.delve = true;
     item.log = player_name(who.payer) + " exiles " + global_coordinator.GetComponent<CardData>(e).name + " via Delve.";
     run.items.push_back(std::move(item));
+}
+
+// Convoke (CR 702.51a, 601.2h): the permanents a TapToPay that asks taps, one at a time, the rows
+// re-derived from the live board at each pass. Each pays a pip of the cost at once, the snapshot
+// undoing it if the payment is reversed; the player stops once mana can pay the rest. Mana pays what
+// is left, with nothing more tapped.
+static PayStatus choose_taps(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    CostRun &run = *who.run;
+    if (!run.mana_pending || !tap_to_pay_asks(run.tap_to_pay)) return PayStatus::PAID;
+    while (!run.mana.empty()) {
+        std::vector<LegalAction> rows = tap_to_pay_rows(who.payer, run.mana, who.payee, run.tap_to_pay, orderer);
+        const bool mana_pays_the_rest =
+            can_pay_mana(who.payer, run.mana, who.payee, orderer, /*has_delve=*/false, TapToPay::NONE);
+        if (rows.empty()) {
+            if (mana_pays_the_rest) break;
+            return PayStatus::FAILED;
+        }
+        const size_t taps = rows.size();
+        if (mana_pays_the_rest) {
+            LegalAction done(PASS_PRIORITY, "Tap nothing more");
+            done.category = ActionCategory::PAYING_COSTS;
+            rows.push_back(done);
+        }
+        std::vector<Entity> tappable;
+        for (const LegalAction &row : rows) tappable.push_back(row.source_entity);
+        const int choice = ctx.ask(std::move(rows), who.payer, who.source);
+        if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        if (static_cast<size_t>(choice) >= taps) break;
+        tap_to_pay_chosen(tappable[static_cast<size_t>(choice)], who.payer, run.mana, who.payee, run.tap_to_pay, orderer);
+    }
+    run.tap_to_pay = TapToPay::NONE;
+    return PayStatus::PAID;
 }
 
 // Exert (CR 701.43a): the source passes the payer's next untap step by, however often it is exerted

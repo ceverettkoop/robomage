@@ -1,0 +1,54 @@
+{
+  "name": "cr702_51a_convoke_chooses_which_creatures_tap",
+  "why": "CR 702.51a: the player chooses which creatures to tap: of eight, the seven named pay Hogaak's cost, the eighth stays untapped.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Llanowar Elves",
+    "Llanowar Elves",
+    "Llanowar Elves",
+    "Llanowar Elves",
+    "Llanowar Elves",
+    "Elvish Mystic"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Hogaak",
+    "A:convoke:Llanowar Elves",
+    "A:convoke:Llanowar Elves",
+    "A:convoke:Llanowar Elves",
+    "A:convoke:Llanowar Elves",
+    "A:convoke:Llanowar Elves",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears"
+  ],
+  "max_decisions": 14,
+  "expect_count": {
+    "Player A taps Llanowar Elves for Convoke": 5,
+    "Player A taps Grizzly Bears for Convoke": 2,
+    "Player A taps Elvish Mystic for Convoke": 0
+  },
+  "expect": [
+    "Player A casts Hogaak"
+  ]
+}

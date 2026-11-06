@@ -1,0 +1,40 @@
+{
+  "name": "cr702_51a_a_white_creature_pays_generic_only",
+  "why": "CR 702.51a: a tapped creature pays for {1} or one mana of its color: seven white creatures can't pay Hogaak's {B/G}{B/G}.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

@@ -1048,7 +1048,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
 | `link_kind` | EXILED_WITH, RETURNABLE |
 | `player_effect_kind` | PROTECTION_FROM_EVERYTHING, CANT_GAIN_LIFE, HEXPROOF_FROM, SPELLS_CANT_BE_COUNTERED, CAST_AS_FLASH, SORCERY_SPEED_ONLY, FLOATING_TRIGGER |
-| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED (the `Permission` bits, in bit order) |
+| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED, GRAVEYARD_SELF (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
 | `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard), BARGAINED |

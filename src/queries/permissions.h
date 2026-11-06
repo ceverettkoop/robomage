@@ -37,6 +37,8 @@ enum class Permission : uint8_t {
     // the exiled copy of a prepared permanent's prepare spell, for that permanent's controller
     // (CR 722.3c)
     PREPARED,
+    // a card in its owner's graveyard whose own static says it may be cast from there (Hogaak)
+    GRAVEYARD_SELF,
     NONE,  // no permission is needed: a card in its owner's hand
 };
 

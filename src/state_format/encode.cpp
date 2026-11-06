@@ -1299,7 +1299,7 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
         for (Zone::Ownership p : {c.self, opponent_of(c.self)}) {
             const PlayPermissions perm = play_permissions(e, p);
             if (!perm.playable()) continue;
-            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::PREPARED); ++bit) {
+            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::GRAVEYARD_SELF); ++bit) {
                 if (!(perm.sources & (1u << bit))) continue;
                 rmstate::PermissionResource resource = rmstate::PermissionResource::MANA;
                 int amount = 0;

@@ -1,0 +1,46 @@
+{
+  "name": "cr702_51a_five_white_and_two_green_pay_hogaak",
+  "why": "CR 702.51a: the colored pips take the creatures of their color and the white ones pay for {1}.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Stoneforge Mystic",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Hogaak",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A casts Hogaak"
+  ],
+  "expect_count": {
+    "Player A taps Stoneforge Mystic for Convoke": 5
+  }
+}

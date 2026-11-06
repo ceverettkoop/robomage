@@ -1,0 +1,33 @@
+{
+  "name": "cr601_2a_hogaak_cant_delve_itself",
+  "why": "CR 601.2a: Hogaak has moved to the stack as its cost is paid, so it can't be one of the cards Delve exiles: four other cards and two creatures can't pay {5}{B/G}{B/G}.",
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "graveyard_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

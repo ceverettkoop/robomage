@@ -1,0 +1,32 @@
+{
+  "name": "cr702_19_hogaak_tramples",
+  "why": "Hogaak's trample: blocked by a 2/2, the rest of its 8 damage goes to the player.",
+  "battlefield_a": [
+    "Hogaak Arisen Necropolis"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Hogaak",
+    "A:attack:done",
+    "B:block:Grizzly Bears",
+    "B:block:done"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "deals 6 damage to Player B"
+  ]
+}

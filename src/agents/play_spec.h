@@ -27,6 +27,7 @@
 //   top:<card>  bottom:<card>  dig:<card>                                  (TOP_LIBRARY, BOTTOM_DECK_CARD, DIG_CHOICE)
 //   mulligan | keep              the mulligan decision                     (MULLIGAN, KEEP_HAND)
 //   pay:<text>                   pay an optional cost                      (PAYING_COSTS)
+//   convoke:<card> | convoke:done  tap a creature toward a cost / tap no more  (PAYING_COSTS)
 //   choice:<text>                any dedicated choice category or OTHER_CHOICE
 //   shuffle:<text>  noshuffle:<text>                                       (SHUFFLE, DONT_SHUFFLE)
 //   sb-in:<card>  sb-out:<card>  sb-done                                   sideboarding (bo3)

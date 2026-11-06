@@ -37,6 +37,7 @@ static bool exile_grant_covers(const PermissionQuery &q);
 static bool exile_grant_expires(const PermissionQuery &q);
 static void exile_grant_spent(Entity card);
 static bool prepared_copy_covers(const PermissionQuery &q);
+static bool graveyard_self_static(const PermissionQuery &q);
 static unsigned zones_with_rows();
 
 static const PermissionRow kPermissionRows[] = {
@@ -47,6 +48,7 @@ static const PermissionRow kPermissionRows[] = {
     {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  never_expires,       nullptr},
     {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires, exile_grant_spent},
     {Permission::PREPARED,       Zone::EXILE,     false,      prepared_copy_covers,   never_expires,       prepared_copy_cast},
+    {Permission::GRAVEYARD_SELF, Zone::GRAVEYARD, true,       graveyard_self_static,  never_expires,       nullptr},
 };
 
 static const unsigned kZonesWithRows = zones_with_rows();
@@ -98,6 +100,8 @@ static bool prepared_copy_covers(const PermissionQuery &q) {
     const Entity permanent = global_coordinator.GetComponent<PreparedCopy>(q.card).permanent.get();
     return is_battlefield_permanent(permanent, q.player);
 }
+
+static bool graveyard_self_static(const PermissionQuery &q) { return q.cd.may_cast_from_graveyard; }
 
 PlayPermissions play_permissions(Entity card, Zone::Ownership player) {
     PlayPermissions out;

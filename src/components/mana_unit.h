@@ -69,7 +69,7 @@ struct ManaUnit {
         ManaUnit(Colors c = NO_COLOR) : color(c) {}
 
         // The object that made it, as it stood once its mana ability's costs were paid: a source that
-        // sacrificed or exiled itself is named where it went. Empty in a simulated payment.
+        // sacrificed or exiled itself is named where it went.
         ObjectRef source;
         const ManaRestriction *restriction = nullptr;  // null: spendable on anything
         const ManaRider *rider = nullptr;              // null: it does nothing to what it is spent on
