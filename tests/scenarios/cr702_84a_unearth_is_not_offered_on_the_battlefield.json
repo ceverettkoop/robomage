@@ -1,0 +1,42 @@
+{
+  "name": "cr702_84a_unearth_is_not_offered_on_the_battlefield",
+  "why": "CR 702.84a, 113.6b: unearth functions while the card is in a graveyard, so Cityscape Leveler on the battlefield with eight mana offers no unearth activation",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Cityscape Leveler",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu": [
+    "Play Island"
+  ],
+  "expect_menu_not": [
+    "Activate Cityscape Leveler"
+  ]
+}

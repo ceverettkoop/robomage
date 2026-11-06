@@ -1030,7 +1030,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (const auto &ab : permanent.abilities) {
             ++ability_index;
             if (ab.def->ability_type != AbilityDef::ACTIVATED) continue;
-            if (ab.def->activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
+            if (ab.def->activation_zone != -1) continue;  // functions from another zone (CR 113.6b): hand, graveyard
             // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
             // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
             // is legal — may go to exactly 0 and die to the SBA).
