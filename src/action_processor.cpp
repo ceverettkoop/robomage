@@ -1093,8 +1093,8 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary) {
     std::vector<const Ability *> targeting;
     if (primary.def->valid_tgts != "N_A") targeting.push_back(&primary);
-    for (const Ability &sub : primary.subabilities)
-        if (sub.def->valid_tgts != "N_A") targeting.push_back(&sub);
+    for (const Ability *sub : primary.chained_subs())
+        if (sub->def->valid_tgts != "N_A") targeting.push_back(sub);
     return targeting;
 }
 
@@ -1179,9 +1179,9 @@ Ability cast_gate_probe(const Ability &tmpl, Entity card_entity, Zone::Ownership
     // DB$ Discard) pick their own target as the spell is cast (CR 601.2c) and are probed via
     // spell_targeting_abilities, so they need the same source/controller. Charm modes are stamped
     // by mode_choosable from the modal ability's source, so they inherit the stamp set here.
-    for (auto &sub : probe.subabilities) {
-        sub.source = probe.source;
-        sub.controller = caster;
+    for (Ability *sub : probe.chained_subs()) {
+        sub->source = probe.source;
+        sub->controller = caster;
     }
     return probe;
 }

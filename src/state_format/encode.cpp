@@ -1107,8 +1107,8 @@ static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t 
         return out;
     };
     std::vector<ObjectRef> all = targets_of(ab);
-    for (const Ability &sub : ab.subabilities)
-        for (const ObjectRef &t : targets_of(sub)) all.push_back(t);
+    for (const Ability *sub : ab.chained_subs())
+        for (const ObjectRef &t : targets_of(*sub)) all.push_back(t);
     for (int idx : ab.charm_chosen)
         if (idx >= 0 && static_cast<size_t>(idx) < ab.charm_choices.size())
             for (const ObjectRef &t : targets_of(ab.charm_choices[static_cast<size_t>(idx)])) all.push_back(t);

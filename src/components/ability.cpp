@@ -152,6 +152,21 @@ size_t Ability::charm_printed_mode(size_t instance) const {
     return instance;
 }
 
+std::vector<Ability *> Ability::chained_subs() {
+    std::vector<Ability *> out;
+    for (Ability &sub : subabilities) {
+        if (sub.def->from_delayed_execute) continue;
+        out.push_back(&sub);
+        for (Ability *deeper : sub.chained_subs()) out.push_back(deeper);
+    }
+    return out;
+}
+
+std::vector<const Ability *> Ability::chained_subs() const {
+    const std::vector<Ability *> subs = const_cast<Ability *>(this)->chained_subs();
+    return std::vector<const Ability *>(subs.begin(), subs.end());
+}
+
 Entity Ability::player_target_for_subs() const {
     const Entity t = target.get();
     return (t != 0 && global_coordinator.entity_has_component<Player>(t)) ? t : targeted_player;

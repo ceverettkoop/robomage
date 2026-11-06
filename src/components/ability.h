@@ -956,6 +956,12 @@ struct Ability {
     // this ability's own target when it is a player, else the one it inherited.
     Entity player_target_for_subs() const;
 
+    // The sub-abilities that resolve as part of this ability, however deep in the chain, in the
+    // order it follows them; a sub-ability a delayed or reflexive trigger will run is the later
+    // trigger's, so neither it nor what chains from it is here (CR 603.7, 603.12).
+    std::vector<Ability *> chained_subs();
+    std::vector<const Ability *> chained_subs() const;
+
     bool identical_activated_ability(const AbilityDef *other) const;
 };
 

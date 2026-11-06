@@ -213,14 +213,16 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std
 
         case AnnounceRT::SUBS: {
             // A chained sub-ability that targets chooses its target now too (CR 601.2c): Cabal
-            // Therapy's DB$ Discard, Cloak and Dagger's "up to one target creature", with a
-            // "ParentTarget" player bound from the ability's chosen player target first. An
-            // Execute$ body (a reflexive or delayed trigger's effect) belongs to the ability
-            // that triggers later and chooses its targets then (CR 603.12, 603.7).
-            for (; rt.sub_idx < ab.subabilities.size(); ++rt.sub_idx) {
-                Ability &sub = ab.subabilities[rt.sub_idx];
+            // Therapy's DB$ Discard, Cloak and Dagger's "up to one target creature", Galvanic
+            // Discharge's DB$ DealDamage two links down, with a "ParentTarget" player bound from
+            // the ability's chosen player target first. An Execute$ body (a reflexive or delayed
+            // trigger's effect) belongs to the ability that triggers later and chooses its targets
+            // then (CR 603.12, 603.7).
+            const std::vector<Ability *> subs = ab.chained_subs();
+            for (; rt.sub_idx < subs.size(); ++rt.sub_idx) {
+                Ability &sub = *subs[rt.sub_idx];
                 if (!rt.pick_in_flight) {
-                    if (sub.def->from_delayed_execute || !targets_unchosen(sub)) continue;
+                    if (!targets_unchosen(sub)) continue;
                     sub.source = ab.source;
                     sub.controller = controller;
                     sub.targeted_player = ab.player_target_for_subs();
