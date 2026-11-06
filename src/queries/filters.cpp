@@ -14,6 +14,7 @@
 #include "../components/object_spec.h"
 #include "../components/permanent.h"
 #include "../components/token.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../object_ref.h"
 #include "../str_util.h"
@@ -800,6 +801,7 @@ static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const Ma
 }
 
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    coverage_row("TargetedPlayerOwn");
     const std::vector<Zone::Ownership> players = resolve_filter_players(q.set, set_context(ctx));
     return std::find(players.begin(), players.end(), v.owner) != players.end();
 }
@@ -820,6 +822,7 @@ static bool ev_entered_this_turn(const CharView &v, const Qualifier &) {
 }
 
 static bool ev_least_power(const CharView &v, const Qualifier &) {
+    coverage_row("leastPower");
     if (!v.on_battlefield || !v.has_pt) return false;
     for (Entity e : battlefield_permanents(zoned_entities()))
         if (global_coordinator.entity_has_component<Creature>(e) && effective_power(e) < v.power) return false;
@@ -875,6 +878,7 @@ static bool ev_has_keyword(const CharView &v, const Qualifier &q) {
 
 // A bare card has no keywords to read, so it has no reading of "without" either.
 static bool ev_lacks_keyword(const CharView &v, const Qualifier &q) {
+    coverage_row("without");
     return v.entity != 0 && !permanent_has_keyword(v.entity, q.text.c_str());
 }
 

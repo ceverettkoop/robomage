@@ -1,0 +1,26 @@
+# The rows M3 added, each behind the card that reads it, and the paths around them.
+# Filter rows: Rough/Tumble and Drop of Honey (without), Drop of Honey (leastPower), Strategic Betrayal.
+row:without
+row:leastPower
+row:TargetedPlayerOwn
+# SVar rows: Peer into the Abyss (a target's half), Dark Matter Manipulator (each whole seven).
+row:TargetedPlayer
+row:DivideEvenlyDown
+# Drop of Honey: its upkeep choice, its tie, its destroy, and the state trigger that sacrifices it.
+trigger:Phase
+effect:ChooseCard
+category:CHOOSE_CARD
+effect:Destroy
+trigger:Always
+effect:Sacrifice
+# Powder Keg's activation.
+cost:SacSelf
+effect:DestroyAll
+# Both halves of Rough/Tumble.
+effect:DamageAll
+cast:split_half
+# Strategic Betrayal's exile, Peer into the Abyss's draw and life, Dark Matter Manipulator's mill.
+effect:ChangeZoneAll
+effect:Draw
+effect:LoseLife
+effect:Mill

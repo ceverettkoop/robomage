@@ -15,6 +15,7 @@
 #include "components/player.h"
 #include "components/types.h"
 #include "components/zone.h"
+#include "coverage.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "queries/activation.h"
@@ -866,6 +867,7 @@ static void set_target(const SvarExpr &, const SvarArgs &a, std::vector<Entity> 
 }
 
 static void set_targeted_player(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    coverage_row("TargetedPlayer");
     if (seat_of_player(a.target) != Zone::UNKNOWN) out.push_back(a.target);
 }
 
@@ -972,4 +974,7 @@ static int step_half_up(int value, int) { return (value + 1) / 2; }
 static int step_plus(int value, int n) { return value + n; }
 static int step_times(int value, int n) { return value * n; }
 static int step_limit_max(int value, int n) { return std::min(value, n); }
-static int step_divide_down(int value, int n) { return n > 0 ? value / n : 0; }
+static int step_divide_down(int value, int n) {
+    coverage_row("DivideEvenlyDown");
+    return n > 0 ? value / n : 0;
+}

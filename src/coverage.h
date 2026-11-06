@@ -36,6 +36,8 @@ void coverage_replacement(const char *kind);
 // category <ActionCategory>: a decision was asked and answered, by the category of the row taken.
 // A one-row menu is never asked, and a concession takes no row, so neither counts.
 void coverage_decision(ActionCategory category);
+// row <name>: a filter or SVar table row was read that no other kind tells from its neighbours.
+void coverage_row(const char *name);
 // cost <part>: a cast or activation paid this part of its cost.
 void coverage_cost(const char *part);
 // cast <mode>: a spell became cast with this LegalAction flag set (one hit per flag), or a special

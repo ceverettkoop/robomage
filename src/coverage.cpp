@@ -42,6 +42,10 @@ void coverage_open(const std::string &path) {
     counting = true;
 }
 
+void coverage_row(const char *name) {
+    if (counting) count_hit("row", name);
+}
+
 void coverage_effect(EffectKind kind) {
     if (counting) count_hit("effect", effect_kind_name(kind));
 }
