@@ -95,6 +95,7 @@ static bool hand_covers(const CostPart &part, const CostCheck &check) {
 // Enough OTHER cards in the payer's graveyard: a fixed number of them (Uro's escape), or any number
 // that collectively cover the card types the cost asks for (Nethergoyf's, CR 601.2f).
 static bool graveyard_covers(const CostPart &part, const CostCheck &check) {
+    if (part.is_self()) return true;
     const EntitySet &entities = check.orderer->mEntities;
     if (part.count_is_x) return graveyard_card_types(check.payer, entities, check.source) >= part.min_types;
     return graveyard_card_count(check.payer, entities, check.source) >= part.count;

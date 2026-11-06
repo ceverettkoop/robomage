@@ -802,13 +802,16 @@ static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> 
     coverage_cost(CostPart::SACRIFICE, "self");
 }
 
-// The source exiles itself (Exile<1/CARDNAME>: The Echoverse Fulcrum).
+// The source exiles itself: from the battlefield (Exile<1/CARDNAME>: The Echoverse Fulcrum) or the
+// graveyard it is activated in (ExileFromGrave<1/CARDNAME>: Runehorn Hellkite).
 static void exile_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
-    if (!who.cost->self(CostPart::EXILE)) return;
-    const std::string name = entity_name(who.source);
-    orderer->add_to_zone(false, who.source, Zone::EXILE);
-    game_log("%s exiles %s\n", player_name(who.payer).c_str(), name.c_str());
-    coverage_cost(CostPart::EXILE, "self");
+    for (CostPart::Kind kind : {CostPart::EXILE, CostPart::EXILE_FROM_GRAVEYARD}) {
+        if (!who.cost->self(kind)) continue;
+        const std::string name = entity_name(who.source);
+        orderer->add_to_zone(false, who.source, Zone::EXILE);
+        game_log("%s exiles %s\n", player_name(who.payer).c_str(), name.c_str());
+        coverage_cost(kind, "self");
+    }
 }
 
 // Discard self from hand cost (Faerie Macabre).

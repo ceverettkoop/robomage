@@ -12,6 +12,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/affected.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
@@ -61,10 +62,13 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     const FilterSpec discard_valid = dp ? dp->valid : FilterSpec();
     std::string mode = dp ? dp->mode : std::string();
 
-    // Hand (Song of Creation: "discard your hand"): every card of it, with no reveal and no choice
-    // (CR 701.9a).
+    // Hand (Song of Creation: "discard your hand"; Runehorn Hellkite: "each player discards their
+    // hand"): every card of it, with no reveal and no choice (CR 701.9a).
     if (mode == "Hand") {
-        discard_cards(hand, tgt_owner, orderer);
+        if (ab.def->defined.is(ObjectSpec::EACH_PLAYER))
+            for (Zone::Ownership player : affected_players(ab)) discard_cards(orderer->get_hand(player), player, orderer);
+        else
+            discard_cards(hand, tgt_owner, orderer);
         return HandlerResult::DONE_RUN_SUBS;
     }
 

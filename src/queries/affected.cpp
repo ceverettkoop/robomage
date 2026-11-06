@@ -314,6 +314,7 @@ static bool read_by_choose_card_or_reveal(const AbilityDef &ability) {
 
 static bool read_by_each_player(const AbilityDef &ability) {
     return ability.category == "Vote" || ability.category == "Draw" || ability.category == "RepeatEach" ||
+           ability.category == "Discard" ||
            (ability.category == "ChangeZone" && ability.origin == Zone::HAND &&
             ability.destination == Zone::BATTLEFIELD);
 }

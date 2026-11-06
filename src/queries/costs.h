@@ -50,7 +50,7 @@ constexpr uint16_t kAllButMana = static_cast<uint16_t>(~CostParts::kind_bit(Cost
 //
 // What it does not hold a player to, here or at the call sites' `unchecked`:
 // - The rest of a cost that names the source, or a hand, is always payable: Sac<1/CARDNAME>,
-//   Discard<1/CARDNAME>, Discard<0/Hand>.
+//   Discard<1/CARDNAME>, Discard<0/Hand>, Exile<1/CARDNAME>, ExileFromGrave<1/CARDNAME>.
 bool can_pay(const CostParts &cost, const CostCheck &check);
 
 #endif /* QUERIES_COSTS_H */

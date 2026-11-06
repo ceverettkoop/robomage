@@ -1683,10 +1683,11 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::FINISH: {
             if (pa.zone_path) {
                 // Auto-consume the activated card to the graveyard, unless the ability
-                // relocates it itself (Defined$ Self) or it was already discarded as an
-                // explicit cost (its Discard<1/CARDNAME>, paid above) — guarding against a double
-                // move.
-                if (!ability.def->defined.is(ObjectSpec::SELF) && !ability.def->cost.self(CostPart::DISCARD)) {
+                // relocates it itself (Defined$ Self) or it was already moved as an explicit cost
+                // (its Discard<1/CARDNAME> or ExileFromGrave<1/CARDNAME>, paid above) — guarding
+                // against a double move.
+                if (!ability.def->defined.is(ObjectSpec::SELF) && !ability.def->cost.self(CostPart::DISCARD) &&
+                    !ability.def->cost.self(CostPart::EXILE_FROM_GRAVEYARD)) {
                     orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 }
 

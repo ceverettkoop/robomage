@@ -1,0 +1,38 @@
+{
+  "name": "cr400_7_runehorn_hellkite_not_from_hand_or_play",
+  "why": "CR 113.6: Runehorn Hellkite's ability functions only from the graveyard: from the battlefield and from the hand it isn't offered",
+  "hand_a": [
+    "Runehorn Hellkite",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Runehorn Hellkite",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu": [
+    "Cast Runehorn Hellkite"
+  ],
+  "expect_menu_not": [
+    "Activate Runehorn Hellkite"
+  ]
+}

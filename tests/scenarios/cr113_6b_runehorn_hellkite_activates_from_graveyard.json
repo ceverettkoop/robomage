@@ -1,0 +1,76 @@
+{
+  "name": "cr113_6b_runehorn_hellkite_activates_from_graveyard",
+  "why": "CR 113.6b / 602.2b: Runehorn Hellkite: {5}{R}, Exile it from your graveyard: each player discards their hand, then draws seven cards. Activated from the graveyard at instant speed, the card exiling itself as the cost",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Runehorn Hellkite"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Runehorn Hellkite"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A exiles Runehorn Hellkite",
+    "Player A activates Runehorn Hellkite from graveyard",
+    "Player A discards Mountain",
+    "Player B discards Island",
+    "Player A draws",
+    "Player B draws"
+  ],
+  "expect_count": {
+    "Player A discards Mountain": 7,
+    "Player B discards Island": 7,
+    "Player A draws Mountain": 7
+  }
+}
