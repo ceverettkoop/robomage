@@ -106,19 +106,10 @@
        "ability_param:Pump.ImprintCards",
        "ability_param:Pump.PumpZone",
        "ability_param:Pump.TargetsWithDefinedController",
-       "filter:sharesControllerWith",
+       "filter:sharesControllerWith Imprinted",
        "svar_expr:Imprinted$Valid"
       ],
       "size": "M"
-     },
-     "TapOrUntap effect": {
-      "cards": [
-       "Sewer-veillance Cam"
-      ],
-      "findings": [
-       "category:TapOrUntap"
-      ],
-      "size": "S"
      },
      "Taps trigger": {
       "cards": [
@@ -149,9 +140,6 @@
      "Melded Moxite": [
       "Discard-a-card activation cost"
      ],
-     "Sewer-veillance Cam": [
-      "TapOrUntap effect"
-     ],
      "Wear/Tear": [
       "Fuse (CR 702.102)"
      ]
@@ -165,28 +153,27 @@
      "Legion Extruder",
      "Melded Moxite",
      "Mishra's Research Desk",
-     "Sewer-veillance Cam",
      "Soul-Guide Lantern",
      "Wear/Tear"
     ],
-    "size_points": 44
+    "size_points": 43
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "11 new card(s): 4 clean, 7 need 10 mechanic(s) (44 points)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "10 new card(s): 4 clean, 6 need 9 mechanic(s) (43 points)",
+   "time": "2026-11-05T20:28:14"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 22,
+    "in_vocab": 23,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
@@ -197,7 +184,6 @@
      "Legion Extruder",
      "Melded Moxite",
      "Mishra's Research Desk",
-     "Sewer-veillance Cam",
      "Soul-Guide Lantern",
      "Wear/Tear"
     ]
@@ -205,11 +191,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "33 cards: 22 in vocab, 11 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "33 cards: 23 in vocab, 10 new (0 without a script)",
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
@@ -222,21 +208,20 @@
      "Face-down permanents (Morph, Cloak; CR 708)",
      "Fuse (CR 702.102)",
      "Goblin Welder swap",
-     "TapOrUntap effect",
      "Taps trigger"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "10 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, TapOrUntap effect, Taps trigger",
-   "time": "2026-11-05T18:01:44"
+   "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, Taps trigger",
+   "time": "2026-11-05T20:28:14"
   },
   "parse": {
    "detail": {
@@ -385,10 +370,10 @@
         "name": "Branch.FalseSubAbility"
        },
        {
-        "detail": "Remembered$Valid Artifact.sharesControllerWith",
+        "detail": "Remembered$Valid Artifact.sharesControllerWith Imprinted",
         "kind": "filter",
         "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "name": "sharesControllerWith"
+        "name": "sharesControllerWith Imprinted"
        },
        {
         "detail": "CheckImprint = Imprinted$Valid Artifact.sharesControllerWith Remembered",
@@ -492,32 +477,6 @@
        -1
       ]
      },
-     "Sewer-veillance Cam": {
-      "card": "Sewer-veillance Cam",
-      "faces": [
-       "Sewer-veillance Cam"
-      ],
-      "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
-        "name": "TapOrUntap"
-       },
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Any | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | Secondary$ True | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
-        "name": "TapOrUntap"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/sewer_veillance_cam.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Soul-Guide Lantern": {
       "card": "Soul-Guide Lantern",
       "faces": [
@@ -558,14 +517,14 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "11 new card(s), 7 with findings (25 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "summary": "10 new card(s), 6 with findings (23 findings), 0 without a script",
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -582,11 +541,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

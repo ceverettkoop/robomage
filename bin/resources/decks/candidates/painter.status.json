@@ -131,7 +131,7 @@
        "ability_param:Pump.ImprintCards",
        "ability_param:Pump.PumpZone",
        "ability_param:Pump.TargetsWithDefinedController",
-       "filter:sharesControllerWith",
+       "filter:sharesControllerWith Imprinted",
        "svar_expr:Imprinted$Valid"
       ],
       "size": "M"
@@ -157,38 +157,6 @@
        "layout:Meld"
       ],
       "size": "L"
-     },
-     "Random choice (AtRandom)": {
-      "cards": [
-       "Chaos Defiler"
-      ],
-      "findings": [
-       "ability_param:ChooseCard.AtRandom",
-       "filter:ControlledBy Remembered"
-      ],
-      "size": "S"
-     },
-     "Repeat effect (DB$ Repeat)": {
-      "cards": [
-       "Grindstone"
-      ],
-      "findings": [
-       "ability_param:Repeat.MaxRepeat",
-       "ability_param:Repeat.RepeatCheckSVar",
-       "ability_param:Repeat.RepeatSVarCompare",
-       "category:Repeat",
-       "filter:SharesColorWithOther"
-      ],
-      "size": "M"
-     },
-     "TapOrUntap effect": {
-      "cards": [
-       "Sewer-veillance Cam"
-      ],
-      "findings": [
-       "category:TapOrUntap"
-      ],
-      "size": "S"
      }
     },
     "needs": {
@@ -197,9 +165,6 @@
      ],
      "Arena of Glory": [
       "Mana with riders and Exert (Arena of Glory)"
-     ],
-     "Chaos Defiler": [
-      "Random choice (AtRandom)"
      ],
      "Fable of the Mirror-Breaker": [
       "Fable of the Mirror-Breaker"
@@ -211,9 +176,6 @@
       "Branch effect (DB$ Branch)",
       "Goblin Welder swap"
      ],
-     "Grindstone": [
-      "Repeat effect (DB$ Repeat)"
-     ],
      "Melded Moxite": [
       "Discard-a-card activation cost"
      ],
@@ -223,9 +185,6 @@
      "Phyrexian Dragon Engine": [
       "Discard-a-card activation cost",
       "Meld (CR 712)"
-     ],
-     "Sewer-veillance Cam": [
-      "TapOrUntap effect"
      ],
      "Unlicensed Hearse": [
       "Crew and vehicles (CR 702.122)"
@@ -238,58 +197,52 @@
     "new_cards": [
      "Agatha's Soul Cauldron",
      "Arena of Glory",
-     "Chaos Defiler",
      "Chromatic Star",
      "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Engineer",
      "Goblin Welder",
      "Great Furnace",
-     "Grindstone",
      "Legion Extruder",
      "Melded Moxite",
      "Painter's Servant",
      "Phyrexian Dragon Engine",
-     "Sewer-veillance Cam",
      "Soul-Guide Lantern",
      "Unlicensed Hearse",
      "Untimely Malfunction"
     ],
-    "size_points": 56
+    "size_points": 51
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "18 new card(s): 5 clean, 13 need 15 mechanic(s) (56 points)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "15 new card(s): 5 clean, 10 need 12 mechanic(s) (51 points)",
+   "time": "2026-11-05T20:28:13"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 23,
+    "in_vocab": 26,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
      "Arena of Glory",
-     "Chaos Defiler",
      "Chromatic Star",
      "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Engineer",
      "Goblin Welder",
      "Great Furnace",
-     "Grindstone",
      "Legion Extruder",
      "Melded Moxite",
      "Painter's Servant",
      "Phyrexian Dragon Engine",
-     "Sewer-veillance Cam",
      "Soul-Guide Lantern",
      "Unlicensed Hearse",
      "Untimely Malfunction"
@@ -298,11 +251,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "41 cards: 23 in vocab, 18 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "41 cards: 26 in vocab, 15 new (0 without a script)",
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
@@ -318,23 +271,20 @@
      "Fable of the Mirror-Breaker",
      "Goblin Welder swap",
      "Mana with riders and Exert (Arena of Glory)",
-     "Meld (CR 712)",
-     "Random choice (AtRandom)",
-     "Repeat effect (DB$ Repeat)",
-     "TapOrUntap effect"
+     "Meld (CR 712)"
     ]
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "15 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin ",
-   "time": "2026-11-05T18:01:44"
+   "summary": "12 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Colour-adding static everywhere (Painter's Servant), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin ",
+   "time": "2026-11-05T20:28:13"
   },
   "parse": {
    "detail": {
@@ -434,38 +384,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/a/arena_of_glory.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Chaos Defiler": {
-      "card": "Chaos Defiler",
-      "faces": [
-       "Chaos Defiler"
-      ],
-      "findings": [
-       {
-        "detail": "ChooseCard AtRandom$ True",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigRepeat | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
-        "name": "ChooseCard.AtRandom"
-       },
-       {
-        "detail": "ChooseCard AtRandom$ True",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Graveyard | ValidCard$ Card.Self | Execute$ TrigRepeat | Secondary$ True | TriggerDescription$ Battle Cannon — When CARDNAME enters or dies, for each opponent, choose a nonland permanent that player controls. Destroy one of them chosen at random.",
-        "name": "ChooseCard.AtRandom"
-       },
-       {
-        "detail": "Choices$ Permanent.nonLand+ControlledBy Remembered",
-        "kind": "filter",
-        "line": "SVar:DBChooseCard:DB$ ChooseCard | Choices$ Permanent.nonLand+ControlledBy Remembered | Mandatory$ True | RememberChosen$ True",
-        "name": "ControlledBy Remembered"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/c/chaos_defiler.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -611,10 +529,10 @@
         "name": "Branch.FalseSubAbility"
        },
        {
-        "detail": "Remembered$Valid Artifact.sharesControllerWith",
+        "detail": "Remembered$Valid Artifact.sharesControllerWith Imprinted",
         "kind": "filter",
         "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "name": "sharesControllerWith"
+        "name": "sharesControllerWith Imprinted"
        },
        {
         "detail": "CheckImprint = Imprinted$Valid Artifact.sharesControllerWith Remembered",
@@ -638,50 +556,6 @@
       "findings": [],
       "layout": "normal",
       "script": "cardsfolder/g/great_furnace.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Grindstone": {
-      "card": "Grindstone",
-      "faces": [
-       "Grindstone"
-      ],
-      "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat"
-       },
-       {
-        "detail": "Repeat MaxRepeat$ MaxRepeats",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.MaxRepeat"
-       },
-       {
-        "detail": "Repeat RepeatCheckSVar$ MilledSharesColor",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatCheckSVar"
-       },
-       {
-        "detail": "Repeat RepeatSVarCompare$ GE2",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ 3 T | ValidTgts$ Player | RepeatSubAbility$ DBCleanAndGrind | MaxRepeat$ MaxRepeats | RepeatCheckSVar$ MilledSharesColor | RepeatSVarCompare$ GE2 | SubAbility$ DBCleanup | SpellDescription$ Target player mills two cards. If two cards that share a color were milled this way, repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatSVarCompare"
-       },
-       {
-        "detail": "Remembered$Valid Card.SharesColorWithOther",
-        "kind": "filter",
-        "line": "SVar:MilledSharesColor:Remembered$Valid Card.SharesColorWithOther Remembered",
-        "name": "SharesColorWithOther"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/grindstone.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -782,32 +656,6 @@
        -1
       ]
      },
-     "Sewer-veillance Cam": {
-      "card": "Sewer-veillance Cam",
-      "faces": [
-       "Sewer-veillance Cam"
-      ],
-      "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
-        "name": "TapOrUntap"
-       },
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "T:Mode$ ChangesZone | Origin$ Battlefield | Destination$ Any | ValidCard$ Card.Self | OptionalDecider$ You | Execute$ TrigTapOrUntap | Secondary$ True | TriggerDescription$ When this artifact enters or leaves the battlefield, you may tap or untap target creature.",
-        "name": "TapOrUntap"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/sewer_veillance_cam.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Soul-Guide Lantern": {
       "card": "Soul-Guide Lantern",
       "faces": [
@@ -884,14 +732,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "18 new card(s), 13 with findings (46 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "summary": "15 new card(s), 10 with findings (36 findings), 0 without a script",
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -909,11 +757,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 3 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

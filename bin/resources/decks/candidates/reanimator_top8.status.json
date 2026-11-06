@@ -34,27 +34,6 @@
       ],
       "size": "S"
      },
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Stronghold Gambit"
-      ],
-      "findings": [
-       "ability_param:ChooseCard.Defined",
-       "ability_param:Reveal.Defined"
-      ],
-      "size": "M"
-     },
-     "Stronghold Gambit": {
-      "cards": [
-       "Stronghold Gambit"
-      ],
-      "findings": [
-       "ability_param:Pump.ForgetObjects",
-       "ability_param:Reveal.RevealDefined",
-       "filter:lowestRememberedCMC"
-      ],
-      "size": "M"
-     },
      "Top creature of a graveyard (Shallow Grave)": {
       "cards": [
        "Shallow Grave"
@@ -72,10 +51,6 @@
      ],
      "Shallow Grave": [
       "Top creature of a graveyard (Shallow Grave)"
-     ],
-     "Stronghold Gambit": [
-      "Defined$ names no reader acts on",
-      "Stronghold Gambit"
      ]
     },
     "new_cards": [
@@ -84,27 +59,26 @@
      "Faithless Looting",
      "Raucous Theater",
      "Shallow Grave",
-     "Stronghold Gambit",
      "Unmask"
     ],
-    "size_points": 8
+    "size_points": 2
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "7 new card(s): 4 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "6 new card(s): 4 clean, 2 need 2 mechanic(s) (2 points)",
+   "time": "2026-11-05T20:28:13"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 21,
+    "in_vocab": 22,
     "no_script": [],
     "not_in_vocab": [
      "Bitter Triumph",
@@ -112,39 +86,36 @@
      "Faithless Looting",
      "Raucous Theater",
      "Shallow Grave",
-     "Stronghold Gambit",
      "Unmask"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "28 cards: 21 in vocab, 7 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "28 cards: 22 in vocab, 6 new (0 without a script)",
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "AlternateAdditionalCost keyword",
-     "Defined$ names no reader acts on",
-     "Stronghold Gambit",
      "Top creature of a graveyard (Shallow Grave)"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: AlternateAdditionalCost keyword, Defined$ names no reader acts on, Stronghold Gambit, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "2 mechanic(s) to implement: AlternateAdditionalCost keyword, Top creature of a graveyard (Shallow Grave)",
+   "time": "2026-11-05T20:28:13"
   },
   "parse": {
    "detail": {
@@ -234,50 +205,6 @@
        -1
       ]
      },
-     "Stronghold Gambit": {
-      "card": "Stronghold Gambit",
-      "faces": [
-       "Stronghold Gambit"
-      ],
-      "findings": [
-       {
-        "detail": "ChooseCard Defined$ Player.IsRemembered",
-        "kind": "ability_param",
-        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
-        "name": "ChooseCard.Defined"
-       },
-       {
-        "detail": "Reveal RevealDefined$ ValidHand Card.IsRemembered+RememberedPlayerCtrl",
-        "kind": "ability_param",
-        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
-        "name": "Reveal.RevealDefined"
-       },
-       {
-        "detail": "Reveal Defined$ Player.IsRemembered",
-        "kind": "ability_param",
-        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
-        "name": "Reveal.Defined"
-       },
-       {
-        "detail": "Pump ForgetObjects$ ValidHand Card.nonCreature+IsRemembered",
-        "kind": "ability_param",
-        "line": "A:SP$ RepeatEach | RepeatPlayers$ Player | RepeatSubAbility$ DBChooseCard | SubAbility$ DBReveal | SpellDescription$ Each player chooses a card in their hand. Then each player reveals their chosen card. The owner of each creature card revealed this way with the lowest mana value puts it onto the battlefield.",
-        "name": "Pump.ForgetObjects"
-       },
-       {
-        "detail": "ChangeType$ Card.lowestRememberedCMC",
-        "kind": "filter",
-        "line": "SVar:MoveToPlay:DB$ ChangeZoneAll | ChangeType$ Card.lowestRememberedCMC | Origin$ Hand | Destination$ Battlefield | SubAbility$ DBCleanup",
-        "name": "lowestRememberedCMC"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/stronghold_gambit.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Unmask": {
       "card": "Unmask",
       "faces": [
@@ -296,14 +223,14 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "7 new card(s), 3 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "summary": "6 new card(s), 2 with findings (3 findings), 0 without a script",
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -317,11 +244,11 @@
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

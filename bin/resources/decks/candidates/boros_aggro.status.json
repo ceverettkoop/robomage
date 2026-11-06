@@ -50,21 +50,9 @@
        "trigger_param:ActivationLimit"
       ],
       "size": "S"
-     },
-     "UnlessCost on more effects": {
-      "cards": [
-       "Galvanic Discharge"
-      ],
-      "findings": [
-       "ability_param:DealDamage.UnlessCost"
-      ],
-      "size": "M"
      }
     },
     "needs": {
-     "Galvanic Discharge": [
-      "UnlessCost on more effects"
-     ],
      "Lazotep Quarry": [
       "Copy with exceptions (CopyPermanent Set*)",
       "Mana value bound from an SVar"
@@ -74,31 +62,29 @@
      ]
     },
     "new_cards": [
-     "Galvanic Discharge",
      "Lazotep Quarry",
      "Sand Scout"
     ],
-    "size_points": 8
+    "size_points": 5
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-05T18:01:43"
+   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (5 points)",
+   "time": "2026-11-05T20:28:13"
   },
   "diff": {
    "detail": {
     "distinct": 31,
-    "in_vocab": 28,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
-     "Galvanic Discharge",
      "Lazotep Quarry",
      "Sand Scout"
     ]
@@ -106,56 +92,35 @@
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "31 cards: 28 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-05T18:01:43"
+   "summary": "31 cards: 29 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-05T20:28:01"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Copy with exceptions (CopyPermanent Set*)",
      "Mana value bound from an SVar",
-     "Sand Scout",
-     "UnlessCost on more effects"
+     "Sand Scout"
     ]
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Mana value bound from an SVar, Sand Scout, UnlessCost on more effects",
-   "time": "2026-11-05T18:01:43"
+   "summary": "3 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Mana value bound from an SVar, Sand Scout",
+   "time": "2026-11-05T20:28:13"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Galvanic Discharge": {
-      "card": "Galvanic Discharge",
-      "faces": [
-       "Galvanic Discharge"
-      ],
-      "findings": [
-       {
-        "detail": "UnlessCost$ PayEnergy<X> is not offered",
-        "kind": "ability_param",
-        "line": "A:SP$ PutCounter | Defined$ You | AILogic$ PayEnergy | CounterType$ ENERGY | CounterNum$ 3 | SubAbility$ DBChooseNumber | SpellDescription$ Choose target creature or planeswalker. You get {E}{E}{E} (three energy counters), then you may pay any amount of {E}. CARDNAME deals that much damage to that permanent.",
-        "name": "DealDamage.UnlessCost"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/galvanic_discharge.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Lazotep Quarry": {
       "card": "Lazotep Quarry",
       "faces": [
@@ -236,14 +201,14 @@
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (8 findings), 0 without a script",
-   "time": "2026-11-05T18:01:43"
+   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
+   "time": "2026-11-05T20:28:01"
   },
   "provision": {
    "detail": {
@@ -259,11 +224,11 @@
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:43"
+   "time": "2026-11-05T20:28:01"
   },
   "scrape": {
    "detail": {

@@ -52,17 +52,6 @@
       ],
       "size": "L"
      },
-     "Repeat effect (DB$ Repeat)": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "ability_param:Repeat.RepeatCheckSVar",
-       "ability_param:Repeat.RepeatSVarCompare",
-       "category:Repeat"
-      ],
-      "size": "M"
-     },
      "Revolt trigger condition": {
       "cards": [
        "Renegade Rallier"
@@ -91,7 +80,6 @@
      ],
      "Grist, the Hunger Tide": [
       "A creature card in every other zone (Grist)",
-      "Repeat effect (DB$ Repeat)",
       "UnlessCost on more effects"
      ],
      "Renegade Rallier": [
@@ -106,19 +94,19 @@
      "Nurturing Peatland",
      "Renegade Rallier"
     ],
-    "size_points": 19
+    "size_points": 16
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "6 new card(s): 2 clean, 4 need 6 mechanic(s) (19 points)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "6 new card(s): 2 clean, 4 need 5 mechanic(s) (16 points)",
+   "time": "2026-11-05T20:28:13"
   },
   "diff": {
    "detail": {
@@ -137,11 +125,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "38 cards: 32 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
@@ -149,22 +137,21 @@
      "A creature card in every other zone (Grist)",
      "CantPreventDamage static",
      "Prepare (CR 722)",
-     "Repeat effect (DB$ Repeat)",
      "Revolt trigger condition",
      "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "6 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Repeat effect (DB$ Repeat), Revolt trigger condition, UnlessCost on more effects",
-   "time": "2026-11-05T18:01:44"
+   "summary": "5 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Prepare (CR 722), Revolt trigger condition, UnlessCost on more effects",
+   "time": "2026-11-05T20:28:13"
   },
   "parse": {
    "detail": {
@@ -229,24 +216,6 @@
        "Grist, the Hunger Tide"
       ],
       "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat"
-       },
-       {
-        "detail": "Repeat RepeatCheckSVar$ MilledInsect",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatCheckSVar"
-       },
-       {
-        "detail": "Repeat RepeatSVarCompare$ EQ1",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatSVarCompare"
-       },
        {
         "detail": "UnlessCost$ Sac<1/Creature> is not offered",
         "kind": "ability_param",
@@ -323,14 +292,14 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "6 new card(s), 4 with findings (10 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "summary": "6 new card(s), 4 with findings (7 findings), 0 without a script",
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -346,11 +315,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

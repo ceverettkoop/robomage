@@ -71,15 +71,15 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (14 points)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:14"
   },
   "diff": {
    "detail": {
@@ -94,11 +94,11 @@
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
@@ -110,15 +110,15 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Play from a zone with replacement (Bilbo)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:14"
   },
   "parse": {
    "detail": {
@@ -212,14 +212,14 @@
    },
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "2 new card(s), 2 with findings (9 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -233,11 +233,11 @@
    "inputs": {
     "deck": "b7fb1149e4d5adf8e1a9d4dfbaca8989f6480da0209bd501ea24170703826aec",
     "scripts": "efceba676f3011685031fdfa954d5ddb497660aae3c327677f41b12b7aaedab5",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

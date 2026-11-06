@@ -79,17 +79,6 @@
       ],
       "size": "L"
      },
-     "Repeat effect (DB$ Repeat)": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "ability_param:Repeat.RepeatCheckSVar",
-       "ability_param:Repeat.RepeatSVarCompare",
-       "category:Repeat"
-      ],
-      "size": "M"
-     },
      "UnlessCost on more effects": {
       "cards": [
        "Grist, the Hunger Tide",
@@ -114,7 +103,6 @@
      ],
      "Grist, the Hunger Tide": [
       "A creature card in every other zone (Grist)",
-      "Repeat effect (DB$ Repeat)",
       "UnlessCost on more effects"
      ],
      "Springheart Nantuko": [
@@ -130,19 +118,19 @@
      "Grist, the Hunger Tide",
      "Springheart Nantuko"
     ],
-    "size_points": 30
+    "size_points": 27
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 8 mechanic(s) (30 points)",
-   "time": "2026-11-05T18:01:43"
+   "summary": "5 new card(s): 0 clean, 5 need 7 mechanic(s) (27 points)",
+   "time": "2026-11-05T20:28:13"
   },
   "diff": {
    "detail": {
@@ -160,11 +148,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "34 cards: 29 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-05T18:01:43"
+   "time": "2026-11-05T20:28:01"
   },
   "implement": {
    "detail": {
@@ -175,21 +163,20 @@
      "Defined$ names no reader acts on",
      "Hybrid pips in costs",
      "Prepare (CR 722)",
-     "Repeat effect (DB$ Repeat)",
      "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "8 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), Defined$ names no reader acts on, Hybrid pips in costs, Prepare (CR 722), Repeat effect (DB$ Repeat), UnlessCost on more effects",
-   "time": "2026-11-05T18:01:43"
+   "summary": "7 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, Bestow (CR 702.103), Defined$ names no reader acts on, Hybrid pips in costs, Prepare (CR 722), UnlessCost on more effects",
+   "time": "2026-11-05T20:28:13"
   },
   "parse": {
    "detail": {
@@ -281,24 +268,6 @@
       ],
       "findings": [
        {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat"
-       },
-       {
-        "detail": "Repeat RepeatCheckSVar$ MilledInsect",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatCheckSVar"
-       },
-       {
-        "detail": "Repeat RepeatSVarCompare$ EQ1",
-        "kind": "ability_param",
-        "line": "A:AB$ Repeat | Cost$ AddCounter<1/LOYALTY> | Planeswalker$ True | RepeatSubAbility$ CleanupBegin | RepeatCheckSVar$ MilledInsect | RepeatSVarCompare$ EQ1 | SubAbility$ DBCleanup | SpellDescription$ Create a 1/1 black and green Insect creature token, then mill a card. If an Insect card was milled this way, put a loyalty counter on NICKNAME and repeat this process. | StackDescription$ SpellDescription",
-        "name": "Repeat.RepeatSVarCompare"
-       },
-       {
         "detail": "UnlessCost$ Sac<1/Creature> is not offered",
         "kind": "ability_param",
         "line": "A:AB$ ImmediateTrigger | Cost$ SubCounter<2/LOYALTY> | Planeswalker$ True | Execute$ TrigDestroy | UnlessCost$ Sac<1/Creature> | UnlessPayer$ You | UnlessSwitched$ True | AILogic$ WeakerCreature | SpellDescription$ You may sacrifice a creature. When you do, destroy target creature or planeswalker.",
@@ -377,14 +346,14 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (16 findings), 0 without a script",
-   "time": "2026-11-05T18:01:43"
+   "summary": "5 new card(s), 5 with findings (13 findings), 0 without a script",
+   "time": "2026-11-05T20:28:01"
   },
   "provision": {
    "detail": {
@@ -401,11 +370,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 2 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:43"
+   "time": "2026-11-05T20:28:01"
   },
   "scrape": {
    "detail": {

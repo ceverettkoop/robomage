@@ -65,24 +65,12 @@
      },
      "Defined$ names no reader acts on": {
       "cards": [
-       "Echo of Eons",
        "Runehorn Hellkite"
       ],
       "findings": [
-       "ability_param:Discard.Defined",
-       "ability_param:Draw.Defined"
+       "ability_param:Discard.Defined"
       ],
       "size": "M"
-     },
-     "Discard the whole hand (Discard Mode$ Hand)": {
-      "cards": [
-       "Runehorn Hellkite",
-       "Song of Creation"
-      ],
-      "findings": [
-       "ability_param:Discard.Mode"
-      ],
-      "size": "S"
      },
      "Exile-the-card-itself costs": {
       "cards": [
@@ -119,25 +107,6 @@
        "ability_param:ChangeZone.Imprint"
       ],
       "size": "M"
-     },
-     "Shuffle effect": {
-      "cards": [
-       "Gamble"
-      ],
-      "findings": [
-       "ability_param:ChangeZone.NoShuffle",
-       "category:Shuffle"
-      ],
-      "size": "S"
-     },
-     "UseAllOriginZones": {
-      "cards": [
-       "Echo of Eons"
-      ],
-      "findings": [
-       "ability_param:ChangeZoneAll.UseAllOriginZones"
-      ],
-      "size": "S"
      }
     },
     "needs": {
@@ -148,75 +117,58 @@
       "Chrome Mox imprint",
       "Imprint past the resolution"
      ],
-     "Echo of Eons": [
-      "Defined$ names no reader acts on",
-      "UseAllOriginZones"
-     ],
      "Gaea's Will": [
       "Gaea's Will",
       "Hogaak casting"
      ],
-     "Gamble": [
-      "Shuffle effect"
-     ],
      "Runehorn Hellkite": [
       "Abilities activated from any zone",
       "Defined$ names no reader acts on",
-      "Discard the whole hand (Discard Mode$ Hand)",
       "Exile-the-card-itself costs"
-     ],
-     "Song of Creation": [
-      "Discard the whole hand (Discard Mode$ Hand)"
      ]
     },
     "new_cards": [
      "Beseech the Mirror",
      "Burning Wish",
      "Chrome Mox",
-     "Echo of Eons",
      "Empty the Warrens",
      "Gaea's Will",
-     "Gamble",
      "Giant's Boulder",
      "Haywire Mite",
      "Raucous Theater",
      "Runehorn Hellkite",
-     "Song of Creation",
      "Taiga",
      "Tendrils of Agony"
     ],
-    "size_points": 28
+    "size_points": 25
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "14 new card(s): 7 clean, 7 need 11 mechanic(s) (28 points)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "11 new card(s): 7 clean, 4 need 8 mechanic(s) (25 points)",
+   "time": "2026-11-05T20:28:14"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 16,
+    "in_vocab": 19,
     "no_script": [],
     "not_in_vocab": [
      "Beseech the Mirror",
      "Burning Wish",
      "Chrome Mox",
-     "Echo of Eons",
      "Empty the Warrens",
      "Gaea's Will",
-     "Gamble",
      "Giant's Boulder",
      "Haywire Mite",
      "Raucous Theater",
      "Runehorn Hellkite",
-     "Song of Creation",
      "Taiga",
      "Tendrils of Agony"
     ]
@@ -224,11 +176,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "30 cards: 16 in vocab, 14 new (0 without a script)",
-   "time": "2026-11-05T18:01:44"
+   "summary": "30 cards: 19 in vocab, 11 new (0 without a script)",
+   "time": "2026-11-05T20:28:02"
   },
   "implement": {
    "detail": {
@@ -237,26 +189,23 @@
      "Bargain and free casting (Beseech the Mirror)",
      "Chrome Mox imprint",
      "Defined$ names no reader acts on",
-     "Discard the whole hand (Discard Mode$ Hand)",
      "Exile-the-card-itself costs",
      "Gaea's Will",
      "Hogaak casting",
-     "Imprint past the resolution",
-     "Shuffle effect",
-     "UseAllOriginZones"
+     "Imprint past the resolution"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "7b99c332307326305569804eafaea5f277b1c7403965a8e490db9471cac16516",
+    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "pending",
-   "summary": "11 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Discard the whole hand (Discard Mode$ Hand), Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution, Shuffle effect, UseAllOriginZone",
-   "time": "2026-11-05T18:01:44"
+   "summary": "8 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution",
+   "time": "2026-11-05T20:28:14"
   },
   "parse": {
    "detail": {
@@ -368,32 +317,6 @@
        -1
       ]
      },
-     "Echo of Eons": {
-      "card": "Echo of Eons",
-      "faces": [
-       "Echo of Eons"
-      ],
-      "findings": [
-       {
-        "detail": "Draw Defined$ Player",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZoneAll | ChangeType$ Card | Origin$ Hand,Graveyard | Destination$ Library | Shuffle$ True | SubAbility$ DBDraw | UseAllOriginZones$ True | AILogic$ Timetwister | SpellDescription$ Each player shuffles their graveyard and hand into their library, then draws seven cards.",
-        "name": "Draw.Defined"
-       },
-       {
-        "detail": "ChangeZoneAll UseAllOriginZones$ True",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZoneAll | ChangeType$ Card | Origin$ Hand,Graveyard | Destination$ Library | Shuffle$ True | SubAbility$ DBDraw | UseAllOriginZones$ True | AILogic$ Timetwister | SpellDescription$ Each player shuffles their graveyard and hand into their library, then draws seven cards.",
-        "name": "ChangeZoneAll.UseAllOriginZones"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/e/echo_of_eons.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Empty the Warrens": {
       "card": "Empty the Warrens",
       "faces": [
@@ -433,32 +356,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/g/gaeas_will.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Gamble": {
-      "card": "Gamble",
-      "faces": [
-       "Gamble"
-      ],
-      "findings": [
-       {
-        "detail": "ChangeZone NoShuffle$ True",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | Origin$ Library | NoShuffle$ True | Destination$ Hand | ChangeType$ Card | ChangeNum$ 1 | SubAbility$ DBDiscard | Mandatory$ True | SpellDescription$ Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
-        "name": "ChangeZone.NoShuffle"
-       },
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:SP$ ChangeZone | Origin$ Library | NoShuffle$ True | Destination$ Hand | ChangeType$ Card | ChangeNum$ 1 | SubAbility$ DBDiscard | Mandatory$ True | SpellDescription$ Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
-        "name": "Shuffle"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/gamble.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -516,18 +413,6 @@
         "name": "ExileFromGrave"
        },
        {
-        "detail": "Discard Mode$ Hand",
-        "kind": "ability_param",
-        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
-        "name": "Discard.Mode"
-       },
-       {
-        "detail": "Draw Defined$ Player",
-        "kind": "ability_param",
-        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
-        "name": "Draw.Defined"
-       },
-       {
         "detail": "Discard ActivationZone$ Graveyard",
         "kind": "ability_param",
         "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
@@ -542,26 +427,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/r/runehorn_hellkite.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Song of Creation": {
-      "card": "Song of Creation",
-      "faces": [
-       "Song of Creation"
-      ],
-      "findings": [
-       {
-        "detail": "Discard Mode$ Hand",
-        "kind": "ability_param",
-        "line": "T:Mode$ Phase | Phase$ End of Turn | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigDiscard | TriggerDescription$ At the beginning of your end step, discard your hand.",
-        "name": "Discard.Mode"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/song_of_creation.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -598,14 +463,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "fc3beb32d0bcd2ce32c0f89844e2611ccae5bef42ef22732e11ca3b4c9dcf766",
+    "engine": "41936b2efbbfb4cee7bdcff92af17416c92b11a040ef98473f768c71fca63516",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
-   "summary": "14 new card(s), 7 with findings (23 findings), 0 without a script",
-   "time": "2026-11-05T18:01:44"
+   "summary": "11 new card(s), 4 with findings (16 findings), 0 without a script",
+   "time": "2026-11-05T20:28:02"
   },
   "provision": {
    "detail": {
@@ -621,11 +486,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "d70a322a116c193c1e4fb05df966f27c937906a6e3269cc04e26b0d4c9239620"
+    "vocab": "45e1e1783ea0c339e855aefdc95eb4ef2b47e7864dd8477a6f413f04096f63dd"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T18:01:44"
+   "time": "2026-11-05T20:28:02"
   },
   "scrape": {
    "detail": {

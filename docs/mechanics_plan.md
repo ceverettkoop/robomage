@@ -14,7 +14,7 @@ special case.
 
 Written to run in a session with no context beyond the repo.
 
-1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M3 done
+1. **Starting state.** Branch `refactor/open-vocab`, Forge pin `f62f8048` (2026-11-05), M0 to M4 done
    and `make check` green. Card scripts are untracked: on a fresh clone, run
    `python3 tools/forge_fetch/provision_decks.py`.
 2. **File and line references** come from a survey at `502f8b07` and will drift. Treat them as
@@ -225,7 +225,7 @@ row in the `Defined$` table plus, where the effect needs it, a branch:
 |---|---|---|
 | `Destroy Defined$ ChosenCard` | Drop of Honey | M3 |
 | `DamageSource$ TriggeredCard`, with `TriggeredCard` bound to the triggering object | Pyrogoyf | M9 |
-| `Draw` / `Discard Defined$ Player` | Echo of Eons | M4 |
+| `Draw Defined$ Player` (`Discard`: Runehorn Hellkite, M5) | Echo of Eons | M4 |
 | `Defined$ Player.IsRemembered`, `Reveal$ RevealDefined` | Stronghold Gambit | M4 |
 | `Defined$ Targeted.<filter>` | Tezzeret, Cruel Captain | M9 |
 | `CopyPermanent Defined$ Enchanted` | Springheart Nantuko | M7 |
@@ -281,7 +281,7 @@ wait for the first stage that can prove them. The stage is when the card's own l
 | `filter:EquippedBy` | Hawkeye's Bow (then Cryptic Coat, M11) | M9 |
 | `svar_expr:PlayerCountOpponents$HighestValid` | Sand Scout | M9 |
 | `svar_expr:TriggeredCard$CardPower` | Pyrogoyf | M9 |
-| `filter:sharesControllerWith`, `svar_expr:Imprinted$Valid` | Goblin Welder | M10 |
+| `filter:sharesControllerWith Imprinted`, `svar_expr:Imprinted$Valid` | Goblin Welder | M10 |
 | `svar_expr:Count$ValidExile` | Unlicensed Hearse | M10 |
 | `svar_expr:Count$xPaid/Twice` | Shatterskull Smashing | M10 |
 | `svar_expr:Sacrificed$CardManaCost/Plus.2` | Broadside Bombardiers | M10 |
@@ -335,48 +335,95 @@ miss, tie cases for `leastPower`. A `bench` comparison, since compiled filters s
 
 ### M4. Resolution memory and effect control flow (L)
 
-**Progress.** Unit (a), the inert migration, is done (2026-11-05). A definition holds `memory_ops`, rows
-of the one table in `src/resolution_memory.cpp` (types in `src/components/memory_ops.h`): 14 by param
-and 5 by effect kind, for the writes no param asks for (Token, Investigate, Vote, ChooseCard's chosen
-cards). A handler only reports what it did (`report_effect`, `report_object`), at the lines it used to
-write memory, so a ref keeps its stamp. `apply_memory_ops`, one step of `resolve_ability()`, writes it
-once the handler returns anything but `SUSPENDED`. The reports live on the resolving `Ability`, so a
-suspended effect's persist in its `FrameLevel` and the step can run neither twice nor not at all. 38
-write lines in 13 effect files and `resolution.cpp` are gone, with their twelve booleans. `REPLACE`
-reads whether the effect reported at all, not whether it reported objects: a paid unless-cost, a
-declined sacrifice and a dig that finds nothing still empty the set, and a Token or RevealHand that
-returns early leaves it alone.
+**Done** (2026-11-05). In the vocab, ids 373 to 380: Sewer-veillance Cam, Song of Creation, Gamble, Echo of
+Eons, Galvanic Discharge, Grindstone, Chaos Defiler, Stronghold Gambit, each with per-rule scenarios that
+fail with their row or fix removed, but for Song of Creation's second land and its draw, which ran on existing
+code. `decks/tests/mech_memory.dk` is the fixture: 100 games each of `explore` and `explore:patient` with no
+error or draw, every key hit, and 48 games clean under `--selfcheck-knowledge`.
+
+The memory table. A definition holds `memory_ops`, rows of the one table in `src/resolution_memory.cpp`
+(types in `src/components/memory_ops.h`): 15 by param and 5 by effect kind. A handler only reports what it
+did (`report_effect`, `report_object`), and `apply_memory_ops`, one step of `resolve_ability()`, writes it
+once the handler returns anything but `SUSPENDED`. The reports live on the resolving `Ability`, so a suspended
+effect's persist in its `FrameLevel`. `REPLACE` reads whether the effect reported at all; `FORGET` runs a row's
+own `ObjectSpec` as any effect finishes (`ForgetObjects$`, on a Pump with nothing to pump). The inert unit
+moved 38 write lines in 13 effect files off the handlers with `replay` byte-identical at each commit,
+6,144 explore games byte-identical, `bench` flat.
 
 Not in the after-effect step, and why:
 
-- `RememberTargets` and `RememberObjects$ …Targeted…` are rows, but the step also runs for them as the
-  ability starts to resolve, where the write always was: a DelayedTrigger's watched object and a
-  prevention Effect read the target during their own effect.
-- A multi-zone search reads its own earlier picks. `ZoneSearch::picking` adds the searching effect's
-  reports to `exclude_remembered`, since Doomsday's picks now reach the remembered set only at the end.
-- `chosen_number`, `named_card` and `chosen_type` stay hand-written: each is an effect's own answer, a
-  value with no param, not objects a row could move.
-- RepeatEach's swap and restore of the remembered set, the frame's save and restore, and
-  `restore_remembered_exiled_with` stay: they scope the memory, and no effect reported them.
+- `RememberTargets` and `RememberObjects$ …Targeted…` also run as the ability starts to resolve: a
+  DelayedTrigger's watched object and a prevention Effect read the target during their own effect.
+- A multi-zone search reads its own earlier picks through `ZoneSearch::picking`.
+- `chosen_number`, `named_card` and `chosen_type` stay hand-written: each is an effect's own answer, a value
+  with no param, not objects a row could move.
+- `restore_remembered_exiled_with` and the frame's save and restore scope the memory. RepeatEach no longer
+  swaps it: an iteration adds its player and forgets them after, so what the body remembers reaches the later
+  iterations and the trailing links (Chaos Defiler's chosen permanent, Stronghold Gambit's chosen cards).
 
-`RememberDiscarded`, `ImprintCards`, `ImprintPlayed`, `RememberCloaked`, `ForgetObjects`,
-`ForgetImprinted`, `ClearNamedCard` and `Imprint` on a move stay unread findings. Kept as they were,
-each a candidate for the next unit to read: `RememberLKI` works only on the targeted and `Defined$
-Enchanted` branches (hence `MOVED_LKI`); `RememberChanged` is unread on the `Defined$ Remembered`,
-`ExiledWith`, same-name and each-player branches; `RememberChosen` is unread on ChooseEach; every
-Token and Investigate replaces the remembered set with or without `RememberTokens`, so a Clue made
-mid-chain drops what was remembered; `RememberObjects$ ThisTargetedCard` counts as `Targeted` by
-substring. A row that could read one of these has only to report from that branch.
+New categories `TapOrUntap` (a `CHOOSE_MODE` menu of two rows; `mode:<text>` now names a mode by its text),
+`Shuffle` and `Repeat` (`RepeatLoopRt` persists the iteration, the body's index and the bound read once, each
+child a `REPEAT_SUB` level). Trailing links of a repeating effect chain after it: `next_sub` starts past
+`repeat_sub_count`. New rows: the filters `SharesColorWithOther Remembered`, `ControlledBy Remembered`,
+`RememberedPlayerCtrl`, `lowestRememberedCMC`; the `Defined$` names `Player.IsRemembered` and `ValidHand <filter>`;
+`Draw Defined$ Player`, `Discard Mode$ Hand`, `NoShuffle$`, `ChooseCard AtRandom$`, `Reveal RevealDefined$`,
+`ForgetObjects$`. `RepeatPlayers$` is an `ObjectSpec`. `UseAllOriginZones$` is an ignored key: a move here
+always takes every zone of `Origin$`.
 
-`replay` stayed byte-identical at each commit, `make registry` a no-op, parse reports and the cards
-frame unchanged over all 430 scripts, `onboard.py check` 0 stale. 6,144 explore games across the league decks
-byte-identical, as were 1,200 on two decks of the rows' own cards; `--selfcheck-state` clean and identical
-on 368 of them. Removing `ZoneSearch::picking` changes 27 of 120 of those games and fails `replay`, so they
-reach it. `bench` flat (130.3 to 129.9 us, median of 11 alternating release runs).
+`lowestRememberedCMC` is a set-relative row, not population-relative: "revealed this way" compares with the
+remembered cards, never with the candidates, so an unrevealed creature of lower or equal mana value is no match
+and a filter's other qualifiers can't change the minimum. Tied cards all match; with none remembered nothing
+does. `select_matching` and `population_row` still have no caller.
 
-No iteration state went into `EffectRuntime`: nothing would read it yet. What remains is the rest of
-**Build** below: the ignored params as rows, imprint on the source permanent, `Repeat`, `Branch`, generic
-`UnlessCost`, the small categories, the rows moved here from M2 and M3, and the M4 cards.
+Galvanic Discharge reported one finding (`DealDamage.UnlessCost`), and that was the least of what it needed.
+Its target sits two links down its script, and nothing looked past one: `Ability::chained_subs` now walks the
+chain for announcing, the cast gate and the frame's target rows, leaving out what a later trigger runs. A stack
+object with no target of its own and all its chained targets illegal no longer resolves (CR 608.2b), which
+is also Cabal Therapy under Veil of Summer; the corpus doesn't reach it. `NumDmg$ X` with `Count$ChosenNumber`
+was silently 0: `is_runtime_amount_expr` drops any expression it doesn't list, with no finding. The same drop hits
+Broadside Bombardiers, Pyrogoyf, Shatterskull Smashing and The Stone Brain, whose units must add theirs, and
+Surgical Extraction's `TargetedController$…` (it reads `ChangeNum$` otherwise). The switched energy unless-cost
+is the definition's now, `pay_switched_energy`, with no second prompt: the chosen number is the decision.
+
+A ChangeZoneAll naming no player and targeting none reaches every player's zones, each owner's cards a batch,
+and shuffles each library, moved into or not (CR 701.24d). No vocab card moved: every such filter names
+remembered or imprinted cards, or the move is Terminus's.
+
+What these scenarios cannot show:
+
+- **A suspension inside a `Repeat` iteration.** No card prompts there: Grindstone's body is Cleanup and Mill, and
+  Grist's is Cleanup, Token, Mill and PutCounter. The path exists (`resolve_child`, `RepeatLoopRt`) and is
+  unexercised. The suspended loop that is exercised is RepeatEach's: Chaos Defiler's and Stronghold
+  Gambit's prompts, through the `state` tier's snapshot check.
+- **`AtRandom` differing by seed.** In a two-player game Chaos Defiler's random pick is among at most one card,
+  so `stable_rand_below` draws nothing and no seed can differ. A replay matches, and removing the row
+  shows as a prompt, but nothing proves the draw itself. It needs a card with several candidates.
+- **`MaxRepeat$` binding.** Grindstone's bound is the library's size and a pair per iteration empties it first, so
+  the bound never ends a loop. `Repeat` with no `MaxRepeat$` (Grist) runs until its check fails.
+- **`Reveal$` on `AtRandom`.** Chaos Defiler's pick is a permanent, already public (`param_form_read` said so).
+
+`replay` stayed byte-identical at every commit and the corpus was not re-recorded. `--selfcheck-knowledge` is
+clean over Stronghold Gambit, and a scenario holds that Player B's frame at B's own choice has Air Elemental
+at 0-1 in A's hand, known after the reveal.
+
+**Lands with its first card, not here.** As in M2 and M3, nothing below has a card in the vocab or in this unit,
+so none landed. The stage is when the card's own last need is met:
+
+| item | first testable card | stage | what it must build |
+|---|---|---|---|
+| `ClearNamedCard`, `Imprint$` on a move that outlives the resolution, `Imprinted$Amount` | The Stone Brain | M5 | Imprint on the source permanent as an `ObjectSet`, with rows writing it |
+| `Discard Defined$ Player` (`Mode$ Hand`) | Runehorn Hellkite | M5 | the row in `read_by_each_player`, and the handler looping `affected_players`; Echo of Eons has no Discard, despite M2's table |
+| `UnlessCost$` on CopyPermanent, `UnlessResolveSubs$` | Springheart Nantuko | M7 | generic `UnlessCost` through `unless_payment` |
+| `RememberDiscarded$` | Fable of the Mirror-Breaker | M8 | a row reported from `discard`. Mox Diamond's script names it but never reaches `discard`: the replacement dispatcher takes its R: line whole, so it can't test the row |
+| `ImmediateTrigger ConditionDefined$` | Agatha's Soul Cauldron | M8 | the condition read through the `Defined$` table, not the battlefield scan |
+| `ImmediateTrigger UnlessCost$ Sac<…>`, `Repeat` with no `MaxRepeat$` | Grist, the Hunger Tide | M8 | the cost through `unless_payment`; a bound for CR 732 if a loop can go on with no library to run out |
+| `ForgetImprinted$`, imprint on the source | Chrome Mox | M9 | a `FORGET` row on the imprinted slot; `forget_remembered` covers only the remembered set |
+| `Branch` (`BranchConditionSVar$`, `True` / `FalseSubAbility$`), `ImprintCards$` | Goblin Welder | M10 | the evaluated side persisted in `EffectRuntime`, since a resume that re-derives a different child is fatal |
+| `UnlessCost$` on Token, `UnlessPayer$ Player.IsRemembered` | Acererak the Archlich | M12 | through `unless_payment`, with a payer per RepeatEach iteration |
+| a suspension inside a `Repeat` iteration | none in `candidates/` | | the first card that prompts in one |
+| an `AtRandom` draw among several | none in `candidates/` | | the first card with more than one candidate |
+
+Appendix A and B still count these findings under M4; the table above says when each lands.
 
 **Today.** 14 effect files write memory by hand; only `RememberTargets` is generic; imprint and
 forget params are ignored; per-permanent memory is `chosen_type`, `chosen_name`, `exiled_with`.
@@ -604,6 +651,8 @@ Meld with one half missing; each new field across a snapshot.
 - Fuzz all playable decks, `--matchups all --fuzz-games 100`, bo1 and `explore:patient`.
 - Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`. Known so far: its
   key files omit `src/resolution_memory.{h,cpp}`, and its `src/coverage` line omits the `row` kind.
+- Make an amount SVar `is_runtime_amount_expr` doesn't list a finding, or read it from the SVar table: today it
+  is silently 0 (M4's Done note).
 
 ## 6. Risks
 
