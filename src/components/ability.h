@@ -517,11 +517,10 @@ struct AbilityDef {
     // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
     bool from_delayed_execute = false;
 
-    // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
-    // loop once per player, setting cur_game.resolution.memory.remembered to that player's entity
-    // before resolving the RepeatSubAbility (parsed into subabilities). Empty = not a
-    // per-player repeat.
-    std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
+    // RepeatEach over players (Price of Progress): RepeatPlayers$ <players> makes the effect loop
+    // once per player it names, remembering that player for the RepeatSubAbility (parsed into
+    // subabilities). DEFAULT = not a per-player repeat.
+    ObjectSpec repeat_players;
 
     // RepeatEach over CARD TYPES (Atraxa, Grand Unifier): RepeatTypesFrom$ ValidLibrary
     // Card.IsImprinted makes the effect loop once per distinct card type present among the

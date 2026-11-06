@@ -282,7 +282,7 @@ static bool read_by_destroy(const AbilityDef &ability) { return ability.category
 static bool read_by_pump(const AbilityDef &ability) { return ability.category == "Pump"; }
 
 static bool read_by_each_player(const AbilityDef &ability) {
-    return ability.category == "Vote" || ability.category == "Draw" ||
+    return ability.category == "Vote" || ability.category == "Draw" || ability.category == "RepeatEach" ||
            (ability.category == "ChangeZone" && ability.origin == Zone::HAND &&
             ability.destination == Zone::BATTLEFIELD);
 }

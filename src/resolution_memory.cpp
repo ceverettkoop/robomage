@@ -1,5 +1,6 @@
 #include "resolution_memory.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "classes/game.h"
@@ -170,6 +171,13 @@ bool reported_object(const Ability &ab, Entity e) {
     for (const ReportedObject &object : ab.report.objects)
         if (object.ref.e == e && object.ref.get() == e) return true;
     return false;
+}
+
+void forget_remembered(Entity e) {
+    std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
+    remembered.erase(std::remove_if(remembered.begin(), remembered.end(),
+                                    [e](const ObjectRef &ref) { return ref.get() == e; }),
+                     remembered.end());
 }
 
 void apply_memory_ops(Ability &ab) {

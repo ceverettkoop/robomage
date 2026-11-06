@@ -28,6 +28,9 @@ void report_targets(Ability &ab);
 // True if `ab` has reported `e`, as the object it is now, since the step last ran.
 bool reported_object(const Ability &ab, Entity e);
 
+// Drops `e` from the remembered set.
+void forget_remembered(Entity e);
+
 // The step: writes what `ab` has reported into the resolution's memory through its definition's
 // ops, and drops the reports.
 void apply_memory_ops(Ability &ab);

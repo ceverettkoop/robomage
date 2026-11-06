@@ -2229,7 +2229,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RepeatPlayers") {
-        ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
+        ability.repeat_players = parse_object_spec(value);  // RepeatEach over players (Price of Progress)
     } else if (key == "RepeatTypesFrom") {
         // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
         // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
@@ -2470,6 +2470,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // it (equipped_to), and the "unattached aura" state-based action reads that link.
     if (key == "RemoveKeywords") return category == "AnimateAll" || (category == "Animate" && value.rfind("Enchant", 0) == 0);
     if (key == "Defined" || key == "DefinedPlayer") return defined_name_read(ability, value);
+    if (key == "RepeatPlayers") return !ability.repeat_players.is(ObjectSpec::UNREAD);
     // UnlessCost$ on an effect that does not run it is reported where it is read (read_unless_cost).
     if (key == "UnlessPayer") {
         if (!unless_cost_read_by(category)) return true;

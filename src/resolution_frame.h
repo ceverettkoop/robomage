@@ -178,12 +178,10 @@ struct CharmRt {
     int announced_idx = 0;
 };
 struct RepeatRt {
-    bool init = false;            // saved_remembered captured
-    bool player_setup = false;    // current player's remembered-set swap done
+    bool player_setup = false;    // current player remembered
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
     int sub_idx = 0;              // next RepeatSubAbility for the current player/type
     int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
-    std::vector<ObjectRef> saved_remembered;  // outer remembered set to restore at completion
 };
 // DB$ Repeat: the iteration under way, the body's next sub-ability, and the bound read as it
 // started, so a resume inside an iteration re-derives the same child.

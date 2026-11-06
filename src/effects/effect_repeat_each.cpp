@@ -9,9 +9,11 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../resolution.h"
+#include "../resolution_memory.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -107,46 +109,41 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
     return HandlerResult::DONE_NO_SUBS;  // body + trailing subs resolved here; suppress default chaining
 }
 
-// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
-// player. Each iteration sets cur_game.resolution.memory.remembered to that player's entity (so a
-// Defined$ Remembered / RememberedPlayerCtrl sub-ability resolves against that player) and
-// resolves the parsed sub-ability with its target/controller pinned to that player.
+// RepeatEach over players (Price of Progress, Chaos Defiler): resolve the RepeatSubAbility once per
+// player RepeatPlayers$ names. Each iteration remembers that player (so a Defined$ Remembered /
+// RememberedPlayerCtrl sub-ability resolves against them) and forgets them after it; whatever else
+// the body remembers stays for the iterations after it and the trailing SubAbility$ links, which
+// chain once the loop is done.
 //
 // Players are processed in APNAP order (active player, then non-active — CR 608.2g/101.4).
 // The card's effect ("deals damage to each player ... they control") is one simultaneous
 // event in MTG; here it is dealt player-by-player, which is observationally identical for a
 // one-shot instant since no player can respond between the two amounts.
 //
-// Suspendable (Batch 8): the (player, sub) loop progress persists in RepeatRt — including
-// the saved outer remembered set and a per-player setup flag, so a resume never re-clears a
-// remembered set a suspended sub-ability's earlier siblings may have grown — and each sub
-// resolves as a persisted REPEAT_SUB FrameLevel (iter_index = the player index).
+// Suspendable (Batch 8): the (player, sub) loop progress persists in RepeatRt — including a
+// per-player setup flag, so a resume never remembers the player twice — and each sub resolves as a
+// persisted REPEAT_SUB FrameLevel (iter_index = the player index).
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // RepeatTypesFrom$ — loop once per distinct card type among the imprinted cards (Atraxa).
     if (!ab.def->repeat_types_from.empty()) return repeat_each_types(ab, orderer, ctx);
 
-    if (ab.def->repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
+    if (ab.def->repeat_players.is(ObjectSpec::DEFAULT) || ab.def->repeat_sub_count == 0)
+        return HandlerResult::DONE_NO_SUBS;
 
-    Zone::Ownership active = active_seat();
-    Zone::Ownership nonactive = opponent_of(active);
-    std::vector<Zone::Ownership> order = {active, nonactive};
+    const std::vector<Zone::Ownership> order = resolve_players(ab.def->repeat_players, ResolveCtx::of(ab));
+    const int body_count = static_cast<int>(ab.def->repeat_sub_count);
 
     RepeatRt local_rt;
     RepeatRt &rt = ctx.can_suspend() ? ctx.rt<RepeatRt>() : local_rt;
-    if (!rt.init) {
-        rt.saved_remembered = cur_game.resolution.memory.remembered;
-        rt.init = true;
-    }
     while (rt.player_idx < static_cast<int>(order.size())) {
         Zone::Ownership p = order[static_cast<size_t>(rt.player_idx)];
         Entity pe = get_player_entity(p);
         if (global_coordinator.entity_has_component<Player>(pe)) {
             if (!rt.player_setup) {
-                cur_game.resolution.memory.remembered.clear();
                 cur_game.resolution.memory.remembered.push_back(ObjectRef::of(pe));
                 rt.player_setup = true;
             }
-            for (; rt.sub_idx < static_cast<int>(ab.subabilities.size()); ++rt.sub_idx) {
+            for (; rt.sub_idx < body_count; ++rt.sub_idx) {
                 const Ability &sub_template = ab.subabilities[static_cast<size_t>(rt.sub_idx)];
                 if (ctx.can_suspend()) {
                     Ability *parent = &ab;
@@ -169,13 +166,13 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     resolve_ability(sub, orderer);
                 }
             }
+            forget_remembered(pe);
         }
         rt.player_idx++;
         rt.sub_idx = 0;
         rt.player_setup = false;
     }
-    cur_game.resolution.memory.remembered = rt.saved_remembered;
-    return HandlerResult::DONE_NO_SUBS;  // sub-abilities already resolved per-player; suppress default chaining
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

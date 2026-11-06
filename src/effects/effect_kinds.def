@@ -84,8 +84,8 @@ EFFECT_KIND(SacrificeTokens, "SacrificeTokens", sacrifice_tokens)
 // Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile each
 // entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
 EFFECT_KIND(ExileTokens, "ExileTokens", exile_tokens)
-// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
-// player, with cur_game.resolution.memory.remembered set to that player's entity each iteration.
+// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per player it
+// names, with that player's entity remembered for the iteration.
 EFFECT_KIND(RepeatEach, "RepeatEach", repeat_each)
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
 // graveyard card in cur_game.resolved_effects.may_cast_this_turn so the casting path offers it this turn.
