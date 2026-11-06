@@ -1,0 +1,15 @@
+{
+  "name": "cr601_2c_cyclonic_rift_cast_for_its_mana_cost_targets_one",
+  "why": "CR 601.2c: cast for its mana cost Cyclonic Rift targets one nonland permanent you don't control and returns only that; a land and your own creature are no targets.",
+  "hand_a": ["Cyclonic Rift"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Air Elemental"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Forest", "Grizzly Bears", "Chalice of the Void"],
+  "play": ["A:keep", "B:keep", "A:cast:Cyclonic Rift", "A:target:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect_menu": ["^Grizzly Bears$", "^Chalice of the Void$"],
+  "expect_menu_not": ["Cast Cyclonic Rift \\(overload\\)", "^Forest$", "^Air Elemental$"],
+  "expect": ["Player A casts Cyclonic Rift targeting Grizzly Bears", "Grizzly Bears is moved to hand"],
+  "expect_not": ["Chalice of the Void is moved"]
+}

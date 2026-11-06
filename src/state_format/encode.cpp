@@ -31,6 +31,7 @@
 #include "../queries/delayed_triggers.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
+#include "../queries/overlays.h"
 #include "../queries/pending_cost.h"
 #include "../queries/permissions.h"
 #include "../queries/player_effects.h"
@@ -1063,6 +1064,7 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             if (sp->chosen.option.cost == CastCost::IMPENDING) bit(CastVariant::IMPENDING);
             if (sp->chosen.option.cost == CastCost::WARP) bit(CastVariant::WARP);
             if (sp->chosen.back_face()) bit(CastVariant::BACK_FACE);
+            variant |= spell_overlay_variant_mask(sp->chosen.option.overlay);
         }
         r.u32(variant)
             .u8(sp && sp->is_copy ? 1 : 0)
@@ -1409,6 +1411,7 @@ static uint32_t cast_variant_mask(const LegalAction &la) {
     bit(la.companion_to_hand, CastVariant::COMPANION);
     bit(la.suspend_action, CastVariant::SUSPEND);
     bit(la.cancel_proposal, CastVariant::CANCEL);
+    m |= spell_overlay_variant_mask(how.overlay);
     return m;
 }
 

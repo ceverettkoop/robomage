@@ -1,0 +1,13 @@
+{
+  "name": "cr702_96b_overload_targets_nothing_so_ward_never_triggers",
+  "why": "CR 702.96b, 702.21a: an overloaded spell has no targets, so Kappa Cannoneer's ward doesn't trigger and the Cannoneer returns; the same spell cast for its mana cost targets it and does trigger ward.",
+  "hand_a": ["Cyclonic Rift"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Kappa Cannoneer"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Cyclonic Rift (overload)"],
+  "max_decisions": 6,
+  "expect": ["Kappa Cannoneer is moved to hand"],
+  "expect_not": ["[Ww]ard"]
+}

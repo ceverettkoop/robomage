@@ -1,0 +1,14 @@
+{
+  "name": "cr702_96b_overload_reaches_a_hexproof_permanent",
+  "why": "CR 702.96b: an overloaded spell requires no targets and may affect objects that couldn't be chosen as legal targets: Geist of Saint Traft's hexproof keeps it from being targeted by Cyclonic Rift, not from being returned by the overloaded one.",
+  "hand_a": ["Cyclonic Rift"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Geist of Saint Traft"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Cyclonic Rift (overload)"],
+  "max_decisions": 6,
+  "expect_menu": ["Cast Cyclonic Rift \\(overload\\)"],
+  "expect_menu_not": ["^Cast Cyclonic Rift$"],
+  "expect": ["Geist of Saint Traft is moved to hand"]
+}

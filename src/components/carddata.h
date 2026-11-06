@@ -61,6 +61,9 @@ struct AltCost {
     // reveal (Game::pending.miracle_reveal), and the revealed card is cast, if at all, as its
     // miracle trigger resolves (effect_miracle.cpp).
     bool is_miracle = false;
+    // K:Overload:<cost> (CR 702.96). An ALTERNATIVE casting cost, a row of the cast table whose
+    // SpellOverlay reads "target" as "each".
+    bool is_overload = false;
 };
 
 //this is the underlying card, not a permanent or spell

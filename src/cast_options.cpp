@@ -85,6 +85,7 @@ static bool evoke_offered(CastOffer &offer);
 static bool impending_offered(CastOffer &offer);
 static bool spectacle_offered(CastOffer &offer);
 static bool warp_offered(CastOffer &offer);
+static bool overload_offered(CastOffer &offer);
 static bool plain_alternative_offered(CastOffer &offer);
 static bool offspring_offered(CastOffer &offer);
 static bool free_cast_offered(CastOffer &offer);
@@ -121,6 +122,7 @@ static const CastSection kCastSections[] = {
         {"spectacle",       CastCost::ALTERNATIVE,  false, 1, " (spectacle)",          Zone::GRAVEYARD, spectacle_offered},
         {"warp",            CastCost::WARP,         false, 1, " (warp)",               Zone::GRAVEYARD, warp_offered},
         {"alternative",     CastCost::ALTERNATIVE,  false, 1, " (alternate cost)",     Zone::GRAVEYARD, plain_alternative_offered},
+        {"overload",        CastCost::ALTERNATIVE,  false, 1, " (overload)",           Zone::GRAVEYARD, overload_offered, SpellOverlay::OVERLOAD},
         {"offspring",       CastCost::MANA_COST,    true,  2, " (offspring)",          Zone::GRAVEYARD, offspring_offered},
         {"hand_free",       CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"hand_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
@@ -459,6 +461,8 @@ static bool spectacle_offered(CastOffer &offer) {
 
 static bool warp_offered(CastOffer &offer) { return offer.face.alt_cost.is_warp && alternative_offered(offer); }
 
+static bool overload_offered(CastOffer &offer) { return offer.face.alt_cost.is_overload && alternative_offered(offer); }
+
 // Any other alternative cost. Miracle (CR 702.94) is never a normal priority-menu cast: it is
 // castable ONLY through the dedicated immediate "cast it for its miracle cost / do not cast" decision
 // presented right when its linked triggered ability resolves (proc_mandatory_choice's miracle-cast
@@ -466,7 +470,8 @@ static bool warp_offered(CastOffer &offer) { return offer.face.alt_cost.is_warp 
 // here.
 static bool plain_alternative_offered(CastOffer &offer) {
     const AltCost &alt = offer.face.alt_cost;
-    if (alt.is_evoke || alt.is_impending || alt.is_spectacle || alt.is_warp || alt.is_miracle) return false;
+    if (alt.is_evoke || alt.is_impending || alt.is_spectacle || alt.is_warp || alt.is_miracle || alt.is_overload)
+        return false;
     return alternative_offered(offer);
 }
 

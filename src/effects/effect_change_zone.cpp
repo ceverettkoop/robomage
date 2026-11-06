@@ -398,12 +398,16 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Loam): move target(s) directly. A targeted ability with no chosen targets (e.g.
     // "up to three" with zero picked) does nothing rather than searching. A target that is the
     // player whose zone is searched (The Stone Brain: ValidTgts$ Opponent, DefinedPlayer$
-    // Targeted) is no object to move: the search below runs.
+    // Targeted) is no object to move: the search below runs. Defined$ Valid moves the same way,
+    // every permanent it matches (overloaded, CR 702.96).
     const bool searches_target_player =
         ab.def->defined.is(ObjectSpec::TARGETED) && target_spec_names_players(ab.def->valid_tgts);
-    if (ab.def->valid_tgts != "N_A" && !searches_target_player) {
+    const bool moves_each = ab.def->defined.is(ObjectSpec::VALID);
+    if ((ab.def->valid_tgts != "N_A" && !searches_target_player) || moves_each) {
         std::vector<Entity> to_move;
-        if (!ab.targets.empty()) {
+        if (moves_each) {
+            to_move = resolve_objects(ab.def->defined, ResolveCtx::of(ab));
+        } else if (!ab.targets.empty()) {
             to_move = live_entities(ab.targets);
         } else if (Entity t = ab.target.get()) {
             to_move.push_back(t);

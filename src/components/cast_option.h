@@ -33,7 +33,10 @@ enum class CastCost : uint8_t {
 
 // What a cast changes on the spell beyond its face and its cost: a kind and a row of
 // kSpellOverlayRows (queries/overlays.cpp), and a column of the cast table.
-enum class SpellOverlay : uint8_t { NONE };
+enum class SpellOverlay : uint8_t {
+    NONE,
+    OVERLOAD,  // CR 702.96: no targets, "target" reads as "each"
+};
 
 // One way of casting a card: a row of a menu holds it, and the cast proceeds from it. The rows are
 // cast_options.cpp's table; a row that is no cast holds the default, and PLAY_LAND rows their face.

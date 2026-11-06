@@ -57,7 +57,7 @@ static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone
 static void players_remembered(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static bool read_by_change_zone(const AbilityDef &ability);
 static bool read_by_change_zone_all(const AbilityDef &ability);
-static bool read_by_copy_permanent(const AbilityDef &ability);
+static bool read_by_copy_permanent_or_change_zone(const AbilityDef &ability);
 static bool read_by_destroy(const AbilityDef &ability);
 static bool read_by_pump(const AbilityDef &ability);
 static bool read_by_reveal_or_pump(const AbilityDef &ability);
@@ -137,8 +137,9 @@ static const DefinedRow kDefinedRows[] = {
     // ReplacedCard — a ReplaceWith$ move (Mox Diamond, Leyline of the Void): the replacement
     // dispatcher applies it to its event's own object, so no resolver reads this.
     {"ReplacedCard", ObjectSpec::REPLACED_CARD, Refers::OBJECT},
-    // Valid <filter> (CopyPermanent's "for each token you control that entered this turn").
-    {"Valid ", ObjectSpec::VALID, Refers::OBJECT, objects_valid, nullptr, read_by_copy_permanent},
+    // Valid <filter> (CopyPermanent's "for each token you control that entered this turn"; an
+    // overloaded ChangeZone's "each").
+    {"Valid ", ObjectSpec::VALID, Refers::OBJECT, objects_valid, nullptr, read_by_copy_permanent_or_change_zone},
     // ValidHand <filter> — the cards in either hand that match (Stronghold Gambit's RevealDefined$
     // and ForgetObjects$).
     {"ValidHand ", ObjectSpec::VALID_HAND, Refers::OBJECT, objects_valid_hand, nullptr, read_by_reveal_or_pump},
@@ -302,7 +303,9 @@ static void players_remembered(const ResolveCtx &, std::vector<Zone::Ownership> 
 
 static bool read_by_change_zone(const AbilityDef &ability) { return ability.category == "ChangeZone"; }
 static bool read_by_change_zone_all(const AbilityDef &ability) { return ability.category == "ChangeZoneAll"; }
-static bool read_by_copy_permanent(const AbilityDef &ability) { return ability.category == "CopyPermanent"; }
+static bool read_by_copy_permanent_or_change_zone(const AbilityDef &ability) {
+    return ability.category == "CopyPermanent" || ability.category == "ChangeZone";
+}
 static bool read_by_destroy(const AbilityDef &ability) { return ability.category == "Destroy"; }
 static bool read_by_pump(const AbilityDef &ability) { return ability.category == "Pump"; }
 static bool read_by_reveal_or_pump(const AbilityDef &ability) {

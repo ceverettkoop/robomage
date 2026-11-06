@@ -24,6 +24,7 @@
 #include "error.h"
 #include "queries/affected.h"
 #include "queries/filters.h"
+#include "queries/overlays.h"
 #include "resolution_memory.h"
 #include "str_util.h"
 #include "svar_eval.h"
@@ -243,6 +244,7 @@ static void kw_equip(const std::string& kw_line, KeywordContext& ctx);
 static void kw_reconfigure(const std::string& kw_line, KeywordContext& ctx);
 static void kw_impending(const std::string& kw_line, KeywordContext& ctx);
 static void kw_suspend(const std::string& kw_line, KeywordContext& ctx);
+static void kw_overload(const std::string& kw_line, KeywordContext& ctx);
 static void kw_chapter(const std::string& kw_line, KeywordContext& ctx);
 static void kw_dredge(const std::string& kw_line, KeywordContext& ctx);
 static void kw_landwalk(const std::string& kw_line, KeywordContext& ctx);
@@ -315,6 +317,7 @@ static const KeywordEntry kKeywordTable[] = {
      [](const std::string &kw_line, KeywordContext &ctx) {
          add_keyword_alt_cost(kw_line, "Miracle", &AltCost::is_miracle, ctx.card);
      }},
+    {"Overload", KeywordEntry::PREFIX, kw_overload},
     {"Chapter:", KeywordEntry::PREFIX, kw_chapter},
     // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
     {"Prowess", KeywordEntry::PREFIX,
@@ -814,6 +817,7 @@ static bool parse_card_file(const std::string &path, CardData &card) {
         parse_card_face(back_script, *backside);
         card.backside = backside;
     }
+    build_overlay_faces(card);
 
     return true;
 }
@@ -1052,6 +1056,15 @@ static void add_keyword_alt_cost(const std::string &kw_line, const char *name, b
     ac.*flag = true;
     card.alt_cost = ac;
     card.keywords.push_back(name);
+}
+
+// K:Overload:<cost> (CR 702.96): an alternative cost that makes the spell act on every object its
+// target spec matches (overload_spell), so a spell whose effect doesn't read such a set can't have it.
+static void kw_overload(const std::string &kw_line, KeywordContext &ctx) {
+    add_keyword_alt_cost(kw_line, "Overload", &AltCost::is_overload, ctx.card);
+    for (const AbilityDef &ability : ctx.face_defs.abilities)
+        if (ability.ability_type == AbilityDef::SPELL && !defined_name_read(ability, "Valid Permanent"))
+            parse_finding("keyword", "Overload." + ability.category, kw_line + ": the effect reads no such set");
 }
 
 // An activated ability a keyword grants (Cycling, Ninjutsu, typecycling, Unearth): activated from
