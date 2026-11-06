@@ -139,6 +139,13 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
         !is_permanent_card(global_coordinator.GetComponent<CardData>(e))) {
         return global_coordinator.GetComponent<Zone>(e).location;
     }
+    // CR 111.8: a token that has left the battlefield can't change zones; it stays where it is
+    // until the state-based action removes it (CR 704.5d). An exile-then-return in one resolution
+    // (Eldrazi Confluence) returns nothing.
+    if (global_coordinator.entity_has_component<Token>(e) &&
+        global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) {
+        return global_coordinator.GetComponent<Zone>(e).location;
+    }
     // CR 303.4f/g: an Aura put onto the battlefield without being cast must choose a legal
     // object to enchant as it enters — and with none available it doesn't enter at all.
     if (dest == Zone::BATTLEFIELD && !aura_enters_choose_object(orderer, fctx, e)) {

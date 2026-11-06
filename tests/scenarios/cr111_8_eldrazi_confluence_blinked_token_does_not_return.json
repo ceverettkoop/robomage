@@ -1,0 +1,51 @@
+{
+  "name": "cr111_8_eldrazi_confluence_blinked_token_does_not_return",
+  "why": "CR 111.8, 704.5d: Eldrazi Confluence's exile-and-return on a token returns nothing: the token stays in exile and ceases to exist",
+  "hand_a": [
+    "Empty the Warrens",
+    "Eldrazi Confluence"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Wastes",
+    "Wastes",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Empty the Warrens",
+    "A:pass",
+    "A:pass",
+    "A:cast:Eldrazi Confluence",
+    "A:mode:Exile target",
+    "A:target:Goblin",
+    "A:mode:Create",
+    "A:mode:Create"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "^Goblin token is moved to exile",
+    "^Goblin \\(token\\) is put into exile and ceases to exist"
+  ],
+  "expect_not": [
+    "^Goblin token is moved to the battlefield"
+  ]
+}
