@@ -590,6 +590,8 @@ game boundary in bo3.
 
 ### M10. Activation rules and announcement constraints (M)
 
+**Also here.** CR 608.2b's check is incomplete for a spell with targets of its own and more on its sub-abilities: `resolve_ability()` fizzles it when its own are illegal, whatever the chain's are, and a spell with no target of its own is checked against the chain alone. It should count all of them, and prune per instruction. Test with the first vocab card of that shape.
+
 **Today.** Limits use two per-turn mechanisms (`activation_limit`, a loyalty bool) with no per-game limit.
 No per-creature attacked-this-turn. `DividedAsYouChoose` and cross-target constraints do not exist;
 `TargetPickGate` is the only per-candidate hook.
@@ -640,8 +642,8 @@ Meld with one half missing; each new field across a snapshot.
 
 ### M13. The sweep (L)
 
-- Verify the 45 candidate cards that report clean, as scenarios, including the ones M1 reclassified. Defense
-  Grid shows why this cannot be skipped.
+- Verify any candidate card that reports clean and is still outside the vocab, as scenarios, including the ones
+  M1 reclassified. Most enter earlier (Appendix B). Defense Grid shows why this cannot be skipped.
   Temur Sabertooth is one to check first: reading the ChangeZone branch it reaches, `ChangeNum$ 1` looks
   unenforced, so it may return more than one creature. Not run, since the card is outside the vocab.
 - Finish the vocab, then run `onboard.py` stages 8–11 for every deck: checks, the fuzz campaign, designation,
@@ -695,7 +697,7 @@ The 21 cards M0 repairs: the 15 vocab cards (Animate Dead, Cori-Steel Cutter, Dr
 
 ## Appendix B. When each card can enter the vocab
 
-A card joins the vocab at the exit of the last stage it needs (M1's `onboard.py vocab --card`). The 37 cards reporting clean need no stage but still need a scenario (M13).
+A card joins the vocab as soon as every mechanic it needs is implemented (M1's `onboard.py vocab --card`), at the end of the unit that finishes the last of them, whatever stage the table below gives: the table is the survey's estimate, and a card outside the vocab cannot be run. So each unit ends by entering every card it finished, and the cards reporting clean do not wait for M13. Each still needs a scenario and a reading of its script and oracle text, since clean is not correct; a clean card that turns out to need a later primitive stays out and is placed here.
 
 | last stage | cards (all stages needed) |
 |---|---|
