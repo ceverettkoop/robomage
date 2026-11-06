@@ -59,10 +59,16 @@ struct StaticAbility {
     // ReduceCost fields (category = "ReduceCost"): the mirror of RaiseCost — a continuous
     // static that reduces the generic portion of matching spells' cost by reduce_cost
     // (CR 118.7 / 601.2f). reduce_cost_filter is the ValidCard$ spec (e.g. "Eldrazi.Colorless").
-    // reduce_cost_you_only gates the reduction to the source's controller (Activator$ You).
+    // cost_activator (below) gates it to some casters.
     int reduce_cost = 0;
     FilterSpec reduce_cost_filter;
-    bool reduce_cost_you_only = false;
+    // Activator$ on a RaiseCost or ReduceCost: whose spells the static applies to.
+    enum class CostActivator : uint8_t {
+        ANYONE,      // Player
+        CONTROLLER,  // You (Eye of Ugin)
+        NOT_ACTIVE,  // Player.!Active (Defense Grid: "except during its controller's turn")
+    };
+    CostActivator cost_activator = CostActivator::ANYONE;
     // ValidCard$ Card.Self (Mystical Dispute: "This spell costs {2} less to cast if ..."): the
     // static reduces only its own card's cost, as that card is cast. It functions on the stack
     // (CR 113.6d) — read off the card's CardData by the cost computation, never gathered from

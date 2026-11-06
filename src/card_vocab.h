@@ -338,6 +338,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Soul-Guide Lantern", 415},
     {"Thought Monitor", 416},
     {"Thundertrap Trainer", 417},
+    {"Defense Grid", 418},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

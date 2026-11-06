@@ -3829,11 +3829,14 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // total up to Amount, never lower a cost that is already at/above it.
                 if (sa.category == "SetCost") sa.set_cost_raise_to = (value == "True");
             } else if (key == "Activator") {
-                // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
-                // spells cast by the source's controller, not to everyone's spells. Activator$
-                // Player is what every reader assumes; no other activator restricts one.
+                // Whose spells a cost static applies to: every player's (Activator$ Player, what
+                // every other reader assumes), its controller's (ReduceCost Activator$ You, Eye of
+                // Ugin), or those of a player whose turn it isn't (RaiseCost Activator$
+                // Player.!Active, Defense Grid).
                 if (sa.category == "ReduceCost" && value == "You")
-                    sa.reduce_cost_you_only = true;
+                    sa.cost_activator = StaticAbility::CostActivator::CONTROLLER;
+                else if (sa.category == "RaiseCost" && value == "Player.!Active")
+                    sa.cost_activator = StaticAbility::CostActivator::NOT_ACTIVE;
                 else if (value != "Player")
                     static_value_finding(sa, key, value);
             } else if (key == "ValidCard") {

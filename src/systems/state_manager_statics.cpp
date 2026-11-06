@@ -56,6 +56,8 @@
 // (anthem-style class) vs the single-target Self / no-filter forms? Shared by
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
+// Does cost static `sa`, controlled by `controller`, apply to a spell `caster` casts (Activator$)?
+static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership controller, Zone::Ownership caster);
 static bool affected_is_general_filter(const std::string &aff);
 static bool static_is_general(const StaticAbility &sa);
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
@@ -230,6 +232,18 @@ static bool static_present_condition_met(const FilterSpec &spec, const std::stri
     return compare_svar(count, compare);
 }
 
+static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership controller, Zone::Ownership caster) {
+    switch (sa.cost_activator) {
+        case StaticAbility::CostActivator::CONTROLLER:
+            return caster == controller;
+        case StaticAbility::CostActivator::NOT_ACTIVE:
+            return caster != active_seat();
+        case StaticAbility::CostActivator::ANYONE:
+            break;
+    }
+    return true;
+}
+
 int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
     bool is_creature = is_creature_card(card_data);
     // Caster's spells already cast this turn — the "other spells" the relative surcharge counts
@@ -245,6 +259,7 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa()->category != "RaiseCost") continue;
+        if (!cost_static_reaches(*as.sa(), as.controller, caster)) continue;
         if (as.sa()->raise_cost_filter == "nonCreature" && is_creature) continue;
         if (as.sa()->match_named_card) {
             if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
@@ -276,7 +291,7 @@ static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership c
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         const StaticAbility &sa = *as.sa();
         if (sa.category != "ReduceCost" || sa.reduce_cost_self) continue;
-        if (sa.reduce_cost_you_only && as.controller != caster) continue;
+        if (!cost_static_reaches(sa, as.controller, caster)) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
         if (!sa.reduce_cost_filter.empty()) {
             if (!card_matches_filter(card_data, sa.reduce_cost_filter, MatchCtx{})) continue;

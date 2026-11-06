@@ -1,0 +1,43 @@
+{
+  "name": "cr601_2f_defense_grid_taxes_its_controller_off_turn",
+  "why": "CR 601.2f: Defense Grid's exception is the spell's controller's turn, not the Grid's: on B's turn A's own Lightning Bolt costs {3}{R}",
+  "hand_a": [
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Defense Grid",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Mountain",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Player A casts Lightning Bolt"
+  ],
+  "expect_count": {
+    "Player A activated Mountain": 4
+  }
+}
