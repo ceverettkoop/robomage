@@ -2091,10 +2091,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
     } else if (key == "TgtZone") {
         if (value == "Graveyard") ability.target_in_graveyard = true;
-    } else if (key == "ClearRemembered") {
-        ability.clear_remembered = (value == "True");
-    } else if (key == "ClearChosenCard") {
-        ability.clear_chosen = (value == "True");
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {
@@ -2238,11 +2234,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
         // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
         ability.repeat_types_from = value;
-    } else if (key == "ClearImprinted") {
-        // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.resolution.memory.imprinted. (For the
-        // exile-and-return cards whose "imprint" is actually the remembered set, memory.imprinted
-        // is empty, so this is a harmless no-op there.)
-        ability.clear_imprinted = (value == "True");
     } else if (key == "Choices" && ability.category == "ChooseCard") {
         // ChooseCard | Choices$ <filter>: the cards the choice is made from (Dauthi Voidwalker:
         // Card.OppOwn+counters_GE1_VOID). Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa)

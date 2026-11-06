@@ -16,32 +16,52 @@ enum class ParamForm {
 
 // One memory write: asked for by `param`, or with a null param made by every effect of `kind`.
 struct MemoryRow {
-    const char *param;
-    ParamForm form;
-    EffectKind kind;
-    MemoryOp op;
+        const char *param;
+        ParamForm form;
+        EffectKind kind;
+        MemoryOp op;
 };
 
 // Every memory write of an effect. A target is remembered as the ability starts to resolve, for
 // its own effect to read (a DelayedTrigger's watched object); the rest as the effect finishes.
 static const MemoryRow kMemoryRows[] = {
-    {"RememberTargets", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
-    {"RememberObjects", ParamForm::NAMES_TARGETED, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
-    {"RememberChanged", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED}},
-    {"RememberLKI", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED_LKI}},
-    {"RememberSacrificed", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::SACRIFICED}},
-    {"RememberMilled", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::MILLED}},
-    {"RememberRevealed", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::REVEALED_HAND}},
-    {"RememberPumped", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::PUMPED}},
-    {"RememberFound", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::FOUND}},
+    {"RememberTargets", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
+    {"RememberObjects", ParamForm::NAMES_TARGETED, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TARGETS}},
+    {"RememberChanged", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED}},
+    {"RememberLKI", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED_LKI}},
+    {"RememberSacrificed", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::SACRIFICED}},
+    {"RememberMilled", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::MILLED}},
+    {"RememberRevealed", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::REVEALED_HAND}},
+    {"RememberPumped", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::PUMPED}},
+    {"RememberFound", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::FOUND}},
     {"RememberChosen", ParamForm::IS_TRUE, EffectKind::None,
-     {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::CHOSEN | EffectObjects::CHOSEN_IMPRINTED}},
-    {"ImprintRevealed", ParamForm::IS_TRUE, EffectKind::None, {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::REVEALED_TOP}},
-    {nullptr, ParamForm::NONE, EffectKind::Token, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
-    {nullptr, ParamForm::NONE, EffectKind::Investigate, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::CHOSEN | EffectObjects::CHOSEN_IMPRINTED}},
+    {"ImprintRevealed", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::REVEALED_TOP}},
+    {"ClearRemembered", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::CLEANED}},
+    {"ClearChosenCard", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::CHOSEN_CARDS, MemoryAction::REPLACE, EffectObjects::CLEANED}},
+    {"ClearImprinted", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::CLEANED}},
+    {nullptr, ParamForm::NONE, EffectKind::Token,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
+    {nullptr, ParamForm::NONE, EffectKind::Investigate,
+        {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
     {nullptr, ParamForm::NONE, EffectKind::Vote, {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::VOTED}},
-    {nullptr, ParamForm::NONE, EffectKind::ChooseCard, {MemorySlot::CHOSEN_CARDS, MemoryAction::REPLACE, EffectObjects::CHOSEN}},
-    {nullptr, ParamForm::NONE, EffectKind::ChooseCard, {MemorySlot::CHOSEN_CARDS, MemoryAction::APPEND, EffectObjects::KEPT}},
+    {nullptr, ParamForm::NONE, EffectKind::ChooseCard,
+        {MemorySlot::CHOSEN_CARDS, MemoryAction::REPLACE, EffectObjects::CHOSEN}},
+    {nullptr, ParamForm::NONE, EffectKind::ChooseCard,
+        {MemorySlot::CHOSEN_CARDS, MemoryAction::APPEND, EffectObjects::KEPT}},
 };
 
 // Adds `op` to `def`, into the op it shares a slot and an action with if there is one.
@@ -66,9 +86,12 @@ static void add_memory_op(AbilityDef &def, const MemoryOp &op) {
 
 static bool form_takes(ParamForm form, const std::string &value) {
     switch (form) {
-        case ParamForm::NONE: return false;
-        case ParamForm::IS_TRUE: return value == "True";
-        case ParamForm::NAMES_TARGETED: return value.find("Targeted") != std::string::npos;
+        case ParamForm::NONE:
+            return false;
+        case ParamForm::IS_TRUE:
+            return value == "True";
+        case ParamForm::NAMES_TARGETED:
+            return value.find("Targeted") != std::string::npos;
     }
     return false;
 }
@@ -81,17 +104,29 @@ static bool reads_report(const AbilityDef &def, uint32_t sources) {
 
 static void clear_slot(MemorySlot slot) {
     switch (slot) {
-        case MemorySlot::REMEMBERED: cur_game.resolution.memory.remembered.clear(); break;
-        case MemorySlot::IMPRINTED: cur_game.resolution.memory.imprinted.clear(); break;
-        case MemorySlot::CHOSEN_CARDS: cur_game.resolution.memory.chosen_cards.clear(); break;
+        case MemorySlot::REMEMBERED:
+            cur_game.resolution.memory.remembered.clear();
+            break;
+        case MemorySlot::IMPRINTED:
+            cur_game.resolution.memory.imprinted.clear();
+            break;
+        case MemorySlot::CHOSEN_CARDS:
+            cur_game.resolution.memory.chosen_cards.clear();
+            break;
     }
 }
 
 static void add_to_slot(MemorySlot slot, const ObjectRef &ref) {
     switch (slot) {
-        case MemorySlot::REMEMBERED: cur_game.resolution.memory.remembered.push_back(ref); break;
-        case MemorySlot::IMPRINTED: cur_game.resolution.memory.imprinted.push_back(ref); break;
-        case MemorySlot::CHOSEN_CARDS: cur_game.resolution.memory.chosen_cards.insert(ref); break;
+        case MemorySlot::REMEMBERED:
+            cur_game.resolution.memory.remembered.push_back(ref);
+            break;
+        case MemorySlot::IMPRINTED:
+            cur_game.resolution.memory.imprinted.push_back(ref);
+            break;
+        case MemorySlot::CHOSEN_CARDS:
+            cur_game.resolution.memory.chosen_cards.insert(ref);
+            break;
     }
 }
 

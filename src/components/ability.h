@@ -547,11 +547,6 @@ struct AbilityDef {
 
 
 
-    // Cleanup sub-ability
-    bool clear_remembered = false;   // ClearRemembered$ True
-    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.resolution.memory.chosen_cards
-    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.resolution.memory.imprinted (Atraxa)
-
     // ChooseCard ChooseEach$ "Type & Type & ..." (Ajani -4): each affected player chooses
     // one permanent of each listed type from among their matching permanents to keep
     // (recorded in cur_game.resolution.memory.chosen_cards). Empty = the legacy single-pick ChooseCard.
