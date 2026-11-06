@@ -169,7 +169,9 @@ static bool parse_non_color(const std::string &token, Qualifier &q);
 static bool parse_non_colorless(const std::string &token, Qualifier &q);
 static bool parse_non_card_type(const std::string &token, Qualifier &q);
 static bool parse_non_subtype(const std::string &token, Qualifier &q);
+static bool parse_keyword_after(const std::string &token, size_t from, Qualifier &q);
 static bool parse_with_keyword(const std::string &token, Qualifier &q);
+static bool parse_without_keyword(const std::string &token, Qualifier &q);
 static bool parse_in_zone(const std::string &token, Qualifier &q);
 static bool parse_mana_cost(const std::string &token, Qualifier &q);
 static bool parse_color(const std::string &token, Qualifier &q);
@@ -214,6 +216,7 @@ static bool ev_non_color(const CharView &v, const Qualifier &q);
 static bool ev_has_a_color(const CharView &v, const Qualifier &q);
 static bool ev_not_type_line(const CharView &v, const Qualifier &q);
 static bool ev_has_keyword(const CharView &v, const Qualifier &q);
+static bool ev_lacks_keyword(const CharView &v, const Qualifier &q);
 static bool ev_in_zone(const CharView &v, const Qualifier &q);
 static bool ev_mana_cost(const CharView &v, const Qualifier &q);
 static bool ev_type_line(const CharView &v, const Qualifier &q);
@@ -351,6 +354,9 @@ static const QualifierRow kQualifierRows[] = {
     // keyword list for a battlefield permanent and falls back to the printed CardData keywords
     // for an off-battlefield card view, so this is correct in either zone.
     parsed_row("with", NameForm::PREFIX, parse_with_keyword, ev_has_keyword),
+    // without<Keyword> — the object doesn't have it (Rough's Creature.withoutFlying, Drop of Honey's
+    // withoutIndestructible), in the same reading.
+    parsed_row("without", NameForm::PREFIX, parse_without_keyword, ev_lacks_keyword),
     // inZone<Zone> — the object currently sits in the named zone. A multi-zone search filter
     // uses it to restrict ONE OR-alternative to a single origin (Cloak and Dagger, Entwined's
     // "Card.nonLand+inZoneHand": only the hand alternative takes any nonland card; the
@@ -592,13 +598,22 @@ static bool parse_non_subtype(const std::string &token, Qualifier &q) {
     return true;
 }
 
-static bool parse_with_keyword(const std::string &token, Qualifier &q) {
-    if (token.size() <= 4 || !std::isupper(static_cast<unsigned char>(token[4]))) return false;
-    for (size_t i = 4; i < token.size(); i++) {
-        if (i > 4 && std::isupper(static_cast<unsigned char>(token[i]))) q.text += ' ';
+// The keyword spelled from `from` on, a capital starting each of its words.
+static bool parse_keyword_after(const std::string &token, size_t from, Qualifier &q) {
+    if (token.size() <= from || !std::isupper(static_cast<unsigned char>(token[from]))) return false;
+    for (size_t i = from; i < token.size(); i++) {
+        if (i > from && std::isupper(static_cast<unsigned char>(token[i]))) q.text += ' ';
         q.text += token[i];
     }
     return true;
+}
+
+static bool parse_with_keyword(const std::string &token, Qualifier &q) {
+    return parse_keyword_after(token, std::strlen("with"), q);
+}
+
+static bool parse_without_keyword(const std::string &token, Qualifier &q) {
+    return parse_keyword_after(token, std::strlen("without"), q);
 }
 
 static bool parse_in_zone(const std::string &token, Qualifier &q) {
@@ -830,6 +845,11 @@ static bool ev_has_a_color(const CharView &v, const Qualifier &) { return view_h
 static bool ev_not_type_line(const CharView &v, const Qualifier &q) { return !view_has_typeline(v, q.text); }
 static bool ev_has_keyword(const CharView &v, const Qualifier &q) {
     return v.entity != 0 && permanent_has_keyword(v.entity, q.text.c_str());
+}
+
+// A bare card has no keywords to read, so it has no reading of "without" either.
+static bool ev_lacks_keyword(const CharView &v, const Qualifier &q) {
+    return v.entity != 0 && !permanent_has_keyword(v.entity, q.text.c_str());
 }
 
 static bool ev_in_zone(const CharView &v, const Qualifier &q) {

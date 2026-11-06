@@ -1,0 +1,14 @@
+{
+  "name": "cr702_9_tumble_damages_only_creatures_with_flying",
+  "why": "CR 709.3 / 702.9: Tumble, the second half, deals 6 damage to each creature with flying and to no other",
+  "hand_a": ["Rough Tumble"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Grizzly Bears"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Air Elemental", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Tumble"],
+  "max_decisions": 5,
+  "expect": ["deals 6 damage to Air Elemental"],
+  "expect_not": ["deals 6 damage to Grizzly Bears"]
+}

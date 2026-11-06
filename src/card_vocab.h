@@ -285,6 +285,9 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Stock Up", 364},
     {"Eldrazi Confluence", 365},
     {"Secluded Courtyard", 366},
+    {"Rough", 367},
+    {"Tumble", 367},
+    {"Rough/Tumble", 367},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

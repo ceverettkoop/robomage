@@ -1,0 +1,15 @@
+{
+  "name": "cr702_9_rough_reads_flying_a_static_grants",
+  "why": "CR 613.1f / 702.9: without flying reads the object's live keywords: Dragon's Rage Channeler has no printed flying, but with delirium it has flying and Rough deals it nothing, while the bears beside it are dealt 2",
+  "hand_a": ["Rough Tumble"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Dragons Rage Channeler", "Grizzly Bears"],
+  "graveyard_b": ["Mountain", "Lightning Bolt", "Grizzly Bears", "Mox Opal"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Rough"],
+  "max_decisions": 5,
+  "expect": ["deals 2 damage to Grizzly Bears"],
+  "expect_not": ["deals 2 damage to Dragon"]
+}
