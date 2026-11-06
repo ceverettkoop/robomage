@@ -1,0 +1,41 @@
+{
+  "name": "cr702_44b_sunburst_not_cast_gets_none",
+  "why": "CR 702.44b: put onto the battlefield by Show and Tell, Engineered Explosives is no resolving spell and gets no counter, whatever Show and Tell's own mana was",
+  "hand_a": [
+    "Show and Tell",
+    "Engineered Explosives",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Show and Tell",
+    "A:choice:Engineered"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A puts Engineered Explosives onto the battlefield"
+  ],
+  "expect_not": [
+    "CHARGE counter"
+  ]
+}

@@ -37,8 +37,8 @@ FilterSpec spell_additional_sac_spec(const CardData &cd);
 // The Cost$ of the spell ability carrying that additional sacrifice (no parts when it has none),
 // what can_pay holds a cast to beyond its mana.
 const CostParts &spell_additional_cost(const CardData &cd);
-// Does the card read which colors of mana were spent to cast it (Count$Adamant_: Vibrance)? Then a
-// hybrid pip's color is the player's to choose, whatever auto-mana would pick.
+// Does the card read which colors of mana were spent to cast it (Count$Adamant_: Vibrance; Sunburst:
+// Engineered Explosives)? Then a hybrid pip's color is the player's to choose, whatever auto-mana would pick.
 bool spell_reads_colors_spent(const CardData &cd);
 
 // True if the spell's SPELL ability carries a VARIABLE life cost (Cost$ ... PayLife<X>): the

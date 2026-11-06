@@ -1,0 +1,51 @@
+{
+  "name": "cr702_44_explosives_destroys_its_counters_mana_value",
+  "why": "Engineered Explosives' {2}, sacrifice reads the charge counters it had as it left (CR 608.2h): with one, each nonland permanent of mana value 1 is destroyed, on both sides, and nothing of mana value 2 or any land",
+  "hand_a": [
+    "Engineered Explosives",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Llanowar Elves"
+  ],
+  "battlefield_b": [
+    "Delver of Secrets",
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Engineered",
+    "A:x:1",
+    "A:activate:Engineered"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A sacrifices Engineered Explosives",
+    "Delver of Secrets is destroyed",
+    "Llanowar Elves is destroyed"
+  ],
+  "expect_not": [
+    "Grizzly Bears is destroyed",
+    "Forest is destroyed",
+    "Mountain is destroyed"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

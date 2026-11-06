@@ -46,6 +46,7 @@ struct StaticAbility {
     // Regent: "Instant,Sorcery" — the ExiledWithSource qualifier is stripped at parse time,
     // it being implied by the card's cost having exiled it). Empty = count every exile.
     FilterSpec counter_count_delve_filter;
+    bool counter_count_from_sunburst = false;  // counter count = colors of mana spent to cast it (CR 702.44a)
     bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells

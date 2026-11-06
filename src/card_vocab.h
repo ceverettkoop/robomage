@@ -349,6 +349,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Bitter Triumph", 426},
     {"Fiend Artisan", 427},
     {"Vibrance", 428},
+    {"Engineered Explosives", 429},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

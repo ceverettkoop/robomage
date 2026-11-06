@@ -1,0 +1,36 @@
+{
+  "name": "cr702_44a_sunburst_one_color_one_counter",
+  "why": "CR 702.44a: a color counts once: X=2 from two Mountains is one charge counter",
+  "hand_a": [
+    "Engineered Explosives",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Engineered",
+    "A:x:2"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Engineered Explosives enters with 1 CHARGE counter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

@@ -1,5 +1,7 @@
 #include "spells.h"
 
+#include <algorithm>
+
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -20,6 +22,7 @@ FilterSpec spell_additional_sac_spec(const CardData &cd) {
 }
 
 bool spell_reads_colors_spent(const CardData &cd) {
+    if (std::find(cd.keywords.begin(), cd.keywords.end(), "Sunburst") != cd.keywords.end()) return true;
     for (const AbilityDef *def : cd.abilities)
         if (def->condition_present.text().rfind("Count$Adamant_", 0) == 0) return true;
     return false;

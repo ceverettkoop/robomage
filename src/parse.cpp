@@ -259,6 +259,7 @@ static void kw_kicker(const std::string& kw_line, KeywordContext& ctx);
 static void kw_replicate(const std::string& kw_line, KeywordContext& ctx);
 static void kw_escalate(const std::string& kw_line, KeywordContext& ctx);
 static void kw_devoid(const std::string& kw_line, KeywordContext& ctx);
+static void kw_sunburst(const std::string& kw_line, KeywordContext& ctx);
 static void kw_gift(const std::string& kw_line, KeywordContext& ctx);
 static void kw_opening_hand(const std::string& kw_line, KeywordContext& ctx);
 static void kw_storm(const std::string& kw_line, KeywordContext& ctx);
@@ -332,6 +333,7 @@ static const KeywordEntry kKeywordTable[] = {
     {"AlternateAdditionalCost:", KeywordEntry::PREFIX, kw_alternate_additional_cost},
     {"Replicate:", KeywordEntry::PREFIX, kw_replicate},
     {"Devoid", KeywordEntry::EXACT, kw_devoid},
+    {"Sunburst", KeywordEntry::EXACT, kw_sunburst},
     {"Gift", KeywordEntry::PREFIX, kw_gift},
     {"MayEffectFromOpeningHand", KeywordEntry::PREFIX, kw_opening_hand},
     {"Storm", KeywordEntry::EXACT, kw_storm},
@@ -1196,6 +1198,16 @@ static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
         }
     }
     ctx.card.static_abilities.push_back(sa);
+}
+
+// K:Sunburst (CR 702.44a): an "enters with counters" whose count is the colors of mana spent to cast
+// it and whose kind is the card's (replacement_effects.cpp).
+static void kw_sunburst(const std::string &, KeywordContext &ctx) {
+    StaticAbility sa;
+    sa.category = "EtbCounter";
+    sa.counter_count_from_sunburst = true;
+    ctx.card.static_abilities.push_back(sa);
+    ctx.card.keywords.push_back("Sunburst");
 }
 
 // K:Equip:<cost> (CR 702.6a): "[Cost]: Attach this permanent to target creature you

@@ -31,6 +31,7 @@
 #include "state_manager.h"
 
 static const char *candidate_kind_name(int kind);
+static std::string etb_counter_kind(const StaticAbility &sa, Entity entering);
 
 // Internal description of a single applicable replacement effect for one dispatch.
 namespace {
@@ -175,6 +176,11 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     const EntryInfo *entry = find_entry_info(ev.entity);
                     if (entry && entry->x_paid > 0) n = entry->x_paid;
                 }
+                else if (sa.counter_count_from_sunburst) {
+                    // CR 702.44b: only a resolving spell's entry holds the mana spent on it.
+                    if (const EntryInfo *entry = find_entry_info(ev.entity))
+                        n = static_cast<int>(colors_of(entry->mana_paid).size());
+                }
                 else n = sa.counter_count;  // literal count (etbCounter:M1M1:6 → 6)
                 if (n <= 0) continue;
                 Candidate c;
@@ -183,7 +189,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.index = -1000 - static_cast<int>(i);  // disjoint from replacement_effects indices
                 c.self_replacement = true;
                 c.amount = n;
-                c.counter_type = sa.counter_type.empty() ? "P1P1" : sa.counter_type;
+                c.counter_type = etb_counter_kind(sa, ev.entity);
                 c.label = "enters with counters";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -627,6 +633,14 @@ void dispatch_draw(ReplacementEvent &ev) {
 }  // namespace
 
 // A candidate's kind, as its --coverage key names it.
+// The kind of counter an EtbCounter static adds. Sunburst's follows the card's own types, whatever
+// type-changing effect applies as it enters (CR 702.44a).
+static std::string etb_counter_kind(const StaticAbility &sa, Entity entering) {
+    if (sa.counter_count_from_sunburst)
+        return is_creature_card(global_coordinator.GetComponent<CardData>(entering)) ? "P1P1" : "CHARGE";
+    return sa.counter_type.empty() ? "P1P1" : sa.counter_type;
+}
+
 static const char *candidate_kind_name(int kind) {
     switch (kind) {
         case SELF_TAPPED: return "SELF_TAPPED";

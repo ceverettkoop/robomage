@@ -1,0 +1,38 @@
+{
+  "name": "cr702_44b_sunburst_x_zero_spends_no_mana",
+  "why": "CR 702.44b: X=0 spends no mana, so no counter",
+  "hand_a": [
+    "Engineered Explosives",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Engineered",
+    "A:x:0"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Engineered Explosives enters the battlefield"
+  ],
+  "expect_not": [
+    "CHARGE counter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}
