@@ -1,0 +1,38 @@
+{
+  "name": "cr118_3_replicate_not_asked_without_its_mana",
+  "why": "CR 118.3, 601.2b: Consign to Memory with one Island can't pay Replicate {1}, so it isn't asked",
+  "hand_a": [
+    "Consign to Memory"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Wastescape Battlemage"
+  ],
+  "library_b": [
+    "Wastes"
+  ],
+  "battlefield_b": [
+    "Wastes",
+    "Wastes"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "B:cast:Wastescape Battlemage",
+    "A:cast:Consign to Memory",
+    "A:target:Wastescape Battlemage"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Player A casts Consign to Memory"
+  ],
+  "expect_menu_not": [
+    "pay replicate"
+  ]
+}

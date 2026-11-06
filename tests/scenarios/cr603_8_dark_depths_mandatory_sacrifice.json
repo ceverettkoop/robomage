@@ -1,0 +1,33 @@
+{
+  "name": "cr603_8_dark_depths_mandatory_sacrifice",
+  "why": "CR 603.8, 603.2: Cost$ Mandatory Sac<1/CARDNAME> on a state trigger is paid without asking: a copy of Dark Depths with no ice counters is sacrificed and Marit Lage is made",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Thespian's Stage",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Thespian's Stage",
+    "A:target:Dark Depths"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Dark Depths triggered",
+    "Player A sacrifices Dark Depths",
+    "Marit Lage"
+  ],
+  "battlefield_b": [
+    "Dark Depths"
+  ]
+}

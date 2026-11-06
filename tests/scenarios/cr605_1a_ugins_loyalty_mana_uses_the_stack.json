@@ -1,0 +1,26 @@
+{
+  "name": "cr605_1a_ugins_loyalty_mana_uses_the_stack",
+  "why": "CR 605.1a, 606.3: a loyalty ability is no mana ability, so Ugin's 0: Add {C}{C}{C} pays its cost and goes on the stack",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Ugin Eye of the Storms"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:[0]"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "activates a loyalty ability \\(\\+0",
+    "ability is on the stack"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "cr118_3_rift_bolt_suspend_needs_its_mana",
+  "why": "CR 118.3, 702.62a: with no red source the suspend cost can't be paid, so Suspend isn't offered",
+  "hand_a": [
+    "Rift Bolt",
+    "Island"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Play Island"
+  ],
+  "expect_menu_not": [
+    "Suspend Rift Bolt"
+  ]
+}

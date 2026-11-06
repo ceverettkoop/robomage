@@ -1,0 +1,46 @@
+{
+  "name": "cr601_2h_delve_exiles_after_the_mana",
+  "why": "CR 601.2g-h, 702.66a: delve's picks are chosen, the mana abilities come next and the cards are exiled with the rest of the cost, so a payment given up has moved nothing",
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "hand_a": [
+    "Murktide Regent"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Murktide Regent",
+    "#2",
+    "A:tap:Island",
+    "A:tap:Island",
+    "A:tap:Island",
+    "A:tap:Island"
+  ],
+  "max_decisions": 14,
+  "expect_order": [
+    "Player A activated Island",
+    "Player A activated Island",
+    "Player A activated Island",
+    "Player A activated Island",
+    "Player A exiles Lightning Bolt via Delve",
+    "Player A casts Murktide Regent"
+  ]
+}

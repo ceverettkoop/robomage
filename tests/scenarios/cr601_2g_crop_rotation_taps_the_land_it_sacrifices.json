@@ -1,0 +1,28 @@
+{
+  "name": "cr601_2g_crop_rotation_taps_the_land_it_sacrifices",
+  "why": "CR 601.2g, 601.2h: mana abilities come before costs are paid, so Crop Rotation off a lone Savannah taps it for {G} and then sacrifices it",
+  "hand_a": [
+    "Crop Rotation"
+  ],
+  "library_a": [
+    "Dryad Arbor",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Savannah"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Crop Rotation"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A activated Savannah",
+    "Player A sacrifices Savannah",
+    "Player A casts Crop Rotation"
+  ]
+}

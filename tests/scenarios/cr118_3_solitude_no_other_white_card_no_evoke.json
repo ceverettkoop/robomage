@@ -1,0 +1,25 @@
+{
+  "name": "cr118_3_solitude_no_other_white_card_no_evoke",
+  "why": "CR 118.3, 702.74a: with no other white card in hand Solitude can't pay its pitch evoke cost, itself being no other card",
+  "hand_a": [
+    "Solitude",
+    "Plains"
+  ],
+  "library_a": [
+    "Plains"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Play Plains"
+  ],
+  "expect_menu_not": [
+    "Cast Solitude \\(alternate cost\\)"
+  ]
+}
