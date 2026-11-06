@@ -1,0 +1,13 @@
+{
+  "name": "cr709_3b_split_half_has_its_own_name_on_the_stack",
+  "why": "CR 709.3b: while on the stack only the characteristics of the half being cast exist, so Tumble deals its damage as Tumble, not as the front half Rough.",
+  "hand_a": ["Rough Tumble"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Flying Men"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Tumble"],
+  "max_decisions": 8,
+  "expect": ["Player A casts Tumble", "Tumble deals 6 damage to Flying Men"],
+  "expect_not": ["Rough deals"]
+}

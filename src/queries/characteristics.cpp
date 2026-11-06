@@ -121,7 +121,7 @@ std::string entity_name(Entity e) {
         return perm.is_token ? perm.name + " token" : perm.name;
     }
     if (global_coordinator.entity_has_component<CardData>(e))
-        return global_coordinator.GetComponent<CardData>(e).name;
+        return active_face(e, global_coordinator.GetComponent<CardData>(e)).name;
     if (global_coordinator.entity_has_component<Token>(e))
         return global_coordinator.GetComponent<Token>(e).name + " token";
     if (global_coordinator.entity_has_component<Ability>(e)) {

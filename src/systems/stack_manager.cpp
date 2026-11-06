@@ -189,12 +189,13 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         auto &card_data = global_coordinator.GetComponent<CardData>(top_entity);
         // A permanent spell (CR 110.4a, any permanent card type incl. Battle) of the face that
         // was cast (a modal back face / split half, CR 712.8f, 709.3) enters the battlefield.
-        bool is_permanent = is_permanent_card(active_face(top_entity, card_data));
+        const CardData &face = active_face(top_entity, card_data);
+        bool is_permanent = is_permanent_card(face);
         if (is_permanent && aura_spell_target_illegal(top_entity)) {
             // CR 608.3b: an Aura spell whose target is illegal doesn't resolve; it is removed
             // from the stack and put into its owner's graveyard.
             game_log("%s doesn't resolve: the object it targets is no longer legal (CR 608.3b)\n",
-                     card_data.name.c_str());
+                     face.name.c_str());
             orderer->remove_from_stack(top_entity, Zone::GRAVEYARD);
         } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
@@ -217,7 +218,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = entering_controller;
             // TODO ETB event here
-            game_log("%s enters the battlefield\n", card_data.name.c_str());
+            game_log("%s enters the battlefield\n", face.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
@@ -240,7 +241,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             const SpellDestination to = spell_destination(top_entity, resolves_to, SpellExit::RESOLVED);
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
-                game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
+                game_log("%s (copy) ceases to exist\n", face.name.c_str());
                 obs_object_ceased(top_entity, true);
                 global_coordinator.DestroyEntity(top_entity);
                 return;
@@ -248,9 +249,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             orderer->add_to_zone(false, top_entity, to.zone);
             if (to.shuffled) {
                 orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
-                game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
+                game_log("%s is shuffled into its owner's library\n", face.name.c_str());
             } else if (to.zone == Zone::EXILE) {
-                game_log("%s is exiled%s\n", card_data.name.c_str(),
+                game_log("%s is exiled%s\n", face.name.c_str(),
                          to.by_cast ? (" (" + std::string(to.by_cast) + ")").c_str() : "");
             }
         }
