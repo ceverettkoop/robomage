@@ -57,15 +57,6 @@
       ],
       "size": "S"
      },
-     "Discard-a-card activation cost": {
-      "cards": [
-       "Melded Moxite"
-      ],
-      "findings": [
-       "cost:Discard"
-      ],
-      "size": "M"
-     },
      "Equipped creature filter (EquippedBy)": {
       "cards": [
        "Hawkeye's Bow"
@@ -101,8 +92,7 @@
        "ability_param:Pump.ImprintCards",
        "ability_param:Pump.PumpZone",
        "ability_param:Pump.TargetsWithDefinedController",
-       "filter:sharesControllerWith Imprinted",
-       "svar_expr:Imprinted$Valid"
+       "filter:sharesControllerWith Imprinted"
       ],
       "size": "M"
      },
@@ -112,6 +102,15 @@
       ],
       "findings": [
        "trigger_mode:Taps"
+      ],
+      "size": "S"
+     },
+     "filter:sharesControllerWith Remembered": {
+      "cards": [
+       "Goblin Welder"
+      ],
+      "findings": [
+       "filter:sharesControllerWith Remembered"
       ],
       "size": "S"
      }
@@ -125,15 +124,13 @@
      ],
      "Goblin Welder": [
       "Branch effect (DB$ Branch)",
-      "Goblin Welder swap"
+      "Goblin Welder swap",
+      "filter:sharesControllerWith Remembered"
      ],
      "Hawkeye's Bow": [
       "Damage dealt by another object (DamageSource$)",
       "Equipped creature filter (EquippedBy)",
       "Taps trigger"
-     ],
-     "Melded Moxite": [
-      "Discard-a-card activation cost"
      ],
      "Wear/Tear": [
       "Fuse (CR 702.102)"
@@ -144,45 +141,43 @@
      "Aphetto Alchemist",
      "Goblin Welder",
      "Hawkeye's Bow",
-     "Melded Moxite",
      "Wear/Tear"
     ],
-    "size_points": 43
+    "size_points": 41
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "6 new card(s): 0 clean, 6 need 9 mechanic(s) (43 points)",
-   "time": "2026-11-05T22:01:59"
+   "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (41 points)",
+   "time": "2026-11-06T02:52:33"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 27,
+    "in_vocab": 28,
     "no_script": [],
     "not_in_vocab": [
      "Agatha's Soul Cauldron",
      "Aphetto Alchemist",
      "Goblin Welder",
      "Hawkeye's Bow",
-     "Melded Moxite",
      "Wear/Tear"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "33 cards: 27 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-05T22:01:59"
+   "summary": "33 cards: 28 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-06T02:52:33"
   },
   "implement": {
    "detail": {
@@ -190,25 +185,25 @@
      "Agatha's Soul Cauldron",
      "Branch effect (DB$ Branch)",
      "Damage dealt by another object (DamageSource$)",
-     "Discard-a-card activation cost",
      "Equipped creature filter (EquippedBy)",
      "Face-down permanents (Morph, Cloak; CR 708)",
      "Fuse (CR 702.102)",
      "Goblin Welder swap",
-     "Taps trigger"
+     "Taps trigger",
+     "filter:sharesControllerWith Remembered"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Discard-a-card activation cost, Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, Taps trigger",
-   "time": "2026-11-05T22:01:59"
+   "summary": "9 mechanic(s) to implement: Agatha's Soul Cauldron, Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Fuse (CR 702.102), Goblin Welder swap, Taps trigger, filter:sharesControllerWith Remembered",
+   "time": "2026-11-06T02:52:33"
   },
   "parse": {
    "detail": {
@@ -350,10 +345,10 @@
         "name": "sharesControllerWith Imprinted"
        },
        {
-        "detail": "CheckImprint = Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "kind": "svar_expr",
+        "detail": "Imprinted$Valid Artifact.sharesControllerWith Remembered",
+        "kind": "filter",
         "line": "SVar:CheckImprint:Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "name": "Imprinted$Valid"
+        "name": "sharesControllerWith Remembered"
        }
       ],
       "layout": "normal",
@@ -395,31 +390,6 @@
        -1
       ]
      },
-     "Melded Moxite": {
-      "card": "Melded Moxite",
-      "faces": [
-       "Melded Moxite"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ Discard<1/Card>",
-        "kind": "cost",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDiscard | TriggerDescription$ When this artifact enters, you may discard a card. If you do, draw two cards.",
-        "name": "Discard"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/m/melded_moxite.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "c_2_2_a_robot"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     },
      "Wear/Tear": {
       "card": "Wear",
       "faces": [
@@ -447,22 +417,20 @@
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "6 new card(s), 6 with findings (23 findings), 0 without a script",
-   "time": "2026-11-05T22:01:59"
+   "summary": "5 new card(s), 5 with findings (22 findings), 0 without a script",
+   "time": "2026-11-06T02:52:33"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "c_2_2_a_robot"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -470,11 +438,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:59"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T02:52:33"
   },
   "scrape": {
    "detail": {

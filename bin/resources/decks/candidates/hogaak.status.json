@@ -130,15 +130,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 8 mechanic(s) (30 points)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "diff": {
    "detail": {
@@ -156,11 +156,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "28 cards: 23 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "implement": {
    "detail": {
@@ -177,15 +177,15 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
    "summary": "8 mechanic(s) to implement: Adventure (CR 715), Can't-block restrictions (CantBlockBy), Convoke (CR 702.51), Enters as a copy (Mockingbird), Hogaak casting, Mana spent on casting (Count$CastTotalManaSpent), Sunburst (CR 702.44), Two-condition alternative cost (Massacre)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "parse": {
    "detail": {
@@ -357,14 +357,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "5 new card(s), 5 with findings (15 findings), 0 without a script",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "provision": {
    "detail": {
@@ -378,11 +378,11 @@
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "scrape": {
    "detail": {

@@ -411,8 +411,8 @@ so none landed. The stage is when the card's own last need is met:
 
 | item | first testable card | stage | what it must build |
 |---|---|---|---|
-| `ClearNamedCard`, `Imprint$` on a move that outlives the resolution, `Imprinted$Amount` | The Stone Brain | M5 | Imprint on the source permanent as an `ObjectSet`, with rows writing it |
-| `Discard Defined$ Player` (`Mode$ Hand`) | Runehorn Hellkite | M5 | the row in `read_by_each_player`, and the handler looping `affected_players`; Echo of Eons has no Discard, despite M2's table |
+| `ClearNamedCard`, `Imprint$`, `Imprinted$Amount` | The Stone Brain | M5 | landed in (c1), in the resolution's memory: the source has exiled itself, and what outlives a resolution is Chrome Mox's |
+| `Discard Defined$ Player` (`Mode$ Hand`) | Runehorn Hellkite | M5 | landed in (c1); Echo of Eons has no Discard, despite M2's table |
 | `UnlessCost$` on CopyPermanent, `UnlessResolveSubs$` | Springheart Nantuko | M7 | generic `UnlessCost` through `unless_payment` |
 | `RememberDiscarded$` | Fable of the Mirror-Breaker | M8 | a row reported from `discard`. Mox Diamond's script names it but never reaches `discard`: the replacement dispatcher takes its R: line whole, so it can't test the row |
 | `ImmediateTrigger ConditionDefined$` | Agatha's Soul Cauldron | M8 | the condition read through the `Defined$` table, not the battlefield scan |
@@ -450,12 +450,12 @@ library that stops the repeat, and one that empties. `AtRandom` replays identica
 ### M5. Typed costs and one payer (XL)
 
 **Progress.** Units (a), typed parts from one parser and `can_pay`, and (b), one suspendable `run_cost_parts` and
-`ChosenCost`, are done (2026-11-05, 06) and inert. Unit (c) (the new cost kinds, `TapToPay`, `ActivationZone$`, the cards)
-is not started; what is left under Today and Build, and everything under Lands here, stands for it.
+`ChosenCost`, are done (2026-11-05, 06) and inert. Unit (c1), the new cost kinds and the cards they finish, is done (2026-11-06): the eleven M5 cards are in the vocab, ids 418 to
+428. Unit (c2), `TapToPay` and the oddities, is not started; what it owes is under **(c2) must**.
 
 A definition holds `CostParts`, a list of `CostPart {kind, count, count_is_x, filter, object, ...}`
 (`src/components/cost_part.h`): `MANA`, `X_MANA`, `TAP`, `LIFE`, `ENERGY`, `LOYALTY`, `SACRIFICE`, `DISCARD`, `RETURN`,
-`EXILE_FROM_HAND`, `EXILE_FROM_GRAVEYARD`, and `MANDATORY`, which pays nothing. Filters are `FilterSpec`s, CARDNAME an
+`EXILE_FROM_HAND`, `EXILE_FROM_GRAVEYARD`, `EXILE`, and `MANDATORY`, which pays nothing. Filters are `FilterSpec`s, CARDNAME an
 `ObjectSpec` SELF. `parse_cost` is the one parser: `read_cost_token` says what a token is, `cost_form_pays` whether a
 `CostForm` pays it (activated, spell, triggered, ImmediateTrigger, alternative, flashback, escape, mana-only keyword,
 Escalate, Ward, unless), and what no form pays is a `cost` finding, as before. Activations, `AltCost`, Flashback, Escape,
@@ -479,13 +479,10 @@ What stayed of (a), and why:
 - **Offers that don't call `can_pay`.** `run_unless_loop` tests the pool, life or energy inside its live menu;
   `pay_mana_cost` and that loop filter sources by the floating pool. A play permission's resource and the companion's {3}
   are no parsed cost.
-- **The pitch.** `EXILE_FROM_HAND` reads `color` through `effective_colors`: its compiled filter would match printed colors
-  in `card_view`, which a color-setting static doesn't reach. (c) must settle that before `ExileFromHand` generalises.
 
 Leniency kept, and in `docs/rules_deviations.md` §2.5: a mana ability's Sac, Return and energy are unchecked (Lazotep
 Quarry, a candidate: `activate_mana_source` pays only a self-sacrifice, so the auto-payer never charges it); a spell's
-additional sacrifice is checked only from hand and on a free cast; `ExileFromHand<N>` asks for one card; `NotPlayerTurn`
-isn't read on `Cost$ 0`.
+additional sacrifice is checked only from hand and on a free cast; `NotPlayerTurn` isn't read on `Cost$ 0`.
 
 (a) inert: `replay` byte-identical and `make check` green at each of the four commits, `make registry` a no-op, parse reports
 (all 430 provisioned cards) and `--cards-frame` unchanged. Every provisioned card's parsed cost, each of its 838 interned
@@ -549,24 +546,19 @@ What stayed of (b), and why:
 - **`mana_spent`** keeps its value: it counts tapped pips.
 - **A mana ability's `SubAbility$`** resolves through a blocking context. No vocab rider asks.
 
-Oddities kept as they are, for (c) to judge:
+Oddities kept as they are, for (c2) to judge:
 
 - Phyrexian life is paid as the pip is announced, before the targets; CR 601.2h pays costs after CR 601.2c. `rewind_cast` gives
   it back by hand, not through the snapshot.
 - An activation's picks log after they move and a cast's before, so a replacement's line lands on different sides (`move_items`).
 - A sacrifice of a cast's additional or flashback cost is offered what an earlier pick already chose (`repeats_chosen`), so an
   alternative and an additional sacrifice could name one permanent.
-- The alternative cost's pitch and return don't stop on an empty pool: `ExileFromHand<N>` past one card would arm an empty menu,
-  since `can_pay` asks for one card.
+- The alternative cost's pitch and return don't stop on an empty pool. `can_pay` now asks for all N cards of a pitch, so no menu
+  comes up empty, but a card moved between the offer and the pick still could.
 - `delve_exiled` goes stale, a rules bug found here and left in: Murktide Regent cast with three delve exiles, countered and
   reanimated by Animate Dead enters with three +1/+1 counters. It should enter with none. `ChosenCost::paid` is the fix's input.
 - A mid-payment prompt reporting no paused flow, and the concession running a payment out, are kept only so the frames hold. A
   commit that drops them changes frames.
-
-**(c) must:** add a new kind as steps in the tables, a `PickRule` row for a chooser (`Discard<N/...>` on an activation is one row
-in `kActivationSteps` and its `cost_form_pays` line); settle the pitch's color read before generalising `ExileFromHand`; put
-`TapToPay` at `PAY_MANA` and `pay_mana_cost`, and fix `mana_spent` there; make a mana part of `TRIGGER`'s table for a mana cost on a
-trigger; and read `ChosenCost::paid` or say why not. A new prompt keeps `AskKind::CHOICE` unless it is a step of paying mana.
 
 (b) inert: `replay` byte-identical and `make check` green at every commit, `make registry` a no-op, parse reports (all 430
 provisioned cards) and `--cards-frame` unchanged, `onboard.py check` 0 stale, `tests/corpus`, `tests/cli` and `src/featurize`
@@ -582,6 +574,88 @@ pitch 106, alternative return 20, alternative sacrifice 27, additional sacrifice
 101, energy 6, life 2 and discard 2 with its pick 2; on The Fantasticar's sacrifice 3 and an ImmediateTrigger's energy 5. No error.
 Release `bench`, median of 9 alternating runs: 130.0 us per decision before, 130.5 after, inside the runs' 127.5 to 133.5 spread.
 
+**Unit (c1).** Every new kind is a part in `read_cost_token` and a line of `cost_form_pays`, paid by a step or a `PickRule` row, with
+no branch for one card:
+
+- **`TRIGGER`'s table.** `pay_trigger_cost` runs on a `CostRun` in the resolving level's runtime (an `EffectRuntime` alternative), so
+  the path now parks. A triggered ability's offered cost has an offer (asked only if `can_pay` holds), a `kTriggerDiscard` pick, the
+  mana and the moves. That offer is the ability's one "may": `OptionalDecider$` doesn't ask again. A payment given up by its last row
+  restores its mana abilities and declines. The state format's `cost_part` gains `TRIGGER`. `Discard<N/...>` and a mana cost landed
+  here, not on an activation: Formidable Speaker's, Melded Moxite's and Nihil Spellbomb's are `AB$ ... | Cost$` under an `Execute$`.
+- **`EXILE_SELF`.** One step for `Exile<1/CARDNAME>`, `ExileFromHand<1/CARDNAME>` and `ExileFromGrave<1/CARDNAME>`, on the activation
+  and mana ability paths.
+- **The pitch.** A filter's card view now takes the layer-5 override (a bug fix, below), so `EXILE_FROM_HAND` reads its compiled
+  filter, `CostPart::color` is gone and `can_pay` asks for all N.
+- **`ActivationZone$`.** Read through `Zone::from_script_name`, offered by `offer_zone_activations`, one call per zone. Hand and
+  Graveyard are the zones any script names; another stays a finding until it has a call and a card.
+- **A mana ability from the hand.** Listed with the battlefield's rows at priority, in a payment and at an unless offer
+  (`append_hand_mana_actions`); the flow's FINISH takes mana first, and production needs no `Permanent`. The auto-payer doesn't spend
+  it and `can_pay_mana` doesn't count it (`docs/rules_deviations.md` §1.4), so a spell it alone would pay for is offered once the
+  mana floats. A permanent's copy of the ability is no source (CR 113.6b).
+- **`AlternateAdditionalCost`.** `CardData::additional_choices`. `can_cast_now` needs one form payable, the cast's `ADDITIONAL` step
+  asks which before the gift and the targets (CR 601.2b), and it pays with the rest, by a `PickRule` row for the discard.
+- **Hybrid pips.** A `MANA` part holds them; `announce_hybrid_pips` is the cast's step, an activation's `HYBRID` and an alternative
+  cost's `ALT_HYBRID`. `can_pay` reads a cost's own pips, X is bounded with them, the floor counts them. Forms other than `ACTIVATED`
+  and `ALTERNATIVE` still refuse a hybrid token, since nothing else announces one.
+- **Cost statics.** `StaticAbility::CostActivator`, one predicate for `Player`, `You`, `Player.!Active`.
+- **Rows.** `Imprint$`, `ClearNamedCard$`, `Imprinted$Amount`, `<Set>$Amount`, `/NMinus.N`, `Discard Defined$ Player`,
+  `Count$Adamant_<N>.<Color>.<high>.<low>`, and the `CastSA>` prefix on a trigger's `CheckSVar$`.
+
+Clean was not correct three times. Vibrance's `CheckSVar$ CastSA>...` was read as a permanent filter, so neither trigger could fire.
+The Stone Brain's `ChangeNum$ Y`, `SVar$X/NMinus.4`, silently read 1, and its `NumCards$ Z` the same. A ChangeZone that targets the
+player it searches (`ValidTgts$ Opponent`, `DefinedPlayer$ Targeted`) was taken for a target move, and with `Origin$ Graveyard` for a
+target in a graveyard: a FATAL on The Stone Brain.
+
+Bugs fixed in shared code, each with a scenario failing without it: a filter's color on a card off the battlefield ignored Mycosynth
+Lattice (the vocab cards that read one are named in that commit, and change only under Lattice); a search with `ChangeNum$` of 0 didn't
+shuffle (Ugin, Eye of the Storms' -11, The Stone Brain).
+
+What differs from the plan as written, and why:
+
+- **Imprint is the resolution's, not the source permanent's.** The Stone Brain exiles itself as a cost, so it has no `Permanent` at
+  resolution, and its imprint ends with the resolution (`DBCleanup`). The row writes the resolution's `imprinted` slot. An `ObjectSet`
+  on the permanent has its first test in Chrome Mox (M9), which keeps its other findings until then; its `Imprint$` finding is gone,
+  so the table below carries it.
+- **`Discard<N/...>` on an activation has no row.** No provisioned script has one, and a row with no test is not done.
+- **`spent_w` to `spent_g` are filled only for a card that reads them.** Filled for every cast permanent they moved 467 of the open
+  vocabulary fixtures' decisions, a feature change for a fact no other card reads.
+
+What stayed of (c1), and why:
+
+- **`ChosenCost::paid`** still has no reader: no card here reads what a cost moved. Bargain and M6 will.
+- **The cast's hybrid prompts are unfiltered under `--no-auto-mana`**, and `pending_cost` lists a cast's pips whole at each prompt. Both
+  are frames, kept so `--no-auto-mana` games don't move. Under auto-mana a card that reads spent colors filters its rows.
+- **Which sources pay Vibrance's generic mana** is the auto-payer's, so {R}{R} can't be aimed through a generic pip (§1.4).
+- **A triggered ability's sacrifice shows no `pending_cost`**: The Fantasticar's frames would move.
+
+**Lands with its first card, not here.** Checked over every provisioned script: `Exert<`, `K:Bargain`, `K:Convoke`, `Waterbend<` and
+`K:Crew` appear in one script each, so no other card can test them. Of those, none can enter before the stage below.
+
+| item | first testable card | stage | what it must build |
+|---|---|---|---|
+| `Exert` (CR 701.43) | Arena of Glory | M6 | a part, and the skipped untap; it also needs `AddsKeywords` and `Produced$ R R` |
+| Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | through (c2)'s `TapToPay`; it also needs M6's restriction and M7's graveyard cast |
+| Bargain (CR 702.166) | Beseech the Mirror | M7 | an optional additional cost, read through `ChosenCost::paid` |
+| Waterbend (CR 701.67) | Invasion Submersible | M10 | through `TapToPay`, with `Exhaust$` |
+| Crew (CR 301.7) | Unlicensed Hearse | M10 | an activation whose cost taps other creatures |
+| `Imprint$` that outlives the resolution, an `ObjectSet` on the permanent | Chrome Mox | M9 | the slot on the source, with `ForgetImprinted$` |
+| `Discard<1/Hand>` on a trigger | Phyrexian Dragon Engine | M12 | `whole_hand` in `TRIGGER`'s table |
+| `Discard<N/...>` on an activation | none provisioned | | one `PickRule` row in `kActivationSteps` and its `cost_form_pays` line |
+| `Exile<N/filter>`, `ActivationZone$` past Hand and Graveyard, hybrid pips on any other cost | none provisioned | | a row and a call of the function already there |
+
+(c1)'s evidence: `replay` byte-identical at every commit and `tests/corpus`, `tests/cli` untouched, so no `make regen`. 51 scenario
+files name each card, each ability and each can't-pay case. Every new chooser parks in a scenario the `state` tier snapshots at
+sample 1: the offer, the trigger's pick and mana row, the form of an additional cost and its pick, a hand card's row, a hybrid pip on an
+activation and on an alternative cost. `decks/tests/mech_cost_kinds` is the fixture: 100 games each of `explore` and `explore:patient`,
+every key hit, no error. Its one draw, and 33 before the fixture went to one Hellkite a side, is both players decking on Runehorn
+Hellkite's draw seven (CR 104.4a), read in each log. 96 games under `--selfcheck-knowledge` at sample 1, half `--no-auto-mana` (73 NameCard
+resolutions among them), and 40 random-agent games under `--offer-cancel`: no error. `scripted` and Python `explore` each play six
+games of it. No candidate deck holding one of these cards is wholly in the vocab yet, so the fixture is the only deck that plays them.
+
+**(c2) must:** put `TapToPay` at `PAY_MANA` and `pay_mana_cost`, and fix `mana_spent` there (Improvise is greedy; a real Convoke choice
+is a deliberate-change commit with `make regen`); judge the oddities above; and read `ChosenCost::paid` or say why not. A new prompt
+keeps `AskKind::CHOICE` unless it is a step of paying mana.
+
 **Today.** Flashback, escape and alt casts skip the X, phyrexian and delve steps. Eligibility for tapping to pay is hard-coded to
 artifacts, only generic is paid, activations pass no improvise, and `mana_spent` counts tapped pips.
 
@@ -589,18 +663,12 @@ artifacts, only generic is paid, activations pass no improvise, and `mana_spent`
 
 - `TapToPay`: Improvise, Convoke and Waterbend as one payment modifier with an eligibility filter and a pip rule. Fix the
   `mana_spent` count: Sunburst and Converge depend on it.
-- `ActivationZone$` for any zone. A mana ability activated from hand must work without a permanent
-  (Simian Spirit Guide): today the zone path sends the card to the graveyard and the mana branch
-  needs a `Permanent`.
 - Extend the state format's `cost_part` enum, the pending-cost table's view, when a new part has one.
 
 **Migrate.** Improvise is greedy with no prompt in machine mode; giving Convoke a real choice changes
 decisions, so that is a deliberate-change commit with `make regen`.
 
-**Lands here.** `Discard<N/...>`, `Exile<1/CARDNAME>`, `ExileFromHand`, `ExileFromGrave`, `Exert`
-(CR 701.43), Waterbend (CR 701.67), `AlternateAdditionalCost`, Bargain (CR 702.166), Convoke (CR
-702.51), Crew and Vehicles (CR 301.7); hybrid pips in any cost (Fiend Artisan, Vibrance), a mana cost
-on a trigger (Nihil Spellbomb), `Activator$` on a cost static (Defense Grid).
+**Lands here.** `TapToPay`; the rest landed in (c1) or has its stage in the table above.
 
 **Test.** Each part paid from each path (cast, activate, mana ability, trigger, unless); cost-payment
 order CR 601.2h; a mid-payment suspension for every chooser; can't-pay hides the option.
@@ -828,6 +896,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **Clean-card batch (2026-11-05).** Nineteen cards entered with no later stage needed, ids 381 to 399: Temur Sabertooth; Burning Wish; Elvish Mystic, Fyndhorn Elves, Llanowar Elves, Elvish Visionary, Quirion Ranger, Wirewood Symbiote, Stitcher's Supplier; Taiga, Watery Grave, Great Furnace, Lush Portico, Nurturing Peatland, Raucous Theater; Faithless Looting, Tendrils of Agony, Empty the Warrens, Unmask. None was placed. Three reported clean and played wrong until fixed: a numeric `ChangeNum$` on the battlefield multi-select, an untargeted Pump's `Defined$`, and a bare `Origin$ Stack` move.
 
 **Second clean-card batch (2026-11-05).** Eighteen cards entered, ids 400 to 417: Aluren, Archive Arbiter, Basalt Monolith, Chromatic Star, Collective Brutality, Crucible of Worlds, Cursed Totem, Displacer Kitten, Fiery Confluence, Giant's Boulder, Goblin Engineer, Haywire Mite, Legion Extruder, Mishra's Research Desk, Portable Hole, Soul-Guide Lantern, Thought Monitor, Thundertrap Trainer. None was placed: Aluren needed nothing from M7, its free cast and flash already read through `free_cast_grant`. Two reported clean and played wrong until fixed: an unearth offered on the battlefield (Mishra's Research Desk, and Cityscape Leveler before it) and a token returning from a same-resolution exile (Displacer Kitten, and Eldrazi Confluence before it). One gap stays, in `docs/rules_deviations.md`: the return of an "until" exile uses the stack, against CR 610.3.
+
+**M5 (c1) (2026-11-06).** All eleven of the M5 row entered, ids 418 to 428, the Robot token 920: Defense Grid, Formidable Speaker, Melded Moxite, Nihil Spellbomb, The Echoverse Fulcrum, The Stone Brain, Runehorn Hellkite, Simian Spirit Guide, Bitter Triumph, Fiend Artisan, Vibrance. None was placed elsewhere. No other candidate card's findings reached zero: the nearest have one finding each, of a later stage (Aphetto Alchemist, Cyclonic Rift, Engineered Explosives, Fury, Hullbreacher, Massacre, Renegade Rallier, Sink into Stupor, Sundering Eruption, Wear/Tear). Two had parts that reported clean and played wrong until fixed: Vibrance and The Stone Brain (M5's Unit (c1)).
 
 | last stage | cards (all stages needed) |
 |---|---|

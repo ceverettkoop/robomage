@@ -40,15 +40,6 @@
       ],
       "size": "M"
      },
-     "Discard-a-card activation cost": {
-      "cards": [
-       "Formidable Speaker"
-      ],
-      "findings": [
-       "cost:Discard"
-      ],
-      "size": "M"
-     },
      "Hogaak casting": {
       "cards": [
        "Hogaak, Arisen Necropolis"
@@ -61,94 +52,73 @@
        "static_param:ValidSource"
       ],
       "size": "L"
-     },
-     "Hybrid pips in costs": {
-      "cards": [
-       "Vibrance"
-      ],
-      "findings": [
-       "cost:Hybrid"
-      ],
-      "size": "S"
      }
     },
     "needs": {
      "Allosaurus Shepherd": [
       "AnimateAll power, toughness and types"
      ],
-     "Formidable Speaker": [
-      "Discard-a-card activation cost"
-     ],
      "Hogaak, Arisen Necropolis": [
       "Convoke (CR 702.51)",
       "Hogaak casting"
-     ],
-     "Vibrance": [
-      "Hybrid pips in costs"
      ]
     },
     "new_cards": [
      "Allosaurus Shepherd",
-     "Formidable Speaker",
-     "Hogaak, Arisen Necropolis",
-     "Vibrance"
+     "Hogaak, Arisen Necropolis"
     ],
-    "size_points": 16
+    "size_points": 12
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "4 new card(s): 0 clean, 4 need 5 mechanic(s) (16 points)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (12 points)",
+   "time": "2026-11-06T02:52:32"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 28,
+    "in_vocab": 30,
     "no_script": [],
     "not_in_vocab": [
      "Allosaurus Shepherd",
-     "Formidable Speaker",
-     "Hogaak, Arisen Necropolis",
-     "Vibrance"
+     "Hogaak, Arisen Necropolis"
     ]
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "32 cards: 28 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-06T02:52:32"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "AnimateAll power, toughness and types",
      "Convoke (CR 702.51)",
-     "Discard-a-card activation cost",
-     "Hogaak casting",
-     "Hybrid pips in costs"
+     "Hogaak casting"
     ]
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "5 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Discard-a-card activation cost, Hogaak casting, Hybrid pips in costs",
-   "time": "2026-11-05T22:01:58"
+   "summary": "3 mechanic(s) to implement: AnimateAll power, toughness and types, Convoke (CR 702.51), Hogaak casting",
+   "time": "2026-11-06T02:52:32"
   },
   "parse": {
    "detail": {
@@ -180,26 +150,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/a/allosaurus_shepherd.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Formidable Speaker": {
-      "card": "Formidable Speaker",
-      "faces": [
-       "Formidable Speaker"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ Discard<1/Card>",
-        "kind": "cost",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigSearch | TriggerDescription$ When this creature enters, you may discard a card. If you do, search your library for a creature card, reveal it, put it into your hand, then shuffle.",
-        "name": "Discard"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/f/formidable_speaker.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -260,46 +210,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Vibrance": {
-      "card": "Vibrance",
-      "faces": [
-       "Vibrance"
-      ],
-      "findings": [
-       {
-        "detail": "alternative cost RG RG",
-        "kind": "cost",
-        "line": "K:Evoke:RG RG",
-        "name": "Hybrid"
-       },
-       {
-        "detail": "alternative cost RG RG",
-        "kind": "cost",
-        "line": "K:Evoke:RG RG",
-        "name": "Hybrid"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/v/vibrance.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "4 new card(s), 4 with findings (13 findings), 0 without a script",
-   "time": "2026-11-05T22:01:58"
+   "summary": "2 new card(s), 2 with findings (10 findings), 0 without a script",
+   "time": "2026-11-06T02:52:32"
   },
   "provision": {
    "detail": {
@@ -313,11 +237,11 @@
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "scrape": {
    "detail": {

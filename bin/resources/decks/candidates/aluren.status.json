@@ -20,24 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Cost statics by player (Defense Grid)": {
-      "cards": [
-       "Defense Grid"
-      ],
-      "findings": [
-       "static_param:Activator"
-      ],
-      "size": "S"
-     },
-     "Discard-a-card activation cost": {
-      "cards": [
-       "Formidable Speaker"
-      ],
-      "findings": [
-       "cost:Discard"
-      ],
-      "size": "M"
-     },
      "Dungeons and venture (CR 309, 701.49)": {
       "cards": [
        "Acererak the Archlich"
@@ -62,73 +44,61 @@
      "Acererak the Archlich": [
       "Dungeons and venture (CR 309, 701.49)",
       "UnlessCost on more effects"
-     ],
-     "Defense Grid": [
-      "Cost statics by player (Defense Grid)"
-     ],
-     "Formidable Speaker": [
-      "Discard-a-card activation cost"
      ]
     },
     "new_cards": [
-     "Acererak the Archlich",
-     "Defense Grid",
-     "Formidable Speaker"
+     "Acererak the Archlich"
     ],
-    "size_points": 27
+    "size_points": 23
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (27 points)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (23 points)",
+   "time": "2026-11-06T02:52:31"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 29,
+    "in_vocab": 31,
     "no_script": [],
     "not_in_vocab": [
-     "Acererak the Archlich",
-     "Defense Grid",
-     "Formidable Speaker"
+     "Acererak the Archlich"
     ]
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "32 cards: 29 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-05T22:01:57"
+   "summary": "32 cards: 31 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T02:52:31"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Cost statics by player (Defense Grid)",
-     "Discard-a-card activation cost",
      "Dungeons and venture (CR 309, 701.49)",
      "UnlessCost on more effects"
     ]
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Cost statics by player (Defense Grid), Discard-a-card activation cost, Dungeons and venture (CR 309, 701.49), UnlessCost on more effects",
-   "time": "2026-11-05T22:01:58"
+   "summary": "2 mechanic(s) to implement: Dungeons and venture (CR 309, 701.49), UnlessCost on more effects",
+   "time": "2026-11-06T02:52:31"
   },
   "parse": {
    "detail": {
@@ -169,60 +139,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Defense Grid": {
-      "card": "Defense Grid",
-      "faces": [
-       "Defense Grid"
-      ],
-      "findings": [
-       {
-        "detail": "RaiseCost Activator$ Player.!Active",
-        "kind": "static_param",
-        "line": "S:Mode$ RaiseCost | Activator$ Player.!Active | Type$ Spell | Amount$ 3 | Description$ Each spell costs {3} more to cast except during its controller's turn.",
-        "name": "Activator"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/d/defense_grid.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Formidable Speaker": {
-      "card": "Formidable Speaker",
-      "faces": [
-       "Formidable Speaker"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ Discard<1/Card>",
-        "kind": "cost",
-        "line": "T:Mode$ ChangesZone | Origin$ Any | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigSearch | TriggerDescription$ When this creature enters, you may discard a card. If you do, search your library for a creature card, reveal it, put it into your hand, then shuffle.",
-        "name": "Discard"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/f/formidable_speaker.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-05T22:01:58"
+   "summary": "1 new card(s), 1 with findings (3 findings), 0 without a script",
+   "time": "2026-11-06T02:52:31"
   },
   "provision": {
    "detail": {
@@ -238,11 +168,11 @@
    "inputs": {
     "deck": "9183e5ca9e8f2e7032692bbc0d3e654b9205355d13a36f127b81eb8553990d45",
     "scripts": "d41c289810ba779df46e4e6d62da833802a143599e5426d2a2ddccfaa905738b",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:57"
+   "time": "2026-11-06T02:52:31"
   },
   "scrape": {
    "detail": {

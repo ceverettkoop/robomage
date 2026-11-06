@@ -73,15 +73,6 @@
       ],
       "size": "M"
      },
-     "Exile-the-card-itself costs": {
-      "cards": [
-       "Simian Spirit Guide"
-      ],
-      "findings": [
-       "cost:ExileFromHand"
-      ],
-      "size": "S"
-     },
      "Fable of the Mirror-Breaker": {
       "cards": [
        "Fable of the Mirror-Breaker"
@@ -90,15 +81,6 @@
        "ability_param:CopyPermanent.AddKeywords",
        "ability_param:CopyPermanent.AtEOT",
        "ability_param:Discard.RememberDiscarded"
-      ],
-      "size": "M"
-     },
-     "Imprint past the resolution": {
-      "cards": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       "ability_param:ChangeZone.Imprint"
       ],
       "size": "M"
      },
@@ -117,8 +99,7 @@
       "Boast (CR 702.142)"
      ],
      "Chrome Mox": [
-      "Chrome Mox imprint",
-      "Imprint past the resolution"
+      "Chrome Mox imprint"
      ],
      "Fable of the Mirror-Breaker": [
       "Fable of the Mirror-Breaker"
@@ -133,9 +114,6 @@
      "Shatterskull Smashing": [
       "Divided damage (CR 601.2d)"
      ],
-     "Simian Spirit Guide": [
-      "Exile-the-card-itself costs"
-     ],
      "Sundering Eruption": [
       "Effect with a continuous static"
      ]
@@ -147,27 +125,26 @@
      "Fury",
      "Pyrogoyf",
      "Shatterskull Smashing",
-     "Simian Spirit Guide",
      "Sundering Eruption"
     ],
-    "size_points": 21
+    "size_points": 17
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "8 new card(s): 0 clean, 8 need 9 mechanic(s) (21 points)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "7 new card(s): 0 clean, 7 need 7 mechanic(s) (17 points)",
+   "time": "2026-11-06T02:52:32"
   },
   "diff": {
    "detail": {
     "distinct": 22,
-    "in_vocab": 14,
+    "in_vocab": 15,
     "no_script": [],
     "not_in_vocab": [
      "Broadside Bombardiers",
@@ -176,18 +153,17 @@
      "Fury",
      "Pyrogoyf",
      "Shatterskull Smashing",
-     "Simian Spirit Guide",
      "Sundering Eruption"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "22 cards: 14 in vocab, 8 new (0 without a script)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "22 cards: 15 in vocab, 7 new (0 without a script)",
+   "time": "2026-11-06T02:52:32"
   },
   "implement": {
    "detail": {
@@ -197,23 +173,21 @@
      "Damage dealt by another object (DamageSource$)",
      "Divided damage (CR 601.2d)",
      "Effect with a continuous static",
-     "Exile-the-card-itself costs",
      "Fable of the Mirror-Breaker",
-     "Imprint past the resolution",
      "Self-or-other zone triggers (Pyrogoyf)"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "9 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Effect with a continuous static, Exile-the-card-itself costs, Fable of the Mirror-Breaker, Imprint past the resolution, Self-or-other zone triggers (Pyrogoyf)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "7 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Effect with a continuous static, Fable of the Mirror-Breaker, Self-or-other zone triggers (Pyrogoyf)",
+   "time": "2026-11-06T02:52:32"
   },
   "parse": {
    "detail": {
@@ -250,12 +224,6 @@
        "Chrome Mox"
       ],
       "findings": [
-       {
-        "detail": "ChangeZone Imprint$ True",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | OptionalDecider$ You | Execute$ TrigExile | TriggerDescription$ Imprint — When CARDNAME enters, you may exile a nonartifact, nonland card from your hand.",
-        "name": "ChangeZone.Imprint"
-       },
        {
         "detail": "Pump ForgetImprinted$ TriggeredCard",
         "kind": "ability_param",
@@ -413,26 +381,6 @@
        -1
       ]
      },
-     "Simian Spirit Guide": {
-      "card": "Simian Spirit Guide",
-      "faces": [
-       "Simian Spirit Guide"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ ExileFromHand<1/CARDNAME>",
-        "kind": "cost",
-        "line": "A:AB$ Mana | Cost$ ExileFromHand<1/CARDNAME> | Produced$ R | ActivationZone$ Hand | SpellDescription$ Add {R}.",
-        "name": "ExileFromHand"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/simian_spirit_guide.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Sundering Eruption": {
       "card": "Sundering Eruption",
       "faces": [
@@ -460,14 +408,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "8 new card(s), 8 with findings (19 findings), 0 without a script",
-   "time": "2026-11-05T22:01:58"
+   "summary": "7 new card(s), 7 with findings (17 findings), 0 without a script",
+   "time": "2026-11-06T02:52:32"
   },
   "provision": {
    "detail": {
@@ -483,11 +431,11 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "scrape": {
    "detail": {

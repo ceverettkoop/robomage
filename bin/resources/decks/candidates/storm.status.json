@@ -20,15 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Abilities activated from any zone": {
-      "cards": [
-       "Runehorn Hellkite"
-      ],
-      "findings": [
-       "ability_param:Discard.ActivationZone"
-      ],
-      "size": "S"
-     },
      "Bargain and free casting (Beseech the Mirror)": {
       "cards": [
        "Beseech the Mirror"
@@ -55,24 +46,6 @@
       ],
       "size": "M"
      },
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Runehorn Hellkite"
-      ],
-      "findings": [
-       "ability_param:Discard.Defined"
-      ],
-      "size": "M"
-     },
-     "Exile-the-card-itself costs": {
-      "cards": [
-       "Runehorn Hellkite"
-      ],
-      "findings": [
-       "cost:ExileFromGrave"
-      ],
-      "size": "S"
-     },
      "Gaea's Will": {
       "cards": [
        "Gaea's Will"
@@ -90,15 +63,6 @@
        "static_form:MayPlay.Graveyard"
       ],
       "size": "L"
-     },
-     "Imprint past the resolution": {
-      "cards": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       "ability_param:ChangeZone.Imprint"
-      ],
-      "size": "M"
      }
     },
     "needs": {
@@ -106,84 +70,72 @@
       "Bargain and free casting (Beseech the Mirror)"
      ],
      "Chrome Mox": [
-      "Chrome Mox imprint",
-      "Imprint past the resolution"
+      "Chrome Mox imprint"
      ],
      "Gaea's Will": [
       "Gaea's Will",
       "Hogaak casting"
-     ],
-     "Runehorn Hellkite": [
-      "Abilities activated from any zone",
-      "Defined$ names no reader acts on",
-      "Exile-the-card-itself costs"
      ]
     },
     "new_cards": [
      "Beseech the Mirror",
      "Chrome Mox",
-     "Gaea's Will",
-     "Runehorn Hellkite"
+     "Gaea's Will"
     ],
-    "size_points": 25
+    "size_points": 17
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "4 new card(s): 0 clean, 4 need 8 mechanic(s) (25 points)",
-   "time": "2026-11-05T22:01:59"
+   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (17 points)",
+   "time": "2026-11-06T02:52:32"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 26,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
      "Beseech the Mirror",
      "Chrome Mox",
-     "Gaea's Will",
-     "Runehorn Hellkite"
+     "Gaea's Will"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "30 cards: 26 in vocab, 4 new (0 without a script)",
-   "time": "2026-11-05T22:01:59"
+   "summary": "30 cards: 27 in vocab, 3 new (0 without a script)",
+   "time": "2026-11-06T02:52:32"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Abilities activated from any zone",
      "Bargain and free casting (Beseech the Mirror)",
      "Chrome Mox imprint",
-     "Defined$ names no reader acts on",
-     "Exile-the-card-itself costs",
      "Gaea's Will",
-     "Hogaak casting",
-     "Imprint past the resolution"
+     "Hogaak casting"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "8 mechanic(s) to implement: Abilities activated from any zone, Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Defined$ names no reader acts on, Exile-the-card-itself costs, Gaea's Will, Hogaak casting, Imprint past the resolution",
-   "time": "2026-11-05T22:01:59"
+   "summary": "4 mechanic(s) to implement: Bargain and free casting (Beseech the Mirror), Chrome Mox imprint, Gaea's Will, Hogaak casting",
+   "time": "2026-11-06T02:52:32"
   },
   "parse": {
    "detail": {
@@ -238,12 +190,6 @@
        "Chrome Mox"
       ],
       "findings": [
-       {
-        "detail": "ChangeZone Imprint$ True",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | OptionalDecider$ You | Execute$ TrigExile | TriggerDescription$ Imprint — When CARDNAME enters, you may exile a nonartifact, nonland card from your hand.",
-        "name": "ChangeZone.Imprint"
-       },
        {
         "detail": "Pump ForgetImprinted$ TriggeredCard",
         "kind": "ability_param",
@@ -307,52 +253,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Runehorn Hellkite": {
-      "card": "Runehorn Hellkite",
-      "faces": [
-       "Runehorn Hellkite"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ 5 R ExileFromGrave<1/CARDNAME>",
-        "kind": "cost",
-        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
-        "name": "ExileFromGrave"
-       },
-       {
-        "detail": "Discard ActivationZone$ Graveyard",
-        "kind": "ability_param",
-        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
-        "name": "Discard.ActivationZone"
-       },
-       {
-        "detail": "Discard Defined$ Player",
-        "kind": "ability_param",
-        "line": "A:AB$ Discard | Cost$ 5 R ExileFromGrave<1/CARDNAME> | ActivationZone$ Graveyard | Defined$ Player | Mode$ Hand | SubAbility$ DBDraw | SpellDescription$ Each player discards their hand, then draws seven cards.",
-        "name": "Discard.Defined"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/r/runehorn_hellkite.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "4 new card(s), 4 with findings (16 findings), 0 without a script",
-   "time": "2026-11-05T22:01:59"
+   "summary": "3 new card(s), 3 with findings (12 findings), 0 without a script",
+   "time": "2026-11-06T02:52:32"
   },
   "provision": {
    "detail": {
@@ -366,11 +280,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:59"
+   "time": "2026-11-06T02:52:32"
   },
   "scrape": {
    "detail": {

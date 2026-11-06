@@ -20,15 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "AlternateAdditionalCost keyword": {
-      "cards": [
-       "Bitter Triumph"
-      ],
-      "findings": [
-       "keyword:AlternateAdditionalCost"
-      ],
-      "size": "S"
-     },
      "Top creature of a graveyard (Shallow Grave)": {
       "cards": [
        "Shallow Grave"
@@ -41,92 +32,66 @@
      }
     },
     "needs": {
-     "Bitter Triumph": [
-      "AlternateAdditionalCost keyword"
-     ],
      "Shallow Grave": [
       "Top creature of a graveyard (Shallow Grave)"
      ]
     },
     "new_cards": [
-     "Bitter Triumph",
      "Shallow Grave"
     ],
-    "size_points": 2
+    "size_points": 1
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (2 points)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
+   "time": "2026-11-06T02:52:32"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 26,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
-     "Bitter Triumph",
      "Shallow Grave"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "28 cards: 26 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "28 cards: 27 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T02:52:32"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "AlternateAdditionalCost keyword",
      "Top creature of a graveyard (Shallow Grave)"
     ]
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: AlternateAdditionalCost keyword, Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-11-05T22:01:58"
+   "summary": "1 mechanic(s) to implement: Top creature of a graveyard (Shallow Grave)",
+   "time": "2026-11-06T02:52:32"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Bitter Triumph": {
-      "card": "Bitter Triumph",
-      "faces": [
-       "Bitter Triumph"
-      ],
-      "findings": [
-       {
-        "detail": "AlternateAdditionalCost:PayLife<3>:Discard<1/Card>",
-        "kind": "keyword",
-        "line": "K:AlternateAdditionalCost:PayLife<3>:Discard<1/Card>",
-        "name": "AlternateAdditionalCost"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/b/bitter_triumph.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Shallow Grave": {
       "card": "Shallow Grave",
       "faces": [
@@ -158,14 +123,14 @@
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "e71d60e1cfb8448e34667171efeb613a67293bc48141308a787f34d6770e0dbc",
+    "engine": "f380172250a0d5239c417bb2eba8411a74c64f33b94371b556cf90278fefbf31",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-05T22:01:58"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-06T02:52:32"
   },
   "provision": {
    "detail": {
@@ -179,11 +144,11 @@
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "d6415e16a632d5a2ce05813653e2c277828432cc1a3ececca64685ee0c8bca98"
+    "vocab": "6bcd2e796145112bc8a1e8fb447058f610c3e7fb514085001c11969061af107d"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-05T22:01:58"
+   "time": "2026-11-06T02:52:32"
   },
   "scrape": {
    "detail": {
