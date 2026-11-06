@@ -8,6 +8,7 @@
 
 #include "../classes/colors.h"
 #include "filter_spec.h"
+#include "object_spec.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -131,6 +132,8 @@ struct DiscardParams {
 // Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
+    // RevealDefined$ <objects> (Stronghold Gambit's DBRevealCard): the cards a Reveal reveals.
+    ObjectSpec reveal_defined;
     bool no_reveal = false;  // NoReveal$ True
     // RevealOptional$ True (Delver of Secrets): "You may reveal that card" — the controller
     // chooses whether to reveal the peeked card; without it the card is revealed.

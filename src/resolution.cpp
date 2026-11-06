@@ -520,6 +520,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
         // The effect is done: what it reported goes into the resolution's memory, once, before
         // anything chained after it can read it.
+        report_effect(ab, EffectObjects::FINISHED);
         apply_memory_ops(ab);
         coverage_effect(ab.def->kind);
         // A repeating effect's body is its own to run; what is chained follows it.

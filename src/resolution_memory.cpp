@@ -5,6 +5,7 @@
 
 #include "classes/game.h"
 #include "components/ability.h"
+#include "queries/affected.h"
 
 extern Game cur_game;
 
@@ -13,6 +14,7 @@ enum class ParamForm {
     NONE,            // no param: the effect kind makes the write
     IS_TRUE,         // True
     NAMES_TARGETED,  // any value naming Targeted (RememberObjects$ Targeted, ThisTargetedCard)
+    NAMES_OBJECTS,   // a Defined$ name, which the op takes as its objects
 };
 
 // One memory write: asked for by `param`, or with a null param made by every effect of `kind`.
@@ -54,6 +56,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::CHOSEN_CARDS, MemoryAction::REPLACE, EffectObjects::CLEANED}},
     {"ClearImprinted", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::CLEANED}},
+    {"ForgetObjects", ParamForm::NAMES_OBJECTS, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::FORGET, EffectObjects::FINISHED}},
     {nullptr, ParamForm::NONE, EffectKind::Token,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
     {nullptr, ParamForm::NONE, EffectKind::Investigate,
@@ -78,7 +82,7 @@ static void add_to_slot(MemorySlot slot, const ObjectRef &ref);
 
 static void add_memory_op(AbilityDef &def, const MemoryOp &op) {
     for (MemoryOp &held : def.memory_ops) {
-        if (held.slot != op.slot || held.action != op.action) continue;
+        if (held.slot != op.slot || held.action != op.action || held.objects != op.objects) continue;
         held.sources |= op.sources;
         return;
     }
@@ -93,6 +97,8 @@ static bool form_takes(ParamForm form, const std::string &value) {
             return value == "True";
         case ParamForm::NAMES_TARGETED:
             return value.find("Targeted") != std::string::npos;
+        case ParamForm::NAMES_OBJECTS:
+            return !parse_object_spec(value).is(ObjectSpec::UNREAD);
     }
     return false;
 }
@@ -135,8 +141,13 @@ bool read_memory_param(AbilityDef &def, const std::string &key, const std::strin
     bool known = false;
     for (const MemoryRow &row : kMemoryRows) {
         if (!row.param || key != row.param) continue;
+        // A name with no row stays unread, for --parse-report to say so.
+        if (row.form == ParamForm::NAMES_OBJECTS && !form_takes(row.form, value)) continue;
         known = true;
-        if (form_takes(row.form, value)) add_memory_op(def, row.op);
+        if (!form_takes(row.form, value)) continue;
+        MemoryOp op = row.op;
+        if (row.form == ParamForm::NAMES_OBJECTS) op.objects = parse_object_spec(value);
+        add_memory_op(def, op);
     }
     return known;
 }
@@ -184,6 +195,10 @@ void apply_memory_ops(Ability &ab) {
     if (ab.report.reported == 0) return;
     for (const MemoryOp &op : ab.def->memory_ops) {
         if (!(op.sources & ab.report.reported)) continue;
+        if (op.action == MemoryAction::FORGET) {
+            for (Entity e : resolve_objects(op.objects, ResolveCtx::of(ab))) forget_remembered(e);
+            continue;
+        }
         if (op.action == MemoryAction::REPLACE) clear_slot(op.slot);
         for (const ReportedObject &object : ab.report.objects)
             if (object.sources & op.sources) add_to_slot(op.slot, object.ref);

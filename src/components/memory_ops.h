@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../object_ref.h"
+#include "object_spec.h"
 
 // What a resolution remembers of its effects (CR 608.2c: a later instruction may act on what an
 // earlier one did) is data on the definition: the MemoryOps parsed from its params, rows of the
@@ -30,6 +31,7 @@ struct EffectObjects {
             CHOSEN_IMPRINTED = 1u << 12,  // the card a ChooseCard chose from the imprinted cards
             KEPT = 1u << 13,              // a permanent a ChooseEach$ ChooseCard kept
             CLEANED = 1u << 14,           // a Cleanup ran (it has no objects)
+            FINISHED = 1u << 15,          // any effect is done (the step reports it)
         };
 };
 
@@ -43,6 +45,7 @@ enum class MemorySlot {
 enum class MemoryAction {
     APPEND,   // add the reported objects
     REPLACE,  // the reported objects become the slot's whole content, none at all included
+    FORGET,   // the op's own objects leave the slot
 };
 
 // One write: the objects reported from `sources` go to `slot`. Rows of an ability that share a
@@ -51,6 +54,7 @@ struct MemoryOp {
         MemorySlot slot = MemorySlot::REMEMBERED;
         MemoryAction action = MemoryAction::APPEND;
         uint32_t sources = 0;
+        ObjectSpec objects;  // FORGET's objects, resolved as the op runs
 };
 
 // One object an effect reported, stamped as it was then.

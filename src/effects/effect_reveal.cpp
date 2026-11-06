@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "../queries/affected.h"
+#include "../queries/characteristics.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../classes/game.h"
@@ -28,6 +30,15 @@ namespace effects {
 // no-op. Subabilities (the slowtrip DelayedTrigger draw) still chain afterward.
 HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const PeekParams *pp = std::get_if<PeekParams>(&ab.def->params);
+    // RevealDefined$ (Stronghold Gambit): the player it names reveals the cards it names to all
+    // players (CR 701.20a).
+    if (pp && !pp->reveal_defined.is(ObjectSpec::DEFAULT)) {
+        const std::vector<Entity> cards = resolve_objects(pp->reveal_defined, ResolveCtx::of(ab));
+        reveal_cards(cards);
+        for (Entity e : cards)
+            game_log("%s reveals %s\n", player_name(affected_player(ab)).c_str(), entity_name(e).c_str());
+        return HandlerResult::DONE_RUN_SUBS;
+    }
     if (!pp || !pp->random_from_hand) {
         // No other Reveal mode is modeled yet; fall through to subability chaining as a no-op.
         return HandlerResult::DONE_RUN_SUBS;
@@ -60,6 +71,7 @@ HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
 
 bool parse_reveal(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "Random") { effect_params<PeekParams>(ab).random_from_hand = (value == "True"); return true; }
+    if (key == "RevealDefined") { effect_params<PeekParams>(ab).reveal_defined = parse_object_spec(value); return true; }
     return false;
 }
 

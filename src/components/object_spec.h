@@ -30,6 +30,7 @@ struct ObjectSpec {
         EQUIPPED,            // the object the source Equipment is attached to
         REPLACED_CARD,       // the object a replacement effect's event acts on
         VALID,               // every permanent matching `filter`
+        VALID_HAND,          // every card in a hand matching `filter`
 
         YOU,                         // the ability's controller
         OPPONENT,                    // that controller's single opponent
@@ -45,7 +46,7 @@ struct ObjectSpec {
     };
 
     Kind kind = DEFAULT;
-    FilterSpec filter;  // Valid <filter>'s filter; empty for every other kind
+    FilterSpec filter;  // Valid / ValidHand <filter>'s filter; empty for every other kind
 
     ObjectSpec() = default;
     explicit ObjectSpec(Kind k) : kind(k) {}

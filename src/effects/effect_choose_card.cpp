@@ -20,6 +20,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../resolution_memory.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
@@ -184,7 +185,13 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
         report_object(ab, EffectObjects::CHOSEN, chosen);
-        game_log("%s chooses %s.\n", player_name(chooser).c_str(), entity_name(chosen).c_str());
+        // A card chosen in a hidden zone stays hidden from the other player (CR 101.4a).
+        if (is_public_zone(ab.def->choose_card_zone)) {
+            game_log("%s chooses %s.\n", player_name(chooser).c_str(), entity_name(chosen).c_str());
+        } else {
+            game_log_private(chooser, "%s chooses %s.\n", player_name(chooser).c_str(), entity_name(chosen).c_str());
+            game_log_redacted(chooser, "%s chooses a card.\n", player_name(chooser).c_str());
+        }
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

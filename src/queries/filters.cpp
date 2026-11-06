@@ -193,6 +193,7 @@ static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &c
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_or_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_lowest_cmc_of_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -291,6 +292,14 @@ static const QualifierRow kQualifierRows[] = {
     // "ControlledBy Remembered": the object's controller is a remembered player (Chaos Defiler's "a
     // nonland permanent that player controls", a RepeatEach's current player).
     set_row("ControlledBy Remembered", ev_controlled_or_owned_by_set, ObjectSpec::REMEMBERED_PLAYERS),
+    // RememberedPlayerCtrl: the same, in Stronghold Gambit's "a card in their hand". Count$Valid's
+    // never reaches this row: it counts as that player's YouCtrl (svar_eval.cpp).
+    set_row("RememberedPlayerCtrl", ev_controlled_or_owned_by_set, ObjectSpec::REMEMBERED_PLAYERS),
+    // lowestRememberedCMC: a remembered card, with no remembered card of lower mana value (Stronghold
+    // Gambit: "each creature card revealed this way with the lowest mana value"). The comparison is
+    // with the remembered cards, not with the candidates a filter is matched over, so it is no
+    // population row: a card left in hand is not among them, whatever its mana value.
+    set_row("lowestRememberedCMC", ev_lowest_cmc_of_set, ObjectSpec::REMEMBERED),
     // TargetedPlayerCtrl / TargetedPlayerOwn: controlled or owned by the player the ability targets
     // (Strategic Betrayal: "a creature they control and their graveyard"). Count$Valid's
     // TargetedPlayerCtrl never reaches these: it counts as that player's YouCtrl (svar_eval.cpp).
@@ -411,7 +420,6 @@ static const QualifierRow kQualifierRows[] = {
     elsewhere_row("NotDefinedTargeted"),
     elsewhere_row("sharesNameWith Targeted"),
     elsewhere_row("ChosenType"),
-    elsewhere_row("RememberedPlayerCtrl"),
     elsewhere_row("wasCast"),
     elsewhere_row("wasCastFromYourHandByYou"),
     elsewhere_row("IsTriggerRemembered"),
@@ -829,6 +837,17 @@ static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, co
             if (v.colors.count(color)) return true;
     }
     return false;
+}
+
+static bool ev_lowest_cmc_of_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    coverage_row("lowestRememberedCMC");
+    const std::vector<Entity> set = resolve_filter_objects(q.set, set_context(ctx));
+    if (std::find(set.begin(), set.end(), v.entity) == set.end()) return false;
+    for (Entity e : set)
+        if (global_coordinator.entity_has_component<CardData>(e) &&
+            object_mana_value(e, global_coordinator.GetComponent<CardData>(e)) < v.cmc)
+            return false;
+    return true;
 }
 
 static bool ev_you_own(const CharView &v, const Qualifier &, const MatchCtx &ctx) {

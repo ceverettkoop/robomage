@@ -1,0 +1,60 @@
+{
+  "name": "cr202_3_stronghold_gambit_tied_creatures_both_enter",
+  "why": "CR 202.3: 'each creature card revealed this way with the lowest mana value': a tie moves every tied creature, each onto the battlefield under its owner's control",
+  "hand_a": [
+    "Stronghold Gambit",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Scryb Ranger",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stronghold Gambit",
+    "A:choice:Grizzly Bears",
+    "B:choice:Scryb Ranger",
+    "B:attack:Scryb Ranger"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Player A moves Grizzly Bears to the battlefield",
+    "Player B moves Scryb Ranger to the battlefield",
+    "Scryb Ranger attacking Player A"
+  ]
+}

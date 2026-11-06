@@ -1,0 +1,59 @@
+{
+  "name": "cr101_4a_stronghold_gambit_choice_hidden_until_revealed",
+  "why": "CR 101.4a/b: a choice in a hidden zone stays hidden until the reveal: as Player B chooses, B's frame holds nothing of Player A's hand, though A has chosen",
+  "hand_a": [
+    "Stronghold Gambit",
+    "Air Elemental",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stronghold Gambit",
+    "A:choice:Air Elemental"
+  ],
+  "max_decisions": 4,
+  "expect_dump_final_not": [
+    "^B d=\\d+ \\S+ \\S+ known_hand Air Elemental"
+  ],
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=6: Air Elemental 0-1"
+  ]
+}

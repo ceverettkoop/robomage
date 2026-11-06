@@ -45,6 +45,7 @@ static void objects_exiled_with(const ObjectSpec &spec, const ResolveCtx &ctx, s
 static void objects_enchanted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_equipped(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_valid(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_valid_hand(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void players_you(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_opponent(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_each(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
@@ -59,6 +60,8 @@ static bool read_by_change_zone_all(const AbilityDef &ability);
 static bool read_by_copy_permanent(const AbilityDef &ability);
 static bool read_by_destroy(const AbilityDef &ability);
 static bool read_by_pump(const AbilityDef &ability);
+static bool read_by_reveal_or_pump(const AbilityDef &ability);
+static bool read_by_choose_card_or_reveal(const AbilityDef &ability);
 static bool read_by_each_player(const AbilityDef &ability);
 static bool read_by_no_ability(const AbilityDef &ability);
 static const DefinedRow *row_named(const std::string &value);
@@ -71,9 +74,8 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
-    // Sets only a filter's qualifiers read (IsImprinted; ControlledBy Remembered).
+    // A set only a filter's qualifiers read (IsImprinted).
     {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
-    {nullptr, ObjectSpec::REMEMBERED_PLAYERS, Refers::PLAYER, nullptr, players_remembered},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed zones and fired
@@ -137,6 +139,9 @@ static const DefinedRow kDefinedRows[] = {
     {"ReplacedCard", ObjectSpec::REPLACED_CARD, Refers::OBJECT},
     // Valid <filter> (CopyPermanent's "for each token you control that entered this turn").
     {"Valid ", ObjectSpec::VALID, Refers::OBJECT, objects_valid, nullptr, read_by_copy_permanent},
+    // ValidHand <filter> — the cards in either hand that match (Stronghold Gambit's RevealDefined$
+    // and ForgetObjects$).
+    {"ValidHand ", ObjectSpec::VALID_HAND, Refers::OBJECT, objects_valid_hand, nullptr, read_by_reveal_or_pump},
 
     // You — the effect's player is the source's controller (CR 109.5). Used by self-pain riders
     // like Ancient Tomb's "deals 2 damage to you" sub-ability.
@@ -146,6 +151,10 @@ static const DefinedRow kDefinedRows[] = {
     {"Player.Opponent", ObjectSpec::OPPONENT, Refers::PLAYER, nullptr, players_opponent},
     {"Opponent", ObjectSpec::OPPONENT, Refers::PLAYER, nullptr, players_opponent},
     {"Player", ObjectSpec::EACH_PLAYER, Refers::PLAYER, nullptr, players_each, read_by_each_player},
+    // Player.IsRemembered — the remembered players: a RepeatEach's current player (Stronghold
+    // Gambit's "each player chooses" and "each player reveals").
+    {"Player.IsRemembered", ObjectSpec::REMEMBERED_PLAYERS, Refers::PLAYER, nullptr, players_remembered,
+     read_by_choose_card_or_reveal},
     // TargetedController — the effect's player is the last-known controller of the target the
     // sub-ability inherits (CR 608.2g/h): its parent may already have moved it.
     {"TargetedController", ObjectSpec::TARGETED_CONTROLLER, Refers::PLAYER, nullptr, players_targeted_controller,
@@ -230,6 +239,14 @@ static void objects_valid(const ObjectSpec &spec, const ResolveCtx &ctx, std::ve
         if (permanent_matches_filter(e, spec.filter, match)) out.push_back(e);
 }
 
+static void objects_valid_hand(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out) {
+    MatchCtx match{ctx.controller, ctx.source.lki_entity()};
+    match.resolve = &ctx;
+    for (Entity e : zoned_entities())
+        if (global_coordinator.GetComponent<Zone>(e).location == Zone::HAND && card_matches_filter(e, spec.filter, match))
+            out.push_back(e);
+}
+
 static void objects_equipped(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {
     const Entity equipment = ctx.source.get();
     if (equipment == 0 || !global_coordinator.entity_has_component<Permanent>(equipment)) return;
@@ -288,6 +305,12 @@ static bool read_by_change_zone_all(const AbilityDef &ability) { return ability.
 static bool read_by_copy_permanent(const AbilityDef &ability) { return ability.category == "CopyPermanent"; }
 static bool read_by_destroy(const AbilityDef &ability) { return ability.category == "Destroy"; }
 static bool read_by_pump(const AbilityDef &ability) { return ability.category == "Pump"; }
+static bool read_by_reveal_or_pump(const AbilityDef &ability) {
+    return ability.category == "Reveal" || ability.category == "Pump";
+}
+static bool read_by_choose_card_or_reveal(const AbilityDef &ability) {
+    return ability.category == "ChooseCard" || ability.category == "Reveal";
+}
 
 static bool read_by_each_player(const AbilityDef &ability) {
     return ability.category == "Vote" || ability.category == "Draw" || ability.category == "RepeatEach" ||
