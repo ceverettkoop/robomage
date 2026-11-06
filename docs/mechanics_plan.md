@@ -335,6 +335,49 @@ miss, tie cases for `leastPower`. A `bench` comparison, since compiled filters s
 
 ### M4. Resolution memory and effect control flow (L)
 
+**Progress.** Unit (a), the inert migration, is done (2026-11-05). A definition holds `memory_ops`, rows
+of the one table in `src/resolution_memory.cpp` (types in `src/components/memory_ops.h`): 14 by param
+and 5 by effect kind, for the writes no param asks for (Token, Investigate, Vote, ChooseCard's chosen
+cards). A handler only reports what it did (`report_effect`, `report_object`), at the lines it used to
+write memory, so a ref keeps its stamp. `apply_memory_ops`, one step of `resolve_ability()`, writes it
+once the handler returns anything but `SUSPENDED`. The reports live on the resolving `Ability`, so a
+suspended effect's persist in its `FrameLevel` and the step can run neither twice nor not at all. 38
+write lines in 13 effect files and `resolution.cpp` are gone, with their twelve booleans. `REPLACE`
+reads whether the effect reported at all, not whether it reported objects: a paid unless-cost, a
+declined sacrifice and a dig that finds nothing still empty the set, and a Token or RevealHand that
+returns early leaves it alone.
+
+Not in the after-effect step, and why:
+
+- `RememberTargets` and `RememberObjects$ …Targeted…` are rows, but the step also runs for them as the
+  ability starts to resolve, where the write always was: a DelayedTrigger's watched object and a
+  prevention Effect read the target during their own effect.
+- A multi-zone search reads its own earlier picks. `ZoneSearch::picking` adds the searching effect's
+  reports to `exclude_remembered`, since Doomsday's picks now reach the remembered set only at the end.
+- `chosen_number`, `named_card` and `chosen_type` stay hand-written: each is an effect's own answer, a
+  value with no param, not objects a row could move.
+- RepeatEach's swap and restore of the remembered set, the frame's save and restore, and
+  `restore_remembered_exiled_with` stay: they scope the memory, and no effect reported them.
+
+`RememberDiscarded`, `ImprintCards`, `ImprintPlayed`, `RememberCloaked`, `ForgetObjects`,
+`ForgetImprinted`, `ClearNamedCard` and `Imprint` on a move stay unread findings. Kept as they were,
+each a candidate for the next unit to read: `RememberLKI` works only on the targeted and `Defined$
+Enchanted` branches (hence `MOVED_LKI`); `RememberChanged` is unread on the `Defined$ Remembered`,
+`ExiledWith`, same-name and each-player branches; `RememberChosen` is unread on ChooseEach; every
+Token and Investigate replaces the remembered set with or without `RememberTokens`, so a Clue made
+mid-chain drops what was remembered; `RememberObjects$ ThisTargetedCard` counts as `Targeted` by
+substring. A row that could read one of these has only to report from that branch.
+
+`replay` stayed byte-identical at each commit, `make registry` a no-op, parse reports and the cards
+frame unchanged over all 430 scripts, `onboard.py check` 0 stale. 6,144 explore games across the league decks
+byte-identical, as were 1,200 on two decks of the rows' own cards; `--selfcheck-state` clean and identical
+on 368 of them. Removing `ZoneSearch::picking` changes 27 of 120 of those games and fails `replay`, so they
+reach it. `bench` flat (130.3 to 129.9 us, median of 11 alternating release runs).
+
+No iteration state went into `EffectRuntime`: nothing would read it yet. What remains is the rest of
+**Build** below: the ignored params as rows, imprint on the source permanent, `Repeat`, `Branch`, generic
+`UnlessCost`, the small categories, the rows moved here from M2 and M3, and the M4 cards.
+
 **Today.** 14 effect files write memory by hand; only `RememberTargets` is generic; imprint and
 forget params are ignored; per-permanent memory is `chosen_type`, `chosen_name`, `exiled_with`.
 `RepeatEach` exists; `Repeat` and `Branch` do not (unknown categories resolve as no-ops), and no
