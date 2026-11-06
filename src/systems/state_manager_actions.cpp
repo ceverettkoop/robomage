@@ -70,6 +70,11 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
                              bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
                                    int ability_index);
+// Offer the abilities of `cards`, in `zone`, that their owner activates from there.
+static void offer_zone_activations(std::vector<LegalAction> &actions, const std::vector<Entity> &cards,
+                                   Zone::ZoneValue zone, Zone::Ownership player, bool sorcery_window,
+                                   std::shared_ptr<Orderer> orderer);
+static std::string zone_activation_label(const AbilityDef &def, const std::string &name, Zone::ZoneValue zone);
 
 // The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
 // stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
@@ -323,6 +328,30 @@ static LegalAction activate_action(Entity source, const Ability &ab, const std::
     la.category = ActionCategory::ACTIVATE_ABILITY;
     la.option_ordinal = ability_index;
     return la;
+}
+
+static void offer_zone_activations(std::vector<LegalAction> &actions, const std::vector<Entity> &cards,
+                                   Zone::ZoneValue zone, Zone::Ownership player, bool sorcery_window,
+                                   std::shared_ptr<Orderer> orderer) {
+    for (Entity card : cards) {
+        if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+        const CardData &card_data = global_coordinator.GetComponent<CardData>(card);
+        int ability_index = -1;  // ordinal: see the battlefield loop in determine_legal_actions
+        for (const auto &ab : card_data.abilities) {
+            ++ability_index;
+            if (ab->ability_type != AbilityDef::ACTIVATED || ab->activation_zone != zone) continue;
+            const Ability zone_ab(ab);
+            if (!can_activate_now(zone_ab, card, player, sorcery_window, orderer)) continue;
+            actions.push_back(
+                activate_action(card, zone_ab, zone_activation_label(*ab, card_data.name, zone), ability_index));
+        }
+    }
+}
+
+static std::string zone_activation_label(const AbilityDef &def, const std::string &name, Zone::ZoneValue zone) {
+    if (def.is_ninjutsu) return "Ninjutsu " + name;
+    if (def.is_unearth) return "Unearth " + name;
+    return "Activate " + name + " from " + (zone == Zone::GRAVEYARD ? "graveyard" : "hand") + " (" + def.category + ")";
 }
 
 // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
@@ -970,42 +999,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             actions.push_back(activate_action(entity, ab, desc, ability_index));
         }
     }
-    // Check hand for cards with ActivationZone$ Hand abilities (e.g. Talon Gates of Madara)
-    for (auto card_entity : hand) {
-        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        int hand_ability_index = -1;  // ordinal: see the battlefield loop above
-        for (const auto &ab : card_data.abilities) {
-            ++hand_ability_index;
-            if (ab->ability_type != AbilityDef::ACTIVATED) continue;
-            if (ab->activation_zone != Zone::HAND) continue;
-            const Ability hand_ab(ab);
-            if (!can_activate_now(hand_ab, card_entity, priority_player, sorcery_window, orderer))
-                continue;
-            std::string desc = ab->is_ninjutsu
-                ? ("Ninjutsu " + card_data.name)
-                : ("Activate " + card_data.name + " from hand (" + ab->category + ")");
-            actions.push_back(activate_action(card_entity, hand_ab, desc, hand_ability_index));
-        }
-    }
-
-    // Check the graveyard for cards with ActivationZone$ Graveyard abilities (Unearth, CR 702.84).
-    // Such abilities are activated from the graveyard at sorcery speed (controller's main phase,
-    // empty stack, holding priority) and return the card to the battlefield.
-    for (auto card_entity : orderer->get_graveyard(priority_player)) {
-        if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
-        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        int gy_ability_index = -1;  // ordinal: see the battlefield loop above
-        for (const auto &ab : card_data.abilities) {
-            ++gy_ability_index;
-            if (ab->ability_type != AbilityDef::ACTIVATED) continue;
-            if (ab->activation_zone != Zone::GRAVEYARD) continue;
-            const Ability gy_ab(ab);
-            if (!can_activate_now(gy_ab, card_entity, priority_player, sorcery_window, orderer))
-                continue;
-            actions.push_back(activate_action(card_entity, gy_ab, "Unearth " + card_data.name,
-                                              gy_ability_index));
-        }
-    }
+    // Abilities that function from the hand or the graveyard (CR 113.6b): Talon Gates of Madara,
+    // ninjutsu, Unearth (CR 702.84), Runehorn Hellkite.
+    offer_zone_activations(actions, hand, Zone::HAND, priority_player, sorcery_window, orderer);
+    offer_zone_activations(actions, orderer->get_graveyard(priority_player), Zone::GRAVEYARD, priority_player,
+                           sorcery_window, orderer);
 
     // With auto-mana off every collected mana ability is listed, so mana can be floated
     // manually whether or not it contributes to a castable spell.

@@ -398,8 +398,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.
     // Same flow: select targets, choose and pay the costs, and the ability becomes activated (the
     // ZONE_TARGET step, converging on the shared cost steps).
-    if ((ability.def->activation_zone == Zone::HAND || ability.def->activation_zone == Zone::GRAVEYARD) &&
-        !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
+    if (ability.def->activation_zone != -1 && !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(permanent_entity);
         Zone::Ownership ctrl = card_zone.owner;
         pa = Game::PendingActivation{};

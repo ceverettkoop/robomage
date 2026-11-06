@@ -66,6 +66,9 @@ static bool read_cost_count(const std::string &text, int &count);
 static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context);
 static bool read_cost_token(const std::string &tok, CostPart &part);
 static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part);
+// Is `zone` one determine_legal_actions offers abilities from (offer_zone_activations)? An
+// ActivationZone$ naming another stays unread, a finding. No script names one.
+static bool activation_zone_offered(Zone::ZoneValue zone);
 static bool read_loyalty_cost_token(const std::string &tok, CostPart &part);
 static bool read_exile_from_grave_token(const std::string &tok, CostPart &part);
 static bool cost_form_pays(CostForm form, const CostPart &part);
@@ -691,6 +694,8 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
     }
     return false;
 }
+
+static bool activation_zone_offered(Zone::ZoneValue zone) { return zone == Zone::HAND || zone == Zone::GRAVEYARD; }
 
 static CostForm ability_cost_form(const AbilityDef &ability) {
     switch (ability.ability_type) {
@@ -2047,7 +2052,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             ability.target_max = MAX_ENTITIES;
         }
     } else if (key == "ActivationZone") {
-        if (value == "Hand") ability.activation_zone = Zone::HAND;
+        Zone::ZoneValue zone;
+        if (Zone::from_script_name(value, zone) && activation_zone_offered(zone)) ability.activation_zone = zone;
     } else if (key == "Activation") {
         // Activation$ <condition> — "activate only if <condition>" gate (CR 602.5). The
         // named condition (e.g. "Metalcraft") is evaluated against the activator at
@@ -2421,7 +2427,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     }
     if (key == "TgtZone")
         return value == "Graveyard" || value == "Battlefield" || (value == "Stack" && !ability.target_type.empty());
-    if (key == "ActivationZone") return value == "Hand";
+    if (key == "ActivationZone") return ability.activation_zone != -1;
     if (key == "Activation") return value == "Metalcraft";
     if (key == "RestrictValid")
         return ability.restrict_to_chosen_type_creature || ability.restrict_to_colorless_eldrazi ||
