@@ -13,7 +13,7 @@ using StatePart = rmstate::CostPart;
 static bool cast_cost(const Cast &pc, PendingCost &out);
 static bool activation_cost(const Activation &pa, PendingCost &out);
 static bool cast_step_is_payment(Cast::Step step);
-static StatePart cast_step_part(Cast::Step step);
+static StatePart cast_step_part(const Cast &pc);
 static const CardData *cast_face(const Cast &pc);
 
 // The steps of the cast flow that decide or pay a cost (CR 601.2b's cost announcements and
@@ -31,22 +31,20 @@ static bool cast_step_is_payment(Cast::Step step) {
     }
 }
 
-static StatePart cast_step_part(Cast::Step step) {
-    switch (step) {
-        case Cast::ALT_PITCH:
-        case Cast::ALT_RETURN:
-        case Cast::ALT_SAC:
-            return StatePart::ALTERNATIVE;
+static StatePart cast_step_part(const Cast &pc) {
+    switch (pc.step) {
+        case Cast::PAY_COSTS:
+            switch (cast_cost_stage(pc.pay)) {
+                case CastCostStage::ALTERNATIVE:
+                    return StatePart::ALTERNATIVE;
+                case CastCostStage::ADDITIONAL:
+                    return StatePart::ADDITIONAL;
+                default:
+                    return StatePart::MANA;
+            }
         case Cast::KICKER:
         case Cast::REPLICATE:
         case Cast::GIFT:
-        case Cast::SPELL_SAC:
-        case Cast::ESCALATE_DISCARD:
-        case Cast::DELVE_COUNT:
-        case Cast::DELVE_PICK:
-        case Cast::DEF_SAC:
-        case Cast::DEF_EXILE_TYPES:
-        case Cast::DEF_EXILE_COUNT:
             return StatePart::ADDITIONAL;
         case Cast::CHOOSE_X:
         case Cast::LIFE_X:
@@ -66,13 +64,13 @@ static const CardData *cast_face(const Cast &pc) {
 static bool cast_cost(const Cast &pc, PendingCost &out) {
     if (!pc.active || !cast_step_is_payment(pc.step)) return false;
     out.paid_for = pc.spell_entity;
-    out.part = cast_step_part(pc.step);
-    out.remaining = pc.deferred_mana_pending ? pc.deferred_mana_cost : pc.cost_to_pay;
-    out.life = pc.deferred_life_cost + std::max(0, pc.life_x_announced);
-    out.energy = pc.deferred_energy_cost;
+    out.part = cast_step_part(pc);
+    out.remaining = pc.pay.mana_pending ? pc.pay.mana : pc.cost_to_pay;
+    out.life = pc.pay.life + std::max(0, pc.pay.life_x);
+    out.energy = pc.pay.energy;
     // Escalate's discards still to pick (CR 702.120a), owed once the modes are announced.
     if (const CardData *face = cast_face(pc))
-        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra - pc.escalate_discards_done);
+        out.discard = std::max(0, face->escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra - pc.pay.discards_chosen);
     // The regular cost branch folds X, hybrid and Phyrexian pips into cost_to_pay one step at a
     // time (KICKER through PHYREXIAN_PIP; the alternative branches skip them): the pips of the
     // steps not yet reached are still owed as printed.

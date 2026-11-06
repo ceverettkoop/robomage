@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,7 @@ struct Ability;
 // that asked.
 
 // The paths that pay a cost, each with its own order of steps.
-enum class CostPath { ACTIVATION };
+enum class CostPath { CAST, ACTIVATION };
 
 // A permanent or card chosen to pay a cost: it moves only once the mana has committed, so a payment
 // that fails has moved nothing (CR 733.1) and the mana can still be taken from a permanent on its
@@ -33,6 +34,7 @@ struct CostItem {
     Entity entity = 0;
     Zone::ZoneValue dest = Zone::GRAVEYARD;
     CostPart::Kind kind = CostPart::SACRIFICE;  // the part it pays
+    bool delve = false;                         // a delve exile (CR 702.66a): recorded in cur_game.delve_exiled
     // The narrative line, formatted as it is chosen (while the card is still where it was) and
     // emitted as it moves.
     std::string log;
@@ -43,18 +45,36 @@ struct CostRun {
     size_t step = 0;  // the next step of the path's table
     int picks = 0;    // choices made at this step
     std::vector<CostItem> items;  // chosen and not yet moved
-    // The mana owed and how it is being paid.
+    // The mana owed and how it is being paid. A cast's is determined as it is announced, paid after
+    // its targets are chosen (CR 601.2c before 601.2g/h): a sacrifice-for-mana source spent first
+    // could remove a spell's only legal target (Lotus Petal, Lion's Eye Diamond). With the payment
+    // here the target is chosen while the source is still on the battlefield; sacrificing it for
+    // mana then merely makes the target illegal, and the spell fizzles (CR 608.2b).
     ManaValue mana;
     bool mana_pending = false;
+    bool delve = false;      // the spell's Delve applies to `mana`
+    bool improvise = false;  // the spell's Improvise applies to `mana`
     ManaPaymentRT mana_payment;
     // Snapshot of mana state taken as the payment first can activate a mana ability, restored when
     // it is reversed (mana_snap_taken).
     ManaPaymentSnapshot mana_snap;
     bool mana_snap_taken = false;
-    // Life and energy owed, paid once the mana has committed.
+    // Life and energy owed, paid once the mana has committed: a cancelled payment never costs any.
+    // An exile grant's LIFE or ENERGY resource cost (CR 118.9, 107.14: Amped Raptor) adds to them.
     int life = 0;
     int energy = 0;
+    // Variable life X (Toxic Deluge's PayLife<X>): the value announced (CR 601.2b). Kept apart from
+    // `life` only so the narrative can still say "pays N life (X = N)". -1 = no such cost.
+    int life_x = -1;
     bool committed = false;  // the mana is paid and the rest of the cost is being paid
+    // Delve (CR 702.66): the chosen exile count, and the pre-delve priority seat. Both delve steps
+    // are seated on the caster; delve_seat_held says the seat is still to be restored.
+    size_t delve_count = 0;
+    bool delve_prev_priority_a = true;
+    bool delve_seat_held = false;
+    // Escape's ExileFromGrave<X/...> (CR 702.139): the distinct card types chosen so far.
+    std::set<std::string> exiled_types;
+    int discards_chosen = 0;  // Escalate's discards chosen so far (CR 702.120a)
 };
 
 // Who pays what along a path. Rebuilt by the flow at every entry; the flow's CostRun carries what
@@ -74,7 +94,22 @@ struct CostPayer {
     const Ability *ability = nullptr;
     Ability *announced = nullptr;
     size_t x = 0;
+
+    // A cast: what it pays besides its mana, each null when this cast doesn't. `cost` is unused.
+    const CostParts *alternative = nullptr;  // the alternative cost it was cast for
+    const CostParts *additional = nullptr;   // a spell's additional sacrifice
+    const CostParts *escalate = nullptr;     // the Escalate cost, paid `escalate_times` times
+    int escalate_times = 0;
+    const CostParts *flashback = nullptr;
+    const CostParts *escape = nullptr;
+    bool spell_has_delve = false;
+    int *mana_spent = nullptr;          // the pips the mana cost comes to (CR 106/601.2g)
+    ManaValue *spent_colors = nullptr;  // the colors spent, persisting with `run`
 };
+
+// Which part of a cast's cost its payment has reached, for the state format's pending_cost.
+enum class CastCostStage { ALTERNATIVE, ADDITIONAL, MANA };
+CastCostStage cast_cost_stage(const CostRun &run);
 
 // Pay `who`'s cost, from where its CostRun stands. PAID: all of it, in the path's order. FAILED: it
 // can't be paid, and the caller reverses the proposal. SUSPENDED: a choice is parked, and the caller

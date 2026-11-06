@@ -125,24 +125,19 @@ static void apply_target_gate(std::vector<Entity> &pool, const TargetPickGate *g
 static bool target_cost_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster,
     Entity candidate, std::shared_ptr<Orderer> orderer);
 // The targets are chosen: take the ValidTarget$-conditioned cost reductions they meet off the
-// deferred mana cost (CR 601.2f).
+// mana owed (CR 601.2f).
 static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
-static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
-                                                  std::shared_ptr<Orderer> orderer);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
                            Entity decision_source);
-// Choose graveyard card `e` as one delve exile (CR 702.66a): it pays one GENERIC pip of the
-// deferred mana cost now and is exiled — and recorded in cur_game.delve_exiled — at PAY_APPLY.
-static void choose_delve_exile(Game::PendingCast &pc, Entity e, Zone::Ownership caster);
 // CR 601.2a: the proposal begins. The card moves to the top of the stack as a spell `caster`
 // controls (its Spell component names the caster), before any mode, target or cost is chosen.
 static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
                        std::shared_ptr<Orderer> orderer);
-// CR 601.5 / 733.1: reverse the cast in flight, at any step before PAY_APPLY applies a cost. The
+// CR 601.5 / 733.1: reverse the cast in flight, at any point before its mana commits. The
 // card returns to where it was cast from as the same object, every mana ability the payment
 // activated is reversed (mana_snap), the life paid for Phyrexian pips is given back, the
 // chosen-but-unapplied cost items are dropped, the cast-time markers are cleared, and no event
@@ -151,7 +146,6 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 // The cast's total cost can't be paid (CR 601.2h): count the failure for the offer gate's
 // payment_blocked guard and reverse the cast.
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
-static const char *cost_removal_part(const Game::PendingCast::CostRemoval &item);
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
 // Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
 // drive it: its payment, then the move, or on a failed payment nothing.
@@ -166,12 +160,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 static std::vector<Entity> escalate_discard_candidates(
     const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 // Can `caster` pay the escalate cost (CR 702.120a) of the spell `pc` is casting `extra` times, on
-// top of the cost determined so far: its mana with the deferred mana cost, its discards from the
-// hand the alternative cost's pitch leaves?
+// top of the cost determined so far: its mana with the mana owed, its discards from the hand the
+// alternative cost's pitch leaves?
 static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, int extra,
     std::shared_ptr<Orderer> orderer);
 // The modes are announced: the escalate cost is owed once per mode beyond the first; its mana
-// joins the deferred mana cost (CR 601.2f), its discards are picked at ESCALATE_DISCARD.
+// joins the mana owed (CR 601.2f), its discards are picked with the cost's other items.
 static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card);
 
@@ -183,7 +177,7 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // SMALLER ability from the same permanent: with Yavimaya out, Ancient Tomb is also a Forest,
 // and the painless {G} outranks its own painful {C}{C}. The bound then overshoots and the
 // chosen X fails to pay. Walk it down with the shared simulate-mode predicate (payability is
-// monotone in X, so the first accepted value is the maximum), exactly as DELVE_COUNT bounds
+// monotone in X, so the first accepted value is the maximum), exactly as delve's count menu bounds
 // its exile count — offered ladder and eventual payment can never disagree.
 // `x_pips` is how many {X} the cost carries (2 for Blast Zone's {X}{X}); `exclude` is the
 // ability's source when its own tap is part of the cost.
@@ -197,34 +191,6 @@ static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, s
         coarse_max--;
     }
     return coarse_max;
-}
-
-// Has `e` already been CHOSEN as a cost item for the in-flight cast? The pick loops
-// re-derive their candidate menu each pass and used to rely on the previous pick having
-// already left its zone to drop it from the next menu. With the moves deferred to
-// PAY_APPLY the picks are still in place, so every multi-pick cost filters on this
-// instead (pitch two cards, sacrifice two Mountains, exile five graveyard cards).
-static bool already_chosen_as_cost(const Game::PendingCast &pc, Entity e) {
-    for (const auto &r : pc.cost_removals)
-        if (r.entity == e) return true;
-    return false;
-}
-
-// Record a chosen non-mana cost item. `log` is the narrative line for it, formatted now
-// (while the card is still where it is) and emitted when PAY_APPLY performs the move.
-static void choose_cost_item(Game::PendingCast &pc, Entity e, Zone::ZoneValue dest,
-                             std::string log) {
-    pc.cost_removals.push_back({e, dest, std::move(log)});
-}
-
-// See forward declaration at top of file.
-static void choose_delve_exile(Game::PendingCast &pc, Entity e, Zone::Ownership caster) {
-    auto git = pc.deferred_mana_cost.find(GENERIC);
-    if (git != pc.deferred_mana_cost.end()) pc.deferred_mana_cost.erase(git);
-    choose_cost_item(pc, e, Zone::EXILE,
-                     player_name(caster) + " exiles " +
-                         global_coordinator.GetComponent<CardData>(e).name + " via Delve.");
-    pc.cost_removals.back().delve = true;
 }
 
 // See forward declaration at top of file.
@@ -244,13 +210,13 @@ static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
 static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer) {
     Entity spell_entity = pc.spell_entity;
     Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
-    if (pc.mana_snap_taken) restore_mana_state(caster, pc.mana_snap, orderer);
+    if (pc.pay.mana_snap_taken) restore_mana_state(caster, pc.pay.mana_snap, orderer);
     if (pc.phyrexian_life_paid > 0) {
         auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
         player.life_total += pc.phyrexian_life_paid;
         player.life_lost_this_turn -= pc.phyrexian_life_paid;
     }
-    if (pc.delve_seat_held) cur_game.priority.player_a_has_priority = pc.delve_prev_priority_a;
+    if (pc.pay.delve_seat_held) cur_game.priority.player_a_has_priority = pc.pay.delve_prev_priority_a;
     if (global_coordinator.entity_has_component<Ability>(spell_entity))
         global_coordinator.RemoveComponent<Ability>(spell_entity);
     if (global_coordinator.entity_has_component<Spell>(spell_entity))
@@ -258,17 +224,6 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
     orderer->rewind_cast_move(spell_entity, pc.cast_origin);
     drop_entry_info(spell_entity);
     pc = Game::PendingCast{};
-}
-
-// See forward declaration at top of file.
-// The --coverage cost part a chosen cost item pays, read before it moves: from where it is and
-// where it goes.
-static const char *cost_removal_part(const Game::PendingCast::CostRemoval &item) {
-    if (item.delve) return "Delve";
-    const Zone::ZoneValue from = global_coordinator.GetComponent<Zone>(item.entity).location;
-    if (from == Zone::BATTLEFIELD) return item.dest == Zone::HAND ? "Return" : "Sac";
-    if (from == Zone::GRAVEYARD) return "ExileFromGrave";
-    return item.dest == Zone::EXILE ? "ExileFromHand" : "Discard";
 }
 
 // The --coverage cast keys of a spell becoming cast: one per LegalAction flag the cast carries (a
@@ -301,7 +256,7 @@ static std::vector<Entity> escalate_discard_candidates(
     const Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     std::vector<Entity> out;
     for (Entity e : orderer->get_hand(caster)) {
-        if (e == pc.spell_entity || already_chosen_as_cost(pc, e)) continue;
+        if (e == pc.spell_entity) continue;
         if (!card_matches_filter(e, card_data.escalate_cost.filter(CostPart::DISCARD))) continue;
         out.push_back(e);
     }
@@ -322,11 +277,11 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
             return false;
     }
     if (card_data.escalate_cost.mana().empty()) return true;
-    ManaValue total = pc.deferred_mana_pending ? pc.deferred_mana_cost : ManaValue{};
+    ManaValue total = pc.pay.mana_pending ? pc.pay.mana : ManaValue{};
     for (int i = 0; i < extra; i++)
         for (Colors c : card_data.escalate_cost.mana()) total.insert(c);
     return can_pay_mana(caster, total, pc.spell_entity, orderer, card_data.has_delve, card_data.has_improvise,
-        /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
+        /*exclude_entity=*/0, /*life_reserve=*/pc.pay.life + std::max(0, pc.pay.life_x));
 }
 
 // See forward declaration at top of file.
@@ -335,19 +290,19 @@ static bool target_cost_payable(const Game::PendingCast &pc, const CardData &car
     std::vector<Entity> targets;
     if (pc.have_ability) append_chosen_targets(pc.ability, targets);
     targets.push_back(candidate);
-    ManaValue cost = pc.deferred_mana_cost;
+    ManaValue cost = pc.pay.mana;
     reduce_generic_cost(cost, target_cost_reduction_for(card_data, caster, targets), card_data);
-    return can_pay_mana(caster, cost, pc.spell_entity, orderer, pc.deferred_delve, pc.deferred_improvise,
-        /*exclude_entity=*/0, /*life_reserve=*/pc.deferred_life_cost + std::max(0, pc.life_x_announced));
+    return can_pay_mana(caster, cost, pc.spell_entity, orderer, pc.pay.delve, pc.pay.improvise,
+        /*exclude_entity=*/0, /*life_reserve=*/pc.pay.life + std::max(0, pc.pay.life_x));
 }
 
 // See forward declaration at top of file.
 static void apply_target_cost_reduction(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
-    const size_t before = pc.deferred_mana_cost.size();
-    reduce_generic_cost(pc.deferred_mana_cost,
+    const size_t before = pc.pay.mana.size();
+    reduce_generic_cost(pc.pay.mana,
         target_cost_reduction_for(card_data, caster, chosen_targets_of(pc.spell_entity)), card_data);
-    if (pc.deferred_mana_cost.size() < before)
-        game_log("%s costs {%zu} less to cast\n", card_data.name.c_str(), before - pc.deferred_mana_cost.size());
+    if (pc.pay.mana.size() < before)
+        game_log("%s costs {%zu} less to cast\n", card_data.name.c_str(), before - pc.pay.mana.size());
 }
 
 // See forward declaration at top of file.
@@ -355,59 +310,27 @@ static void apply_escalate(Game::PendingCast &pc, const CardData &card_data, Zon
     pc.escalate_extra = std::max(0, static_cast<int>(pc.ability.charm_chosen.size()) - 1);
     if (pc.escalate_extra == 0) return;
     if (!card_data.escalate_cost.mana().empty()) {
-        if (!pc.deferred_mana_pending) {
-            pc.deferred_mana_cost.clear();
-            pc.deferred_mana_pending = true;
+        if (!pc.pay.mana_pending) {
+            pc.pay.mana.clear();
+            pc.pay.mana_pending = true;
         }
         for (int i = 0; i < pc.escalate_extra; i++)
-            for (Colors c : card_data.escalate_cost.mana()) pc.deferred_mana_cost.insert(c);
+            for (Colors c : card_data.escalate_cost.mana()) pc.pay.mana.insert(c);
     }
     game_log("%s pays the escalate cost for %s (%d)\n", player_name(caster).c_str(), card_data.name.c_str(),
         pc.escalate_extra);
-}
-
-// Drop already-chosen entities from a re-derived cost menu (see already_chosen_as_cost).
-static void drop_chosen_cost_items(const Game::PendingCast &pc,
-                                   std::vector<LegalAction> &menu) {
-    menu.erase(std::remove_if(menu.begin(), menu.end(),
-                              [&](const LegalAction &la) {
-                                  return already_chosen_as_cost(pc, la.source_entity);
-                              }),
-               menu.end());
-}
-
-// Candidate menu for one Escape ExileFromGrave pick (CR 702.139 / 601.2f): the caster's
-// remaining OTHER graveyard cards, in mEntities order. Re-derived from the live graveyard
-// at each arm of the DEF_EXILE_TYPES / DEF_EXILE_COUNT steps (each exile drops that card
-// from the next menu), exactly the per-iteration rebuild the old blocking loops did.
-// menu[i].source_entity is the candidate, so the resumed apply indexes straight into it.
-static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
-                                                  std::shared_ptr<Orderer> orderer) {
-    std::vector<LegalAction> menu;
-    for (auto e : orderer->mEntities) {
-        if (e == spell_entity) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        std::string nm = global_coordinator.GetComponent<CardData>(e).name;
-        LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-        la.category = ActionCategory::EXILE_FROM_YARD;
-        menu.push_back(la);
-    }
-    return menu;
 }
 
 // See forward declaration at top of file.
 static size_t max_life_x(const Game::PendingCast &pc, Zone::Ownership caster, Entity spell_entity,
                          std::shared_ptr<Orderer> orderer) {
     const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-    int max_x = std::max(0, player.life_total - pc.deferred_life_cost);
-    if (!pc.deferred_mana_pending || pc.deferred_mana_cost.empty()) return static_cast<size_t>(max_x);
+    int max_x = std::max(0, player.life_total - pc.pay.life);
+    if (!pc.pay.mana_pending || pc.pay.mana.empty()) return static_cast<size_t>(max_x);
     while (max_x > 0 &&
-           !can_pay_mana(caster, pc.deferred_mana_cost, spell_entity, orderer, pc.deferred_delve,
-                         pc.deferred_improvise, /*exclude_entity=*/0,
-                         /*life_reserve=*/pc.deferred_life_cost + max_x))
+           !can_pay_mana(caster, pc.pay.mana, spell_entity, orderer, pc.pay.delve,
+                         pc.pay.improvise, /*exclude_entity=*/0,
+                         /*life_reserve=*/pc.pay.life + max_x))
         --max_x;
     return static_cast<size_t>(max_x);
 }
@@ -525,7 +448,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 // paid here: the alt cost's pick loops (pitch a card from hand, return a permanent, sacrifice)
 // and its mana payment all run after targets are chosen, so a Force of Will's pitch and a
 // Daze's bounce are no longer spent before the spell has a target — and a payment that then
-// fails rewinds without having consumed them (see PendingCast::cost_removals).
+// fails rewinds without having consumed them (see CostItem).
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster) {
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor (Trinisphere)
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
@@ -535,7 +458,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
 
     // Record the mana this alternative cost will pay (CR 106/601.2g). A pitch/life alt cost
     // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
-    // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. MANA_PAY recomputes it
+    // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. The payment recomputes it
     // from the deferred cost when there IS one, so the two agree.
     game.pending.cast.mana_spent = static_cast<int>(alt_mana.size());
 
@@ -548,11 +471,11 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // Affordability is pre-verified by can_afford_alt (against the same floored cost),
     // so in machine mode the deferred payment always succeeds.
     if (!alt_mana.empty()) {
-        game.pending.cast.deferred_mana_cost = alt_mana;
-        game.pending.cast.deferred_mana_pending = true;
+        game.pending.cast.pay.mana = alt_mana;
+        game.pending.cast.pay.mana_pending = true;
     }
     if (card_data.alt_cost.cost.life() != 0)
-        game.pending.cast.deferred_life_cost += card_data.alt_cost.cost.life();
+        game.pending.cast.pay.life += card_data.alt_cost.cost.life();
 }
 
 // The hybrid pips of the mana cost this cast pays: none when it is cast without paying its mana
@@ -1702,7 +1625,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::LOYALTY_X: {
             // X LOYALTY COST (Chandra, Flamecaller's [-X]): choose X at announcement, bounded
             // by the planeswalker's current loyalty for a minus cost (you can't remove more
-            // than it has, 606.5). Recorded as x_paid, so the loyalty cost (PAY_APPLY) and the
+            // than it has, 606.5). Recorded as x_paid, so the loyalty cost and the
             // effect's Count$xPaid (NumDmg$ X) both read it. This is a loyalty cost, not mana —
             // it never touches the PAY cost.
             if (ability.def->cost.loyalty_is_x()) {
@@ -1873,20 +1796,16 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             const bool impulse_normal = pc.impulse_cast && grant_p &&
                                         grant_p->resource == Game::ImpulseCastPermission::NORMAL;
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
-            // chosen (601.2c before 601.2g/h; see the deferred_* fields). Paying
+            // chosen (601.2c before 601.2g/h; see CostRun). Paying
             // the sacrifice first leaked information and changed the board before the
             // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
             if (pc.use_flashback) {
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                pc.deferred_mana_cost =
+                pc.pay.mana =
                     floored_alt_mana_cost(card_data, card_data.flashback_cost.mana(), caster);
-                pc.deferred_mana_pending = true;
-                pc.deferred_life_cost = card_data.flashback_cost.life();
-                // Flashback sacrifice cost: the cast is only offered when a matching
-                // permanent exists (cast legality), so there is always something to
-                // sacrifice when the deferred payment runs.
-                pc.deferred_sac_spec = card_data.flashback_cost.filter(CostPart::SACRIFICE);
+                pc.pay.mana_pending = true;
+                pc.pay.life = card_data.flashback_cost.life();
                 pc.step = Game::PendingCast::GIFT;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
@@ -1895,18 +1814,16 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (pc.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                pc.deferred_mana_cost =
+                pc.pay.mana =
                     floored_alt_mana_cost(card_data, card_data.escape_cost.mana(), caster);
-                pc.deferred_mana_pending = true;
-                pc.deferred_life_cost = card_data.escape_cost.life();
-                pc.deferred_exile_min_types = card_data.escape_cost.exile_min_types();
-                pc.deferred_exile_count = card_data.escape_cost.count(CostPart::EXILE_FROM_GRAVEYARD);
+                pc.pay.mana_pending = true;
+                pc.pay.life = card_data.escape_cost.life();
                 pc.step = Game::PendingCast::GIFT;
 
             // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
             // (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
             // resource (ENERGY / LIFE: Amped Raptor's DB$ Play) of the permission's resolved
-            // amount, determined here (CR 601.2f) and paid with the other costs at PAY_APPLY
+            // amount, determined here (CR 601.2f) and paid with the other costs at PAY_COSTS
             // (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
             // for a spell cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light
             // Up the Stage, warp) pays the card's own costs, so it takes the regular branch below.
@@ -1917,9 +1834,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         game_log("%s casts %s without paying its mana cost\n",
                                  player_name(caster).c_str(), card_data.name.c_str());
                     else if (grant.resource == Game::ImpulseCastPermission::ENERGY)
-                        pc.deferred_energy_cost = grant.amount;
+                        pc.pay.energy = grant.amount;
                     else
-                        pc.deferred_life_cost = grant.amount;
+                        pc.pay.life = grant.amount;
                 }
 
                 if (card_data.has_x_cost) pc.x_paid = 0;
@@ -1932,8 +1849,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // of mana.
                 ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
                 if (!floor_mana.empty()) {
-                    pc.deferred_mana_cost = floor_mana;
-                    pc.deferred_mana_pending = true;
+                    pc.pay.mana = floor_mana;
+                    pc.pay.mana_pending = true;
                 }
                 pc.step = Game::PendingCast::GIFT;
 
@@ -1967,111 +1884,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.kicked_flags.assign(card_data.kicker_costs.size(), false);
                 pc.step = Game::PendingCast::KICKER;
             }
-            break;
-        }
-
-        case Game::PendingCast::ALT_PITCH: {
-            // Alt-cost pitch (Force of Will: "exile a blue card from your hand"): one pick
-            // per required card, the menu re-derived from the live hand each pass, minus
-            // whatever earlier picks already claimed. pc.alt_pitch_done counts completed
-            // picks. The three ALT_* steps belong to the ALTERNATIVE cost (CR 601.2b) and
-            // are skipped entirely on a normal cast of the same card — Daze cast for {1}{U}
-            // does not also return an Island.
-            if (!pc.use_alt_cost) {
-                pc.step = Game::PendingCast::SPELL_SAC;
-                break;
-            }
-            Colors pitch_color = card_data.alt_cost.cost.pitch_color();
-            while (pc.alt_pitch_done < card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND)) {
-                std::vector<LegalAction> exile_actions;
-                for (auto e : orderer->get_hand(caster)) {
-                    if (e == spell_entity) continue;
-                    if (already_chosen_as_cost(pc, e)) continue;
-                    if (pitch_color != NO_COLOR && !effective_colors(e).count(pitch_color)) continue;
-                    LegalAction la(PASS_PRIORITY, e,
-                                   "Exile " + global_coordinator.GetComponent<CardData>(e).name);
-                    la.category = ActionCategory::PAYING_COSTS;
-                    exile_actions.push_back(la);
-                }
-                if (resume_choice >= 0) {
-                    Entity exiled = exile_actions[static_cast<size_t>(resume_choice)].source_entity;
-                    resume_choice = -1;
-                    choose_cost_item(pc, exiled, Zone::EXILE,
-                                     player_name(caster) + " exiles " +
-                                         global_coordinator.GetComponent<CardData>(exiled).name);
-                    pc.alt_pitch_done++;
-                    continue;
-                }
-                arm_cast_query(game, std::move(exile_actions), caster, spell_entity);
-                return;
-            }
-            pc.step = Game::PendingCast::ALT_RETURN;
-            break;
-        }
-
-        case Game::PendingCast::ALT_RETURN: {
-            // Alt-cost return-to-hand (Daze: "return an Island you control to its owner's
-            // hand"): one pick per required permanent, menu re-derived from the live
-            // battlefield each pass. pc.alt_return_done counts completed picks.
-            while (pc.alt_return_done < card_data.alt_cost.cost.count(CostPart::RETURN)) {
-                std::vector<LegalAction> rth_actions;
-                const FilterSpec &type = card_data.alt_cost.cost.filter(CostPart::RETURN);
-                for (auto e : controlled_permanents_matching(caster, type, orderer->mEntities)) {
-                    if (already_chosen_as_cost(pc, e)) continue;
-                    LegalAction la(PASS_PRIORITY, e,
-                                   "Return " + global_coordinator.GetComponent<Permanent>(e).name);
-                    la.category = ActionCategory::RETURN_PERMANENT;
-                    rth_actions.push_back(la);
-                }
-                if (resume_choice >= 0) {
-                    Entity returned = rth_actions[static_cast<size_t>(resume_choice)].source_entity;
-                    resume_choice = -1;
-                    choose_cost_item(pc, returned, Zone::HAND,
-                                     player_name(caster) + " returns " +
-                                         global_coordinator.GetComponent<Permanent>(returned).name +
-                                         " to hand");
-                    pc.alt_return_done++;
-                    continue;
-                }
-                arm_cast_query(game, std::move(rth_actions), caster, spell_entity);
-                return;
-            }
-            pc.step = Game::PendingCast::ALT_SAC;
-            break;
-        }
-
-        case Game::PendingCast::ALT_SAC: {
-            // Alt-cost sacrifice (Fireblast: "sacrifice two Mountains rather than pay this
-            // spell's mana cost", CR 118.9): one pick per required permanent, the menu of
-            // matching permanents the caster controls re-derived each pass (an earlier pick has
-            // left the battlefield, so it drops from the next menu). pc.alt_sac_done counts
-            // completed sacrifices. Cast legality (can_afford_alt) already guaranteed enough
-            // matching permanents exist.
-            while (pc.alt_sac_done < card_data.alt_cost.cost.count(CostPart::SACRIFICE)) {
-                std::vector<Entity> choices = controlled_permanents_matching(
-                    caster, card_data.alt_cost.cost.filter(CostPart::SACRIFICE), orderer->mEntities, spell_entity);
-                std::vector<LegalAction> sac_actions;
-                for (auto e : choices) {
-                    std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
-                    LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
-                    la.category = ActionCategory::SACRIFICE_PERMANENT;
-                    sac_actions.push_back(la);
-                }
-                drop_chosen_cost_items(pc, sac_actions);
-                if (sac_actions.empty()) break;  // defensive: legality guaranteed enough permanents
-                if (resume_choice >= 0) {
-                    Entity to_sac = sac_actions[static_cast<size_t>(resume_choice)].source_entity;
-                    resume_choice = -1;
-                    choose_cost_item(pc, to_sac, Zone::GRAVEYARD,
-                                     player_name(caster) + " sacrifices " +
-                                         global_coordinator.GetComponent<Permanent>(to_sac).name);
-                    pc.alt_sac_done++;
-                    continue;
-                }
-                arm_cast_query(game, std::move(sac_actions), caster, spell_entity);
-                return;
-            }
-            pc.step = Game::PendingCast::SPELL_SAC;
             break;
         }
 
@@ -2322,17 +2134,17 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             }
 
             // Defer the actual mana payment until after targets are chosen (CR 601.2c before
-            // 601.2g/h — see the deferred_mana_* fields), so a sacrifice-for-mana source spent
+            // 601.2g/h — see CostRun), so a sacrifice-for-mana source spent
             // here can't remove a spell's only legal target before it is chosen. The cost is
             // fully resolved (base + offspring/kicker/replicate/X/hybrid/phyrexian), so the
             // deferred payment is a pure spend with no target-dependent choices left.
             // Untargeted spells take the same path — their (empty) target step makes "pay
             // after targets" identical to paying now, so a single unified order serves every
             // cast.
-            pc.deferred_mana_cost = pc.cost_to_pay;
-            pc.deferred_delve = card_data.has_delve;
-            pc.deferred_improvise = card_data.has_improvise;
-            pc.deferred_mana_pending = true;
+            pc.pay.mana = pc.cost_to_pay;
+            pc.pay.delve = card_data.has_delve;
+            pc.pay.improvise = card_data.has_improvise;
+            pc.pay.mana_pending = true;
             pc.step = Game::PendingCast::LIFE_X;
             break;
         }
@@ -2341,7 +2153,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // VARIABLE LIFE X-COST (Toxic Deluge: "As an additional cost, pay X life").
             // The life paid IS the spell's X (Count$xPaid). CR 601.2b ANNOUNCES the value
             // of X here, before targets; the life itself is a cost, so it is deferred and
-            // paid with everything else at PAY_APPLY — a cancelled mana payment then costs
+            // paid with everything else at PAY_COSTS — a cancelled mana payment then costs
             // no life. X may be 0..life (CR 119.4 lets a player pay up to their whole total),
             // less whatever other life the cast costs and whatever life the mana payment must
             // take (max_life_x), so every offered X is payable.
@@ -2350,7 +2162,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
                     pc.x_paid = static_cast<int>(x_val);
-                    pc.life_x_announced = static_cast<int>(x_val);
+                    pc.pay.life_x = static_cast<int>(x_val);
                 } else {
                     size_t max_x = max_life_x(pc, caster, spell_entity, orderer);
                     game_log("Choose X value (0-%zu):\n", max_x);
@@ -2366,80 +2178,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 }
             }
             pc.step = Game::PendingCast::GIFT;
-            break;
-        }
-
-        case Game::PendingCast::SPELL_SAC: {
-            // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
-            // Natural Order — "As an additional cost to cast this spell, sacrifice a
-            // green creature." Chosen here and sacrificed at PAY_APPLY, using the same
-            // SACRIFICE_PERMANENT choice activated abilities use.
-            // Cast legality already guaranteed a matching permanent exists. General to
-            // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
-            // alternate casts pay their own sac cost in their own branch above.
-            const FilterSpec spell_sac_spec = spell_additional_sac_spec(card_data);
-            if (!spell_sac_spec.empty()) {
-                // The exact pool/menu pay_sacrifice_cost's prompt_permanent_choice built,
-                // armed as a pending decision instead. The pool re-derives identically at
-                // apply — nothing runs between arm and resume.
-                std::vector<Entity> choices = controlled_permanents_matching(
-                    caster, spell_sac_spec, orderer->mEntities, spell_entity);
-                if (!choices.empty()) {
-                    if (resume_choice >= 0) {
-                        Entity to_sac = choices[static_cast<size_t>(resume_choice)];
-                        resume_choice = -1;
-                        choose_cost_item(pc, to_sac, Zone::GRAVEYARD,
-                                         player_name(caster) + " sacrifices " +
-                                             global_coordinator.GetComponent<Permanent>(to_sac).name);
-                    } else {
-                        std::vector<LegalAction> menu;
-                        for (auto e : choices) {
-                            std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
-                            LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
-                            la.category = ActionCategory::SACRIFICE_PERMANENT;
-                            menu.push_back(la);
-                        }
-                        arm_cast_query(game, std::move(menu), caster, spell_entity);
-                        return;
-                    }
-                }
-            }
-            pc.step = Game::PendingCast::ESCALATE_DISCARD;
-            break;
-        }
-
-        case Game::PendingCast::ESCALATE_DISCARD: {
-            // ESCALATE's discards (CR 702.120a / 601.2h): the cost's N cards for each mode
-            // beyond the first, chosen one pick at a time from the live hand (less the picks so
-            // far) and discarded at PAY_APPLY. The mode menu offered each extra mode only while
-            // enough cards were left, so the candidates suffice. When every candidate left must
-            // be discarded there is no choice, and they are taken without a prompt.
-            const int owed = card_data.escalate_cost.count(CostPart::DISCARD) * pc.escalate_extra;
-            while (pc.escalate_discards_done < owed) {
-                std::vector<Entity> cands = escalate_discard_candidates(pc, card_data, caster, orderer);
-                if (cands.empty()) break;  // defensive: the mode menu checked the hand
-                size_t pick = 0;
-                if (cands.size() > static_cast<size_t>(owed - pc.escalate_discards_done)) {
-                    if (resume_choice < 0) {
-                        std::vector<LegalAction> menu;
-                        for (Entity e : cands) {
-                            LegalAction la(
-                                PASS_PRIORITY, e, "Discard " + global_coordinator.GetComponent<CardData>(e).name);
-                            la.category = ActionCategory::DISCARD;
-                            menu.push_back(la);
-                        }
-                        arm_cast_query(game, std::move(menu), caster, spell_entity);
-                        return;
-                    }
-                    pick = static_cast<size_t>(resume_choice);
-                    resume_choice = -1;
-                }
-                choose_cost_item(pc, cands[pick], Zone::GRAVEYARD,
-                    player_name(caster) + " discards " + global_coordinator.GetComponent<CardData>(cands[pick]).name +
-                        " (escalate)");
-                pc.escalate_discards_done++;
-            }
-            pc.step = Game::PendingCast::DELVE_COUNT;
             break;
         }
 
@@ -2588,323 +2326,34 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                              target_display_name(cur_game, pc.enchant_ab.target.lki_entity()).c_str());
                 }
             }
-            // Targets are locked in (CR 601.2c); everything from here is cost payment
-            // (601.2f-h) — first the non-mana cost PICKS, then mana, then the moves.
+            // Targets are locked in (CR 601.2c): the total cost is determined.
             if (pc.target_cost_reduction) apply_target_cost_reduction(pc, card_data, caster);
-            pc.step = Game::PendingCast::ALT_PITCH;
+            pc.step = Game::PendingCast::PAY_COSTS;
             break;
         }
 
-        case Game::PendingCast::DELVE_COUNT: {
-            // Delve (CR 702.66 / 601.2h): the caster chooses how many graveyard cards to
-            // exile and which ones, one pick at a time; each exile pays one generic pip of
-            // the deferred cost. Runs after targets are locked in (601.2c), like every
-            // other cost. The remainder is then paid WITHOUT delve — the count menu is
-            // constrained to counts whose remaining cost is payable. Stage 1 here: the
-            // count menu. The count range [min_needed .. max_exiles] is computed at arm
-            // and re-derived identically at apply (nothing runs between arm and resume):
-            // each exile removes one GENERIC pip, so payability is monotone in the count
-            // and the legal counts form a contiguous range; min_needed is found with the
-            // shared simulate-mode payer (can_pay_mana, has_delve=false), so the offered
-            // menu and the eventual payment can never disagree — cast legality (which
-            // allowed the maximum delve) guarantees the range is non-empty.
-            if (!pc.deferred_mana_pending || !pc.deferred_delve) {
-                pc.step = Game::PendingCast::DEF_SAC;
-                break;
-            }
-            size_t eligible_ct = 0;
-            for (auto e : orderer->mEntities)
-                if (is_delve_eligible(e, caster)) eligible_ct++;
-            size_t max_exiles = std::min(eligible_ct, pc.deferred_mana_cost.count(GENERIC));
-            if (max_exiles == 0) {
-                pc.step = Game::PendingCast::DEF_SAC;
-                break;
-            }
-            ManaValue reduced = pc.deferred_mana_cost;
-            size_t min_needed = 0;
-            while (min_needed < max_exiles &&
-                   !can_pay_mana(caster, reduced, spell_entity, orderer, /*has_delve=*/false,
-                                 pc.deferred_improvise)) {
-                reduced.erase(reduced.find(GENERIC));
-                min_needed++;
-            }
-            if (resume_choice >= 0) {
-                // Apply the latched count against the re-derived (identical) range.
-                pc.delve_exile_ct = min_needed + static_cast<size_t>(resume_choice);
-                resume_choice = -1;
-                pc.step = Game::PendingCast::DELVE_PICK;
-                break;
-            }
-            // Seat both delve stages on the casting player — the blocking prompt's
-            // save/repoint/restore becomes arm-time persistence: the prev seat lives in
-            // pc and DELVE_PICK's completion (or a rewind) restores it.
-            pc.delve_prev_priority_a = cur_game.priority.player_a_has_priority;
-            pc.delve_seat_held = true;
-            cur_game.priority.player_a_has_priority = (caster == Zone::PLAYER_A);
-            // The count prompt is skipped when only one count is legal (the pre-collapse
-            // condition, re-derived at arm). The actions carry the delve spell as their
-            // source entity, so the machine protocol emits its card id (a plain X-cost
-            // ladder emits the null sentinel — this is how observers tell the two
-            // CHOOSE_X menus apart).
-            if (max_exiles > min_needed) {
-                std::vector<LegalAction> count_menu;
-                for (size_t n = min_needed; n <= max_exiles; n++) {
-                    LegalAction la(PASS_PRIORITY, spell_entity,
-                                   "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") +
-                                       " from graveyard (Delve)");
-                    la.category = ActionCategory::CHOOSE_X;
-                    la.option_ordinal = static_cast<int>(n);  // the delve exile count
-                    la.card_is_public = true;  // the spell being cast is public
-                    count_menu.push_back(la);
-                }
-                game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed,
-                         max_exiles);
-                arm_cast_query(game, std::move(count_menu), caster, spell_entity);
+        case Game::PendingCast::PAY_COSTS: {
+            // Targets are locked in (CR 601.2c); everything from here is cost payment (601.2f-h).
+            FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
+            CostPayer who(CostPath::CAST, caster, spell_entity, spell_entity, nullptr, &pc.pay);
+            if (pc.use_alt_cost) who.alternative = &card_data.alt_cost.cost;
+            who.additional = &spell_additional_cost(card_data);
+            who.escalate = &card_data.escalate_cost;
+            who.escalate_times = pc.escalate_extra;
+            if (pc.use_flashback) who.flashback = &card_data.flashback_cost;
+            if (pc.use_escape) who.escape = &card_data.escape_cost;
+            who.spell_has_delve = card_data.has_delve;
+            who.mana_spent = &pc.mana_spent;
+            who.spent_colors = &pc.mana_spent_colors;
+            const PayStatus paid = run_cost_parts(who, ctx, orderer);
+            if (paid == PayStatus::SUSPENDED) return;
+            if (paid == PayStatus::FAILED) {
+                // Payment cancelled (interactive), or a machine-mode payment the gate wrongly
+                // offered: the proposal is reversed (CR 601.5 / 733.1).
+                fail_cast_payment(pc, orderer);
                 return;
             }
-            pc.delve_exile_ct = min_needed;
-            pc.step = Game::PendingCast::DELVE_PICK;
-            break;
-        }
-
-        case Game::PendingCast::DELVE_PICK: {
-            // Delve stage 2 — which cards, one pick at a time; the candidate menu is
-            // re-derived from the live graveyard each pass minus the cards already picked.
-            // When the remaining candidates are all going to be exiled anyway (candidates
-            // <= picks left, including the single-candidate case) there is no real choice,
-            // so they are taken without a prompt — the pre-collapse condition, re-checked
-            // per pick at arm. Each pick pays one GENERIC pip of pc.deferred_mana_cost
-            // (CR 702.66a) and is a chosen cost item: the card is exiled, and recorded in
-            // cur_game.delve_exiled, at PAY_APPLY.
-            while (pc.delve_picks_done < pc.delve_exile_ct) {
-                std::vector<LegalAction> picks;
-                for (auto e : orderer->mEntities) {
-                    if (!is_delve_eligible(e, caster) || already_chosen_as_cost(pc, e)) continue;
-                    auto &ecd = global_coordinator.GetComponent<CardData>(e);
-                    LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
-                    la.category = ActionCategory::CHOOSE_CARD;
-                    la.card_is_public = true;  // graveyards are public zones
-                    picks.push_back(la);
-                }
-                if (picks.empty()) break;  // defensive: eligibility was counted above
-                size_t pick = 0;
-                if (picks.size() > pc.delve_exile_ct - pc.delve_picks_done) {
-                    if (resume_choice < 0) {
-                        game_log("Choose a card to exile via Delve (%zu of %zu):\n",
-                                 pc.delve_picks_done + 1, pc.delve_exile_ct);
-                        arm_cast_query(game, std::move(picks), caster, spell_entity);
-                        return;
-                    }
-                    pick = static_cast<size_t>(resume_choice);
-                    resume_choice = -1;
-                }
-                choose_delve_exile(pc, picks[pick].source_entity, caster);
-                pc.delve_picks_done++;
-            }
-            // Restore the pre-delve seat (persisted at DELVE_COUNT's arm).
-            cur_game.priority.player_a_has_priority = pc.delve_prev_priority_a;
-            pc.delve_seat_held = false;
-            pc.step = Game::PendingCast::DEF_SAC;
-            break;
-        }
-
-        case Game::PendingCast::MANA_PAY: {
-            // Pay the mana cost, last of the costs (CR 601.2h). Targets are locked in
-            // (601.2c) and every non-mana cost item has been CHOSEN but not yet applied,
-            // which is what makes this step safely failable: nothing irreversible has
-            // happened, so the cancel path below is a complete rewind.
-            if (!pc.mana_snap_taken) {
-                // This is the first step that can activate a mana ability, so the snapshot a
-                // reversed proposal restores them from is taken here (CR 733.1).
-                pc.mana_snap = snapshot_mana_state(caster, orderer);
-                pc.mana_snap_taken = true;
-                // CR 601.2g first: a permanent that is about to leave to pay one of those
-                // costs is still on the battlefield right now, so tap it for mana on its way
-                // out. Without this a Crop Rotation cast off a lone Savannah would sacrifice
-                // the land and then be unable to pay {G}.
-                if (pc.deferred_mana_pending)
-                    for (const auto &r : pc.cost_removals)
-                        float_mana_before_cost_removal(r.entity, caster, orderer,
-                                                       pc.deferred_mana_cost, spell_entity);
-                // Record the mana actually spent (CR 106/601.2g) for a ValidSA$ Spell.ManaSpent
-                // trigger to read at cast time. The deferred cost's pip count is the total mana paid,
-                // after any delve/improvise reduction already removed pips from it. A no-mana
-                // alternative cost leaves deferred_mana_pending false, and the 0 that
-                // defer_alternate_cost recorded stands.
-                if (pc.deferred_mana_pending)
-                    pc.mana_spent = static_cast<int>(pc.deferred_mana_cost.size());
-            }
-            if (pc.deferred_mana_pending) {
-                FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
-                const PayStatus paid = pay_mana_cost(pc.mana, caster, pc.deferred_mana_cost, spell_entity, ctx, orderer,
-                                                     /*has_delve=*/false, pc.deferred_improvise,
-                                                     &pc.mana_spent_colors);
-                if (paid == PayStatus::SUSPENDED) return;
-                if (paid == PayStatus::FAILED) {
-                    // Payment cancelled (interactive), or a machine-mode payment the gate
-                    // wrongly offered: the proposal is reversed (CR 601.5 / 733.1).
-                    fail_cast_payment(pc, orderer);
-                    return;
-                }
-                if (pc.mana_spent > 0) coverage_cost("Mana");
-            }
-
-            pc.step = Game::PendingCast::PAY_APPLY;
-            break;
-        }
-
-        case Game::PendingCast::PAY_APPLY: {
-            // The mana committed, so the rest of the cost is now paid for real: the life,
-            // then every cost item chosen during the pick steps (alt-cost pitch/bounce/
-            // sacrifice, the spell's additional sacrifice, flashback's sacrifice, escape's
-            // graveyard exiles). Nothing here can fail — the choices were made against the
-            // live board and only this step moves anything — which is exactly why the
-            // preceding payment is allowed to fail.
-            //
-            // A permanent leaving here may make a chosen target illegal; the spell then
-            // fizzles at resolution (CR 608.2b), matching paper rules.
-            //
-            // The life and energy are checked first, while nothing of this step has
-            // happened yet: a painful mana source the payment used can have left too little
-            // life (the gate reserves it, so only a wrongly offered cast gets here), and
-            // then the whole cost can't be paid and the proposal is reversed (CR 601.5).
-            {
-                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-                const int life_x = pc.life_x_announced >= 0 ? pc.life_x_announced : 0;
-                if (!can_pay_life(player, pc.deferred_life_cost + life_x) ||
-                    player_energy(player) < pc.deferred_energy_cost) {
-                    fail_cast_payment(pc, orderer);
-                    return;
-                }
-                if (pc.deferred_life_cost > 0) {
-                    pay_life(player, pc.deferred_life_cost);
-                    game_log("%s pays %d life\n", player_name(caster).c_str(), pc.deferred_life_cost);
-                    coverage_cost("PayLife");
-                }
-                if (pc.life_x_announced >= 0) {
-                    pay_life(player, pc.life_x_announced);
-                    game_log("%s pays %d life (X = %d)\n", player_name(caster).c_str(),
-                             pc.life_x_announced, pc.life_x_announced);
-                    coverage_cost("PayLifeX");
-                }
-                if (pc.deferred_energy_cost > 0) {
-                    pay_energy(player, pc.deferred_energy_cost);
-                    game_log("%s pays %d energy\n", player_name(caster).c_str(),
-                             pc.deferred_energy_cost);
-                    coverage_cost("PayEnergy");
-                }
-            }
-            // A delve cast's exiles replace any a previous delve spell recorded
-            // (delve_exiled persists until an etbCounter replacement consumes it).
-            if (card_data.has_delve) cur_game.delve_exiled.clear();
-            for (const auto &r : pc.cost_removals) {
-                coverage_cost(cost_removal_part(r));
-                game_log("%s\n", r.log.c_str());
-                orderer->add_to_zone(false, r.entity, r.dest);
-                if (r.delve) cur_game.delve_exiled.push_back(ObjectRef::of(r.entity));
-            }
-            pc.cost_removals.clear();
             pc.step = Game::PendingCast::FINISH;
-            break;
-        }
-
-        case Game::PendingCast::DEF_SAC: {
-            // Deferred "sacrifice a <spec>" cost — the flashback alternate cost's
-            // sacrifice (CR 702.34, Cabal Therapy). The exact pool/menu the old blocking
-            // pay_sacrifice_cost built (via prompt_permanent_choice), armed as a pending
-            // decision instead; the pool re-derives identically at apply. Cast legality
-            // already guaranteed a matching permanent exists; the empty-choices guard is
-            // a defensive no-op.
-            if (!pc.deferred_sac_spec.empty()) {
-                std::vector<Entity> choices = controlled_permanents_matching(
-                    caster, pc.deferred_sac_spec, orderer->mEntities, spell_entity);
-                if (!choices.empty()) {
-                    if (resume_choice >= 0) {
-                        Entity to_sac = choices[static_cast<size_t>(resume_choice)];
-                        resume_choice = -1;
-                        choose_cost_item(pc, to_sac, Zone::GRAVEYARD,
-                                         player_name(caster) + " sacrifices " +
-                                             global_coordinator.GetComponent<Permanent>(to_sac).name);
-                    } else {
-                        std::vector<LegalAction> menu;
-                        for (auto e : choices) {
-                            std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
-                            LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
-                            la.category = ActionCategory::SACRIFICE_PERMANENT;
-                            menu.push_back(la);
-                        }
-                        arm_cast_query(game, std::move(menu), caster, spell_entity);
-                        return;
-                    }
-                }
-            }
-            pc.step = Game::PendingCast::DEF_EXILE_TYPES;
-            break;
-        }
-
-        case Game::PendingCast::DEF_EXILE_TYPES: {
-            // Deferred Escape ExileFromGrave cost (CR 702.139 / 601.2f): exile any number
-            // of OTHER cards from the caster's graveyard until the exiled set collectively
-            // has at least min_types distinct card types (CR 205.2). One pick per pass, the
-            // candidate menu re-derived from the live graveyard at each arm; the loop is
-            // mandatory (no "done" option) until the constraint — tracked across
-            // suspensions in pc.escape_exiled_types — is met. Cast legality already
-            // guaranteed enough types exist.
-            if (pc.deferred_exile_min_types > 0) {
-                while (static_cast<int>(pc.escape_exiled_types.size()) <
-                       pc.deferred_exile_min_types) {
-                    std::vector<LegalAction> menu =
-                        escape_exile_menu(caster, spell_entity, orderer);
-                    drop_chosen_cost_items(pc, menu);
-                    if (menu.empty()) break;  // defensive: legality guaranteed enough cards
-                    if (resume_choice >= 0) {
-                        Entity to_exile = menu[static_cast<size_t>(resume_choice)].source_entity;
-                        resume_choice = -1;
-                        auto &cd = global_coordinator.GetComponent<CardData>(to_exile);
-                        for (auto &t : cd.types)
-                            if (t.kind == TYPE) pc.escape_exiled_types.insert(t.name);
-                        choose_cost_item(pc, to_exile, Zone::EXILE,
-                                         player_name(caster) + " exiles " + cd.name +
-                                             " from their graveyard");
-                        continue;
-                    }
-                    arm_cast_query(game, std::move(menu), caster, spell_entity);
-                    return;
-                }
-            }
-            pc.step = Game::PendingCast::DEF_EXILE_COUNT;
-            break;
-        }
-
-        case Game::PendingCast::DEF_EXILE_COUNT: {
-            // Deferred Escape ExileFromGrave cost in its literal-count form (CR 702.139 /
-            // 601.2f): exile exactly `count` OTHER cards from the caster's graveyard (Uro:
-            // "Exile five other cards from your graveyard"). One mandatory pick per pass
-            // (no "done" option) until pc.escape_exiled_count reaches the count; the menu
-            // re-derives from the live graveyard at each arm. Cast legality already
-            // guaranteed enough cards exist.
-            if (pc.deferred_exile_count > 0) {
-                while (pc.escape_exiled_count < pc.deferred_exile_count) {
-                    std::vector<LegalAction> menu =
-                        escape_exile_menu(caster, spell_entity, orderer);
-                    drop_chosen_cost_items(pc, menu);
-                    if (menu.empty()) break;  // defensive: legality guaranteed enough cards
-                    if (resume_choice >= 0) {
-                        Entity to_exile = menu[static_cast<size_t>(resume_choice)].source_entity;
-                        resume_choice = -1;
-                        choose_cost_item(pc, to_exile, Zone::EXILE,
-                                         player_name(caster) + " exiles " +
-                                             global_coordinator.GetComponent<CardData>(to_exile).name +
-                                             " from their graveyard");
-                        pc.escape_exiled_count++;
-                        continue;
-                    }
-                    arm_cast_query(game, std::move(menu), caster, spell_entity);
-                    return;
-                }
-            }
-            // Every non-mana cost item is chosen; the mana is the last thing paid.
-            pc.step = Game::PendingCast::MANA_PAY;
             break;
         }
 

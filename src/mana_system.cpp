@@ -950,7 +950,7 @@ static int life_reserved_for_pending_payment(Zone::Ownership seat) {
     bool seat_is_a = (seat == Zone::PLAYER_A);
     const auto &pc = cur_game.pending.cast;
     if (pc.active && pc.caster_is_a == seat_is_a)
-        return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
+        return pc.pay.life + (pc.pay.life_x > 0 ? pc.pay.life_x : 0);
     // An activation pays its mana before its life.
     const auto &pa = cur_game.pending.activation;
     if (pa.active && pa.activator_is_a == seat_is_a && !pa.pay.committed)
@@ -1720,8 +1720,3 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
 
     return PayStatus::PAID;
 }
-
-// (The old blocking prompt_delve_exiles lived here. Batch 11 moved the interactive
-// delve count/pick prompts into run_cast_flow's DELVE_COUNT/DELVE_PICK steps
-// (action_processor.cpp), where they suspend as loop-top pending decisions; the
-// shared primitives is_delve_eligible/delve_exile_one above are what it consumes.)

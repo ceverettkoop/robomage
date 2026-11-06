@@ -283,9 +283,8 @@ PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const Man
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
 // your graveyard rather than pay that mana"); riders that care about the exiled cards'
 // types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
-// source for "what can Delve eat", consumed by the automatic payer and the cast flow's
-// DELVE_COUNT/DELVE_PICK steps (run_cast_flow), which replaced the old blocking
-// prompt_delve_exiles with loop-top pending decisions.
+// source for "what can Delve eat", consumed by the automatic payer and the cost payment's
+// delve steps (cost_payment.cpp).
 bool is_delve_eligible(Entity e, Zone::Ownership controller);
 
 // Pay one generic pip via Delve: exile `e`, record it in cur_game.delve_exiled (for

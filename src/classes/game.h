@@ -343,13 +343,13 @@ struct Game {
         struct PendingCast {
             // Where the flow resumes. The enum is listed in RUN order, which follows
             // CR 601.2: announce (601.2b) -> targets (601.2c) -> pay every cost
-            // (601.2f-h). Everything from ALT_PITCH to PAY_APPLY is the single payment
-            // phase: it CHOOSES each non-mana cost item first, then floats and pays
-            // mana, then applies the chosen items and every other cost (CR 601.2h).
-            // Nothing irreversible happens before MANA_PAY commits, so a proposal
-            // reversed at any step before PAY_APPLY (CR 601.5 / 733.1) is undone by
-            // rewind_cast: the card returns to cast_origin, mana_snap restores the
-            // payment's mana abilities, and the chosen items are simply dropped.
+            // (601.2f-h). PAY_COSTS is the single payment phase: run_cost_parts CHOOSES
+            // each non-mana cost item first, then floats and pays mana, then applies the
+            // chosen items and every other cost (CR 601.2h). Nothing irreversible
+            // happens before the mana commits, so a proposal reversed before then
+            // (CR 601.5 / 733.1) is undone by rewind_cast: the card returns to
+            // cast_origin, the run's mana_snap restores the payment's mana abilities,
+            // and the chosen items are simply dropped.
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 KICKER,           // per-kicker optional-additional-cost y/n
@@ -358,25 +358,13 @@ struct Game {
                 HYBRID,           // hybrid pips (auto-mana resolves them; otherwise one prompt per pip)
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
-                                  // CR 601.2b announces the value, the life is paid at PAY_APPLY)
+                                  // CR 601.2b announces the value, the life is paid with the cost)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 MODES_TARGETS,    // modes (CR 601.2b) and every target (601.2c) via run_announce
                                   // (pc.announce; ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
-                // ── payment phase (CR 601.2f-h), all of it after targets ──
-                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
-                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
-                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
-                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
-                ESCALATE_DISCARD,  // escalate's discards, one per pick (CR 702.120a: Collective Brutality)
-                DELVE_COUNT,      // delve exile count menu (CR 702.66)
-                DELVE_PICK,       // delve exile picks, one card at a time
-                DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
-                DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
-                DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
-                MANA_PAY,         // float doomed permanents, then pay mana
-                PAY_APPLY,        // apply the chosen cost items + life + energy, once the mana committed
+                PAY_COSTS,        // the payment phase (CR 601.2f-h), all of it after targets
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // the spell becomes cast (CR 601.2i): cast events; seeds COPY_TARGETS
             };
@@ -403,14 +391,9 @@ struct Game {
             // The X announced for this spell (CR 601.2b / 107.3a; a variable life cost's X
             // too), recorded on its Spell as the cast finishes.
             int x_paid = 0;
-            // Snapshot of mana state taken as MANA_PAY begins (the first step that
-            // can activate a mana ability), restored when the proposal is reversed
-            // after it (mana_snap_taken).
-            ManaPaymentSnapshot mana_snap;
-            bool mana_snap_taken = false;
             // The regular-cost accumulation (base + offspring/kicker/replicate/
-            // X/hybrid/phyrexian folds), deferred into deferred_mana_cost once
-            // the cost is fully resolved.
+            // X/hybrid/phyrexian folds), moved to pay.mana once the cost is fully
+            // resolved.
             ManaValue cost_to_pay;
             // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
             // branch and copied onto the Spell so linked "if it was kicked with its [N]
@@ -424,19 +407,8 @@ struct Game {
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
             size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
             bool gift_promised = false;
-            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
-            // mana payment is therefore captured here and deferred until after targets are chosen.
-            // This matters when the mana is paid by sacrificing a permanent for mana
-            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
-            // target before it is chosen, crashing on an empty target menu. With the payment
-            // deferred, the target is chosen while the would-be mana source is still on the
-            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
-            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
-            ManaValue deferred_mana_cost;
-            bool deferred_mana_pending = false;
-            ManaPaymentRT mana;  // the MANA_PAY step's payment
             // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
-            // deferred_mana_cost at the MANA_PAY step (after any delve/improvise reduction) and
+            // pay.mana as the payment reaches it (after any delve/improvise reduction) and
             // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
             // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
             int mana_spent = 0;
@@ -445,54 +417,15 @@ struct Game {
             // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
             // whose size the resolution frame reads as Converge. Empty for a free / no-mana cast.
             ManaValue mana_spent_colors;
-            bool deferred_delve = false;
-            bool deferred_improvise = false;
-            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
-            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
-            // then every cost (601.2g/h). They are paid only after the deferred mana
-            // payment commits, so a cancelled payment never costs life or a creature.
-            // An exile grant's LIFE resource cost (CR 118.9) adds to it too.
-            int deferred_life_cost = 0;
             // Life paid for Phyrexian pips (CR 107.4f). Paid as each pip is announced, so the
             // choice shows in the life total at the prompts that follow; a rewind gives it back.
             int phyrexian_life_paid = 0;
-            // An exile grant's ENERGY resource cost (Amped Raptor, CR 118.9 / 107.14), paid at
-            // PAY_APPLY with the rest of the non-mana costs.
-            int deferred_energy_cost = 0;
-            // Variable life X (Toxic Deluge's PayLife<X>): the value ANNOUNCED at LIFE_X
-            // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
-            // the narrative can still say "pays N life (X = N)". -1 = no such cost.
-            int life_x_announced = -1;
             // The regular cost is reduced by a ValidTarget$-conditioned ReduceCost static once
             // the targets are chosen (Mystical Dispute; CR 601.2c before 601.2f): the target
             // picks are limited to those whose cost is payable, and the reduction comes off
-            // deferred_mana_cost as the payment phase begins.
+            // pay.mana as the payment phase begins.
             bool target_cost_reduction = false;
-            FilterSpec deferred_sac_spec;
-            int deferred_exile_min_types = 0;
-            int deferred_exile_count = 0;
-            // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
-            // that moves a card (the alt cost's pitch/bounce/sacrifice, a spell's
-            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles,
-            // delve's graveyard exiles) is picked before the mana payment and applied
-            // only after it commits, at PAY_APPLY. That split is what makes a reversed
-            // proposal a CLEAN rewind: before PAY_APPLY nothing irreversible has happened,
-            // so rewind_cast restores the whole game (CR 601.2h lets the costs be paid in
-            // any order, and CR 733.1 wants the reversal to leave no trace). It also lets
-            // the payment SEE the doomed permanents — MANA_PAY floats their mana before
-            // spending, since they are still on the battlefield at that point.
-            struct CostRemoval {
-                Entity entity = 0;
-                Zone::ZoneValue dest = Zone::GRAVEYARD;
-                // The narrative line, formatted at PICK time (while the card is still
-                // where it was) and emitted at PAY_APPLY, where the move happens. Held
-                // whole so each cost keeps its own wording ("sacrifices X", "returns X
-                // to hand", "exiles X from their graveyard").
-                std::string log;
-                // A delve exile (CR 702.66a): recorded in cur_game.delve_exiled as it moves.
-                bool delve = false;
-            };
-            std::vector<CostRemoval> cost_removals;
+            CostRun pay;  // the cost: what it comes to as it is announced, then the payment
             // The half-built primary spell ability. The ENTITY's Ability
             // component is added at the same point as the blocking flow did
             // (at the end of MODES_TARGETS, once every announce target is
@@ -515,32 +448,9 @@ struct Game {
             // Replicate copies' retargeting machine (COPY_TARGETS; see
             // CopySpellRT / effect_copy_spell.cpp).
             CopySpellRT copy_rt;
-            // ── Deferred-payment progress (Batch 11) ──
-            // Alt-cost pick loops (Force of Will's pitch, Daze's return):
-            // completed picks.
-            int alt_pitch_done = 0;
-            int alt_return_done = 0;
-            int alt_sac_done = 0;  // alt-cost Sac<N/Type> sacrifices completed (Fireblast)
-            // Delve (CR 702.66): the chosen exile count, completed picks, and
-            // the pre-delve priority seat (the blocking prompt seated both
-            // delve stages on the caster and restored the seat afterwards;
-            // the arm-time repoint persists its prev value here instead, and
-            // delve_seat_held says it is still to be restored).
-            size_t delve_exile_ct = 0;
-            size_t delve_picks_done = 0;
-            bool delve_prev_priority_a = true;
-            bool delve_seat_held = false;
-            // Escape ExileFromGrave progress (CR 702.139): distinct card types
-            // exiled so far (min-types form) / cards exiled so far (Uro's
-            // literal-count form). Candidate lists are re-derived from the
-            // live graveyard at each arm, exactly like the blocking loops.
-            std::set<std::string> escape_exiled_types;
-            int escape_exiled_count = 0;
             // Escalate (CR 702.120a): the modes chosen beyond the first, each paying the escalate
-            // cost (its mana folded into deferred_mana_cost as the modes are announced), and the
-            // escalate discards picked so far.
+            // cost (its mana folded into pay.mana as the modes are announced).
             int escalate_extra = 0;
-            int escalate_discards_done = 0;
         };
         // Activated-ability suspension state (pending.query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY

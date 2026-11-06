@@ -157,7 +157,7 @@ static ManaValue regular_cast_cost(
 
 // Only a cast from hand and a free cast hold the player to the spell's additional sacrifice; every
 // other cast for the card's mana cost (a back face, Offspring, a permission to cast it from a
-// graveyard or exile) is offered without it, and SPELL_SAC then finds nothing to take.
+// graveyard or exile) is offered without it, and its pick then finds nothing to take.
 constexpr uint16_t kSpellSacrificeUnchecked = CostParts::kind_bit(CostPart::SACRIFICE);
 
 // Can `caster` cast `face` for its mana cost, `mana` after reductions, with the hybrid and Phyrexian
