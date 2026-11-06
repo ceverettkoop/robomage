@@ -24,6 +24,40 @@
 #include "systems/state_manager.h"
 #include "targeting.h"
 
+// One card's turn in a section: what its rows ask about, each gate they share worked out once.
+struct CastOffer {
+        Entity card;
+        const CardData &face;  // the face cast
+        Zone::ZoneValue zone;
+        const CastWindow &window;
+        int timing = -1;  // spell_timing_ok, -1 until asked
+        int gates = -1;   // can_cast_now without the timing, -1 until asked
+};
+
+// A way of casting: its coverage name, what it pays, what labels it (LegalAction::option_ordinal
+// and what follows "Cast <face>" in the menu), where it sends the spell, and whether it is offered.
+struct CastRow {
+        const char *name;
+        CastCost cost;
+        bool offspring;
+        int ordinal;
+        const char *label;
+        Zone::ZoneValue destination;
+        bool (*offered)(CastOffer &offer);
+};
+
+// The rows of one zone, permission and face, offered to each card that has the permission. `covers`
+// (none: every card) says whether the card is cast this way at all, and `beside` adds what stands
+// among a section's rows without being a cast.
+struct CastSection {
+        Zone::ZoneValue zone;
+        Permission permission;
+        CastFace face;
+        bool (*covers)(const CardData &card);
+        void (*beside)(CastOffer &offer, std::vector<LegalAction> &actions);
+        std::vector<CastRow> rows;
+};
+
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer);
 static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, Zone::Ownership priority_player,
@@ -34,7 +68,6 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
-static CastCost alternative_cost_kind(const AltCost &alt_cost);
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
@@ -45,6 +78,41 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     Zone::ZoneValue from_zone, Zone::Ownership caster, bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static bool can_afford_alt(const CardData &card_data, const AltCost &alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer);
+static bool offer_timing_ok(CastOffer &offer);
+static bool offer_gates_ok(CastOffer &offer);
+static bool offer_castable(CastOffer &offer);
+static bool mana_cost_offered(CastOffer &offer);
+static bool alternative_offered(CastOffer &offer);
+static bool evoke_offered(CastOffer &offer);
+static bool impending_offered(CastOffer &offer);
+static bool spectacle_offered(CastOffer &offer);
+static bool warp_offered(CastOffer &offer);
+static bool plain_alternative_offered(CastOffer &offer);
+static bool offspring_offered(CastOffer &offer);
+static bool free_cast_offered(CastOffer &offer);
+static bool free_offspring_offered(CastOffer &offer);
+static bool cast_from_front(const CardData &card);
+static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions);
+static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc);
+static void enumerate_cast_options(Entity card, const CastSection &section, const CastWindow &window,
+                                   std::vector<LegalAction> &actions);
+
+// The cast rows of a priority menu, in menu order: a section at a time, card by card, each card's
+// rows in turn. A new way of casting is a row, with what offers it.
+static const CastSection kCastSections[] = {
+    {Zone::HAND, Permission::NONE, CastFace::FRONT, cast_from_front, offer_suspend, {
+        // name             cost                   offspring ordinal label                     destination      offered
+        {"hand",            CastCost::MANA_COST,    false, 0, "",                      Zone::GRAVEYARD, mana_cost_offered},
+        {"evoke",           CastCost::EVOKE,        false, 1, " (alternate cost)",     Zone::GRAVEYARD, evoke_offered},
+        {"impending",       CastCost::IMPENDING,    false, 1, " (impending)",          Zone::GRAVEYARD, impending_offered},
+        {"spectacle",       CastCost::ALTERNATIVE,  false, 1, " (spectacle)",          Zone::GRAVEYARD, spectacle_offered},
+        {"warp",            CastCost::WARP,         false, 1, " (warp)",               Zone::GRAVEYARD, warp_offered},
+        {"alternative",     CastCost::ALTERNATIVE,  false, 1, " (alternate cost)",     Zone::GRAVEYARD, plain_alternative_offered},
+        {"offspring",       CastCost::MANA_COST,    true,  2, " (offspring)",          Zone::GRAVEYARD, offspring_offered},
+        {"hand_free",       CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
+        {"hand_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
+    }},
+};
 
 // May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
 // 307.1)? An instant, a Flash card, or a spell a cast-with-flash permission covers (Teferi, Time
@@ -109,14 +177,6 @@ static LegalAction cast_action(Entity card_entity, const std::string &desc, int 
     la.category = ActionCategory::CAST_SPELL;
     la.option_ordinal = option_ordinal;
     return la;
-}
-
-// The CastCost of `alt_cost`, the alternative cost of a card.
-static CastCost alternative_cost_kind(const AltCost &alt_cost) {
-    if (alt_cost.is_evoke) return CastCost::EVOKE;
-    if (alt_cost.is_impending) return CastCost::IMPENDING;
-    if (alt_cost.is_warp) return CastCost::WARP;
-    return CastCost::ALTERNATIVE;
 }
 
 // The regular cost of casting `face` from `card_entity` for `caster` that the cast-legality gates
@@ -286,20 +346,6 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
-    // Miracle (CR 702.94) is never a normal priority-menu cast: it is castable ONLY through the
-    // dedicated immediate "cast it for its miracle cost / do not cast" decision presented right when
-    // its linked triggered ability resolves (proc_mandatory_choice's miracle-cast branch, gated on
-    // its own affordability check). So the alternate-cost cast option is never offered here.
-    if (alt_cost.is_miracle) return false;
-
-    // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
-    // caster lost life this turn. Two-player game — the sole opponent is the other seat.
-    if (alt_cost.is_spectacle) {
-        Zone::Ownership opp = opponent_of(priority_player);
-        if (global_coordinator.GetComponent<Player>(get_player_entity(opp)).life_lost_this_turn <= 0)
-            return false;
-    }
-
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
         // The condition's SVar (Once Upon a Time: Count$YouCastThisGame EQ0; Mindbreak Trap:
@@ -375,81 +421,167 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, Zone:
     }
 }
 
+// The spell's timing, once.
+static bool offer_timing_ok(CastOffer &offer) {
+    if (offer.timing < 0)
+        offer.timing = spell_timing_ok(offer.face, offer.window.caster, offer.window.sorcery_window);
+    return offer.timing != 0;
+}
+
+// can_cast_now without the timing, once.
+static bool offer_gates_ok(CastOffer &offer) {
+    if (offer.gates < 0)
+        offer.gates = can_cast_now(offer.face, offer.card, offer.window.caster, offer.zone, offer.window.sorcery_window,
+                                   /*ignore_timing=*/true, offer.window.orderer);
+    return offer.gates != 0;
+}
+
+static bool offer_castable(CastOffer &offer) { return offer_timing_ok(offer) && offer_gates_ok(offer); }
+
+// X-cost spells: base cost (without X) is enough to be castable;
+// X value is chosen at cast time in action_processor. Additional Sacrifice-a-<type>
+// cost on the spell itself (Natural Order: "As an additional cost to cast this spell,
+// sacrifice a green creature"): the spell can't be cast unless a matching permanent is
+// available to sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$
+// carries a Sac<...> token, matched (incl. color qualifier) like an activation cost.
+static bool mana_cost_offered(CastOffer &offer) {
+    const CastWindow &w = offer.window;
+    return offer_castable(offer) &&
+           regular_cast_payable(offer.face, offer.card, w.caster,
+                                regular_cast_cost(offer.face, offer.card, w.caster, w.orderer), w.orderer);
+}
+
+static bool alternative_offered(CastOffer &offer) {
+    return offer_castable(offer) && can_afford_alt(offer.face, offer.face.alt_cost, offer.window.caster, offer.card,
+                                                   offer.window.orderer);
+}
+
+static bool evoke_offered(CastOffer &offer) { return offer.face.alt_cost.is_evoke && alternative_offered(offer); }
+
+static bool impending_offered(CastOffer &offer) {
+    return offer.face.alt_cost.is_impending && alternative_offered(offer);
+}
+
+// Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
+// caster lost life this turn. Two-player game — the sole opponent is the other seat.
+static bool spectacle_offered(CastOffer &offer) {
+    if (!offer.face.alt_cost.is_spectacle) return false;
+    Zone::Ownership opp = opponent_of(offer.window.caster);
+    if (global_coordinator.GetComponent<Player>(get_player_entity(opp)).life_lost_this_turn <= 0) return false;
+    return alternative_offered(offer);
+}
+
+static bool warp_offered(CastOffer &offer) { return offer.face.alt_cost.is_warp && alternative_offered(offer); }
+
+// Any other alternative cost. Miracle (CR 702.94) is never a normal priority-menu cast: it is
+// castable ONLY through the dedicated immediate "cast it for its miracle cost / do not cast" decision
+// presented right when its linked triggered ability resolves (proc_mandatory_choice's miracle-cast
+// branch, gated on its own affordability check). So the alternate-cost cast option is never offered
+// here.
+static bool plain_alternative_offered(CastOffer &offer) {
+    const AltCost &alt = offer.face.alt_cost;
+    if (alt.is_evoke || alt.is_impending || alt.is_spectacle || alt.is_warp || alt.is_miracle) return false;
+    return alternative_offered(offer);
+}
+
+// Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option
+// that must pay the base cost plus the offspring cost together.
+static bool offspring_offered(CastOffer &offer) {
+    if (!offer.face.has_offspring || !offer_castable(offer)) return false;
+    const CastWindow &w = offer.window;
+    ManaValue offspring_total = regular_cast_cost(offer.face, offer.card, w.caster, w.orderer);
+    for (Colors c : offer.face.offspring_cost.mana()) offspring_total.insert(c);
+    return regular_cast_payable(offer.face, offer.card, w.caster, offspring_total, w.orderer);
+}
+
+// Free-cast statics (Omniscience, Aluren; rules_mod::free_cast_grant): beside the card's cast for
+// its own costs, offer the cast without paying its mana cost — the
+// alternative cost of CR 118.9, so never combined with another one (118.9a). It keeps the
+// spell's own timing, or any time its caster holds priority when the grant gives flash (CR
+// 601.3c; an opponent's sorcery-speed lock still applies), and the other cast gates. Its mana is
+// what cost increases and the SetCost floor add to {0} (CR 118.9d); the spell's own additional
+// sacrifice must be payable, and with Offspring a second row pays that additional cost too.
+static bool free_cast_offered(CastOffer &offer) {
+    const CastWindow &w = offer.window;
+    const rules_mod::FreeCastGrant grant = rules_mod::free_cast_grant(offer.card, offer.face, w.caster);
+    if (!grant.granted) return false;
+    const bool timing_ok = grant.with_flash ? w.sorcery_window || !rules_mod::opponent_sorcery_speed_locked(w.caster)
+                                            : offer_timing_ok(offer);
+    if (!timing_ok || !offer_gates_ok(offer)) return false;
+    const ManaValue mana = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster);
+    CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
+    check.mana = &mana;
+    return can_pay(spell_additional_cost(offer.face), check);
+}
+
+static bool free_offspring_offered(CastOffer &offer) {
+    if (!offer.face.has_offspring || !free_cast_offered(offer)) return false;
+    const CastWindow &w = offer.window;
+    ManaValue with_offspring = floored_alt_mana_cost(offer.face, ManaValue{}, w.caster);
+    for (Colors c : offer.face.offspring_cost.mana()) with_offspring.insert(c);
+    CostCheck check = total_cost_check(offer.face, offer.card, w.caster, w.orderer);
+    check.mana = &with_offspring;
+    return can_pay(spell_additional_cost(offer.face), check);
+}
+
+// A land isn't cast (CR 601.1).
+static bool cast_from_front(const CardData &card) { return !card_has_type(card, "Land"); }
+
+// SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
+// the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
+// suspend cost and exile it with N time counters. This is a special action (doesn't use the
+// stack). Its targets are chosen only later, when the last counter is removed and it is cast
+// for free, so no legal target is required now (702.62 casts it then, not here); the card
+// just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
+// affordable. General over any Suspend card. Offered independently of the normal-cast block.
+static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions) {
+    const CardData &card_data = offer.face;
+    if (!card_data.has_suspend || !cast_from_front(card_data) || !offer_timing_ok(offer)) return;
+    const Zone::Ownership caster = offer.window.caster;
+    CostCheck suspend_check(caster, offer.card, offer.window.orderer);
+    suspend_check.payee = ManaPayee(offer.card, ManaPurpose::OTHER);
+    if (rules_mod::cast_prohibited(caster, card_data) || !can_pay(card_data.suspend_cost, suspend_check) ||
+        payment_blocked(offer.card))
+        return;
+    LegalAction sus_la(SPECIAL_ACTION, offer.card, "Suspend " + card_data.name);
+    sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action
+    sus_la.suspend_action = true;
+    actions.push_back(sus_la);
+}
+
+// The menu row of `row`, offered for `card`.
+static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc) {
+    LegalAction la = cast_action(card, desc, row.ordinal);
+    la.option = CastOption{section.face, section.zone, row.cost, section.permission, row.offspring, row.destination};
+    return la;
+}
+
+// `card`'s turn in `section`: the rows offered to it, in the table's order.
+static void enumerate_cast_options(Entity card, const CastSection &section, const CastWindow &window,
+                                   std::vector<LegalAction> &actions) {
+    const CardData &printed = global_coordinator.GetComponent<CardData>(card);
+    const bool covered = !section.covers || section.covers(printed);
+    CastOffer offer{card, covered && section.face == CastFace::BACK ? *printed.backside : printed, section.zone, window};
+    if (covered)
+        for (const CastRow &row : section.rows)
+            if (row.offered(offer))
+                actions.push_back(row_action(row, section, card, "Cast " + offer.face.name + row.label));
+    if (section.beside) section.beside(offer, actions);
+}
+
 // See declaration in cast_options.h.
 void offer_cast_options(std::vector<LegalAction> &actions, const CastWindow &window, const std::vector<Entity> &hand,
                         const std::vector<std::pair<Entity, unsigned>> &zone_play_routes) {
     const Zone::Ownership priority_player = window.caster;
     const bool sorcery_window = window.sorcery_window;
     const std::shared_ptr<Orderer> &orderer = window.orderer;
-    // checking for spells to cast from hand
-    for (auto card_entity : hand) {
-        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        if (card_has_type(card_data, "Land")) continue;  // can't cast land
-        // Timing alone also gates the suspend special action below.
-        bool timing_ok = spell_timing_ok(card_data, priority_player, sorcery_window);
-        if (timing_ok && can_cast_now(card_data, card_entity, priority_player, Zone::HAND,
-                                      sorcery_window, /*ignore_timing=*/true, orderer)) {
-            LegalAction la = cast_action(card_entity, "Cast " + card_data.name, 0);
-
-            ManaValue effective_cost = regular_cast_cost(card_data, card_entity, priority_player, orderer);
-
-            // X-cost spells: base cost (without X) is enough to be castable;
-            // X value is chosen at cast time in action_processor. Additional Sacrifice-a-<type>
-            // cost on the spell itself (Natural Order: "As an additional cost to cast this spell,
-            // sacrifice a green creature"): the spell can't be cast unless a matching permanent is
-            // available to sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$
-            // carries a Sac<...> token, matched (incl. color qualifier) like an activation cost.
-            bool can_regular = regular_cast_payable(card_data, card_entity, priority_player, effective_cost, orderer);
-
-            bool can_alt = can_afford_alt(card_data, card_data.alt_cost, priority_player, card_entity, orderer);
-
-            if (can_regular) actions.push_back(la);
-            if (can_alt) {
-                LegalAction alt_la = la;
-                alt_la.option.cost = alternative_cost_kind(card_data.alt_cost);
-                alt_la.option_ordinal = 1;  // cast variant: 1 = alternate/impending cost
-                alt_la.description = "Cast " + card_data.name +
-                    (card_data.alt_cost.is_impending ? " (impending)"
-                     : card_data.alt_cost.is_spectacle ? " (spectacle)"
-                     : card_data.alt_cost.is_miracle   ? " (miracle)"
-                     : card_data.alt_cost.is_warp      ? " (warp)"
-                                                        : " (alternate cost)");
-                actions.push_back(alt_la);
-            }
-            // Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option
-            // that must pay the base cost plus the offspring cost together.
-            if (card_data.has_offspring) {
-                ManaValue offspring_total = effective_cost;
-                for (Colors c : card_data.offspring_cost.mana()) offspring_total.insert(c);
-                if (regular_cast_payable(card_data, card_entity, priority_player, offspring_total, orderer)) {
-                    LegalAction off_la = la;
-                    off_la.option.offspring = true;
-                    off_la.option_ordinal = 2;  // cast variant: 2 = offspring
-                    off_la.description = "Cast " + card_data.name + " (offspring)";
-                    actions.push_back(off_la);
-                }
-            }
+    for (const CastSection &section : kCastSections) {
+        if (section.permission == Permission::NONE) {
+            for (Entity card : hand) enumerate_cast_options(card, section, window, actions);
+            continue;
         }
-        offer_free_cast(actions, cast_action(card_entity, "Cast " + card_data.name, 0), card_data, Zone::HAND,
-            priority_player, sorcery_window, orderer);
-        // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
-        // the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
-        // suspend cost and exile it with N time counters. This is a special action (doesn't use the
-        // stack). Its targets are chosen only later, when the last counter is removed and it is cast
-        // for free, so no legal target is required now (702.62 casts it then, not here); the card
-        // just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
-        // affordable. General over any Suspend card. Offered independently of the normal-cast block.
-        CostCheck suspend_check(priority_player, card_entity, orderer);
-        suspend_check.payee = ManaPayee(card_entity, ManaPurpose::OTHER);
-        if (card_data.has_suspend && timing_ok &&
-            !rules_mod::cast_prohibited(priority_player, card_data) &&
-            can_pay(card_data.suspend_cost, suspend_check) &&
-            !payment_blocked(card_entity)) {
-            LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
-            sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action
-            sus_la.suspend_action = true;
-            actions.push_back(sus_la);
-        }
+        for (const auto &[card, routes] : zone_play_routes)
+            if (routes & permission_bit(section.permission)) enumerate_cast_options(card, section, window, actions);
     }
     // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
     // cast and the land-back PLAY_LAND were handled in the hand loop above).
