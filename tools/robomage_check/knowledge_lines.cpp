@@ -23,6 +23,7 @@ static void facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 static void stack_target_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
+static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
 
 static std::string card_of(const SeatNames &n, int64_t cid) {
     auto it = n.cards.find(cid);
@@ -115,6 +116,28 @@ static void facts(
         out->push_back(
             "known_hand " + card_name(n, kh, r, kh.col("card")) + " x" + std::to_string(kh.u(r, kh.col("copies"))));
     stack_target_facts(f, s, n, out);
+    mana_facts(f, s, out);
+}
+
+// A nonempty pool as the player row counts it, and each pool_mana row.
+static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
+    const Rows players(f, s, "player");
+    for (size_t r = 0; r < players.size(); ++r) {
+        std::string pool;
+        for (const char *color : {"w", "u", "b", "r", "g", "c"}) {
+            const uint64_t n = players.u(r, players.col((std::string("mana_") + color).c_str()));
+            if (n) pool += std::string(" ") + color + "=" + std::to_string(n);
+        }
+        if (!pool.empty()) out->push_back("mana " + rel_text(players.u(r, players.col("player_rel"))) + pool);
+    }
+    const Rows pm(f, s, "pool_mana");
+    for (size_t r = 0; r < pm.size(); ++r)
+        out->push_back("mana_unit " + rel_text(pm.u(r, pm.col("player_rel"))) + " " + pm.name(r, pm.col("color")) + " x" +
+                       std::to_string(pm.u(r, pm.col("count"))) + " restriction=" + pm.name(r, pm.col("restriction")) +
+                       (pm.text(r, pm.col("chosen_type")).empty() ? "" : " type=" + pm.text(r, pm.col("chosen_type"))) +
+                       " activated=" + std::to_string(pm.u(r, pm.col("activated"))) +
+                       " on_battlefield=" + std::to_string(pm.u(r, pm.col("activated_on_battlefield"))) +
+                       " cant_be_countered=" + std::to_string(pm.u(r, pm.col("cant_be_countered"))));
 }
 
 static void stack_target_facts(

@@ -121,10 +121,10 @@ static const FoldRule *find_fold(const std::string &table) {
     return nullptr;
 }
 
-// A token type: a STATE snapshot (20-48) or knowledge (90-95) table.
+// A token type: a STATE snapshot (20-49) or knowledge (90-95) table.
 static bool is_token_table(const rmstate::TableDef &def) {
     const uint16_t id = static_cast<uint16_t>(def.id);
-    return def.frame_kind == rmstate::FrameKind::STATE && ((id >= 20 && id <= 48) || (id >= 90 && id <= 95));
+    return def.frame_kind == rmstate::FrameKind::STATE && ((id >= 20 && id <= 49) || (id >= 90 && id <= 95));
 }
 
 static const featurize::Override *find_override(const std::string &table, const std::string &column) {

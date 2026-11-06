@@ -13,6 +13,7 @@
 #include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/carddata.h"
+#include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
@@ -106,6 +107,7 @@ static int column(const DecodedTable &t, const char *name);
 static uint64_t cell(const DecodedTable &t, size_t row, int col);
 static size_t rows_of(const DecodedFrame &f, TableId id);
 static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t menu_rows);
+static void check_pool_mana(Zone::Ownership viewer, const DecodedFrame &f);
 static void check_references(Zone::Ownership viewer, const DecodedFrame &f, const std::set<uint64_t> &handles);
 static bool is_word_char(char ch);
 static const std::vector<std::vector<std::string>> &vocab_names_by_initial();
@@ -369,6 +371,31 @@ static size_t rows_of(const DecodedFrame &f, TableId id) {
     return t ? t->rows.size() : 0;
 }
 
+// pool_mana's rows against the pools: all that isn't plain mana, each player's in the player row's
+// count of that color.
+static void check_pool_mana(Zone::Ownership viewer, const DecodedFrame &f) {
+    size_t carrying[3] = {0, 0, 0};
+    for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B})
+        for (const ManaUnit &unit : global_coordinator.GetComponent<Player>(get_player_entity(seat)).mana)
+            if (unit.restriction || unit.rider) carrying[seat]++;
+    size_t shown[3] = {0, 0, 0};
+    if (const DecodedTable *t = f.table(static_cast<uint16_t>(TableId::POOL_MANA))) {
+        const int seat_col = column(*t, "player"), color_col = column(*t, "color"), count_col = column(*t, "count");
+        for (size_t r = 0; r < t->rows.size(); ++r) {
+            const uint64_t seat = cell(*t, r, seat_col);
+            const auto color = static_cast<Colors>(cell(*t, r, color_col));
+            const size_t count = cell(*t, r, count_col);
+            shown[seat] += count;
+            const ManaPool &pool = global_coordinator.GetComponent<Player>(get_player_entity(static_cast<Zone::Ownership>(seat))).mana;
+            if (count > pool.count(color)) report("complete", viewer, "pool_mana holds more than the pool's color");
+        }
+    }
+    for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B})
+        if (shown[seat] != carrying[seat])
+            report("complete", viewer, std::string("pool_mana of ") + trace_seat_word(seat) + " shows " +
+                   std::to_string(shown[seat]) + ", pool carries " + std::to_string(carrying[seat]));
+}
+
 // The complete check (selfcheck.h) of one decoded STATE frame against the game.
 static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t menu_rows) {
     const Zone::Ownership v = is_seat(viewer) ? viewer : Zone::UNKNOWN;
@@ -440,6 +467,7 @@ static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t
     } else {
         report("complete", viewer, "no player table");
     }
+    check_pool_mana(viewer, f);
     // The reveal table lists the viewer's windows; the menu, the actions as offered.
     const size_t windows = reveal_windows_for(v).size();
     if (rows_of(f, TableId::REVEAL) != windows)

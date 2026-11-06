@@ -25,7 +25,7 @@ struct Frame {
         const agents::SeatStream &st;
         // STATE frame.
         agents::Table header, turn, player, pcounter, obj, counter, keyword, combat, stack, smode, starget, lki, reveal,
-            pending, cost, pip, menu, match, own_deck, emblem, effect, delayed, permission;
+            pending, cost, pip, menu, match, own_deck, emblem, effect, delayed, permission, pool_mana;
         agents::Table event, event_card, event_player;
         agents::Table k_meta, k_seen, k_pool, k_pool_card, k_position, k_known_hand;
         // CARDS frame.
@@ -60,6 +60,7 @@ Frame::Frame(const agents::DecisionView &view) : v(view), st(view.stream()) {
     own_deck = v.table("own_deck");
     emblem = v.table("emblem");
     effect = v.table("player_effect");
+    pool_mana = v.table("pool_mana");
     delayed = v.table("delayed_trigger");
     permission = v.table("play_permission");
     event = v.table("event");
@@ -124,6 +125,7 @@ static std::string power_toughness(const Frame &f, size_t row);
 static std::vector<std::string> object_status(const Frame &f, size_t row);
 static std::string mask_names(const Frame &f, const char *enum_name, uint64_t mask);
 static std::string mana_pool(const Frame &f, size_t prow);
+static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat);
 static std::vector<std::string> player_lines(const Frame &f, bool sideboarding);
 static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t controller);
 static std::string stack_item(const Frame &f, size_t row);
@@ -375,6 +377,26 @@ static std::string mana_pool(const Frame &f, size_t prow) {
     return out;
 }
 
+// What the floating mana of `seat` isn't free to do: one note per row of pool_mana ("{C}{C} only
+// colorless eldrazi or abilities").
+static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat) {
+    const agents::Table &m = f.pool_mana;
+    std::vector<std::string> notes;
+    for (size_t r = 0; r < m.rows(); ++r) {
+        if (m.u(r, m.col("player")) != seat) continue;
+        const std::string pip = std::string("{") + "WUBRGC"[m.u(r, m.col("color"))] + "}";
+        std::string note;
+        for (uint64_t i = 0; i < m.u(r, m.col("count")); ++i) note += pip;
+        const std::string restriction = f.st.enum_name("mana_restriction", m.u(r, m.col("restriction")));
+        if (restriction != "NONE") note += " only " + lower_words(restriction);
+        if (!m.text(r, m.col("chosen_type")).empty()) note += " " + m.text(r, m.col("chosen_type"));
+        if (m.u(r, m.col("activated"))) note += " or abilities";
+        if (m.u(r, m.col("cant_be_countered"))) note += ", can't be countered";
+        notes.push_back(note);
+    }
+    return notes;
+}
+
 // One line per player (the viewer first): life, zone sizes, pool, counters and designations;
 // while `sideboarding`, the match wins alone (the zones are the last game's).
 static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) {
@@ -397,6 +419,7 @@ static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) 
         std::vector<std::string> extra;
         const std::string pool = mana_pool(f, r);
         if (!pool.empty()) extra.push_back("pool " + pool);
+        for (const std::string &note : pool_mana_notes(f, seat)) extra.push_back(note);
         const int c_cp = f.pcounter.col("player");
         for (size_t c = 0; c < f.pcounter.rows(); ++c)
             if (f.pcounter.u(c, c_cp) == seat && f.pcounter.u(c, f.pcounter.col("count")))

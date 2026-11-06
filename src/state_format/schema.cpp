@@ -517,6 +517,17 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_card(out.back(), "card");
     col_count(out.back(), "main", Storage::U8);
     col_count(out.back(), "side", Storage::U8);
+
+    add_table(out, TableId::POOL_MANA, "pool_mana", FrameKind::STATE);
+    TableDef &pm = out.back();
+    col_seat(pm, "player");
+    col_enum(pm, "color", Storage::U8, "color");
+    col_count(pm, "count", Storage::U16);
+    col_enum(pm, "restriction", Storage::U8, "mana_restriction");
+    col_text(pm, "chosen_type");
+    col_bool(pm, "activated");
+    col_bool(pm, "activated_on_battlefield");
+    col_bool(pm, "cant_be_countered");
 }
 
 static void define_event_tables(std::vector<TableDef> &out) {
@@ -701,6 +712,7 @@ std::vector<EnumTable> format_enums() {
         {"knowledge_level", {RMSTATE_KNOWLEDGE_LEVEL(RMSTATE_ENUM_NAME)}},
         {"pool_kind", {RMSTATE_POOL_KIND(RMSTATE_ENUM_NAME)}},
         {"amount_kind", {RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_NAME)}},
+        {"mana_restriction", {RMSTATE_MANA_RESTRICTION(RMSTATE_ENUM_NAME)}},
         {"target_class", {RMSTATE_TARGET_CLASS(RMSTATE_ENUM_NAME)}},
         {"part_kind", {RMSTATE_PART_KIND(RMSTATE_ENUM_NAME)}},
     };

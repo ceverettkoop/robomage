@@ -78,6 +78,8 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
 #define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT)
 #define RMSTATE_POOL_KIND(X) X(HAND) X(LIBRARY_RANGE) X(SIDEBOARD) X(FACE_DOWN) X(SET_ASIDE)
 #define RMSTATE_AMOUNT_KIND(X) X(NONE) X(FIXED) X(VARIABLE)
+#define RMSTATE_MANA_RESTRICTION(X) \
+    X(NONE) X(CHOSEN_TYPE_CREATURE) X(CREATURE) X(COLORLESS_ELDRAZI) X(NO_NONARTIFACT_SPELLS)
 #define RMSTATE_TARGET_CLASS(X) \
     X(CREATURE)                 \
     X(PLANESWALKER)             \
@@ -164,6 +166,9 @@ enum class KnowledgeLevel : uint8_t {
 enum class PoolKind : uint8_t {
     RMSTATE_POOL_KIND(RMSTATE_ENUM_VALUE)
 };
+enum class ManaRestrictionKind : uint8_t {
+    RMSTATE_MANA_RESTRICTION(RMSTATE_ENUM_VALUE)
+};
 enum class AmountKind : uint8_t {
     RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_VALUE)
 };
@@ -219,6 +224,7 @@ enum class TableId : uint16_t {
     MENU = 46,
     MATCH = 47,
     OWN_DECK = 48,
+    POOL_MANA = 49,
     EVENT = 80,
     EVENT_CARD = 81,
     EVENT_PLAYER = 82,

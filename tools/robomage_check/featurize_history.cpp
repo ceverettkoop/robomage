@@ -73,7 +73,9 @@ static std::string check_spec(const rmcheck::Options &opt, const Featurization &
     for (const featurize::TokenType &t : off.spec.types)
         if (t.kind == featurize::TypeKind::HISTORY) return "the spec built without options has a history type";
     if (!on.spec.history.on() || on.spec.hash == off.spec.hash) return "the history spec has the off spec's hash";
-    if (on.spec.types.size() != off.spec.types.size() + 2) return "the history spec does not add two token types";
+    const auto history_types = std::count_if(on.spec.types.begin(), on.spec.types.end(),
+        [](const featurize::TokenType &t) { return t.kind == featurize::TypeKind::HISTORY; });
+    if (history_types != 2) return "the history spec does not add two token types";
     for (size_t i = 0; i < off.spec.types.size(); ++i)
         if (on.spec.types[i].name != off.spec.types[i].name) return "the history spec reorders the off spec's types";
     rmcheck::ProcSpec spec;

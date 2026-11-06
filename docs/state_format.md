@@ -112,6 +112,7 @@ child tables.
 |---|---|---|
 | `header` | 1 | format version, schema hash, viewer, game number, decision number |
 | `turn` | 1 | turn, step, active player, priority holder, pass flags, extra turns queued, land drops remaining |
+| `pool_mana` | one per color, restriction and rider of a player's floating mana that has one | the part of the pool the `player` row's counts can't say; none for plain mana |
 | `player` | 2 | life, poison, energy, mana pool, designations (monarch, city's blessing), day/night, per-turn counters, hand count, library count, mulligans taken |
 | `object` | one per identifiable object | handle, zone, owner and controller (each both as absolute seat and relative to the viewer: self/opponent), card id (or "face-down"), face/transformed state, tapped/sick/phased, damage, base and post-layer characteristics, attached-to, chosen name/colour/type, linked exiled cards |
 | `object_keyword`, `object_counter`, `object_ability`, `object_provenance` | children of `object` | every keyword with its parameters; counters by kind; abilities by reference (decision 2); which sources currently affect the object, what kind of effect, and when it expires (decision 1) |
@@ -777,7 +778,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `next_extra_turn` | seat | | none = no extra turn queued |
 | `player` (22): self row first (A first for omniscient) | `player` | seat | | |
 | | `life` | i32 | `signed` | |
-| | `mana_w`, `mana_u`, `mana_b`, `mana_r`, `mana_g`, `mana_c` | 6 × u16 | `count` | floating pool |
+| | `mana_w`, `mana_u`, `mana_b`, `mana_r`, `mana_g`, `mana_c` | 6 × u16 | `count` | floating pool, all of it: restricted mana counts here and has its `pool_mana` row too |
 | | `hand`, `library`, `graveyard`, `exile`, `sideboard` | 5 × u16 | `count` | zone sizes (by owner) |
 | | `mulligans`, `to_bottom` | u8 | `count` | London bottoming still owed |
 | | `passed` | u8 | `bool` | pass flag |
@@ -947,6 +948,14 @@ computes neither outside its legal-action enumeration.
 | `own_deck` (48): the viewer's current 75 (the omniscient frame: both players') | `player` | seat | | |
 | | `card` | u16 | `card` | as `decklist_card.card` |
 | | `main`, `side` | u8 | `count` | |
+| `pool_mana` (49): floating mana with a restriction or a rider (CR 106.6), both players', the viewer's first, each in the pool's order; a pool of plain mana has no row | `player` | seat | | |
+| | `color` | u8 | `enum:color` | |
+| | `count` | u16 | `count` | units alike in color, restriction and rider |
+| | `restriction` | u8 | `enum:mana_restriction` | what it may be spent on; NONE for mana that only carries a rider |
+| | `chosen_type` | text | `text` | the type a CHOSEN_TYPE_CREATURE restriction names, as its source stood when the mana was made |
+| | `activated` | u8 | `bool` | the restriction also allows activating abilities |
+| | `activated_on_battlefield` | u8 | `bool` | of permanents only |
+| | `cant_be_countered` | u8 | `bool` | rider: a spell it is spent on can't be countered |
 
 ### A.6 Events and knowledge (`STATE` frame)
 
@@ -1040,6 +1049,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `knowledge_level` | OFF, EXPERT |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 | `amount_kind` | NONE, FIXED, VARIABLE |
+| `mana_restriction` | NONE, CHOSEN_TYPE_CREATURE, CREATURE, COLORLESS_ELDRAZI, NO_NONARTIFACT_SPELLS |
 | `target_class` | CREATURE, PLANESWALKER, ARTIFACT, ENCHANTMENT, LAND, BATTLE, PERMANENT_OTHER, PLAYER, SPELL, ABILITY, CARD_GRAVEYARD, CARD_OTHER |
 | `part_kind` | SUB, MODE |
 

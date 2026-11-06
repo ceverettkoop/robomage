@@ -1,0 +1,36 @@
+{
+  "name": "cr106_6_frame_shows_restricted_mana",
+  "why": "CR 106.6: the {C} an Eldrazi Temple leaves floating is shown as restricted in both seats' frames; the player row's mana_c still counts it",
+  "hand_a": [
+    "Reality Smasher",
+    "Mountain",
+    "Lightning Strike",
+    "Wastescape Battlemage"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Eldrazi Temple",
+    "Eldrazi Temple",
+    "Eldrazi Temple"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Reality Smasher"
+  ],
+  "max_decisions": 5,
+  "expect_dump": [
+    "^A .* mana self c=1$",
+    "^A .* mana_unit self COLORLESS x1 restriction=COLORLESS_ELDRAZI activated=1 on_battlefield=1 cant_be_countered=0$",
+    "^B .* mana opp c=1$",
+    "^B .* mana_unit opp COLORLESS x1 restriction=COLORLESS_ELDRAZI"
+  ]
+}

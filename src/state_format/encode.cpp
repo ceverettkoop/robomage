@@ -155,6 +155,7 @@ static void write_stack_targets(const Ctx &c, Entity stack_object, uint32_t h, c
 static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stack);
 static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_cards);
 static void write_player_effects(const Ctx &c, Zone::Ownership p);
+static void write_pool_mana(const Ctx &c, Zone::Ownership p);
 static void write_reveals(const Ctx &c);
 static void write_pending(const Ctx &c, Zone::Ownership decider);
 static void write_pending_cost(const Ctx &c);
@@ -1170,6 +1171,38 @@ static rmstate::Duration effect_duration(bool until_your_next_turn) {
     return until_your_next_turn ? rmstate::Duration::UNTIL_YOUR_NEXT_TURN : rmstate::Duration::END_OF_TURN;
 }
 
+// The mana of `p`'s pool that isn't plain: one row per color, restriction and rider, in the pool's
+// order. The player row's mana_* columns count all of it, so unrestricted mana adds no row.
+static void write_pool_mana(const Ctx &c, Zone::Ownership p) {
+    static_assert(static_cast<int>(rmstate::ManaRestrictionKind::NO_NONARTIFACT_SPELLS) ==
+                  ManaRestriction::NO_NONARTIFACT_SPELLS);
+    struct Group {
+            const ManaUnit *unit;
+            size_t count;
+    };
+    std::vector<Group> groups;
+    for (const ManaUnit &unit : global_coordinator.GetComponent<Player>(get_player_entity(p)).mana) {
+        if (!unit.restriction && !unit.rider) continue;
+        auto same = std::find_if(groups.begin(), groups.end(), [&unit](const Group &g) {
+            return g.unit->color == unit.color && g.unit->restriction == unit.restriction && g.unit->rider == unit.rider;
+        });
+        if (same != groups.end()) same->count++;
+        else groups.push_back({&unit, 1});
+    }
+    for (const Group &g : groups) {
+        const ManaRestriction *restriction = g.unit->restriction;
+        const ManaRider *rider = g.unit->rider;
+        Row r = c.w.row(TableId::POOL_MANA);
+        put_seat(r, p, c.self);
+        r.u8(static_cast<uint64_t>(g.unit->color)).u16(u16_count(static_cast<int64_t>(g.count)));
+        r.u8(restriction ? static_cast<uint64_t>(restriction->kind) : 0);
+        r.text(restriction ? restriction->chosen_type : "");
+        r.u8(restriction && restriction->allows_activated ? 1 : 0)
+            .u8(restriction && restriction->activated_on_battlefield ? 1 : 0);
+        r.u8(rider && rider->cant_be_countered ? 1 : 0);
+    }
+}
+
 // The effects that apply to a player (player_effects, queries/player_effects.h) with the duration
 // of the resolved effect behind each; one a battlefield static gives has duration STATIC.
 static void write_player_effects(const Ctx &c, Zone::Ownership p) {
@@ -1597,6 +1630,8 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
     if (!is_seat(v) || v == decider) write_menu(c, actions);
     write_match(c);
     write_own_deck(c);
+    write_pool_mana(c, c.self);
+    write_pool_mana(c, opponent_of(c.self));
     write_events(c, events);
     return w.finish();
 }

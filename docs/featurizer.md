@@ -69,12 +69,12 @@ batcher, never a format cap.
 
 ### 3.1 Token types
 
-Every `STATE` table with id 20-48 or 90-95 is a token type, except `strings` and the tables a fold
+Every `STATE` table with id 20-49 or 90-95 is a token type, except `strings` and the tables a fold
 takes whole (§3.6: `own_deck`, `k_seen`, `k_known_hand`); so are the fold's synthetic type,
 `ledger`, and with the history option its two types (§3.7). A type's id (its `tok_type`) is its
 permanent position in the layout registry (§6.1), matched by name; tokens come in id order. Today's
 ids are the table types in ascending table id (0-31), `ledger` (32), `hist_event` and `hist_card`
-(33, 34); a type added later takes the next free id, whatever its table id. A table's
+(33, 34), `pool_mana` (35); a type added later takes the next free id, whatever its table id. A table's
 rows are its tokens in frame order, except where a fold filters them (`k_pool_card`) or keeps only an
 object's differences from its card (`object_subtype`, `object_keyword`). Single-row tables (`header`, `turn`, `pending`, `pending_cost`, `match`,
 `k_meta`) are one token each, so global state is a few tokens rather than a special vector. Child

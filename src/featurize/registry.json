@@ -42,7 +42,8 @@
 {"name":"pool_kind","capacity":16,"values":["HAND","LIBRARY_RANGE","SIDEBOARD","FACE_DOWN","SET_ASIDE"]},
 {"name":"lib_anchor","capacity":2,"closed":true,"values":["TOP","BOTTOM"]},
 {"name":"event_kind","capacity":32,"values":["ZONE_MOVE","DRAW","LIBRARY_PLACE","REVEAL_START","REVEAL_END","LOOK","SHUFFLE","REORDER","SEARCH","CAST_FROM_HIDDEN","PLAY_FROM_HIDDEN","FACE_DOWN","FACE_UP","GAME_START","GAME_END","MATCH_END"]},
-{"name":"hand_subset","capacity":8,"values":["ANY","DRAWN_THIS_TURN"]}
+{"name":"hand_subset","capacity":8,"values":["ANY","DRAWN_THIS_TURN"]},
+{"name":"mana_restriction","capacity":16,"values":["NONE","CHOSEN_TYPE_CREATURE","CREATURE","COLORLESS_ELDRAZI","NO_NONARTIFACT_SPELLS"]}
 ],
 "token_types":[
 {"id":0,"name":"header","num_at":0,"num_capacity":16},
@@ -79,7 +80,8 @@
 {"id":31,"name":"k_position","num_at":768,"num_capacity":16},
 {"id":32,"name":"ledger","num_at":784,"num_capacity":24},
 {"id":33,"name":"hist_event","num_at":808,"num_capacity":24},
-{"id":34,"name":"hist_card","num_at":832,"num_capacity":24}
+{"id":34,"name":"hist_card","num_at":832,"num_capacity":24},
+{"id":35,"name":"pool_mana","num_at":856,"num_capacity":16}
 ],
 "numeric":[
 {"type":"header","name":"game","kind":"scalar","at":0},
@@ -289,7 +291,11 @@
 {"type":"object","name":"spent_u","kind":"scalar","at":82},
 {"type":"object","name":"spent_b","kind":"scalar","at":83},
 {"type":"object","name":"spent_r","kind":"scalar","at":84},
-{"type":"object","name":"spent_g","kind":"scalar","at":85}
+{"type":"object","name":"spent_g","kind":"scalar","at":85},
+{"type":"pool_mana","name":"count","kind":"scalar","at":0},
+{"type":"pool_mana","name":"activated","kind":"scalar","at":1},
+{"type":"pool_mana","name":"activated_on_battlefield","kind":"scalar","at":2},
+{"type":"pool_mana","name":"cant_be_countered","kind":"scalar","at":3}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},
@@ -368,7 +374,10 @@
 {"type":"hist_event","name":"to_rel","source":"player-rel","col":7,"offset":4895,"size":4},
 {"type":"hist_card","name":"from_anchor","source":"enum:lib_anchor","col":0,"offset":4899,"size":3},
 {"type":"hist_card","name":"to_anchor","source":"enum:lib_anchor","col":1,"offset":4902,"size":3},
-{"type":"hist_card","name":"hand_subset","source":"enum:hand_subset","col":2,"offset":4905,"size":9}
+{"type":"hist_card","name":"hand_subset","source":"enum:hand_subset","col":2,"offset":4905,"size":9},
+{"type":"pool_mana","name":"player_rel","source":"player-rel","col":0,"offset":4914,"size":4},
+{"type":"pool_mana","name":"color","source":"enum:color","col":1,"offset":4918,"size":9},
+{"type":"pool_mana","name":"restriction","source":"enum:mana_restriction","col":2,"offset":4927,"size":17}
 ],
 "cards":[
 {"type":"object","name":"card","col":0},

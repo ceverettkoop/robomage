@@ -1,0 +1,4 @@
+{"name": "restricted_mana",
+ "why": "CR 106.6: the board shows what a floating {C} from Eldrazi Temple can be spent on, beside the pool's pips",
+ "args": ["--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Reality Smasher,Mountain", "--library-a", "Mountain", "--battlefield-a", "Eldrazi Temple,Eldrazi Temple,Eldrazi Temple", "--hand-b", "Forest", "--library-b", "Forest"],
+ "input": ["0", "7", "0", "0", "board", "concede match"]}

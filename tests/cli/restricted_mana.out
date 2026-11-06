@@ -1,0 +1,185 @@
+robomage 0.2
+Decision log: restricted_mana.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Reality Smasher, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Reality Smasher  #1  {4}{C}  Creature - Eldrazi
+  Mountain         #2          Basic Land - Mountain
+  Mountain         #3          Basic Land - Mountain
+  Mountain         #4          Basic Land - Mountain
+  Mountain         #5          Basic Land - Mountain
+  Mountain         #6          Basic Land - Mountain
+  Mountain         #7          Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Eldrazi Temple: created on the battlefield (x3)
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Eldrazi Temple x3  #8 #9 #10
+Your hand (7):
+  Reality Smasher  #1  {4}{C}  Creature - Eldrazi
+  Mountain         #2          Basic Land - Mountain
+  Mountain         #3          Basic Land - Mountain
+  Mountain         #4          Basic Land - Mountain
+  Mountain         #5          Basic Land - Mountain
+  Mountain         #6          Basic Land - Mountain
+  Mountain         #7          Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+  6: Play Mountain
+  7: Cast Reality Smasher
+Player A [0-7, help]> 
+Since your last decision:
+  T1: Player A casts Reality Smasher from hand
+  T1: Player A's Reality Smasher: stack -> battlefield
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0   pool {C}, {C} only colorless eldrazi or abilities
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Reality Smasher    5/5  #12
+  Eldrazi Temple x3       #8 #9 #10  tapped
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+  6: Play Mountain
+Player A [0-6, help]> 
+Game 1, turn 1, Declare attackers: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Reality Smasher    5/5  #12
+  Eldrazi Temple x3       #8 #9 #10  tapped
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Reality Smasher [5/5]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+Since your last decision:
+  life: Player B 20 -> 15
+Game 1, turn 1, Second main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 15   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Reality Smasher    5/5  #12        tapped
+  Eldrazi Temple x3       #8 #9 #10  tapped
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+  6: Play Mountain
+Player A [0-6, help]> Game 1, turn 1, Second main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 15   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Reality Smasher    5/5  #12        tapped
+  Eldrazi Temple x3       #8 #9 #10  tapped
+Your hand (6):
+  Mountain  #2  Basic Land - Mountain
+  Mountain  #3  Basic Land - Mountain
+  Mountain  #4  Basic Land - Mountain
+  Mountain  #5  Basic Land - Mountain
+  Mountain  #6  Basic Land - Mountain
+  Mountain  #7  Basic Land - Mountain
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Mountain
+  2: Play Mountain
+  3: Play Mountain
+  4: Play Mountain
+  5: Play Mountain
+  6: Play Mountain
+Player A [0-6, help]> 
+Player A concedes - Player B wins!
+GAME_RESULT: 1 Player B wins
