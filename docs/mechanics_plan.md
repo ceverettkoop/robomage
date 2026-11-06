@@ -790,7 +790,7 @@ Against the (b) list: `ManaFromCard`, `Count$CastTotalManaSpent`, `S:Mode$ ManaR
 | `Count$CastTotalManaSpent` | Mockingbird | M8 | a row reading the entry's `mana_paid`, which `spell_reads_colors_spent` must then hold while it stands; it also needs `K:ETBReplacement:Copy` |
 | `ManaFromCard`, `ValidSA$ Spell.ManaFromCard.StrictlySelf` | The Myriad Pools (The Everflowing Well's back) | M9 | `mana_from` as the reader, on a `SpellCast` trigger's `ValidSA$`; it also needs `Clone`'s `CloneTarget$` and `Duration$` and `ValidCard$ Permanent` |
 
-**What stops `spent_w` to `spent_g`.** `spell_reads_colors_spent` stays in `record_cast_entry`, and `tests/open_vocab/` was left alone, because the acceptance does not hold, and did not before this unit. For the user to decide.
+**What stops `spent_w` to `spent_g`.** `spell_reads_colors_spent` stays in `record_cast_entry`, and `tests/open_vocab/` was left alone, because the acceptance did not hold, and did not before this unit. Since settled, in §7: the numbers below are from before `s0_rows.json`.
 
 `learn/.venv/bin/python` runs both here (torch 2.10; the S0 originals are in `ckpt.v1/`). `open_vocab_acceptance.py gate` **fails at `e71d7e71`, where this unit started, and at this tip, with the same numbers**: 8 failures, max |Δ logit| 0.145 against `TOL` 1e-4 over 614 decisions; `full`, 72 failures over 35 networks and 8,735 decisions. So nothing here broke it, and the check is red with or without the flag.
 
@@ -988,7 +988,7 @@ Meld with one half missing; each new field across a snapshot.
 None block M0 to M12. Before M13: the `league/` and `heldout/` split. Before M12's Dungeons: whether Acererak alone
 justifies the subsystem, or whether Aluren should swap the card out. This plan assumes it is built.
 
-Open, blocking nothing in M7 to M12: how `learn/open_vocab_acceptance.py` treats cards whose table rows moved on purpose, which decides when `spell_reads_colors_spent` can go (M6, "What stops `spent_w` to `spent_g`").
+Settled 2026-11-06: `learn/open_vocab_acceptance.py` runs on a test-only copy of the tables holding the rows S0 recorded (`tests/open_vocab/s0_rows.json`), so a card whose rows move on purpose is one more entry there and every decision stays in the check. `gate` passes; `full` is to run at M7's stage gate. Left: `spell_reads_colors_spent` can go in its own commit, with a mode of `write_inputs` that keeps the file's decisions at today's digests.
 
 ## Appendix A. Every finding, by stage
 

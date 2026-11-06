@@ -35,6 +35,12 @@ the ``featurize`` tier checks without torch (``python/pycheck.py --part open_voc
 after showing today's featurization equals S0's mapped one; a decision whose inputs later move
 intentionally is dropped from the file (``inputs --drop-moved``), and (a) runs on the rest.
 
+**Rows that moved on purpose.** S0's outputs are of the card rows of their day. A card whose table rows moved
+since, by a script change or a parser change the digest reports, has its old rows in
+``tests/open_vocab/s0_rows.json``, and (a) and (b) run on a test-only copy of today's tables holding them
+(``fixture_tables``): the check is of the migration, and every decision stays in it. A card that drifts is one
+more entry there.
+
 The last line is ``OPEN-VOCAB-ACCEPTANCE: ok …`` or ``… N failure(s)`` (exit 1), or ``skipped: …``
 (exit 0).
 """
@@ -74,6 +80,7 @@ from rmlearn import spec as S  # noqa: E402
 TOL = 1e-4
 FIXTURE = os.path.join(REPO_ROOT, "tests", "open_vocab")
 INPUTS = os.path.join(FIXTURE, "inputs.json")
+S0_ROWS = os.path.join(FIXTURE, "s0_rows.json")
 # The card ids each run's training inputs held (S4's episode scan); the critic fixture is m11's.
 SEEN = {"runs/league24h-sb": "runs/open_vocab_s4/card_ids_league24h-sb.json",
         "runs/pilotA": "runs/open_vocab_s4/card_ids_pilotA.json",
@@ -222,10 +229,24 @@ _W = {}
 
 def _init(work, tables_dir, threads):
     torch.set_num_threads(threads)
-    _W["tables"] = S.load_tables(tables_dir)
+    _W["tables"] = fixture_tables(tables_dir)
     _W["decs"] = {n: OVB.load_decisions(os.path.join(work, n + ".rmtb")) for n in ("seat", "omni")}
     with open(os.path.join(work, "jobs.json")) as fp:
         _W["ctx"] = json.load(fp)
+
+
+def fixture_tables(tables_dir):
+    """The tables of `tables_dir` with each card of ``s0_rows.json`` holding the rows S0 recorded it with."""
+    tables = S.load_tables(tables_dir)
+    with open(S0_ROWS) as fp:
+        cards = json.load(fp)["cards"]
+    card, text = tables.card.copy(), tables.text.copy()
+    for c in cards:
+        for col, value in c["card"].items():
+            card[c["id"], int(col)] = value
+        text[c["id"]] = c["text"]
+    return S.Tables(tables.spec, card, text, tables.ability, tables.part, tables.part_ability, tables.hashes,
+                    tables.lineage)
 
 
 def forward(model, decs, critic=False):
@@ -525,7 +546,7 @@ def expanded_dir_check(args, jobs, seat, seat_ids):
     networks, outputs identical to today's tables' on the decisions holding none of `args.skip_cards`."""
     fails = []
     torch.set_num_threads(args.threads * 4)
-    tables = S.load_tables(os.path.join(args.work, "feat", "tables"))
+    tables = fixture_tables(os.path.join(args.work, "feat", "tables"))
     ext = S.load_tables(args.expanded)
     skip = {int(x) for x in args.skip_cards.split(",") if x}
     clean = np.array([not (s & skip) for s in seat_ids])
