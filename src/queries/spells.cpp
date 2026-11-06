@@ -21,10 +21,12 @@ SpellDestination spell_destination(Entity spell, Zone::ZoneValue proposed, Spell
         global_coordinator.GetComponent<CardData>(spell).shuffle_into_library) {
         to.zone = Zone::LIBRARY;
         to.shuffled = true;
-    } else if (global_coordinator.entity_has_component<Spell>(spell) &&
-               global_coordinator.GetComponent<Spell>(spell).chosen.flashback()) {
-        to.zone = Zone::EXILE;
-        to.by_cast = true;
+    } else if (global_coordinator.entity_has_component<Spell>(spell)) {
+        const Zone::ZoneValue by_cast = global_coordinator.GetComponent<Spell>(spell).chosen.option.destination;
+        if (by_cast != Zone::GRAVEYARD) {
+            to.zone = by_cast;
+            to.by_cast = true;
+        }
     }
     return to;
 }

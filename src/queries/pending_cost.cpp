@@ -61,7 +61,7 @@ static StatePart cast_step_part(const Cast &pc) {
 static const CardData *cast_face(const Cast &pc) {
     if (pc.spell_entity == 0 || !global_coordinator.entity_has_component<CardData>(pc.spell_entity)) return nullptr;
     const CardData &cd = global_coordinator.GetComponent<CardData>(pc.spell_entity);
-    return pc.chosen.back_face ? cd.backside.get() : &cd;
+    return pc.chosen.back_face() ? cd.backside.get() : &cd;
 }
 
 static bool cast_cost(const Cast &pc, PendingCost &out) {

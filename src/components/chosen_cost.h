@@ -7,34 +7,15 @@
 
 #include "../classes/colors.h"
 #include "../object_ref.h"
+#include "cast_option.h"
 #include "cost_part.h"
 #include "mana_unit.h"
 
 // What a cast committed to (CR 601.2b-h): how the spell was cast and what was paid. Built on
 // Game::PendingCast as the cast is proposed, and recorded on the Spell as it becomes cast
-// (CR 601.2i) for as long as it is on the stack; until then a Spell holds only its back_face.
+// (CR 601.2i) for as long as it is on the stack; until then a Spell holds only the face of its option.
 struct ChosenCost {
-        enum class Mode : uint8_t {
-            REGULAR,      // for its mana cost, a play permission's resource or nothing
-            FLASHBACK,    // exiled when it leaves the stack
-            ESCAPE,       // from the graveyard for its escape cost: the resulting permanent "escaped"
-                          // (CR 702.138), read by an "if it escaped" clause (Uro)
-            ALTERNATIVE,  // for its alternative cost, and:
-            EVOKE,        // sacrifices itself when it enters
-            IMPENDING,    // CR 702.175: enters with time counters, and isn't a creature until they're gone
-            WARP,         // exiled at the next end step (a delayed trigger), then castable from exile later
-                          // for its normal cost
-        };
-        Mode mode = Mode::REGULAR;
-        bool offspring = false;  // Offspring additional cost paid: makes a 1/1 token copy on ETB
-        bool impulse = false;    // cast from exile under a play permission
-        // Cast without paying its mana cost under a free-cast static (CR 118.9): the regular branch
-        // with a {0} mana cost — additional costs, cost increases and the SetCost floor still apply, X
-        // is 0 (CR 107.3b), the mana cost's hybrid and Phyrexian pips unpaid.
-        bool without_mana_cost = false;
-        // Cast as its modal DFC back face or as a split card's second half: on the stack the spell
-        // has only that face's characteristics (CR 712.8f, 709.3; read through active_face).
-        bool back_face = false;
+        CastOption option;  // how it is cast
         // The X announced (CR 601.2b / 107.3a; a variable life cost's X too): Chalice of the Void enters
         // with X charge counters, the resolving spell's Count$xPaid reads it.
         int x = 0;
@@ -79,9 +60,10 @@ struct ChosenCost {
         // (Prismatic Ending).
         std::set<Colors> colors_spent() const { return colors_of(mana_paid); }
 
-        bool flashback() const { return mode == Mode::FLASHBACK; }
-        bool escape() const { return mode == Mode::ESCAPE; }
-        bool alternative() const { return mode >= Mode::ALTERNATIVE; }
+        bool flashback() const { return option.cost == CastCost::FLASHBACK; }
+        bool escape() const { return option.cost == CastCost::ESCAPE; }
+        bool alternative() const { return option.alternative(); }
+        bool back_face() const { return option.face == CastFace::BACK; }
 };
 
 #endif /* CHOSEN_COST_H */

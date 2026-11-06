@@ -207,7 +207,7 @@ static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
     // stack (CR 601.2a, 712.8f), so active_face reads them throughout the proposal.
     Spell spell;
     spell.caster = caster;
-    spell.chosen.back_face = pc.chosen.back_face;
+    spell.chosen.option.face = pc.chosen.option.face;
     global_coordinator.AddComponent(pc.spell_entity, spell);
 }
 
@@ -226,19 +226,19 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
     pc = Game::PendingCast{};
 }
 
-// The --coverage cast keys of a spell becoming cast: one per LegalAction flag the cast carries (a
-// split card's second half is its back face), or the zone of a cast with none.
+// The --coverage cast keys of a spell becoming cast: one per way its option departs from a cast of
+// the mana cost (a split card's second half is its back face), or the zone of a cast with none.
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity) {
     if (pc.chosen.flashback()) coverage_cast("flashback");
     if (pc.chosen.escape()) coverage_cast("escape");
     if (pc.chosen.alternative()) coverage_cast("alt_cost");
-    if (pc.chosen.offspring) coverage_cast("offspring");
-    if (pc.chosen.impulse) coverage_cast("impulse");
-    if (pc.chosen.without_mana_cost) coverage_cast("without_mana_cost");
-    if (pc.chosen.back_face) coverage_cast(front.is_split ? "split_half" : "back_face");
-    if (pc.chosen.flashback() || pc.chosen.escape() || pc.chosen.alternative() || pc.chosen.offspring || pc.chosen.impulse ||
-        pc.chosen.without_mana_cost || pc.chosen.back_face)
-        return;
+    const CastOption &how = pc.chosen.option;
+    const bool impulse = how.permission == Permission::EXILE_GRANT;
+    if (how.offspring) coverage_cast("offspring");
+    if (impulse) coverage_cast("impulse");
+    if (how.cost == CastCost::NO_MANA_COST) coverage_cast("without_mana_cost");
+    if (pc.chosen.back_face()) coverage_cast(front.is_split ? "split_half" : "back_face");
+    if (how.cost != CastCost::MANA_COST || how.offspring || impulse || pc.chosen.back_face()) return;
     const EntryInfo *entry = find_entry_info(spell_entity);
     coverage_cast(entry && entry->cast_from_hand ? "hand" : "graveyard_permission");
 }
@@ -1808,7 +1808,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
     // face, but the spell has only the BACK face's characteristics — pay the back's mana cost,
     // put the back's spell ability on the stack, and (if the back is a permanent) enter as the
     // back face. Every cast-path read of card_data comes from the back face for this cast.
-    const CardData &card_data = (pc.chosen.back_face && front_data.backside)
+    const CardData &card_data = (pc.chosen.back_face() && front_data.backside)
                                     ? *front_data.backside : front_data;
     Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
 
@@ -1817,12 +1817,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // A NORMAL play-from-exile grant (Light Up the Stage, warp) casts the card for its
             // own costs, so it follows the regular branch: kicker, X, hybrid and Phyrexian pips
             // and additional costs all apply (CR 601.2b, 601.2f).
-            const Game::ImpulseCastPermission *grant_p =
-                cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
-            const bool impulse_normal = pc.chosen.impulse && grant_p &&
-                                        grant_p->resource == Game::ImpulseCastPermission::NORMAL;
-            pc.mana_cost_replaced = pc.chosen.flashback() || pc.chosen.escape() || pc.chosen.alternative() ||
-                                    pc.chosen.without_mana_cost || (pc.chosen.impulse && !impulse_normal);
+            const CastOption &how = pc.chosen.option;
+            pc.mana_cost_replaced = how.cost != CastCost::MANA_COST;
             // Delve and TapToPay act on the total cost, whichever cost it was made from.
             pc.pay.delve = card_data.has_delve;
             pc.pay.tap_to_pay = card_data.tap_to_pay;
@@ -1855,7 +1851,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // (CR 601.2h). The permission is consumed as the spell becomes cast (FINISH). X is 0
             // for a spell cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light
             // Up the Stage, warp) pays the card's own costs, so it takes the regular branch below.
-            } else if (pc.chosen.impulse && !impulse_normal) {
+            } else if (how.cost == CastCost::GRANT) {
+                const Game::ImpulseCastPermission *grant_p =
+                    cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
                 if (grant_p) {
                     const auto &grant = *grant_p;
                     if (grant.resource == Game::ImpulseCastPermission::FREE)
@@ -1888,18 +1886,19 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // Without paying its mana cost (a free-cast static, CR 118.9) the mana cost is
                 // {0}, to which cost increases and the SetCost floor still apply (118.9d); the
                 // additional costs below are offered and paid as on any cast.
-                pc.cost_to_pay = pc.chosen.without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
-                                                      : effective_base_cost(card_data, caster);
+                const bool without_mana_cost = how.cost == CastCost::NO_MANA_COST;
+                pc.cost_to_pay = without_mana_cost ? floored_alt_mana_cost(card_data, ManaValue{}, caster)
+                                                   : effective_base_cost(card_data, caster);
                 // A reduction conditioned on the spell's targets (Mystical Dispute) is taken off
                 // once they are chosen (AURA_TARGET), the total cost being determined after them
                 // (CR 601.2c, 601.2f).
-                pc.target_cost_reduction = !pc.chosen.without_mana_cost && has_target_cost_reduction(card_data, caster);
-                if (pc.chosen.without_mana_cost)
+                pc.target_cost_reduction = !without_mana_cost && has_target_cost_reduction(card_data, caster);
+                if (without_mana_cost)
                     game_log("%s casts %s without paying its mana cost\n", player_name(caster).c_str(),
                         card_data.name.c_str());
 
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
-                if (pc.chosen.offspring)
+                if (how.offspring)
                     for (Colors c : card_data.offspring_cost.mana()) pc.cost_to_pay.insert(c);
 
                 pc.step = Game::PendingCast::KICKER;
@@ -2403,11 +2402,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // as the card moved to the stack, begin_cast) now records how it was cast.
             Spell spell;
             spell.caster = caster;
-            if (pc.chosen.mode == ChosenCost::Mode::ALTERNATIVE) {
-                if (card_data.alt_cost.is_evoke) pc.chosen.mode = ChosenCost::Mode::EVOKE;
-                else if (card_data.alt_cost.is_impending) pc.chosen.mode = ChosenCost::Mode::IMPENDING;
-                else if (card_data.alt_cost.is_warp) pc.chosen.mode = ChosenCost::Mode::WARP;
-            }
             spell.chosen = pc.chosen;
             // Mana spent on it may say it can't be countered (Cavern of Souls).
             if (mana_makes_uncounterable(pc.chosen.mana_paid)) spell.cant_be_countered = true;
@@ -2433,7 +2427,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             count_cast_modes(pc, front_data, spell_entity);
             // A play permission is consumed by the cast it allowed (it lapses once the card
             // has left exile).
-            if (pc.chosen.impulse) cur_game.resolved_effects.impulse_cast_permission.erase(spell_entity);
+            spend_permission(pc.chosen.option.permission, spell_entity);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells
             {
@@ -2619,7 +2613,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // EntryInfo::enters_transformed so apply_permanent_components flips it to the back face
             // at entry (suppressing the front-face ETBs). As a modal card it doesn't flip again.
             const CardData *played_face = &card_data;
-            if (action.play_back_face && card_data.backside) {
+            if (action.option.face == CastFace::BACK && card_data.backside) {
                 played_face = card_data.backside.get();
                 entry_info(land_entity).enters_transformed = true;
                 coverage_cast("land_back_face");
@@ -2667,7 +2661,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // showing the back face (apply_permanent_components flips it at entry, suppressing the
             // front-face ETBs). Instant/sorcery backs resolve and leave the stack, so no flip is
             // needed and none is marked.
-            if (action.cast_back_face && front_data.backside &&
+            if (action.option.face == CastFace::BACK && front_data.backside &&
                 is_permanent_card(*front_data.backside))
                 entry_info(spell_entity).enters_transformed = true;
 
@@ -2676,7 +2670,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // tell it "was cast from your hand by you" (Amped Raptor's dig gate). One-shot:
             // set here, consumed when the Permanent is created (state_manager_statics). Casts
             // from graveyard/exile (flashback, impulse) clear it so they don't count.
-            if (zone.location == Zone::HAND && zone.owner == caster)
+            if (action.option.zone == Zone::HAND && zone.owner == caster)
                 entry_info(spell_entity).cast_from_hand = true;
             else if (EntryInfo *entry = find_entry_info(spell_entity))
                 entry->cast_from_hand = false;
@@ -2693,14 +2687,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             pc.active = true;
             pc.spell_entity = spell_entity;
             pc.caster_is_a = (caster == Zone::PLAYER_A);
-            pc.chosen.mode = action.use_flashback ? ChosenCost::Mode::FLASHBACK
-                             : action.use_escape  ? ChosenCost::Mode::ESCAPE
-                             : action.use_alt_cost ? ChosenCost::Mode::ALTERNATIVE
-                                                   : ChosenCost::Mode::REGULAR;
-            pc.chosen.offspring = action.use_offspring;
-            pc.chosen.impulse = action.impulse_cast;
-            pc.chosen.back_face = action.cast_back_face && front_data.backside;
-            pc.chosen.without_mana_cost = action.without_mana_cost;
+            pc.chosen.option = action.option;
             begin_cast(pc, caster, orderer);
             run_cast_flow(pc, game, orderer, -1);
             break;
@@ -3019,7 +3006,9 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
     const std::string nm = entity_name(card);
     LegalAction cast(CAST_SPELL, card, "Cast " + nm);
     cast.category = ActionCategory::CAST_SPELL;
-    cast.impulse_cast = true;
+    cast.option.zone = Zone::EXILE;
+    cast.option.cost = CastCost::GRANT;
+    cast.option.permission = Permission::EXILE_GRANT;
     const char *how = grant.resource == Game::ImpulseCastPermission::FREE
                           ? " without paying its mana cost" : "";
     ResolutionCastStatus status =

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../components/ability.h"
+#include "../components/cast_option.h"
 #include "../ecs/entity.h"
 
 enum ActionType {
@@ -84,25 +85,8 @@ struct LegalAction {
         Ability ability;       // Ability being activated (ACTIVATE_ABILITY only)
         std::string description;
         ActionCategory category = ActionCategory::OTHER_CHOICE;
-        bool use_alt_cost = false;
-        bool use_flashback = false;
-        bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
-        bool use_escape = false;     // cast from graveyard paying the Escape cost (CR 702.139)
-        bool impulse_cast = false;   // cast from exile under a cur_game.resolved_effects.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
-        // Cast without paying its mana cost under a free-cast static (Omniscience, Aluren): the
-        // alternative cost of CR 118.9, its additional costs still paid (rules_mod::free_cast_grant).
-        bool without_mana_cost = false;
-        // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
-        // CardData is the front face), but it is being played as its back face (a land). The
-        // processor marks it EntryInfo::enters_transformed so it enters showing the back face.
-        bool play_back_face = false;
-        // CAST_SPELL of a modal DFC's BACK face when that back face is a NONLAND spell
-        // (Tergrid, God of Fright // Tergrid's Lantern). The source entity is the combined
-        // card (whose CardData is the front face); it is cast paying the BACK face's mana cost
-        // and using the back face's characteristics/abilities (CR 712.8). If the back is a
-        // permanent the processor marks it EntryInfo::enters_transformed so it enters showing the
-        // back face (reusing the transform machinery, parallel to play_back_face for lands).
-        bool cast_back_face = false;
+        // How this row casts its card, or which face a PLAY_LAND plays (CastOption).
+        CastOption option;
         // SPECIAL_ACTION that puts the player's chosen Companion (CR 702.139) from the sideboard
         // into their hand for {3}. Disambiguates the companion special action from the play-land
         // special action; the processor pays {3} and moves the source entity Sideboard -> Hand.

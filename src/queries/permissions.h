@@ -55,6 +55,10 @@ struct PlayPermissions {
 };
 PlayPermissions play_permissions(Entity card, Zone::Ownership player);
 
+// The cast `card` was allowed by `permission` is made: a permission that lasts only until it is used
+// is gone (an exile grant; it lapses once the card has left exile).
+void spend_permission(Permission permission, Entity card);
+
 // The cards among `entities` that `player` has a permission for, in entity-id order, with the
 // bits of each.
 std::vector<std::pair<Entity, unsigned>> play_routes(const EntitySet &entities, Zone::Ownership player);

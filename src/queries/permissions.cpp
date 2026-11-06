@@ -14,13 +14,14 @@ struct PermissionQuery {
 };
 
 // A permission: the zone it reaches, whether only the card's owner has it, whether it covers the
-// card for the player, and whether it lapses at this turn's cleanup.
+// card for the player, whether it lapses at this turn's cleanup, and what using it uses up.
 struct PermissionRow {
         Permission kind;
         Zone::ZoneValue zone;
         bool owner_only;
         bool (*covers)(const PermissionQuery &q);
         bool (*expires)(const PermissionQuery &q);
+        void (*spent)(Entity card);
 };
 
 static bool never_expires(const PermissionQuery &q);
@@ -31,15 +32,16 @@ static bool granted_graveyard_cast(const PermissionQuery &q);
 static bool graveyard_land_static(const PermissionQuery &q);
 static bool exile_grant_covers(const PermissionQuery &q);
 static bool exile_grant_expires(const PermissionQuery &q);
+static void exile_grant_spent(Entity card);
 static unsigned zones_with_rows();
 
 static const PermissionRow kPermissionRows[] = {
-    // kind                      zone             owner only  covers                  expires
-    {Permission::FLASHBACK,      Zone::GRAVEYARD, true,       has_flashback,          never_expires},
-    {Permission::ESCAPE,         Zone::GRAVEYARD, true,       has_escape,             never_expires},
-    {Permission::GRAVEYARD_CAST, Zone::GRAVEYARD, true,       granted_graveyard_cast, expires_at_cleanup},
-    {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  never_expires},
-    {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires},
+    // kind                      zone             owner only  covers                  expires              spent
+    {Permission::FLASHBACK,      Zone::GRAVEYARD, true,       has_flashback,          never_expires,       nullptr},
+    {Permission::ESCAPE,         Zone::GRAVEYARD, true,       has_escape,             never_expires,       nullptr},
+    {Permission::GRAVEYARD_CAST, Zone::GRAVEYARD, true,       granted_graveyard_cast, expires_at_cleanup,  nullptr},
+    {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  never_expires,       nullptr},
+    {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires, exile_grant_spent},
 };
 
 static const unsigned kZonesWithRows = zones_with_rows();
@@ -86,6 +88,8 @@ static bool exile_grant_expires(const PermissionQuery &q) {
                        (g.caster == active && cur_game.turn_state.turn > g.grant_turn));
 }
 
+static void exile_grant_spent(Entity card) { cur_game.resolved_effects.impulse_cast_permission.erase(card); }
+
 PlayPermissions play_permissions(Entity card, Zone::Ownership player) {
     PlayPermissions out;
     if (!global_coordinator.entity_has_component<Zone>(card)) return out;
@@ -103,6 +107,11 @@ PlayPermissions play_permissions(Entity card, Zone::Ownership player) {
     }
     out.expires_this_turn = out.playable() && all_expire;
     return out;
+}
+
+void spend_permission(Permission permission, Entity card) {
+    for (const PermissionRow &row : kPermissionRows)
+        if (row.kind == permission && row.spent) row.spent(card);
 }
 
 std::vector<std::pair<Entity, unsigned>> play_routes(const EntitySet &entities, Zone::Ownership player) {

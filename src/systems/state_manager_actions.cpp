@@ -61,6 +61,7 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
+static CastCost alternative_cost_kind(const AltCost &alt_cost);
 static ManaValue regular_cast_cost(
     const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
@@ -160,6 +161,14 @@ static LegalAction cast_action(Entity card_entity, const std::string &desc, int 
     return la;
 }
 
+// The CastCost of `alt_cost`, the alternative cost of a card.
+static CastCost alternative_cost_kind(const AltCost &alt_cost) {
+    if (alt_cost.is_evoke) return CastCost::EVOKE;
+    if (alt_cost.is_impending) return CastCost::IMPENDING;
+    if (alt_cost.is_warp) return CastCost::WARP;
+    return CastCost::ALTERNATIVE;
+}
+
 // The regular cost of casting `face` from `card_entity` for `caster` that the cast-legality gates
 // check: effective_base_cost, less the most a ValidTarget$-conditioned reduction takes off for one
 // of the spell's legal targets (best_target_cost_reduction; Mystical Dispute targeting a blue
@@ -214,7 +223,7 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     const CostParts &additional = spell_additional_cost(face);
     if (!can_pay(additional, check)) return;
     LegalAction free_la = cast;
-    free_la.without_mana_cost = true;
+    free_la.option.cost = CastCost::NO_MANA_COST;
     free_la.option_ordinal = 8;
     free_la.description = cast.description + " without paying its mana cost";
     actions.push_back(free_la);
@@ -223,7 +232,7 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     for (Colors c : face.offspring_cost.mana()) with_offspring.insert(c);
     check.mana = &with_offspring;
     if (!can_pay(additional, check)) return;
-    free_la.use_offspring = true;
+    free_la.option.offspring = true;
     free_la.description += " (offspring)";
     actions.push_back(free_la);
 }
@@ -693,7 +702,7 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
         if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
 
         LegalAction la = cast_action(card_entity, "Cast " + back.name, 3);
-        la.cast_back_face = true;
+        la.option.face = CastFace::BACK;
         // Timing, targets and prohibitions are the back face's own (Gone is an instant).
         if (can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
@@ -746,7 +755,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     "Play " + (back_face ? card_data.backside->name : card_data.name);
                 LegalAction la(SPECIAL_ACTION, card_entity, desc);
                 la.category = ActionCategory::PLAY_LAND;
-                la.play_back_face = back_face;
+                if (back_face) la.option.face = CastFace::BACK;
                 actions.push_back(la);
             }
             // Lands in the graveyard while a play-lands-from-graveyard static applies
@@ -814,7 +823,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (can_regular) actions.push_back(la);
             if (can_alt) {
                 LegalAction alt_la = la;
-                alt_la.use_alt_cost = true;
+                alt_la.option.cost = alternative_cost_kind(card_data.alt_cost);
                 alt_la.option_ordinal = 1;  // cast variant: 1 = alternate/impending cost
                 alt_la.description = "Cast " + card_data.name +
                     (card_data.alt_cost.is_impending ? " (impending)"
@@ -831,7 +840,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 for (Colors c : card_data.offspring_cost.mana()) offspring_total.insert(c);
                 if (regular_cast_payable(card_data, card_entity, priority_player, offspring_total, orderer)) {
                     LegalAction off_la = la;
-                    off_la.use_offspring = true;
+                    off_la.option.offspring = true;
                     off_la.option_ordinal = 2;  // cast variant: 2 = offspring
                     off_la.description = "Cast " + card_data.name + " (offspring)";
                     actions.push_back(off_la);
@@ -881,7 +890,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!can_pay(gcd.flashback_cost, fb_check)) continue;
 
         LegalAction fb_la = cast_action(gy_entity, "Cast " + gcd.name + " (flashback)", 4);
-        fb_la.use_flashback = true;
+        fb_la.option.zone = Zone::GRAVEYARD;
+        fb_la.option.cost = CastCost::FLASHBACK;
+        fb_la.option.permission = Permission::FLASHBACK;
+        fb_la.option.destination = Zone::EXILE;
         actions.push_back(fb_la);
     }
     // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
@@ -904,7 +916,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!can_pay(gcd.escape_cost, esc_check)) continue;
 
         LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);
-        esc_la.use_escape = true;
+        esc_la.option.zone = Zone::GRAVEYARD;
+        esc_la.option.cost = CastCost::ESCAPE;
+        esc_la.option.permission = Permission::ESCAPE;
         actions.push_back(esc_la);
     }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
@@ -914,7 +928,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & permission_bit(Permission::GRAVEYARD_CAST))) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        const LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
+        LegalAction gy_la = cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6);
+        gy_la.option.zone = Zone::GRAVEYARD;
+        gy_la.option.permission = Permission::GRAVEYARD_CAST;
         if (can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
                 /*ignore_timing=*/false, orderer) &&
             regular_cast_payable(gcd, gy_entity, priority_player,
@@ -959,7 +975,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                      ? " (from exile, no cost)"
                                      : " (from exile)";
         LegalAction imp_la = cast_action(ex_entity, "Cast " + ecd.name + imp_suffix, 7);
-        imp_la.impulse_cast = true;
+        imp_la.option.zone = Zone::EXILE;
+        imp_la.option.permission = Permission::EXILE_GRANT;
+        if (perm_grant.resource != Game::ImpulseCastPermission::NORMAL) imp_la.option.cost = CastCost::GRANT;
         if (castable) actions.push_back(imp_la);
         if (normal_grant) offer_free_cast(actions, imp_la, ecd, Zone::EXILE, priority_player, sorcery_window, orderer);
     }

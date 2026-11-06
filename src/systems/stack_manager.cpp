@@ -121,7 +121,7 @@ bool StackManager::aura_spell_target_illegal(Entity spell) {
 void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
-    if (spell.chosen.mode == ChosenCost::Mode::EVOKE) entry.evoked = true;
+    if (spell.chosen.option.cost == CastCost::EVOKE) entry.evoked = true;
     // Vibrance's "if {R}{R} was spent to cast it" reads it. Kept only for a card that does: the
     // record is a column of every object's row, which no other card's should move.
     if (spell_reads_colors_spent(global_coordinator.GetComponent<CardData>(spell_entity)))
@@ -129,13 +129,13 @@ void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     entry.keywords_until_eot = spell.keywords_until_eot;
     entry.moved = spell.chosen.moved;
     // Offspring: its token-copy ETB trigger fires.
-    if (spell.chosen.offspring) entry.offspring = true;
+    if (spell.chosen.option.offspring) entry.offspring = true;
     // Escape: Uro's "sacrifice it unless it escaped" reads it.
     if (spell.chosen.escape()) entry.escaped = true;
     // Impending (CR 702.175): it enters with time counters, a noncreature until they shed.
-    if (spell.chosen.mode == ChosenCost::Mode::IMPENDING) entry.impending = true;
+    if (spell.chosen.option.cost == CastCost::IMPENDING) entry.impending = true;
     // Warp: its "exile at the next end step" delayed trigger is registered as it enters.
-    if (spell.chosen.mode == ChosenCost::Mode::WARP) entry.warp = true;
+    if (spell.chosen.option.cost == CastCost::WARP) entry.warp = true;
     // The X paid for an X-cost permanent, for an "enters with X counters" replacement (Chalice
     // of the Void).
     if (spell.chosen.x > 0) entry.x_paid = spell.chosen.x;

@@ -783,7 +783,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(z.is_face_down ? 1 : 0);
     const bool transformed =
         visible && ((perm && perm->transformed) || (global_coordinator.entity_has_component<Spell>(e) &&
-                                                       global_coordinator.GetComponent<Spell>(e).chosen.back_face));
+                                                       global_coordinator.GetComponent<Spell>(e).chosen.back_face()));
     r.u8(transformed ? 1 : 0);
     r.u16(visible && perm && perm->printed_card && cd ? card_or_none(card_name_to_index(cd->name)) : NONE16);
     // The phasing subsystem's flag is read directly: phased-out permanents are included and
@@ -1057,12 +1057,12 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
             using rmstate::CastVariant;
             auto bit = [&variant](CastVariant v) { variant |= 1u << static_cast<int>(v); };
             if (sp->chosen.flashback()) bit(CastVariant::FLASHBACK);
-            if (sp->chosen.mode == ChosenCost::Mode::EVOKE) bit(CastVariant::EVOKE);
+            if (sp->chosen.option.cost == CastCost::EVOKE) bit(CastVariant::EVOKE);
             if (sp->chosen.escape()) bit(CastVariant::ESCAPE);
-            if (sp->chosen.offspring) bit(CastVariant::OFFSPRING);
-            if (sp->chosen.mode == ChosenCost::Mode::IMPENDING) bit(CastVariant::IMPENDING);
-            if (sp->chosen.mode == ChosenCost::Mode::WARP) bit(CastVariant::WARP);
-            if (sp->chosen.back_face) bit(CastVariant::BACK_FACE);
+            if (sp->chosen.option.offspring) bit(CastVariant::OFFSPRING);
+            if (sp->chosen.option.cost == CastCost::IMPENDING) bit(CastVariant::IMPENDING);
+            if (sp->chosen.option.cost == CastCost::WARP) bit(CastVariant::WARP);
+            if (sp->chosen.back_face()) bit(CastVariant::BACK_FACE);
         }
         r.u16(variant)
             .u8(sp && sp->is_copy ? 1 : 0)
@@ -1398,13 +1398,14 @@ static uint16_t cast_variant_mask(const LegalAction &la) {
     auto bit = [&m](bool on, CastVariant v) {
         if (on) m |= 1u << static_cast<int>(v);
     };
-    bit(la.use_flashback, CastVariant::FLASHBACK);
-    bit(la.use_escape, CastVariant::ESCAPE);
-    bit(la.use_offspring, CastVariant::OFFSPRING);
-    bit(la.play_back_face || la.cast_back_face, CastVariant::BACK_FACE);
-    bit(la.use_alt_cost, CastVariant::ALT_COST);
-    bit(la.impulse_cast, CastVariant::IMPULSE);
-    bit(la.without_mana_cost, CastVariant::WITHOUT_MANA_COST);
+    const CastOption &how = la.option;
+    bit(how.cost == CastCost::FLASHBACK, CastVariant::FLASHBACK);
+    bit(how.cost == CastCost::ESCAPE, CastVariant::ESCAPE);
+    bit(how.offspring, CastVariant::OFFSPRING);
+    bit(how.face == CastFace::BACK, CastVariant::BACK_FACE);
+    bit(how.alternative(), CastVariant::ALT_COST);
+    bit(how.permission == Permission::EXILE_GRANT, CastVariant::IMPULSE);
+    bit(how.cost == CastCost::NO_MANA_COST, CastVariant::WITHOUT_MANA_COST);
     bit(la.companion_to_hand, CastVariant::COMPANION);
     bit(la.suspend_action, CastVariant::SUSPEND);
     bit(la.cancel_proposal, CastVariant::CANCEL);

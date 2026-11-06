@@ -33,7 +33,7 @@ HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     const std::string nm = entity_name(card);
     LegalAction cast(CAST_SPELL, card, "Cast " + nm + " (miracle)");
     cast.category = ActionCategory::CAST_SPELL;
-    cast.use_alt_cost = true;
+    cast.option.cost = CastCost::ALTERNATIVE;
     cast.option_ordinal = 1;
     if (cast_during_resolution(cast, ab.controller, castable, "Cast " + nm + " for its miracle cost",
                                rt, ctx, orderer) == ResolutionCastStatus::SUSPENDED)
