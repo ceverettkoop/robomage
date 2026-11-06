@@ -37,8 +37,8 @@ bool compare_svar(int value, const std::string &compare);
 // Evaluate an SVar expression to an integer from `controller`'s view ("you"). `source` is the
 // object the expression belongs to (Count$CardCounters, Count$ResolvedThisTurn, +Other, the
 // cards exiled with it), `target` the ability's chosen target (Targeted$CardPower,
-// TargetedPlayerCtrl). Trailing /Plus.N, /Times.N, /HalfUp and /LimitMax.N adjust the value. An
-// expression the engine doesn't recognize is reported as an error and evaluates to 0.
+// TargetedPlayerCtrl). Trailing /Plus.N, /Times.N, /HalfUp, /LimitMax.N and /DivideEvenlyDown.N adjust
+// the value. An expression the engine doesn't recognize is reported as an error and evaluates to 0.
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                   Entity target = 0);
 

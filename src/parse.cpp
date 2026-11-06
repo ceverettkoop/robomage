@@ -102,6 +102,7 @@ static Colors filter_color(const std::string &filter);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string svar_or_literal(const std::map<std::string, std::string>& svars,
                                    const std::string& name);
+static std::string expand_svar_head(const std::string& body, const std::map<std::string, std::string>& svars);
 static void resolve_svar_ref(std::string& ref, const std::map<std::string, std::string>& svars);
 static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
@@ -1880,7 +1881,19 @@ static uint32_t parse_toughness(std::string value) {
 static std::string svar_or_literal(const std::map<std::string, std::string> &svars,
                                    const std::string &name) {
     auto it = svars.find(name);
-    return (it != svars.end()) ? it->second : name;
+    return (it != svars.end()) ? expand_svar_head(it->second, svars) : name;
+}
+
+// An SVar body that opens with a reference to another SVar reads as that SVar's body with this one's
+// trailing steps after it, which the evaluator can read alone (Dark Matter Manipulator's X:
+// SVar$Y/Times.2, Y a count). A body with no such head, or naming no SVar, is left as it is.
+static std::string expand_svar_head(const std::string &body, const std::map<std::string, std::string> &svars) {
+    const std::string prefix = "SVar$";
+    if (body.rfind(prefix, 0) != 0) return body;
+    const size_t steps = body.find('/', prefix.size());
+    auto it = svars.find(body.substr(prefix.size(), steps == std::string::npos ? steps : steps - prefix.size()));
+    if (it == svars.end()) return body;
+    return expand_svar_head(it->second, svars) + (steps == std::string::npos ? "" : body.substr(steps));
 }
 
 // Replaces a non-empty SVar reference with the SVar's body; a name the script has no SVar for is

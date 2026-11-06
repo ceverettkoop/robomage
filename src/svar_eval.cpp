@@ -198,6 +198,7 @@ static int step_half_up(int value, int n);
 static int step_plus(int value, int n);
 static int step_times(int value, int n);
 static int step_limit_max(int value, int n);
+static int step_divide_down(int value, int n);
 
 static bool urza_lands_assembled(Zone::Ownership controller);
 
@@ -334,12 +335,14 @@ static const NamedProperty kNamedProperties[] = {
 // /Plus.N adds N (Birthing Ritual: 1 plus the sacrificed creature's mana value), /Times.N
 // multiplies (Price of Progress: twice the nonbasic lands), /HalfUp halves rounding up (Doomsday:
 // half your life; Tamiyo: half your library), /LimitMax.N caps at N (Flow State: "an instant card"
-// = at most 1).
+// = at most 1), /DivideEvenlyDown.N divides rounding down (Dark Matter Manipulator: each whole seven
+// cards).
 static const SuffixRow kSuffixRows[] = {
     {"HalfUp", false, step_half_up},
     {"Plus.", true, step_plus},
     {"Times.", true, step_times},
     {"LimitMax.", true, step_limit_max},
+    {"DivideEvenlyDown.", true, step_divide_down},
 };
 
 // A whole-string integer, optionally negative.
@@ -969,3 +972,4 @@ static int step_half_up(int value, int) { return (value + 1) / 2; }
 static int step_plus(int value, int n) { return value + n; }
 static int step_times(int value, int n) { return value * n; }
 static int step_limit_max(int value, int n) { return std::min(value, n); }
+static int step_divide_down(int value, int n) { return n > 0 ? value / n : 0; }

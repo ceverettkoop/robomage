@@ -1,0 +1,13 @@
+{
+  "name": "cr613_4c_dark_matter_manipulator_mills_itself_to_seven",
+  "why": "CR 613.4c / 701.17: Dark Matter Manipulator's enters trigger mills three, taking a graveyard of four to seven, and its bonus reads the graveyard as it is now: it attacks for 3 next turn",
+  "hand_a": ["Dark Matter Manipulator", "Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "graveyard_a": ["Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "play": ["A:keep", "B:keep", "A:cast:Dark Matter Manipulator", "A:attack:Dark Matter Manipulator"],
+  "max_decisions": 11,
+  "expect_order": ["Player A mills Swamp", "Dark Matter Manipulator deals 3 damage to Player B"]
+}
