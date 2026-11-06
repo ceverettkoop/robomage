@@ -85,7 +85,7 @@ struct CardData{
     // so split cards never pick up MDFC permanent-entering logic.
     bool is_split = false;
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
-    bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
+    TapToPay tap_to_pay = TapToPay::NONE;  // K:Improvise — what may be tapped toward this spell's mana
     CostParts ward_cost;                 // K:Ward:N / K:Ward:PayLife<N> — opponent's spell/ability targeting this is countered unless they pay it (CR 702.21)
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     FilterSpec enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution

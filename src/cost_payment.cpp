@@ -315,7 +315,7 @@ PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const
     if (*a.next == 0) coverage_cost(CostPart::MANA, "hybrid");
     if (auto_mana && !a.colors_matter) {
         ManaValue resolved;
-        if (resolve_hybrid_cost(a.payer, *a.owed, pips, a.payee, orderer, a.delve, a.improvise, &resolved, 0, a.exclude)) {
+        if (resolve_hybrid_cost(a.payer, *a.owed, pips, a.payee, orderer, a.delve, a.tap_to_pay, &resolved, 0, a.exclude)) {
             *a.owed = resolved;
             return PayStatus::PAID;
         }
@@ -336,7 +336,7 @@ PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const
         auto offer = [&](const std::string &label, const ManaValue &add) {
             ManaValue with_it = *a.owed;
             with_it.insert(add.begin(), add.end());
-            if (auto_mana && !resolve_hybrid_cost(a.payer, with_it, later, a.payee, orderer, a.delve, a.improvise,
+            if (auto_mana && !resolve_hybrid_cost(a.payer, with_it, later, a.payee, orderer, a.delve, a.tap_to_pay,
                                                   nullptr, 0, a.exclude))
                 return;
             LegalAction row(PASS_PRIORITY, label);
@@ -505,6 +505,7 @@ static PayStatus pay_step(
         case CostStep::OWE_TRIGGER:
             who.run->mana = who.cost->mana();
             who.run->mana_pending = !who.run->mana.empty();
+            who.run->tap_to_pay = who.cost->tap_to_pay();
             break;
         case CostStep::TRIGGER_MANA:
             return pay_trigger_mana(who, ctx, orderer);
@@ -684,7 +685,7 @@ static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const s
     ManaValue reduced = run.mana;
     size_t min_needed = 0;
     while (min_needed < max_exiles &&
-           !can_pay_mana(who.payer, reduced, who.payee, orderer, /*has_delve=*/false, run.improvise)) {
+           !can_pay_mana(who.payer, reduced, who.payee, orderer, /*has_delve=*/false, run.tap_to_pay)) {
         reduced.erase(reduced.find(GENERIC));
         min_needed++;
     }
@@ -782,6 +783,7 @@ static void owe_activation(const CostPayer &who, const std::shared_ptr<Orderer> 
         for (size_t i = 0; i < who.x * x_pips; i++) run.mana.insert(GENERIC);
     }
     run.mana_pending = true;
+    run.tap_to_pay = who.cost->tap_to_pay();
     run.life = who.cost->life();
     run.energy = who.cost->energy();
 }
@@ -794,7 +796,7 @@ static PayStatus pay_mana(const CostPayer &who, FrameCtx &ctx, const std::shared
     CostRun &run = *who.run;
     if (!run.mana_pending || run.mana.empty()) return PayStatus::PAID;
     const PayStatus paid = pay_mana_cost(run.mana_payment, who.payer, run.mana, who.payee, ctx, orderer,
-        /*has_delve=*/false, run.improvise, &run.spent_colors);
+        /*has_delve=*/false, run.tap_to_pay, &run.spent_colors);
     if (paid == PayStatus::PAID) coverage_cost(CostPart::MANA, path_form(who.path));
     return paid;
 }

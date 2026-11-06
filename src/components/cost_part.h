@@ -7,6 +7,7 @@
 #include "../classes/colors.h"
 #include "filter_spec.h"
 #include "object_spec.h"
+#include "tap_to_pay.h"
 
 // A hybrid mana pip (CR 107.4b/107.4e, 202.3f). Stored parallel to a card's mana_cost and a cost's
 // plain pips (which hold only the NON-hybrid pips), the same way phyrexian_mana is kept separate.
@@ -72,8 +73,11 @@ class CostParts {
         void add(const CostPart &part);
         // Cost$ 0 on an alternative cost: castable for nothing, as distinct from no cost named.
         void set_free() { free_ = true; }
+        void set_tap_to_pay(TapToPay how) { tap_to_pay_ = how; }
 
         bool is_free() const { return free_; }
+        // What the cost itself lets its payer tap toward its mana.
+        TapToPay tap_to_pay() const { return tap_to_pay_; }
         bool empty() const { return parts_.empty(); }
         bool has(CostPart::Kind kind) const { return (kinds_ & kind_bit(kind)) != 0; }
         const std::vector<CostPart> &parts() const { return parts_; }
@@ -107,6 +111,7 @@ class CostParts {
         std::vector<CostPart> parts_;
         uint16_t kinds_ = 0;
         bool free_ = false;
+        TapToPay tap_to_pay_ = TapToPay::NONE;
 };
 
 #endif /* COST_PART_H */

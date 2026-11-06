@@ -187,12 +187,12 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // on top of it.
 static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, size_t coarse_max,
                             size_t x_pips, ManaPayee paid_for, Entity exclude,
-                            std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
+                            std::shared_ptr<Orderer> orderer, bool has_delve, TapToPay tap,
                             const std::vector<HybridPip> &hybrid) {
     while (coarse_max > 0) {
         ManaValue trial = base_cost;
         for (size_t i = 0; i < coarse_max * x_pips; i++) trial.insert(GENERIC);
-        if (resolve_hybrid_cost(payer, trial, hybrid, paid_for, orderer, has_delve, has_improvise, nullptr, 0, exclude))
+        if (resolve_hybrid_cost(payer, trial, hybrid, paid_for, orderer, has_delve, tap, nullptr, 0, exclude))
             break;
         coarse_max--;
     }
@@ -263,7 +263,7 @@ static bool additional_cost_payable(const Game::PendingCast &pc, const CardData 
     check.mana = &with_extra;
     check.hybrid = &mana_cost_hybrid_pips(pc, card_data);
     check.delve = card_data.has_delve;
-    check.improvise = card_data.has_improvise;
+    check.tap_to_pay = card_data.tap_to_pay;
     return can_pay(extra, check);
 }
 
@@ -276,7 +276,7 @@ static bool escalate_payable(const Game::PendingCast &pc, const CardData &card_d
     CostCheck check(caster, pc.spell_entity, orderer);
     check.mana = &total;
     check.delve = card_data.has_delve;
-    check.improvise = card_data.has_improvise;
+    check.tap_to_pay = card_data.tap_to_pay;
     check.times = extra;
     check.hand_reserved = pc.chosen.alternative() ? card_data.alt_cost.cost.count(CostPart::EXILE_FROM_HAND) : 0;
     check.life_reserve = pc.pay.life + std::max(0, pc.pay.life_x);
@@ -293,7 +293,7 @@ static bool target_cost_payable(const Game::PendingCast &pc, const CardData &car
     targets.push_back(candidate);
     ManaValue cost = pc.pay.mana;
     reduce_generic_cost(cost, target_cost_reduction_for(card_data, caster, targets), card_data);
-    return can_pay_mana(caster, cost, pc.spell_entity, orderer, pc.pay.delve, pc.pay.improvise,
+    return can_pay_mana(caster, cost, pc.spell_entity, orderer, pc.pay.delve, pc.pay.tap_to_pay,
         /*exclude_entity=*/0, /*life_reserve=*/pc.pay.life + std::max(0, pc.pay.life_x));
 }
 
@@ -330,7 +330,7 @@ static size_t max_life_x(const Game::PendingCast &pc, Zone::Ownership caster, En
     if (!pc.pay.mana_pending || pc.pay.mana.empty()) return static_cast<size_t>(max_x);
     while (max_x > 0 &&
            !can_pay_mana(caster, pc.pay.mana, spell_entity, orderer, pc.pay.delve,
-                         pc.pay.improvise, /*exclude_entity=*/0,
+                         pc.pay.tap_to_pay, /*exclude_entity=*/0,
                          /*life_reserve=*/pc.pay.life + max_x))
         --max_x;
     return static_cast<size_t>(max_x);
@@ -1620,7 +1620,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     max_x /= x_pips;
                     max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
                                           x_exclude, orderer, /*has_delve=*/false,
-                                          /*has_improvise=*/false, pips);
+                                          ability.def->cost.tap_to_pay(), pips);
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
@@ -1683,6 +1683,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 }
                 HybridAnnouncement hybrid{controller, permanent_entity, ability_payee, &pips, &pa.hybrid_idx, &pa.pay.mana};
                 hybrid.exclude = ability.def->cost.taps() ? permanent_entity : 0;
+                hybrid.tap_to_pay = ability.def->cost.tap_to_pay();
                 FrameCtx ctx = FrameCtx::flow(PendingQuery::ACTIVATION, resume_choice);
                 const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
                 if (announced == PayStatus::SUSPENDED) return;
@@ -2019,7 +2020,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer) / x_pips;
                     max_x = payable_max_x(caster, pc.cost_to_pay, max_x, x_pips, spell_entity,
                                           /*exclude=*/0, orderer, card_data.has_delve,
-                                          card_data.has_improvise, {});
+                                          card_data.tap_to_pay, {});
                     // For a spell whose required target count IS X (Hide on the Ceiling), X can't
                     // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
                     // pick an X that leaves a mandatory target choice with too few candidates.
@@ -2054,7 +2055,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 HybridAnnouncement hybrid{caster, spell_entity, spell_entity, &mana_cost_hybrid_pips(pc, card_data),
                                           &pc.hybrid_idx, &pc.cost_to_pay};
                 hybrid.delve = card_data.has_delve;
-                hybrid.improvise = card_data.has_improvise;
+                hybrid.tap_to_pay = card_data.tap_to_pay;
                 hybrid.colors_matter = spell_reads_colors_spent(card_data);
                 FrameCtx ctx = FrameCtx::flow(PendingQuery::CAST, resume_choice);
                 const PayStatus announced = announce_hybrid_pips(hybrid, ctx, orderer);
@@ -2117,7 +2118,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     with_pip.insert(phyrex_color);
                     bool can_pay_colored =
                         can_pay_mana(caster, with_pip, spell_entity, orderer,
-                                     card_data.has_delve, card_data.has_improvise);
+                                     card_data.has_delve, card_data.tap_to_pay);
                     // Never arm an empty menu. Neither half payable means the cast should not
                     // have been offered (life < 2 AND no source); keep the mana option so the
                     // payment fails through the normal path instead of vanishing here.
@@ -2152,7 +2153,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // cast.
             pc.pay.mana = pc.cost_to_pay;
             pc.pay.delve = card_data.has_delve;
-            pc.pay.improvise = card_data.has_improvise;
+            pc.pay.tap_to_pay = card_data.tap_to_pay;
             pc.pay.mana_pending = true;
             pc.step = Game::PendingCast::LIFE_X;
             break;

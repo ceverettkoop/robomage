@@ -10,6 +10,8 @@
 
 #include "classes/action.h"
 #include "classes/colors.h"
+#include "components/filter_spec.h"
+#include "components/tap_to_pay.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 #include "ecs/entity_set.h"
@@ -37,6 +39,16 @@ struct ManaPayee {
     Entity entity = 0;
     ManaPurpose purpose = ManaPurpose::CAST;
     ManaPayee(Entity paid_for = 0, ManaPurpose why = ManaPurpose::CAST) : entity(paid_for), purpose(why) {}
+};
+
+// What a TapToPay kind lets its payer tap, and which pips a tap pays.
+struct TapToPayRule {
+    const char *keyword;  // names it in the payment's rows and the narrative
+    FilterSpec eligible;  // the untapped permanents they control that may be tapped
+    enum Pips {
+        GENERIC,               // one generic pip
+        GENERIC_OR_OWN_COLOR,  // a generic pip, or a colored pip of a color of the permanent tapped
+    } pips;
 };
 
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
@@ -197,8 +209,8 @@ std::vector<LegalAction> collect_mana_legal_actions(
 
 // Can the controller pay `cost`? Runs the real machine-mode payment algorithm in a
 // side-effect-free simulate mode, so legality and actual payment can never disagree.
-// has_delve folds in graveyard instant/sorcery exiling; paid_for gates restricted mana
-// (Cavern of Souls) the same way the payer does.
+// has_delve folds in graveyard instant/sorcery exiling; `tap` the permanents a TapToPay lets it tap;
+// paid_for gates restricted mana (Cavern of Souls) the same way the payer does.
 //
 // `exclude_entity` drops one permanent from the source pool. Pass the ability's SOURCE
 // when the ability's own cost taps it ({T} in the cost): that tap is already spoken for,
@@ -214,7 +226,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // can only be paid by spending the life the rest of it needs (CR 601.2h, 602.2b).
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false, Entity exclude_entity = 0, int life_reserve = 0);
+                  TapToPay tap = TapToPay::NONE, Entity exclude_entity = 0, int life_reserve = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
@@ -228,7 +240,7 @@ bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
 bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
                          const std::vector<HybridPip>& hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
+                         TapToPay tap = TapToPay::NONE, std::multiset<Colors>* out_resolved = nullptr,
                          int life_reserve = 0, Entity exclude_entity = 0);
 
 // Can `caster` pay `base_flat_cost` plus the hybrid pips (CR 107.4e, via resolve_hybrid_cost) and
@@ -282,13 +294,14 @@ struct ManaPaymentRT {
 // Pay `cost` for `paid_for`: from the pool, then the auto-payer, or under --no-auto-mana by asking
 // `ctx` for one source at a time, which may suspend (re-enter with the same `rt` and `cost`). On
 // FAILED the caller must restore from snapshot.
-// If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
+// If has_delve is true, delve exile options are included alongside mana abilities for generic costs,
+// and with a `tap` the permanents it lets the player tap.
 // `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
 // pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90). It
 // must persist with `rt`.
 PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const ManaValue& cost,
                         ManaPayee paid_for, FrameCtx& ctx, std::shared_ptr<Orderer> orderer,
-                        bool has_delve = false, bool has_improvise = false,
+                        bool has_delve = false, TapToPay tap = TapToPay::NONE,
                         ManaValue* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to

@@ -64,7 +64,7 @@ struct CostRun {
         ManaValue mana;
         bool mana_pending = false;
         bool delve = false;      // the spell's Delve applies to `mana`
-        bool improvise = false;  // the spell's Improvise applies to `mana`
+        TapToPay tap_to_pay = TapToPay::NONE;  // what may be tapped toward `mana`
         ManaPaymentRT mana_payment;
         // The exact colors of mana spent, accumulated by the payment (pay_mana_cost's spent-sink) as
         // pips leave the pool. Empty for a free / no-mana cast.
@@ -153,7 +153,7 @@ struct HybridAnnouncement {
         size_t *next;     // the next pip to resolve
         ManaValue *owed;  // the mana owed so far, the pips resolved included
         bool delve = false;
-        bool improvise = false;
+        TapToPay tap_to_pay = TapToPay::NONE;
         Entity exclude = 0;  // the source, when its own {T} is part of the cost
         // Under auto-mana the pips still go to the player, among the assignments that can be paid:
         // which color is spent matters to the card (Vibrance).

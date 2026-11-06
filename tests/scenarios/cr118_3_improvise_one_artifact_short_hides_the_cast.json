@@ -1,0 +1,38 @@
+{
+  "name": "cr118_3_improvise_one_artifact_short_hides_the_cast",
+  "why": "CR 118.3, 702.126a: one artifact short of Kappa Cannoneer's generic mana, the cast isn't offered",
+  "hand_a": [
+    "Kappa Cannoneer",
+    "Island"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Mishra's Bauble",
+    "Urza's Bauble",
+    "Aether Spellbomb",
+    "Chromatic Star"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 12,
+  "expect_menu_not": [
+    "Cast Kappa Cannoneer"
+  ],
+  "expect_menu": [
+    "Play Island"
+  ]
+}

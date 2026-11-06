@@ -203,7 +203,7 @@ static void offer_free_cast(std::vector<LegalAction> &actions, const LegalAction
     CostCheck check(caster, card, orderer);
     check.mana = &mana;
     check.delve = face.has_delve;
-    check.improvise = face.has_improvise;
+    check.tap_to_pay = face.tap_to_pay;
     const CostParts &additional = spell_additional_cost(face);
     if (!can_pay(additional, check)) return;
     LegalAction free_la = cast;
@@ -300,7 +300,7 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
         ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
         if (!floor_mana.empty() &&
             !can_pay_mana(caster, floor_mana, card, orderer, /*has_delve=*/false,
-                          /*has_improvise=*/false, /*exclude_entity=*/0,
+                          TapToPay::NONE, /*exclude_entity=*/0,
                           /*life_reserve=*/grant_life))
             return false;
     }

@@ -27,7 +27,7 @@ struct CostCheck {
         const ManaValue *mana = nullptr;  // the mana owed after reductions and floors; null: the cost's own
         const CardData *spell = nullptr;  // a cast for its mana cost: the card's hybrid and Phyrexian pips too
         bool delve = false;               // the spell's Delve applies to `mana`
-        bool improvise = false;           // the spell's Improvise applies to `mana`
+        TapToPay tap_to_pay = TapToPay::NONE;  // what may be tapped toward `mana`, beside the cost's own
         // A cost added to a cast: the hybrid pips still to resolve on top of `mana`, which is the
         // mana the cast has committed to with this cost's.
         const std::vector<HybridPip> *hybrid = nullptr;

@@ -56,11 +56,11 @@ static ManaValue *s_mana_spent_sink = nullptr;
 static ManaValue pool_shortfall(const ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit = true, bool has_improvise = false,
+                          bool commit = true, TapToPay tap = TapToPay::NONE,
                           Entity exclude_entity = 0, int life_reserve = 0);
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
-                                  bool has_delve, bool commit, bool has_improvise,
+                                  bool has_delve, bool commit, TapToPay tap,
                                   Entity exclude_entity, bool max_yield_only, int life_reserve);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
@@ -69,8 +69,12 @@ static bool casting_nonartifact_spell(Entity paid_for);
 static bool restricts_spending_to(const AbilityDef &def);
 static bool restriction_covers_activation(const AbilityDef &def, Entity paid_for);
 static bool mana_source_usable_for(const Ability &ab, Entity source_entity, ManaPayee paid_for);
-static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
-static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
+static const TapToPayRule &tap_to_pay_rule(TapToPay how);
+static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller, Entity paid_for);
+static bool tap_pays_pip(const TapToPayRule &rule, Entity e, Colors pip);
+static ManaValue::const_iterator pip_paid_by_tap(const TapToPayRule &rule, Entity e, const ManaValue &owed);
+static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership controller, ManaValue &remaining,
+                           ManaValue::const_iterator pip);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
@@ -749,27 +753,49 @@ void delve_exile_one(Entity e, Zone::Ownership controller,
     game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
 }
 
-// True if `e` is an untapped artifact `controller` controls on the battlefield — i.e. an
-// artifact Improvise can tap to pay one generic pip (CR 702.126b/c). The spell being paid
-// for (`paid_for`) is excluded: it is on the stack, not the battlefield, but guard anyway so
-// the artifact creature can never tap itself to help pay its own Improvise cost.
-static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for) {
-    if (e == paid_for) return false;
-    if (!is_battlefield_permanent(e, controller)) return false;
-    auto &perm = global_coordinator.GetComponent<Permanent>(e);
-    if (perm.is_tapped) return false;
-    return permanent_has_type(perm, "Artifact");
+// The rule of each TapToPay kind. Built on first use: a FilterSpec interns its text.
+static const TapToPayRule &tap_to_pay_rule(TapToPay how) {
+    static const TapToPayRule kRules[] = {
+        // CR 702.126a: each artifact tapped pays for {1}.
+        {"Improvise", FilterSpec("Artifact"), TapToPayRule::GENERIC},
+    };
+    return kRules[static_cast<size_t>(how) - 1];
 }
 
-// Pay one generic pip via Improvise: tap `e` and drop one GENERIC from `remaining`. Mirrors
-// delve_exile_one for the tap-an-artifact cost. Tapping an artifact this way is not a mana
-// ability and produces no mana — it directly satisfies a {1} (CR 702.126b).
-static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining) {
+// Can `controller` tap `e` under `rule`? The spell being paid for is on the stack, not the
+// battlefield; an ability's source is on the battlefield, and may help pay for it.
+static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller, Entity paid_for) {
+    if (e == paid_for) return false;
+    if (!is_battlefield_permanent(e, controller)) return false;
+    if (global_coordinator.GetComponent<Permanent>(e).is_tapped) return false;
+    return permanent_matches_filter(e, rule.eligible);
+}
+
+// Does tapping `e` pay `pip`? Generic mana always can be; a colored pip only under a rule that says
+// so, by a permanent of that color.
+static bool tap_pays_pip(const TapToPayRule &rule, Entity e, Colors pip) {
+    if (pip == GENERIC) return true;
+    if (rule.pips != TapToPayRule::GENERIC_OR_OWN_COLOR) return false;
+    const auto colors = effective_colors(e);
+    return std::find(colors.begin(), colors.end(), pip) != colors.end();
+}
+
+// The pip of `owed` a tap of `e` pays, colored pips before generic; owed.end() when it pays none.
+static ManaValue::const_iterator pip_paid_by_tap(const TapToPayRule &rule, Entity e, const ManaValue &owed) {
+    for (auto pip = owed.begin(); pip != owed.end(); ++pip)
+        if (tap_pays_pip(rule, e, *pip)) return pip;
+    return owed.end();
+}
+
+// Tap `e` to pay `pip` of `remaining`. It is no mana ability and produces no mana: the pip is paid
+// without any being spent.
+static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership controller, ManaValue &remaining,
+                           ManaValue::const_iterator pip) {
     auto &perm = global_coordinator.GetComponent<Permanent>(e);
     perm.is_tapped = true;
-    auto git = remaining.find(GENERIC);
-    if (git != remaining.end()) remaining.erase(git);
-    game_log("%s taps %s for Improvise.\n", player_name(controller).c_str(), perm.name.c_str());
+    remaining.erase(pip);
+    game_log("%s taps %s for %s.\n", player_name(controller).c_str(), perm.name.c_str(), rule.keyword);
+    coverage_cost(CostPart::MANA, "tap_to_pay");
 }
 
 void increment_activation_count(Permanent &perm, const Ability &ability) {
@@ -1021,30 +1047,30 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // replays the winning strategy so legality and payment stay in lockstep.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit, bool has_improvise, Entity exclude_entity,
+                          bool commit, TapToPay tap, Entity exclude_entity,
                           int life_reserve) {
     ManaValue trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
-                              /*commit=*/false, has_improvise, exclude_entity,
+                              /*commit=*/false, tap, exclude_entity,
                               /*max_yield_only=*/false, life_reserve)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
-                                     /*commit=*/true, has_improvise, exclude_entity,
+                                     /*commit=*/true, tap, exclude_entity,
                                      /*max_yield_only=*/false, life_reserve);
     }
     trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
-                              /*commit=*/false, has_improvise, exclude_entity,
+                              /*commit=*/false, tap, exclude_entity,
                               /*max_yield_only=*/true, life_reserve)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
-                                     /*commit=*/true, has_improvise, exclude_entity,
+                                     /*commit=*/true, tap, exclude_entity,
                                      /*max_yield_only=*/true, life_reserve);
     }
     return false;
@@ -1052,7 +1078,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
-                                  bool has_delve, bool commit, bool has_improvise,
+                                  bool has_delve, bool commit, TapToPay tap,
                                   Entity exclude_entity, bool max_yield_only, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -1067,8 +1093,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     Player &payer = commit ? player : player_copy;
 
     // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, any mana
-    // can pay any colored pip. We keep the colored pips colored (so Delve/Improvise, which reduce
-    // only generic costs, never touch them) and instead relax the colored source-matching below.
+    // can pay any colored pip. We keep the colored pips colored (so Delve, which reduces only
+    // generic costs, never touches them) and instead relax the colored source-matching below.
     bool any_color = any_mana_as_any_color_active();
 
     // Delve: exile graveyard instants/sorceries to reduce generic portion
@@ -1297,6 +1323,24 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         auto pc = producer_count.find(c);
         return pc == producer_count.end() ? 0 : pc->second;
     };
+    // A pip can also be paid by tapping a permanent the payment's TapToPay allows. Tried after every
+    // mana source, so colored pips keep their producers; a permanent already tapped for mana is
+    // excluded via tapped_entities.
+    auto tap_for_pip = [&](Colors pip) {
+        if (tap == TapToPay::NONE) return false;
+        const TapToPayRule &rule = tap_to_pay_rule(tap);
+        for (auto e : orderer->mEntities) {
+            if (tapped_entities.count(e)) continue;
+            if (!can_tap_to_pay(rule, e, controller, paid_for.entity) || !tap_pays_pip(rule, e, pip)) continue;
+            auto owed = remaining.find(pip);
+            if (commit) tap_to_pay_pip(rule, e, controller, remaining, owed);
+            else remaining.erase(owed);
+            tapped_entities.insert(e);
+            return true;
+        }
+        return false;
+    };
+
     while (true) {
         // Select the remaining colored pip whose color has the fewest producers. `remaining`
         // is sorted ascending by color enum, so replacing only on a STRICTLY-smaller scarcity
@@ -1371,6 +1415,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         if (try_source([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
         if (try_source([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
         if (try_source([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
+        if (tap_for_pip(needed)) continue;
         return false;
     }
 
@@ -1408,26 +1453,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         if (try_generic([&](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE) && painless(s); })) continue;
         if (try_generic([](const SourceInfo &s) { return !s.ability.def->cost.self(CostPart::SACRIFICE); })) continue;  // painful, if needed
         if (try_generic([](const SourceInfo &) { return true; })) continue;  // self-sacrifice last resort
-        // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
-        // Tried after mana sources so colored pips (paid above) keep their producers; an
-        // artifact already tapped for mana is excluded via tapped_entities.
-        if (has_improvise) {
-            bool tapped_one = false;
-            for (auto e : orderer->mEntities) {
-                if (tapped_entities.count(e)) continue;
-                if (!is_improvise_eligible(e, controller, paid_for.entity)) continue;
-                if (commit) {
-                    improvise_tap_one(e, controller, remaining);
-                } else {
-                    auto git = remaining.find(GENERIC);
-                    if (git != remaining.end()) remaining.erase(git);
-                }
-                tapped_entities.insert(e);
-                tapped_one = true;
-                break;
-            }
-            if (tapped_one) continue;
-        }
+        if (tap_for_pip(GENERIC)) continue;
         return false;
     }
 
@@ -1436,7 +1462,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                  bool has_improvise, Entity exclude_entity, int life_reserve) {
+                  TapToPay tap, Entity exclude_entity, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
@@ -1444,7 +1470,7 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
     // so a spell can never be offered as legal and then fail to pay (and vice versa).
     ManaValue remaining = cost;
     return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
-                         has_improvise, exclude_entity, life_reserve);
+                         tap, exclude_entity, life_reserve);
 }
 
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
@@ -1504,10 +1530,10 @@ bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
 static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
                                    const std::vector<HybridPip> &hybrids, size_t idx,
                                    ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
-                                   bool has_delve, bool has_improvise, ManaValue *out,
+                                   bool has_delve, TapToPay tap, ManaValue *out,
                                    int life_reserve, Entity exclude_entity) {
     if (idx == hybrids.size()) {
-        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, has_improvise, exclude_entity, life_reserve))
+        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, tap, exclude_entity, life_reserve))
             return false;
         if (out) *out = cur;
         return true;
@@ -1516,14 +1542,14 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
     for (Colors c : pip.colors) {
         cur.insert(c);
         if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
-                                   has_delve, has_improvise, out, life_reserve, exclude_entity))
+                                   has_delve, tap, out, life_reserve, exclude_entity))
             return true;
         cur.erase(cur.find(c));
     }
     if (pip.generic_alt > 0) {
         for (int i = 0; i < pip.generic_alt; i++) cur.insert(GENERIC);
         if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
-                                   has_delve, has_improvise, out, life_reserve, exclude_entity))
+                                   has_delve, tap, out, life_reserve, exclude_entity))
             return true;
         for (int i = 0; i < pip.generic_alt; i++) cur.erase(cur.find(GENERIC));
     }
@@ -1532,11 +1558,11 @@ static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
 
 bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost,
                          const std::vector<HybridPip> &hybrids, ManaPayee paid_for,
-                         std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
+                         std::shared_ptr<Orderer> orderer, bool has_delve, TapToPay tap,
                          ManaValue *out_resolved, int life_reserve, Entity exclude_entity) {
     ManaValue cur = base_flat_cost;
     return resolve_hybrid_recurse(caster, cur, hybrids, 0, paid_for, orderer, has_delve,
-                                  has_improvise, out_resolved, life_reserve, exclude_entity);
+                                  tap, out_resolved, life_reserve, exclude_entity);
 }
 
 bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
@@ -1554,7 +1580,7 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
         }
         if (!can_pay_life(pl, life)) continue;
         if (resolve_hybrid_cost(caster, cost, cd.hybrid_mana, paid_for, orderer, cd.has_delve,
-                                cd.has_improvise, nullptr, life))
+                                cd.tap_to_pay, nullptr, life))
             return true;
     }
     return false;
@@ -1562,7 +1588,7 @@ bool can_pay_spell_mana(Zone::Ownership caster, const ManaValue &base_flat_cost,
 
 PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const ManaValue &cost,
                         ManaPayee paid_for, FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                        bool has_delve, bool has_improvise, ManaValue *spent_out) {
+                        bool has_delve, TapToPay tap, ManaValue *spent_out) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -1591,7 +1617,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
         // Auto-mana: the greedy payer selects the mana sources (no decisions)
         if (auto_mana) {
             return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
-                                 has_improvise)
+                                 tap)
                        ? PayStatus::PAID
                        : PayStatus::FAILED;
         }
@@ -1639,13 +1665,15 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             }
         }
 
-        // Improvise: tap untapped artifacts to pay generic costs (CR 702.126)
-        size_t improvise_action_start = pay_actions.size();
-        if (has_improvise && remaining.count(GENERIC) > 0) {
+        // The permanents the payment's TapToPay lets the player tap for a pip still owed.
+        size_t tap_action_start = pay_actions.size();
+        if (tap != TapToPay::NONE) {
+            const TapToPayRule &rule = tap_to_pay_rule(tap);
             for (auto e : orderer->mEntities) {
-                if (!is_improvise_eligible(e, controller, paid_for.entity)) continue;
+                if (!can_tap_to_pay(rule, e, controller, paid_for.entity)) continue;
+                if (pip_paid_by_tap(rule, e, remaining) == remaining.end()) continue;
                 auto &perm = global_coordinator.GetComponent<Permanent>(e);
-                LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (Improvise)");
+                LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
             }
@@ -1695,11 +1723,12 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
         auto &chosen = pay_actions[static_cast<size_t>(choice)];
 
         size_t uchoice = static_cast<size_t>(choice);
-        if (has_improvise && uchoice >= improvise_action_start && uchoice < pay_actions.size() - 1) {
-            // Improvise: tap the chosen artifact to pay one generic.
-            improvise_tap_one(chosen.source_entity, controller, remaining);
+        if (uchoice >= tap_action_start && uchoice < pay_actions.size() - 1) {
+            const TapToPayRule &rule = tap_to_pay_rule(tap);
+            tap_to_pay_pip(rule, chosen.source_entity, controller, remaining,
+                           pip_paid_by_tap(rule, chosen.source_entity, remaining));
         } else if (has_delve && uchoice >= delve_action_start &&
-                   uchoice < improvise_action_start) {
+                   uchoice < tap_action_start) {
             // Delve exile action.
             delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {

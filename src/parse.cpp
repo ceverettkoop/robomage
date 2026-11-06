@@ -273,11 +273,9 @@ static const KeywordEntry kKeywordTable[] = {
      }},
     // K:Improvise — your artifacts can help cast this spell; each untapped artifact you
     // tap after activating mana abilities pays for {1} of the generic cost (CR 702.126).
-    // A cast-time generic cost reduction, mirroring Delve but tapping battlefield
-    // artifacts instead of exiling graveyard cards.
     {"Improvise", KeywordEntry::PREFIX,
      [](const std::string &, KeywordContext &ctx) {
-         ctx.card.has_improvise = true;
+         ctx.card.tap_to_pay = TapToPay::IMPROVISE;
          ctx.card.keywords.push_back("Improvise");
      }},
     {"Companion:", KeywordEntry::PREFIX, kw_companion},

@@ -1,0 +1,3 @@
+# M5 (c2): a pip paid by tapping a permanent rather than with mana (Improvise: Kappa Cannoneer,
+# Metallic Rebuke; the payment's TapToPay row).
+cost:MANA.tap_to_pay
