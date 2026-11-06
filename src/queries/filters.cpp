@@ -102,10 +102,10 @@ struct Qualifier {
     Colors color = NO_COLOR;
     Zone::ZoneValue zone = Zone::SIDEBOARD;  // inZone<Zone>; `known_zone` says it names one
     bool known_zone = false;
-    bool has_reading = true;     // false: the matcher fails it closed (--parse-report's finding)
+    bool has_reading = true;     // false: the matcher fails it closed, negated or not (--parse-report's
+                                 // finding); a type-line name no type has has none
     bool read_elsewhere = false; // its filter's reader reads it, whatever the matcher makes of it
-    bool reads_type_name = false;  // `text` is a type-line name it requires or excludes; it has a
-                                   // reading only if the type exists
+    bool reads_type_name = false;  // `text` is a type-line name it requires or excludes
     ObjectSpec set;              // the row's set
 };
 
@@ -500,6 +500,7 @@ static Qualifier compile_qualifier(const std::string &token) {
         if (row.parse && !row.parse(q.name, q)) continue;
         q.row = &row;
         q.set = ObjectSpec(row.set);
+        if (q.reads_type_name && !known_type_name(q.text)) q.has_reading = false;
         return q;
     }
     return q;
@@ -642,9 +643,12 @@ static bool parse_unknown(const std::string &, Qualifier &q) {
 
 // ── Matching ─────────────────────────────────────────────────────────────
 
+// A token the matcher can't read fails closed, its negation too: a "!" of nothing known says nothing
+// about the object, so it can't pass it.
 static bool eval_qualifier(const Qualifier &q, const CharView &v, const MatchCtx &ctx) {
     const QualifierRow &row = *q.row;
-    return (row.local ? row.local(v, q) : row.relative(v, q, ctx)) != q.negate;
+    const bool holds = row.local ? row.local(v, q) : row.relative(v, q, ctx);
+    return q.has_reading && holds != q.negate;
 }
 
 static bool alternative_matches(const Alternative &alt, const CharView &v, const MatchCtx &ctx) {
@@ -1094,8 +1098,7 @@ std::vector<std::string> filter_unknown_qualifiers(const std::string &spec) {
             unknown.push_back(head);
         for (size_t i = alt.head_qualifiers; i < alt.qualifiers.size(); i++) {
             const Qualifier &q = alt.qualifiers[i];
-            if (q.read_elsewhere) continue;
-            if (!q.has_reading || (q.reads_type_name && !known_type_name(q.text))) unknown.push_back(q.token);
+            if (!q.read_elsewhere && !q.has_reading) unknown.push_back(q.token);
         }
     }
     return unknown;

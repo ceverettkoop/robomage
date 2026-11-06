@@ -23,7 +23,7 @@ struct ResolveCtx;
 // (toughnessLE2), mana-value bounds (cmcLEX / the dynamic ctx bound), control (YouCtrl/
 // OppCtrl), token state (token/nonToken), combat/tap state (attacking/blocking/tapped/
 // untapped), timing (ThisTurnEntered) and identity (IsRemembered/Other/nonChosenCard).
-// Unrecognized qualifiers fail closed and warn once.
+// Unrecognized qualifiers fail closed, negated ones too, and warn once.
 //
 // Every qualifier is one row of the table in filters.cpp: a name or prefix, a parser for what a
 // prefix carries, and an evaluator of one of three shapes. Object-local reads the object alone;
