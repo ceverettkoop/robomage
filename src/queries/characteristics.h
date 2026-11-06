@@ -87,6 +87,10 @@ inline int card_mana_value(const CardData &cd) {
 // other card's name (a double-faced card's is its front face's, CR 712.8a).
 std::string whole_card_name(const CardData &cd);
 
+// The names a player may choose when an effect has them choose a card name and they want this card
+// (CR 709.4a): a split card's each half's.
+std::vector<std::string> card_names(const CardData &cd);
+
 // Mana value of object `e` (printed characteristics `cd`). A spell on the stack has the face
 // that was cast (a split card's half or a modal back face, CR 709.3, 712.8f; active_face), and
 // each {X} in its mana cost counts as the value announced for X (CR 202.3e). In every other zone

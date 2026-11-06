@@ -274,6 +274,12 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
         const std::string text = norm(a.description);
         return exact ? text == *intent.card : text.find(*intent.card) != std::string::npos;
     }
+    // A name is its row's text: a split card's two names ground to one card (CR 709.4a).
+    if (intent.verb == "name" && intent.card && !intent.card->empty()) {
+        const std::string text = norm(a.description);
+        const std::string name = text.substr(text.find(':') == std::string::npos ? 0 : text.find(':') + 2);
+        return exact ? name == *intent.card : name.find(*intent.card) != std::string::npos;
+    }
     if (intent.card && !intent.card->empty()) return card_matches(*intent.card, a, exact);
     return true;
 }

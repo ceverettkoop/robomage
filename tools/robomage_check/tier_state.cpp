@@ -379,10 +379,10 @@ static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
         std::sort(fronts.begin(), fronts.end());
         std::vector<std::string> fails;
         if (closed) {
-            std::vector<uint64_t> sorted_named = named;
-            std::sort(sorted_named.begin(), sorted_named.end());
-            if (sorted_named != fronts)
-                fails.push_back(label + ": " + std::to_string(named.size()) + " candidates, CARDS lists " +
+            // A split card is a candidate under each of its names (CR 709.4a).
+            const std::set<uint64_t> distinct(named.begin(), named.end());
+            if (std::vector<uint64_t>(distinct.begin(), distinct.end()) != fronts)
+                fails.push_back(label + ": " + std::to_string(distinct.size()) + " candidate cards, CARDS lists " +
                                 std::to_string(fronts.size()) + " vocab cards");
             if (has_source) fails.push_back(label + ": a candidate has an object handle");
             if (!std::is_sorted(descs.begin(), descs.end()))
@@ -391,8 +391,8 @@ static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
                 fails.push_back(label + ": DECKLISTS lists other than only A's own list");
         } else {
             const std::set<uint64_t> &opp = listed["PLAYER_B"];
-            const std::set<uint64_t> unique(named.begin(), named.end());
-            bool inside = unique.size() == named.size();
+            const std::set<std::string> unique(descs.begin(), descs.end());
+            bool inside = unique.size() == descs.size();
             for (uint64_t c : named) inside = inside && opp.count(c);
             if (!inside) fails.push_back(label + ": candidates outside the opponent's registered list");
         }

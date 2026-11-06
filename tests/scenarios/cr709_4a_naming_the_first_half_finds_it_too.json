@@ -1,0 +1,12 @@
+{
+  "name": "cr709_4a_naming_the_first_half_finds_it_too",
+  "why": "CR 709.4a: naming the card's first half names the same card: Cabal Therapy naming Dead discards Dead/Gone.",
+  "hand_a": ["Cabal Therapy"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Dead Gone", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B", "A:name:Dead"],
+  "max_decisions": 8,
+  "expect": ["Player A names card: Dead", "Player B discards Dead"]
+}

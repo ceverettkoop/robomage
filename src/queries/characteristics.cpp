@@ -115,6 +115,12 @@ std::string whole_card_name(const CardData &cd) {
     return cd.is_split && cd.backside ? cd.name + " // " + cd.backside->name : cd.name;
 }
 
+std::vector<std::string> card_names(const CardData &cd) {
+    std::vector<std::string> names = {cd.name};
+    if (cd.is_split && cd.backside) names.push_back(cd.backside->name);
+    return names;
+}
+
 std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);

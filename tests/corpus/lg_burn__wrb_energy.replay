@@ -143,7 +143,8 @@ Player B names a card:
 |   13: Name card: Skewer the Critics
 |   14: Name card: Dead
 |   15: Name card: Exquisite Firecraft
-|   16: Name card: Light Up the Stage
+|   16: Name card: Gone
+|   17: Name card: Light Up the Stage
 (REPLAY) [T1 | First Main | Player B] Input: 1
 | >> Player B: 1 (Name card: Eidolon of the Great Revel)
 Player B names card: Eidolon of the Great Revel
@@ -311,7 +312,8 @@ Player B names a card:
 |   13: Name card: Skewer the Critics
 |   14: Name card: Dead
 |   15: Name card: Exquisite Firecraft
-|   16: Name card: Light Up the Stage
+|   16: Name card: Gone
+|   17: Name card: Light Up the Stage
 (REPLAY) [T3 | First Main | Player B] Input: 4
 | >> Player B: 4 (Name card: Leyline of the Void)
 Player B names card: Leyline of the Void

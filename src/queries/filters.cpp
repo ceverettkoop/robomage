@@ -147,7 +147,7 @@ static bool matches_view(const CharView &v, const CompiledFilter *filter, const 
 static bool alternative_matches(const Alternative &alt, const CharView &v, const MatchCtx &ctx);
 static bool eval_qualifier(const Qualifier &q, const CharView &v, const MatchCtx &ctx);
 
-static std::string object_name(Entity e);
+static bool object_has_name(Entity e, const std::string &name);
 static bool view_has_typeline(const CharView &v, const std::string &name);
 static bool view_is_permanent(const CharView &v);
 static bool color_token(const std::string &q, Colors &c);
@@ -713,14 +713,17 @@ static bool matches_view(const CharView &v, const CompiledFilter *filter, const 
     return false;
 }
 
-// The name an object has in its current zone: a permanent's (the face it shows, CR 712.8e),
-// else its card's. Empty for an object with neither.
-static std::string object_name(Entity e) {
+// Whether an object in its current zone has `name`: a permanent's (the face it shows, CR 712.8e),
+// a spell's cast face, a split card's either half (CR 709.4a; a fused spell's too, 709.4d).
+static bool object_has_name(Entity e, const std::string &name) {
     if (global_coordinator.entity_has_component<Permanent>(e))
-        return global_coordinator.GetComponent<Permanent>(e).name;
-    if (global_coordinator.entity_has_component<CardData>(e))
-        return global_coordinator.GetComponent<CardData>(e).name;
-    return "";
+        return global_coordinator.GetComponent<Permanent>(e).name == name;
+    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    const CardData &cd = global_coordinator.GetComponent<CardData>(e);
+    const CardData &face = card_characteristics(e, cd);
+    if (&face != cd.combined.get()) return face.name == name;
+    const std::vector<std::string> names = card_names(cd);
+    return std::find(names.begin(), names.end(), name) != names.end();
 }
 
 static bool view_has_typeline(const CharView &v, const std::string &name) {
@@ -790,7 +793,7 @@ static bool ev_fails_closed(const CharView &, const Qualifier &) { return false;
 
 static bool ev_named_card(const CharView &v, const Qualifier &) {
     const std::string &named = cur_game.resolution.memory.named_card;
-    return v.entity != 0 && !named.empty() && object_name(v.entity) == named;
+    return v.entity != 0 && !named.empty() && object_has_name(v.entity, named);
 }
 
 static bool ev_other(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
