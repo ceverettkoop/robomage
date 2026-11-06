@@ -343,6 +343,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Melded Moxite", 420},
     {"Nihil Spellbomb", 421},
     {"The Echoverse Fulcrum", 422},
+    {"The Stone Brain", 423},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

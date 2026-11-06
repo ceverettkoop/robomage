@@ -396,8 +396,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // Targeted ChangeZone (e.g. Swords to Plowshares, Faerie Macabre, Life from the
     // Loam): move target(s) directly. A targeted ability with no chosen targets (e.g.
-    // "up to three" with zero picked) does nothing rather than searching.
-    if (ab.def->valid_tgts != "N_A") {
+    // "up to three" with zero picked) does nothing rather than searching. A target that is the
+    // player whose zone is searched (The Stone Brain: ValidTgts$ Opponent, DefinedPlayer$
+    // Targeted) is no object to move: the search below runs.
+    const bool searches_target_player =
+        ab.def->defined.is(ObjectSpec::TARGETED) && target_spec_names_players(ab.def->valid_tgts);
+    if (ab.def->valid_tgts != "N_A" && !searches_target_player) {
         std::vector<Entity> to_move;
         if (!ab.targets.empty()) {
             to_move = live_entities(ab.targets);

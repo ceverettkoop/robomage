@@ -2383,10 +2383,6 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // Announce$ X (Kozilek's Command): declares the X to announce while casting. The X cost is
     // already auto-detected from a ManaCost containing X (has_x_cost).
     if (key == "Announce") return value == "X";
-    // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is already tracked
-    // in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI), which the paired
-    // ConditionDefined$ Imprinted gate reads. Any other imprint outlives the resolution.
-    if (key == "Imprint") return ability.defined.is(ObjectSpec::DELAY_REMEMBERED);
     // Reorder$ True (Brainstorm): cards go back on top one pick at a time, so the picks are the
     // order the player chooses.
     if (key == "Reorder") return ability.origin == Zone::HAND && ability.destination == Zone::LIBRARY;
@@ -3013,7 +3009,8 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         dp.is_delirium_scale = true;
         return;
     }
-    if (is_runtime_amount_expr(sv)) ability.dynamic_amount_expr = sv;
+    const std::string expanded = expand_svar_head(sv, svars);
+    if (is_runtime_amount_expr(expanded)) ability.dynamic_amount_expr = expanded;
 }
 
 // Where the ".<yes>.<no>" tail of a delirium-conditional amount starts in `sv`: right after
@@ -3086,6 +3083,9 @@ static bool is_runtime_amount_expr(const std::string &sv) {
         // but populated from a RememberLKI$ ChangeZone last-known-info snapshot (Reanimate:
         // LifeAmount$ X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
         "Remembered$", "RememberedLKI$",
+        // Imprinted$Amount — how many cards the resolution imprinted (The Stone Brain: NumCards$ Z,
+        // the cards exiled from the hand).
+        "Imprinted$",
         // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
         // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
         "xPaid",

@@ -177,6 +177,7 @@ static void set_you(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &o
 static void set_your_library(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_your_yard_of_type(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_remembered(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_imprinted(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_target(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_targeted_player(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_exiled_with_card(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
@@ -199,6 +200,7 @@ static int step_half_up(int value, int n);
 static int step_plus(int value, int n);
 static int step_times(int value, int n);
 static int step_limit_max(int value, int n);
+static int step_n_minus(int value, int n);
 static int step_divide_down(int value, int n);
 
 static bool urza_lands_assembled(Zone::Ownership controller);
@@ -318,6 +320,9 @@ static const NamedSet kNamedSets[] = {
     // remembered set all the same.
     {"Remembered", set_remembered},
     {"RememberedLKI", set_remembered},
+    // Imprinted$ — the objects the resolution imprinted (The Stone Brain: the cards exiled from
+    // the hand).
+    {"Imprinted", set_imprinted},
 };
 
 static const NamedProperty kNamedProperties[] = {
@@ -337,12 +342,13 @@ static const NamedProperty kNamedProperties[] = {
 // multiplies (Price of Progress: twice the nonbasic lands), /HalfUp halves rounding up (Doomsday:
 // half your life; Tamiyo: half your library), /LimitMax.N caps at N (Flow State: "an instant card"
 // = at most 1), /DivideEvenlyDown.N divides rounding down (Dark Matter Manipulator: each whole seven
-// cards).
+// cards), /NMinus.N is what is left of N (The Stone Brain: up to four cards across its three zones).
 static const SuffixRow kSuffixRows[] = {
     {"HalfUp", false, step_half_up},
     {"Plus.", true, step_plus},
     {"Times.", true, step_times},
     {"LimitMax.", true, step_limit_max},
+    {"NMinus.", true, step_n_minus},
     {"DivideEvenlyDown.", true, step_divide_down},
 };
 
@@ -522,6 +528,11 @@ static bool compile_set_property(const std::string &expr, SvarExpr &x) {
             x.aggregate = Aggregate::COUNT;
             x.filter = rest.substr(std::strlen("Valid "));
             return rest.find('$') == std::string::npos;
+        }
+        // <Set>$Amount: how many objects the set holds.
+        if (rest == "Amount") {
+            x.aggregate = Aggregate::COUNT;
+            return true;
         }
         x.aggregate = Aggregate::FIRST;
         for (const NamedProperty &property : kNamedProperties) {
@@ -862,6 +873,10 @@ static void set_remembered(const SvarExpr &, const SvarArgs &, std::vector<Entit
     for (const ObjectRef &r : cur_game.resolution.memory.remembered) out.push_back(r.lki_entity());
 }
 
+static void set_imprinted(const SvarExpr &, const SvarArgs &, std::vector<Entity> &out) {
+    for (const ObjectRef &r : cur_game.resolution.memory.imprinted) out.push_back(r.lki_entity());
+}
+
 static void set_target(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
     if (a.target != 0) out.push_back(a.target);
 }
@@ -974,6 +989,7 @@ static int step_half_up(int value, int) { return (value + 1) / 2; }
 static int step_plus(int value, int n) { return value + n; }
 static int step_times(int value, int n) { return value * n; }
 static int step_limit_max(int value, int n) { return std::min(value, n); }
+static int step_n_minus(int value, int n) { return n - value; }
 static int step_divide_down(int value, int n) {
     coverage_row("DivideEvenlyDown");
     return n > 0 ? value / n : 0;

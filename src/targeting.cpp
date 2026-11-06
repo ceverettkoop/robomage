@@ -157,9 +157,11 @@ static bool targets_stack_objects(const AbilityDef &def) {
 }
 
 // The target is a card in a graveyard: TgtZone$ Graveyard on any effect (Surgical Extraction's
-// SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm).
+// SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm) that
+// doesn't target the player whose graveyard it searches (The Stone Brain).
 static bool targets_graveyard_card(const AbilityDef &def) {
-    return def.target_in_graveyard || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD);
+    return def.target_in_graveyard || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD &&
+                                          !target_spec_names_players(def.valid_tgts));
 }
 
 // Whether one filter alternative carries a non<type> qualifier (Permanent.nonLand), in either of

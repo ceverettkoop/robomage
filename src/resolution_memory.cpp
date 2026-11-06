@@ -48,6 +48,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::FOUND}},
     {"RememberChosen", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::CHOSEN | EffectObjects::CHOSEN_IMPRINTED}},
+    {"Imprint", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::IMPRINTED, MemoryAction::APPEND, EffectObjects::MOVED}},
     {"ImprintRevealed", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::REVEALED_TOP}},
     {"ClearRemembered", ParamForm::IS_TRUE, EffectKind::None,
@@ -56,6 +58,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::CHOSEN_CARDS, MemoryAction::REPLACE, EffectObjects::CLEANED}},
     {"ClearImprinted", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::IMPRINTED, MemoryAction::REPLACE, EffectObjects::CLEANED}},
+    {"ClearNamedCard", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::NAMED_CARD, MemoryAction::REPLACE, EffectObjects::CLEANED}},
     {"ForgetObjects", ParamForm::NAMES_OBJECTS, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::FORGET, EffectObjects::FINISHED}},
     {nullptr, ParamForm::NONE, EffectKind::Token,
@@ -120,6 +124,9 @@ static void clear_slot(MemorySlot slot) {
         case MemorySlot::CHOSEN_CARDS:
             cur_game.resolution.memory.chosen_cards.clear();
             break;
+        case MemorySlot::NAMED_CARD:
+            cur_game.resolution.memory.named_card.clear();
+            break;
     }
 }
 
@@ -133,6 +140,8 @@ static void add_to_slot(MemorySlot slot, const ObjectRef &ref) {
             break;
         case MemorySlot::CHOSEN_CARDS:
             cur_game.resolution.memory.chosen_cards.insert(ref);
+            break;
+        case MemorySlot::NAMED_CARD:
             break;
     }
 }

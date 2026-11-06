@@ -351,8 +351,9 @@ struct ResolutionMemory {
     // RememberTargets$, RememberSacrificed$, ...: Doomsday's pile, an Attach's creature).
     std::vector<ObjectRef> remembered;
     // Cards "imprinted" (recorded) by a DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand
-    // Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter
-    // (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$.
+    // Unifier: the top-N revealed cards) or a move's Imprint$ True (The Stone Brain: the cards
+    // exiled from a hand); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard
+    // / ChangeZoneAll) or Imprinted$Amount, and cleared by Cleanup ClearImprinted$.
     // Distinct from `remembered` (which holds the chosen cards taken to hand).
     std::vector<ObjectRef> imprinted;
     // Cards chosen by a ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's

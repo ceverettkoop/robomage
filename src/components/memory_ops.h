@@ -39,7 +39,8 @@ struct EffectObjects {
 enum class MemorySlot {
     REMEMBERED,
     IMPRINTED,
-    CHOSEN_CARDS
+    CHOSEN_CARDS,
+    NAMED_CARD  // the chosen name: a row can only clear it
 };
 
 enum class MemoryAction {
