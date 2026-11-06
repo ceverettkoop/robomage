@@ -483,8 +483,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // parked query, a pregame step, a priority window, a prompt below the
         // loop that the unwind carried back here), the game's suspended state is
         // discarded and the loop exits — no parked prompt of the conceded game
-        // is answered or resumed.
-        if (cur_game.ended && concede_unwind_pending()) {
+        // is answered or resumed, but for a mid-payment prompt: the payment it
+        // belongs to runs out on first choices, and what follows it is discarded.
+        if (cur_game.ended && concede_unwind_pending() &&
+            !(cur_game.pending.query.active && cur_game.pending.query.mid_payment)) {
             discard_conceded_game_suspensions();
             break;
         }
@@ -522,7 +524,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 int choice = InputLogger::instance().get_input(pq.menu);
                 snapshot_set_loop_safe(false);
                 // A concession read here: the loop top discards the parked query.
-                if (concede_unwind_pending()) continue;
+                if (concede_unwind_pending() && !pq.mid_payment) continue;
                 pq.answer = choice;
                 pq.answered = true;
             }
