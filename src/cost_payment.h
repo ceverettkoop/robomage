@@ -25,7 +25,8 @@ struct UnlessTerms;
 // pays (cost_payment.cpp), each step paying a part of the cost or choosing what a part moves. Any
 // step may ask a choice through its FrameCtx and park; all progress lives in the path's CostRun,
 // on Game, so a snapshot of a parked payment covers it and the re-entered run lands on the step
-// that asked. A path of one step, whose question re-derives from the live state, keeps no CostRun.
+// that asked. A path that can't park between its steps, whose question re-derives from the live
+// state, keeps no CostRun.
 
 // The paths that pay a cost, each with its own order of steps.
 enum class CostPath {
@@ -85,7 +86,7 @@ struct CostRun {
         size_t delve_count = 0;
         bool delve_prev_priority_a = true;
         bool delve_seat_held = false;
-        // Escape's ExileFromGrave<X/...> (CR 702.139): the distinct card types chosen so far.
+        // Escape's ExileFromGrave<X/...> (CR 702.138): the distinct card types chosen so far.
         std::set<std::string> exiled_types;
         int discards_chosen = 0;  // Escalate's discards chosen so far (CR 702.120a)
 };

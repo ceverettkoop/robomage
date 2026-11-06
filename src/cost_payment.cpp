@@ -170,7 +170,7 @@ static const PickRule kEscalateDiscard = {CostSlot::ESCALATE, CostPart::DISCARD,
 // Flashback's sacrifice (CR 702.34, Cabal Therapy).
 static const PickRule kFlashbackSacrifice = {CostSlot::FLASHBACK, CostPart::SACRIFICE, "Sacrifice ", "",
     ActionCategory::SACRIFICE_PERMANENT, Zone::GRAVEYARD, " sacrifices ", "", PickRule::ONE_IF_ANY, true, true, false};
-// Escape's ExileFromGrave (CR 702.139 / 601.2f), mandatory until met: OTHER cards of the graveyard
+// Escape's ExileFromGrave (CR 702.138 / 601.2f), mandatory until met: OTHER cards of the graveyard
 // until the set collectively has at least min_types distinct card types (CR 205.2), or exactly
 // `count` of them (Uro: "Exile five other cards from your graveyard").
 static const PickRule kEscapeExileTypes = {CostSlot::ESCAPE, CostPart::EXILE_FROM_GRAVEYARD, "Exile ",

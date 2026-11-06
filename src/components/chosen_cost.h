@@ -17,7 +17,7 @@ struct ChosenCost {
             REGULAR,      // for its mana cost, a play permission's resource or nothing
             FLASHBACK,    // exiled when it leaves the stack
             ESCAPE,       // from the graveyard for its escape cost: the resulting permanent "escaped"
-                          // (CR 702.139), read by an "if it escaped" clause (Uro)
+                          // (CR 702.138), read by an "if it escaped" clause (Uro)
             ALTERNATIVE,  // for its alternative cost, and:
             EVOKE,        // sacrifices itself when it enters
             IMPENDING,    // CR 702.175: enters with time counters, and isn't a creature until they're gone
