@@ -394,6 +394,14 @@ warns on a script category with no entry (it would resolve as a no-op). Mana abi
 (`AddMana`) resolve at activation, off the stack.
 Targets are chosen before costs are paid and re-checked at resolution.
 
+**Object references (CR 608.2c).** `Defined$` / `DefinedPlayer$`, and a static's `AffectedDefined$`,
+parse once into an `ObjectSpec` (`src/components/object_spec.h`) on the definition. One table in
+`src/queries/affected.cpp` gives each name its kind, what it resolves to, object or player, and which
+abilities read it; the parser, `--parse-report` and `resolve_objects` / `resolve_players` (over a
+`ResolveCtx`) all read it, so a new name is one row. An effect takes its objects and players from
+the resolvers (or `affected_objects` / `affected_player`), and compares `def->defined` only to pick
+a form of its own behaviour.
+
 **Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's
 characteristics AFTER the resolution that moved it (its own leaves/dies triggers, an ability whose
 source it was resolving later) must use `departed_lki_for` (`src/queries/lki.h`), not
@@ -554,8 +562,8 @@ sections above are not repeated here.
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
   `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
-  controller, `Defined$` player), `affected` (the objects / player an effect acts on:
-  targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
+  controller), `affected` (the `Defined$` table, `ResolveCtx`, `resolve_objects` / `resolve_players`,
+  and the objects / player an effect acts on: targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
   exile, `interchangeable_cards`), `lki` (object identity stamp, last-known info), `entry`
   (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal

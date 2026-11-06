@@ -11,6 +11,7 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
 #include "../queries/keywords.h"
@@ -72,7 +73,7 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     mctx.source = ab.source.lki_entity();
     if (dp && !dp->cmc_expr.empty()) {
         mctx.cmc_bound = static_cast<int>(
-            evaluate_amount(dp->cmc_expr, ab.controller, ab.source.lki_entity(), ab.target.get()));
+            evaluate_amount(dp->cmc_expr, ResolveCtx::of(ab)));
         mctx.cmc_op = dp->cmc_op.empty() ? "LE" : dp->cmc_op;
     }
     std::vector<Entity> to_destroy;

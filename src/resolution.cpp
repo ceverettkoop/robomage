@@ -168,7 +168,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
         if (amt == 0 && (ab.def->kind == EffectKind::Draw || ab.def->kind == EffectKind::Mill)) amt = 1;
         if (!ab.def->dynamic_amount_expr.empty())
-            amt = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
+            amt = evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab));
         return ", amount: " + std::to_string(amt);
     }
     return "";

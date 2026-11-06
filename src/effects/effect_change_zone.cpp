@@ -392,7 +392,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (ab.def->condition_on_target && !ab.def->dynamic_amount_expr.empty() &&
             ab.def->condition_present.find("cmcLE") != std::string::npos)
             cmc_threshold = static_cast<int>(
-                evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get()));
+                evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab)));
 
         for (auto tgt : to_move) {
             if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;

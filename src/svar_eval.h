@@ -7,6 +7,8 @@
 #include "ecs/entity.h"
 #include "components/zone.h"
 
+struct ResolveCtx;
+
 // SVar evaluation: the one evaluator for every Forge count expression a card script names
 // (Count$..., Targeted$..., Remembered$..., PlayerCount...$..., integer literals) and the one
 // comparator for its "GE4"-style comparisons, shared by effect amounts, target counts, resolution
@@ -28,6 +30,10 @@ bool compare_svar(int value, const std::string &compare);
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                   Entity target = 0);
 
+// The same, reading the expression from `ctx`: its controller's view, its source, and the chosen
+// target of its ability instance (none for a static).
+int evaluate_svar(const std::string &expr, const ResolveCtx &ctx);
+
 // True when evaluate_svar has a reading for `expr` (it would not report it unrecognized): the same
 // grammar — literals, the /Plus.N /Times.N /HalfUp /LimitMax.N steps, the Count$ / Targeted$ /
 // Remembered$ / PlayerCount… forms — checked without a game (--parse-report, parse_report.h).
@@ -38,6 +44,7 @@ bool svar_expr_recognized(const std::string &expr);
 // evaluate_svar as an amount (a number of cards, counters, damage, ...): never below 0.
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source = 0,
                        Entity target = 0);
+size_t evaluate_amount(const std::string &expr, const ResolveCtx &ctx);
 
 // Per-permanent stored-SVar trigger gate (a trigger's CheckSVar$ on a Number$ scratch SVar): read
 // `source`'s Permanent::stored_svars[name] (absent reads as 0) and test it against `compare`

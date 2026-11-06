@@ -120,9 +120,10 @@ a finding, per ability category, static mode and trigger mode (`param_form_read`
 Not audited: `R:` lines, which still match whole shapes (`replacement` when none fits), and whether a
 known `Defined$` name is read by the particular effect it sits on, which M2 settles.
 
-The per-param form checks M1 added to `src/parse.cpp` (`param_form_read`, `defined_value_read` and
-similar) are a second recogniser, against §1's "one recogniser, one implementation". They are
-temporary: retire each as M2 and M3 make the engine's own tables the source of what is known.
+The per-param form checks M1 added to `src/parse.cpp` (`param_form_read` and similar) are a second
+recogniser, against §1's "one recogniser, one implementation". They are temporary: retire each as M2
+and M3 make the engine's own tables the source of what is known. M2 retired the `Defined$` one: its
+names are read from the table (`defined_name_read`).
 
 **Mechanic-first onboarding.** `onboard.py vocab` appends a whole deck and only once that deck needs
 nothing. CLAUDE.md also forbids testing cards outside the vocab. A mechanic-first plan cannot work
@@ -194,6 +195,15 @@ After M3 the three lanes (M4; M5–M7; M8–M10) touch mostly separate files and
 worktrees if time matters. M7 and M8 must both land before M11.
 
 ### M2. Object references (L)
+
+**Progress.** The primitive and the inert migration are done (2026-11-05): `ObjectSpec`
+(`src/components/object_spec.h`), the `Defined$` table, `ResolveCtx` and `resolve_objects` /
+`resolve_players` (`src/queries/affected.{h,cpp}`). Every `defined_*` boolean and raw `Defined$`
+compare is gone, M0's fold is replaced by `StaticAbility::affected_defined`, and the SVar evaluator has
+its `ResolveCtx` overloads (signature only; the five `evaluate_amount` callers that pass exactly
+those values use them, the rest move with M3). `replay` stayed byte-identical at each commit.
+Still to do here: the "Lands here" items below. Effects that behave differently per form still
+compare `def->defined`; a new name only they read needs a branch as well as its row.
 
 **Today.** `Defined$` becomes booleans at parse (`parse.cpp`), with some names compared raw in effect
 files, and at least 10 effect files read the flags directly beside `affected_objects` /

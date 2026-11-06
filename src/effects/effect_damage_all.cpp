@@ -6,6 +6,7 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../systems/orderer.h"
@@ -24,7 +25,7 @@ namespace effects {
 HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     size_t dmg = ab.def->amount;
     if (!ab.def->dynamic_amount_expr.empty())
-        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
+        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab));
     std::vector<Entity> recipients;
     if (!ab.def->valid_cards_filter.empty())
         for (auto e : orderer->mEntities)

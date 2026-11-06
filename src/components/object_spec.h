@@ -17,7 +17,7 @@ struct ObjectSpec {
         REMEMBERED,          // the objects the resolution remembers
         DELAY_REMEMBERED,    // the objects a delayed trigger captured, restored as remembered
         TARGETED,            // the target its parent chose
-        PARENT_TARGET,       // the same, by the names only target-binding reads
+        PARENT_TARGET,       // the same; only ChangeZone tells the two apart
         TRIGGERED_ATTACKER,  // bound as the target when it triggered
         TRIGGERED_SPELL,     // bound as the target when it triggered
         TRIGGERED_SOURCE_SA, // bound as the target when it triggered

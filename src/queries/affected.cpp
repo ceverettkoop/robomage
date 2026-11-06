@@ -88,12 +88,15 @@ static const DefinedRow kDefinedRows[] = {
     // return the exiled card).
     {"DelayTriggerRememberedLKI", ObjectSpec::DELAY_REMEMBERED, Refers::OBJECT, objects_remembered},
 
-    // The target its parent chose, which may be an object or a player (CR 608.2c). Targeted also
-    // names the chain's targeted PLAYER, read through resolve_players, and ChangeZone routes the
-    // searched zone by it; ParentTarget and Parent have no reader beyond this inheritance.
-    {"Targeted", ObjectSpec::TARGETED, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr, true},
-    {"ParentTarget", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr, true},
-    {"Parent", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr, true},
+    // The target its parent chose, which may be an object or a player (CR 608.2c). As players these
+    // name the nearest player target up the chain; ChangeZone routes a searched zone by Targeted
+    // alone, the one reader that tells the names apart.
+    {"Targeted", ObjectSpec::TARGETED, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr,
+     true},
+    {"ParentTarget", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target,
+     nullptr, true},
+    {"Parent", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr,
+     true},
 
     // TriggeredAttacker(LKICopy) — the effect acts on the creature whose attack fired this trigger
     // (Tamiyo, Seasoned Scholar: the attacking creature gets -1/-0). Bound as the ability's target
@@ -135,7 +138,8 @@ static const DefinedRow kDefinedRows[] = {
     {"Player", ObjectSpec::EACH_PLAYER, Refers::PLAYER, nullptr, players_each, read_by_each_player},
     // TargetedController — the effect's player is the last-known controller of the target the
     // sub-ability inherits (CR 608.2g/h): its parent may already have moved it.
-    {"TargetedController", ObjectSpec::TARGETED_CONTROLLER, Refers::PLAYER, nullptr, players_targeted_controller, nullptr, true},
+    {"TargetedController", ObjectSpec::TARGETED_CONTROLLER, Refers::PLAYER, nullptr, players_targeted_controller,
+     nullptr, true},
     // TriggeredActivator — the effect acts on the player who caused the trigger (the caster of the
     // triggering spell). The actual player is bound at trigger-fire time from the event's PLAYER
     // param. CR 603.x.
@@ -148,8 +152,10 @@ static const DefinedRow kDefinedRows[] = {
     // fired the (Mode$ ChangesZone delayed) trigger (Searing Blood: the dead creature's controller).
     // Bound from the watched card's last-known controller at trigger-fire time (CR 608.2g); the card
     // is already in the graveyard by then. Shares triggered_player storage.
-    {"TriggeredCardController", ObjectSpec::TRIGGERED_CARD_CONTROLLER, Refers::PLAYER, nullptr, players_triggered_player},
-    {"TriggeredCardOwner", ObjectSpec::TRIGGERED_CARD_OWNER, Refers::PLAYER, nullptr, players_triggered_card_owner, read_by_change_zone_all},
+    {"TriggeredCardController", ObjectSpec::TRIGGERED_CARD_CONTROLLER, Refers::PLAYER, nullptr,
+     players_triggered_player},
+    {"TriggeredCardOwner", ObjectSpec::TRIGGERED_CARD_OWNER, Refers::PLAYER, nullptr, players_triggered_card_owner,
+     read_by_change_zone_all},
     // TriggeredDefendingPlayer — the effect acts on the defending player of the attack that fired
     // this trigger (Goblin Guide). Bound as the ability's target at trigger-fire time from the
     // CREATURE_ATTACKED event (the opponent of the attacker's controller in a 2-player game), which

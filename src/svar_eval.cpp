@@ -17,6 +17,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/counters.h"
@@ -98,6 +99,10 @@ bool stored_svar_gate_passes(Entity source, const std::string &name, const std::
     return compare_svar(val, compare);
 }
 
+int evaluate_svar(const std::string &expr, const ResolveCtx &ctx) {
+    return evaluate_svar(expr, ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0);
+}
+
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source, Entity target) {
     int value = 0;
     if (apply_suffix_op(expr, controller, source, target, value)) return value;
@@ -153,6 +158,10 @@ bool svar_expr_recognized(const std::string &expr) {
                (prop == "HasPropertyLostLifeThisTurn" || spells);
     }
     return false;
+}
+
+size_t evaluate_amount(const std::string &expr, const ResolveCtx &ctx) {
+    return evaluate_amount(expr, ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0);
 }
 
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source,
