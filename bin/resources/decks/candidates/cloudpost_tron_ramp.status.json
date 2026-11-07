@@ -20,16 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Exhaust and Waterbend (Avatar)": {
-      "cards": [
-       "Invasion Submersible"
-      ],
-      "findings": [
-       "ability_param:Animate.Exhaust",
-       "cost:Waterbend"
-      ],
-      "size": "M"
-     },
      "Targets in several zones": {
       "cards": [
        "Sink into Stupor"
@@ -41,98 +31,66 @@
      }
     },
     "needs": {
-     "Invasion Submersible": [
-      "Exhaust and Waterbend (Avatar)"
-     ],
      "Sink into Stupor": [
       "Targets in several zones"
      ]
     },
     "new_cards": [
-     "Invasion Submersible",
      "Sink into Stupor"
     ],
-    "size_points": 4
+    "size_points": 1
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (4 points)",
-   "time": "2026-11-07T01:16:59"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
+   "time": "2026-11-07T03:55:38"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 27,
+    "in_vocab": 28,
     "no_script": [],
     "not_in_vocab": [
-     "Invasion Submersible",
      "Sink into Stupor"
     ]
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "29 cards: 27 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-07T01:16:59"
+   "summary": "29 cards: 28 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-07T03:55:38"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Exhaust and Waterbend (Avatar)",
      "Targets in several zones"
     ]
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Targets in several zones",
-   "time": "2026-11-07T02:00:29"
+   "summary": "1 mechanic(s) to implement: Targets in several zones",
+   "time": "2026-11-07T03:55:38"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Invasion Submersible": {
-      "card": "Invasion Submersible",
-      "faces": [
-       "Invasion Submersible"
-      ],
-      "findings": [
-       {
-        "detail": "Cost$ Waterbend<3>",
-        "kind": "cost",
-        "line": "A:AB$ Animate | Cost$ Waterbend<3> | Defined$ Self | Types$ Artifact,Creature | Exhaust$ True | Duration$ Permanent | SubAbility$ DBPutCounter | SpellDescription$ This Vehicle becomes an artifact creature. Put three +1/+1 counters on it.",
-        "name": "Waterbend"
-       },
-       {
-        "detail": "Animate Exhaust$ True",
-        "kind": "ability_param",
-        "line": "A:AB$ Animate | Cost$ Waterbend<3> | Defined$ Self | Types$ Artifact,Creature | Exhaust$ True | Duration$ Permanent | SubAbility$ DBPutCounter | SpellDescription$ This Vehicle becomes an artifact creature. Put three +1/+1 counters on it.",
-        "name": "Animate.Exhaust"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/i/invasion_submersible.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Sink into Stupor": {
       "card": "Sink into Stupor",
       "faces": [
@@ -160,14 +118,14 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
-   "time": "2026-11-07T01:16:59"
+   "summary": "1 new card(s), 1 with findings (1 findings), 0 without a script",
+   "time": "2026-11-07T03:55:38"
   },
   "provision": {
    "detail": {
@@ -181,11 +139,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T01:16:59"
+   "time": "2026-11-07T03:55:38"
   },
   "scrape": {
    "detail": {

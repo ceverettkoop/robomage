@@ -621,8 +621,8 @@ What stayed of (c1), and why:
 | `Exert` (CR 701.43) | Arena of Glory | M6 | done (M6's Done) |
 | Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | done (M7's Done) |
 | Bargain (CR 702.166) | Beseech the Mirror | M7 | done (M7's Done) |
-| Waterbend (CR 701.67) | Invasion Submersible | M10 | a `TapToPay` row and a cost token calling `set_tap_to_pay`, with `Exhaust$`. CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: this card's whole cost is it |
-| Crew (CR 301.7) | Unlicensed Hearse | M10 | an activation whose cost taps other creatures |
+| Waterbend (CR 701.67) | Invasion Submersible | M10 | done (M10's (b1)). CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: a token beside other mana is a finding |
+| Crew (CR 702.122) | Unlicensed Hearse | M10 | the cost and keyword done (M10's (b1)); the card waits for (b2) |
 | `Imprint$` that outlives the resolution, an `ObjectSet` on the permanent | Chrome Mox | M9 | the slot on the source, with `ForgetImprinted$` |
 | `Discard<1/Hand>` on a trigger | Phyrexian Dragon Engine | M12 | `whole_hand` in `TRIGGER`'s table |
 | `Discard<N/...>` on an activation | none provisioned | | one `PickRule` row in `kActivationSteps` and its `cost_form_pays` line |
@@ -684,7 +684,7 @@ No script has these, so each stays out of the scenarios:
 | `Condition$ NotPlayerTurn` on `Cost$ 0` | a card |
 | X, Phyrexian pips, Delve or Improvise with a card's own flashback, escape or alternative cost; kicker or replicate with one | a card; the one flow carries it |
 | {X} in an alternative cost | `cost_form_pays` refuses it, a finding |
-| `TapToPay` on an activation or a trigger | Waterbend (M10) |
+| `TapToPay` on a trigger | a card; an activation's is done (Waterbend, M10) |
 | A colored pip paid by a tap | done: Convoke (M7) |
 | A mana ability's Sac, Return, energy | Lazotep Quarry (M8) |
 | Sacrifice as an unless cost | Grist (a candidate, its own stage) |
@@ -1302,6 +1302,32 @@ Evidence. Each of the four inert commits: 1,018 explore games (80 bo3, 182 `--no
 
 Unproved. Release `bench` wasn't compared. The `actor` tier's torch part was skipped. **`PER_LIFETIME` runs nowhere:** no row sets it until (b). **The mana half of the count:** no script has a limited mana ability, so the count in `produce_mana_from_ability` and the whole-list restore are read by nothing, and keying by definition rather than colour was shown only by that absence. `cost_payable` refuses in no explore game; only the four Mystical Dispute scenarios reach it. `prune_illegal_targets`' line prints in no explore game either, and no scenario asserts it. A limited ability on a permanent that becomes a copy of the same card kept its count from `01427de1` on, where the instance lost it; the fix makes that the rule, and no vocab line reaches it.
 
+**Progress (2026-11-07).** Unit (b1), activations. Broadside Bombardiers 465, Invasion Submersible 466. Unlicensed Hearse, the only Crew card, waits for (b2). Those three are every provisioned card with Boast, Exhaust, Waterbend or Crew (`dragon_stompy`, `cloudpost_tron_ramp`, `painter`). No other card reached zero findings.
+
+- **Boast:** `Boast$ True` is a `CONDITION` row, `AttackedThisTurn`, and `per_turn(1)`. `Permanent::attacked_on_turn` is set where a declared attacker is committed (CR 508.1k), so ninjutsu, Raph & Mikey's card and a token never attacked (CR 508.4). It is a stamp like `entered_on_turn`, so no walk clears it and a phased-out permanent can't keep it, and it is on the Permanent because a permanent that stops being a creature still attacked. `attacked_this_turn` (`queries/combat.h`) reads it.
+- **`attacked`, an `object` scalar at 90.** It reads 1 only on an object with an ability that asks (`reads_attacked_this_turn`). Written for every attacker it moved 46 of the gate's fixture decisions: a scalar doesn't move tensors only while it is 0. See Decisions below.
+- **`Sacrificed$CardManaCost`:** a value row. `move_items` records the mana value on the stack ability as the cost is paid (`permanent_mana_value`), the frame takes it, like X. A copy reads what it copied, and a token leaves nothing to look up.
+- **Exhaust:** `Exhaust$ True` is `per_lifetime(1)`. `exhausted` reads `activation_limit_reached`, either kind of the ability's own limit; a loyalty ability's stays 0.
+- **Waterbend:** a row of `tap_to_pay_rule` that asks, `Artifact,Creature` for generic pips. `Waterbend<N>` is a mana part carrying the row to `set_tap_to_pay`. `kActivationSteps` has the cast's `TAP_TO_PAY`, so the rows, Tap nothing more, the reversal and play_spec are Convoke's. `can_tap_to_pay` no longer leaves out the paid-for object: only an ability's source could be that, and it may tap for its own cost. CR 701.67b is a finding: a token beside other mana, or anywhere but an activation.
+- **Crew:** `K:Crew:N` is an activated Animate with one new cost part, `TAP_OTHERS` (`tap_others`, `tappable_for_cost`): picks one at a time until the total power reaches N, then as many more as the payer likes (CR 702.122a). Each taps at once, the snapshot undoing it. `Crew` joins the keyword enum at row 81. "Can't crew" and "becomes crewed" (CR 702.122c, d) have no card.
+- **Prompts.** Both are `PAYING_COSTS` rows through `FrameCtx`: explore, the scripted agent and the CLI read them as Convoke's. play_spec gains `waterbend:` and `crew:`.
+- **Fixture:** `decks/tests/mech_activation.dk`, keys `row:AttackedThisTurn`, `row:Sacrificed$CardManaCost`, `row:activation_per_lifetime`, `cost:MANA.Waterbend`, `cost:MANA.tap_chosen`.
+
+Bug. CR 302.6: a permanent entered with summoning sickness only if it was a creature, so one made a creature later that turn attacked (The Fantasticar, `cr302_6_a_permanent_made_a_creature_the_turn_it_came_cant_attack`, fails without the fix). No corpus or fixture moved.
+
+Where the plan was off. Crew is CR 702.122, not 301.7. `is_runtime_amount_expr` is a second list of recognised expressions, against principle: `Sacrificed$CardManaCost` reported clean and dealt 0 until it was added there. It still needs replacing with `svar_expr_recognized`.
+
+**(b2) must, beyond (a)'s list:**
+
+- Unlicensed Hearse: `TargetsWithSameController$`, a plain `Count$ValidExile` row (today's needs `$CardTypes`), and its reading. Then its Crew scenarios, none of which exist: a summoning-sick creature crews; two 1-power creatures for Crew 2; a total too low offers no row; tapping past the total; it isn't one of its own crew once a creature; a 0/0 Hearse crewed dies. Add `cost:TAP_OTHERS` to `mech_activation.expect`.
+- `DIVIDE_DAMAGE`, `Count$xPaid/Twice`, `Imprinted$Valid`, `sharesControllerWith Imprinted` and Welder's `Branch` stay as (a) listed them. Nothing above took any of them.
+
+**Decision for the user.** Whether `attacked` should read for every attacker. That is `reads_attacked_this_turn` out of `encode.cpp`, then the 46 decisions dropped (`learn/open_vocab_acceptance.py inputs --drop-moved`), which this unit may not touch.
+
+Evidence. `make check` before each commit. Bombardiers' and the Submersible's scenarios fail with the row, stamp, capture or step removed; `cr702_142a_boast_cost_needs_another_permanent` and the boast flicker stay green through every removal, reading what was already there. `tests/corpus`, `tests/cli` and `tests/open_vocab` unmoved; the card digest gained two rows and changed none. Fixture against itself: 100 bo1 and a bo3 under `explore`, 30 `--no-auto-mana`, 100 under `--coverage`, no error, no draw; `rm_driver.py` scripted against explore, six bo1 and two bo3 matches. All 71 frozen logs replay but `a9-m18276`, at decision 352, past its cut at 315.
+
+Unproved. **Crew has no scenario:** it ran only on a scratch build with Hearse in the vocab, by hand: a sick Bears crewed, two 1-powers and a third past the total, no row at power 1. The new cost part isn't in any fuzz game. The `actor` tier's torch part was skipped and release `bench` not run. The Waterbend finding on a token beside other mana has no script to show it.
+
 ### M11. Face-down objects and standing looks (XL)
 
 **Today.** `Zone::is_face_down` exists for exile, and visibility, the state format's FACE_DOWN pool and
@@ -1417,6 +1443,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **M9 (b1) (2026-11-06).** Five of the M9 row entered: Renegade Rallier 455, Sand Scout 456 with the Sand Warrior token 924, Pyrogoyf 457, Hawkeye's Bow 458, Chrome Mox 459. None was placed elsewhere. No other candidate card's findings reached zero: the 18 names left outside the vocab hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Hullbreacher, Sink into Stupor, Sundering Eruption). Gaea's Will, Hullbreacher, Sundering Eruption and Tezzeret, Cruel Captain wait for (b2), Theorist's Proxy for (b2) and M12. Next free card id 460, token 925.
 
 **M9 (b2) (2026-11-07).** The rest of the M9 row entered: Tezzeret, Cruel Captain 460, Sundering Eruption 461 with Volcanic Fissure 462, Hullbreacher 463 with the Treasure token 925, Gaea's Will 464. Theorist's Proxy stays at M12, Empower its only findings. None was placed elsewhere. No other candidate card's findings reached zero: the 15 names left outside the vocab hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Sink into Stupor). All five had parts that reported clean and needed reading: Tezzeret's Animate, Sundering Eruption's hidden keyword, Hullbreacher's first draw, Gaea's Will's missing mana cost. Next free card id 465, token 926.
+
+**M10 (b1) (2026-11-07).** Two of the M10 row entered: Broadside Bombardiers 465, Invasion Submersible 466. Unlicensed Hearse has Crew and waits for (b2), its findings `TargetsWithSameController$` and `Count$ValidExile`. None was placed elsewhere. No other candidate card's findings reached zero: the 12 names left outside the vocab hold one finding at best, each another unit's or stage's (Aphetto Alchemist, Fury, Sink into Stupor). Both had parts that reported clean and needed reading: Bombardiers' amount dealt 0, the Submersible made a creature the turn it came attacked. Next free card id 467, token 926.
 
 | last stage | cards (all stages needed) |
 |---|---|

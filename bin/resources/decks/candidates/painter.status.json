@@ -57,7 +57,6 @@
       ],
       "findings": [
        "ability_param:ChangeZone.TargetsWithSameController",
-       "keyword:Crew",
        "svar_expr:Count$ValidExile"
       ],
       "size": "M"
@@ -143,15 +142,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (30 points)",
-   "time": "2026-11-07T01:17:00"
+   "time": "2026-11-07T03:55:38"
   },
   "diff": {
    "detail": {
@@ -169,11 +168,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
    "summary": "41 cards: 36 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-07T01:17:00"
+   "time": "2026-11-07T03:55:38"
   },
   "implement": {
    "detail": {
@@ -191,15 +190,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Goblin Welder swap, Meld (CR 712), filter:sharesControllerWith Remembered",
-   "time": "2026-11-07T02:00:29"
+   "time": "2026-11-07T03:55:38"
   },
   "parse": {
    "detail": {
@@ -337,12 +336,6 @@
         "name": "ChangeZone.TargetsWithSameController"
        },
        {
-        "detail": "Crew:2",
-        "kind": "keyword",
-        "line": "K:Crew:2",
-        "name": "Crew"
-       },
-       {
         "detail": "X = Count$ValidExile Card.ExiledWithSource",
         "kind": "svar_expr",
         "line": "SVar:X:Count$ValidExile Card.ExiledWithSource",
@@ -387,14 +380,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (18 findings), 0 without a script",
-   "time": "2026-11-07T01:17:00"
+   "summary": "5 new card(s), 5 with findings (17 findings), 0 without a script",
+   "time": "2026-11-07T03:55:38"
   },
   "provision": {
    "detail": {
@@ -408,11 +401,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T01:17:00"
+   "time": "2026-11-07T03:55:38"
   },
   "scrape": {
    "detail": {

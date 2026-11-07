@@ -20,16 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Boast (CR 702.142)": {
-      "cards": [
-       "Broadside Bombardiers"
-      ],
-      "findings": [
-       "ability_param:DealDamage.Boast",
-       "svar_expr:Sacrificed$CardManaCost/Plus.2"
-      ],
-      "size": "M"
-     },
      "Divided damage (CR 601.2d)": {
       "cards": [
        "Fury",
@@ -43,9 +33,6 @@
      }
     },
     "needs": {
-     "Broadside Bombardiers": [
-      "Boast (CR 702.142)"
-     ],
      "Fury": [
       "Divided damage (CR 601.2d)"
      ],
@@ -54,31 +41,29 @@
      ]
     },
     "new_cards": [
-     "Broadside Bombardiers",
      "Fury",
      "Shatterskull Smashing"
     ],
-    "size_points": 6
+    "size_points": 3
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-07T01:16:59"
+   "summary": "2 new card(s): 0 clean, 2 need 1 mechanic(s) (3 points)",
+   "time": "2026-11-07T03:55:38"
   },
   "diff": {
    "detail": {
     "distinct": 22,
-    "in_vocab": 19,
+    "in_vocab": 20,
     "no_script": [],
     "not_in_vocab": [
-     "Broadside Bombardiers",
      "Fury",
      "Shatterskull Smashing"
     ]
@@ -86,60 +71,33 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "22 cards: 19 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-07T01:16:59"
+   "summary": "22 cards: 20 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-07T03:55:38"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Boast (CR 702.142)",
      "Divided damage (CR 601.2d)"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Boast (CR 702.142), Divided damage (CR 601.2d)",
-   "time": "2026-11-07T02:00:29"
+   "summary": "1 mechanic(s) to implement: Divided damage (CR 601.2d)",
+   "time": "2026-11-07T03:55:38"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Broadside Bombardiers": {
-      "card": "Broadside Bombardiers",
-      "faces": [
-       "Broadside Bombardiers"
-      ],
-      "findings": [
-       {
-        "detail": "DealDamage Boast$ True",
-        "kind": "ability_param",
-        "line": "A:AB$ DealDamage | Cost$ Sac<1/Artifact.Other;Creature.Other/another creature or artifact> | ValidTgts$ Any | NumDmg$ X | Boast$ True | SpellDescription$ CARDNAME deals damage equal to 2 plus the sacrificed permanent's mana value to any target.",
-        "name": "DealDamage.Boast"
-       },
-       {
-        "detail": "X = Sacrificed$CardManaCost/Plus.2",
-        "kind": "svar_expr",
-        "line": "SVar:X:Sacrificed$CardManaCost/Plus.2",
-        "name": "Sacrificed$CardManaCost/Plus.2"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/b/broadside_bombardiers.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Fury": {
       "card": "Fury",
       "faces": [
@@ -193,14 +151,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-07T01:16:59"
+   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
+   "time": "2026-11-07T03:55:38"
   },
   "provision": {
    "detail": {
@@ -214,11 +172,11 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T01:16:59"
+   "time": "2026-11-07T03:55:38"
   },
   "scrape": {
    "detail": {
