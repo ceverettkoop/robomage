@@ -1,0 +1,57 @@
+{
+  "name": "cr606_6_minus_three_needs_three_loyalty",
+  "why": "CR 606.6, 306.6, 306.8: flashed in on Player B's turn and attacked by a 1-power creature, the token has 2 loyalty on Player A's turn: [-1] is offered and [-3] isn't",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Monastery Swiftspear"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Island",
+    "A:cast:Theorist's Proxy",
+    "B:attack:Monastery Swiftspear",
+    "B:desc:Jace",
+    "B:attack:done",
+    "A:block:done"
+  ],
+  "max_decisions": 20,
+  "expect": [
+    "Monastery Swiftspear deals 1 damage to Jace"
+  ],
+  "expect_menu": [
+    "Activate Jace.*\\[-1\\]"
+  ],
+  "expect_menu_not": [
+    "Activate Jace.*\\[-3\\]"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

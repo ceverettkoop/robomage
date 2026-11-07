@@ -1,0 +1,396 @@
+robomage 0.2
+Decision log: empower.rmlog
+
+======== Player A to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Theorist's Proxy, Island, Island, Island, Island, Island, Island
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Theorist's Proxy  #1  {1}{U}  Creature - Illusion
+  Island            #2          Basic Land - Island
+  Island            #3          Basic Land - Island
+  Island            #4          Basic Land - Island
+  Island            #5          Basic Land - Island
+  Island            #6          Basic Land - Island
+  Island            #7          Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+======== Player B to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Island, Island, Island, Island, Island, Island, Island
+Game 1, opening hand (Player A plays first)
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Island  #1  Basic Land - Island
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x6
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Island: created on the battlefield (x2)
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Island x2  #8 #9
+Your hand (7):
+  Theorist's Proxy  #1  {1}{U}  Creature - Illusion
+  Island            #2          Basic Land - Island
+  Island            #3          Basic Land - Island
+  Island            #4          Basic Land - Island
+  Island            #5          Basic Land - Island
+  Island            #6          Basic Land - Island
+  Island            #7          Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Theorist's Proxy
+Player A [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A casts Theorist's Proxy from hand
+  T1: Player A's Theorist's Proxy: stack -> battlefield
+  T1: Player A puts Jace token onto the battlefield from hand (by Theorist's Proxy)
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11    summoning sick
+  Jace                   #12    loyalty 3, token
+  Island x2              #8 #9  tapped
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Activate Jace token [-1] (Surveil)
+  8: Activate Jace token [-3] (Draw)
+Player A [0-8, help]> Jace #12, the battlefield, controlled by Player A
+  now: loyalty 3, token
+Jace
+  Planeswalker Token - Jace
+  [-1]: Surveil 1.
+  [-3]: Draw a card.
+Player A [0-8, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A looks at 1 card of Player A's library (top): Island (by Jace)
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11    summoning sick
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9  tapped
+Stack (top first):
+  1. Jace (activated ability) #14 (Player A)
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+Revealed:
+  Island #13 (Player A's library, 1st from the top): look, to Player A
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: Jace resolving: choose a card to put on top of the library
+  0: Put Island on top of library
+  1: Put Island into graveyard
+Player A [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Island: library (top) -> library (top) (by Jace)
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11    summoning sick
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9  tapped
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+Player A [0-6, help]> 
+======== Player A to decide ========
+Game 1, turn 1, Second main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+Player A [0-6, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A's Island: created on the battlefield (x2)
+  T1: Player A casts Theorist's Proxy from hand
+  T1: Player A's Theorist's Proxy: stack -> battlefield
+  T1: Player A puts Jace token onto the battlefield from hand (by Theorist's Proxy)
+  T1: Player A looks at 1 card of Player A's library (top) (by Jace)
+  T1: Player A's card: library (top) -> library (top) (by Jace)
+  T2: Player B draws a card: Island
+Game 1, turn 2, First main: Player B's turn; Player B has priority
+  Player B (you)  life 20   hand 8   library 7   graveyard 0   exile 0
+  Player A        life 20   hand 6   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11    summoning sick
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9  tapped
+Player B's battlefield:
+  (no permanents)
+Your hand (8):
+  Island  #1   Basic Land - Island
+  Island  #2   Basic Land - Island
+  Island  #3   Basic Land - Island
+  Island  #4   Basic Land - Island
+  Island  #5   Basic Land - Island
+  Island  #6   Basic Land - Island
+  Island  #7   Basic Land - Island
+  Island  #14  Basic Land - Island
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Play Island
+  8: Play Island
+Player B [0-8, help]> 
+======== Player B to decide ========
+Game 1, turn 2, Second main: Player B's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Play Island
+  8: Play Island
+Player B [0-8, help]> 
+======== Player B to decide ========
+Game 1, turn 2, Cleanup: Player B's turn
+Decision: discard down to your maximum hand size
+  0: Island
+  1: Island
+  2: Island
+  3: Island
+  4: Island
+  5: Island
+  6: Island
+  7: Island
+Player B [0-7, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T2: Player B draws a card
+  T2: Player B's Island: hand -> graveyard
+Game 1, turn 3, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 7   graveyard 1   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: Island
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Activate Theorist's Proxy (DelayedTrigger)
+Player A [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T3: Player A draws a card: Island
+Game 1, turn 3, Draw: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 7   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 7   graveyard 1   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9
+Your hand (7):
+  Island  #2   Basic Land - Island
+  Island  #3   Basic Land - Island
+  Island  #4   Basic Land - Island
+  Island  #5   Basic Land - Island
+  Island  #6   Basic Land - Island
+  Island  #7   Basic Land - Island
+  Island  #16  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: Island
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Activate Theorist's Proxy (DelayedTrigger)
+Player A [0-1, help]> 
+======== Player A to decide ========
+Game 1, turn 3, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Play Island
+  8: Activate Theorist's Proxy (DelayedTrigger)
+  9: Activate Jace token [-1] (Surveil)
+Player A [0-9, help]> 
+======== Player A to decide ========
+Game 1, turn 3, Begin combat: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Activate Theorist's Proxy (DelayedTrigger)
+Player A [0-1, help]> 
+======== Player A to decide ========
+Game 1, turn 3, Declare attackers: Player A's turn
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Theorist's Proxy [0/3]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+======== Player A to decide ========
+Game 1, turn 3, Declare attackers: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 7   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 7   graveyard 1   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Theorist's Proxy  0/3  #11    tapped, attacking
+  Jace                   #12    loyalty 2, token
+  Island x2              #8 #9
+Your hand (7):
+  Island  #2   Basic Land - Island
+  Island  #3   Basic Land - Island
+  Island  #4   Basic Land - Island
+  Island  #5   Basic Land - Island
+  Island  #6   Basic Land - Island
+  Island  #7   Basic Land - Island
+  Island  #16  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: Island
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Activate Theorist's Proxy (DelayedTrigger)
+Player A [0-1, help]> 
+Input closed; quitting.

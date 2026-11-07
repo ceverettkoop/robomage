@@ -1,0 +1,50 @@
+{
+  "name": "cr111_a_second_empower_adds_to_the_token",
+  "why": "Empower (oracle): a Jace token you control takes the counters and no second token is made",
+  "hand_a": [
+    "Theorist's Proxy",
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 8,
+  "expect_count": {
+    "Token created: Jace": 1
+  },
+  "expect": [
+    "Empower Jace 3: Player A's Jace token now has 6 loyalty"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

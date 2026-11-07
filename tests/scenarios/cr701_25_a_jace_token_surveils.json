@@ -1,0 +1,50 @@
+{
+  "name": "cr701_25_a_jace_token_surveils",
+  "why": "Empower (oracle): the token's [-1] is Surveil 1 (CR 701.25): Island into the graveyard, loyalty 2",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:desc:[-1]",
+    "A:desc:into graveyard"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "loyalty now 2",
+    "Player A surveils 1"
+  ],
+  "expect_order": [
+    "Player A surveils 1",
+    "Island.*graveyard"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

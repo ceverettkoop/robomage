@@ -1,0 +1,70 @@
+{
+  "name": "cr701_6_theorists_proxy_covers_only_your_spell",
+  "why": "CR 701.6a, 101.2: {U}, Sacrifice: Player B's own Bolt is no spell Player A cast: Player B's Counterspell counters it, and the next spell Player A casts is still the covered one",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "battlefield_a": [
+    "Theorist's Proxy",
+    "Island",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Counterspell",
+    "Counterspell"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Theorist's Proxy",
+    "A:pass",
+    "A:pass",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt"
+  ],
+  "max_decisions": 18,
+  "expect_count": {
+    "Lightning Bolt is countered": 1
+  },
+  "expect": [
+    "Lightning Bolt deals 3 damage to Player B"
+  ],
+  "expect_not": [
+    "Lightning Bolt deals 3 damage to Player A"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

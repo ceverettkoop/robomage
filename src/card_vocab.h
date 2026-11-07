@@ -401,6 +401,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Cryptic Coat", 476},
     {"Mystic Forge", 477},
     {"Perilous Snare", 478},
+    {"Theorist's Proxy", 479},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -450,6 +451,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"r_2_2_goblin_shaman_treasure", "Goblin Shaman", 923},          // Fable of the Mirror-Breaker
     {"rgw_1_1_sand_warrior", "Sand Warrior", 924},                   // Sand Scout
     {"c_a_treasure_sac", "Treasure", 925},                           // Hullbreacher
+    {"u_empower_jace", "Jace", 926},                                 // Theorist's Proxy
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

@@ -16,6 +16,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | cradle_control | Cradle Control | 1.0 | control | 34 | 0 | 0 | 0 | implement |
 | death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | designate |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 0 | 0 | 0 | implement |
+| doomsday | Doomsday | 4.0 | combo | 33 | 0 | 0 | 0 | implement |
 | dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 0 | 0 | 0 | implement |
 | eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | baseline |
 | elves | Elves | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
@@ -30,7 +31,6 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
-| doomsday | Doomsday | 4.0 | combo | 33 | 1 | 0 | 0 | implement |
 | painter | Painter | 1.0 | combo | 41 | 1 | 0 | 0 | implement |
 
 ## Mechanics ranked by the decks that need them
@@ -111,6 +111,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 31 cards, 0 new; clean: -
 
 
+### doomsday — Doomsday (4.0%, combo)
+
+33 cards, 0 new; clean: -
+
+
 ### dragon_stompy — Dragon Stompy (1.0%, aggro)
 
 22 cards, 0 new; clean: -
@@ -179,11 +184,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 ### welder_cam — Welder Cam (2.0%, combo)
 
 33 cards, 0 new; clean: -
-
-
-### doomsday — Doomsday (4.0%, combo)
-
-33 cards, 1 new; clean: Theorist's Proxy
 
 
 ### painter — Painter (1.0%, combo)

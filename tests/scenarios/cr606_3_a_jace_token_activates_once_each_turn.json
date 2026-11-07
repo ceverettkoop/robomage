@@ -1,0 +1,52 @@
+{
+  "name": "cr606_3_a_jace_token_activates_once_each_turn",
+  "why": "CR 606.3: once one of the token's loyalty abilities is activated, neither is offered again that turn, and they are the next: with six loyalty and nothing else to do, the keyed spec waits for Player A's next turn",
+  "hand_a": [
+    "Theorist's Proxy",
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:cast:Theorist's Proxy",
+    "A:desc:[-1]",
+    "A:top:Island",
+    "A:desc:[-1]"
+  ],
+  "max_decisions": 14,
+  "expect_order": [
+    "loyalty now 5",
+    "TURN 3 \\(Player A\\)",
+    "loyalty now 4"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

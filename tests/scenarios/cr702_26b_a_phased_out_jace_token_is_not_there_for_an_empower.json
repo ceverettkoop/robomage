@@ -1,0 +1,65 @@
+{
+  "name": "cr702_26b_a_phased_out_jace_token_is_not_there_for_an_empower",
+  "why": "CR 702.26b, Empower (oracle): Karn's +1 under Mycosynth Lattice makes the token a creature, It That Heralds the End keeps it at 1/1, Talon Gates phases it out, and the next empower finds no Jace token and makes a second",
+  "hand_a": [
+    "Theorist's Proxy",
+    "Theorist's Proxy",
+    "Theorist's Proxy",
+    "Talon Gates of Madara"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Karn the Great Creator",
+    "Mycosynth Lattice",
+    "It That Heralds the End",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:activate:Karn",
+    "A:target:Jace",
+    "A:play:Talon Gates of Madara",
+    "A:target:Jace",
+    "A:pass",
+    "A:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 17,
+  "expect_count": {
+    "Token created: Jace": 2,
+    "Empower Jace 3: Player A's Jace token now has 3 loyalty": 2
+  },
+  "expect_not": [
+    "now has 6 loyalty"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

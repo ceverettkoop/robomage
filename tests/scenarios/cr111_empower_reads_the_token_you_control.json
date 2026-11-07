@@ -1,0 +1,53 @@
+{
+  "name": "cr111_empower_reads_the_token_you_control",
+  "why": "Empower (oracle): \"a Jace token you control\": Player B's token is not Player A's, so each seat's Proxy makes its own",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:pass",
+    "B:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 10,
+  "expect_count": {
+    "Token created: Jace": 2
+  },
+  "expect": [
+    "Empower Jace 3: Player A's Jace token now has 3 loyalty",
+    "Empower Jace 3: Player B's Jace token now has 3 loyalty"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

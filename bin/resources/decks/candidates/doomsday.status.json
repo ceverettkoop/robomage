@@ -18,102 +18,75 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Theorist's Proxy"
-    ],
+    "clean": [],
     "mechanics": {},
     "needs": {},
-    "new_cards": [
-     "Theorist's Proxy"
-    ],
+    "new_cards": [],
     "size_points": 0
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
+    "engine": "0b205ace61c62ec79661f30a17e16b2b3144cbcace8a6b4aa7d7e499c6c42090",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
+    "vocab": "69ea19cca33d6f2348ddbbefe9f41cb31bae1d5d83a4588b105ae088b2304ceb"
    },
    "result": "ok",
-   "summary": "1 new card(s): 1 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-11-07T13:36:59"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:42:58"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 32,
+    "in_vocab": 33,
     "no_script": [],
-    "not_in_vocab": [
-     "Theorist's Proxy"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
+    "vocab": "69ea19cca33d6f2348ddbbefe9f41cb31bae1d5d83a4588b105ae088b2304ceb"
    },
    "result": "ok",
-   "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-07T13:36:59"
+   "summary": "33 cards: 33 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:42:58"
   },
   "implement": {
    "detail": {},
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
+    "engine": "0b205ace61c62ec79661f30a17e16b2b3144cbcace8a6b4aa7d7e499c6c42090",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
+    "vocab": "69ea19cca33d6f2348ddbbefe9f41cb31bae1d5d83a4588b105ae088b2304ceb"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-11-07T13:36:59"
+   "time": "2026-11-07T13:42:58"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Theorist's Proxy": {
-      "card": "Theorist's Proxy",
-      "faces": [
-       "Theorist's Proxy"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/t/theorists_proxy.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "u_empower_jace"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
+    "engine": "0b205ace61c62ec79661f30a17e16b2b3144cbcace8a6b4aa7d7e499c6c42090",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
+    "vocab": "69ea19cca33d6f2348ddbbefe9f41cb31bae1d5d83a4588b105ae088b2304ceb"
    },
    "result": "ok",
-   "summary": "1 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-11-07T13:36:59"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:42:58"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "u_empower_jace"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -121,11 +94,11 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
+    "vocab": "69ea19cca33d6f2348ddbbefe9f41cb31bae1d5d83a4588b105ae088b2304ceb"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T13:36:59"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:42:58"
   },
   "scrape": {
    "detail": {
