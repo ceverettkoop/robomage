@@ -970,7 +970,7 @@ Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership 
         d.valid_tgts = filter;
         // "Enchant creature card in a graveyard" (Animate Dead): the legal objects are graveyard
         // cards, not battlefield permanents (CR 303.4).
-        d.target_in_graveyard = enchant_targets_graveyard(filter);
+        if (enchant_targets_graveyard(filter)) d.add_target_zone(Zone::GRAVEYARD);
         return d;
     }));
     enchant_ab.source = ObjectRef::of(aura);

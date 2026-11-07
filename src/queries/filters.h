@@ -131,7 +131,7 @@ bool color_set_passes(const std::string &vt, const std::set<Colors> &colors);
 // An Aura whose Enchant restriction names "inZoneGraveyard" (K:Enchant:Creature.inZoneGraveyard,
 // Animate Dead) enchants a creature CARD sitting in a graveyard rather than a battlefield
 // permanent (CR 303.4). The aura's cast-time target search must therefore look in graveyards, not
-// on the battlefield: setting Ability::target_in_graveyard routes both build_valid_targets and
+// on the battlefield: a graveyard target zone routes both build_valid_targets and
 // is_legal_target through their graveyard branches. General over any "enchant a card in a
 // graveyard" aura, keyed on the filter token, not on a specific card.
 inline bool enchant_targets_graveyard(const std::string &enchant_filter) {

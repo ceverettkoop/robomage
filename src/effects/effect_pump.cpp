@@ -111,7 +111,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
-    if (ab.def->target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def->targets_in(Zone::GRAVEYARD)) return HandlerResult::DONE_RUN_SUBS;
 
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).

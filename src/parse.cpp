@@ -2205,7 +2205,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // chose (Dauthi Voidwalker's "You may play it this turn").
         if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
     } else if (key == "TgtZone") {
-        if (value == "Graveyard") ability.target_in_graveyard = true;
+        for (const std::string &name : split(value, ',')) {
+            Zone::ZoneValue zone;
+            if (Zone::from_script_name(name, zone)) ability.add_target_zone(zone);
+        }
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {
@@ -2567,7 +2570,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
         if (value == "Battlefield")
             return ability.effect_static_ability == "Unblockable" ||
                    ability.has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
-        return value == "Exile" ? ability.effect_may_play_from_exile : value == "Graveyard" && ability.target_in_graveyard;
+        return value == "Exile" ? ability.effect_may_play_from_exile : value == "Graveyard" && ability.targets_in(Zone::GRAVEYARD);
     }
     // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing ChooseEach$;
     // ControlledByPlayer$ Chooser is captured by the choose_each handler.
@@ -2706,7 +2709,7 @@ static void effect_form_findings(const AbilityDef &ability, const std::map<std::
     const std::string zone = param_value(body, "AffectedZone");
     const bool may_play = param_value(body, "MayPlay") == "True";
     const bool remembered = filter_names_token(param_value(body, "Affected"), "IsRemembered");
-    const bool read = (may_play && zone == "Exile") || (may_play && zone == "Graveyard" && remembered && ability.target_in_graveyard) ||
+    const bool read = (may_play && zone == "Exile") || (may_play && zone == "Graveyard" && remembered && ability.targets_in(Zone::GRAVEYARD)) ||
                       (holds_static && mode == "Continuous") || mode == "CantGainLife" || mode == "CastWithFlash" ||
                       (name == "Unblockable" && mode == "CantBlockBy" && param_value(body, "ValidAttacker") == "Card.IsRemembered");
     if (read) return;

@@ -159,7 +159,7 @@ static bool targets_stack_objects(const AbilityDef &def) {
 // SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm) that
 // doesn't target the player whose graveyard it searches (The Stone Brain).
 static bool targets_graveyard_card(const AbilityDef &def) {
-    return def.target_in_graveyard || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD &&
+    return def.targets_in(Zone::GRAVEYARD) || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD &&
                                           !target_spec_names_players(def.valid_tgts));
 }
 
@@ -428,7 +428,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     // is_legal_target applies the type/owner/MV filter, so YouOwn effects only keep the
     // caster's own cards. The destination is irrelevant to where the candidate sits, so
     // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
-    // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
+    // A graveyard target zone covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
     if (targets_graveyard_card(*ability.def)) {
         for (int pass = 0; pass < 2; pass++) {

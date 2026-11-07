@@ -182,10 +182,12 @@ struct AbilityDef {
     // What this ability's resolution remembers of what it did (memory_ops.h): the rows of the
     // memory table its params and its effect kind name.
     std::vector<MemoryOp> memory_ops;
-    // TgtZone$ Graveyard — this spell/ability targets a card in a graveyard even though
-    // its category isn't ChangeZone (e.g. Surgical Extraction's SP$ Pump vehicle). Lets
-    // target enumeration offer graveyard cards.
-    bool target_in_graveyard = false;
+    // TgtZone$ — the zones its targets may be in, a bit each (targets_in). A graveyard's lets a
+    // spell/ability target a card there even though its category isn't ChangeZone (e.g. Surgical
+    // Extraction's SP$ Pump vehicle), and target enumeration offer graveyard cards.
+    uint32_t target_zones = 0;
+    bool targets_in(Zone::ZoneValue zone) const { return (target_zones >> zone) & 1u; }
+    void add_target_zone(Zone::ZoneValue zone) { target_zones |= 1u << zone; }
     // GainControl$ True — a ChangeZone that puts a card onto the battlefield does so under the
     // ability CONTROLLER's control rather than the card's owner's (CR 110.2a). Animate Dead's
     // Defined$ Enchanted reanimation: the enchanted creature card enters under the reanimating
