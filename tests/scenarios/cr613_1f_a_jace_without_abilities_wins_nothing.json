@@ -1,0 +1,79 @@
+{
+  "name": "cr613_1f_a_jace_without_abilities_wins_nothing",
+  "why": "CR 613.1f, 121.4: Jace, Wielder of Mysteries turned into an artifact by Mycosynth Lattice, into a creature by Tezzeret's emblem, loses his abilities to Humility, so his draw from an empty library replaces nothing and his controller loses",
+  "hand_a": [
+    "Lotus Petal",
+    "Lotus Petal",
+    "Lotus Petal"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Jace Wielder of Mysteries",
+    "Tezzeret Cruel Captain",
+    "Mycosynth Lattice",
+    "Humility"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:desc:[-7]",
+    "A:target:Jace"
+  ],
+  "max_decisions": 160,
+  "expect": [
+    "attempts to draw from an empty library"
+  ],
+  "expect_result": "B",
+  "life_b": 500
+}

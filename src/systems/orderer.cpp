@@ -721,6 +721,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // decking out. Scan the drawing player's battlefield permanents for the replacement.
         for (auto e : mEntities) {
             if (!is_battlefield_permanent(e, player)) continue;
+            if (global_coordinator.GetComponent<Permanent>(e).abilities_removed) continue;  // CR 613.1f
             for (const auto &r : permanent_replacement_effects(e)) {
                 if (r.kind != Effect::Replacement::DRAW_EMPTY_WIN) continue;
                 replacement::run_replace_with(r, e, player, shared_from_this());
