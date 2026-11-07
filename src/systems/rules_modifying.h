@@ -1,6 +1,8 @@
 #ifndef RULES_MODIFYING_H
 #define RULES_MODIFYING_H
 
+#include <cstddef>
+
 #include "../ecs/entity.h"
 #include "../components/zone.h"
 
@@ -82,10 +84,18 @@ FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership
 // prohibited creature is never offered as a legal attacker.
 bool attack_prohibited(Entity creature);
 
-// May `blocker` not be declared as a blocker of `attacker` (CR 509.1b)? True when an active CantBlockBy
-// static's ValidAttacker$ matches the attacker and its ValidBlocker$, if any, the blocker: Brazen
-// Borrower, whose "can block only creatures with flying" reads as can't block Creature.withoutFlying.
+// May `blocker` not be declared as a blocker of `attacker` (CR 509.1b)? Each restriction on one
+// blocker and one attacker is a row of the table in rules_modifying.cpp: the attacker can't be
+// blocked this turn (Kappa Cannoneer), landwalk (702.14c), shadow (702.28b), flying and reach
+// (702.9b, 702.17b), protection (702.16f), and an active CantBlockBy static whose ValidAttacker$
+// matches the attacker and its ValidBlocker$, if any, the blocker: Brazen Borrower, whose "can block
+// only creatures with flying" reads as can't block Creature.withoutFlying.
 bool block_prohibited(Entity blocker, Entity attacker);
+
+// The fewest creatures that may block `attacker` (CR 509.1b; 702.111b, menace: two). A restriction
+// on the whole declaration: no one blocker and attacker can break it, so it is read as the
+// declaration closes.
+size_t minimum_blockers(Entity attacker);
 
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);

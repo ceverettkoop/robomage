@@ -5,6 +5,7 @@
 
 #include "../classes/game.h"  // cur_game, CastWithFlashPermission
 #include "../components/carddata.h"
+#include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/static_ability.h"
@@ -15,8 +16,10 @@
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
+#include "../queries/keywords.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../svar_eval.h"   // evaluate_svar (CantAttack dynamic-X hand count)
 #include "state_manager.h"  // g_active_statics, ActiveStatic
 
@@ -28,6 +31,14 @@ static std::string activation_source_name(Entity source);
 static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card);
 static bool may_play_player_covers(
     StaticAbility::MayPlayPlayer who, Zone::Ownership controller, Zone::Ownership caster);
+static std::string landwalk_subtype(const std::string &kw);
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
+static bool blocked_by_none_this_turn(Entity blocker, Entity attacker);
+static bool blocked_by_none_for_landwalk(Entity blocker, Entity attacker);
+static bool shadow_differs(Entity blocker, Entity attacker);
+static bool flyer_out_of_reach(Entity blocker, Entity attacker);
+static bool protected_from_blocker(Entity blocker, Entity attacker);
+static bool block_static_prohibits(Entity blocker, Entity attacker);
 
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
@@ -266,7 +277,56 @@ bool attack_prohibited(Entity creature_entity) {
     return false;
 }
 
-bool block_prohibited(Entity blocker, Entity attacker) {
+static std::string landwalk_subtype(const std::string &kw) {
+    // "Swampwalk" -> "Swamp", "Forestwalk" -> "Forest", etc.
+    if (kw == "Swampwalk") return "Swamp";
+    if (kw == "Forestwalk") return "Forest";
+    if (kw == "Islandwalk") return "Island";
+    if (kw == "Mountainwalk") return "Mountain";
+    if (kw == "Plainswalk") return "Plains";
+    return "";
+}
+
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype) {
+    for (auto e : battlefield_permanents(zoned_entities(), player))
+        for (auto &t : global_coordinator.GetComponent<Permanent>(e).types)
+            if (t.kind == SUBTYPE && t.name == subtype) return true;
+    return false;
+}
+
+static bool blocked_by_none_this_turn(Entity, Entity attacker) {
+    return global_coordinator.GetComponent<Creature>(attacker).cant_be_blocked_this_turn;
+}
+
+// Landwalk: the attacker can't be blocked while the defending player, who controls the blocker,
+// controls a land of that type (CR 702.14c).
+static bool blocked_by_none_for_landwalk(Entity blocker, Entity attacker) {
+    const Zone::Ownership defending_player = global_coordinator.GetComponent<Permanent>(blocker).controller;
+    for (const auto &kw : global_coordinator.GetComponent<Creature>(attacker).keywords) {
+        const std::string subtype = landwalk_subtype(kw);
+        if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype)) return true;
+    }
+    return false;
+}
+
+// Shadow: creatures with shadow can only be blocked by shadow creatures, and creatures without
+// shadow cannot be blocked by shadow creatures (rule 702.28)
+static bool shadow_differs(Entity blocker, Entity attacker) {
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Shadow") !=
+           creature_has_keyword(global_coordinator.GetComponent<Creature>(blocker), "Shadow");
+}
+
+static bool flyer_out_of_reach(Entity blocker, Entity attacker) {
+    const Creature &cr = global_coordinator.GetComponent<Creature>(blocker);
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Flying") &&
+           !creature_has_keyword(cr, "Flying") && !creature_has_keyword(cr, "Reach");
+}
+
+static bool protected_from_blocker(Entity blocker, Entity attacker) {
+    return has_protection_from(global_coordinator.GetComponent<Creature>(attacker), blocker);
+}
+
+static bool block_static_prohibits(Entity blocker, Entity attacker) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met) continue;
         const StaticAbility &sa = *as.sa();
@@ -279,6 +339,23 @@ bool block_prohibited(Entity blocker, Entity attacker) {
             return true;
     }
     return false;
+}
+
+// A restriction on one blocker and one attacker (CR 509.1b).
+using BlockRestriction = bool (*)(Entity blocker, Entity attacker);
+static const BlockRestriction kBlockRestrictions[] = {
+    blocked_by_none_this_turn, blocked_by_none_for_landwalk, shadow_differs,
+    flyer_out_of_reach,        protected_from_blocker,       block_static_prohibits,
+};
+
+bool block_prohibited(Entity blocker, Entity attacker) {
+    for (BlockRestriction prohibits : kBlockRestrictions)
+        if (prohibits(blocker, attacker)) return true;
+    return false;
+}
+
+size_t minimum_blockers(Entity attacker) {
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Menace") ? 2 : 1;
 }
 
 int land_play_bonus(Zone::Ownership player) {

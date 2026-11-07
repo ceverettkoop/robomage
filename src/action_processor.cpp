@@ -90,9 +90,6 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      Entity chosen_creature);
 static void resume_attack_target(Game &game);
 static void resume_block_target(Game &game);
-static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype, const EntitySet &entities);
-static std::string landwalk_subtype(const std::string &kw);
-static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player, const EntitySet &entities);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
                                             const std::vector<Entity> &attackers);
@@ -773,90 +770,39 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending.choice = NONE;
 }
 
-static bool player_controls_land_subtype(
-    Zone::Ownership player, const std::string &subtype, const EntitySet &entities) {
-    for (auto e : battlefield_permanents(entities, player))
-        for (auto &t : global_coordinator.GetComponent<Permanent>(e).types)
-            if (t.kind == SUBTYPE && t.name == subtype) return true;
-    return false;
-}
-
-static std::string landwalk_subtype(const std::string &kw) {
-    // "Swampwalk" -> "Swamp", "Forestwalk" -> "Forest", etc.
-    if (kw == "Swampwalk") return "Swamp";
-    if (kw == "Forestwalk") return "Forest";
-    if (kw == "Islandwalk") return "Island";
-    if (kw == "Mountainwalk") return "Mountain";
-    if (kw == "Plainswalk") return "Plains";
-    return "";
-}
-
-// True if no creature `defending_player` controls can block `atk` (CR 509.1b): it can't be
-// blocked this turn (Kappa Cannoneer), or it has landwalk and the defending player controls a
-// land of that type (CR 702.14c).
-static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player, const EntitySet &entities) {
-    auto &acr = global_coordinator.GetComponent<Creature>(atk);
-    if (acr.cant_be_blocked_this_turn) return true;
-    for (auto &kw : acr.keywords) {
-        std::string subtype = landwalk_subtype(kw);
-        if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype, entities))
-            return true;
-    }
-    return false;
-}
-
-// The attackers among `attackers` (already filtered by attacker_unblockable) that `blocker`
-// itself may block: flying/reach, shadow and protection are checked per blocker.
+// The attackers among `attackers` that `blocker` may block (CR 509.1b).
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
-    auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
-    bool blocker_can_fly = false;
-    bool blocker_has_shadow = false;
-    for (auto &kw : bcr.keywords) {
-        if (kw == "Flying" || kw == "Reach") blocker_can_fly = true;
-        if (kw == "Shadow") blocker_has_shadow = true;
-    }
-
     std::vector<Entity> result;
-    for (auto atk : attackers) {
-        auto &acr = global_coordinator.GetComponent<Creature>(atk);
-        bool atk_flying = creature_has_keyword(acr, "Flying");
-        bool atk_has_shadow = creature_has_keyword(acr, "Shadow");
-
-        // Shadow: creatures with shadow can only be blocked by shadow creatures,
-        // and creatures without shadow cannot be blocked by shadow creatures (rule 702.28)
-        if (atk_has_shadow != blocker_has_shadow) continue;
-
-        if (atk_flying && !blocker_can_fly) continue;
-        if (has_protection_from(acr, blocker)) continue;
-        if (rules_mod::block_prohibited(blocker, atk)) continue;
-        result.push_back(atk);
-    }
+    for (auto atk : attackers)
+        if (!rules_mod::block_prohibited(blocker, atk)) result.push_back(atk);
     return result;
 }
 
-// 702.111b / 509.1b: a creature with menace can only be blocked by two or more creatures.
-// After blocks are declared, any menace attacker blocked by exactly one creature has an
-// illegal block; the legal resolution is that the lone blocker isn't blocking it. Release
-// such lone blockers (clear is_blocking, and the attacker's is_blocked if it now has none).
+// 702.111b / 509.1b: a creature with menace can only be blocked by two or more creatures
+// (rules_mod::minimum_blockers). After blocks are declared, any such attacker blocked by too few
+// creatures has an illegal block; the legal resolution is that those blockers aren't blocking it.
+// Release them (clear is_blocking, and the attacker's is_blocked as it now has none).
 static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
                                             const std::vector<Entity> &attackers) {
     for (auto atk : attackers) {
         if (!global_coordinator.entity_has_component<Creature>(atk)) continue;
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
-        if (!creature_has_keyword(acr, "Menace")) continue;
+        const size_t needed = rules_mod::minimum_blockers(atk);
+        if (needed < 2) continue;
         std::vector<Entity> blockers;
         for (auto b : eligible) {
             auto &bcr = global_coordinator.GetComponent<Creature>(b);
             if (bcr.is_blocking && bcr.blocking_target.get() == atk) blockers.push_back(b);
         }
-        if (blockers.size() == 1) {
-            auto &bcr = global_coordinator.GetComponent<Creature>(blockers[0]);
+        if (blockers.empty() || blockers.size() >= needed) continue;
+        for (Entity b : blockers) {
+            auto &bcr = global_coordinator.GetComponent<Creature>(b);
             bcr.is_blocking = false;
             bcr.blocking_target = ObjectRef{};
-            acr.is_blocked = false;  // no other blocker assigned this attacker
             game_log("%s cannot block %s alone (menace) — block released.\n",
-                     entity_name(blockers[0]).c_str(), entity_name(atk).c_str());
+                     entity_name(b).c_str(), entity_name(atk).c_str());
         }
+        acr.is_blocked = false;  // no other blocker assigned this attacker
     }
 }
 
@@ -867,15 +813,10 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     if (game.pending.blocker != 0)
         fatal_error("declare_blockers entered with a block-target sub-prompt parked");
 
-    // Collect attackers, and the ones the defending player can block at all
+    // Collect attackers
     std::vector<Entity> attackers;
-    std::vector<Entity> blockable;
-    for (auto entity : orderer->mEntities) {
-        if (!is_attacking_creature(entity)) continue;
-        attackers.push_back(entity);
-        if (!attacker_unblockable(entity, defending_player, orderer->mEntities))
-            blockable.push_back(entity);
-    }
+    for (auto entity : orderer->mEntities)
+        if (is_attacking_creature(entity)) attackers.push_back(entity);
 
     if (attackers.empty()) {
         game_log("No attackers — skipping declare blockers.\n");
@@ -890,7 +831,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (!is_battlefield_permanent(entity, defending_player)) continue;
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
         if (global_coordinator.GetComponent<Permanent>(entity).is_tapped) continue;
-        if (determine_blockable_attackers(entity, blockable).empty()) continue;
+        if (determine_blockable_attackers(entity, attackers).empty()) continue;
         eligible.push_back(entity);
     }
 
@@ -960,7 +901,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         std::string chosen_name = entity_name(chosen);
 
-        auto legal_attackers = determine_blockable_attackers(chosen, blockable);
+        auto legal_attackers = determine_blockable_attackers(chosen, attackers);
         game_log("Select attacker for %s to block:\n", chosen_name.c_str());
         std::vector<LegalAction> blk_tgt_actions;
         for (auto atk_entity : legal_attackers) {
