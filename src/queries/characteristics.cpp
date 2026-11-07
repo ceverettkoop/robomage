@@ -4,6 +4,7 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/creature.h"
+#include "../components/face_down_card.h"
 #include "../components/token.h"
 #include "../coverage.h"
 #include "../svar_eval.h"
@@ -226,8 +227,11 @@ std::vector<std::string> card_names(const CardData &cd) {
 }
 
 std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<FaceDownCard>(e)) return "Face-down creature";
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        // A copy of a face-down object has no name either (CR 707.2).
+        if (perm.name.empty()) return "Nameless creature";
         return perm.is_token ? perm.name + " token" : perm.name;
     }
     if (global_coordinator.entity_has_component<CardData>(e))

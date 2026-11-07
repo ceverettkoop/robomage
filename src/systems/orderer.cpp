@@ -23,6 +23,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/copies.h"
 #include "../queries/entry.h"
+#include "../queries/face_down.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
 #include "../queries/players.h"
@@ -236,7 +237,8 @@ void Orderer::move_object(
             // Layer-6 ability removal (Humility, CR 613.1f): a permanent whose abilities were
             // removed has no triggered abilities, so its own leaves/dies look-back trigger
             // (CR 603.10) must not fire — capture the flag before Permanent is stripped.
-            lki.abilities_removed = p.abilities_removed;
+            // A face-down permanent has none either (CR 708.2).
+            lki.abilities_removed = p.abilities_removed || is_face_down(target);
             lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
         // Snapshot the typed counters (CR 608.2h): an ability that counts counters on its own
@@ -265,9 +267,11 @@ void Orderer::move_object(
                 global_coordinator.entity_has_component<CardData>(target))
                 lki.copied_card = std::make_shared<const CardData>(
                     global_coordinator.GetComponent<CardData>(target));
+            reveal_as_it_leaves(target);
             end_copy_effect(target);
         }
     }
+    if (destination != Zone::BATTLEFIELD) reveal_as_it_leaves(target);
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
@@ -338,8 +342,9 @@ void Orderer::move_object(
     }
 
     // A face-down exiled card that moves anywhere is no longer that hidden object
-    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
-    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
+    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down), and a
+    // face-down spell that resolves stays face down (CR 708.4).
+    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down) || face_down_card(target);
     if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
     // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it.

@@ -32,10 +32,10 @@ struct Zone {
         uint64_t obj_gen = 0;
         Ownership owner = UNKNOWN;
         Ownership controller = UNKNOWN; //only relevant for battlefield
-        // A card exiled FACE DOWN (CR 708 / 701.35 — e.g. The Creation of Avacyn chapter I
-        // "exile it face down"). While face down in exile its characteristics are hidden; a
-        // later effect (a SetState$ TurnFaceUp) turns it face up by clearing this flag. Reset
-        // on every zone change (a card that leaves exile is no longer the face-down object).
+        // Face down (CR 708): a card exiled face down (The Creation of Avacyn chapter I), or a
+        // face-down permanent or spell, which also has a FaceDownCard. Read through is_face_down
+        // (queries/face_down.h) and written there and by the moves of Orderer: a card that moves
+        // is no longer the face-down object, unless a face-down spell becomes a face-down permanent.
         bool is_face_down = false;
         // Counters on this card while it is not a permanent (a permanent's are
         // Permanent::counters): suspend's TIME counters (CR 702.62) and a VOID counter (Dauthi

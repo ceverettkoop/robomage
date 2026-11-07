@@ -53,6 +53,7 @@ enum class SpellOverlay : uint8_t {
     ADVENTURE,  // CR 715: exiled as it resolves, and its caster may play the card from exile
     BESTOW,     // CR 702.103: an Aura with enchant creature, and a creature if it falls off
     PREPARE,    // CR 722.3c: the copy of a prepare spell, which goes nowhere as it leaves the stack
+    FACE_DOWN,  // CR 708.2a: a 2/2 with no text, no name, no subtypes and no mana cost
 };
 
 // One way of casting a card: a row of a menu holds it, and the cast proceeds from it. The rows are

@@ -80,12 +80,10 @@ static bool in_hidden_zone(Entity card) {
 // What `viewer` sees of `card` by the zone rules alone, without a window.
 static bool sees_without_window(Entity card, Zone::Ownership viewer) {
     if (!is_seat(viewer) || !global_coordinator.entity_has_component<Zone>(card)) return true;
+    // CR 708.5: the controller may look at a face-down permanent or spell; a face-down card in any
+    // other zone is seen only through a window (CR 406.3).
+    if (is_face_down(card)) return face_down_card(card) && source_controller(card) == viewer;
     const Zone &z = global_coordinator.GetComponent<Zone>(card);
-    if (is_face_down(card)) {
-        // CR 708.5: the controller may look at a face-down permanent or spell; a face-down card in
-        // any other zone is seen only through a window (CR 406.3).
-        return (z.location == Zone::BATTLEFIELD || z.location == Zone::STACK) && z.controller == viewer;
-    }
     if (is_public_zone(z.location)) return true;
     return (z.location == Zone::HAND || z.location == Zone::SIDEBOARD) && z.owner == viewer;
 }
@@ -344,6 +342,10 @@ bool identity_visible(Entity entity, Zone::Ownership viewer) {
     return sees_without_window(entity, viewer) || in_reveal_window(entity, viewer);
 }
 
+bool characteristics_visible(Entity entity, Zone::Ownership viewer) {
+    return face_down_card(entity) || identity_visible(entity, viewer);
+}
+
 bool order_visible(Zone::ZoneValue zone, Zone::Ownership /*owner*/, Zone::Ownership /*viewer*/) {
     return zone == Zone::STACK || zone == Zone::GRAVEYARD || zone == Zone::EXILE;
 }
@@ -417,6 +419,13 @@ void look_at_cards(const std::vector<Entity> &cards, Zone::Ownership looker) {
 
 void look_at_found_card(Entity card, Zone::Ownership looker) {
     if (is_seat(looker)) open_windows({card}, looker, Window::LOOK, Window::RESOLUTION, 0, false, false);
+}
+
+void reveal_face_down_objects() {
+    std::vector<Entity> objects;
+    for (Entity e : zoned_entities())
+        if (face_down_card(e)) objects.push_back(e);
+    if (!objects.empty()) reveal_cards(objects);
 }
 
 void reveal_until_leaves_stack(Entity card, Entity stack_object) {
@@ -504,6 +513,7 @@ static int physical_card_id(Entity e) {
         if (perm.is_token) return token_card_id(e);
         if (perm.printed_card) return card_name_to_index(perm.printed_card->name);
     }
+    if (const CardData *under = face_down_card(e)) return physical_card_of(card_name_to_index(under->name));
     // A card that has chosen what it enters as, its Permanent still to be built, is its own card.
     if (const EntryInfo *entry = find_entry_info(e))
         if (entry->printed_card) return card_name_to_index(entry->printed_card->name);

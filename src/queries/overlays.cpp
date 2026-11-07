@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "../classes/game.h"
 #include "../components/ability.h"
@@ -20,14 +21,16 @@ static std::shared_ptr<const CardData> combined_halves(const CardData &left, con
 static void on_an_adventure(Entity card, Zone::Ownership caster);
 static bool has_bestow(const CardData &card);
 static void bestow_aura(CardData &face);
+static void no_characteristics_but_2_2(CardData &face);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
-    // kind                   name         variant                                            resolved_to      has           change          resolved         stays  copy
-    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false, false},
-    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell, nullptr,         false, false},
-    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,        on_an_adventure, false, false},
-    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,    nullptr,         true,  false},
-    {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,        nullptr,         false, true},
+    // kind                   name         variant                                            resolved_to      has           change                     resolved         stays  copy   face_down
+    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, false, false},
+    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell,            nullptr,         false, false, false},
+    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,                   on_an_adventure, false, false, false},
+    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,               nullptr,         true,  false, false},
+    {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, true,  false},
+    {SpellOverlay::FACE_DOWN, "face_down", -1,                                                Zone::GRAVEYARD, nullptr,      no_characteristics_but_2_2, nullptr,        true,  false, true},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }
@@ -108,11 +111,33 @@ static void bestow_aura(CardData &face) {
     face.enchant_filter = "Creature";
 }
 
+// CR 708.2a: a face-down object has only what the rules give it, so nothing of a card comes along.
+static void no_characteristics_but_2_2(CardData &face) {
+    face = CardData{};
+    face.types.insert(Type{TYPE, "Creature"});
+    face.types_text = "Creature";
+    face.no_mana_cost = true;
+    face.power = 2;
+    face.toughness = 2;
+}
+
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }
 
 uint32_t spell_overlay_variant_mask(SpellOverlay kind) {
     const int variant = spell_overlay(kind).variant;
     return variant < 0 ? 0 : 1u << variant;
+}
+
+const CardData &face_down_face(SpellOverlay kind) {
+    static const std::vector<CardData> faces = [] {
+        std::vector<CardData> built;
+        for (const SpellOverlayRow &row : kSpellOverlayRows) {
+            built.emplace_back();
+            if (row.face_down) row.change(built.back());
+        }
+        return built;
+    }();
+    return faces[static_cast<size_t>(kind)];
 }
 
 // A characteristic-defining ability's power or toughness: a literal is written on the face, anything

@@ -9,6 +9,7 @@
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/entry_info.h"
+#include "../components/face_down_card.h"
 #include "../components/permanent.h"
 #include "../components/spell.h"
 #include "../coverage.h"
@@ -27,6 +28,8 @@ static void sync_creature(Entity e, const std::set<Type> &types, uint32_t power,
                           const std::vector<std::string> &keywords);
 static void token_becomes_copy(Entity permanent, Permanent &perm, Entity original, const CopyOverlay &overlay,
                                bool until_eot);
+static void face_down_becomes_copy(Permanent &perm, FaceDownCard &under, Entity original, const CopyOverlay &overlay,
+                                   bool until_eot);
 
 // What `overlay` sets on the copied values: a token's or a card's.
 template <typename Values>
@@ -107,7 +110,7 @@ void enter_as_copy(Entity entering, Entity original, const CopyOverlay &overlay)
     const std::string name = card.name;
     card = copied_card(original, overlay);
     coverage_row("enters_as_copy");
-    game_log("%s enters as a copy of %s.\n", name.c_str(), card.name.c_str());
+    game_log("%s enters as a copy of %s.\n", name.c_str(), card.name.empty() ? "a creature with no name" : card.name.c_str());
 }
 
 Token copied_token(Entity original, const CopyOverlay &overlay) {
@@ -186,6 +189,15 @@ void permanent_takes_values(Entity permanent, const CardData &values) {
     sync_creature(permanent, values.types, values.power, values.toughness, values.keywords);
 }
 
+// CR 708.10: what the copy takes on is the card under it, which it shows once turned face up. Its
+// characteristics stay those it has face down.
+static void face_down_becomes_copy(Permanent &perm, FaceDownCard &under, Entity original, const CopyOverlay &overlay,
+                                   bool until_eot) {
+    if (!perm.printed_card) perm.printed_card = under.card;
+    if (until_eot && !perm.copy_eot_card) perm.copy_eot_card = under.card;
+    under.card = std::make_shared<const CardData>(copied_card(original, overlay));
+}
+
 void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, bool until_eot) {
     auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
     if (until_eot) coverage_row("copy_until_eot");
@@ -195,6 +207,11 @@ void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, 
     if (!global_coordinator.entity_has_component<CardData>(permanent)) {
         token_becomes_copy(permanent, perm, original, overlay, until_eot);
         game_log("%s becomes a copy of %s.\n", old_name.c_str(), perm.name.c_str());
+        return;
+    }
+    if (global_coordinator.entity_has_component<FaceDownCard>(permanent)) {
+        face_down_becomes_copy(perm, global_coordinator.GetComponent<FaceDownCard>(permanent), original, overlay, until_eot);
+        game_log("%s becomes a copy of %s, face down.\n", old_name.c_str(), entity_name(original).c_str());
         return;
     }
     CardData &card = global_coordinator.GetComponent<CardData>(permanent);
@@ -233,6 +250,12 @@ void end_copy_until_eot(Entity permanent) {
         game_log("%s is no longer a copy.\n", perm.name.c_str());
     }
     if (!perm.copy_eot_card) return;
+    if (global_coordinator.entity_has_component<FaceDownCard>(permanent)) {
+        global_coordinator.GetComponent<FaceDownCard>(permanent).card = perm.copy_eot_card;
+        if (perm.copy_eot_card == perm.printed_card) perm.printed_card.reset();
+        perm.copy_eot_card.reset();
+        return;
+    }
     CardData &card = global_coordinator.GetComponent<CardData>(permanent);
     card = *perm.copy_eot_card;
     if (perm.copy_eot_card == perm.printed_card) perm.printed_card.reset();

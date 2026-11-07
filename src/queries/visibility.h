@@ -19,6 +19,11 @@
 // are always visible.
 bool identity_visible(Entity entity, Zone::Ownership viewer);
 
+// Whether `viewer` can see what `entity` is where it is, its characteristics: whatever identity they
+// can see, and a face-down permanent or spell, public for what it is face down while the card
+// under it isn't (CR 708.2, 708.6).
+bool characteristics_visible(Entity entity, Zone::Ownership viewer);
+
 // Whether `viewer` can see the order of the cards `owner` has in `zone`: the stack, graveyards and
 // exile keep a public order; a library's order is hidden from everyone (CR 401.2), and hands, the
 // battlefield and the sideboard have none. A library card in one of the viewer's reveal windows
@@ -133,6 +138,8 @@ bool in_reveal_window(Entity card, Zone::Ownership viewer);
 // A reveal to all players while the current resolution needs it (CR 701.20a).
 void reveal_card(Entity card);
 void reveal_cards(const std::vector<Entity> &cards);
+// CR 708.9: at the end of a game, every face-down permanent and spell is revealed to all players.
+void reveal_face_down_objects();
 // A look by `looker` alone while the current resolution needs it (CR 701.20e).
 void look_at_card(Entity card, Zone::Ownership looker);
 void look_at_cards(const std::vector<Entity> &cards, Zone::Ownership looker);

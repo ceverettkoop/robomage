@@ -166,9 +166,8 @@ EFFECT_KIND(CopySpellAbility, "CopySpellAbility", copy_spell_ability)
 // effect_suspend_tick.cpp.
 EFFECT_KIND(SuspendTick, "SuspendTick", suspend_tick)
 // DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
-// turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).
-// Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
-// effect_set_state.cpp.
+// turn the Defined$ card face up (CR 708.3 / 711.8); TurnFaceDown and Transform are its other
+// Mode$ values. See effect_set_state.cpp.
 EFFECT_KIND(SetState, "SetState", set_state)
 // WarpExile (a 2025 keyword; not in the checked-in CR snapshot): the delayed end-step triggered
 // ability set up for a warp-cast permanent (mark_warp_permanent). Exiles ab.source (if it is still

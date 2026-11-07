@@ -33,7 +33,7 @@ struct Permanent {
     // permanent that attacked and stopped being a creature still attacked.
     long attacked_on_turn = -1;
     bool transformed = false;  // true when DFC is showing its back face
-    SpellOverlay overlay = SpellOverlay::NONE;  // what it keeps of its spell (bestowed, CR 702.103b), read through active_face
+    SpellOverlay overlay = SpellOverlay::NONE;  // what it keeps of its spell (bestowed, CR 702.103b), read through active_face, or how it came to lie face down
     bool prepared = false;       // the prepared designation (CR 722.3a)
     ObjectRef prepared_copy;     // the copy of its prepare spell in exile (CR 722.3c), once made
     uint32_t times_transformed = 0;  // transforms since it entered (CR 701.27f stamp)

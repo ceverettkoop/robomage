@@ -217,7 +217,7 @@ inline bool is_planeswalker_permanent(Entity e) {
 
 // Human-readable name for an entity, used in game_log output and action labels. The single
 // shared resolver (do not open-code a CardData/Permanent name ternary at a log site):
-// a battlefield object's Permanent name (a token is tagged " token"), then the name of the
+// a face-down permanent or spell's words for what it is (it has no name, CR 708.2a), a battlefield object's Permanent name (a token is tagged " token"), then the name of the
 // card's active face (on the stack, the half or face cast, CR 709.3b), then a lingering Token component (a token that already left the
 // battlefield keeps only Token), then a standalone ability entity described via its source
 // card ("Sylvan Library's ability") or its effect category, then the last-known name of a

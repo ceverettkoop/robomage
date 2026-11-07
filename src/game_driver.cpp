@@ -24,6 +24,7 @@
 #include "components/damage.h"
 #include "components/effect.h"
 #include "components/entry_info.h"
+#include "components/face_down_card.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/prepared_copy.h"
@@ -34,6 +35,7 @@
 #include "error.h"
 #include "queries/characteristics.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
 #include "queries/zones.h"
 #include "input_logger.h"
 #include "snapshot.h"
@@ -394,6 +396,7 @@ EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Token>();
     global_coordinator.RegisterComponent<EntryInfo>();
     global_coordinator.RegisterComponent<PreparedCopy>();
+    global_coordinator.RegisterComponent<FaceDownCard>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();
@@ -802,6 +805,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // Leave auto-choice mode behind with the game: the between-games sideboard
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
+    reveal_face_down_objects();
     obs_game_end(cur_game.winner);
     // A single game is a whole match (play_bo3_match reports a bo3 match's end).
     if (match_game_number < 0) {

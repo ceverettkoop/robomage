@@ -22,7 +22,7 @@ static void set_object_state(const Ability &ab, Entity subject);
 // DB$ SetState | Mode$ <mode> — change an object's face-up/face-down state (CR 708 / 711.8).
 // The Creation of Avacyn chapter II turns the face-down exiled card face up (Mode$ TurnFaceUp),
 // revealing its real characteristics so the following chapters (and this chapter's own life-loss
-// rider) can read them. Structured so TurnFaceDown (and other state modes) slot in later.
+// rider) can read them; TurnFaceDown turns a permanent face down where it is (CR 708.2a).
 // It acts on the affected objects: Defined$ ExiledWith (the card the source Saga chapter I exiled
 // face down), Defined$ Self (the source) or a target.
 HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, FrameCtx & /*ctx*/) {
@@ -33,19 +33,18 @@ HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, Frame
 
 // Apply `ab`'s Mode$ to `subject`.
 static void set_object_state(const Ability &ab, Entity subject) {
-    auto &z = global_coordinator.GetComponent<Zone>(subject);
-
     if (ab.def->set_state_mode == "TurnFaceUp") {
         if (is_face_down(subject)) {
-            z.is_face_down = false;
+            turn_face_up(subject);
             close_windows_on_face_up(subject);
             obs_face_turned(subject, true);
             game_log("%s is turned face up.\n", entity_name(subject).c_str());
         }
     } else if (ab.def->set_state_mode == "TurnFaceDown") {
-        z.is_face_down = true;
+        const std::string name = entity_name(subject);
+        if (!turn_face_down(subject, SpellOverlay::FACE_DOWN)) return;
         obs_face_turned(subject, false);
-        game_log("%s is turned face down.\n", entity_name(subject).c_str());
+        game_log("%s is turned face down.\n", name.c_str());
     } else if (ab.def->set_state_mode == "Transform") {
         // CR 701.27f: not one that transformed since this ability went on the stack (Delver of
         // Secrets, which its PeekAndReveal has just transformed).

@@ -286,8 +286,8 @@ struct AbilityDef {
     // card the source Saga exiled (is it a Creature?), not board presence. Gated at resolution:
     // on failure the body is skipped but subabilities still chain (The Creation of Avacyn II & III).
     bool condition_on_exiled_with = false;
-    // DB$ SetState | Mode$ <mode>: the state transition to apply. "TurnFaceUp" clears the target's
-    // face-down flag (CR 708.3/711.8). Structured so "TurnFaceDown" (and other modes) can be added.
+    // DB$ SetState | Mode$ <mode>: the state transition to apply: "TurnFaceUp", "TurnFaceDown"
+    // (CR 708.3/711.8), "Transform".
     std::string set_state_mode = "";
     // ExileFaceDown$ True on a ChangeZone | Destination$ Exile: the moved card is exiled FACE DOWN
     // (CR 708). Its Zone::is_face_down flag is set after the move (The Creation of Avacyn I).

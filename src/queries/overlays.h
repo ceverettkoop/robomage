@@ -30,12 +30,19 @@ struct SpellOverlayRow {
         // (CR 702.103e, f) where another Aura would go to the graveyard.
         bool stays_on_the_permanent;
         bool casts_a_copy;  // the object is a copy, not a card: it ceases to exist as it leaves the stack
+        // The object lies face down (queries/face_down.h), and `change` writes the characteristics
+        // it has for it: the way an object came to be face down is a row, so what it is given
+        // that way (CR 708.2) is that row's.
+        bool face_down;
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);
 
 // The cast_variant bit `kind` sets on a menu row and a stack row; 0 for none.
 uint32_t spell_overlay_variant_mask(SpellOverlay kind);
+
+// The characteristics of an object face down as the row of `kind` says, built once.
+const CardData &face_down_face(SpellOverlay kind);
 
 // Gives the parsed `card` the faces of the overlays it has, and a split card its combined
 // characteristics.
