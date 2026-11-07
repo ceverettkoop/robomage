@@ -375,6 +375,18 @@ bool targets_still_legal(const Ability &ab) {
     return is_legal_target(ab, ab.target.get(), ab.controller);
 }
 
+bool every_target_illegal(const Ability &ab) {
+    const bool own = ab.def->valid_tgts != "N_A";
+    if (own && targets_still_legal(ab)) return false;
+    bool chosen = own;
+    for (const Ability *sub : ab.chained_subs()) {
+        if (sub->def->valid_tgts == "N_A" || (sub->target.empty() && sub->targets.empty())) continue;
+        if (targets_still_legal(*sub)) return false;
+        chosen = true;
+    }
+    return chosen;
+}
+
 std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
                                         Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets;

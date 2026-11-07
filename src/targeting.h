@@ -22,6 +22,11 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster);
 // unchosen counts as legal). A target that changed zones since it was chosen is a new object and
 // illegal (CR 400.7).
 bool targets_still_legal(const Ability &ab);
+// CR 608.2b, for a stack object as it resolves: are all its targets, for every instance of the word
+// "target" on it and its chained instructions, illegal? Its own count when it targets, even with
+// none chosen and one required; a chained instruction's count once chosen. False with no target at
+// all. A modal object's modes aren't read: each resolves on its own.
+bool every_target_illegal(const Ability &ab);
 
 // The legal targets for `ability` from `priority_player`'s perspective, in menu order: opponent
 // entities first (opponent player, then opponent's permanents in entity-ID order), then own
