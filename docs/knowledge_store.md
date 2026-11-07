@@ -184,7 +184,7 @@ enter or leave above them and converts between top and bottom.
 | `reorder` | the reordered range becomes one unordered pool, unless the viewer saw the result (then each position is pinned) |
 | `shuffle` | all positions of that library merge into one unordered remainder pool; position facts are dropped; contents facts are kept |
 | `search` | nothing by itself (a look at the whole zone, when there is one, comes as `look`); the cards leave as `zone_move`s, usually followed by a `shuffle` |
-| `cast_from_hidden` / `play_from_hidden` | as `zone_move` to a public zone, or with the face-down flag to the pool below; a reversed face-down cast is a hidden `zone_move` back, which teaches nothing |
+| `cast_from_hidden` / `play_from_hidden` | as `zone_move` to a public zone, or with the face-down flag to the pool below; a reversed face-down cast is a hidden `zone_move` back, which teaches nothing. A cloak's `play_from_hidden` takes the unit at the library position it names into the pool with what is known of it, so a seat that had seen the top keeps it pinned in `k_pool_card` while the `object` row shows no card |
 | `face_down` / `face_up` | a face-down card, in exile, on the battlefield or on the stack, is an anonymous singleton pool (with its source constraint), keyed by its handle; face-up pins it. Any entry face down is a `zone_move` with the face-down flag, with the same pool. A face-down permanent or spell leaving is a `zone_move` naming the card (CR 708.9), which pins the unit; so does the reveal at the end of a game |
 | mulligan (hand to library, shuffle, draw 7, London bottoming) | composed of the rules above |
 | `game_end` / `match_end` | match memory updated; networks reset at the next `game_start` |

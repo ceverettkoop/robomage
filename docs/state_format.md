@@ -106,6 +106,13 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
   `zone_move` shows the card to every viewer, a move to a hidden zone included. At the end of a game
   every face-down permanent and spell left is revealed (`reveal_face_down_objects`: a reveal to all,
   before `game_end`).
+- A card cloaked out of a library (CR 701.58a) opens no window: CR 406.3's look is a rule of exile,
+  and CR 708.5 forbids looking at another player's face-down permanent. Its controller sees it from
+  the moment it is on the battlefield, not before. A seat that knew the top card goes on knowing it
+  by its own record, not by a frame: the other player's `object` row shows no card, whatever that
+  seat saw, and the unit its sidecar held at the top of the library moves to the face-down pool
+  with what it knew (`docs/knowledge_store.md`). A window open at that moment would name the card
+  in the move's event for that seat, and end with the move; no vocab effect cloaks with one open.
 - The snapshot shows exactly the cards in the viewer's windows.
 
 ## 4. Snapshot
@@ -199,8 +206,8 @@ closes the batch with the range.
 | `shuffle` | library owner |
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
 | `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle`. Emitted once the pick is made, per searched hidden zone (a library, a sideboard, another player's hand; a pick from the searcher's own hand, such as a put-back, is no search), with the cards found in that zone; the `look` at the searched zone comes first |
-| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity. A card cast face down (CR 708.4) moves with the face-down flag and no identity for anyone who couldn't see it where it was, and a reversed proposal of one returns it with a `zone_move` that shows none: nothing was revealed |
-| `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is. `face_up` is `SetState`'s `TurnFaceUp` or the special action that turns a morph up (CR 702.37e): the same handle, the card to both seats |
+| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity. A card cast face down (CR 708.4) moves with the face-down flag and no identity for anyone who couldn't see it where it was, and a reversed proposal of one returns it with a `zone_move` that shows none: nothing was revealed. A card cloaked from a library (CR 701.58a) is a `play_from_hidden` with the flag: its position for every viewer, its card for the controller and for a seat that saw it as it moved |
+| `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is. `face_up` is `SetState`'s `TurnFaceUp` or the special action that turns a morph or a cloak up (CR 702.37e, 701.58b): the same handle, the card to both seats |
 | `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
 | `game_end` / `match_end` | game number, winner (or draw); match wins per player. `game_end` is queued when the game's loop ends, after the game's last events; `match_end` after the last `game_end` (a single game is a match of one game) |
 
@@ -266,8 +273,9 @@ built for the viewer drains its queue into `event` / `event_card` / `event_playe
   turn.
 - `reorder` has no engine site (rearrangements are library → library `zone_move`s), and
   `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses; the `--face-down-a/-b`
-  presets enter face down, a created object's `zone_move` with the flag, and a morph is cast face
-  down, a `cast_from_hidden` with the flag and then a `play_from_hidden` from the stack.
+  presets enter face down, a created object's `zone_move` with the flag, a morph is cast face
+  down, a `cast_from_hidden` with the flag and then a `play_from_hidden` from the stack, and a cloak
+  is a `play_from_hidden` from the library with the flag.
 
 ## 6. Handles
 
