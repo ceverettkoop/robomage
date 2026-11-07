@@ -178,6 +178,7 @@ static bool in_pump_zone(Entity pumped, const PumpParams *pp) {
 static std::vector<Entity> pumped_objects(const Ability &ab) {
     if (ab.def->valid_tgts == "N_A" && !ab.def->defined.is(ObjectSpec::DEFAULT))
         return resolve_objects(ab.def->defined, ResolveCtx::of(ab));
+    if (!ab.targets.empty()) return live_entities(ab.targets);
     if (Entity target = ab.target.get()) return {target};
     return {};
 }

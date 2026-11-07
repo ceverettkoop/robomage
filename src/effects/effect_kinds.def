@@ -211,5 +211,8 @@ EFFECT_KIND(Repeat, "Repeat", repeat)
 // "If <condition>, this, else that": resolve TrueSubAbility$ or FalseSubAbility$ (Goblin Welder).
 EFFECT_KIND(Branch, "Branch", branch)
 
+// "Change the target of target spell or ability" (CR 115.7a): pick another for it as this resolves.
+EFFECT_KIND(ChangeTargets, "ChangeTargets", change_targets)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

@@ -4827,7 +4827,7 @@ static bool read_cost_count(const std::string &text, int &count) {
 static bool plain_keyword_modelled(const std::string &keyword) {
     static const char *const kExact[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
         "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Indestructible", "Hexproof", "Shroud", "Flash",
-        "Shadow", "Infect", "Wither", "Exalted", "Daybound", "Nightbound", "Ascend"};
+        "Shadow", "Infect", "Wither", "Exalted", "Daybound", "Nightbound", "Ascend", kCantBlockKeyword};
     static const char *const kPrefix[] = {"Mobilize:", "Protection from ", "Protection:"};
     for (const char *k : kExact)
         if (keyword == k) return true;

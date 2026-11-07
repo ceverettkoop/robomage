@@ -1,0 +1,50 @@
+{
+  "name": "cr514_2_cant_block_ends_with_the_turn",
+  "why": "CR 514.2: \"this turn\" ends: on A's next turn Grizzly Bears may block again.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Goblin Guide"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Untimely Malfunction",
+    "A:mode:can't block",
+    "A:target:Grizzly Bears",
+    "A:target:Done",
+    "A:attack:Goblin Guide",
+    "A:attack:done",
+    "B:play:Island",
+    "B:attack:done",
+    "A:attack:Goblin Guide",
+    "A:attack:done",
+    "B:block:Grizzly Bears"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "No creatures eligible to block",
+    "Grizzly Bears blocks|Grizzly Bears blocking"
+  ]
+}

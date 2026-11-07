@@ -1,0 +1,39 @@
+{
+  "name": "cr115_7_untimely_malfunction_changes_an_abilitys_target",
+  "why": "CR 115.7: the object may be an ability: Mishra's Bauble's, from Player A to Player B, its only other legal target.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:activate:Mishra's Bauble",
+    "B:target:Player A",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Change the target"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "now targets Player B"
+  ]
+}

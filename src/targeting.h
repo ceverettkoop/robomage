@@ -25,6 +25,10 @@ bool targets_still_legal(const Ability &ab);
 // The instructions of a stack object that may hold targets, in the order it lists them: its own,
 // its chained sub-abilities', then each chosen mode's and what that mode chains.
 std::vector<const Ability *> announced_instructions(const Ability &ab);
+std::vector<Ability *> announced_instructions(Ability &ab);
+// How many times an object or player was chosen as a target of stack object `stack_object`, an
+// Aura spell's enchant target included (CR 115.9a).
+int chosen_target_count(Entity stack_object);
 // CR 608.2b, for a stack object as it resolves: are all its targets, for every instance of the word
 // "target" on it, its chained instructions and its chosen modes, illegal? Its own count even with
 // none chosen when one is required; an instruction that chose none and could count for nothing

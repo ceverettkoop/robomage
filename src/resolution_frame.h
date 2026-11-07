@@ -162,10 +162,13 @@ struct TargetSelectRT {
 
 // What a caller asks of the legal target candidates of the pick in flight, read by target_gate.h's
 // rows. `cost_payable`: false when choosing the candidate would leave the object's cost unpayable
-// (a cost reduced only for some targets, CR 601.2f). A pick whose every candidate it refuses offers
+// (a cost reduced only for some targets, CR 601.2f); a pick whose every candidate it refuses offers
 // them all.
 struct TargetPickGate {
     std::function<bool(Entity candidate)> cost_payable;
+    // A target being changed (CR 115.7a): the new one must be another, and not the object changing.
+    Entity changing_from = 0;
+    Entity changing_object = 0;
 };
 
 // The persisted progress of announcing a stack object's modes and targets (run_announce,

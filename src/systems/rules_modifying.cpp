@@ -21,6 +21,7 @@
 #include "../queries/types.h"
 #include "../queries/zones.h"
 #include "../svar_eval.h"   // evaluate_svar (CantAttack dynamic-X hand count)
+#include "../type_constants.h"
 #include "state_manager.h"  // g_active_statics, ActiveStatic
 
 namespace rules_mod {
@@ -347,11 +348,19 @@ static bool block_static_prohibits(Entity blocker, Entity attacker) {
     return false;
 }
 
+// "Can't block this turn" (Untimely Malfunction's KW$ HIDDEN CARDNAME can't block.): a rule of the
+// game until end of turn, not an ability (CR 611.2c): read from the grant, which Humility leaves.
+static bool cant_block_this_turn(Entity blocker, Entity) {
+    const auto &grants = global_coordinator.GetComponent<Creature>(blocker).eot_keywords;
+    return std::find(grants.begin(), grants.end(), kCantBlockKeyword) != grants.end();
+}
+
 // A restriction on one blocker and one attacker (CR 509.1b).
 using BlockRestriction = bool (*)(Entity blocker, Entity attacker);
 static const BlockRestriction kBlockRestrictions[] = {
     blocked_by_none_this_turn, blocked_by_none_for_landwalk, shadow_differs,
     flyer_out_of_reach,        protected_from_blocker,       block_static_prohibits,
+    cant_block_this_turn,
 };
 
 bool block_prohibited(Entity blocker, Entity attacker) {

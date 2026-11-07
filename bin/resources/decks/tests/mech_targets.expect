@@ -10,3 +10,6 @@ row:target_gate:defined_controller
 row:target_gate:leaves_a_target
 row:sharesControllerWith
 effect:Branch
+# ChangeTargets (Untimely Malfunction): a target changed as it resolves, through the same rows.
+effect:ChangeTargets
+row:target_gate:another_target

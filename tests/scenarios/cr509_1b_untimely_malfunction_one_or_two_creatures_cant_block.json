@@ -1,0 +1,43 @@
+{
+  "name": "cr509_1b_untimely_malfunction_one_or_two_creatures_cant_block",
+  "why": "CR 509.1b, 611.2c: Untimely Malfunction's two targets can't block this turn; the Pump reads both, and next turn they can.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Goblin Guide"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Flying Men"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Untimely Malfunction",
+    "A:mode:can't block",
+    "A:target:Grizzly Bears",
+    "A:target:Flying Men",
+    "A:attack:Goblin Guide",
+    "A:attack:done"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "No creatures eligible to block",
+    "Goblin Guide deals 2 damage to Player B"
+  ]
+}

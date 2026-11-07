@@ -1,0 +1,47 @@
+{
+  "name": "cr115_9a_a_spell_that_chose_one_of_two_has_a_single_target",
+  "why": "CR 115.9a: Prismari Charm with one target chosen of its one or two has a single target, and the change gives it another: \"one or two\" doesn't make None a choice.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Prismari Charm"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Prismari Charm",
+    "B:mode:deals 1 damage",
+    "B:target:Grizzly Bears",
+    "B:target:Done",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Change the target",
+    "A:target:Player B"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Prismari Charm now targets Player B",
+    "Prismari Charm deals 1 damage to Player B"
+  ]
+}

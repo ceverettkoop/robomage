@@ -27,6 +27,8 @@ static bool controlled_as_defined(const TargetPick &pick, Entity candidate);
 static const Ability *instruction_answering_to_this_target(const Ability &ab);
 static bool an_instruction_answers_to_this_target(const TargetPick &pick);
 static bool leaves_that_instruction_a_target(const TargetPick &pick, Entity candidate);
+static bool a_target_is_changing(const TargetPick &pick);
+static bool is_another_target(const TargetPick &pick, Entity candidate);
 static bool cost_is_gated(const TargetPick &pick);
 static bool leaves_cost_payable(const TargetPick &pick, Entity candidate);
 
@@ -40,6 +42,8 @@ static const TargetGateRow kTargetGateRows[] = {
     // CR 601.2c: a target an instruction chained to this one has no target to go with isn't offered
     // (Goblin Welder's pair), so a first pick can't leave the second's menu empty.
     {"target_gate:leaves_a_target", true, an_instruction_answers_to_this_target, leaves_that_instruction_a_target},
+    // CR 115.7a: a changed target becomes another legal target (CR 115.5: not the object itself).
+    {"target_gate:another_target", true, a_target_is_changing, is_another_target},
     // CR 601.2f: a cost reduced only for some targets (Mystical Dispute).
     {"target_gate:cost_payable", false, cost_is_gated, leaves_cost_payable},
 };
@@ -92,7 +96,13 @@ static bool leaves_that_instruction_a_target(const TargetPick &pick, Entity cand
     return !target_candidates(chained, pick.orderer, pick.chooser).empty();
 }
 
-static bool cost_is_gated(const TargetPick &pick) { return pick.gate != nullptr; }
+static bool a_target_is_changing(const TargetPick &pick) { return pick.gate && pick.gate->changing_from != 0; }
+
+static bool is_another_target(const TargetPick &pick, Entity candidate) {
+    return candidate != pick.gate->changing_from && candidate != pick.gate->changing_object;
+}
+
+static bool cost_is_gated(const TargetPick &pick) { return pick.gate && pick.gate->cost_payable; }
 
 static bool leaves_cost_payable(const TargetPick &pick, Entity candidate) { return pick.gate->cost_payable(candidate); }
 

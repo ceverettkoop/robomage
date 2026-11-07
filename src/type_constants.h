@@ -14,4 +14,7 @@ const std::string *subtype_entry(const std::string &name);
 // The most words one subtype has (a type line's tokens are matched longest first: CR 205.3m).
 size_t subtype_max_words();
 
+// KW$ HIDDEN CARDNAME can't block.: a Pump's "can't block this turn", shown as a keyword.
+static constexpr const char *kCantBlockKeyword = "HIDDEN CARDNAME can't block.";
+
 #endif /* TYPE_CONSTANTS_H */

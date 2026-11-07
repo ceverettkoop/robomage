@@ -1,0 +1,52 @@
+{
+  "name": "cr115_7f_a_changed_target_keeps_the_division",
+  "why": "CR 115.7f: Fury's trigger with one target divides nothing, but what it holds stays with the new target: 4 to Air Elemental.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Air Elemental",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Fury"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Fury",
+    "B:target:Grizzly Bears",
+    "B:target:Done",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Change the target",
+    "A:target:Air Elemental"
+  ],
+  "max_decisions": 36,
+  "expect": [
+    "Fury deals 4 damage to Air Elemental"
+  ],
+  "expect_not": [
+    "deals 4 damage to Grizzly Bears"
+  ]
+}

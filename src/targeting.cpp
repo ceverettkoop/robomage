@@ -9,6 +9,7 @@
 #include "classes/game.h"
 #include "components/carddata.h"
 #include "components/creature.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
@@ -16,6 +17,7 @@
 #include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
+#include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/keywords.h"
 #include "queries/players.h"
@@ -36,6 +38,7 @@ extern Game cur_game;
 // "Spell.Colorless,Triggered" is one such disjunction. Forward-declared per CLAUDE.md.
 static bool stack_spell_alt_matches(const std::string &alt, Entity cand);
 static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
+static bool single_target_alt_matches(const std::string &alt, Entity cand);
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand);
 static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster);
 static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster);
@@ -98,12 +101,21 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
     return false;
 }
 
+// SpellAbility.singleTarget: a spell or ability with a single target (CR 115.9a): one chosen, however
+// many are legal now.
+static bool single_target_alt_matches(const std::string &, Entity cand) {
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    return chosen_target_count(cand) == 1;
+}
+
 // One kind of stack object TargetType$ names: an alternative containing `name`, the first such row.
 struct StackAlternative {
     const char *name;
     bool (*matches)(const std::string &alt, Entity cand);
 };
 static const StackAlternative kStackAlternatives[] = {
+    {"SpellAbility", single_target_alt_matches},
     {"Activated", stack_ability_alt_matches},
     {"Triggered", stack_ability_alt_matches},
     {"Spell", stack_spell_alt_matches},
@@ -221,7 +233,8 @@ TargetClasses target_classes(const AbilityDef &def) {
     if (vt == "N_A" || vt.empty()) return out;
     if (targets_stack_objects(def)) {
         for (const std::string &alt : split(def.target_type, ',', /*skip_empty=*/true)) {
-            if (alt.find("Activated") != std::string::npos || alt.find("Triggered") != std::string::npos)
+            if (alt.find("Activated") != std::string::npos || alt.find("Triggered") != std::string::npos ||
+                alt.find("SpellAbility") != std::string::npos)
                 out.ability = true;
             if (alt.find("Spell") != std::string::npos) out.spell = true;
         }
@@ -414,6 +427,24 @@ std::vector<const Ability *> announced_instructions(const Ability &ab) {
         for (const Ability *sub : mode.chained_subs()) out.push_back(sub);
     }
     return out;
+}
+
+std::vector<Ability *> announced_instructions(Ability &ab) {
+    std::vector<Ability *> out;
+    for (const Ability *part : announced_instructions(static_cast<const Ability &>(ab)))
+        out.push_back(const_cast<Ability *>(part));
+    return out;
+}
+
+int chosen_target_count(Entity stack_object) {
+    int chosen = 0;
+    if (global_coordinator.entity_has_component<Ability>(stack_object))
+        for (const Ability *part : announced_instructions(global_coordinator.GetComponent<Ability>(stack_object))) {
+            if (part->def->valid_tgts == "N_A") continue;
+            chosen += part->targets.empty() ? !part->target.empty() : static_cast<int>(part->targets.size());
+        }
+    const EntryInfo *entry = find_entry_info(stack_object);
+    return chosen + (entry && !entry->aura_target.empty() ? 1 : 0);
 }
 
 bool every_target_illegal(const Ability &ab) {

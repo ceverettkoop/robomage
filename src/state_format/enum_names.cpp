@@ -302,7 +302,7 @@ static rmstate::EnumTable string_set_table(const char *name, const std::set<std:
 // The evergreen keywords the keyword table always names, in this order after the parser's.
 static constexpr const char *EVERGREEN_KEYWORDS[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
     "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Defender", "Indestructible", "Hexproof", "Shroud", "Ward",
-    "Flash"};
+    "Flash", kCantBlockKeyword};
 
 // The parser's keyword table (parse.cpp's kKeywordTable), then the evergreen keywords
 // (EVERGREEN_KEYWORDS) that the table has no entry for.
