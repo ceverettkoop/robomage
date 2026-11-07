@@ -3593,7 +3593,6 @@ static void read_trigger_valid_card(const std::string &value,
     ability.trigger_valid_card = value;
     if (filter_has_head(value, "Creature"))          t.valid_card_creature     = true;
     if (filter_names_token(value, "nonCreature"))    t.valid_card_non_creature = true;
-    if (filter_has_head(value, "Permanent"))         ability.trigger_valid_card_permanent = true;
     if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
     // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
     // Card.wasCastByYou+Self).
@@ -3616,7 +3615,6 @@ static void read_trigger_valid_card(const std::string &value,
     }
     if (filter_names_token(value, "OppOwn"))         t.valid_card_opp_own      = true;
     if (filter_names_token(value, "OppCtrl"))        t.valid_card_opp_ctrl     = true;
-    if (filter_names_token(value, "Colorless"))      t.valid_card_colorless    = true;
     // "untapped" qualifier — the changing card must be untapped when the trigger checks
     // it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters untapped").
     if (filter_names_token(value, "untapped"))       t.valid_card_untapped     = true;

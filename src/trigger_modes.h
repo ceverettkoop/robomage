@@ -22,7 +22,6 @@ struct TriggerLine {
     bool valid_card_creature = false;
     bool valid_card_self = false;
     bool valid_card_non_creature = false;
-    bool valid_card_colorless = false;
     bool valid_card_untapped = false;
     bool valid_card_opp_own = false;
     bool valid_card_opp_ctrl = false;

@@ -241,41 +241,21 @@ static void bind_phase(const TriggerMode &, const TriggerLine &t, AbilityDef &ab
     }
 }
 
-// Mode$ SpellCast: which cast event the trigger binds to, and its gates on the cast spell.
+// Mode$ SpellCast: which cast event the trigger binds to, and the gates ValidCard$ can't say: who
+// cast it, how many they have cast, an identity and a kicker. match_spell_cast reads the filter whole.
 static void bind_spell_cast(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
-    if (t.valid_card_non_creature) {
-        ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
-    // "Whenever you cast a colorless spell, ..." — Glaring Fleshraker
-    // (Mode$ SpellCast | ValidCard$ Card.Colorless | ValidActivatingPlayer$ You). A plain
-    // SpellCast with a colorless filter on the cast spell; matched at trigger time against the
-    // spell's colorlessness (CR 105.2c). Keyed on the general Colorless tag, not this card.
-    if (t.valid_card_colorless) {
-        ability.trigger_on = mode.event;
-        ability.trigger_valid_card_colorless = true;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
+    // SPELL_CAST is fired AFTER the per-cast spell counters bump, unlike NONCREATURE_SPELL_CAST, so
+    // a count gate sees the current cast.
+    ability.trigger_on = t.valid_card_non_creature && t.cast_count_eq == 0 ? Events::NONCREATURE_SPELL_CAST : mode.event;
+    ability.trigger_valid_player_is_controller = t.player_is_you;
+    // A spell's controller is its caster, which YouCtrl and OppCtrl on a card off the battlefield don't
+    // read.
+    if (t.valid_card_opp_ctrl) ability.trigger_valid_player_is_opponent = true;
     // "whenever you cast your Nth spell" — Cori-Steel Cutter; or "your Nth NONCREATURE spell each
-    // turn" — The Fantasticar. Bind to SPELL_CAST (fired AFTER the per-cast spell counters bump,
-    // unlike NONCREATURE_SPELL_CAST which fires before) so the count gate sees the current cast.
+    // turn" — The Fantasticar, which counts noncreature spells alone.
     if (t.cast_count_eq > 0) {
-        ability.trigger_on = mode.event;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
         ability.trigger_spell_count_eq = t.cast_count_eq;
-        if (t.valid_card_non_creature) {
-            // Count only noncreature spells, and only fire on a noncreature cast (the SPELL_CAST
-            // event carries every spell, so filter the triggering card to noncreature too).
-            ability.trigger_valid_card_non_creature = true;
-            ability.trigger_spell_count_noncreature = true;
-        }
-    }
-    // "Whenever a player casts a spell with mana value equal to ..." — Chalice of the Void
-    // (Mode$ SpellCast | ValidCard$ Card.cmcEQY | ValidActivatingPlayer$ Player). A dynamic
-    // mana-value filter on any player's spell. The cmc match is checked at trigger time.
-    if (!ability.trigger_cmc_expr.empty()) {
-        ability.trigger_on = mode.event;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
+        ability.trigger_spell_count_noncreature = t.valid_card_non_creature;
     }
     // "When you cast this spell, [if it was kicked with its [N] kicker,] ..." — Wastescape
     // Battlemage (Mode$ SpellCast | ValidCard$ Card.Self[+kicked N]). A linked self-cast
@@ -283,20 +263,8 @@ static void bind_spell_cast(const TriggerMode &mode, const TriggerLine &t, Abili
     // restricts it to the source spell; trigger_kicked_index (>0) additionally gates on the
     // Nth kicker having been paid. Handled by the dedicated self-cast SPELL_CAST scan.
     if (t.valid_card_self) {
-        ability.trigger_on = mode.event;
         ability.trigger_only_self = true;
         ability.trigger_kicked_index = t.kicked_index;
-    }
-    // General "whenever you cast a spell, ..." — Paradox Engine
-    // (Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You). A plain, unfiltered
-    // SpellCast trigger that fires on EVERY spell the source's controller casts. None of the
-    // specialized SpellCast bindings above (noncreature/colorless/count/cmc/self) applied, so
-    // bind to SPELL_CAST and gate on the caster being this source's controller. The general
-    // battlefield trigger scan fires it (no extra ValidCard$ filter ⇒ any spell). Keyed on the
-    // bare SpellCast mode, not this card.
-    if (ability.trigger_on == 0) {
-        ability.trigger_on = mode.event;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
     }
 }
 
@@ -307,13 +275,12 @@ static bool card_read_move(const std::string &value, bool) {
            (!filter_names_token(value, "Self") && !filter_names_token(value, "Other"));
 }
 
+// match_spell_cast takes the filter whole, but the gates read YouCtrl, OppCtrl and Self off the whole
+// list.
 static bool card_read_spell_cast(const std::string &value, bool) {
-    // bind_spell_cast binds one gate: a noncreature spell, or a colour or mana value.
-    if (filter_names_token(value, "nonCreature") &&
-        (filter_names_token(value, "Colorless") || value.find("cmc") != std::string::npos))
-        return false;
-    return filter_reads_only(
-        value, {"Card", "Permanent", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
+    return value.find_first_of(",;") == std::string::npos ||
+           (!filter_names_token(value, "YouCtrl") && !filter_names_token(value, "OppCtrl") &&
+            !filter_names_token(value, "Self"));
 }
 
 static bool card_read_drawn(const std::string &value, bool) {
@@ -427,20 +394,19 @@ static bool match_spell_cast(const TriggerEvent &fired) {
         const size_t index = static_cast<size_t>(ab.trigger_kicked_index - 1);
         if (index >= kicked.size() || !kicked[index]) return false;
     }
-    // ValidCard$ Card.nonCreature (The Fantasticar): the cast spell must NOT be a creature spell.
-    if (ab.trigger_valid_card_non_creature && has_spell && type_set_has(effective_types(spell), "Creature"))
-        return false;
-    // ValidCard$ Permanent, ValidSA$ Spell.ManaFromCard.StrictlySelf (The Myriad Pools): a permanent
-    // spell, cast with mana this source made.
-    if (has_spell) {
-        if (ab.trigger_valid_card_permanent && !is_permanent_type_line(effective_types(spell))) return false;
-        if (ab.trigger_mana_from_self &&
-            (!global_coordinator.entity_has_component<Spell>(spell) ||
-                mana_from(global_coordinator.GetComponent<Spell>(spell).chosen.mana_paid, fired.source) == 0))
-            return false;
+    // ValidCard$ on the spell, whatever it names (The Fantasticar's Card.nonCreature, Glaring
+    // Fleshraker's Card.Colorless, The Myriad Pools' Permanent), bar Card.Self's identity.
+    if (has_spell && !ab.trigger_only_self && !ab.trigger_valid_card.empty()) {
+        MatchCtx vctx;
+        vctx.controller = fired.controller;
+        vctx.source = fired.source;
+        if (!card_matches_filter(spell, ab.trigger_valid_card, vctx)) return false;
     }
-    // Colorless filter (Glaring Fleshraker): the cast spell must be colorless (CR 105.2c).
-    if (ab.trigger_valid_card_colorless && has_spell && !is_colorless(spell)) return false;
+    // ValidSA$ Spell.ManaFromCard.StrictlySelf (The Myriad Pools): cast with mana this source made.
+    if (has_spell && ab.trigger_mana_from_self &&
+        (!global_coordinator.entity_has_component<Spell>(spell) ||
+            mana_from(global_coordinator.GetComponent<Spell>(spell).chosen.mana_paid, fired.source) == 0))
+        return false;
     // Spell count filter (Cori-Steel Cutter)
     if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
         Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
@@ -622,6 +588,7 @@ const TriggerMode *trigger_mode_on(EventId event) {
         std::array<const TriggerMode *, 64> rows{};
         for (const TriggerMode &mode : kTriggerModes)
             if (mode.event != 0 && !rows[mode.event]) rows[mode.event] = &mode;
+        rows[Events::NONCREATURE_SPELL_CAST] = rows[Events::SPELL_CAST];  // bind_spell_cast's other event
         return rows;
     }();
     return event < by_event.size() ? by_event[event] : nullptr;
