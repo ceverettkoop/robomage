@@ -121,6 +121,7 @@ static void append_defs(std::vector<CardAbility> &out, const std::vector<const A
     rmstate::AbilityKind kind_override, bool use_override);
 static rmstate::AbilityKind def_kind(const AbilityDef &def);
 static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_object);
+static int copied_card_id(Entity e, const Permanent &perm);
 static const CardData *object_card_data(Entity e);
 static const CardData &object_face(Entity e, const CardData &cd);
 static const CardData *card_definition(int card_id);
@@ -767,6 +768,17 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
     }
 }
 
+// The card a copy effect made permanent `e` a copy of: -1 for no copy, or a copy of a scripted token.
+static int copied_card_id(Entity e, const Permanent &perm) {
+    if (perm.printed_card && global_coordinator.entity_has_component<CardData>(e))
+        return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        const std::string &copied = global_coordinator.GetComponent<Token>(e).copied_card;
+        if (!copied.empty()) return card_name_to_index(copied);
+    }
+    return -1;
+}
+
 // One object row. The characteristic columns are filled only when the viewer can see the
 // object's identity (a face-down object shows only where it is and its public status).
 // `stack_pos` is a stack object's position from the top (0 = top), else -1.
@@ -799,7 +811,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                     (global_coordinator.entity_has_component<Spell>(e) &&
                      global_coordinator.GetComponent<Spell>(e).chosen.back_face()));
     r.u8(transformed ? 1 : 0);
-    r.u16(visible && perm && perm->printed_card && cd ? card_or_none(card_name_to_index(cd->name)) : NONE16);
+    r.u16(visible && perm ? card_or_none(copied_card_id(e, *perm)) : NONE16);
     // The phasing subsystem's flag is read directly: phased-out permanents are included and
     // flagged (state_format.md §6), the one exception to the battlefield accessors' rule.
     r.u8(perm && perm->is_tapped ? 1 : 0)
@@ -899,7 +911,8 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
     }
 
     if (perm) {
-        const int ab_card = cd ? card_name_to_index(cd->name) : card_identity(e, c.viewer);
+        const int copied = copied_card_id(e, *perm);
+        const int ab_card = cd ? card_name_to_index(cd->name) : copied >= 0 ? copied : card_identity(e, c.viewer);
         std::vector<CardAbility> own = cd    ? card_ability_list(*cd)
                                        : tok ? token_ability_list(*tok)
                                              : std::vector<CardAbility>();

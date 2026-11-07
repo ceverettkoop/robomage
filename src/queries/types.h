@@ -91,6 +91,9 @@ inline bool is_basic_land_subtype(const std::string &name) {
 // The nonbasic land types: every land type of CR 205.3i other than the five basic ones.
 const std::vector<std::string> &nonbasic_land_types();
 
+// Is subtype `name` a creature type: none of the artifact, enchantment or land types (CR 205.3g-i)?
+bool is_creature_subtype(const std::string &name);
+
 // A " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") as Type objects, each token
 // classified TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is (all_types /
 // all_subtypes / all_supertypes).

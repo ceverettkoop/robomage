@@ -25,6 +25,7 @@
 #include "queries/affected.h"
 #include "queries/filters.h"
 #include "queries/overlays.h"
+#include "queries/types.h"
 #include "resolution_memory.h"
 #include "str_util.h"
 #include "svar_eval.h"
@@ -112,6 +113,7 @@ static void read_alternative_cost(const std::string &cost_str, AltCost &ac);
 static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken);
 static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
+static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
 // qualifier.
 static const struct {
@@ -1876,6 +1878,30 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
 // Shared by card and token parsing so both compute colorlessness identically: an empty set
 // (no Colors: line) leaves the object's color to be derived from its mana cost (CR 105.2),
 // which for a costless token means colorless.
+// The exceptions a copy effect's params make (CopyOverlay, CR 707.9): a param of a CopyPermanent or
+// Clone is a row here.
+static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value) {
+    if (ability.category != "CopyPermanent" && ability.category != "Clone") return false;
+    CopyOverlay &overlay = ability.copy_overlay;
+    if (key == "GainThisAbility") {
+        overlay.gains_this_ability = (value == "True");
+    } else if (key == "AddKeywords") {
+        overlay.add_keywords = split_keyword_list(value);
+    } else if (key == "AddTypes") {
+        overlay.add_types = parse_added_types(value);
+    } else if (key == "SetCreatureTypes") {
+        overlay.set_creature_types = parse_added_types(value);
+    } else if (key == "SetColor") {
+        overlay.set_colors = parse_colors_field(value);
+    } else if ((key == "SetPower" || key == "SetToughness") && !value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+        overlay.sets_pt = true;
+        (key == "SetPower" ? overlay.power : overlay.toughness) = static_cast<uint32_t>(std::stoi(value));
+    } else {
+        return false;
+    }
+    return true;
+}
+
 static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     std::set<Colors> ret;
     if (colors_field.empty()) return ret;
@@ -2071,10 +2097,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
-    } else if (key == "GainThisAbility") {
-        // GainThisAbility$ True on an AB$ Clone (Thespian's Stage): the in-place copy retains this
-        // very ability ("...except it has this ability."). CR 707.9a. Consumed by become_copy.
-        ability.copy_overlay.gains_this_ability = (value == "True");
+    } else if (read_copy_overlay_param(ability, key, value)) {
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
@@ -2320,9 +2343,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // Enchant keyword is Animate Dead's cosmetic swap (see AbilityDef::animate_keywords).
         for (const std::string &kw : split_keyword_list(value))
             if (kw.rfind("Enchant", 0) != 0) ability.animate_keywords.push_back(kw);
-    } else if (key == "AtEOT" && ability.category == "Animate") {
-        // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack), Exile (Shallow Grave): where it goes at the
-        // next end step. Any other value is an unmodelled param.
+    } else if (key == "AtEOT" && (ability.category == "Animate" || ability.category == "CopyPermanent")) {
+        // AtEOT$ Sacrifice (Sneak Attack, Reflection of Kiki-Jiki's copy), Exile (Shallow Grave):
+        // where it goes at the next end step. Any other value is an unmodelled param.
         if (value == "Sacrifice") {
             ability.at_eot = AtEotMove::SACRIFICE;
         } else if (value == "Exile") {
@@ -2562,7 +2585,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "ReflectProperty") return value == "Is";
     if (key == "Produced")
         return value == "Any" || value.rfind("Combo", 0) == 0 || effects::produced_pips(value) > 0;
-    if (key == "AtEOT") return category == "Animate" || (category == "Token" && value == "ExileCombat");
+    if (key == "AtEOT") return category == "Animate" || category == "CopyPermanent" || (category == "Token" && value == "ExileCombat");
     if (key == "GainControl") return category == "ChangeZone";
     return true;
 }

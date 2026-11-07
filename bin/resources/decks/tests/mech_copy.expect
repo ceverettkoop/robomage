@@ -3,3 +3,8 @@
 row:animate_eot_base_pt
 # The top creature of a graveyard (Shallow Grave), exiled at the next end step.
 row:TopGraveyardCreature
+# A copy's added keyword, its end-step sacrifice, the discard that may stop (Fable of the Mirror-Breaker).
+row:copy_add_keywords
+effect:CopyPermanent
+trigger:Delayed
+category:DISCARD

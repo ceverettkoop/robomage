@@ -38,6 +38,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED_LKI}},
     {"RememberSacrificed", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::SACRIFICED}},
+    {"RememberDiscarded", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::DISCARDED}},
     {"RememberMilled", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::MILLED}},
     {"RememberRevealed", ParamForm::IS_TRUE, EffectKind::None,

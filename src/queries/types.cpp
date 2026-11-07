@@ -18,6 +18,15 @@ bool is_land_subtype(const std::string &name) {
     return false;
 }
 
+bool is_creature_subtype(const std::string &name) {
+    static const std::set<std::string> kOtherTypes = {
+        "Attraction", "Blood", "Bobblehead", "Book", "Clue", "Contraption", "Equipment", "Food", "Fortification",
+        "Gold", "Incubator", "Infinity", "Junk", "Lander", "Map", "Mutagen", "Powerstone", "Spacecraft", "Stone",
+        "Treasure", "Vehicle",
+        "Aura", "Background", "Cartouche", "Case", "Class", "Curse", "Role", "Room", "Rune", "Saga", "Shard", "Shrine"};
+    return kOtherTypes.count(name) == 0 && !is_land_subtype(name);
+}
+
 std::vector<Type> parse_added_types(const std::string &spec) {
     std::vector<Type> out;
     size_t p = 0;

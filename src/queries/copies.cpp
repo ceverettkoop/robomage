@@ -6,8 +6,11 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "characteristics.h"
+#include "keywords.h"
+#include "types.h"
 
 template <typename Values>
 static void apply_copy_overlay(Values &values, const CopyOverlay &overlay);
@@ -19,6 +22,16 @@ static void apply_copy_overlay(Values &values, const CopyOverlay &overlay) {
         values.power = overlay.power;
         values.toughness = overlay.toughness;
     }
+    if (!overlay.add_keywords.empty()) coverage_row("copy_add_keywords");
+    for (const std::string &kw : overlay.add_keywords) add_keyword_instance(values.keywords, kw);
+    values.types.insert(overlay.add_types.begin(), overlay.add_types.end());
+    if (!overlay.set_creature_types.empty()) {
+        coverage_row("copy_set_creature_types");
+        for (auto t = values.types.begin(); t != values.types.end();)
+            t = t->kind == SUBTYPE && is_creature_subtype(t->name) ? values.types.erase(t) : std::next(t);
+        values.types.insert(overlay.set_creature_types.begin(), overlay.set_creature_types.end());
+    }
+    if (!overlay.set_colors.empty()) values.explicit_colors = overlay.set_colors;
 }
 
 Token copied_token(Entity original, const CopyOverlay &overlay) {
@@ -35,6 +48,7 @@ Token copied_token(Entity original, const CopyOverlay &overlay) {
     // Being bestowed isn't a copiable value.
     const CardData &face = transformed ? active_face(original, card) : card;
     tok.name = face.name;
+    tok.copied_card = face.name;
     tok.types = face.types;
     tok.explicit_colors = card_colors(face);
     tok.mana_value = card_mana_value(mana_value_face(card, transformed));

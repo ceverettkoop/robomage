@@ -72,7 +72,6 @@ std::optional<std::string> DecisionView::object_name(size_t row) const {
     int cid = object_.card(row, o_card_);
     if (cid < 0) return std::nullopt;
     const bool back = object_.u(row, o_transformed_) != 0;
-    if (object_.u(row, o_token_)) return cards().name(cid, back);
     const int copy = object_.card(row, o_copy_of_);
     if (copy >= 0) cid = copy;
     return cards().name(cid, back);
@@ -113,9 +112,10 @@ std::optional<std::string> DecisionView::card(size_t i) const {
 
 int DecisionView::object_face_id(size_t row) const {
     int cid = object_.card(row, o_card_);
-    if (cid < 0 || object_.u(row, o_token_)) return cid;
+    if (cid < 0) return cid;
     const int copy = object_.card(row, o_copy_of_);
     if (copy >= 0) cid = copy;
+    if (object_.u(row, o_token_)) return cid;
     return object_.u(row, o_transformed_) ? cards().back_face(cid) : cid;
 }
 

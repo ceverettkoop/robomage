@@ -370,6 +370,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Agatha's Soul Cauldron", 445},
     {"Allosaurus Shepherd", 446},
     {"Shallow Grave", 447},
+    {"Fable of the Mirror-Breaker", 448},
+    {"Reflection of Kiki-Jiki", 449},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -416,6 +418,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"c_2_2_a_robot", "Robot", 920},                                 // Melded Moxite
     {"g_1_1_insect", "Insect", 921},                                 // Springheart Nantuko
     {"bg_1_1_insect", "Insect", 922},                                // Grist, the Hunger Tide
+    {"r_2_2_goblin_shaman_treasure", "Goblin Shaman", 923},          // Fable of the Mirror-Breaker
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

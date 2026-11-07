@@ -33,6 +33,7 @@ struct EffectObjects {
             CLEANED = 1u << 14,           // a Cleanup ran (it has no objects)
             FINISHED = 1u << 15,          // any effect is done (the step reports it)
             PLAYED = 1u << 16,            // the card a Play cast
+            DISCARDED = 1u << 17,         // what a Discard discarded
         };
 };
 

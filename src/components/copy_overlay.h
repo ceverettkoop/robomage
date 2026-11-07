@@ -2,6 +2,12 @@
 #define COPY_OVERLAY_H
 
 #include <cstdint>
+#include <set>
+#include <string>
+#include <vector>
+
+#include "../classes/colors.h"
+#include "types.h"
 
 // The exceptions a copy effect makes to the copying process (CR 707.9): what it sets or adds is
 // part of the copy's copiable values, so a copy of the copy has them too (707.9a, b). One value
@@ -16,6 +22,15 @@ struct CopyOverlay {
     // GainThisAbility$ True (Thespian's Stage: "except it has this ability", 707.9a): the copy keeps
     // the Clone abilities of the permanent that became it.
     bool gains_this_ability = false;
+    // AddKeywords$ (Reflection of Kiki-Jiki: "except it has haste", 707.9a).
+    std::vector<std::string> add_keywords;
+    // AddTypes$ (Mockingbird: "except it's a Bird in addition to its other types", 707.9b).
+    std::vector<Type> add_types;
+    // SetCreatureTypes$ (Lazotep Quarry: "except it's a ... Zombie"): these replace its creature
+    // types, and its other subtypes stay (205.1a).
+    std::vector<Type> set_creature_types;
+    // SetColor$ (Lazotep Quarry: "except it's ... black"): what it is instead of what it copied.
+    std::set<Colors> set_colors;
 };
 
 #endif /* COPY_OVERLAY_H */

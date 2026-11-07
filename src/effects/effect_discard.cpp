@@ -16,6 +16,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
+#include "../resolution_memory.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -27,7 +28,7 @@ namespace effects {
 // Forward declaration (see definition below).
 static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid);
 // `owner` discards each of `cards`, with no choice to make.
-static void discard_cards(const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
+static void discard_cards(Ability &ab, const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
 
 // True if the card entity `e` matches a DiscardValid$ filter spec (Thoughtseize's
 // Card.nonLand, Cabal Therapy's Card.NamedCard, Mox Diamond's Land), matched by the shared filter
@@ -36,11 +37,12 @@ static bool discard_filter_matches(Entity e, const FilterSpec &discard_valid) {
     return discard_valid.empty() || card_matches_filter(e, discard_valid);
 }
 
-static void discard_cards(const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer) {
+static void discard_cards(Ability &ab, const std::vector<Entity> &cards, Zone::Ownership owner, std::shared_ptr<Orderer> orderer) {
     for (Entity card : cards) {
         game_log("%s discards %s\n", player_name(owner).c_str(),
                  global_coordinator.GetComponent<CardData>(card).name.c_str());
         orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+        report_object(ab, EffectObjects::DISCARDED, card);
     }
 }
 
@@ -66,9 +68,9 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // hand"): every card of it, with no reveal and no choice (CR 701.9a).
     if (mode == "Hand") {
         if (ab.def->defined.is(ObjectSpec::EACH_PLAYER))
-            for (Zone::Ownership player : affected_players(ab)) discard_cards(orderer->get_hand(player), player, orderer);
+            for (Zone::Ownership player : affected_players(ab)) discard_cards(ab, orderer->get_hand(player), player, orderer);
         else
-            discard_cards(hand, tgt_owner, orderer);
+            discard_cards(ab, hand, tgt_owner, orderer);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -92,6 +94,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);
             game_log("%s discards %s at random\n", player_name(tgt_owner).c_str(), cd.name.c_str());
             orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+            report_object(ab, EffectObjects::DISCARDED, chosen);
         }
         return HandlerResult::DONE_RUN_SUBS;
     }
@@ -120,7 +123,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         for (auto e : hand)
             if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
         if (valid.empty()) game_log("No matching cards to discard.\n");
-        discard_cards(valid, tgt_owner, orderer);
+        discard_cards(ab, valid, tgt_owner, orderer);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -152,12 +155,21 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
+        // Optional$ True (Fable of the Mirror-Breaker: "you may discard up to two cards"): each pick
+        // may instead end the discarding.
+        if (ab.def->optional_choice) {
+            LegalAction stop(PASS_PRIORITY, std::string("Discard no more"));
+            stop.category = ActionCategory::DISCARD;
+            discard_actions.push_back(stop);
+        }
         int choice = ctx.ask(std::move(discard_actions), chooser, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (static_cast<size_t>(choice) >= valid.size()) break;
         Entity chosen = valid[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         game_log("%s discards %s\n", player_name(tgt_owner).c_str(), cd.name.c_str());
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+        report_object(ab, EffectObjects::DISCARDED, chosen);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

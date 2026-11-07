@@ -45,6 +45,9 @@ struct Token {
     // Mana value of the mana cost a token copy of a card copied (CR 707.2, 202.3); a scripted
     // token has no mana cost, so 0.
     int mana_value = 0;
+    // The card a token copy copied: the face its characteristics came from. Empty for a scripted
+    // token and a copy of one, which keeps its script's name in `script_name`.
+    std::string copied_card;
     // A copy of a preparation card keeps its prepare spell (CR 722.2b) and "enters prepared".
     std::shared_ptr<const CardData> prepare_spell;
     bool enters_prepared = false;

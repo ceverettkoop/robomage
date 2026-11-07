@@ -23,15 +23,16 @@ extern Game cur_game;
 
 namespace effects {
 
-static void put_token_copy(const Token &tok, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer);
+static Entity put_token_copy(const Token &tok, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer);
 
 // Creates the token `tok`, a copy, under `ctrl`'s control.
-static void put_token_copy(const Token &tok, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer) {
+static Entity put_token_copy(const Token &tok, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer) {
     Entity tok_entity = global_coordinator.CreateEntity();
     global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
     global_coordinator.AddComponent(tok_entity, tok);
     orderer->add_to_zone(false, tok_entity, Zone::BATTLEFIELD);
     bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
+    return tok_entity;
 }
 
 // CopyPermanent (Ocelot Pride): "for each token you control that entered this turn, create a
@@ -55,12 +56,16 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
+    // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn"). A
+    // Defined$ Remembered card may sit in any zone (Lazotep Quarry's, in exile): copied_token reads
+    // it there. ValidTgts$ names its target (Reflection of Kiki-Jiki's).
     std::vector<Entity> sources;
-    if (ab.def->defined.is(ObjectSpec::VALID) || ab.def->defined.is(ObjectSpec::ENCHANTED)) {
+    if (ab.def->defined.is(ObjectSpec::VALID) || ab.def->defined.is(ObjectSpec::ENCHANTED) || ab.def->defined.is_remembered()) {
         ResolveCtx copied = ResolveCtx::of(ab);
         copied.controller = ctrl;
         sources = resolve_objects(ab.def->defined, copied);
+    } else if (ab.def->valid_tgts != "N_A") {
+        sources = affected_objects(ab);
     }
 
     // UnlessCost$ (CR 118.12): Springheart Nantuko's "you may pay {1}{G}. If you do, create a token
@@ -80,12 +85,14 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         if (paid != ab.def->unless_switched) return HandlerResult::DONE_RUN_SUBS;
     }
 
+    std::vector<ObjectRef> created;
     for (auto src : sources) {
         Token tok = copied_token(src, ab.def->copy_overlay);
         if (tok.name.empty()) continue;
-        put_token_copy(tok, ctrl, orderer);
+        created.push_back(ObjectRef::of(put_token_copy(tok, ctrl, orderer)));
         game_log("Token copy created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
     }
+    register_at_eot_move(ab, created);
     return paid && ab.def->unless_subs_when_not_paid ? HandlerResult::DONE_NO_SUBS : HandlerResult::DONE_RUN_SUBS;
 }
 
