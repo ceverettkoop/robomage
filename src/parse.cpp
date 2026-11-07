@@ -115,6 +115,7 @@ static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value);
 static void read_static_effect(AbilityDef &ability, const std::string &svar, const std::map<std::string, std::string> &svars);
+static void resolve_clone_bound(AbilityDef &ability, const std::map<std::string, std::string> &svars);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
 // qualifier.
 static const struct {
