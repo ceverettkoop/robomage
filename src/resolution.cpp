@@ -51,7 +51,8 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
-// CR 608.2b: every target of `ab` became illegal; it is removed from the stack without effect.
+// CR 608.2b: every target of `ab` became illegal: a stack object is removed from the stack without
+// effect, and an instruction of one does nothing.
 static void fizzle(const Ability &ab, const FrameCtx &ctx);
 static void prune_illegal_targets(Ability &ab);
 
@@ -359,29 +360,32 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 return ResolveStatus::DONE;
             }
             // Pre-resolve target validity check (CR 608.2b): every targeted effect, a Pump
-            // included, was targeted as it was put on the stack and fizzles here if its target
-            // became illegal (it does NOT retarget). A stack object fizzles only when all its
-            // targets are illegal, whichever of its instructions chose them: with one of a chained
-            // instruction's still legal it resolves, and this instruction alone does nothing
-            // (phase 3).
+            // included, was targeted as it was put on the stack and it does NOT retarget. A stack
+            // object doesn't resolve only when all its targets are illegal, whichever of its
+            // instructions chose them. An instruction with its own targets illegal does nothing
+            // (phase 3), and what is chained to it goes on.
             const bool targets = ab.def->valid_tgts != "N_A";
-            if (ctx.is_stack_object() ? every_target_illegal(ab) : targets && !targets_still_legal(ab)) {
+            const bool own_illegal = targets && !targets_still_legal(ab);
+            if (ctx.is_stack_object() ? every_target_illegal(ab) : own_illegal) {
                 fizzle(ab, ctx);
-                return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+                if (ctx.is_stack_object()) return ResolveStatus::DONE;
             }
-            if (targets) prune_illegal_targets(ab);
-            // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,
-            // its source's Count$ResolvedThisTurn, before its effects read the count (a declined
-            // optional ability, an unmet intervening-if or illegal targets returned above
-            // uncounted, CR 603.4 / 608.2b).
-            count_resolution(ab, ctx.is_stack_object());
-            // RememberTargets/RememberObjects: stash the target(s) so chained
-            // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-            report_targets(ab);
-            apply_memory_ops(ab);
-            if (!ab.replacing_an_event)
-                game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
-                         resolving_log_detail(ab, orderer).c_str());
+            if (targets && !own_illegal) prune_illegal_targets(ab);
+            if (ctx.is_stack_object() || !own_illegal) {
+                // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,
+                // its source's Count$ResolvedThisTurn, before its effects read the count (a declined
+                // optional ability, an unmet intervening-if or illegal targets returned above
+                // uncounted, CR 603.4 / 608.2b).
+                count_resolution(ab, ctx.is_stack_object());
+                // RememberTargets/RememberObjects: stash the target(s) so chained
+                // ChangeType$ Remembered.sameName subabilities can match by name (Surgical
+                // Extraction). An illegal target isn't one of them.
+                if (!own_illegal) report_targets(ab);
+                apply_memory_ops(ab);
+                if (!ab.replacing_an_event)
+                    game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
+                             resolving_log_detail(ab, orderer).c_str());
+            }
             next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
         }  // end of the one-shot (non-resuming) section
 
@@ -418,7 +422,8 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     if (phase == 3) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
-        bool condition_passed = ab.def->valid_tgts == "N_A" || !ctx.is_stack_object() || targets_still_legal(ab);
+        const bool own_illegal = ab.def->valid_tgts != "N_A" && !targets_still_legal(ab);
+        bool condition_passed = !own_illegal;
         if (condition_passed && !ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
         // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you
@@ -450,7 +455,12 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // (matching the pre-refactor early return). Routed to its own
             // phase (7) so a suspension inside a chained sub resumes there —
             // never re-evaluating the condition gates above, which could read
-            // state an earlier sub mutated and diverge.
+            // state an earlier sub mutated and diverge. What is chained to an illegal target finds
+            // nothing of it (CR 608.2b).
+            if (own_illegal) {
+                ab.target = ObjectRef{};
+                ab.targets.clear();
+            }
             next_sub = static_cast<int>(ab.def->repeat_sub_count);
             phase = 7;
         } else {
