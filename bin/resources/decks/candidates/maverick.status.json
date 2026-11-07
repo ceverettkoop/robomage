@@ -1,6 +1,6 @@
 {
  "deck": "maverick",
- "location": "candidates",
+ "location": "league",
  "source": {
   "archetype_id": 128,
   "deck_id": 902701,
@@ -35,6 +35,32 @@
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
    "time": "2026-11-07T01:17:00"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups league/maverick:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_maverick",
+    "out_dir": "ci_out/onboard_maverick"
+   },
+   "inputs": {
+    "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-07T02:00:19"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-07T01:59:19"
   },
   "diff": {
    "detail": {
@@ -108,6 +134,28 @@
    "result": "ok",
    "summary": "Maverick, 1.0% (aggro), 60 main + 15 side",
    "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "0abfced51c37a4e2b7188e6bee3e06bae7d00e1037a92f7475e905f313da9e48",
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-07T01:53:34"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-07T01:53:32"
   }
  }
 }

@@ -17,7 +17,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | elves | Elves | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
 | hogaak | Hogaak | 2.0 | combo | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | designate |
-| maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | implement |
+| maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | designate |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | storm | Storm | 3.0 | combo | 30 | 0 | 0 | 0 | implement |
