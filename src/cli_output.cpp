@@ -322,7 +322,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      Starting life total (default: 20)\n");
     printf("\n  --help, -h          Show this help message\n");
     printf("\nDeck names are filenames without .dk, relative to resources/decks/ under the\n");
-    printf("working directory (run from bin/), e.g. league/ur_delver.\n");
+    printf("working directory (run from bin/), e.g. league/ur_tempo.\n");
     printf("An unrecognized option, or a value-taking option given last with no value, is\n");
     printf("skipped with a warning on stderr.\n");
 }

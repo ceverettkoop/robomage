@@ -350,7 +350,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # vs explore, bo3, three league pairings, knowledge expert, the featurizer on: the actor loop's
 # stages), then rebuilds obj/pgo from scratch with the profile (obj/pgo-profile). Only the engine
 # binary; `make check` does not run it (docs/ci.md, bench).
-PGO_GAMES := league/ur_delver:league/gw_maverick league/bug:league/burn league/reanimator:league/uw_control
+PGO_GAMES := league/ur_tempo:league/eldrazi_aggro league/bug:league/burn league/reanimator:league/uw_control
 pgo:
 	rm -rf obj/pgo $(PGO_PROFILE)
 	$(MAKE) --no-print-directory BUILD=PGO PGO=gen program

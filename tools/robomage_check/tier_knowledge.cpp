@@ -43,11 +43,11 @@ static std::vector<FuzzGame> fuzz_games() {
     };
     static const Row rows[] = {
         {"league/reanimator", "league/uw_control", true, 201, false, true},
-        {"mav", "league/ur_delver", false, 202, false, true},
+        {"mav", "league/ur_tempo", false, 202, false, true},
         {"league/bug", "league/wrb_energy", true, 203, false, false},
-        {"league/wubg_doomsday", "league/bw_dnt", false, 204, true, false},
+        {"league/wubg_doomsday", "league/death_and_taxes", false, 204, true, false},
         {"mav", "league/reanimator", true, 205, false, false},
-        {"league/ur_delver", "league/bug", false, 206, false, false},
+        {"league/ur_tempo", "league/bug", false, 206, false, false},
     };
     std::vector<FuzzGame> out;
     for (const Row &r : rows) {
@@ -72,10 +72,10 @@ static std::vector<KnowledgeSession> sessions() {
             bool closed, selfcheck;
     };
     static const Row rows[] = {
-        {"league/ur_delver", "league/bug", false, 31, false, true},
+        {"league/ur_tempo", "league/bug", false, 31, false, true},
         {"league/reanimator", "league/uw_control", true, 32, false, true},
         {"league/bug", "league/wubg_doomsday", true, 33, true, true},
-        {"league/reanimator", "league/ur_delver", false, 51, true, true},
+        {"league/reanimator", "league/ur_tempo", false, 51, true, true},
         {"league/burn", "mav", false, 52, false, false},
     };
     std::vector<KnowledgeSession> out;

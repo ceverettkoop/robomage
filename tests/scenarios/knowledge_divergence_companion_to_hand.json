@@ -20,7 +20,7 @@
     "Island",
     "Island"
   ],
-  "deck_b": "league/bw_dnt",
+  "deck_b": "league/death_and_taxes",
   "battlefield_b": [
     "Plains",
     "Plains",
@@ -31,7 +31,7 @@
     "B:keep",
     "B:desc:Companion: pay"
   ],
-  "max_decisions": 6,
+  "max_decisions": 15,
   "expect_dump_final": [
     "^A d=\\d+ \\S+ \\S+ known_hand Yorion, Sky Nomad x1$"
   ]

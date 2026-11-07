@@ -1,0 +1,2747 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_death_and_taxes__death_and_taxes.rmlog
+REPLAY MODE: Using embedded decks 'league/death_and_taxes' / 'league/death_and_taxes' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws White Orchid Phantom
+Player A draws Stoneforge Mystic
+Player A draws Wasteland
+Player A draws Pre-War Formalwear
+Player A draws Swords to Plowshares
+Player A draws Skyclave Apparition
+Player A draws Phelia, Exuberant Shepherd
+Player B draws Aether Vial
+Player B draws Skyclave Apparition
+Player B draws Plains
+Player B draws Thalia, Guardian of Thraben
+Player B draws Witch Enchanter
+Player B draws Thalia, Guardian of Thraben
+Player B draws Canoptek Scarab Swarm
+Player A hand:
+Pre-War Formalwear
+Swords to Plowshares
+Skyclave Apparition
+White Orchid Phantom
+Stoneforge Mystic
+Phelia, Exuberant Shepherd
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Thalia, Guardian of Thraben
+Player A draws Plains
+Player A draws Clarion Conqueror
+Player A draws Witch Enchanter
+Player A draws Ghost Quarter
+Player A draws Solitude
+Player A draws Flagstones of Trokair
+Player B hand:
+Aether Vial
+Canoptek Scarab Swarm
+Skyclave Apparition
+Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben
+Witch Enchanter
+Plains
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Witch Enchanter
+Player B draws Swords to Plowshares
+Player B draws Skyclave Apparition
+Player B draws Witch Enchanter
+Player B draws Clarion Conqueror
+Player B draws Plains
+Player B draws Recruiter of the Guard
+Player A hand:
+Clarion Conqueror
+Thalia, Guardian of Thraben
+Solitude
+Witch Enchanter
+Ghost Quarter
+Flagstones of Trokair
+Plains
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Clarion Conqueror
+|   1: Thalia, Guardian of Thraben
+|   2: Solitude
+|   3: Witch Enchanter
+|   4: Ghost Quarter
+|   5: Flagstones of Trokair
+|   6: Plains
+(REPLAY) [T0 | Untap | Player A] Input: 4
+| >> Player A: 4 (Ghost Quarter)
+Player B hand:
+Swords to Plowshares
+Clarion Conqueror
+Skyclave Apparition
+Witch Enchanter
+Witch Enchanter
+Recruiter of the Guard
+Plains
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Ghost Quarter
+Player B draws Aether Vial
+Player B draws Karakas
+Player B draws Phelia, Exuberant Shepherd
+Player B draws Thalia, Guardian of Thraben
+Player B draws Plains
+Player B draws Aether Vial
+Player B hand:
+Aether Vial
+Aether Vial
+Thalia, Guardian of Thraben
+Phelia, Exuberant Shepherd
+Ghost Quarter
+Karakas
+Plains
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 5-card hand.
+Player B: Choose card to put on library bottom (2 remaining):
+| decision 7: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Aether Vial
+|   1: Aether Vial
+|   2: Thalia, Guardian of Thraben
+|   3: Phelia, Exuberant Shepherd
+|   4: Ghost Quarter
+|   5: Karakas
+|   6: Plains
+(REPLAY) [T0 | Untap | Player B] Input: 4
+| >> Player B: 4 (Ghost Quarter)
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 8: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Aether Vial
+|   1: Aether Vial
+|   2: Thalia, Guardian of Thraben
+|   3: Phelia, Exuberant Shepherd
+|   4: Karakas
+|   5: Plains
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Aether Vial)
+
+-------- TURN 1 (Player A) --------
+| decision 9: Player A (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 10: Player A (game 0, turn 0, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Play Flagstones of Trokair
+|   3: Play Plains
+|   4: Cast Solitude (alternate cost)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Witch-Blessed Meadow)
+Player A played Witch-Blessed Meadow
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: pay 3 life so it enters untapped)
+Player A pays 3 life.
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 14: Player A (game 0, turn 0, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 15: Player A (game 0, turn 0, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 16: Player A (game 0, turn 0, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 17: Player A (game 0, turn 0, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 18: Player A (game 0, turn 0, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 2 (Player B) --------
+| decision 19: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Wasteland
+| decision 20: Player A (game 0, turn 1, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Play Wasteland
+|   3: Play Plains
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Karakas)
+Player B played Karakas
+| decision 22: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Aether Vial
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Aether Vial)
+Player B activated Karakas for 1(W)
+Player B casts Aether Vial
+| decision 23: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Aether Vial enters the battlefield
+| decision 24: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 25: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 26: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 27: Player A (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 28: Player A (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 29: Player A (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 30: Player A (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 31: Player A (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 32: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Flagstones of Trokair
+| decision 33: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flagstones of Trokair
+|   2: Play Flagstones of Trokair
+|   3: Play Plains
+|   4: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Flagstones of Trokair)
+Player A played Flagstones of Trokair
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Thalia, Guardian of Thraben)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Flagstones of Trokair for 1(W)
+Player A casts Thalia, Guardian of Thraben
+| decision 36: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Thalia, Guardian of Thraben enters the battlefield
+| decision 37: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 38: Player A (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 39: Player A (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 41: Player A (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 42: Player A (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+Aether Vial triggered
+| decision 43: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 44: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 45: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 46: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 47: Player A (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Meteor Sword
+| decision 48: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 49: Player A (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Plains
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Karakas (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Cast Phelia, Exuberant Shepherd
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Karakas (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thalia, Guardian of Thraben)
+Player B activated Karakas for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Thalia, Guardian of Thraben
+| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 53: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 54: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Thalia, Guardian of Thraben enters the battlefield
+| decision 55: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Solitude (alternate cost))
+| auto: Player A: Exile Clarion Conqueror
+Player A exiles Clarion Conqueror
+Player A casts Solitude
+Solitude enters the battlefield
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 56: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 57: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+|   1: Thalia, Guardian of Thraben
+|   2: Thalia, Guardian of Thraben
+(REPLAY) [T3 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thalia, Guardian of Thraben)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player B gains 2 life (now at 22)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Clarion Conqueror
+| decision 58: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flagstones of Trokair
+|   2: Play Plains
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Flagstones of Trokair)
+Player A played Flagstones of Trokair
+Legend rule: Player A controls 2 copies of Flagstones of Trokair; choose one to keep.
+| decision 59: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Flagstones of Trokair
+|   1: Keep Flagstones of Trokair
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Keep Flagstones of Trokair)
+Flagstones of Trokair is put into the graveyard (legend rule)
+Flagstones of Trokair triggered
+| decision 60: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: use Flagstones of Trokair's triggered ability
+|   1: Accept: use Flagstones of Trokair's triggered ability
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Flagstones of Trokair's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Shadowy Backstreet
+|   2: Plains
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Shadowy Backstreet)
+Player A shuffles their library
+Player A puts Shadowy Backstreet to the battlefield
+Shadowy Backstreet enters tapped.
+Shadowy Backstreet triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Plains
+| decision 62: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Plains on top of library
+|   1: Put Plains into graveyard
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Put Plains into graveyard)
+Player A puts Plains into their graveyard.
+
+--- Declare Attackers (Player A) ---
+| decision 63: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 20 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 6 (Player B) --------
+Aether Vial triggered
+| decision 64: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Karakas (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Phelia, Exuberant Shepherd)
+Player B activated Karakas for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Phelia, Exuberant Shepherd
+| decision 65: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 66: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 68: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Solitude
+| decision 69: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 70: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 71: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Aether Vial
+| decision 72: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Cast Aether Vial
+|   4: Cast Clarion Conqueror
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Aether Vial)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A casts Aether Vial
+Aether Vial enters the battlefield
+| decision 73: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Plains)
+Player A played Plains
+| decision 74: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+
+--- Declare Attackers (Player A) ---
+| decision 75: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+| decision 76: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm blockers
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 18 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+Aether Vial triggered
+| decision 77: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 78: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 79: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Karakas
+| decision 80: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 81: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Karakas (ChangeZone)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Karakas)
+Player B played Karakas
+Legend rule: Player B controls 2 copies of Karakas; choose one to keep.
+| decision 82: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Karakas
+|   1: Keep Karakas
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Karakas)
+Karakas is put into the graveyard (legend rule)
+| decision 83: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Karakas (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 84: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Karakas (ChangeZone))
+Choose target for Karakas:
+| decision 85: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben
+|   1: Phelia, Exuberant Shepherd
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben)
+Targeting choice 0
+Player B's Karakas ability targeting Thalia, Guardian of Thraben is on the stack
+| decision 86: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 87: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Witch-Blessed Meadow
+|   1: Shadowy Backstreet
+|   2: Flagstones of Trokair
+|   3: Karakas
+|   4: Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Witch-Blessed Meadow)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Witch-Blessed Meadow is on the stack
+Resolving ability (category: Destroy)
+Witch-Blessed Meadow is destroyed
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to hand
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 88: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 89: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: Aether Vial
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Aether Vial)
+Targeting choice 1
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Aether Vial is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Aether Vial is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+| decision 90: Player A (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+Aether Vial triggered
+| decision 91: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 92: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 93: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws White Orchid Phantom
+| decision 94: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 95: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Clarion Conqueror
+|   3: Cast White Orchid Phantom
+|   4: Cast Thalia, Guardian of Thraben
+|   5: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Clarion Conqueror)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Clarion Conqueror
+| decision 96: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+Clarion Conqueror enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+Aether Vial triggered
+| decision 97: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 98: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 99: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 100: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 102: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Activate Karakas (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 103: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Shadowy Backstreet
+|   1: Flagstones of Trokair
+|   2: Karakas
+|   3: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Shadowy Backstreet)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Shadowy Backstreet is on the stack
+| decision 104: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Shadowy Backstreet is destroyed
+| decision 105: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 106: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 107: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 108: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 109: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 110: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 111: Player B (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T9 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+Aether Vial triggered
+| decision 112: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 113: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 114: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Phelia, Exuberant Shepherd
+| decision 115: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+(REPLAY) [T10 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Phelia, Exuberant Shepherd
+| decision 116: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 117: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 118: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T10 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Karakas (ChangeZone))
+Choose target for Karakas:
+| decision 119: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd
+|   1: Phelia, Exuberant Shepherd
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd)
+Targeting choice 0
+Player B's Karakas ability targeting Phelia, Exuberant Shepherd is on the stack
+Resolving ability (category: ChangeZone)
+Phelia, Exuberant Shepherd is moved to hand
+
+--- Declare Attackers (Player A) ---
+| decision 120: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Clarion Conqueror [3/3]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Clarion Conqueror [3/3])
+Clarion Conqueror attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Clarion Conqueror -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Clarion Conqueror deals 3 damage to Player B (now at 15 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+Aether Vial triggered
+| decision 121: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 122: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+| decision 123: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws White Orchid Phantom
+| decision 124: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Solitude (alternate cost))
+| auto: Player B: Exile White Orchid Phantom
+Player B exiles White Orchid Phantom
+Player B casts Solitude
+| decision 125: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Solitude enters the battlefield
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 126: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 127: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: No target
+|   1: Clarion Conqueror
+|   2: Phelia, Exuberant Shepherd
+(REPLAY) [T11 | Draw | Player B] Input: 1
+| >> Player B: 1 (Clarion Conqueror)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+| decision 128: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+| decision 129: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Clarion Conqueror is moved to exile
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 18)
+| decision 130: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 131: Player A (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 132: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 133: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 134: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+| decision 135: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 136: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: White Orchid Phantom
+|   2: Thalia, Guardian of Thraben
+|   3: Phelia, Exuberant Shepherd
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (White Orchid Phantom)
+Player A puts White Orchid Phantom to the battlefield
+Choose target for White Orchid Phantom:
+| decision 137: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+|   1: Karakas
+|   2: Flagstones of Trokair
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Karakas)
+Targeting choice 1
+White Orchid Phantom triggered
+| decision 138: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Tap Karakas for (W)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Karakas is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 139: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Plains)
+Player B shuffles their library
+Player B puts Plains to the battlefield
+Plains enters tapped.
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 140: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 141: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: White Orchid Phantom
+|   3: Aether Vial
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (White Orchid Phantom)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 16 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+Choose target for White Orchid Phantom:
+| decision 142: Player A (game 0, turn 11, END_STEP, Player B active)
+| menu:
+|   0: No target
+|   1: Flagstones of Trokair
+(REPLAY) [T11 | End Step | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Destroy: no target chosen
+Resolving ability (category: ChangeZone)
+
+-------- TURN 13 (Player A) --------
+Aether Vial triggered
+| decision 143: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Phelia, Exuberant Shepherd
+| decision 144: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 145: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 146: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 147: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Phelia, Exuberant Shepherd
+| decision 148: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 149: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+
+--- Declare Attackers (Player A) ---
+| decision 150: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  White Orchid Phantom -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 13 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+Aether Vial triggered
+| decision 151: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 152: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T13 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 6).
+| decision 153: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Stoneforge Mystic
+| decision 154: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 155: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Stoneforge Mystic
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Stoneforge Mystic)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Stoneforge Mystic
+| decision 156: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Stoneforge Mystic enters the battlefield
+Stoneforge Mystic triggered
+| decision 157: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Stoneforge Mystic's triggered ability
+|   1: Accept: use Stoneforge Mystic's triggered ability
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Stoneforge Mystic's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 158: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Pre-War Formalwear
+|   2: Lion Sash
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Pre-War Formalwear)
+Player B shuffles their library
+Player B reveals Pre-War Formalwear and puts it to hand
+
+--- Declare Attackers (Player B) ---
+| decision 159: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 160: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: White Orchid Phantom
+|   3: Phelia, Exuberant Shepherd
+|   4: Aether Vial
+|   5: Stoneforge Mystic
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (White Orchid Phantom)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Phelia, Exuberant Shepherd [2/2]
+Your creatures:
+| decision 161: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 14 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+Choose target for White Orchid Phantom:
+| decision 162: Player A (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: No target
+|   1: Flagstones of Trokair
+(REPLAY) [T13 | End Step | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Destroy: no target chosen
+Resolving ability (category: ChangeZone)
+
+-------- TURN 15 (Player A) --------
+Aether Vial triggered
+| decision 163: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Phelia, Exuberant Shepherd
+| decision 164: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+Legend rule: Player A controls 2 copies of Phelia, Exuberant Shepherd; choose one to keep.
+| decision 165: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Keep Phelia, Exuberant Shepherd
+|   1: Keep Phelia, Exuberant Shepherd
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Keep Phelia, Exuberant Shepherd)
+Phelia, Exuberant Shepherd is put into the graveyard (legend rule)
+| decision 166: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 167: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 168: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Plains
+| decision 169: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 170: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Plains)
+Player A played Plains
+| decision 171: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+
+--- Declare Attackers (Player A) ---
+| decision 172: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  White Orchid Phantom -> Player B
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 11 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 16 (Player B) --------
+Aether Vial triggered
+| decision 173: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 174: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T15 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 7).
+| decision 175: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thalia, Guardian of Thraben
+| decision 176: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 177: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thalia, Guardian of Thraben)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Thalia, Guardian of Thraben
+| decision 178: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Thalia, Guardian of Thraben enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 179: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| decision 180: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 181: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: White Orchid Phantom
+|   3: Phelia, Exuberant Shepherd
+|   4: Aether Vial
+|   5: Thalia, Guardian of Thraben
+|   6: Stoneforge Mystic
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (White Orchid Phantom)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Phelia, Exuberant Shepherd [2/2]
+Your creatures:
+| decision 182: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 12 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+Choose target for White Orchid Phantom:
+| decision 183: Player A (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: No target
+|   1: Flagstones of Trokair
+(REPLAY) [T15 | End Step | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Destroy: no target chosen
+Resolving ability (category: ChangeZone)
+
+-------- TURN 17 (Player A) --------
+Aether Vial triggered
+| decision 184: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 185: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+| decision 186: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Pre-War Formalwear
+| decision 187: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 188: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Thalia, Guardian of Thraben
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Thalia, Guardian of Thraben)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Thalia, Guardian of Thraben
+| decision 189: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+Thalia, Guardian of Thraben enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 190: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: White Orchid Phantom [2/2]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom [2/2])
+White Orchid Phantom attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] White Orchid Phantom [2/2] -> Player B
+| decision 191: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] White Orchid Phantom [2/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  White Orchid Phantom -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 192: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: Thalia, Guardian of Thraben
+|   3: Stoneforge Mystic
+|   4: Phelia, Exuberant Shepherd
+|   5: Aether Vial
+|   6: White Orchid Phantom
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Thalia, Guardian of Thraben)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: White Orchid Phantom [2/2]
+  1: Phelia, Exuberant Shepherd [2/2]
+Your creatures:
+| decision 193: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Confirm blockers
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  White Orchid Phantom deals 2 damage to Player B (now at 9 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 7 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+
+-------- TURN 18 (Player B) --------
+Aether Vial triggered
+| decision 194: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 195: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 8).
+| decision 196: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Plains
+| decision 197: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 198: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 199: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 200: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Stoneforge Mystic (ChangeZone))
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B's Stoneforge Mystic ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 201: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Meteor Sword
+|   2: Pre-War Formalwear
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Meteor Sword)
+Player B puts Meteor Sword to the battlefield
+Choose target for Meteor Sword:
+| decision 202: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Aether Vial
+|   1: White Orchid Phantom
+|   2: Thalia, Guardian of Thraben
+|   3: Phelia, Exuberant Shepherd
+|   4: Flagstones of Trokair
+|   5: Plains
+|   6: Plains
+|   7: Meteor Sword
+|   8: Aether Vial
+|   9: Thalia, Guardian of Thraben
+|   10: Stoneforge Mystic
+|   11: Phelia, Exuberant Shepherd
+|   12: Plains
+|   13: Plains
+|   14: Plains
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (White Orchid Phantom)
+Targeting choice 1
+Meteor Sword triggered
+Resolving ability (category: Destroy)
+White Orchid Phantom is destroyed
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 203: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 204: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 205: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: Thalia, Guardian of Thraben
+|   3: Phelia, Exuberant Shepherd
+|   4: Meteor Sword
+|   5: Aether Vial
+|   6: Thalia, Guardian of Thraben
+|   7: Stoneforge Mystic
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Thalia, Guardian of Thraben)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 10 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 8 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+
+-------- TURN 19 (Player A) --------
+Aether Vial triggered
+| decision 206: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 207: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T18 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 6).
+| decision 208: Player A (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Phelia, Exuberant Shepherd
+| decision 209: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Phelia, Exuberant Shepherd
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Phelia, Exuberant Shepherd)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Phelia, Exuberant Shepherd
+| decision 210: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+Legend rule: Player A controls 2 copies of Phelia, Exuberant Shepherd; choose one to keep.
+| decision 211: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Keep Phelia, Exuberant Shepherd
+|   1: Keep Phelia, Exuberant Shepherd
+(REPLAY) [T18 | Draw | Player A] Input: 0
+| >> Player A: 0 (Keep Phelia, Exuberant Shepherd)
+Phelia, Exuberant Shepherd is put into the graveyard (legend rule)
+| decision 212: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 213: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+
+--- Declare Attackers (Player A) ---
+| decision 214: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+| decision 215: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 216: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Meteor Sword
+|   2: Aether Vial
+|   3: Thalia, Guardian of Thraben
+|   4: Stoneforge Mystic
+|   5: Phelia, Exuberant Shepherd
+|   6: Aether Vial
+|   7: Thalia, Guardian of Thraben
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 3
+| >> Player A: 3 (Thalia, Guardian of Thraben)
+Targeting choice 3
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player B (now at 5 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 3 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+
+-------- TURN 20 (Player B) --------
+Aether Vial triggered
+| decision 217: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 218: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T19 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 9).
+| decision 219: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Solitude
+| decision 220: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Solitude (alternate cost))
+| auto: Player B: Exile Pre-War Formalwear
+Player B exiles Pre-War Formalwear
+Player B casts Solitude
+| decision 221: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Solitude enters the battlefield
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 222: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 223: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: No target
+|   1: Thalia, Guardian of Thraben
+|   2: Phelia, Exuberant Shepherd
+|   3: Thalia, Guardian of Thraben
+|   4: Stoneforge Mystic
+|   5: Phelia, Exuberant Shepherd
+(REPLAY) [T19 | Draw | Player B] Input: 1
+| >> Player B: 1 (Thalia, Guardian of Thraben)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+| decision 224: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+| decision 225: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player A gains 2 life (now at 10)
+| decision 226: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 227: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Equip Meteor Sword
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Equip Meteor Sword)
+Choose target for Meteor Sword:
+| decision 228: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben
+|   1: Stoneforge Mystic
+|   2: Phelia, Exuberant Shepherd
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben)
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B's Meteor Sword ability targeting Thalia, Guardian of Thraben is on the stack
+| decision 229: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Resolving ability (category: Attach)
+Equipment attached.
+Thalia, Guardian of Thraben gains 3/3 (always)
+
+--- Declare Attackers (Player B) ---
+| decision 230: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [5/4]
+|   1: Stoneforge Mystic [1/2]
+|   2: Phelia, Exuberant Shepherd [2/2]
+|   3: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [5/4])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [5/4] -> Player A
+| decision 231: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Stoneforge Mystic [1/2])
+Stoneforge Mystic attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [5/4] -> Player A
+  [attacking] Stoneforge Mystic [1/2] -> Player A
+| decision 232: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [5/4] -> Player A
+  [attacking] Stoneforge Mystic [1/2] -> Player A
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Stoneforge Mystic -> Player A
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 233: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: Phelia, Exuberant Shepherd
+|   3: Meteor Sword
+|   4: Aether Vial
+|   5: Thalia, Guardian of Thraben
+|   6: Stoneforge Mystic
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Phelia, Exuberant Shepherd)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Phelia, Exuberant Shepherd is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 5 damage to Player A (now at 5 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Stoneforge Mystic deals 1 damage to Player A (now at 4 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 2 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Phelia, Exuberant Shepherd is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+
+-------- TURN 21 (Player A) --------
+Aether Vial triggered
+| decision 234: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T20 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 235: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T20 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 7).
+| decision 236: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T20 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws White Orchid Phantom
+| decision 237: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T20 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 238: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast White Orchid Phantom
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T20 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast White Orchid Phantom)
+Player A activated Flagstones of Trokair for 1(W)
+Player A activated Plains for 1(W)
+Player A casts White Orchid Phantom
+| decision 239: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+White Orchid Phantom enters the battlefield
+Choose target for White Orchid Phantom:
+| decision 240: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Flagstones of Trokair
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (No target)
+Targeting choice 0
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Destroy: no target chosen
+Resolving ability (category: ChangeZone)
+
+--- Declare Attackers (Player A) ---
+| decision 241: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Phelia, Exuberant Shepherd -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 242: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Meteor Sword
+|   2: Aether Vial
+|   3: Thalia, Guardian of Thraben
+|   4: Stoneforge Mystic
+|   5: Phelia, Exuberant Shepherd
+|   6: Aether Vial
+|   7: White Orchid Phantom
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 3
+| >> Player A: 3 (Thalia, Guardian of Thraben)
+Targeting choice 3
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+Meteor Sword becomes unattached
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Thalia, Guardian of Thraben is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+
+-------- TURN 22 (Player B) --------
+Aether Vial triggered
+| decision 243: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 244: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 10).
+| decision 245: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Disruptor Flute
+| decision 246: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Disruptor Flute
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T21 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Disruptor Flute)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Disruptor Flute
+| decision 247: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Disruptor Flute enters the battlefield
+Choose a card name for Disruptor Flute:
+| decision 248: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Name card: Plains
+|   1: Name card: Aether Vial
+|   2: Name card: Disruptor Flute
+|   3: Name card: Flagstones of Trokair
+|   4: Name card: Ghost Quarter
+|   5: Name card: Karakas
+|   6: Name card: Leyline of the Void
+|   7: Name card: Phelia, Exuberant Shepherd
+|   8: Name card: Recruiter of the Guard
+|   9: Name card: Solitude
+|   10: Name card: Stoneforge Mystic
+|   11: Name card: Swords to Plowshares
+|   12: Name card: Thalia, Guardian of Thraben
+|   13: Name card: Wasteland
+|   14: Name card: White Orchid Phantom
+|   15: Name card: Witch Enchanter
+|   16: Name card: Clarion Conqueror
+|   17: Name card: Deafening Silence
+|   18: Name card: Skyclave Apparition
+|   19: Name card: Wrath of the Skies
+|   20: Name card: Eiganjo, Seat of the Empire
+|   21: Name card: Erode
+|   22: Name card: Canoptek Scarab Swarm
+|   23: Name card: Containment Priest
+|   24: Name card: Damping Sphere
+|   25: Name card: Flickerwisp
+|   26: Name card: Lion Sash
+|   27: Name card: Meteor Sword
+|   28: Name card: Pre-War Formalwear
+|   29: Name card: Shadowy Backstreet
+|   30: Name card: Yorion, Sky Nomad
+(REPLAY) [T21 | Draw | Player B] Input: 14
+| >> Player B: 14 (Name card: White Orchid Phantom)
+Player B names card: White Orchid Phantom
+| decision 249: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 250: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 251: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Stoneforge Mystic [1/2]
+|   2: Phelia, Exuberant Shepherd [2/2]
+|   3: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 252: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Stoneforge Mystic [1/2])
+Stoneforge Mystic attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Stoneforge Mystic [1/2] -> Player A
+| decision 253: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [2/2]
+|   1: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Phelia, Exuberant Shepherd [2/2])
+Phelia, Exuberant Shepherd attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Stoneforge Mystic [1/2] -> Player A
+  [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Stoneforge Mystic -> Player A
+  Phelia, Exuberant Shepherd -> Player A
+Choose target for Phelia, Exuberant Shepherd:
+| decision 254: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: No target
+|   1: Aether Vial
+|   2: White Orchid Phantom
+|   3: Phelia, Exuberant Shepherd
+|   4: Meteor Sword
+|   5: Disruptor Flute
+|   6: Aether Vial
+|   7: Thalia, Guardian of Thraben
+|   8: Stoneforge Mystic
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (White Orchid Phantom)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 0 life)
+--- End First Strike Combat Damage ---
+
+
+Player A has 0 life - Player B wins!
+GAME_RESULT: 1 Player B wins

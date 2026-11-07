@@ -1,0 +1,666 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_burn__ur_tempo.rmlog
+REPLAY MODE: Using embedded decks 'league/burn' / 'league/ur_tempo' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Fiery Islet
+Player A draws Rift Bolt
+Player A draws Rift Bolt
+Player A draws Mountain
+Player A draws Price of Progress
+Player A draws Mountain
+Player A draws Mountain
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Misty Rainforest
+Player B draws Wasteland
+Player B draws Brainstorm
+Player B draws Flow State
+Player B draws Force of Will
+Player A hand:
+Fiery Islet
+Mountain
+Mountain
+Mountain
+Price of Progress
+Rift Bolt
+Rift Bolt
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Flow State
+Brainstorm
+Force of Will
+Mishra's Bauble
+Dragon's Rage Channeler
+Wasteland
+Misty Rainforest
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Fiery Islet
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Play Mountain
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Fiery Islet)
+Player A played Fiery Islet
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Suspend Rift Bolt
+|   2: Suspend Rift Bolt
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Suspend Rift Bolt)
+Player A pays 1 life
+Player A activated Fiery Islet for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Volcanic Island
+| decision 5: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fiery Islet
+|   1: Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Fiery Islet)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Fiery Islet is on the stack
+Resolving ability (category: Destroy)
+Fiery Islet is destroyed
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Chain Lightning
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Daze
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+Resolving ability (category: SuspendCast)
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A casts Rift Bolt targeting Player B
+| decision 14: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player B: Rift Bolt
+Targeting choice 0
+| decision 15: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Exile Flow State
+|   1: Exile Brainstorm
+|   2: Exile Daze
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Exile Flow State)
+Player B pays 1 life
+Player B exiles Flow State
+Player B casts Force of Will targeting Rift Bolt
+Resolving ability (category: Counter)
+Rift Bolt is countered
+Player A draws Chain Lightning
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+|   2: Suspend Rift Bolt
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (19 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A casts Chain Lightning targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at 16 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Preordain
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Preordain
+|   2: Cast Brainstorm
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Preordain)
+Player B activated Volcanic Island for 1(U)
+Player B casts Preordain
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Scry, amount: 2)
+Player B scries 2.
+Scry: looking at Ponder
+Scry: looking at Brainstorm
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Ponder on the bottom of library
+|   3: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Exquisite Firecraft
+| decision 24: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Suspend Rift Bolt
+(REPLAY) [T4 | First Main | Player A] Input: 3
+| >> Player A: 3 (Suspend Rift Bolt)
+Player A activated Mountain for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+| decision 25: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 26: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 27: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Brainstorm
+Player B draws Daze
+Player B draws Volcanic Island
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Ponder
+|   1: Brainstorm
+|   2: Daze
+|   3: Daze
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+|   6: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 29: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Ponder
+|   1: Brainstorm
+|   2: Daze
+|   3: Daze
+|   4: Dragon's Rage Channeler
+|   5: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Ponder)
+Player B puts Ponder to top of library
+Player B draws Ponder
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 32: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Thundering Falls)
+Player B shuffles their library
+Player B puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Volcanic Island
+| decision 33: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Volcanic Island on top of library
+|   1: Put Volcanic Island into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Volcanic Island on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+| decision 34: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Price of Progress
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Price of Progress)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Price of Progress
+| decision 35: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player B: Price of Progress
+Targeting choice 0
+| decision 36: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Return Thundering Falls)
+Player B returns Thundering Falls to hand
+Player B casts Daze targeting Price of Progress
+| decision 37: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 38: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Daze
+|   1: Price of Progress
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Price of Progress)
+Targeting choice 1
+| auto: Player B: Return Volcanic Island
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Price of Progress
+Resolving ability (category: Counter)
+Price of Progress's controller may pay {1} to save it:
+| auto: Player A: Don't pay (Price of Progress is countered)
+Price of Progress is countered
+Counter fizzles
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+Resolving ability (category: SuspendCast)
+| decision 39: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 40: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Player B (15 life)
+|   1: Player A (19 life)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (15 life))
+Targeting choice 0
+Player A casts Rift Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Rift Bolt deals 3 damage to Player B (now at 12 life)
+Player A draws Mountain
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Volcanic Island
+| decision 42: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thundering Falls)
+Player B played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Daze
+| decision 43: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Daze on top of library
+|   1: Put Daze into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Daze on top of library)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Eidolon of the Great Revel
+| decision 44: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Cast Eidolon of the Great Revel
+|   3: Cast Exquisite Firecraft
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Eidolon of the Great Revel)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Eidolon of the Great Revel
+Eidolon of the Great Revel enters the battlefield
+| decision 45: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 46: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Thundering Falls for 1(U)
+Player B casts Brainstorm
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player B (now at 10 life)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Daze
+Player B draws Brainstorm
+Player B draws Chain Lightning
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 47: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Chain Lightning
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+|   6: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 48: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Chain Lightning
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Chain Lightning)
+Player B puts Chain Lightning to top of library
+Player B draws Chain Lightning
+| decision 49: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 50: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+|   2: Cast Ponder
+|   3: Cast Brainstorm
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 51: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (10 life)
+|   2: Eidolon of the Great Revel
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Chain Lightning targeting Player A
+Eidolon of the Great Revel triggered
+| decision 52: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player B: Chain Lightning
+Targeting choice 0
+| decision 53: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Thundering Falls)
+Player B returns Thundering Falls to hand
+Player B casts Daze targeting Chain Lightning
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player B (now at 8 life)
+Resolving ability (category: Counter)
+Chain Lightning's controller may pay {1} to save it:
+| auto: Player B: Don't pay (Chain Lightning is countered)
+Chain Lightning is countered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player B (now at 6 life)
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Chain Lightning
+| decision 54: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+|   2: Cast Exquisite Firecraft
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 55: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (6 life)
+|   1: Player A (19 life)
+|   2: Eidolon of the Great Revel
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (6 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A casts Chain Lightning targeting Player B
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player A (now at 17 life)
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at 3 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| auto: Player B: Don't pay (Chain Lightning is not copied)
+| decision 56: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exquisite Firecraft
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Exquisite Firecraft)
+Choose target for Exquisite Firecraft:
+| decision 57: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Player A (17 life)
+|   2: Eidolon of the Great Revel
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Exquisite Firecraft targeting Player B
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player A (now at 15 life)
+Resolving ability (category: DealDamage, amount: 4)
+Exquisite Firecraft deals 4 damage to Player B (now at -1 life)
+
+Player B has -1 life - Player A wins!
+GAME_RESULT: 1 Player A wins

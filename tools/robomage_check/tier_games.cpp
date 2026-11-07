@@ -499,8 +499,8 @@ void tier_fuzz(const Options &opt, Report &rep) {
 // agents' own featurize and evaluate time per decision (NN-STATS). The decision count is each
 // game's decision log's length.
 void tier_bench(const Options &opt, Report &rep) {
-    const std::vector<std::pair<std::string, std::string>> pairs = {{"league/ur_delver", "league/gw_maverick"},
-        {"league/bug", "league/ur_delver"}, {"league/reanimator", "league/burn"}};
+    const std::vector<std::pair<std::string, std::string>> pairs = {{"league/ur_tempo", "league/eldrazi_aggro"},
+        {"league/bug", "league/ur_tempo"}, {"league/reanimator", "league/burn"}};
     const std::string dir = make_temp_dir(opt.out("bench"), "run_");
     std::vector<BenchStage> stages(4);
     stages[0].label = "engine alone (--replay)";

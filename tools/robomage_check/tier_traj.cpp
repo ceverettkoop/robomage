@@ -64,7 +64,7 @@ static std::vector<TrajGame> traj_games(const rmcheck::Options &opt) {
     const std::string s = std::to_string(opt.seed + 400);
     std::vector<TrajGame> out(4);
     out[0].name = "bo1_omniscient";
-    out[0].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/ur_delver", "--deck-b",
+    out[0].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/ur_tempo", "--deck-b",
         "league/bug", "--game-seed", s, "--trajectory-omniscient"};
     out[0].omniscient = out[0].dump = true;
     out[0].mu_seats = {0};
@@ -75,11 +75,11 @@ static std::vector<TrajGame> traj_games(const rmcheck::Options &opt) {
     out[1].dump = true;
     out[1].mu_seats = {1};
     out[2].name = "concede";
-    out[2].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/burn", "--deck-b", "league/lands",
-        "--bo3", "--game-seed", s, "--play", "A:keep,B:keep,A:concede,A:concede:match"};
+    out[2].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/burn", "--deck-b",
+        "league/lands_top8", "--bo3", "--game-seed", s, "--play", "A:keep,B:keep,A:concede,A:concede:match"};
     out[2].end_reasons = {"concession", "concession"};
     out[3].name = "cap_seat_a";
-    out[3].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/gw_maverick", "--deck-b",
+    out[3].args = {"--agent-a", "random", "--agent-b", "explore", "--deck-a", "league/eldrazi_aggro", "--deck-b",
         "league/uw_control", "--bo3", "--game-seed", s, "--max-decisions", "40", "--trajectory-seats", "A"};
     out[3].seats_ab = false;
     out[3].mu_seats = {0};

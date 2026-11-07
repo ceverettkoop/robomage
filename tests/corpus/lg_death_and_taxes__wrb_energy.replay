@@ -1,0 +1,2627 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_death_and_taxes__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/death_and_taxes' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws White Orchid Phantom
+Player A draws Stoneforge Mystic
+Player A draws Wasteland
+Player A draws Pre-War Formalwear
+Player A draws Swords to Plowshares
+Player A draws Skyclave Apparition
+Player A draws Phelia, Exuberant Shepherd
+Player B draws Amped Raptor
+Player B draws Scrubland
+Player B draws Hexing Squelcher
+Player B draws Goblin Bombardment
+Player B draws Ocelot Pride
+Player B draws Ajani, Nacatl Pariah
+Player B draws Thoughtseize
+Player A hand:
+Pre-War Formalwear
+Swords to Plowshares
+Skyclave Apparition
+White Orchid Phantom
+Stoneforge Mystic
+Phelia, Exuberant Shepherd
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws White Orchid Phantom
+Player A draws Plains
+Player A draws Phelia, Exuberant Shepherd
+Player A draws Plains
+Player A draws Swords to Plowshares
+Player A draws Flagstones of Trokair
+Player A draws Aether Vial
+Player B hand:
+Ajani, Nacatl Pariah
+Amped Raptor
+Goblin Bombardment
+Hexing Squelcher
+Ocelot Pride
+Scrubland
+Thoughtseize
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Plateau
+Player B draws Arid Mesa
+Player B draws Wasteland
+Player B draws Amped Raptor
+Player B draws Swords to Plowshares
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Swords to Plowshares
+Aether Vial
+White Orchid Phantom
+Phelia, Exuberant Shepherd
+Flagstones of Trokair
+Plains
+Plains
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Aether Vial
+|   2: White Orchid Phantom
+|   3: Phelia, Exuberant Shepherd
+|   4: Flagstones of Trokair
+|   5: Plains
+|   6: Plains
+(REPLAY) [T0 | Untap | Player A] Input: 4
+| >> Player A: 4 (Flagstones of Trokair)
+Player B hand:
+Amped Raptor
+Amped Raptor
+Arid Mesa
+Marsh Flats
+Plateau
+Swords to Plowshares
+Wasteland
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Amped Raptor
+|   1: Amped Raptor
+|   2: Arid Mesa
+|   3: Marsh Flats
+|   4: Plateau
+|   5: Swords to Plowshares
+|   6: Wasteland
+(REPLAY) [T0 | Untap | Player B] Input: 2
+| >> Player B: 2 (Arid Mesa)
+
+-------- TURN 1 (Player A) --------
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Plains
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Plains)
+Player A played Plains
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Aether Vial
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Aether Vial)
+Player A activated Plains for 1(W)
+Player A casts Aether Vial
+Aether Vial enters the battlefield
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Thoughtseize
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Plateau
+|   3: Play Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Swords to Plowshares
+  White Orchid Phantom
+  Phelia, Exuberant Shepherd
+  Plains
+Player B chooses a card to discard:
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: White Orchid Phantom
+|   2: Phelia, Exuberant Shepherd
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Phelia, Exuberant Shepherd)
+Player A discards Phelia, Exuberant Shepherd
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 17)
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Aether Vial triggered
+| decision 16: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 17: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 18: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Stoneforge Mystic
+| decision 19: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Plains)
+Player A played Plains
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast White Orchid Phantom
+|   2: Cast Stoneforge Mystic
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast White Orchid Phantom)
+Player A activated Plains for 1(W)
+Player A activated Plains for 1(W)
+Player A casts White Orchid Phantom
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+White Orchid Phantom enters the battlefield
+Choose target for White Orchid Phantom:
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Badlands
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Badlands)
+Targeting choice 1
+White Orchid Phantom triggered
+Resolving ability (category: Destroy)
+Badlands is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 24: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Plains
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Plains)
+Player B shuffles their library
+Player B puts Plains to the battlefield
+Plains enters tapped.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 25: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| auto: Player B: White Orchid Phantom
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B casts Swords to Plowshares targeting White Orchid Phantom
+Resolving ability (category: ChangeZone)
+White Orchid Phantom is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player A gains 2 life (now at 22)
+Player B draws Amped Raptor
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plateau
+|   2: Play Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plateau)
+Player B played Plateau
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Aether Vial triggered
+| decision 27: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 28: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Flagstones of Trokair
+| decision 30: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flagstones of Trokair
+|   2: Cast Stoneforge Mystic
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Stoneforge Mystic)
+Player A activated Plains for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Stoneforge Mystic
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+Stoneforge Mystic enters the battlefield
+Stoneforge Mystic triggered
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: use Stoneforge Mystic's triggered ability
+|   1: Accept: use Stoneforge Mystic's triggered ability
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Stoneforge Mystic's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Meteor Sword
+|   2: Pre-War Formalwear
+|   3: Lion Sash
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Meteor Sword)
+Player A shuffles their library
+Player A reveals Meteor Sword and puts it to hand
+| decision 35: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Flagstones of Trokair
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Flagstones of Trokair)
+Player A played Flagstones of Trokair
+| decision 36: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 37: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 38: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 39: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 41: Player A (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T4 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 42: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Goblin Bombardment
+| decision 43: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Amped Raptor
+|   3: Cast Amped Raptor
+|   4: Cast Amped Raptor
+|   5: Cast Goblin Bombardment
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Plateau for 1(R)
+Player B activated Plains for 1(W)
+Player B casts Amped Raptor
+| decision 45: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+| decision 46: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 47: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Amped Raptor
+|   1: Stoneforge Mystic
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Amped Raptor)
+Targeting choice 0
+Player A activated Flagstones of Trokair for 1(W)
+Player A casts Swords to Plowshares targeting Amped Raptor
+Resolving ability (category: ChangeZone)
+Amped Raptor is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player B gains 2 life (now at 19)
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: DigUntil)
+Player B reveals Cabal Therapy.
+Player B exiles Cabal Therapy.
+Resolving ability (category: Play)
+Player B may cast Cabal Therapy by paying 1 energy rather than its mana cost.
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Cabal Therapy
+|   1: Cast Cabal Therapy
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (22 life)
+|   1: Player B (19 life)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (22 life))
+Targeting choice 0
+Player B pays 1 energy
+Player B casts Cabal Therapy
+Resolving ability (category: Cleanup)
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 50: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Aether Vial
+|   1: Name card: Disruptor Flute
+|   2: Name card: Leyline of the Void
+|   3: Name card: Phelia, Exuberant Shepherd
+|   4: Name card: Recruiter of the Guard
+|   5: Name card: Solitude
+|   6: Name card: Stoneforge Mystic
+|   7: Name card: Swords to Plowshares
+|   8: Name card: Thalia, Guardian of Thraben
+|   9: Name card: White Orchid Phantom
+|   10: Name card: Witch Enchanter
+|   11: Name card: Clarion Conqueror
+|   12: Name card: Deafening Silence
+|   13: Name card: Skyclave Apparition
+|   14: Name card: Wrath of the Skies
+|   15: Name card: Erode
+|   16: Name card: Canoptek Scarab Swarm
+|   17: Name card: Containment Priest
+|   18: Name card: Damping Sphere
+|   19: Name card: Flickerwisp
+|   20: Name card: Lion Sash
+|   21: Name card: Meteor Sword
+|   22: Name card: Pre-War Formalwear
+|   23: Name card: Yorion, Sky Nomad
+(REPLAY) [T5 | First Main | Player B] Input: 21
+| >> Player B: 21 (Name card: Meteor Sword)
+Player B names card: Meteor Sword
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Meteor Sword
+Player A discards Meteor Sword
+| decision 51: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 52: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 53: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flagstones of Trokair
+|   1: Plateau
+|   2: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flagstones of Trokair)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Flagstones of Trokair is on the stack
+Resolving ability (category: Destroy)
+Flagstones of Trokair is destroyed
+Flagstones of Trokair triggered
+| decision 54: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Flagstones of Trokair's triggered ability
+|   1: Accept: use Flagstones of Trokair's triggered ability
+(REPLAY) [T5 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Flagstones of Trokair's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 55: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Shadowy Backstreet
+|   2: Plains
+(REPLAY) [T5 | First Main | Player A] Input: 1
+| >> Player A: 1 (Shadowy Backstreet)
+Player A shuffles their library
+Player A puts Shadowy Backstreet to the battlefield
+Shadowy Backstreet enters tapped.
+Shadowy Backstreet triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Clarion Conqueror
+| decision 56: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Clarion Conqueror on top of library
+|   1: Put Clarion Conqueror into graveyard
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Clarion Conqueror on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Aether Vial triggered
+| decision 57: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 58: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 59: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Clarion Conqueror
+| decision 60: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Clarion Conqueror
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Clarion Conqueror)
+Player A activated Plains for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Clarion Conqueror
+| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+Player A's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
+Clarion Conqueror enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 63: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic [1/2])
+Stoneforge Mystic attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Stoneforge Mystic -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Stoneforge Mystic deals 1 damage to Player B (now at 18 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+Player B draws Thoughtseize
+| decision 64: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Amped Raptor
+|   2: Cast Amped Raptor
+|   3: Cast Goblin Bombardment
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Amped Raptor)
+Player B activated Plateau for 1(R)
+Player B activated Plains for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 3).
+Resolving ability (category: DigUntil)
+Player B reveals Ajani, Nacatl Pariah.
+Player B exiles Ajani, Nacatl Pariah.
+Resolving ability (category: Play)
+Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
+| decision 65: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Ajani, Nacatl Pariah
+|   1: Cast Ajani, Nacatl Pariah
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B pays 2 energy
+Player B casts Ajani, Nacatl Pariah
+Resolving ability (category: Cleanup)
+Ajani, Nacatl Pariah enters the battlefield
+Ajani, Nacatl Pariah triggered
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+| decision 66: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 67: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (22 life)
+|   1: Player B (18 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (22 life))
+Targeting choice 0
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Sacrifice Ajani, Nacatl Pariah
+|   1: Sacrifice Amped Raptor
+|   2: Sacrifice Cat Warrior
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Sacrifice Cat Warrior)
+Player B sacrifices Cat Warrior
+Player B casts Cabal Therapy
+Cat Warrior (token) is put into the graveyard and ceases to exist.
+Ajani, Nacatl Pariah triggered
+| decision 69: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Ajani, Nacatl Pariah's triggered ability
+|   1: Accept: use Ajani, Nacatl Pariah's triggered ability
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Ajani, Nacatl Pariah's triggered ability)
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to exile
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to the battlefield
+Resolving ability (category: Cleanup)
+Ajani, Nacatl Avenger enters transformed.
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 70: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Aether Vial
+|   1: Name card: Disruptor Flute
+|   2: Name card: Leyline of the Void
+|   3: Name card: Phelia, Exuberant Shepherd
+|   4: Name card: Recruiter of the Guard
+|   5: Name card: Solitude
+|   6: Name card: Stoneforge Mystic
+|   7: Name card: Swords to Plowshares
+|   8: Name card: Thalia, Guardian of Thraben
+|   9: Name card: White Orchid Phantom
+|   10: Name card: Witch Enchanter
+|   11: Name card: Clarion Conqueror
+|   12: Name card: Deafening Silence
+|   13: Name card: Skyclave Apparition
+|   14: Name card: Wrath of the Skies
+|   15: Name card: Erode
+|   16: Name card: Canoptek Scarab Swarm
+|   17: Name card: Containment Priest
+|   18: Name card: Damping Sphere
+|   19: Name card: Flickerwisp
+|   20: Name card: Lion Sash
+|   21: Name card: Meteor Sword
+|   22: Name card: Pre-War Formalwear
+|   23: Name card: Yorion, Sky Nomad
+(REPLAY) [T7 | First Main | Player B] Input: 5
+| >> Player B: 5 (Name card: Solitude)
+Player B names card: Solitude
+Resolving ability (category: Discard)
+Player A reveals their hand:
+No matching cards to discard.
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Aether Vial triggered
+| decision 71: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+Player A draws Witch Enchanter
+| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Witch-Blessed Meadow)
+Player A played Witch-Blessed Meadow
+| decision 73: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: pay 3 life so it enters untapped)
+Player A pays 3 life.
+| decision 74: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Companion: pay {3}, put Yorion, Sky Nomad into your hand)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A pays {3} and puts Yorion, Sky Nomad into their hand from outside the game
+
+--- Declare Attackers (Player A) ---
+| decision 75: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Clarion Conqueror [3/3]
+|   1: Stoneforge Mystic [1/2]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Clarion Conqueror [3/3])
+Select target for Clarion Conqueror:
+| decision 76: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (18 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (18 life))
+Clarion Conqueror attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+| decision 77: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic [1/2])
+Select target for Stoneforge Mystic:
+| decision 78: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (18 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (18 life))
+Stoneforge Mystic attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Clarion Conqueror -> Player B
+  Stoneforge Mystic -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+Your creatures:
+| decision 79: Player B (game 0, turn 8, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Confirm blockers
+(REPLAY) [T8 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Clarion Conqueror deals 3 damage to Player B (now at 15 life)
+  Stoneforge Mystic deals 1 damage to Player B (now at 14 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Elegant Parlor
+| decision 80: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Elegant Parlor
+|   2: Cast Amped Raptor
+|   3: Cast Goblin Bombardment
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Plateau for 1(R)
+Player B activated Plains for 1(W)
+Player B casts Amped Raptor
+Amped Raptor enters the battlefield
+Amped Raptor triggered
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 3).
+Resolving ability (category: DigUntil)
+Player B reveals Guide of Souls.
+Player B exiles Guide of Souls.
+Resolving ability (category: Play)
+Player B may cast Guide of Souls by paying 1 energy rather than its mana cost.
+| decision 81: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Do not cast Guide of Souls
+|   1: Cast Guide of Souls
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Guide of Souls)
+Player B pays 1 energy
+Player B casts Guide of Souls
+Resolving ability (category: Cleanup)
+Guide of Souls enters the battlefield
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Elegant Parlor
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Elegant Parlor)
+Player B played Elegant Parlor
+Elegant Parlor enters tapped.
+Elegant Parlor triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Orcish Bowmasters
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Orcish Bowmasters on top of library
+|   1: Put Orcish Bowmasters into graveyard
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Orcish Bowmasters on top of library)
+
+--- Declare Attackers (Player B) ---
+| decision 84: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor [2/1])
+Amped Raptor attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Amped Raptor [2/1] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Amped Raptor -> Player A
+Guide of Souls triggered
+Resolving ability (category: ImmediateTrigger)
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Amped Raptor deals 2 damage to Player A (now at 17 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+--- End Combat Damage ---
+
+
+-------- TURN 11 (Player A) --------
+Aether Vial triggered
+| decision 85: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+Player A draws Karakas
+| decision 86: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Karakas)
+Player A played Karakas
+| decision 87: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Yorion, Sky Nomad
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Yorion, Sky Nomad)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Plains for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A activated Karakas for 1(W)
+Player A casts Yorion, Sky Nomad
+Yorion, Sky Nomad enters the battlefield
+Yorion, Sky Nomad triggered
+Resolving ability (category: ChangeZone)
+| decision 88: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Aether Vial
+|   1: Exile Clarion Conqueror
+|   2: Exile Stoneforge Mystic
+|   3: Done (exile no more)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Aether Vial)
+Player A exiles Aether Vial
+| decision 89: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Clarion Conqueror
+|   1: Exile Stoneforge Mystic
+|   2: Done (exile no more)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Clarion Conqueror)
+Player A exiles Clarion Conqueror
+| decision 90: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Stoneforge Mystic
+|   1: Done (exile no more)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Stoneforge Mystic)
+Player A exiles Stoneforge Mystic
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to attack.
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Aether Vial is moved to the battlefield
+Clarion Conqueror is moved to the battlefield
+Stoneforge Mystic is moved to the battlefield
+Resolving ability (category: Cleanup)
+Stoneforge Mystic triggered
+| decision 91: Player A (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Decline: use Stoneforge Mystic's triggered ability
+|   1: Accept: use Stoneforge Mystic's triggered ability
+(REPLAY) [T10 | End Step | Player A] Input: 1
+| >> Player A: 1 (Accept: use Stoneforge Mystic's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 92: Player A (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Pre-War Formalwear
+|   2: Lion Sash
+(REPLAY) [T10 | End Step | Player A] Input: 1
+| >> Player A: 1 (Pre-War Formalwear)
+Player A shuffles their library
+Player A reveals Pre-War Formalwear and puts it to hand
+
+-------- TURN 12 (Player B) --------
+Player B draws Orcish Bowmasters
+| decision 93: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Goblin Bombardment
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Goblin Bombardment)
+Player B activated Elegant Parlor for 1(R)
+Player B activated Plains for 1(W)
+Player B casts Goblin Bombardment
+Goblin Bombardment enters the battlefield
+| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 95: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 96: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Amped Raptor [2/1]
+|   2: Guide of Souls [1/2]
+|   3: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 3
+| >> Player B: 3 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 97: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 98: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 99: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 100: Player B (game 0, turn 11, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T11 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 13 (Player A) --------
+Aether Vial triggered
+| decision 101: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 103: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 104: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 105: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Recruiter of the Guard
+| decision 106: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 107: Player B (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 108: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pre-War Formalwear
+|   2: Cast Recruiter of the Guard
+|   3: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Pre-War Formalwear)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Pre-War Formalwear
+| decision 109: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 110: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Pre-War Formalwear enters the battlefield
+Choose target for Pre-War Formalwear:
+| auto: Player A: Phelia, Exuberant Shepherd
+Targeting choice 0
+Pre-War Formalwear triggered
+| decision 111: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 112: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Phelia, Exuberant Shepherd is moved to the battlefield
+Resolving ability (category: Attach)
+Equipment will attach once the creature finishes entering.
+Resolving ability (category: Cleanup)
+Equipment attached.
+Phelia, Exuberant Shepherd gains 2/2 Vigilance (always)
+| decision 113: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 114: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 115: Player A (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 116: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 117: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Clarion Conqueror [3/3]
+|   1: Stoneforge Mystic [1/2]
+|   2: Yorion, Sky Nomad [4/5]
+|   3: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Clarion Conqueror [3/3])
+Select target for Clarion Conqueror:
+| decision 118: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Clarion Conqueror attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+| decision 119: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic [1/2])
+Select target for Stoneforge Mystic:
+| decision 120: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Stoneforge Mystic attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+| decision 121: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 122: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Yorion, Sky Nomad attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Yorion, Sky Nomad [4/5] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Clarion Conqueror -> Player B
+  Stoneforge Mystic -> Player B
+  Yorion, Sky Nomad -> Player B
+| decision 123: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 124: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Yorion, Sky Nomad [4/5]
+Your creatures:
+| decision 125: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Amped Raptor [2/1]
+|   2: Guide of Souls [1/2]
+|   3: Confirm blockers
+(REPLAY) [T12 | Declare Blockers | Player B] Input: 3
+| >> Player B: 3 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 126: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 127: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Clarion Conqueror deals 3 damage to Player B (now at 11 life)
+  Stoneforge Mystic deals 1 damage to Player B (now at 10 life)
+  Yorion, Sky Nomad deals 4 damage to Player B (now at 6 life)
+--- End Combat Damage ---
+
+| decision 128: Player A (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 129: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 130: Player A (game 0, turn 12, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 131: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 132: Player A (game 0, turn 12, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 133: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 134: Player A (game 0, turn 12, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T12 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 135: Player B (game 0, turn 12, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T12 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 14 (Player B) --------
+| decision 136: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 137: Player A (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Guide of Souls
+| decision 138: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 139: Player A (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 140: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Guide of Souls
+|   2: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Guide of Souls)
+Player B activated Plains for 1(W)
+Player B casts Guide of Souls
+| decision 141: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 142: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Guide of Souls enters the battlefield
+Guide of Souls triggered
+| decision 143: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 144: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 7)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 3).
+| decision 145: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 146: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 147: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 148: Player A (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 149: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Amped Raptor [2/1]
+|   2: Guide of Souls [1/2]
+|   3: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 3
+| >> Player B: 3 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 150: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 151: Player A (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 152: Player B (game 0, turn 13, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 153: Player A (game 0, turn 13, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 154: Player B (game 0, turn 13, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 155: Player A (game 0, turn 13, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 156: Player B (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T13 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 157: Player A (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T13 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 15 (Player A) --------
+Aether Vial triggered
+| decision 158: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 159: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 160: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 161: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 162: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Recruiter of the Guard
+| decision 163: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 164: Player B (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 165: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Recruiter of the Guard
+|   2: Cast Recruiter of the Guard
+|   3: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Recruiter of the Guard)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Recruiter of the Guard
+| decision 166: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 167: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Recruiter of the Guard enters the battlefield
+Recruiter of the Guard triggered
+| decision 168: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 169: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 170: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: use Recruiter of the Guard's triggered ability
+|   1: Accept: use Recruiter of the Guard's triggered ability
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Recruiter of the Guard's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 171: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Flickerwisp
+|   2: Lion Sash
+|   3: Canoptek Scarab Swarm
+|   4: Skyclave Apparition
+|   5: White Orchid Phantom
+|   6: Thalia, Guardian of Thraben
+|   7: Solitude
+|   8: Stoneforge Mystic
+|   9: Witch Enchanter
+|   10: Recruiter of the Guard
+|   11: Phelia, Exuberant Shepherd
+(REPLAY) [T14 | First Main | Player A] Input: 7
+| >> Player A: 7 (Solitude)
+Player A shuffles their library
+Player A reveals Solitude and puts it to hand
+| decision 172: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Solitude (alternate cost))
+| auto: Player A: Exile Recruiter of the Guard
+Player A exiles Recruiter of the Guard
+Player A casts Solitude
+| decision 173: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 174: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Solitude enters the battlefield
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 175: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 176: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Amped Raptor
+|   2: Amped Raptor
+|   3: Guide of Souls
+|   4: Guide of Souls
+|   5: Clarion Conqueror
+|   6: Stoneforge Mystic
+|   7: Recruiter of the Guard
+|   8: Phelia, Exuberant Shepherd
+|   9: Yorion, Sky Nomad
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Amped Raptor)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+| decision 177: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 178: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+| decision 179: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 180: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Amped Raptor is moved to exile
+Resolving ability (category: GainLife, amount: 2)
+Player B gains 2 life (now at 9)
+| decision 181: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 182: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 183: Player A (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 184: Player B (game 0, turn 14, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 185: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Clarion Conqueror [3/3]
+|   1: Stoneforge Mystic [1/2]
+|   2: Phelia, Exuberant Shepherd [4/4]
+|   3: Yorion, Sky Nomad [4/5]
+|   4: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Clarion Conqueror [3/3])
+Select target for Clarion Conqueror:
+| decision 186: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (9 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (9 life))
+Clarion Conqueror attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+| decision 187: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Phelia, Exuberant Shepherd [4/4]
+|   2: Yorion, Sky Nomad [4/5]
+|   3: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic [1/2])
+Select target for Stoneforge Mystic:
+| decision 188: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (9 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (9 life))
+Stoneforge Mystic attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+| decision 189: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [4/4]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [4/4])
+Select target for Phelia, Exuberant Shepherd:
+| decision 190: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (9 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (9 life))
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
+| decision 191: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 192: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (9 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (9 life))
+Yorion, Sky Nomad attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
+  [attacking] Yorion, Sky Nomad [4/5] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Clarion Conqueror -> Player B
+  Stoneforge Mystic -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+  Yorion, Sky Nomad -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 193: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Ajani, Nacatl Avenger
+|   2: Amped Raptor
+|   3: Goblin Bombardment
+|   4: Guide of Souls
+|   5: Guide of Souls
+|   6: Pre-War Formalwear
+|   7: Aether Vial
+|   8: Clarion Conqueror
+|   9: Stoneforge Mystic
+|   10: Recruiter of the Guard
+|   11: Yorion, Sky Nomad
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Amped Raptor)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+| decision 194: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 195: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Amped Raptor is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 196: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 197: Player B (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Phelia, Exuberant Shepherd [4/4]
+  3: Yorion, Sky Nomad [4/5]
+Your creatures:
+| decision 198: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Guide of Souls [1/2]
+|   1: Guide of Souls [1/2]
+|   2: Confirm blockers
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls [1/2])
+Select attacker for Guide of Souls to block:
+| decision 199: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Phelia, Exuberant Shepherd [4/4]
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Phelia, Exuberant Shepherd [4/4])
+Guide of Souls blocking Phelia, Exuberant Shepherd.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Phelia, Exuberant Shepherd [4/4]
+  3: Yorion, Sky Nomad [4/5]
+Your creatures:
+  (assigned) Guide of Souls [1/2] blocking Phelia, Exuberant Shepherd
+| decision 200: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Guide of Souls [1/2]
+|   1: Confirm blockers
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  Guide of Souls blocking Phelia, Exuberant Shepherd
+| decision 201: Player A (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 202: Player B (game 0, turn 14, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Clarion Conqueror deals 3 damage to Player B (now at 6 life)
+  Stoneforge Mystic deals 1 damage to Player B (now at 5 life)
+  Guide of Souls deals 1 damage to Phelia, Exuberant Shepherd
+  Phelia, Exuberant Shepherd deals 4 damage to Guide of Souls
+  Yorion, Sky Nomad deals 4 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+Guide of Souls is destroyed (lethal damage)
+| decision 203: Player A (game 0, turn 14, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 204: Player B (game 0, turn 14, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 205: Player A (game 0, turn 14, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 206: Player B (game 0, turn 14, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 207: Player A (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 208: Player B (game 0, turn 14, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Delayed trigger fires.
+| decision 209: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 210: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Amped Raptor is moved to the battlefield
+Resolving ability (category: PutCounter, amount: 1)
+Resolving ability (category: Cleanup)
+Resolving ability (category: Cleanup)
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 211: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Amped Raptor (PutCounter)
+|   1: Guide of Souls (GainLife)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Amped Raptor (PutCounter))
+Amped Raptor triggered
+Guide of Souls triggered
+| decision 212: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 213: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 2)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 4).
+| decision 214: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 215: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 6).
+Resolving ability (category: DigUntil)
+Resolving ability (category: Play)
+Resolving ability (category: Cleanup)
+| decision 216: Player A (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T14 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 217: Player B (game 0, turn 14, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T14 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 16 (Player B) --------
+| decision 218: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 219: Player A (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Voice of Victory
+| decision 220: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 221: Player A (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 222: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Voice of Victory
+|   2: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Voice of Victory)
+Player B activated Plains for 1(W)
+Player B activated Elegant Parlor for 1(R)
+Player B casts Voice of Victory
+| decision 223: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 224: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Voice of Victory enters the battlefield
+Guide of Souls triggered
+| decision 225: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 226: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: GainLife, amount: 1)
+Player B gains 1 life (now at 3)
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 7).
+| decision 227: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 228: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 229: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 230: Player A (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 231: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Amped Raptor [2/1]
+|   1: Guide of Souls [1/2]
+|   2: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 2
+| >> Player B: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 232: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 233: Player A (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 234: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 235: Player A (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 236: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 237: Player A (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 238: Player B (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T15 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 239: Player A (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T15 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 17 (Player A) --------
+Aether Vial triggered
+| decision 240: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 241: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 242: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 243: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 244: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Canoptek Scarab Swarm
+| decision 245: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 246: Player B (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 247: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Canoptek Scarab Swarm
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Canoptek Scarab Swarm)
+Player A activated Witch-Blessed Meadow for 1(W)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Canoptek Scarab Swarm
+| decision 248: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 249: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Canoptek Scarab Swarm enters the battlefield
+Choose target for Canoptek Scarab Swarm:
+| decision 250: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Player A (17 life)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Targeting choice 0
+Canoptek Scarab Swarm triggered
+| decision 251: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 252: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZoneAll)
+Player B moves Badlands to exile
+Player B moves Guide of Souls to exile
+Player B moves Marsh Flats to exile
+Player B moves Swords to Plowshares to exile
+Player B moves Thoughtseize to exile
+Player B moves Wasteland to exile
+Player B moves 6 card(s) to exile
+Resolving ability (category: Token)
+Token created: 1/1 Insect
+Token created: 1/1 Insect
+Token created: 1/1 Insect
+Resolving ability (category: Cleanup)
+| decision 253: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 254: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 255: Player A (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 256: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 257: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Clarion Conqueror [3/3]
+|   1: Stoneforge Mystic [1/2]
+|   2: Recruiter of the Guard [1/1]
+|   3: Phelia, Exuberant Shepherd [4/4]
+|   4: Yorion, Sky Nomad [4/5]
+|   5: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Clarion Conqueror [3/3])
+Select target for Clarion Conqueror:
+| decision 258: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Clarion Conqueror attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+| decision 259: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Recruiter of the Guard [1/1]
+|   2: Phelia, Exuberant Shepherd [4/4]
+|   3: Yorion, Sky Nomad [4/5]
+|   4: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic [1/2])
+Select target for Stoneforge Mystic:
+| decision 260: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Stoneforge Mystic attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+| decision 261: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Recruiter of the Guard [1/1]
+|   1: Phelia, Exuberant Shepherd [4/4]
+|   2: Yorion, Sky Nomad [4/5]
+|   3: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Recruiter of the Guard [1/1])
+Select target for Recruiter of the Guard:
+| decision 262: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Recruiter of the Guard attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Recruiter of the Guard [1/1] -> Player B
+| decision 263: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Phelia, Exuberant Shepherd [4/4]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Phelia, Exuberant Shepherd [4/4])
+Select target for Phelia, Exuberant Shepherd:
+| decision 264: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Phelia, Exuberant Shepherd attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Recruiter of the Guard [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
+| decision 265: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 266: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Ajani, Nacatl Avenger (loyalty 3)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Yorion, Sky Nomad attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Clarion Conqueror [3/3] -> Player B
+  [attacking] Stoneforge Mystic [1/2] -> Player B
+  [attacking] Recruiter of the Guard [1/1] -> Player B
+  [attacking] Phelia, Exuberant Shepherd [4/4] -> Player B
+  [attacking] Yorion, Sky Nomad [4/5] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Clarion Conqueror -> Player B
+  Stoneforge Mystic -> Player B
+  Recruiter of the Guard -> Player B
+  Phelia, Exuberant Shepherd -> Player B
+  Yorion, Sky Nomad -> Player B
+Choose target for Phelia, Exuberant Shepherd:
+| decision 267: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: No target
+|   1: Ajani, Nacatl Avenger
+|   2: Amped Raptor
+|   3: Goblin Bombardment
+|   4: Guide of Souls
+|   5: Voice of Victory
+|   6: Pre-War Formalwear
+|   7: Aether Vial
+|   8: Canoptek Scarab Swarm
+|   9: Clarion Conqueror
+|   10: Stoneforge Mystic
+|   11: Recruiter of the Guard
+|   12: Yorion, Sky Nomad
+|   13: Insect token
+|   14: Insect token
+|   15: Insect token
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Amped Raptor)
+Targeting choice 2
+Phelia, Exuberant Shepherd triggered
+| decision 268: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 269: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Amped Raptor is moved to exile
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+| decision 270: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 271: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Recruiter of the Guard [1/1]
+  3: Phelia, Exuberant Shepherd [4/4]
+  4: Yorion, Sky Nomad [4/5]
+Your creatures:
+| decision 272: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Guide of Souls [1/2]
+|   1: Voice of Victory [1/3]
+|   2: Confirm blockers
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Voice of Victory [1/3])
+Select attacker for Voice of Victory to block:
+| decision 273: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Recruiter of the Guard [1/1]
+|   2: Phelia, Exuberant Shepherd [4/4]
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Recruiter of the Guard [1/1])
+Voice of Victory blocking Recruiter of the Guard.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Recruiter of the Guard [1/1]
+  3: Phelia, Exuberant Shepherd [4/4]
+  4: Yorion, Sky Nomad [4/5]
+Your creatures:
+  (assigned) Voice of Victory [1/3] blocking Recruiter of the Guard
+| decision 274: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Guide of Souls [1/2]
+|   1: Confirm blockers
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Guide of Souls [1/2])
+Select attacker for Guide of Souls to block:
+| decision 275: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Stoneforge Mystic [1/2]
+|   1: Recruiter of the Guard [1/1]
+|   2: Phelia, Exuberant Shepherd [4/4]
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Recruiter of the Guard [1/1])
+Guide of Souls blocking Recruiter of the Guard.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Clarion Conqueror [3/3]
+  1: Stoneforge Mystic [1/2]
+  2: Recruiter of the Guard [1/1]
+  3: Phelia, Exuberant Shepherd [4/4]
+  4: Yorion, Sky Nomad [4/5]
+Your creatures:
+  (assigned) Guide of Souls [1/2] blocking Recruiter of the Guard
+  (assigned) Voice of Victory [1/3] blocking Recruiter of the Guard
+| auto: Player B: Confirm blockers
+
+Blockers declared:
+  Guide of Souls blocking Recruiter of the Guard
+  Voice of Victory blocking Recruiter of the Guard
+| decision 276: Player A (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T16 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 277: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Goblin Bombardment (DealDamage)
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Clarion Conqueror deals 3 damage to Player B (now at 0 life)
+  Stoneforge Mystic deals 1 damage to Player B (now at -1 life)
+  Guide of Souls deals 1 damage to Recruiter of the Guard
+  Recruiter of the Guard deals 1 damage to Guide of Souls
+  Voice of Victory deals 1 damage to Recruiter of the Guard
+  Phelia, Exuberant Shepherd deals 4 damage to Player B (now at -5 life)
+  Yorion, Sky Nomad deals 4 damage to Player B (now at -9 life)
+--- End Combat Damage ---
+
+
+Player B has -9 life - Player A wins!
+GAME_RESULT: 1 Player A wins

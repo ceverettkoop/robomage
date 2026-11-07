@@ -106,10 +106,10 @@ OPEN_VOCAB_TENSORS = (("tok_type", "tok_type"), ("tok_num", "tok_type"), ("tok_c
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
 # The in-process agents' dumps: (deck_a, deck_b, bo3, game seed).
-ENGINE_DUMPS = (("league/ur_delver", "league/gw_maverick", False, 41),
+ENGINE_DUMPS = (("league/ur_tempo", "league/eldrazi_aggro", False, 41),
                 ("league/reanimator", "league/uw_control", True, 42))
 # The driver's closed-decklist session: (deck_a, deck_b, bo3, seed).
-STREAM_DUMP = ("league/wrb_energy", "league/bw_dnt", True, 43)
+STREAM_DUMP = ("league/wrb_energy", "league/death_and_taxes", True, 43)
 # rm_driver.engine_seed's values (numpy's SeedSequence → PCG64 derivation, computed without numpy).
 PINNED_ENGINE_SEEDS = ((0, 1826701614), (1, 1016164991), (2, 1798679647), (7, 2029167940),
                        (1001, 1940026651), (2147483647, 1751933748), (4294967295, 409763535),

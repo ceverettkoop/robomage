@@ -60,12 +60,12 @@ SCENARIOS = [
 
 # Full league-matchup coverage: every deck of the league roster against every
 # other (each unordered pair once, the lexically-earlier deck seated as Player
-# A) plus each deck's mirror — 55 scenarios named lg_<a>__<b>. One game per
+# A) plus each deck's mirror — 45 scenarios named lg_<a>__<b>. One game per
 # matchup keeps the corpus and the CI replay tier tractable; the curated
 # scenarios above already exercise both seatings for the deepest decks.
 LEAGUE_DECKS = [
-    "bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator",
-    "ur_delver", "uw_control", "wrb_energy", "wubg_doomsday",
+    "bug", "burn", "death_and_taxes", "lands_top8", "reanimator",
+    "ur_tempo", "uw_control", "wrb_energy", "wubg_doomsday",
 ]
 for _i, _a in enumerate(LEAGUE_DECKS):
     for _b in LEAGUE_DECKS[_i:]:

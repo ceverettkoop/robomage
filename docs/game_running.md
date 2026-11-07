@@ -170,7 +170,7 @@ which then decides those seats itself, so they cannot be combined with the drive
 ```bash
 python3 python/rm_driver.py --player-a scripted --player-b explore \
   --deck-a league/bug --deck-b league/burn --format bo1 --games 5 --verbose
-python3 python/rm_driver.py --deck-a league/ur_delver --deck-b league/gw_maverick \
+python3 python/rm_driver.py --deck-a league/ur_tempo --deck-b league/eldrazi_aggro \
   --games 20 --quiet --timing                                        # 20 bo3 matches, summary only
 ```
 

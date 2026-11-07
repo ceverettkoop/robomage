@@ -559,7 +559,7 @@ size_t g_choose_one_prompts = 0;
 //     the void counter records no source), only the prompt itself differs.
 //   - MOVE_TO_ZONE -> BATTLEFIELD: two PREVENT_ETB / EXILE_INSTEAD_OF_ETB
 //     sources (wrb_energy runs 2x Containment Priest).
-//   - UNTAP: two SKIP_UNTAP sources matching one permanent (gw_maverick runs
+//   - UNTAP: two SKIP_UNTAP sources matching one permanent (lands_top8 boards
 //     2x Choke; both choices are identical in outcome).
 //   - ENTERS_BATTLEFIELD: needs >= 2 SELF-replacements on one entering card
 //     (616.1a filters non-self out) — no vocab card has two, so unreachable.

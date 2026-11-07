@@ -1,0 +1,1700 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__lands_top8.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/lands_top8' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Malevolent Rumble
+Player B draws Urza's Saga
+Player B draws Wasteland
+Player B draws Dark Depths
+Player B draws Sphere of Resistance
+Player B draws Talon Gates of Madara
+Player B draws Sphere of Resistance
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Verdant Catacombs
+Player A draws Sheoldred's Edict
+Player A draws Misty Rainforest
+Player A draws Wasteland
+Player A draws Brainstorm
+Player A draws Brainstorm
+Player A draws Witherbloom Command
+Player B hand:
+Sphere of Resistance
+Sphere of Resistance
+Dark Depths
+Malevolent Rumble
+Talon Gates of Madara
+Urza's Saga
+Wasteland
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Brainstorm
+Brainstorm
+Misty Rainforest
+Sheoldred's Edict
+Verdant Catacombs
+Wasteland
+Witherbloom Command
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Brainstorm
+|   2: Misty Rainforest
+|   3: Sheoldred's Edict
+|   4: Verdant Catacombs
+|   5: Wasteland
+|   6: Witherbloom Command
+(REPLAY) [T0 | Untap | Player A] Input: 2
+| >> Player A: 2 (Misty Rainforest)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Verdant Catacombs
+|   2: Play Wasteland
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Verdant Catacombs)
+Player A played Verdant Catacombs
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Verdant Catacombs (ChangeZone)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Verdant Catacombs (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Verdant Catacombs
+Player A's Verdant Catacombs ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bayou
+|   2: Forest
+|   3: Swamp
+|   4: Tropical Island
+|   5: Undercity Sewers
+|   6: Underground Sea
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Bayou)
+Player A shuffles their library
+Player A puts Bayou to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Exploration
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Baleful Strix
+| decision 9: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 10: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sheoldred's Edict
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Sheoldred's Edict)
+Choose mode:
+| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Each opponent sacrifices a nontoken creature.
+|   1: Each opponent sacrifices a creature token.
+|   2: Each opponent sacrifices a planeswalker.
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Each opponent sacrifices a nontoken creature.)
+Player A chooses mode — Each opponent sacrifices a nontoken creature.
+Player A activated Bayou for 1(B)
+Player A activated Wasteland for 1(C)
+Player A casts Sheoldred's Edict
+Resolving ability (category: Charm)
+Resolving ability (category: Sacrifice)
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Urza's Saga
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 12: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 13: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Cast Sphere of Resistance
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Sphere of Resistance)
+Player B activated Urza's Saga for 1(C)
+Player B activated Urza's Saga for 1(C)
+Player B casts Sphere of Resistance
+Sphere of Resistance enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 14: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Ponder
+| decision 15: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 16: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 17: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Urza's Saga
+|   1: Urza's Saga
+|   2: Bayou
+|   3: Wasteland
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Urza's Saga)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Urza's Saga is on the stack
+Resolving ability (category: Destroy)
+Urza's Saga is destroyed
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Wasteland
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 18: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Tamiyo, Inquisitive Student
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Boseiju, Who Endures
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 19: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Pithing Needle
+|   2: Mox Diamond
+|   3: Soul-Guide Lantern
+|   4: Expedition Map
+|   5: Skateboard
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Pithing Needle)
+Player B shuffles their library
+Player B puts Pithing Needle to the battlefield
+Choose a card name for Pithing Needle:
+| decision 20: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Misty Rainforest
+|   3: Name card: Orcish Bowmasters
+|   4: Name card: Ponder
+|   5: Name card: Wasteland
+|   6: Name card: Fatal Push
+|   7: Name card: Flow State
+|   8: Name card: Polluted Delta
+|   9: Name card: Tamiyo, Inquisitive Student
+|   10: Name card: Tropical Island
+|   11: Name card: Baleful Strix
+|   12: Name card: Carpet of Flowers
+|   13: Name card: Consign to Memory
+|   14: Name card: Endurance
+|   15: Name card: Pernicious Deed
+|   16: Name card: Sheoldred's Edict
+|   17: Name card: Thoughtseize
+|   18: Name card: Underground Sea
+|   19: Name card: Uro, Titan of Nature's Wrath
+|   20: Name card: Witherbloom Command
+|   21: Name card: Bayou
+|   22: Name card: Force of Negation
+|   23: Name card: Force of Vigor
+|   24: Name card: Forest
+|   25: Name card: Hydroblast
+|   26: Name card: Island
+|   27: Name card: Kaito, Bane of Nightmares
+|   28: Name card: Life from the Loam
+|   29: Name card: Lórien Revealed
+|   30: Name card: Null Rod
+|   31: Name card: Surgical Extraction
+|   32: Name card: Swamp
+|   33: Name card: Toxic Deluge
+|   34: Name card: Undercity Sewers
+|   35: Name card: Veil of Summer
+|   36: Name card: Verdant Catacombs
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Name card: Brainstorm)
+Player B names card: Brainstorm
+Urza's Saga is sacrificed (final chapter completed).
+| decision 21: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Boseiju, Who Endures)
+Player B played Boseiju, Who Endures
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Flow State
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+Player B draws Maze of Ith
+| decision 22: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Maze of Ith
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Maze of Ith)
+Player B played Maze of Ith
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Misty Rainforest
+| decision 23: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 24: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 25: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+(REPLAY) [T10 | First Main | Player A] Input: 3
+| >> Player A: 3 (Tropical Island)
+Player A shuffles their library
+Player A puts Tropical Island to the battlefield
+| decision 26: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Brainstorm
+|   3: Cast Ponder
+|   4: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Tropical Island for 1(U)
+Player A activated Bayou for 1(G)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Ponder
+Player A draws Life from the Loam
+Player A draws Tamiyo, Inquisitive Student
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 27: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Life from the Loam
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+|   8: Witherbloom Command
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Brainstorm)
+Player A puts Brainstorm to top of library
+Player A chooses a card from Player A hand:
+| decision 28: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Flow State
+|   2: Life from the Loam
+|   3: Ponder
+|   4: Ponder
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+|   7: Witherbloom Command
+(REPLAY) [T10 | First Main | Player A] Input: 3
+| >> Player A: 3 (Ponder)
+Player A puts Ponder to top of library
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+Player B draws Wasteland
+| decision 29: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Talon Gates of Madara)
+Player B played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| auto: Player B: No target
+Targeting choice 0
+Talon Gates of Madara triggered
+Resolving ability (category: Phases)
+| decision 30: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exploration
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Exploration)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Exploration
+Exploration enters the battlefield
+| decision 31: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 32: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 33: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bayou
+|   1: Tropical Island
+|   2: Maze of Ith
+|   3: Boseiju, Who Endures
+|   4: Dark Depths
+|   5: Talon Gates of Madara
+|   6: Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bayou)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Bayou is on the stack
+Resolving ability (category: Destroy)
+Bayou is destroyed
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Ponder
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 34: Player A (game 0, turn 12, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Flow State
+|   2: Life from the Loam
+|   3: Ponder
+|   4: Ponder
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+|   7: Witherbloom Command
+(REPLAY) [T12 | Cleanup | Player A] Input: 7
+| >> Player A: 7 (Witherbloom Command)
+Player A discards Witherbloom Command.
+
+-------- TURN 14 (Player B) --------
+Player B draws Sphere of Resistance
+| decision 35: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 36: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Sphere of Resistance
+|   3: Cast Sphere of Resistance
+|   4: Cast Malevolent Rumble
+|   5: Activate Dark Depths (RemoveCounter)
+|   6: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Sphere of Resistance)
+Player B activated Wasteland for 1(C)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Sphere of Resistance
+Sphere of Resistance enters the battlefield
+| decision 37: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 38: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 39: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tropical Island
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Dark Depths
+|   4: Talon Gates of Madara
+|   5: Wasteland
+|   6: Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tropical Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Tropical Island is on the stack
+| decision 40: Player A (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Tropical Island for (G)
+|   2: Tap Tropical Island for (U)
+(REPLAY) [T13 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Tropical Island is destroyed
+No creatures eligible to attack.
+
+-------- TURN 15 (Player A) --------
+Player A draws Brainstorm
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 41: Player A (game 0, turn 14, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Life from the Loam
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+(REPLAY) [T14 | Cleanup | Player A] Input: 3
+| >> Player A: 3 (Life from the Loam)
+Player A discards Life from the Loam.
+
+-------- TURN 16 (Player B) --------
+| decision 42: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Yavimaya, Cradle of Growth
+| decision 43: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 44: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Activate Dark Depths (RemoveCounter)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Yavimaya, Cradle of Growth)
+Player B played Yavimaya, Cradle of Growth
+| decision 45: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Cast Malevolent Rumble
+|   3: Activate Dark Depths (RemoveCounter)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Sphere of Resistance)
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Maze of Ith for 1(G)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B casts Sphere of Resistance
+| decision 46: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Sphere of Resistance enters the battlefield
+| decision 47: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 48: Player B (game 0, turn 15, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 49: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 50: Player B (game 0, turn 15, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 51: Player B (game 0, turn 15, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 52: Player B (game 0, turn 15, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T15 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 17 (Player A) --------
+| decision 53: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 54: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T16 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Lórien Revealed.
+Player A mills Flow State.
+Player A mills Forest.
+Player A dredges Life from the Loam (milled 3)
+| decision 55: Player B (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 56: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 57: Player B (game 0, turn 16, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 58: Player B (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 16, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 60: Player B (game 0, turn 16, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 61: Player B (game 0, turn 16, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T16 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 62: Player A (game 0, turn 16, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Life from the Loam
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+(REPLAY) [T16 | Cleanup | Player A] Input: 3
+| >> Player A: 3 (Life from the Loam)
+Player A discards Life from the Loam.
+
+-------- TURN 18 (Player B) --------
+| decision 63: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Life from the Loam
+| decision 64: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 65: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Malevolent Rumble
+|   3: Activate Dark Depths (RemoveCounter)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 66: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Urza's Saga
+|   2: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Urza's Saga)
+Targeting choice 1
+Choose target for Life from the Loam:
+| decision 67: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Urza's Saga
+|   2: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Urza's Saga)
+Targeting choice 1
+Choose target for Life from the Loam:
+| decision 68: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Targeting choice 1
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Maze of Ith for 1(G)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Life from the Loam targeting Urza's Saga
+| decision 69: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+Urza's Saga is moved to hand
+Wasteland is moved to hand
+| decision 70: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Urza's Saga
+|   3: Play Wasteland
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+| decision 71: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 72: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Wasteland
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+| decision 73: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Urza's Saga for 1(G)
+Player B activated Urza's Saga for 1(G)
+Player B activated Wasteland for 1(C)
+Player B's Dark Depths ability is on the stack
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+No creatures eligible to attack.
+
+-------- TURN 19 (Player A) --------
+| decision 74: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T18 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Sheoldred's Edict.
+Player A mills Tropical Island.
+Player A mills Brainstorm.
+Player A dredges Life from the Loam (milled 3)
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 75: Player A (game 0, turn 18, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Life from the Loam
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+(REPLAY) [T18 | Cleanup | Player A] Input: 3
+| >> Player A: 3 (Life from the Loam)
+Player A discards Life from the Loam.
+
+-------- TURN 20 (Player B) --------
+| decision 76: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 77: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T19 | Draw | Player B] Input: 1
+| >> Player B: 1 (Dredge Life from the Loam (mill 3))
+Player B mills Mox Diamond.
+Player B mills Ancient Tomb.
+Player B mills Ghost Quarter.
+Player B dredges Life from the Loam (milled 3)
+| decision 78: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga gets 1 lore counter (now 2).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 79: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Urza's Saga (chapter 2)
+|   1: Urza's Saga (chapter 2)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Urza's Saga (chapter 2))
+Urza's Saga chapter 2 triggers.
+Urza's Saga chapter 2 triggers.
+| decision 80: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Urza's Saga for 1(G)
+Player B activated Urza's Saga for 1(G)
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B's Dark Depths ability is on the stack
+| decision 81: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Maze of Ith for 1(G)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B's Dark Depths ability is on the stack
+| decision 82: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+| decision 83: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+| decision 84: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 85: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 86: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 87: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Talon Gates of Madara for 1(C)
+Player B activated Wasteland for 1(C)
+Player B activated Wasteland for 1(C)
+Player B's Dark Depths ability is on the stack
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+No creatures eligible to attack.
+
+-------- TURN 21 (Player A) --------
+| decision 88: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T20 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Polluted Delta.
+Player A mills Wasteland.
+Player A mills Baleful Strix.
+Player A dredges Life from the Loam (milled 3)
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 89: Player A (game 0, turn 20, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Life from the Loam
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+(REPLAY) [T20 | Cleanup | Player A] Input: 3
+| >> Player A: 3 (Life from the Loam)
+Player A discards Life from the Loam.
+
+-------- TURN 22 (Player B) --------
+| decision 90: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Urza's Saga (Token)
+|   3: Activate Urza's Saga (Token)
+|   4: Activate Wasteland (Destroy)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Urza's Saga (Token))
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Maze of Ith for 1(G)
+Player B's Urza's Saga ability is on the stack
+| decision 91: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Urza's Saga (Token)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Urza's Saga (Token))
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B's Urza's Saga ability is on the stack
+| decision 92: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 93: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 94: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Malevolent Rumble
+| decision 95: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga gets 1 lore counter (now 3).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 96: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Urza's Saga (chapter 3)
+|   1: Urza's Saga (chapter 3)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Urza's Saga (chapter 3))
+Urza's Saga chapter 3 triggers.
+Urza's Saga chapter 3 triggers.
+| decision 97: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Talon Gates of Madara for 1(C)
+Player B activated Wasteland for 1(C)
+Player B activated Wasteland for 1(C)
+Player B's Dark Depths ability is on the stack
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 98: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Soul-Guide Lantern
+|   3: Expedition Map
+|   4: Skateboard
+(REPLAY) [T21 | First Main | Player B] Input: 2
+| >> Player B: 2 (Soul-Guide Lantern)
+Player B shuffles their library
+Player B puts Soul-Guide Lantern to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+Choose target for Soul-Guide Lantern:
+| decision 99: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Baleful Strix
+|   1: Bayou
+|   2: Brainstorm
+|   3: Flow State
+|   4: Forest
+|   5: Life from the Loam
+|   6: Lórien Revealed
+|   7: Misty Rainforest
+|   8: Polluted Delta
+|   9: Sheoldred's Edict
+|   10: Tropical Island
+|   11: Verdant Catacombs
+|   12: Wasteland
+|   13: Witherbloom Command
+|   14: Mox Diamond
+|   15: Ghost Quarter
+|   16: Urza's Saga
+|   17: Ancient Tomb
+|   18: Wasteland
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Baleful Strix)
+Targeting choice 0
+Soul-Guide Lantern triggered
+| decision 100: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Soul-Guide Lantern (ChangeZoneAll)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Soul-Guide Lantern (ChangeZoneAll))
+Player B sacrifices Soul-Guide Lantern
+Player B's Soul-Guide Lantern ability is on the stack
+Resolving ability (category: ChangeZoneAll)
+Player A moves Baleful Strix to exile
+Player A moves Bayou to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Flow State to exile
+Player A moves Forest to exile
+Player A moves Life from the Loam to exile
+Player A moves Lórien Revealed to exile
+Player A moves Misty Rainforest to exile
+Player A moves Polluted Delta to exile
+Player A moves Sheoldred's Edict to exile
+Player A moves Sheoldred's Edict to exile
+Player A moves Tropical Island to exile
+Player A moves Tropical Island to exile
+Player A moves Verdant Catacombs to exile
+Player A moves Wasteland to exile
+Player A moves Wasteland to exile
+Player A moves Witherbloom Command to exile
+Player A moves 18 card(s) to exile
+Player B moves 0 card(s) to exile
+ChangeZone fizzles
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 101: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Expedition Map
+|   3: Skateboard
+(REPLAY) [T21 | First Main | Player B] Input: 2
+| >> Player B: 2 (Expedition Map)
+Player B shuffles their library
+Player B puts Expedition Map to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+No creatures eligible to attack.
+
+-------- TURN 23 (Player A) --------
+Player A draws Orcish Bowmasters
+No creatures eligible to attack.
+
+--- Discard to hand size (Player A) ---
+Hand (8 cards, must discard to 7):
+| decision 102: Player A (game 0, turn 22, CLEANUP, Player A active)
+| menu:
+|   0: Baleful Strix
+|   1: Brainstorm
+|   2: Flow State
+|   3: Orcish Bowmasters
+|   4: Ponder
+|   5: Ponder
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+(REPLAY) [T22 | Cleanup | Player A] Input: 3
+| >> Player A: 3 (Orcish Bowmasters)
+Player A discards Orcish Bowmasters.
+
+-------- TURN 24 (Player B) --------
+| decision 103: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Activate Dark Depths (RemoveCounter)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Crucible of Worlds
+| decision 104: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Activate Dark Depths (RemoveCounter)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 105: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Crucible of Worlds
+|   3: Cast Malevolent Rumble
+|   4: Cast Malevolent Rumble
+|   5: Activate Expedition Map (ChangeZone)
+|   6: Activate Dark Depths (RemoveCounter)
+|   7: Activate Wasteland (Destroy)
+|   8: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 106: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Urza's Saga
+|   3: Ancient Tomb
+|   4: Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 2
+| >> Player B: 2 (Urza's Saga)
+Targeting choice 2
+Choose target for Life from the Loam:
+| decision 107: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Urza's Saga
+|   3: Ancient Tomb
+|   4: Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 2
+| >> Player B: 2 (Urza's Saga)
+Targeting choice 2
+Choose target for Life from the Loam:
+| decision 108: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Ancient Tomb
+|   3: Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 3
+| >> Player B: 3 (Wasteland)
+Targeting choice 3
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Maze of Ith for 1(G)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B casts Life from the Loam targeting Urza's Saga
+| decision 109: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Expedition Map (ChangeZone)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Expedition Map (ChangeZone))
+Player B activated Wasteland for 1(C)
+Player B activated Wasteland for 1(C)
+Player B sacrifices Expedition Map
+Player B's Expedition Map ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 110: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Boseiju, Who Endures
+|   2: Karakas
+|   3: Ghost Quarter
+|   4: Forest
+|   5: Dark Depths
+|   6: Bojuka Bog
+|   7: Blast Zone
+|   8: Urza's Saga
+|   9: Yavimaya, Cradle of Growth
+|   10: The Tabernacle at Pendrell Vale
+|   11: Thespian's Stage
+|   12: Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 11
+| >> Player B: 11 (Thespian's Stage)
+Player B shuffles their library
+Player B reveals Thespian's Stage and puts it to hand
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+Urza's Saga is moved to hand
+Wasteland is moved to hand
+| decision 111: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Urza's Saga
+|   3: Play Thespian's Stage
+|   4: Play Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Thespian's Stage)
+Player B played Thespian's Stage
+| decision 112: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Urza's Saga
+|   3: Play Wasteland
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+
+--- Declare Attackers (Player B) ---
+| decision 113: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [6/6]
+|   1: Construct token [6/6]
+|   2: Confirm attackers
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [6/6])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [6/6] -> Player A
+| decision 114: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [6/6]
+|   1: Confirm attackers
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [6/6])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [6/6] -> Player A
+  [attacking] Construct token [6/6] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player A
+  Construct token -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player A (now at 12 life)
+  Construct token deals 6 damage to Player A (now at 6 life)
+--- End Combat Damage ---
+
+
+-------- TURN 25 (Player A) --------
+Player A draws Misty Rainforest
+| decision 115: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 116: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 117: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tropical Island
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T24 | First Main | Player A] Input: 3
+| >> Player A: 3 (Undercity Sewers)
+Player A shuffles their library
+Player A puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Misty Rainforest
+| decision 118: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Misty Rainforest on top of library
+|   1: Put Misty Rainforest into graveyard
+(REPLAY) [T24 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Misty Rainforest on top of library)
+No creatures eligible to attack.
+
+-------- TURN 26 (Player B) --------
+| decision 119: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 120: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Undercity Sewers
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Dark Depths
+|   4: Talon Gates of Madara
+|   5: Urza's Saga
+|   6: Yavimaya, Cradle of Growth
+|   7: Thespian's Stage
+|   8: Wasteland
+|   9: Wasteland
+(REPLAY) [T25 | Upkeep | Player B] Input: 3
+| >> Player B: 3 (Dark Depths)
+Targeting choice 3
+Player B activated Urza's Saga for 1(G)
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B's Thespian's Stage ability targeting Dark Depths is on the stack
+| decision 121: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
+| decision 122: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T25 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+| decision 123: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+| decision 124: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 125: Player B (game 0, turn 25, DRAW, Player B active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T25 | Draw | Player B] Input: 1
+| >> Player B: 1 (Dredge Life from the Loam (mill 3))
+Player B mills Sphere of Resistance.
+Player B mills Ghost Quarter.
+Player B mills Crop Rotation.
+Player B dredges Life from the Loam (milled 3)
+| decision 126: Player B (game 0, turn 25, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+| decision 127: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 128: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Undercity Sewers
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Talon Gates of Madara
+|   4: Urza's Saga
+|   5: Yavimaya, Cradle of Growth
+|   6: Wasteland
+|   7: Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 0
+| >> Player B: 0 (Undercity Sewers)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Undercity Sewers is on the stack
+| decision 129: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 130: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Undercity Sewers
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Talon Gates of Madara
+|   4: Urza's Saga
+|   5: Yavimaya, Cradle of Growth
+|   6: Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 0
+| >> Player B: 0 (Undercity Sewers)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Undercity Sewers is on the stack
+Resolving ability (category: Destroy)
+Undercity Sewers is destroyed
+Destroy fizzles
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 131: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 132: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 133: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Malevolent Rumble
+|   3: Cast Malevolent Rumble
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 134: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Dark Depths
+|   3: Ancient Tomb
+|   4: Thespian's Stage
+|   5: Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 5
+| >> Player B: 5 (Wasteland)
+Targeting choice 6
+Choose target for Life from the Loam:
+| decision 135: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Dark Depths
+|   3: Ancient Tomb
+|   4: Thespian's Stage
+|   5: Wasteland
+(REPLAY) [T25 | First Main | Player B] Input: 5
+| >> Player B: 5 (Wasteland)
+Targeting choice 6
+Choose target for Life from the Loam:
+| decision 136: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Ghost Quarter
+|   2: Dark Depths
+|   3: Ancient Tomb
+|   4: Thespian's Stage
+(REPLAY) [T25 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Maze of Ith for 1(G)
+Player B activated Urza's Saga for 1(G)
+Player B activated Boseiju, Who Endures for 1(G)
+Player B activated Talon Gates of Madara for 1(C)
+Player B activated Wasteland for 1(C)
+Player B casts Life from the Loam targeting Wasteland
+Resolving ability (category: ChangeZone)
+Wasteland is moved to hand
+Wasteland is moved to hand
+
+--- Declare Attackers (Player B) ---
+| decision 137: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [6/6]
+|   1: Construct token [6/6]
+|   2: Confirm attackers
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [6/6])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [6/6] -> Player A
+| decision 138: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [6/6]
+|   1: Confirm attackers
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [6/6])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [6/6] -> Player A
+  [attacking] Construct token [6/6] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player A
+  Construct token -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Construct token deals 6 damage to Player A (now at -1 life)
+  Construct token deals 6 damage to Player A (now at -7 life)
+--- End Combat Damage ---
+
+
+Player A has -7 life - Player B wins!
+GAME_RESULT: 1 Player B wins

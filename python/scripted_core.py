@@ -1405,7 +1405,7 @@ def _is_miracle_reveal(v) -> bool:
 # not the game, because eligibility can change in ways a fail can't tell
 # (Aether Vial's search keys on its charge-counter count: a fail at 0 counters
 # says nothing about next turn's 1). After _FRUITLESS_ACTIVATION_LIMIT failed
-# tries the card is dropped for the game: hard-scripted bw_dnt once activated
+# tries the card is dropped for the game: a hard-scripted Vial deck once activated
 # Vial into a guaranteed fail-to-find every turn (~60 activations) to the
 # decision cap — the one non-decisive game of a 441-game fuzz campaign — so
 # retries must be bounded.

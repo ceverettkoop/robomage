@@ -1,0 +1,1119 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands_top8__lands_top8.rmlog
+REPLAY MODE: Using embedded decks 'league/lands_top8' / 'league/lands_top8' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Life from the Loam
+Player A draws Soul-Guide Lantern
+Player A draws Wasteland
+Player A draws Mox Diamond
+Player A draws Malevolent Rumble
+Player A draws Malevolent Rumble
+Player A draws Life from the Loam
+Player B draws Ghost Quarter
+Player B draws Malevolent Rumble
+Player B draws Yavimaya, Cradle of Growth
+Player B draws Mox Diamond
+Player B draws Mox Diamond
+Player B draws Boseiju, Who Endures
+Player B draws Life from the Loam
+Player A hand:
+Mox Diamond
+Life from the Loam
+Life from the Loam
+Soul-Guide Lantern
+Malevolent Rumble
+Malevolent Rumble
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Mox Diamond
+Player A draws Bojuka Bog
+Player A draws Malevolent Rumble
+Player A draws Ancient Tomb
+Player A draws Pithing Needle
+Player A draws Urza's Saga
+Player A draws Urza's Saga
+Player B hand:
+Mox Diamond
+Mox Diamond
+Boseiju, Who Endures
+Life from the Loam
+Ghost Quarter
+Malevolent Rumble
+Yavimaya, Cradle of Growth
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Pithing Needle
+Mox Diamond
+Malevolent Rumble
+Bojuka Bog
+Urza's Saga
+Urza's Saga
+Ancient Tomb
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Pithing Needle
+|   1: Mox Diamond
+|   2: Malevolent Rumble
+|   3: Bojuka Bog
+|   4: Urza's Saga
+|   5: Urza's Saga
+|   6: Ancient Tomb
+(REPLAY) [T0 | Untap | Player A] Input: 3
+| >> Player A: 3 (Bojuka Bog)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Urza's Saga
+|   3: Play Ancient Tomb
+|   4: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pithing Needle
+|   2: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Pithing Needle)
+Player A activated Urza's Saga for 1(C)
+Player A casts Pithing Needle
+Pithing Needle enters the battlefield
+Choose a card name for Pithing Needle:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Name card: Crop Rotation
+|   1: Name card: Exploration
+|   2: Name card: Malevolent Rumble
+|   3: Name card: Mox Diamond
+|   4: Name card: Sphere of Resistance
+|   5: Name card: Urza's Saga
+|   6: Name card: Wasteland
+|   7: Name card: Yavimaya, Cradle of Growth
+|   8: Name card: Boseiju, Who Endures
+|   9: Name card: Dark Depths
+|   10: Name card: Disruptor Flute
+|   11: Name card: Force of Vigor
+|   12: Name card: Life from the Loam
+|   13: Name card: Thespian's Stage
+|   14: Name card: Choke
+|   15: Name card: Damping Sphere
+|   16: Name card: Dismember
+|   17: Name card: Endurance
+|   18: Name card: Ghost Quarter
+|   19: Name card: Ancient Tomb
+|   20: Name card: Blast Zone
+|   21: Name card: Bojuka Bog
+|   22: Name card: Crucible of Worlds
+|   23: Name card: Drop of Honey
+|   24: Name card: Elvish Reclaimer
+|   25: Name card: Expedition Map
+|   26: Name card: Forest
+|   27: Name card: Icetill Explorer
+|   28: Name card: Karakas
+|   29: Name card: Maze of Ith
+|   30: Name card: Pithing Needle
+|   31: Name card: Skateboard
+|   32: Name card: Soul-Guide Lantern
+|   33: Name card: Talon Gates of Madara
+|   34: Name card: The Tabernacle at Pendrell Vale
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Name card: Crop Rotation)
+Player A names card: Crop Rotation
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Mox Diamond
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Mox Diamond)
+Player A casts Mox Diamond
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+|   1: Discard Ancient Tomb (put Mox Diamond onto the battlefield)
+|   2: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+Player A discards Urza's Saga.
+Mox Diamond enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws The Tabernacle at Pendrell Vale
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Ghost Quarter
+|   3: Play Yavimaya, Cradle of Growth
+|   4: Play The Tabernacle at Pendrell Vale
+|   5: Cast Mox Diamond
+|   6: Cast Mox Diamond
+(REPLAY) [T1 | First Main | Player B] Input: 5
+| >> Player B: 5 (Cast Mox Diamond)
+Player B casts Mox Diamond
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield)
+|   1: Discard Ghost Quarter (put Mox Diamond onto the battlefield)
+|   2: Discard Yavimaya, Cradle of Growth (put Mox Diamond onto the battlefield)
+|   3: Discard The Tabernacle at Pendrell Vale (put Mox Diamond onto the battlefield)
+|   4: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield))
+Player B discards Boseiju, Who Endures.
+Mox Diamond enters the battlefield
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play The Tabernacle at Pendrell Vale
+|   4: Cast Mox Diamond
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mox Diamond)
+Player B casts Mox Diamond
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Discard Ghost Quarter (put Mox Diamond onto the battlefield)
+|   1: Discard Yavimaya, Cradle of Growth (put Mox Diamond onto the battlefield)
+|   2: Discard The Tabernacle at Pendrell Vale (put Mox Diamond onto the battlefield)
+|   3: Don't discard (put Mox Diamond into graveyard)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Discard Ghost Quarter (put Mox Diamond onto the battlefield))
+Player B discards Ghost Quarter.
+Mox Diamond enters the battlefield
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Play The Tabernacle at Pendrell Vale
+|   3: Cast Life from the Loam
+|   4: Cast Malevolent Rumble
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Ghost Quarter
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Mox Diamond for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B casts Life from the Loam
+Resolving ability (category: ChangeZone)
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Play The Tabernacle at Pendrell Vale
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Yavimaya, Cradle of Growth)
+Player B played Yavimaya, Cradle of Growth
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Crop Rotation
+| decision 17: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| auto: Player A: Sacrifice Urza's Saga
+Player A activated Urza's Saga for 1(G)
+Player A sacrifices Urza's Saga
+Player A casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 18: Player A (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Karakas
+|   4: Ghost Quarter
+|   5: Forest
+|   6: Dark Depths
+|   7: Talon Gates of Madara
+|   8: Bojuka Bog
+|   9: Blast Zone
+|   10: Urza's Saga
+|   11: Yavimaya, Cradle of Growth
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Wasteland
+(REPLAY) [T2 | Draw | Player A] Input: 10
+| >> Player A: 10 (Urza's Saga)
+Player A shuffles their library
+Player A puts Urza's Saga to the battlefield
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Ancient Tomb
+|   2: Cast Malevolent Rumble
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Malevolent Rumble)
+Player A activated Mox Diamond for 1(G)
+Player A activated Urza's Saga for 1(G)
+Player A casts Malevolent Rumble
+Resolving ability (category: Dig)
+Player A looks at the top 4 card(s) of their library.
+Player A reveals Thespian's Stage from the top of their library.
+Player A reveals Boseiju, Who Endures from the top of their library.
+Player A reveals Crop Rotation from the top of their library.
+Player A reveals Crucible of Worlds from the top of their library.
+| decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Take nothing (rest go into the graveyard)
+|   1: Thespian's Stage
+|   2: Boseiju, Who Endures
+|   3: Crucible of Worlds
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thespian's Stage)
+Player A reveals Thespian's Stage and puts it into hand.
+Player A puts Boseiju, Who Endures into their graveyard.
+Player A puts Crop Rotation into their graveyard.
+Player A puts Crucible of Worlds into their graveyard.
+Resolving ability (category: Token)
+Token created: 0/1 Eldrazi Spawn
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Ancient Tomb
+|   2: Play Thespian's Stage
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Ancient Tomb)
+Player A played Ancient Tomb
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+| decision 22: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T3 | Draw | Player B] Input: 1
+| >> Player B: 1 (Dredge Life from the Loam (mill 3))
+Player B mills Malevolent Rumble.
+Player B mills Urza's Saga.
+Player B mills Sphere of Resistance.
+Player B dredges Life from the Loam (milled 3)
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play The Tabernacle at Pendrell Vale
+|   2: Cast Life from the Loam
+|   3: Cast Malevolent Rumble
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 24: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Ghost Quarter
+|   3: Urza's Saga
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Urza's Saga)
+Targeting choice 3
+Choose target for Life from the Loam:
+| decision 25: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Ghost Quarter
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Done selecting targets)
+Targeting choice 0
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Mox Diamond for 1(W)
+Player B casts Life from the Loam targeting Urza's Saga
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+| decision 26: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play The Tabernacle at Pendrell Vale
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 27: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Malevolent Rumble
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Malevolent Rumble)
+Player B activated Mox Diamond for 1(G)
+Player B activated Urza's Saga for 1(G)
+Player B casts Malevolent Rumble
+Resolving ability (category: Dig)
+Player B looks at the top 4 card(s) of their library.
+Player B reveals Malevolent Rumble from the top of their library.
+Player B reveals Dark Depths from the top of their library.
+Player B reveals Forest from the top of their library.
+Player B reveals Elvish Reclaimer from the top of their library.
+| decision 28: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Take nothing (rest go into the graveyard)
+|   1: Dark Depths
+|   2: Forest
+|   3: Elvish Reclaimer
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dark Depths)
+Player B reveals Dark Depths and puts it into hand.
+Player B puts Malevolent Rumble into their graveyard.
+Player B puts Forest into their graveyard.
+Player B puts Elvish Reclaimer into their graveyard.
+Resolving ability (category: Token)
+Token created: 0/1 Eldrazi Spawn
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 29: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Urza's Saga (Token)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Activate Urza's Saga (Token))
+Player A activated Mox Diamond for 1(W)
+Player A activated Ancient Tomb for 1(G)
+Player A's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+Player A draws Sphere of Resistance
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 30: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Soul-Guide Lantern
+|   3: Expedition Map
+|   4: Skateboard
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Soul-Guide Lantern)
+Player A shuffles their library
+Player A puts Soul-Guide Lantern to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+Choose target for Soul-Guide Lantern:
+| decision 31: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Boseiju, Who Endures
+|   1: Life from the Loam
+|   2: Elvish Reclaimer
+|   3: Ghost Quarter
+|   4: Forest
+|   5: Sphere of Resistance
+|   6: Malevolent Rumble
+|   7: Boseiju, Who Endures
+|   8: Crucible of Worlds
+|   9: Crop Rotation
+|   10: Malevolent Rumble
+|   11: Urza's Saga
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Boseiju, Who Endures)
+Targeting choice 0
+Soul-Guide Lantern triggered
+| decision 32: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Soul-Guide Lantern (ChangeZoneAll)
+|   2: Activate Soul-Guide Lantern (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Soul-Guide Lantern (ChangeZoneAll))
+Player A sacrifices Soul-Guide Lantern
+Player A's Soul-Guide Lantern ability is on the stack
+Resolving ability (category: ChangeZoneAll)
+Player A moves 0 card(s) to exile
+Player B moves Boseiju, Who Endures to exile
+Player B moves Life from the Loam to exile
+Player B moves Elvish Reclaimer to exile
+Player B moves Ghost Quarter to exile
+Player B moves Forest to exile
+Player B moves Sphere of Resistance to exile
+Player B moves Malevolent Rumble to exile
+Player B moves Malevolent Rumble to exile
+Player B moves Malevolent Rumble to exile
+Player B moves 9 card(s) to exile
+ChangeZone fizzles
+| decision 33: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thespian's Stage)
+Player A played Thespian's Stage
+| decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Sphere of Resistance)
+Player A activated Thespian's Stage for 1(C)
+Player A sacrifices Eldrazi Spawn
+Player A activated Eldrazi Spawn for 1(C)
+Player A casts Sphere of Resistance
+Eldrazi Spawn (token) is put into the graveyard and ceases to exist.
+Sphere of Resistance enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Thespian's Stage
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 35: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play The Tabernacle at Pendrell Vale
+|   3: Play Thespian's Stage
+|   4: Activate Urza's Saga (Token)
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Activate Urza's Saga (Token))
+Player B activated Mox Diamond for 1(W)
+Player B activated Mox Diamond for 1(W)
+Player B's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 36: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play The Tabernacle at Pendrell Vale
+|   3: Play Thespian's Stage
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+| decision 37: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Dark Depths (RemoveCounter))
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B sacrifices Eldrazi Spawn
+Player B activated Eldrazi Spawn for 1(C)
+Player B's Dark Depths ability is on the stack
+Eldrazi Spawn (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 38: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Boseiju, Who Endures
+| decision 39: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+|   2: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 40: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Activate Thespian's Stage (Clone)
+|   3: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Boseiju, Who Endures)
+Player A played Boseiju, Who Endures
+| decision 41: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 42: Player A (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 43: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [4/4]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Construct token [4/4])
+Construct token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Construct token [4/4] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player B
+| decision 44: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Construct token [4/4]
+Your creatures:
+| decision 45: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Construct token [3/3]
+|   1: Confirm blockers
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 46: Player A (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 4 damage to Player B (now at 16 life)
+--- End Combat Damage ---
+
+| decision 47: Player A (game 0, turn 6, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 48: Player A (game 0, turn 6, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 49: Player A (game 0, turn 6, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 50: Player A (game 0, turn 6, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 8 (Player B) --------
+| decision 51: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Urza's Saga (Token)
+(REPLAY) [T7 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate Urza's Saga (Token))
+Player B activated Mox Diamond for 1(W)
+Player B activated Mox Diamond for 1(W)
+Player B's Urza's Saga ability is on the stack
+| decision 52: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 53: Player A (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Bojuka Bog
+| decision 54: Player A (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+| decision 55: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Pithing Needle
+|   2: Mox Diamond
+|   3: Soul-Guide Lantern
+|   4: Expedition Map
+|   5: Skateboard
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Pithing Needle)
+Player B shuffles their library
+Player B puts Pithing Needle to the battlefield
+Choose a card name for Pithing Needle:
+| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Crop Rotation
+|   1: Name card: Exploration
+|   2: Name card: Malevolent Rumble
+|   3: Name card: Mox Diamond
+|   4: Name card: Sphere of Resistance
+|   5: Name card: Urza's Saga
+|   6: Name card: Wasteland
+|   7: Name card: Yavimaya, Cradle of Growth
+|   8: Name card: Boseiju, Who Endures
+|   9: Name card: Dark Depths
+|   10: Name card: Disruptor Flute
+|   11: Name card: Force of Vigor
+|   12: Name card: Life from the Loam
+|   13: Name card: Thespian's Stage
+|   14: Name card: Choke
+|   15: Name card: Damping Sphere
+|   16: Name card: Dismember
+|   17: Name card: Endurance
+|   18: Name card: Ghost Quarter
+|   19: Name card: Ancient Tomb
+|   20: Name card: Blast Zone
+|   21: Name card: Bojuka Bog
+|   22: Name card: Crucible of Worlds
+|   23: Name card: Drop of Honey
+|   24: Name card: Elvish Reclaimer
+|   25: Name card: Expedition Map
+|   26: Name card: Forest
+|   27: Name card: Icetill Explorer
+|   28: Name card: Karakas
+|   29: Name card: Maze of Ith
+|   30: Name card: Pithing Needle
+|   31: Name card: Skateboard
+|   32: Name card: Soul-Guide Lantern
+|   33: Name card: Talon Gates of Madara
+|   34: Name card: The Tabernacle at Pendrell Vale
+(REPLAY) [T7 | First Main | Player B] Input: 4
+| >> Player B: 4 (Name card: Sphere of Resistance)
+Player B names card: Sphere of Resistance
+Urza's Saga is sacrificed (final chapter completed).
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Play The Tabernacle at Pendrell Vale
+|   3: Play Thespian's Stage
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Thespian's Stage)
+Player B played Thespian's Stage
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 60: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Boseiju, Who Endures
+|   1: Ancient Tomb
+|   2: Thespian's Stage
+|   3: Dark Depths
+|   4: Yavimaya, Cradle of Growth
+|   5: Thespian's Stage
+(REPLAY) [T7 | First Main | Player B] Input: 3
+| >> Player B: 3 (Dark Depths)
+Targeting choice 3
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B's Thespian's Stage ability targeting Dark Depths is on the stack
+| decision 61: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
+| decision 62: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+| decision 63: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+| decision 64: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 65: Player A (game 0, turn 7, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 66: Player B (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [5/5]
+|   1: Confirm attackers
+(REPLAY) [T7 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [5/5])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [5/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player A
+| decision 67: Player A (game 0, turn 7, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 68: Player A (game 0, turn 7, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 5 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+| decision 69: Player A (game 0, turn 7, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 70: Player A (game 0, turn 7, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 71: Player A (game 0, turn 7, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 72: Player A (game 0, turn 7, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T7 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 9 (Player A) --------
+| decision 73: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Forest
+| decision 74: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 75: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 76: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 77: Player A (game 0, turn 8, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 78: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Construct token [4/4]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+| decision 79: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 80: Player A (game 0, turn 8, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 81: Player A (game 0, turn 8, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 82: Player A (game 0, turn 8, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T8 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 10 (Player B) --------
+| decision 83: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Thespian's Stage
+| decision 84: Player A (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 85: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Play The Tabernacle at Pendrell Vale
+|   3: Play Thespian's Stage
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Bojuka Bog)
+Player B played Bojuka Bog
+Bojuka Bog enters tapped.
+Choose target for Bojuka Bog:
+| decision 86: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (15 life)
+|   1: Player B (16 life)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (15 life))
+Targeting choice 0
+Bojuka Bog triggered
+| decision 87: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZoneAll)
+Player A moves Boseiju, Who Endures to exile
+Player A moves Soul-Guide Lantern to exile
+Player A moves Crucible of Worlds to exile
+Player A moves Crop Rotation to exile
+Player A moves Crop Rotation to exile
+Player A moves Malevolent Rumble to exile
+Player A moves Urza's Saga to exile
+Player A moves Urza's Saga to exile
+Player A moves Urza's Saga to exile
+Player A moves 9 card(s) to exile
+| decision 88: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 89: Player A (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 90: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [5/5]
+|   1: Construct token [5/5]
+|   2: Marit Lage token [20/20]
+|   3: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [5/5])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [5/5] -> Player A
+| decision 91: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [5/5]
+|   1: Marit Lage token [20/20]
+|   2: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [5/5])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [5/5] -> Player A
+  [attacking] Construct token [5/5] -> Player A
+| decision 92: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [5/5] -> Player A
+  [attacking] Construct token [5/5] -> Player A
+  [attacking] Marit Lage token [20/20] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player A
+  Construct token -> Player A
+  Marit Lage token -> Player A
+| decision 93: Player A (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [5/5]
+  1: Construct token [5/5]
+  2: Marit Lage token [20/20]
+Your creatures:
+| decision 94: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Construct token [4/4]
+|   1: Confirm blockers
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Construct token [4/4])
+Select attacker for Construct token to block:
+| decision 95: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Construct token [5/5]
+|   1: Construct token [5/5]
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Construct token [5/5])
+Construct token blocking Construct token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [5/5]
+  1: Construct token [5/5]
+  2: Marit Lage token [20/20]
+Your creatures:
+  (assigned) Construct token [4/4] blocking Construct token
+| auto: Player A: Confirm blockers
+
+Blockers declared:
+  Construct token blocking Construct token
+| decision 96: Player A (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T9 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 4 damage to Construct token
+  Construct token deals 5 damage to Construct token
+  Construct token deals 5 damage to Player A (now at 10 life)
+  Marit Lage token deals 20 damage to Player A (now at -10 life)
+--- End Combat Damage ---
+
+
+Player A has -10 life - Player B wins!
+GAME_RESULT: 1 Player B wins

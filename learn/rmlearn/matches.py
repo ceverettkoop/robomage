@@ -69,8 +69,8 @@ def deck_name(stem):
 
 
 def directory_decks(sub, bin_dir=BIN_DIR):
-    """The decks of ``bin/resources/decks/<sub>/`` (``deck_name``s): ``league/`` the ten original decks
-    (``LEAGUE``) first, in their order, then the others sorted."""
+    """The decks of ``bin/resources/decks/<sub>/`` (``deck_name``s): ``league/`` the ten decks of
+    ``LEAGUE`` first, in their order, then the others sorted."""
     root = os.path.join(bin_dir, "resources", "decks", sub)
     stems = sorted(fn[:-3] for fn in os.listdir(root) if fn.endswith(".dk")) if os.path.isdir(root) else []
     names = [deck_name("%s/%s" % (sub, s)) for s in stems]
@@ -121,7 +121,7 @@ def parse_pairs(text):
 
 
 def parse_pair(item):
-    """'ur_delver-burn' or 'ur_delver:burn' → ('ur_delver', 'burn')."""
+    """'ur_tempo-burn' or 'ur_tempo:burn' → ('ur_tempo', 'burn')."""
     if isinstance(item, (tuple, list)):
         return tuple(item)
     if ":" in item:

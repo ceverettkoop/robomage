@@ -388,11 +388,11 @@ void tier_actor(const Options &opt, Report &rep) {
                 path_join(a.dir, "traj_projected")},
             {}},
         {"argmax_ts",
-            {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_delver",
+            {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_tempo",
                 "--deck-b", "league/bug"},
             {}},
         {"argmax_pt2",
-            {"--agent-a", "nn:" + a.pt2() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_delver",
+            {"--agent-a", "nn:" + a.pt2() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_tempo",
                 "--deck-b", "league/bug"},
             {}},
     };

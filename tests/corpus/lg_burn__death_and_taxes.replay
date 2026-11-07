@@ -1,0 +1,706 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_burn__death_and_taxes.rmlog
+REPLAY MODE: Using embedded decks 'league/burn' / 'league/death_and_taxes' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Fiery Islet
+Player A draws Rift Bolt
+Player A draws Rift Bolt
+Player A draws Mountain
+Player A draws Price of Progress
+Player A draws Mountain
+Player A draws Mountain
+Player B draws Plains
+Player B draws Witch Enchanter
+Player B draws Plains
+Player B draws Clarion Conqueror
+Player B draws Solitude
+Player B draws Swords to Plowshares
+Player B draws Phelia, Exuberant Shepherd
+Player A hand:
+Fiery Islet
+Mountain
+Mountain
+Mountain
+Price of Progress
+Rift Bolt
+Rift Bolt
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Swords to Plowshares
+Clarion Conqueror
+Solitude
+Witch Enchanter
+Phelia, Exuberant Shepherd
+Plains
+Plains
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 4: Player B (game 0, turn 0, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Fiery Islet
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Play Mountain
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Fiery Islet)
+Player A played Fiery Islet
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Suspend Rift Bolt
+|   2: Suspend Rift Bolt
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Suspend Rift Bolt)
+Player A pays 1 life
+Player A activated Fiery Islet for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+| decision 7: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 8: Player B (game 0, turn 0, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 9: Player B (game 0, turn 0, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 10: Player B (game 0, turn 0, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 11: Player B (game 0, turn 0, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 12: Player B (game 0, turn 0, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 2 (Player B) --------
+| decision 13: Player B (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Plains
+| decision 14: Player B (game 0, turn 1, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Play Plains
+|   3: Play Plains
+|   4: Play Plains
+|   5: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Witch-Blessed Meadow)
+Player B played Witch-Blessed Meadow
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: pay 3 life so it enters untapped)
+Player B pays 3 life.
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 18: Player B (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 19: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 20: Player B (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 21: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+| decision 23: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+| decision 24: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: SuspendCast)
+| decision 25: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 26: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Player B (17 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (17 life))
+Targeting choice 0
+Player A casts Rift Bolt targeting Player B
+| decision 27: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Rift Bolt deals 3 damage to Player B (now at 14 life)
+| decision 28: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Chain Lightning
+| decision 29: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Cast Chain Lightning
+|   5: Suspend Rift Bolt
+(REPLAY) [T2 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Targeting choice 0
+Player A pays 1 life
+Player A activated Fiery Islet for 1(R)
+Player A casts Chain Lightning targeting Player B
+| decision 32: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at 11 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 33: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Witch-Blessed Meadow for (W)
+|   1: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Don't pay (Chain Lightning is not copied))
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Suspend Rift Bolt
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Suspend Rift Bolt)
+Player A activated Mountain for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+| decision 36: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 37: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 38: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 39: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 40: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 42: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Witch Enchanter
+| decision 43: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Play Plains
+|   3: Play Plains
+|   4: Play Plains
+|   5: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Witch-Blessed Meadow)
+Player B played Witch-Blessed Meadow
+| decision 45: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Decline: pay 3 life so it enters untapped)
+Witch-Blessed Meadow enters tapped.
+| decision 46: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 47: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 48: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 49: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 50: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 51: Player B (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+| decision 52: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Price of Progress
+|   2: Activate Fiery Islet (Draw)
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Price of Progress)
+Player A activated Mountain for 1(R)
+Player A pays 1 life
+Player A activated Fiery Islet for 1(U)
+Player A casts Price of Progress
+| decision 53: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RepeatEach)
+Resolving ability (category: DealDamage, amount: 2)
+Price of Progress deals 2 damage to Player A (now at 15 life)
+Resolving ability (category: DealDamage, amount: 4)
+Price of Progress deals 4 damage to Player B (now at 7 life)
+| decision 54: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+| decision 55: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: SuspendCast)
+| decision 56: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 57: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Player B (7 life)
+|   1: Player A (15 life)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (7 life))
+Targeting choice 0
+Player A casts Rift Bolt targeting Player B
+| decision 58: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Rift Bolt deals 3 damage to Player B (now at 4 life)
+| decision 59: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Exquisite Firecraft
+| decision 60: Player B (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 61: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 62: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 63: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 64: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 65: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 66: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player B (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 68: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Cast Phelia, Exuberant Shepherd
+(REPLAY) [T5 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Cast Phelia, Exuberant Shepherd)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Phelia, Exuberant Shepherd
+| decision 69: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 70: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Aether Vial
+| decision 71: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 72: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Plains
+|   3: Play Plains
+|   4: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 73: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Aether Vial
+|   3: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Aether Vial)
+Player B activated Plains for 1(W)
+Player B casts Aether Vial
+| decision 74: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Aether Vial enters the battlefield
+| decision 75: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 76: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 77: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 78: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 79: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 80: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 81: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 82: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 83: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Fiery Islet (Draw)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 84: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Mountain
+| decision 85: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Fiery Islet (Draw)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 86: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T6 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 87: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Cast Exquisite Firecraft
+|   4: Activate Fiery Islet (Draw)
+(REPLAY) [T6 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Exquisite Firecraft)
+Choose target for Exquisite Firecraft:
+| decision 88: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (4 life)
+|   1: Player A (15 life)
+|   2: Phelia, Exuberant Shepherd
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (4 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A pays 1 life
+Player A activated Fiery Islet for 1(U)
+Player A casts Exquisite Firecraft targeting Player B
+| decision 89: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 4)
+Exquisite Firecraft deals 4 damage to Player B (now at 0 life)
+
+Player B has 0 life - Player A wins!
+GAME_RESULT: 1 Player A wins

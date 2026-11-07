@@ -401,8 +401,9 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a) {
     remove_tree(dir);
     make_dirs(dir);
     const std::vector<RemoteGame> games = {{"league/bug", "league/burn", opt.seed + 11},
-        {"league/ur_delver", "league/uw_control", opt.seed + 12}, {"league/reanimator", "league/bw_dnt", opt.seed + 13},
-        {"league/gw_maverick", "league/wrb_energy", opt.seed + 14}};
+        {"league/ur_tempo", "league/uw_control", opt.seed + 12},
+        {"league/reanimator", "league/death_and_taxes", opt.seed + 13},
+        {"league/eldrazi_aggro", "league/wrb_energy", opt.seed + 14}};
     const size_t n = games.size();
     const std::string sock = path_join(dir, "rmserve.sock");
     rmcheck::ServerRun server;

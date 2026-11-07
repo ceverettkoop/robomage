@@ -95,7 +95,7 @@ def make_inputs(args):
         [eng, "--cards-frame", cards],
         [rmfeat, "--export-tables", cards, tables, "--text-table", text],
         [eng, "--agent-a", "explore", "--agent-b", "explore", "--bo3", "--game-seed", "1", "--deck-a",
-         "league/ur_delver", "--deck-b", "league/burn", "--max-decisions", "300", "--rmstate-dump", dump],
+         "league/ur_tempo", "--deck-b", "league/burn", "--max-decisions", "300", "--rmstate-dump", dump],
         [rmfeat, "--featurize", dump, "--viewer", "A", "--out", os.path.join(w, "A.rmtb"), "--cards", cards,
          "--tables", tables, "--text-table", text],
         [rmfeat, "--featurize", dump, "--viewer", "omniscient", "--out", os.path.join(w, "omniscient.rmtb"),
@@ -801,7 +801,8 @@ def make_episodes(args):
     if os.path.isdir(out) and any(n.endswith(".rmtraj") for n in os.listdir(out)):
         return out
     eng = os.path.join(args.engine_dir, "robomage")
-    for seed, da, db, cap in ((5, "league/ur_delver", "league/burn", "600"), (6, "league/bug", "league/lands", "400")):
+    for seed, da, db, cap in ((5, "league/ur_tempo", "league/burn", "600"),
+                              (6, "league/bug", "league/lands_top8", "400")):
         argv = [eng, "--agent-a", "explore", "--agent-b", "random", "--bo3", "--game-seed", str(seed), "--deck-a", da,
                 "--deck-b", db, "--teacher-a", "python3 ../python/teacher.py", "--trajectory-out", out,
                 "--trajectory-omniscient", "--max-decisions", cap]

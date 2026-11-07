@@ -106,10 +106,10 @@ static std::vector<rmcheck::FuzzGame> featurize_games() {
             const char *flag;
     };
     static const Row rows[] = {
-        {"ur_delver", "bug", false, 301, nullptr},
+        {"ur_tempo", "bug", false, 301, nullptr},
         {"reanimator", "wrb_energy", true, 302, nullptr},
-        {"lands", "bw_dnt", false, 303, "--closed-decklist"},
-        {"gw_maverick", "uw_control", false, 304, "off"},
+        {"lands_top8", "death_and_taxes", false, 303, "--closed-decklist"},
+        {"eldrazi_aggro", "uw_control", false, 304, "off"},
     };
     std::vector<rmcheck::FuzzGame> out;
     for (const Row &r : rows) {

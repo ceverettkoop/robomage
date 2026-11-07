@@ -1,0 +1,3841 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__death_and_taxes.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/death_and_taxes' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Plains
+Player B draws Witch Enchanter
+Player B draws Plains
+Player B draws Clarion Conqueror
+Player B draws Solitude
+Player B draws Swords to Plowshares
+Player B draws Phelia, Exuberant Shepherd
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Witherbloom Command
+Player A draws Undercity Sewers
+Player A draws Uro, Titan of Nature's Wrath
+Player A draws Orcish Bowmasters
+Player A draws Fatal Push
+Player A draws Tropical Island
+Player A draws Polluted Delta
+Player B hand:
+Swords to Plowshares
+Clarion Conqueror
+Solitude
+Witch Enchanter
+Phelia, Exuberant Shepherd
+Plains
+Plains
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Fatal Push
+Orcish Bowmasters
+Polluted Delta
+Tropical Island
+Undercity Sewers
+Uro, Titan of Nature's Wrath
+Witherbloom Command
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Fatal Push
+|   1: Orcish Bowmasters
+|   2: Polluted Delta
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Uro, Titan of Nature's Wrath
+|   6: Witherbloom Command
+(REPLAY) [T0 | Untap | Player A] Input: 2
+| >> Player A: 2 (Polluted Delta)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player B (game 0, turn 0, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 6: Player B (game 0, turn 0, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Play Undercity Sewers
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+| decision 8: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 9: Player B (game 0, turn 0, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 10: Player B (game 0, turn 0, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 11: Player B (game 0, turn 0, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 12: Player B (game 0, turn 0, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 13: Player B (game 0, turn 0, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T0 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 2 (Player B) --------
+| decision 14: Player B (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Plains
+| decision 15: Player B (game 0, turn 1, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Play Plains
+|   3: Play Plains
+|   4: Play Plains
+|   5: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Witch-Blessed Meadow)
+Player B played Witch-Blessed Meadow
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: pay 3 life so it enters untapped)
+Player B pays 3 life.
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 19: Player B (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 20: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 21: Player B (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 23: Player B (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T1 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 24: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Tropical Island
+| decision 25: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+|   2: Play Undercity Sewers
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+| decision 27: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 28: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 29: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 30: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 31: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 32: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 33: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Witch Enchanter
+| decision 34: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Witch-Blessed Meadow
+|   2: Play Plains
+|   3: Play Plains
+|   4: Play Plains
+|   5: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Witch-Blessed Meadow)
+Player B played Witch-Blessed Meadow
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: pay 3 life so it enters untapped
+|   1: Accept: pay 3 life so it enters untapped
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: pay 3 life so it enters untapped)
+Player B pays 3 life.
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Cast Phelia, Exuberant Shepherd
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Phelia, Exuberant Shepherd)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Phelia, Exuberant Shepherd
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Phelia, Exuberant Shepherd enters the battlefield
+| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 40: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 41: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 42: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 43: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 44: Player B (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T3 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+| decision 45: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Bayou
+| decision 46: Player B (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bayou
+|   2: Play Undercity Sewers
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Bayou)
+Player A played Bayou
+| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Cast Orcish Bowmasters
+|   3: Cast Uro, Titan of Nature's Wrath
+|   4: Cast Witherbloom Command
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Fatal Push)
+Choose target for Fatal Push:
+| auto: Player A: Phelia, Exuberant Shepherd
+Targeting choice 0
+Player A activated Bayou for 1(B)
+Player A casts Fatal Push targeting Phelia, Exuberant Shepherd
+| decision 49: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Phelia, Exuberant Shepherd is destroyed
+| decision 50: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 51: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 52: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 53: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 54: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 55: Player B (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T4 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 56: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Aether Vial
+| decision 57: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 58: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Plains
+|   3: Play Plains
+|   4: Cast Aether Vial
+|   5: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Aether Vial)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Aether Vial
+| decision 59: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Aether Vial enters the battlefield
+| decision 60: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Plains
+|   3: Play Plains
+|   4: Cast Solitude (alternate cost)
+|   5: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 61: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 62: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 63: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 64: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 65: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 66: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 68: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 69: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Orcish Bowmasters)
+Player A activated Bayou for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A casts Orcish Bowmasters
+| decision 70: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 71: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Player A (20 life)
+|   2: Orcish Bowmasters
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+| decision 72: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Solitude (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| auto: Player B: Orcish Bowmasters
+Targeting choice 0
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Swords to Plowshares targeting Orcish Bowmasters
+| decision 73: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Solitude (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Solitude (alternate cost))
+| auto: Player B: Exile Clarion Conqueror
+Player B exiles Clarion Conqueror
+Player B casts Solitude
+Solitude enters the battlefield
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 74: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Solitude (ChangeZone, targeted)
+|   1: Solitude (evoke: sacrifice)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Solitude (ChangeZone, targeted))
+Choose target for Solitude:
+| decision 75: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: No target
+|   1: Orcish Bowmasters
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Orcish Bowmasters)
+Targeting choice 1
+Solitude triggered
+Solitude triggered
+Resolving ability (category: ChangeZone)
+Solitude is moved to graveyard
+Resolving ability (category: ChangeZone)
+Orcish Bowmasters is moved to exile
+Resolving ability (category: GainLife, amount: 1)
+Player A gains 1 life (now at 21)
+ChangeZone fizzles
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 1/1.
+Player A draws Ponder
+| decision 76: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+|   2: Cast Ponder
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Ponder)
+Player A activated Tropical Island for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Wasteland
+|   1: Underground Sea
+|   2: Fatal Push
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Wasteland)
+Choose which card goes 2 from top:
+| decision 78: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Underground Sea
+|   1: Fatal Push
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Underground Sea)
+| decision 79: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Fatal Push
+| decision 80: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Undercity Sewers
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Undercity Sewers)
+Player A played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Underground Sea
+| decision 81: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Underground Sea on top of library
+|   1: Put Underground Sea into graveyard
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Put Underground Sea into graveyard)
+Player A puts Underground Sea into their graveyard.
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Aether Vial triggered
+| decision 82: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 83: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 84: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Disruptor Flute
+| decision 85: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Disruptor Flute
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Disruptor Flute)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Disruptor Flute
+| decision 86: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Disruptor Flute enters the battlefield
+Choose a card name for Disruptor Flute:
+| decision 87: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Force of Will
+|   2: Name card: Misty Rainforest
+|   3: Name card: Orcish Bowmasters
+|   4: Name card: Ponder
+|   5: Name card: Wasteland
+|   6: Name card: Fatal Push
+|   7: Name card: Flow State
+|   8: Name card: Polluted Delta
+|   9: Name card: Tamiyo, Inquisitive Student
+|   10: Name card: Tropical Island
+|   11: Name card: Baleful Strix
+|   12: Name card: Carpet of Flowers
+|   13: Name card: Consign to Memory
+|   14: Name card: Endurance
+|   15: Name card: Pernicious Deed
+|   16: Name card: Sheoldred's Edict
+|   17: Name card: Thoughtseize
+|   18: Name card: Underground Sea
+|   19: Name card: Uro, Titan of Nature's Wrath
+|   20: Name card: Witherbloom Command
+|   21: Name card: Bayou
+|   22: Name card: Force of Negation
+|   23: Name card: Force of Vigor
+|   24: Name card: Forest
+|   25: Name card: Hydroblast
+|   26: Name card: Island
+|   27: Name card: Kaito, Bane of Nightmares
+|   28: Name card: Life from the Loam
+|   29: Name card: Lórien Revealed
+|   30: Name card: Null Rod
+|   31: Name card: Surgical Extraction
+|   32: Name card: Swamp
+|   33: Name card: Toxic Deluge
+|   34: Name card: Undercity Sewers
+|   35: Name card: Veil of Summer
+|   36: Name card: Verdant Catacombs
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Name card: Brainstorm)
+Player B names card: Brainstorm
+| decision 88: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Plains
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 90: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+| decision 91: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+(REPLAY) [T8 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Wasteland
+| decision 92: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 93: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Fatal Push
+|   3: Cast Uro, Titan of Nature's Wrath
+|   4: Cast Witherbloom Command
+(REPLAY) [T8 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Uro, Titan of Nature's Wrath)
+Player A activated Tropical Island for 1(U)
+Player A activated Tropical Island for 1(G)
+Player A activated Bayou for 1(G)
+Player A casts Uro, Titan of Nature's Wrath
+| decision 94: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Uro, Titan of Nature's Wrath enters the battlefield
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 95: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Uro, Titan of Nature's Wrath (Sacrifice)
+|   1: Uro, Titan of Nature's Wrath (GainLife)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Uro, Titan of Nature's Wrath (Sacrifice))
+Uro, Titan of Nature's Wrath triggered
+Uro, Titan of Nature's Wrath triggered
+| decision 96: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 24)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Sheoldred's Edict
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 97: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Wasteland)
+Player A puts Wasteland to the battlefield
+| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Cast Sheoldred's Edict
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Sheoldred's Edict)
+Choose mode:
+| decision 99: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Each opponent sacrifices a nontoken creature.
+|   1: Each opponent sacrifices a creature token.
+|   2: Each opponent sacrifices a planeswalker.
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Each opponent sacrifices a nontoken creature.)
+Player A chooses mode — Each opponent sacrifices a nontoken creature.
+Player A activated Undercity Sewers for 1(B)
+Player A activated Wasteland for 1(C)
+Player A casts Sheoldred's Edict
+Resolving ability (category: Charm)
+Resolving ability (category: Sacrifice)
+Resolving ability (category: Sacrifice)
+| auto: Player A: Sacrifice Uro, Titan of Nature's Wrath
+Player A sacrifices Uro, Titan of Nature's Wrath.
+
+--- Declare Attackers (Player A) ---
+| decision 100: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Aether Vial triggered
+| decision 101: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 102: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 103: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Stoneforge Mystic
+| decision 104: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 105: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Cast Stoneforge Mystic
+|   4: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Stoneforge Mystic)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B casts Stoneforge Mystic
+| decision 106: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Stoneforge Mystic enters the battlefield
+Stoneforge Mystic triggered
+| decision 107: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Stoneforge Mystic's triggered ability
+|   1: Accept: use Stoneforge Mystic's triggered ability
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Stoneforge Mystic's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 108: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Meteor Sword
+|   2: Pre-War Formalwear
+|   3: Lion Sash
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Meteor Sword)
+Player B shuffles their library
+Player B reveals Meteor Sword and puts it to hand
+| decision 109: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 110: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Companion: pay {3}, put Yorion, Sky Nomad into your hand)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B pays {3} and puts Yorion, Sky Nomad into their hand from outside the game
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+| decision 111: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Fatal Push)
+Choose target for Fatal Push:
+| decision 112: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Stoneforge Mystic
+|   1: Orc Army token
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Stoneforge Mystic)
+Targeting choice 0
+Player A activated Bayou for 1(B)
+Player A casts Fatal Push targeting Stoneforge Mystic
+| decision 113: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Stoneforge Mystic is destroyed
+| decision 114: Player A (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Ponder
+| decision 115: Player A (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 116: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Witherbloom Command
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Tropical Island for 1(U)
+Player A casts Ponder
+| decision 117: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 118: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Witch-Blessed Meadow
+|   1: Witch-Blessed Meadow
+|   2: Bayou
+|   3: Tropical Island
+|   4: Tropical Island
+|   5: Undercity Sewers
+|   6: Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Witch-Blessed Meadow)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Witch-Blessed Meadow is on the stack
+Resolving ability (category: Destroy)
+Witch-Blessed Meadow is destroyed
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 119: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Ponder
+|   1: Island
+|   2: Verdant Catacombs
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Island)
+Choose which card goes 2 from top:
+| decision 120: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Ponder
+|   1: Verdant Catacombs
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Verdant Catacombs)
+| decision 121: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Ponder
+| decision 122: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Witherbloom Command
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Tropical Island for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 123: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Verdant Catacombs
+|   1: Island
+|   2: Life from the Loam
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Verdant Catacombs)
+Choose which card goes 2 from top:
+| decision 124: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Island
+|   1: Life from the Loam
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Island)
+| decision 125: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Life from the Loam
+
+--- Declare Attackers (Player A) ---
+| decision 126: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 11 life)
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+Aether Vial triggered
+| decision 127: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 128: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 129: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 130: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 131: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 132: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 133: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 134: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 135: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 136: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 137: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 138: Player B (game 0, turn 11, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 13 (Player A) --------
+| decision 139: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Island
+| decision 140: Player B (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 141: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Cast Life from the Loam
+|   3: Cast Witherbloom Command
+|   4: Cast Uro, Titan of Nature's Wrath (escape)
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 142: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Underground Sea
+|   2: Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Wasteland)
+Targeting choice 2
+Choose target for Life from the Loam:
+| decision 143: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Tropical Island for 1(G)
+Player A casts Life from the Loam targeting Wasteland
+| decision 144: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Wasteland is moved to hand
+| decision 145: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Wasteland
+|   3: Cast Witherbloom Command
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Witherbloom Command)
+Choose mode:
+| decision 146: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Target player mills three cards, then you return a land card from your graveyard to your hand.
+|   1: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   2: Target creature gets -3/-1 until end of turn.
+|   3: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Target player mills three cards, then you return a land card from your graveyard to your hand.)
+Player A chooses mode — Target player mills three cards, then you return a land card from your graveyard to your hand.
+Choose target for Witherbloom Command:
+| decision 147: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (11 life)
+|   1: Player A (24 life)
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (11 life))
+Targeting choice 0
+Choose mode:
+| decision 148: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Destroy target noncreature, nonland permanent with mana value 2 or less.
+|   1: Target creature gets -3/-1 until end of turn.
+|   2: Target opponent loses 2 life and you gain 2 life.
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Destroy target noncreature, nonland permanent with mana value 2 or less.)
+Player A chooses mode — Destroy target noncreature, nonland permanent with mana value 2 or less.
+Choose target for Witherbloom Command:
+| decision 149: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Disruptor Flute
+|   1: Aether Vial
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Disruptor Flute)
+Targeting choice 0
+Player A activated Undercity Sewers for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A casts Witherbloom Command
+| decision 150: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Charm)
+Resolving ability (category: Mill, amount: 3)
+Player B mills Flagstones of Trokair.
+Player B mills Plains.
+Player B mills Phelia, Exuberant Shepherd.
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A graveyard:
+| auto: Player A: Underground Sea
+Player A puts Underground Sea to hand
+Resolving ability (category: Destroy)
+Disruptor Flute is destroyed
+| decision 151: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Underground Sea
+|   3: Play Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+| decision 152: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 153: Player B (game 0, turn 12, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 154: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Orc Army token -> Player B
+| decision 155: Player B (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 156: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 10 life)
+--- End Combat Damage ---
+
+| decision 157: Player B (game 0, turn 12, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 158: Player B (game 0, turn 12, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 159: Player B (game 0, turn 12, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 160: Player B (game 0, turn 12, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T12 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 14 (Player B) --------
+Aether Vial triggered
+| decision 161: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 162: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T13 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 163: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Ghost Quarter
+| decision 164: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 165: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+|   2: Cast Swords to Plowshares
+|   3: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Ghost Quarter)
+Player B played Ghost Quarter
+| decision 166: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Yorion, Sky Nomad
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Ghost Quarter (Destroy)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Yorion, Sky Nomad)
+Player B activated Witch-Blessed Meadow for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Ghost Quarter for 1(C)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Yorion, Sky Nomad
+| decision 167: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Yorion, Sky Nomad enters the battlefield
+Yorion, Sky Nomad triggered
+Resolving ability (category: ChangeZone)
+| decision 168: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Aether Vial
+|   1: Done (exile no more)
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Aether Vial)
+Player B exiles Aether Vial
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
+No creatures eligible to attack.
+Delayed trigger fires.
+Resolving ability (category: ChangeZone)
+Aether Vial is moved to the battlefield
+Resolving ability (category: Cleanup)
+| decision 169: Player B (game 0, turn 13, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T13 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 15 (Player A) --------
+| decision 170: Player B (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 171: Player A (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T14 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Verdant Catacombs.
+Player A mills Brainstorm.
+Player A mills Flow State.
+Player A dredges Life from the Loam (milled 3)
+| decision 172: Player B (game 0, turn 14, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 173: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Play Wasteland
+|   3: Cast Life from the Loam
+|   4: Cast Uro, Titan of Nature's Wrath (escape)
+(REPLAY) [T14 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 174: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Verdant Catacombs
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Island for 1(U)
+Player A casts Life from the Loam
+| decision 175: Player B (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T14 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Resolving ability (category: ChangeZone)
+| decision 176: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Play Wasteland
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Underground Sea)
+Player A played Underground Sea
+| decision 177: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Uro, Titan of Nature's Wrath (escape)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Uro, Titan of Nature's Wrath (escape))
+| decision 178: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Brainstorm from graveyard
+|   1: Exile Fatal Push from graveyard
+|   2: Exile Flow State from graveyard
+|   3: Exile Life from the Loam from graveyard
+|   4: Exile Ponder from graveyard
+|   5: Exile Sheoldred's Edict from graveyard
+|   6: Exile Verdant Catacombs from graveyard
+|   7: Exile Witherbloom Command from graveyard
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Brainstorm from graveyard)
+| decision 179: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Fatal Push from graveyard
+|   1: Exile Flow State from graveyard
+|   2: Exile Life from the Loam from graveyard
+|   3: Exile Ponder from graveyard
+|   4: Exile Sheoldred's Edict from graveyard
+|   5: Exile Verdant Catacombs from graveyard
+|   6: Exile Witherbloom Command from graveyard
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Fatal Push from graveyard)
+| decision 180: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Fatal Push from graveyard
+|   1: Exile Flow State from graveyard
+|   2: Exile Life from the Loam from graveyard
+|   3: Exile Ponder from graveyard
+|   4: Exile Sheoldred's Edict from graveyard
+|   5: Exile Verdant Catacombs from graveyard
+|   6: Exile Witherbloom Command from graveyard
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Fatal Push from graveyard)
+| decision 181: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Flow State from graveyard
+|   1: Exile Life from the Loam from graveyard
+|   2: Exile Ponder from graveyard
+|   3: Exile Sheoldred's Edict from graveyard
+|   4: Exile Verdant Catacombs from graveyard
+|   5: Exile Witherbloom Command from graveyard
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Flow State from graveyard)
+| decision 182: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Life from the Loam from graveyard
+|   1: Exile Ponder from graveyard
+|   2: Exile Sheoldred's Edict from graveyard
+|   3: Exile Verdant Catacombs from graveyard
+|   4: Exile Witherbloom Command from graveyard
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Life from the Loam from graveyard)
+Player A activated Tropical Island for 1(G)
+Player A activated Tropical Island for 1(G)
+Player A activated Undercity Sewers for 1(U)
+Player A activated Underground Sea for 1(U)
+Player A exiles Brainstorm from their graveyard
+Player A exiles Fatal Push from their graveyard
+Player A exiles Fatal Push from their graveyard
+Player A exiles Flow State from their graveyard
+Player A exiles Life from the Loam from their graveyard
+Player A casts Uro, Titan of Nature's Wrath
+Uro, Titan of Nature's Wrath enters the battlefield
+Uro, Titan of Nature's Wrath triggered
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 27)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Tamiyo, Inquisitive Student
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 183: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Wasteland
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Wasteland)
+Player A puts Wasteland to the battlefield
+| decision 184: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 185: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Witch-Blessed Meadow
+|   1: Ghost Quarter
+|   2: Bayou
+|   3: Tropical Island
+|   4: Tropical Island
+|   5: Undercity Sewers
+|   6: Underground Sea
+|   7: Wasteland
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Witch-Blessed Meadow)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Witch-Blessed Meadow is on the stack
+Resolving ability (category: Destroy)
+Witch-Blessed Meadow is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 186: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 16 (Player B) --------
+Aether Vial triggered
+| decision 187: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 188: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Uro, Titan of Nature's Wrath
+|   1: Orc Army token
+|   2: Yorion, Sky Nomad
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Uro, Titan of Nature's Wrath)
+Targeting choice 0
+Player B activated Plains for 1(W)
+Player B casts Swords to Plowshares targeting Uro, Titan of Nature's Wrath
+| decision 189: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Uro, Titan of Nature's Wrath is moved to exile
+Resolving ability (category: GainLife, amount: 6)
+Player A gains 6 life (now at 33)
+| decision 190: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 191: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T15 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 1).
+| decision 192: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Plains
+| decision 193: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 194: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+|   3: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 195: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 196: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Ghost Quarter (Destroy))
+Choose target for Ghost Quarter:
+| decision 197: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bayou
+|   1: Island
+|   2: Tropical Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+|   6: Ghost Quarter
+|   7: Plains
+|   8: Plains
+|   9: Plains
+|   10: Plains
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bayou)
+Targeting choice 0
+Player B sacrifices Ghost Quarter
+Player B's Ghost Quarter ability targeting Bayou is on the stack
+Resolving ability (category: Destroy)
+Bayou is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 198: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Forest
+|   2: Swamp
+(REPLAY) [T15 | First Main | Player A] Input: 1
+| >> Player A: 1 (Forest)
+Player A shuffles their library
+Player A puts Forest to the battlefield
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 199: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Yorion, Sky Nomad -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 4 damage to Player A (now at 29 life)
+--- End Combat Damage ---
+
+
+-------- TURN 17 (Player A) --------
+Player A draws Brainstorm
+| decision 200: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T16 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Wasteland
+Player A draws Tamiyo, Inquisitive Student
+Player A draws Wasteland
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 201: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Tamiyo, Inquisitive Student
+|   2: Wasteland
+|   3: Wasteland
+(REPLAY) [T16 | Draw | Player A] Input: 2
+| >> Player A: 2 (Wasteland)
+Player A puts Wasteland to top of library
+Player A chooses a card from Player A hand:
+| decision 202: Player A (game 0, turn 16, DRAW, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Tamiyo, Inquisitive Student
+|   2: Wasteland
+(REPLAY) [T16 | Draw | Player A] Input: 2
+| >> Player A: 2 (Wasteland)
+Player A puts Wasteland to top of library
+| decision 203: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Tropical Island for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+| decision 204: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Tropical Island for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+Legend rule: Player A controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+| decision 205: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Tamiyo, Inquisitive Student
+|   1: Keep Tamiyo, Inquisitive Student
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Keep Tamiyo, Inquisitive Student)
+Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+
+--- Declare Attackers (Player A) ---
+| decision 206: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 9 life)
+--- End Combat Damage ---
+
+
+-------- TURN 18 (Player B) --------
+Aether Vial triggered
+| decision 207: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 208: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T17 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 2).
+| decision 209: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Thalia, Guardian of Thraben
+| decision 210: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 211: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Thalia, Guardian of Thraben
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Thalia, Guardian of Thraben)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Thalia, Guardian of Thraben
+| decision 212: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+Thalia, Guardian of Thraben enters the battlefield
+
+--- Declare Attackers (Player B) ---
+| decision 213: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Yorion, Sky Nomad -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Yorion, Sky Nomad [4/5]
+Your creatures:
+| decision 214: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 4 damage to Player A (now at 25 life)
+--- End Combat Damage ---
+
+
+-------- TURN 19 (Player A) --------
+Player A draws Wasteland
+| decision 215: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 216: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 217: Player A (game 0, turn 18, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 218: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 219: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+  Orc Army token -> Player B
+Tamiyo, Inquisitive Student triggered
+| decision 220: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 221: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Tamiyo, Inquisitive Student [0/3]
+  1: Orc Army token [1/1]
+Your creatures:
+| decision 222: Player B (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Confirm blockers
+(REPLAY) [T18 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 223: Player A (game 0, turn 18, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T18 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+| decision 224: Player A (game 0, turn 18, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T18 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 225: Player A (game 0, turn 18, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T18 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 226: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T18 | Second Main | Player A] Input: 2
+| >> Player A: 2 (Activate Clue token (Draw))
+Player A activated Forest for 1(G)
+Player A activated Island for 1(U)
+Player A sacrifices Clue token
+Player A's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+| decision 227: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Wasteland
+| decision 228: Player A (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 229: Player A (game 0, turn 18, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T18 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 20 (Player B) --------
+Aether Vial triggered
+| decision 230: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 231: Player A (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 232: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T19 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 3).
+| decision 233: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 234: Player A (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Plains
+| decision 235: Player B (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 236: Player A (game 0, turn 19, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 237: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 238: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 239: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 240: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 241: Player A (game 0, turn 19, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 242: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 243: Player B (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T19 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Yorion, Sky Nomad -> Player A
+| decision 244: Player A (game 0, turn 19, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 245: Player A (game 0, turn 19, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 23 life)
+--- End First Strike Combat Damage ---
+
+| decision 246: Player A (game 0, turn 19, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 4 damage to Player A (now at 19 life)
+--- End Combat Damage ---
+
+| decision 247: Player A (game 0, turn 19, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 248: Player A (game 0, turn 19, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 249: Player A (game 0, turn 19, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 250: Player A (game 0, turn 19, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T19 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 21 (Player A) --------
+| decision 251: Player A (game 0, turn 20, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Flow State
+| decision 252: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 253: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Flow State
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Flow State)
+Player A activated Island for 1(U)
+Player A activated Forest for 1(G)
+Player A activated Tropical Island for 1(G)
+Player A casts Flow State
+| decision 254: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player A looks at the top 3 card(s) of their library.
+| decision 255: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Thoughtseize
+|   2: Baleful Strix
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thoughtseize)
+| decision 256: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student
+|   1: Baleful Strix
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Baleful Strix)
+Player A puts Thoughtseize into hand.
+Player A puts Baleful Strix into hand.
+Player A puts 1 card(s) on the bottom of their library.
+| decision 257: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Baleful Strix
+|   3: Cast Thoughtseize
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Baleful Strix)
+Player A activated Undercity Sewers for 1(B)
+Player A activated Tropical Island for 1(U)
+Player A casts Baleful Strix
+| decision 258: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Baleful Strix enters the battlefield
+Baleful Strix triggered
+| decision 259: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Force of Will
+| decision 260: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Thoughtseize
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 261: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (8 life)
+|   1: Player A (19 life)
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Player A activated Underground Sea for 1(B)
+Player A activated Wasteland for 1(C)
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard)
+Player B reveals their hand:
+  Meteor Sword
+Player A chooses a card to discard:
+| auto: Player A: Meteor Sword
+Player B discards Meteor Sword
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 17)
+| decision 262: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 263: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 264: Player A (game 0, turn 20, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 265: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Tamiyo, Inquisitive Student [0/3])
+Tamiyo, Inquisitive Student attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+| decision 266: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Tamiyo, Inquisitive Student -> Player B
+  Orc Army token -> Player B
+Tamiyo, Inquisitive Student triggered
+| decision 267: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Investigate)
+Token created: 0/0 Clue
+| decision 268: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 269: Player A (game 0, turn 20, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Orc Army token deals 1 damage to Player B (now at 7 life)
+--- End Combat Damage ---
+
+| decision 270: Player A (game 0, turn 20, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 271: Player A (game 0, turn 20, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 272: Player A (game 0, turn 20, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 273: Player A (game 0, turn 20, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T20 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 22 (Player B) --------
+Aether Vial triggered
+| decision 274: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 275: Player A (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 276: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T21 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 4).
+| decision 277: Player B (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 278: Player A (game 0, turn 21, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Ghost Quarter
+| decision 279: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 280: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 281: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Ghost Quarter)
+Player B played Ghost Quarter
+| decision 282: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 283: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Ghost Quarter (Destroy))
+Choose target for Ghost Quarter:
+| decision 284: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Forest
+|   1: Island
+|   2: Tropical Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+|   6: Wasteland
+|   7: Wasteland
+|   8: Ghost Quarter
+|   9: Plains
+|   10: Plains
+|   11: Plains
+|   12: Plains
+|   13: Plains
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Forest)
+Targeting choice 0
+Player B sacrifices Ghost Quarter
+Player B's Ghost Quarter ability targeting Forest is on the stack
+| decision 285: Player A (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T21 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Forest is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 286: Player A (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+(REPLAY) [T21 | First Main | Player A] Input: 1
+| >> Player A: 1 (Swamp)
+Player A shuffles their library
+Player A puts Swamp to the battlefield
+| decision 287: Player A (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Clue token (Draw)
+(REPLAY) [T21 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Clue token (Draw))
+Player A activated Swamp for 1(B)
+Player A activated Wasteland for 1(C)
+Player A sacrifices Clue token
+Player A's Clue ability is on the stack
+Clue (token) is put into the graveyard and ceases to exist.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 288: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 289: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Yorion, Sky Nomad -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Thalia, Guardian of Thraben [2/1]
+  1: Yorion, Sky Nomad [4/5]
+Your creatures:
+| decision 290: Player A (game 0, turn 21, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Confirm blockers
+(REPLAY) [T21 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A (now at 15 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 4 damage to Player A (now at 11 life)
+--- End Combat Damage ---
+
+
+-------- TURN 23 (Player A) --------
+| decision 291: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Island for 1(U)
+Player A activated Swamp for 1(B)
+Player A casts Brainstorm
+| decision 292: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player A draws Force of Will
+Player A draws Misty Rainforest
+Player A draws Force of Will
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 293: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Force of Will
+|   2: Force of Will
+|   3: Misty Rainforest
+(REPLAY) [T22 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Misty Rainforest)
+Player A puts Misty Rainforest to top of library
+Player A chooses a card from Player A hand:
+| decision 294: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Force of Will
+|   2: Force of Will
+(REPLAY) [T22 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Force of Will)
+Player A puts Force of Will to top of library
+Tamiyo, Inquisitive Student triggered
+| decision 295: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to exile
+Resolving ability (category: ChangeZone)
+Tamiyo, Inquisitive Student is moved to the battlefield
+Resolving ability (category: Cleanup)
+Tamiyo, Seasoned Scholar enters transformed.
+| decision 296: Player A (game 0, turn 22, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Force of Will
+| decision 297: Player A (game 0, turn 22, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 298: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+Player A's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 299: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 300: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 301: Player A (game 0, turn 22, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 302: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 303: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Orc Army token -> Player B
+| decision 304: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 305: Player A (game 0, turn 22, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 6 life)
+  Orc Army token deals 1 damage to Player B (now at 5 life)
+--- End Combat Damage ---
+
+| decision 306: Player A (game 0, turn 22, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 307: Player A (game 0, turn 22, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 308: Player A (game 0, turn 22, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 309: Player A (game 0, turn 22, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T22 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 24 (Player B) --------
+Aether Vial triggered
+| decision 310: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T23 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 311: Player A (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 312: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T23 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 5).
+| decision 313: Player B (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T23 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 314: Player A (game 0, turn 23, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Ghost Quarter
+| decision 315: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T23 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 316: Player A (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 317: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Ghost Quarter)
+Player B played Ghost Quarter
+| decision 318: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Ghost Quarter (Destroy)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 319: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T23 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Ghost Quarter (Destroy))
+Choose target for Ghost Quarter:
+| decision 320: Player B (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Island
+|   1: Swamp
+|   2: Tropical Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+|   6: Wasteland
+|   7: Wasteland
+|   8: Ghost Quarter
+|   9: Plains
+|   10: Plains
+|   11: Plains
+|   12: Plains
+|   13: Plains
+(REPLAY) [T23 | First Main | Player B] Input: 0
+| >> Player B: 0 (Island)
+Targeting choice 0
+Player B sacrifices Ghost Quarter
+Player B's Ghost Quarter ability targeting Island is on the stack
+| decision 321: Player A (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Island is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| auto: Player A: Fail to find
+Player A fails to find
+| decision 322: Player A (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+| decision 323: Player A (game 0, turn 23, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 324: Player A (game 0, turn 23, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 325: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Select target for Thalia, Guardian of Thraben:
+| decision 326: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Player A (11 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 4)
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Player A (11 life))
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 327: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 328: Player B (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Player A (11 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 4)
+(REPLAY) [T23 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Player A (11 life))
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Yorion, Sky Nomad -> Player A
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 329: Player A (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Floating trigger (Pump)
+|   1: Floating trigger (Pump)
+(REPLAY) [T23 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Floating trigger (Pump))
+A floating triggered ability triggers.
+A floating triggered ability triggers.
+| decision 330: Player A (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Pump, -1/+0)
+Yorion, Sky Nomad gets -1/+0 (now 3/5)
+| decision 331: Player A (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Pump, -1/+0)
+Thalia, Guardian of Thraben gets -1/+0 (now 1/1)
+| decision 332: Player A (game 0, turn 23, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 333: Player A (game 0, turn 23, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 1 damage to Player A (now at 10 life)
+--- End First Strike Combat Damage ---
+
+| decision 334: Player A (game 0, turn 23, FIRST_STRIKE_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | First Strike Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 3 damage to Player A (now at 7 life)
+--- End Combat Damage ---
+
+| decision 335: Player A (game 0, turn 23, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 336: Player A (game 0, turn 23, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 337: Player A (game 0, turn 23, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 338: Player A (game 0, turn 23, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T23 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 25 (Player A) --------
+| decision 339: Player A (game 0, turn 24, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Misty Rainforest
+| decision 340: Player A (game 0, turn 24, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 341: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 342: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+|   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   4: Activate Wasteland (Destroy)
+|   5: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+| decision 343: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 344: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Tropical Island
+|   2: Underground Sea
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Tropical Island)
+Player A shuffles their library
+Player A puts Tropical Island to the battlefield
+| decision 345: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+Player A's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 346: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 347: Player A (game 0, turn 24, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 348: Player A (game 0, turn 24, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 349: Player A (game 0, turn 24, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T24 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 350: Player A (game 0, turn 24, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T24 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Orc Army token -> Player B
+| decision 351: Player A (game 0, turn 24, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 352: Player A (game 0, turn 24, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 4 life)
+  Orc Army token deals 1 damage to Player B (now at 3 life)
+--- End Combat Damage ---
+
+| decision 353: Player A (game 0, turn 24, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 354: Player A (game 0, turn 24, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 355: Player A (game 0, turn 24, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 356: Player A (game 0, turn 24, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T24 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 26 (Player B) --------
+Aether Vial triggered
+| decision 357: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 358: Player A (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 359: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T25 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 6).
+| decision 360: Player B (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T25 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 361: Player A (game 0, turn 25, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Recruiter of the Guard
+| decision 362: Player B (game 0, turn 25, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T25 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 363: Player A (game 0, turn 25, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T25 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 364: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Recruiter of the Guard
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Recruiter of the Guard)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Recruiter of the Guard
+| decision 365: Player B (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T25 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 366: Player A (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will
+|   2: Cast Force of Will (alternate cost)
+|   3: Cast Force of Will
+|   4: Cast Force of Will (alternate cost)
+|   5: Cast Force of Will
+|   6: Cast Force of Will (alternate cost)
+|   7: Activate Wasteland (Destroy)
+|   8: Activate Wasteland (Destroy)
+(REPLAY) [T25 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will)
+Choose target for Force of Will:
+| auto: Player A: Recruiter of the Guard
+Targeting choice 0
+Player A activated Tropical Island for 1(U)
+Player A activated Tropical Island for 1(U)
+Player A activated Swamp for 1(B)
+Player A activated Wasteland for 1(C)
+Player A activated Wasteland for 1(C)
+Player A activated Tropical Island for 1(G)
+Player A casts Force of Will targeting Recruiter of the Guard
+| decision 367: Player A (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T25 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 368: Player A (game 0, turn 25, FIRST_MAIN, Player B active)
+| menu:
+|   0: Force of Will
+|   1: Recruiter of the Guard
+(REPLAY) [T25 | First Main | Player A] Input: 1
+| >> Player A: 1 (Recruiter of the Guard)
+Targeting choice 1
+| auto: Player A: Exile Force of Will
+Player A activated Undercity Sewers for 1(U)
+Player A pays 1 life
+Player A exiles Force of Will
+Player A casts Force of Will targeting Recruiter of the Guard
+Resolving ability (category: Counter)
+Recruiter of the Guard is countered
+Counter fizzles
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 369: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Thalia, Guardian of Thraben [2/1]
+|   1: Yorion, Sky Nomad [4/5]
+|   2: Confirm attackers
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Thalia, Guardian of Thraben [2/1])
+Select target for Thalia, Guardian of Thraben:
+| decision 370: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Player A (5 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 6)
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Player A (5 life))
+Thalia, Guardian of Thraben attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+| decision 371: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 372: Player B (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Player A (5 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 6)
+(REPLAY) [T25 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Player A (5 life))
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+  Yorion, Sky Nomad -> Player A
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 373: Player A (game 0, turn 25, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Floating trigger (Pump)
+|   1: Floating trigger (Pump)
+(REPLAY) [T25 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Floating trigger (Pump))
+A floating triggered ability triggers.
+A floating triggered ability triggers.
+Resolving ability (category: Pump, -1/+0)
+Yorion, Sky Nomad gets -1/+0 (now 3/5)
+Resolving ability (category: Pump, -1/+0)
+Thalia, Guardian of Thraben gets -1/+0 (now 1/1)
+No creatures eligible to block.
+
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 1 damage to Player A (now at 4 life)
+--- End First Strike Combat Damage ---
+
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 3 damage to Player A (now at 1 life)
+--- End Combat Damage ---
+
+
+-------- TURN 27 (Player A) --------
+| decision 374: Player A (game 0, turn 26, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Sheoldred's Edict
+| decision 375: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sheoldred's Edict
+|   2: Activate Wasteland (Destroy)
+|   3: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Sheoldred's Edict)
+Choose mode:
+| decision 376: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Each opponent sacrifices a nontoken creature.
+|   1: Each opponent sacrifices a creature token.
+|   2: Each opponent sacrifices a planeswalker.
+(REPLAY) [T26 | Draw | Player A] Input: 0
+| >> Player A: 0 (Each opponent sacrifices a nontoken creature.)
+Player A chooses mode — Each opponent sacrifices a nontoken creature.
+Player A activated Swamp for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A activated Tropical Island for 1(G)
+Player A casts Sheoldred's Edict
+| decision 377: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Charm)
+Resolving ability (category: Sacrifice)
+| decision 378: Player B (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Sacrifice Thalia, Guardian of Thraben
+|   1: Sacrifice Yorion, Sky Nomad
+(REPLAY) [T26 | Draw | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Thalia, Guardian of Thraben)
+Player B sacrifices Thalia, Guardian of Thraben.
+| decision 379: Player A (game 0, turn 26, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 380: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)
+|   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)
+|   3: Activate Wasteland (Destroy)
+|   4: Activate Wasteland (Destroy)
+(REPLAY) [T26 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
+Player A's Tamiyo, Seasoned Scholar ability is on the stack
+| decision 381: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Effect)
+A floating triggered ability is created until your next turn.
+| decision 382: Player A (game 0, turn 26, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 383: Player A (game 0, turn 26, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 384: Player A (game 0, turn 26, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T26 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 385: Player A (game 0, turn 26, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T26 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Orc Army token -> Player B
+| decision 386: Player A (game 0, turn 26, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to block.
+| decision 387: Player A (game 0, turn 26, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 2 life)
+  Orc Army token deals 1 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+| decision 388: Player A (game 0, turn 26, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 389: Player A (game 0, turn 26, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 390: Player A (game 0, turn 26, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 391: Player A (game 0, turn 26, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T26 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 28 (Player B) --------
+Aether Vial triggered
+| decision 392: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T27 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 393: Player A (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T27 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 394: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Decline: use Aether Vial's triggered ability
+|   1: Accept: use Aether Vial's triggered ability
+(REPLAY) [T27 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Accept: use Aether Vial's triggered ability)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 CHARGE counter(s) on Aether Vial (now 7).
+| decision 395: Player B (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T27 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 396: Player A (game 0, turn 27, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T27 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Karakas
+| decision 397: Player B (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+(REPLAY) [T27 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 398: Player A (game 0, turn 27, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T27 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 399: Player B (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Activate Aether Vial (ChangeZone)
+(REPLAY) [T27 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Karakas)
+Player B played Karakas
+| decision 400: Player B (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Karakas (ChangeZone)
+(REPLAY) [T27 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Aether Vial (ChangeZone))
+Player B's Aether Vial ability is on the stack
+| decision 401: Player B (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+(REPLAY) [T27 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 402: Player A (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T27 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 403: Player A (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Karakas
+|   1: Tropical Island
+|   2: Tropical Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+|   6: Wasteland
+|   7: Wasteland
+(REPLAY) [T27 | First Main | Player A] Input: 0
+| >> Player A: 0 (Karakas)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Karakas is on the stack
+| decision 404: Player A (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T27 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 405: Player A (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Karakas
+|   1: Tropical Island
+|   2: Tropical Island
+|   3: Tropical Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+|   6: Wasteland
+(REPLAY) [T27 | First Main | Player A] Input: 0
+| >> Player A: 0 (Karakas)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Karakas is on the stack
+| decision 406: Player B (game 0, turn 27, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Karakas (ChangeZone)
+|   2: Tap Karakas for (W)
+(REPLAY) [T27 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Karakas is destroyed
+Destroy fizzles
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| auto: Player B: Fail to find
+Player B fails to find
+
+--- Declare Attackers (Player B) ---
+| decision 407: Player B (game 0, turn 27, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Yorion, Sky Nomad [4/5]
+|   1: Confirm attackers
+(REPLAY) [T27 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Yorion, Sky Nomad [4/5])
+Select target for Yorion, Sky Nomad:
+| decision 408: Player B (game 0, turn 27, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Player A (1 life)
+|   1: Tamiyo, Seasoned Scholar (loyalty 8)
+(REPLAY) [T27 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Player A (1 life))
+Yorion, Sky Nomad attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Yorion, Sky Nomad [4/5] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Yorion, Sky Nomad -> Player A
+A floating triggered ability triggers.
+Resolving ability (category: Pump, -1/+0)
+Yorion, Sky Nomad gets -1/+0 (now 3/5)
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Yorion, Sky Nomad deals 3 damage to Player A (now at -2 life)
+--- End Combat Damage ---
+
+
+Player A has -2 life - Player B wins!
+GAME_RESULT: 1 Player B wins

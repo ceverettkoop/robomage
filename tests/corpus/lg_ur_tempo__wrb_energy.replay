@@ -1,0 +1,1257 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_ur_tempo__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/ur_tempo' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Ponder
+Player A draws Misty Rainforest
+Player A draws Misty Rainforest
+Player A draws Mishra's Bauble
+Player A draws Volcanic Island
+Player A draws Mishra's Bauble
+Player A draws Dragon's Rage Channeler
+Player B draws Ocelot Pride
+Player B draws Scrubland
+Player B draws Voice of Victory
+Player B draws Swords to Plowshares
+Player B draws Cabal Therapy
+Player B draws Amped Raptor
+Player B draws Marsh Flats
+Player A hand:
+Ponder
+Mishra's Bauble
+Mishra's Bauble
+Dragon's Rage Channeler
+Volcanic Island
+Misty Rainforest
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Amped Raptor
+Cabal Therapy
+Marsh Flats
+Ocelot Pride
+Scrubland
+Swords to Plowshares
+Voice of Victory
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Cast Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Mishra's Bauble enters the battlefield
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Dragon's Rage Channeler
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+|   2: Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Preordain)
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Flow State
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 14: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Preordain
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mishra's Bauble
+Player B draws Thoughtseize
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Scrubland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Elegant Parlor
+|   3: Plains
+|   4: Plateau
+|   5: Scrubland
+|   6: Shadowy Backstreet
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy
+|   2: Cast Thoughtseize
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy)
+Choose target for Cabal Therapy:
+| decision 19: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Daze
+|   2: Name card: Dragon's Rage Channeler
+|   3: Name card: Force of Will
+|   4: Name card: Lightning Bolt
+|   5: Name card: Mishra's Bauble
+|   6: Name card: Ponder
+|   7: Name card: Cori-Steel Cutter
+|   8: Name card: Flow State
+|   9: Name card: Bilbo, Thief in the Night
+|   10: Name card: Consign to Memory
+|   11: Name card: Murktide Regent
+|   12: Name card: Price of Progress
+|   13: Name card: Pyroblast
+|   14: Name card: Unholy Heat
+|   15: Name card: Brazen Borrower
+|   16: Name card: Chain Lightning
+|   17: Name card: Echoing Truth
+|   18: Name card: Force of Negation
+|   19: Name card: Grafdigger's Cage
+|   20: Name card: Hydroblast
+|   21: Name card: Meltdown
+|   22: Name card: Petty Theft
+|   23: Name card: Preordain
+|   24: Name card: Prismari Charm
+|   25: Name card: Rough
+|   26: Name card: Surgical Extraction
+|   27: Name card: Tumble
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Name card: Force of Will)
+Player B names card: Force of Will
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Preordain
+  Flow State
+  Mishra's Bauble
+  Dragon's Rage Channeler
+  Misty Rainforest
+  Misty Rainforest
+No matching cards to discard.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Cori-Steel Cutter
+| decision 21: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Cast Preordain
+|   4: Cast Mishra's Bauble
+|   5: Cast Dragon's Rage Channeler
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Preordain)
+Player A activated Volcanic Island for 1(U)
+Player A casts Preordain
+Resolving ability (category: Scry, amount: 2)
+Player A scries 2.
+Scry: looking at Prismari Charm
+Scry: looking at Wasteland
+| decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Prismari Charm on top of library
+|   1: Put Wasteland on top of library
+|   2: Put Prismari Charm on the bottom of library
+|   3: Put Wasteland on the bottom of library
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Prismari Charm on top of library)
+| decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland on the bottom of library
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Wasteland on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Prismari Charm
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Cast Mishra's Bauble
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+| decision 25: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (20 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (19 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thundering Falls)
+Player A shuffles their library
+Player A puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Island
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Island on top of library
+|   1: Put Island into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Island on top of library)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Thoughtseize
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Island
+Player B draws Thoughtseize
+| decision 31: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+|   2: Cast Thoughtseize
+|   3: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 32: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (19 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+Player B activated Badlands for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Prismari Charm
+  Cori-Steel Cutter
+  Flow State
+  Dragon's Rage Channeler
+  Island
+  Misty Rainforest
+Player B chooses a card to discard:
+| decision 33: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Prismari Charm
+|   1: Cori-Steel Cutter
+|   2: Flow State
+|   3: Dragon's Rage Channeler
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Flow State)
+Player A discards Flow State
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 17)
+| decision 34: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scrubland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scrubland)
+Player B played Scrubland
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ocelot Pride
+|   2: Cast Thoughtseize
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ocelot Pride)
+Player B activated Scrubland for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cabal Therapy (flashback)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cabal Therapy (flashback))
+Choose target for Cabal Therapy:
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (19 life)
+|   1: Player B (17 life)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (19 life))
+Targeting choice 0
+| auto: Player B: Sacrifice Ocelot Pride
+Player B sacrifices Ocelot Pride
+Player B casts Cabal Therapy
+Resolving ability (category: NameCard)
+Player B names a card:
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Daze
+|   2: Name card: Dragon's Rage Channeler
+|   3: Name card: Force of Will
+|   4: Name card: Lightning Bolt
+|   5: Name card: Mishra's Bauble
+|   6: Name card: Ponder
+|   7: Name card: Cori-Steel Cutter
+|   8: Name card: Flow State
+|   9: Name card: Bilbo, Thief in the Night
+|   10: Name card: Consign to Memory
+|   11: Name card: Murktide Regent
+|   12: Name card: Price of Progress
+|   13: Name card: Pyroblast
+|   14: Name card: Unholy Heat
+|   15: Name card: Brazen Borrower
+|   16: Name card: Chain Lightning
+|   17: Name card: Echoing Truth
+|   18: Name card: Force of Negation
+|   19: Name card: Grafdigger's Cage
+|   20: Name card: Hydroblast
+|   21: Name card: Meltdown
+|   22: Name card: Petty Theft
+|   23: Name card: Preordain
+|   24: Name card: Prismari Charm
+|   25: Name card: Rough
+|   26: Name card: Surgical Extraction
+|   27: Name card: Tumble
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Name card: Dragon's Rage Channeler)
+Player B names card: Dragon's Rage Channeler
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Prismari Charm
+  Cori-Steel Cutter
+  Dragon's Rage Channeler
+  Island
+  Misty Rainforest
+Player A discards Dragon's Rage Channeler
+Cabal Therapy is exiled (flashback)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 39: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Prismari Charm
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Prismari Charm)
+Choose mode:
+| decision 40: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Surveil 2, then draw a card.
+|   1: CARDNAME deals 1 damage to each of one or two targets.
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Surveil 2, then draw a card.)
+Player A chooses mode — Surveil 2, then draw a card.
+Player A activated Thundering Falls for 1(U)
+Player A activated Volcanic Island for 1(R)
+Player A casts Prismari Charm
+Resolving ability (category: Charm)
+Resolving ability (category: Surveil, amount: 2)
+Player A surveils 2.
+Surveil: looking at Force of Will
+Surveil: looking at Bilbo, Thief in the Night
+| decision 41: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Bilbo, Thief in the Night on top of library
+|   2: Put Force of Will into graveyard
+|   3: Put Bilbo, Thief in the Night into graveyard
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Put Bilbo, Thief in the Night on top of library)
+| decision 42: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Put Force of Will on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Bilbo, Thief in the Night
+Player A draws Force of Will
+| decision 43: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Marsh Flats
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Cast Amped Raptor
+|   3: Cast Thoughtseize
+|   4: Cast Voice of Victory
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Amped Raptor)
+Player B activated Badlands for 1(R)
+Player B activated Scrubland for 1(W)
+Player B casts Amped Raptor
+| decision 45: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player A: Amped Raptor
+Targeting choice 0
+| auto: Player A: Exile Bilbo, Thief in the Night
+Player A pays 1 life
+Player A exiles Bilbo, Thief in the Night
+Player A casts Force of Will targeting Amped Raptor
+Resolving ability (category: Counter)
+Amped Raptor is countered
+| decision 46: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 47: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 48: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Elegant Parlor
+|   2: Plains
+|   3: Plateau
+|   4: Scrubland
+|   5: Shadowy Backstreet
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Elegant Parlor)
+Player B shuffles their library
+Player B puts Elegant Parlor to the battlefield
+Elegant Parlor enters tapped.
+Elegant Parlor triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ajani, Nacatl Pariah
+| decision 49: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ajani, Nacatl Pariah on top of library
+|   1: Put Ajani, Nacatl Pariah into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ajani, Nacatl Pariah on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Lightning Bolt
+| decision 50: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T6 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 51: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Player B (16 life)
+|   1: Player A (18 life)
+(REPLAY) [T6 | Draw | Player A] Input: 0
+| >> Player A: 0 (Player B (16 life))
+Targeting choice 0
+Player A activated Thundering Falls for 1(R)
+Player A casts Lightning Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player B (now at 13 life)
+| decision 52: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Cori-Steel Cutter
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Island for 1(U)
+Player A casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
+| decision 53: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 54: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 55: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Volcanic Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Ajani, Nacatl Pariah
+| decision 56: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ajani, Nacatl Pariah
+|   2: Cast Thoughtseize
+|   3: Cast Voice of Victory
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B activated Elegant Parlor for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Ajani, Nacatl Pariah
+Ajani, Nacatl Pariah enters the battlefield
+Ajani, Nacatl Pariah triggered
+| decision 57: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+| decision 58: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Thoughtseize
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (17 life)
+|   1: Player B (13 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (17 life))
+Targeting choice 0
+Player B activated Scrubland for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 11)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Lightning Bolt
+| decision 60: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T8 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 61: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Player B (11 life)
+|   1: Player A (17 life)
+|   2: Ajani, Nacatl Pariah
+|   3: Cat Warrior token
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Player B (11 life))
+Targeting choice 0
+Player A activated Thundering Falls for 1(R)
+Player A casts Lightning Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player B (now at 8 life)
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 62: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Ajani, Nacatl Pariah
+| decision 63: Player B (game 0, turn 9, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ajani, Nacatl Pariah
+|   2: Cast Swords to Plowshares
+|   3: Cast Voice of Victory
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ajani, Nacatl Pariah)
+Player B activated Elegant Parlor for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Ajani, Nacatl Pariah
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Ajani, Nacatl Pariah enters the battlefield
+Legend rule: Player B controls 2 copies of Ajani, Nacatl Pariah; choose one to keep.
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Keep Ajani, Nacatl Pariah
+|   1: Keep Ajani, Nacatl Pariah
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Keep Ajani, Nacatl Pariah)
+Ajani, Nacatl Pariah is put into the graveyard (legend rule)
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Ajani, Nacatl Pariah (Token)
+|   1: Ajani, Nacatl Pariah (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Ajani, Nacatl Pariah (Token))
+Ajani, Nacatl Pariah triggered
+Ajani, Nacatl Pariah triggered
+| decision 68: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 69: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Ajani, Nacatl Pariah's triggered ability
+|   1: Accept: use Ajani, Nacatl Pariah's triggered ability
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Ajani, Nacatl Pariah's triggered ability)
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to exile
+Resolving ability (category: ChangeZone)
+Ajani, Nacatl Pariah is moved to the battlefield
+Resolving ability (category: Cleanup)
+Ajani, Nacatl Avenger enters transformed.
+| decision 70: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 2/1 Cat Warrior
+| decision 71: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   3: Activate Ajani, Nacatl Avenger [0] (Token)
+(REPLAY) [T9 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 5)
+Player B's Ajani, Nacatl Avenger ability is on the stack
+| decision 72: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounterAll, amount: 1)
+Put 1 P1P1 counter(s) on Cat Warrior.
+Put 1 P1P1 counter(s) on Cat Warrior.
+| decision 73: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 74: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 75: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [3/2]
+|   1: Confirm attackers
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [3/2])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Cat Warrior token [3/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Cat Warrior token -> Player A
+| decision 76: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 77: Player B (game 0, turn 9, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Cat Warrior token deals 3 damage to Player A (now at 14 life)
+--- End Combat Damage ---
+
+| decision 78: Player B (game 0, turn 9, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 79: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 80: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 81: Player B (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T9 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+| decision 82: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Daze
+| decision 83: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 84: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 85: Player B (game 0, turn 10, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 86: Player B (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 87: Player B (game 0, turn 10, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 88: Player B (game 0, turn 10, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 89: Player B (game 0, turn 10, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T10 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 12 (Player B) --------
+| decision 90: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Voice of Victory
+| decision 91: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 92: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Voice of Victory
+|   3: Cast Voice of Victory
+|   4: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   5: Activate Ajani, Nacatl Avenger [0] (Token)
+|   6: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Voice of Victory)
+Player B activated Elegant Parlor for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Voice of Victory
+| decision 93: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 94: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze)
+Choose target for Daze:
+| auto: Player A: Voice of Victory
+Targeting choice 0
+Player A activated Island for 1(U)
+Player A activated Thundering Falls for 1(U)
+Player A casts Daze targeting Voice of Victory
+| decision 95: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Counter)
+Voice of Victory's controller may pay {1} to save it:
+| decision 96: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tap Scrubland for (W)
+|   1: Tap Scrubland for (B)
+|   2: Don't pay (Voice of Victory is countered)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tap Scrubland for (W))
+Player B tapped Scrubland for {W}
+| decision 97: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pay {1} (Voice of Victory is not countered)
+|   1: Don't pay (Voice of Victory is countered)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pay {1} (Voice of Victory is not countered))
+Player B pays {1} — Voice of Victory is not countered
+Voice of Victory enters the battlefield
+| decision 98: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   2: Activate Ajani, Nacatl Avenger [0] (Token)
+|   3: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 7)
+Player B's Ajani, Nacatl Avenger ability is on the stack
+Resolving ability (category: PutCounterAll, amount: 1)
+Put 1 P1P1 counter(s) on Cat Warrior.
+Put 1 P1P1 counter(s) on Cat Warrior.
+
+--- Declare Attackers (Player B) ---
+| decision 99: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [4/3]
+|   1: Cat Warrior token [4/3]
+|   2: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [4/3])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Cat Warrior token [4/3] -> Player A
+| decision 100: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [4/3]
+|   1: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [4/3])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Cat Warrior token [4/3] -> Player A
+  [attacking] Cat Warrior token [4/3] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Cat Warrior token -> Player A
+  Cat Warrior token -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Cat Warrior token deals 4 damage to Player A (now at 10 life)
+  Cat Warrior token deals 4 damage to Player A (now at 6 life)
+--- End Combat Damage ---
+
+
+-------- TURN 13 (Player A) --------
+Player A draws Unholy Heat
+| decision 101: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Unholy Heat
+(REPLAY) [T12 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Unholy Heat)
+Choose target for Unholy Heat:
+| decision 102: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Ajani, Nacatl Avenger
+|   1: Voice of Victory
+|   2: Cat Warrior token
+|   3: Cat Warrior token
+(REPLAY) [T12 | Draw | Player A] Input: 2
+| >> Player A: 2 (Cat Warrior token)
+Targeting choice 2
+Player A activated Thundering Falls for 1(R)
+Player A casts Unholy Heat targeting Cat Warrior token
+Resolving ability (category: DealDamage, amount: 2)
+Unholy Heat deals 6 damage to Cat Warrior token
+Cat Warrior token is destroyed (lethal damage)
+Cat Warrior (token) is put into the graveyard and ceases to exist.
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+| decision 103: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 104: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 105: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Cast Voice of Victory
+|   4: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   5: Activate Ajani, Nacatl Avenger [0] (Token)
+|   6: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Voice of Victory)
+Player B activated Elegant Parlor for 1(W)
+Player B activated Badlands for 1(R)
+Player B casts Voice of Victory
+| decision 106: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Voice of Victory enters the battlefield
+| decision 107: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)
+|   4: Activate Ajani, Nacatl Avenger [0] (Token)
+|   5: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 9)
+Player B's Ajani, Nacatl Avenger ability is on the stack
+| decision 108: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounterAll, amount: 1)
+Put 1 P1P1 counter(s) on Cat Warrior.
+| decision 109: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 110: Player B (game 0, turn 13, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 111: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Voice of Victory [1/3]
+|   1: Cat Warrior token [5/4]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Voice of Victory [1/3])
+Voice of Victory attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Voice of Victory [1/3] -> Player A
+| decision 112: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Cat Warrior token [5/4]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Cat Warrior token [5/4])
+Cat Warrior token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Voice of Victory [1/3] -> Player A
+  [attacking] Cat Warrior token [5/4] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Voice of Victory -> Player A
+  Cat Warrior token -> Player A
+Voice of Victory triggered
+| decision 113: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Mobilize)
+Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+| decision 114: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 115: Player B (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+(REPLAY) [T13 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Voice of Victory deals 1 damage to Player A (now at 5 life)
+  Cat Warrior token deals 5 damage to Player A (now at 0 life)
+  Warrior token deals 1 damage to Player A (now at -1 life)
+  Warrior token deals 1 damage to Player A (now at -2 life)
+--- End Combat Damage ---
+
+
+Player A has -2 life - Player B wins!
+GAME_RESULT: 1 Player B wins

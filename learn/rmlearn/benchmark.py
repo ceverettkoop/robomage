@@ -24,7 +24,7 @@ the policies'. ``--wait`` waits for the run to stop first (its shutdown finishes
 separated — and ``--focus`` keeps the pairs holding one of its decks. The default is the ten league decks
 (``LEAGUE``), as before. Per deck the summary has the policy **playing** it and **facing** it, each
 policy's paired difference from the baseline for both, and the deck **groups** (``deck_groups``:
-the training decks, the original ten when the training directory holds more, the held-out decks)
+the training decks, ``LEAGUE``'s ten when the training directory holds more, the held-out decks)
 played, faced and played among themselves. A report played over other pairs is not reused.
 
 Writes ``<run>/bench/<label>/`` (``<label>-vs-<opponent>`` for an opponent other than scripted:hard,
@@ -292,7 +292,7 @@ def _delta(d):
 
 def deck_groups(decks):
     """{group: [decks]} of a benchmark's decks when they fall into more than one: ``league`` (the
-    training directory's decks), ``league:original`` (the ten original ones, ``LEAGUE``, when
+    training directory's decks), ``league:original`` (the ten of ``LEAGUE``, when
     ``league`` holds others too), ``heldout`` (``decks/heldout/``); {} otherwise."""
     league = [d for d in decks if not d.startswith("heldout/")]
     held = [d for d in decks if d.startswith("heldout/")]

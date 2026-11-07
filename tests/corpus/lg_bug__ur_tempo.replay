@@ -1,0 +1,1860 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_bug__ur_tempo.rmlog
+REPLAY MODE: Using embedded decks 'league/bug' / 'league/ur_tempo' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Flow State
+Player A draws Wasteland
+Player A draws Verdant Catacombs
+Player A draws Polluted Delta
+Player A draws Underground Sea
+Player A draws Polluted Delta
+Player A draws Sheoldred's Edict
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Misty Rainforest
+Player B draws Wasteland
+Player B draws Brainstorm
+Player B draws Flow State
+Player B draws Force of Will
+Player A hand:
+Flow State
+Polluted Delta
+Polluted Delta
+Sheoldred's Edict
+Underground Sea
+Verdant Catacombs
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Thoughtseize
+Player A draws Fatal Push
+Player A draws Brainstorm
+Player A draws Fatal Push
+Player A draws Tropical Island
+Player A draws Sheoldred's Edict
+Player A draws Force of Will
+Player B hand:
+Flow State
+Brainstorm
+Force of Will
+Mishra's Bauble
+Dragon's Rage Channeler
+Wasteland
+Misty Rainforest
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Brainstorm
+Fatal Push
+Fatal Push
+Force of Will
+Sheoldred's Edict
+Thoughtseize
+Tropical Island
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Fatal Push
+|   2: Fatal Push
+|   3: Force of Will
+|   4: Sheoldred's Edict
+|   5: Thoughtseize
+|   6: Tropical Island
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Brainstorm)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Volcanic Island
+| decision 6: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 7: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Tropical Island
+|   1: Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Tropical Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Tropical Island is on the stack
+| decision 13: Player A (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Tropical Island for (G)
+|   2: Tap Tropical Island for (U)
+(REPLAY) [T1 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Tropical Island is destroyed
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Orcish Bowmasters
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Daze
+Player A draws Orcish Bowmasters
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Preordain
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 15: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Preordain
+|   2: Cast Brainstorm
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Preordain)
+Player B activated Volcanic Island for 1(U)
+Player B casts Preordain
+| decision 16: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Scry, amount: 2)
+Player B scries 2.
+Scry: looking at Ponder
+Scry: looking at Brainstorm
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Ponder on the bottom of library
+|   3: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Tamiyo, Inquisitive Student
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 19: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 20: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 21: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Brainstorm
+Player B draws Daze
+Player B draws Volcanic Island
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 22: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Daze
+|   5: Force of Will
+|   6: Dragon's Rage Channeler
+|   7: Volcanic Island
+|   8: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 7
+| >> Player B: 7 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 23: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Daze
+|   5: Force of Will
+|   6: Dragon's Rage Channeler
+|   7: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Ponder)
+Player B puts Ponder to top of library
+Player B draws Ponder
+| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Thundering Falls)
+Player B shuffles their library
+Player B puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Volcanic Island
+| decision 27: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Volcanic Island on top of library
+|   1: Put Volcanic Island into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Volcanic Island on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Tropical Island
+| decision 28: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+| decision 29: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Tamiyo, Inquisitive Student)
+Player A activated Tropical Island for 1(U)
+Player A casts Tamiyo, Inquisitive Student
+| decision 30: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+|   3: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player B: Tamiyo, Inquisitive Student
+Targeting choice 0
+| decision 31: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Return Thundering Falls)
+Player B returns Thundering Falls to hand
+Player B casts Daze targeting Tamiyo, Inquisitive Student
+| decision 32: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 33: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Daze
+|   1: Tamiyo, Inquisitive Student
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tamiyo, Inquisitive Student)
+Targeting choice 1
+| auto: Player B: Return Volcanic Island
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Tamiyo, Inquisitive Student
+| decision 34: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 35: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Daze
+|   1: Daze
+|   2: Tamiyo, Inquisitive Student
+(REPLAY) [T6 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tamiyo, Inquisitive Student)
+Targeting choice 2
+| decision 36: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Flow State
+|   1: Exile Ponder
+|   2: Exile Brainstorm
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Flow State)
+Player B pays 1 life
+Player B exiles Flow State
+Player B casts Force of Will targeting Tamiyo, Inquisitive Student
+Resolving ability (category: Counter)
+Tamiyo, Inquisitive Student is countered
+Counter fizzles
+Counter fizzles
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Volcanic Island
+| decision 37: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+|   3: Play Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thundering Falls)
+Player B played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Brainstorm
+| decision 38: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Baleful Strix
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 39: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Thundering Falls for 1(U)
+Player B casts Brainstorm
+| decision 40: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Brainstorm
+Player B draws Flow State
+Player B draws Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 41: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+|   6: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 42: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Ponder)
+Player B puts Ponder to top of library
+Player B draws Ponder
+| decision 43: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 44: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Brainstorm
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+| decision 45: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 46: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dragon's Rage Channeler)
+Choose which card goes 2 from top:
+| auto: Player B: Volcanic Island
+| decision 47: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Volcanic Island
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Swamp
+| decision 48: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Swamp
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Swamp)
+Player A played Swamp
+| decision 49: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Baleful Strix
+|   2: Cast Orcish Bowmasters
+|   3: Cast Sheoldred's Edict
+|   4: Cast Thoughtseize
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Baleful Strix)
+Player A activated Tropical Island for 1(U)
+Player A activated Swamp for 1(B)
+Player A casts Baleful Strix
+Baleful Strix enters the battlefield
+Baleful Strix triggered
+Resolving ability (category: Draw, amount: 1)
+Player A draws Misty Rainforest
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+| decision 50: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Thundering Falls for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Volcanic Island
+Player B draws Dragon's Rage Channeler
+Player B draws Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 51: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Dragon's Rage Channeler
+|   2: Dragon's Rage Channeler
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+|   6: Volcanic Island
+(REPLAY) [T11 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 52: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Dragon's Rage Channeler
+|   2: Dragon's Rage Channeler
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+(REPLAY) [T11 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B draws Volcanic Island
+| decision 53: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Dragon's Rage Channeler
+|   5: Cast Dragon's Rage Channeler
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 54: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 55: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+| decision 56: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Cast Fatal Push
+|   3: Cast Orcish Bowmasters
+|   4: Cast Sheoldred's Edict
+(REPLAY) [T12 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Fatal Push)
+Choose target for Fatal Push:
+| decision 57: Player A (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Dragon's Rage Channeler
+|   2: Baleful Strix
+(REPLAY) [T12 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Swamp for 1(B)
+Player A casts Fatal Push targeting Dragon's Rage Channeler
+Resolving ability (category: Destroy)
+Dragon's Rage Channeler is destroyed
+Player A draws Lórien Revealed
+| decision 58: Player A (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 59: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 60: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+| decision 61: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Lórien Revealed from hand (ChangeZone))
+Player A activated Tropical Island for 1(G)
+Player A activates Lórien Revealed from hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 62: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tropical Island
+|   3: Undercity Sewers
+|   4: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Tropical Island)
+Player A shuffles their library
+Player A reveals Tropical Island and puts it to hand
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 63: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Bayou
+|   2: Forest
+|   3: Island
+|   4: Undercity Sewers
+|   5: Underground Sea
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Bayou)
+Player A shuffles their library
+Player A puts Bayou to the battlefield
+| decision 64: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Fatal Push
+|   2: Cast Thoughtseize
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Fatal Push)
+Choose target for Fatal Push:
+| decision 65: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Baleful Strix
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player A activated Bayou for 1(B)
+Player A casts Fatal Push targeting Dragon's Rage Channeler
+Resolving ability (category: Destroy)
+Dragon's Rage Channeler is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 66: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 17 life)
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+Player B draws Volcanic Island
+| decision 67: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Flow State
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Flow State)
+Player B activated Thundering Falls for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Flow State
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 68: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Misty Rainforest
+|   1: Force of Will
+|   2: Island
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Force of Will)
+| decision 69: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Misty Rainforest
+|   1: Island
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Island)
+Player B puts Force of Will into hand.
+Player B puts Island into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 70: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Volcanic Island
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 71: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Volcanic Island
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+No creatures eligible to attack.
+
+-------- TURN 15 (Player A) --------
+| decision 72: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+|   2: Cast Sheoldred's Edict
+(REPLAY) [T14 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Orcish Bowmasters)
+Player A activated Swamp for 1(B)
+Player A activated Bayou for 1(G)
+Player A casts Orcish Bowmasters
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 73: Player A (game 0, turn 14, UPKEEP, Player A active)
+| menu:
+|   0: Player B (17 life)
+|   1: Player A (19 life)
+|   2: Dragon's Rage Channeler
+|   3: Baleful Strix
+|   4: Orcish Bowmasters
+(REPLAY) [T14 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Dragon's Rage Channeler)
+Targeting choice 2
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Dragon's Rage Channeler
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 1/1.
+Player A draws Kaito, Bane of Nightmares
+| decision 74: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Tropical Island
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Tropical Island)
+Player A played Tropical Island
+
+--- Declare Attackers (Player A) ---
+| decision 75: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 16 (Player B) --------
+Player B draws Flow State
+| decision 76: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Flow State
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Flow State)
+Player B activated Island for 1(U)
+Player B activated Thundering Falls for 1(U)
+Player B casts Flow State
+Dragon's Rage Channeler triggered
+| decision 77: Player A (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T15 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player A: Flow State
+Targeting choice 0
+| auto: Player A: Exile Kaito, Bane of Nightmares
+Player A pays 1 life
+Player A exiles Kaito, Bane of Nightmares
+Player A casts Force of Will targeting Flow State
+Resolving ability (category: Counter)
+Flow State is countered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Cori-Steel Cutter
+| decision 78: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Cori-Steel Cutter on top of library
+|   1: Put Cori-Steel Cutter into graveyard
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Cori-Steel Cutter on top of library)
+| decision 79: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 80: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Dragon's Rage Channeler [3/3]
+Your creatures:
+| decision 81: Player A (game 0, turn 15, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Confirm blockers
+(REPLAY) [T15 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 15 life)
+--- End Combat Damage ---
+
+
+-------- TURN 17 (Player A) --------
+| decision 82: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sheoldred's Edict
+(REPLAY) [T16 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Sheoldred's Edict)
+Choose mode:
+| decision 83: Player A (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Each opponent sacrifices a nontoken creature.
+|   1: Each opponent sacrifices a creature token.
+|   2: Each opponent sacrifices a planeswalker.
+(REPLAY) [T16 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Each opponent sacrifices a nontoken creature.)
+Player A chooses mode — Each opponent sacrifices a nontoken creature.
+Player A activated Swamp for 1(B)
+Player A activated Tropical Island for 1(G)
+Player A casts Sheoldred's Edict
+Resolving ability (category: Charm)
+Resolving ability (category: Sacrifice)
+| decision 84: Player B (game 0, turn 16, UPKEEP, Player A active)
+| menu:
+|   0: Sacrifice Dragon's Rage Channeler
+|   1: Sacrifice Dragon's Rage Channeler
+(REPLAY) [T16 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Sacrifice Dragon's Rage Channeler)
+Player B sacrifices Dragon's Rage Channeler.
+Player A draws Baleful Strix
+| decision 85: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Baleful Strix
+|   2: Cast Thoughtseize
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Baleful Strix)
+Player A activated Tropical Island for 1(U)
+Player A activated Bayou for 1(B)
+Player A casts Baleful Strix
+Baleful Strix enters the battlefield
+Baleful Strix triggered
+Resolving ability (category: Draw, amount: 1)
+Player A draws Life from the Loam
+
+--- Declare Attackers (Player A) ---
+| decision 86: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 3
+| >> Player A: 3 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 18 (Player B) --------
+Player B draws Cori-Steel Cutter
+| decision 87: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cori-Steel Cutter)
+Player B activated Thundering Falls for 1(R)
+Player B activated Island for 1(U)
+Player B casts Cori-Steel Cutter
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Misty Rainforest
+| decision 88: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Misty Rainforest on top of library
+|   1: Put Misty Rainforest into graveyard
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Put Misty Rainforest into graveyard)
+Player B puts Misty Rainforest into their graveyard.
+Cori-Steel Cutter enters the battlefield
+| decision 89: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Equip Cori-Steel Cutter)
+Choose target for Cori-Steel Cutter:
+| auto: Player B: Dragon's Rage Channeler
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B's Cori-Steel Cutter ability targeting Dragon's Rage Channeler is on the stack
+Resolving ability (category: Attach)
+Equipment attached.
+Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Dragon's Rage Channeler [4/4]
+Your creatures:
+| decision 90: Player A (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Baleful Strix [1/1]
+|   2: Confirm blockers
+(REPLAY) [T17 | Declare Blockers | Player A] Input: 2
+| >> Player A: 2 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player A (now at 11 life)
+--- End Combat Damage ---
+
+
+-------- TURN 19 (Player A) --------
+Player A draws Force of Will
+| decision 91: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Thoughtseize
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 92: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Misty Rainforest
+|   2: Tropical Island
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Swamp for 1(B)
+Player A casts Life from the Loam
+Resolving ability (category: ChangeZone)
+
+--- Declare Attackers (Player A) ---
+| decision 93: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Baleful Strix [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 94: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 95: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 96: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Baleful Strix -> Player B
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 16 life)
+  Baleful Strix deals 1 damage to Player B (now at 15 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+  Orc Army token deals 1 damage to Player B (now at 13 life)
+--- End Combat Damage ---
+
+
+-------- TURN 20 (Player B) --------
+Player B draws Scalding Tarn
+| decision 97: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 98: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+|   2: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T19 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 99: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Volcanic Island
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Volcanic Island)
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+| decision 100: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [4/4] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 4 damage to Player A (now at 7 life)
+--- End Combat Damage ---
+
+| decision 101: Player B (game 0, turn 19, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T19 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 21 (Player A) --------
+| decision 102: Player A (game 0, turn 20, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T20 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Wasteland.
+Player A mills Uro, Titan of Nature's Wrath.
+Player A mills Underground Sea.
+Player A dredges Life from the Loam (milled 3)
+| decision 103: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Thoughtseize
+(REPLAY) [T20 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 104: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Misty Rainforest
+|   2: Tropical Island
+|   3: Underground Sea
+|   4: Wasteland
+(REPLAY) [T20 | First Main | Player A] Input: 4
+| >> Player A: 4 (Wasteland)
+Targeting choice 4
+Choose target for Life from the Loam:
+| decision 105: Player A (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Misty Rainforest
+|   2: Tropical Island
+|   3: Underground Sea
+(REPLAY) [T20 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Swamp for 1(B)
+Player A casts Life from the Loam targeting Wasteland
+| decision 106: Player B (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will
+(REPLAY) [T20 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will)
+Choose target for Force of Will:
+| auto: Player B: Life from the Loam
+Targeting choice 0
+Player B activated Island for 1(U)
+Player B activated Thundering Falls for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Force of Will targeting Life from the Loam
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Brainstorm
+| decision 107: Player B (game 0, turn 20, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm into graveyard
+(REPLAY) [T20 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+Resolving ability (category: Counter)
+Life from the Loam is countered
+
+--- Declare Attackers (Player A) ---
+| decision 108: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Baleful Strix [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Orc Army token [1/1]
+|   4: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 109: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orc Army token [1/1]
+|   3: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 110: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [1/1]
+|   2: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 111: Player A (game 0, turn 20, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [1/1]
+|   1: Confirm attackers
+(REPLAY) [T20 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [1/1])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [1/1] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Baleful Strix -> Player B
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 11 life)
+  Baleful Strix deals 1 damage to Player B (now at 10 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 9 life)
+  Orc Army token deals 1 damage to Player B (now at 8 life)
+--- End Combat Damage ---
+
+
+-------- TURN 22 (Player B) --------
+Player B draws Brainstorm
+| decision 112: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T21 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Lightning Bolt
+| decision 113: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Put Lightning Bolt on top of library
+|   1: Put Lightning Bolt into graveyard
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Lightning Bolt on top of library)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Lightning Bolt
+Player B draws Unholy Heat
+Player B draws Murktide Regent
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 114: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Unholy Heat
+|   1: Lightning Bolt
+|   2: Murktide Regent
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Unholy Heat)
+Player B puts Unholy Heat to top of library
+Player B chooses a card from Player B hand:
+| decision 115: Player B (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Lightning Bolt
+|   1: Murktide Regent
+(REPLAY) [T21 | Draw | Player B] Input: 0
+| >> Player B: 0 (Lightning Bolt)
+Player B puts Lightning Bolt to top of library
+Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+| decision 116: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Orcish Bowmasters (DealDamage, targeted)
+|   1: Orcish Bowmasters (DealDamage, targeted)
+|   2: Orcish Bowmasters (DealDamage, targeted)
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters (DealDamage, targeted))
+Choose target for Orcish Bowmasters:
+| decision 117: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Player B (8 life)
+|   1: Player A (7 life)
+|   2: Dragon's Rage Channeler
+|   3: Baleful Strix
+|   4: Baleful Strix
+|   5: Orcish Bowmasters
+|   6: Orc Army token
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 118: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Orcish Bowmasters (DealDamage, targeted)
+|   1: Orcish Bowmasters (DealDamage, targeted)
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters (DealDamage, targeted))
+Choose target for Orcish Bowmasters:
+| decision 119: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Player B (8 life)
+|   1: Player A (7 life)
+|   2: Dragon's Rage Channeler
+|   3: Baleful Strix
+|   4: Baleful Strix
+|   5: Orcish Bowmasters
+|   6: Orc Army token
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Choose target for Orcish Bowmasters:
+| decision 120: Player A (game 0, turn 21, DRAW, Player B active)
+| menu:
+|   0: Player B (8 life)
+|   1: Player A (7 life)
+|   2: Dragon's Rage Channeler
+|   3: Baleful Strix
+|   4: Baleful Strix
+|   5: Orcish Bowmasters
+|   6: Orc Army token
+(REPLAY) [T21 | Draw | Player A] Input: 0
+| >> Player A: 0 (Player B (8 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 7 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 2/2.
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 6 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 3/3.
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player B (now at 5 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player A Army is now 4/4.
+| decision 121: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Murktide Regent
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Murktide Regent)
+Choose how many cards to exile via Delve (2-5):
+| decision 122: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile 2 cards from graveyard (Delve)
+|   1: Exile 3 cards from graveyard (Delve)
+|   2: Exile 4 cards from graveyard (Delve)
+|   3: Exile 5 cards from graveyard (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 3
+| >> Player B: 3 (Exile 5 cards from graveyard (Delve))
+Choose a card to exile via Delve (1 of 5):
+| decision 123: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Preordain (Delve)
+|   1: Exile Flow State (Delve)
+|   2: Exile Ponder (Delve)
+|   3: Exile Brainstorm (Delve)
+|   4: Exile Daze (Delve)
+|   5: Exile Force of Will (Delve)
+|   6: Exile Mishra's Bauble (Delve)
+|   7: Exile Dragon's Rage Channeler (Delve)
+|   8: Exile Wasteland (Delve)
+|   9: Exile Misty Rainforest (Delve)
+|   10: Exile Scalding Tarn (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Preordain (Delve))
+Choose a card to exile via Delve (2 of 5):
+| decision 124: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Flow State (Delve)
+|   1: Exile Ponder (Delve)
+|   2: Exile Brainstorm (Delve)
+|   3: Exile Daze (Delve)
+|   4: Exile Force of Will (Delve)
+|   5: Exile Mishra's Bauble (Delve)
+|   6: Exile Dragon's Rage Channeler (Delve)
+|   7: Exile Wasteland (Delve)
+|   8: Exile Misty Rainforest (Delve)
+|   9: Exile Scalding Tarn (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Flow State (Delve))
+Choose a card to exile via Delve (3 of 5):
+| decision 125: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Flow State (Delve)
+|   1: Exile Ponder (Delve)
+|   2: Exile Brainstorm (Delve)
+|   3: Exile Daze (Delve)
+|   4: Exile Force of Will (Delve)
+|   5: Exile Mishra's Bauble (Delve)
+|   6: Exile Dragon's Rage Channeler (Delve)
+|   7: Exile Wasteland (Delve)
+|   8: Exile Misty Rainforest (Delve)
+|   9: Exile Scalding Tarn (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Flow State (Delve))
+Choose a card to exile via Delve (4 of 5):
+| decision 126: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Ponder (Delve)
+|   1: Exile Brainstorm (Delve)
+|   2: Exile Daze (Delve)
+|   3: Exile Force of Will (Delve)
+|   4: Exile Mishra's Bauble (Delve)
+|   5: Exile Dragon's Rage Channeler (Delve)
+|   6: Exile Wasteland (Delve)
+|   7: Exile Misty Rainforest (Delve)
+|   8: Exile Scalding Tarn (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Ponder (Delve))
+Choose a card to exile via Delve (5 of 5):
+| decision 127: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Brainstorm (Delve)
+|   1: Exile Daze (Delve)
+|   2: Exile Force of Will (Delve)
+|   3: Exile Mishra's Bauble (Delve)
+|   4: Exile Dragon's Rage Channeler (Delve)
+|   5: Exile Wasteland (Delve)
+|   6: Exile Misty Rainforest (Delve)
+|   7: Exile Scalding Tarn (Delve)
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Brainstorm (Delve))
+Player B activated Thundering Falls for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B exiles Preordain via Delve.
+Player B exiles Flow State via Delve.
+Player B exiles Flow State via Delve.
+Player B exiles Ponder via Delve.
+Player B exiles Brainstorm via Delve.
+Player B casts Murktide Regent
+Cori-Steel Cutter triggered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 128: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T21 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Murktide Regent enters the battlefield
+Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
+| decision 129: Player B (game 0, turn 21, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T21 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| decision 130: Player B (game 0, turn 21, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T21 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Monk token [2/2])
+Monk token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Monk token [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Monk token -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 4 life)
+  Monk token deals 2 damage to Player A (now at 2 life)
+--- End Combat Damage ---
+
+| decision 131: Player B (game 0, turn 21, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T21 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 23 (Player A) --------
+| decision 132: Player A (game 0, turn 22, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T22 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Witherbloom Command.
+Player A mills Misty Rainforest.
+Player A mills Flow State.
+Player A dredges Life from the Loam (milled 3)
+| decision 133: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Thoughtseize
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 134: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Misty Rainforest
+|   2: Tropical Island
+|   3: Underground Sea
+|   4: Wasteland
+(REPLAY) [T22 | First Main | Player A] Input: 4
+| >> Player A: 4 (Wasteland)
+Targeting choice 5
+Choose target for Life from the Loam:
+| decision 135: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Misty Rainforest
+|   2: Tropical Island
+|   3: Underground Sea
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Bayou for 1(G)
+Player A activated Swamp for 1(B)
+Player A casts Life from the Loam targeting Wasteland
+Resolving ability (category: ChangeZone)
+Wasteland is moved to hand
+| decision 136: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 137: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T22 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 138: Player A (game 0, turn 22, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+|   1: Volcanic Island
+|   2: Volcanic Island
+|   3: Volcanic Island
+|   4: Volcanic Island
+|   5: Bayou
+|   6: Tropical Island
+|   7: Tropical Island
+|   8: Wasteland
+(REPLAY) [T22 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thundering Falls)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 139: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Baleful Strix [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Orc Army token [4/4]
+|   4: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 140: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Orcish Bowmasters [1/1]
+|   2: Orc Army token [4/4]
+|   3: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Baleful Strix [1/1])
+Baleful Strix attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+| decision 141: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orcish Bowmasters [1/1]
+|   1: Orc Army token [4/4]
+|   2: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orcish Bowmasters [1/1])
+Orcish Bowmasters attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+| decision 142: Player A (game 0, turn 22, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Orc Army token [4/4]
+|   1: Confirm attackers
+(REPLAY) [T22 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Orc Army token [4/4])
+Orc Army token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Baleful Strix [1/1] -> Player B
+  [attacking] Orcish Bowmasters [1/1] -> Player B
+  [attacking] Orc Army token [4/4] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Baleful Strix -> Player B
+  Baleful Strix -> Player B
+  Orcish Bowmasters -> Player B
+  Orc Army token -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Baleful Strix [1/1]
+  1: Baleful Strix [1/1]
+  2: Orcish Bowmasters [1/1]
+  3: Orc Army token [4/4]
+Your creatures:
+| decision 143: Player B (game 0, turn 22, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Murktide Regent [8/8]
+|   1: Confirm blockers
+(REPLAY) [T22 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Murktide Regent [8/8])
+Select attacker for Murktide Regent to block:
+| decision 144: Player B (game 0, turn 22, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Baleful Strix [1/1]
+|   1: Baleful Strix [1/1]
+|   2: Orcish Bowmasters [1/1]
+|   3: Orc Army token [4/4]
+(REPLAY) [T22 | Declare Blockers | Player B] Input: 3
+| >> Player B: 3 (Orc Army token [4/4])
+Murktide Regent blocking Orc Army token.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Baleful Strix [1/1]
+  1: Baleful Strix [1/1]
+  2: Orcish Bowmasters [1/1]
+  3: Orc Army token [4/4]
+Your creatures:
+  (assigned) Murktide Regent [8/8] blocking Orc Army token
+| auto: Player B: Confirm blockers
+
+Blockers declared:
+  Murktide Regent blocking Orc Army token
+
+--- Combat Damage ---
+  Baleful Strix deals 1 damage to Player B (now at 4 life)
+  Baleful Strix deals 1 damage to Player B (now at 3 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 2 life)
+  Murktide Regent deals 8 damage to Orc Army token
+  Orc Army token deals 4 damage to Murktide Regent
+--- End Combat Damage ---
+
+Orc Army token is destroyed (lethal damage)
+Orc Army (token) is put into the graveyard and ceases to exist.
+
+-------- TURN 24 (Player B) --------
+Player B draws Lightning Bolt
+| decision 145: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lightning Bolt
+(REPLAY) [T23 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Lightning Bolt)
+Choose target for Lightning Bolt:
+| decision 146: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Player A (2 life)
+|   1: Player B (2 life)
+|   2: Baleful Strix
+|   3: Baleful Strix
+|   4: Orcish Bowmasters
+|   5: Murktide Regent
+|   6: Dragon's Rage Channeler
+|   7: Monk token
+(REPLAY) [T23 | Draw | Player B] Input: 0
+| >> Player B: 0 (Player A (2 life))
+Targeting choice 0
+Player B activated Volcanic Island for 1(R)
+Player B casts Lightning Bolt targeting Player A
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 147: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T23 | Draw | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Unholy Heat
+| decision 148: Player B (game 0, turn 23, DRAW, Player B active)
+| menu:
+|   0: Put Unholy Heat on top of library
+|   1: Put Unholy Heat into graveyard
+(REPLAY) [T23 | Draw | Player B] Input: 0
+| >> Player B: 0 (Put Unholy Heat on top of library)
+Resolving ability (category: DealDamage, amount: 3)
+Lightning Bolt deals 3 damage to Player A (now at -1 life)
+
+Player A has -1 life - Player B wins!
+GAME_RESULT: 1 Player B wins

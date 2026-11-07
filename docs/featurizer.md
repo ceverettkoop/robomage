@@ -272,7 +272,7 @@ and a `history` key, so its hash differs and a model trained one way is refused 
   `featurize_viewer` without one emits no history tokens (the omniscient featurization of an
   episode has none). BC's `event_dropout` p (`learn/rmlearn/bc.py`) masks each event token out in
   training with probability p, its card tokens with it.
-- **Cost** (val1's B0 games, scripted:hard on ur_delver / burn / uw_control / wrb_energy, N 32):
+- **Cost** (val1's B0 games, scripted:hard on that run's ur_delver / burn / uw_control / wrb_energy, N 32):
   about 30 more tokens per decision (some 15 events and 15 cards; 121 → 152 tokens in one bo3
   match), relations 21 → 53; an episode with the omniscient part grows ~9%.
 

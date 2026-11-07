@@ -1123,7 +1123,7 @@ def check_eval_options_and_findings(tmp):
     # Training actors' draws.
     with open(os.path.join(run.actors, "a3.results.jsonl"), "w") as fp:
         fp.write(json.dumps({"actor": 3, "match": 126, "game": 2, "entry": "sp-a-b", "schedule": "b4",
-                             "deck_a": "league/ur_delver", "deck_b": "league/burn", "result_a": 0, "result_b": 0,
+                             "deck_a": "league/ur_tempo", "deck_b": "league/burn", "result_a": 0, "result_b": 0,
                              "end_reason": "draw", "decisions": 64,
                              "rmlog": os.path.join(run.path, "rmlog", "selfplay", "a3-m126.rmlog")}) + "\n")
         fp.write(json.dumps({"actor": 3, "match": 127, "game": 1, "schedule": "b4", "result_a": 1, "result_b": -1,
@@ -1135,7 +1135,7 @@ def check_eval_options_and_findings(tmp):
     o.write_status()
     text = format_status(o.status_cache)
     check("findings: 2 draws" in text and "rmlog/selfplay/a3-m126.rmlog" in text and
-          "actors/a3.results.jsonl" in text and "ur_delver vs burn" in text,
+          "actors/a3.results.jsonl" in text and "ur_tempo vs burn" in text,
           "the status's findings line names each draw's results file and decision log")
     check("FAIL" not in text and not any("ERROR" in m for m in logs), "a draw is not an error")
     o.metrics.close()
@@ -1355,7 +1355,7 @@ memory_max = "24G"
 gpu_lock_wait = true
 restart_delay_s = 5
 [league]
-decks = ["ur_delver", "burn", "bw_dnt"]
+decks = ["ur_tempo", "burn", "death_and_taxes"]
 max_game_decisions = 3000
 [actors]
 count = 3
@@ -1403,7 +1403,7 @@ p_end = 0.1
 hold_frac = 0.5
 rewrite_every_s = 5
 [eval]
-pairs = [["ur_delver", "burn"]]
+pairs = [["ur_tempo", "burn"]]
 matches = 2
 ladder = 2
 ladder_matches = 2
@@ -1511,14 +1511,14 @@ def smoke(args):
         "kind") == "rnad" and (s["checkpoint"].get("learner_steps") or 0) >= 60, "two R-NaD iterations", 1200)
     ck_steps = s["checkpoint"]["learner_steps"]
     # The expansion procedure, live (open_vocab_plan S8): a league deck whose cards the tables hold.
-    r = sh([rmtrain, "add-decks", run.path, "lands"])
+    r = sh([rmtrain, "add-decks", run.path, "lands_top8"])
     check(r.returncode == 0 and "set live" in r.stdout, "add-decks on the running run")
     check(sh([rmtrain, "add-decks", run.path, "heldout/bant_control"], check_ok=False).returncode != 0,
           "add-decks refuses a held-out deck")
     end = time.time() + 60
-    while time.time() < end and "league/lands" not in open(run.schedule).read():
+    while time.time() < end and "league/lands_top8" not in open(run.schedule).read():
         time.sleep(1)
-    check("league/lands" in open(run.schedule).read(), "the live league change rewrote the schedule")
+    check("league/lands_top8" in open(run.schedule).read(), "the live league change rewrote the schedule")
     ck_steps = (status().get("checkpoint") or {}).get("learner_steps") or ck_steps
     # kill -9 everything, then resume.
     t_kill = time.time()
@@ -1613,14 +1613,14 @@ def smoke(args):
 
 
 def smoke_expansion_checks(run):
-    """The decks added live (lands) and to the stopped run (eldrazi_aggro) were played in self-play, and
+    """The decks added live (lands_top8) and to the stopped run (eldrazi_aggro) were played in self-play, and
     the final learner's networks marked the added deck's cards seen (the first batches holding them)."""
     import torch
     results = []
     for path in glob.glob(os.path.join(run.actors, "a*.results.jsonl")):
         results += RD.read_jsonl(path)
     sp = [r for r in results if r.get("schedule") in ("b4", "b5")]
-    for deck in ("league/lands", "league/eldrazi_aggro"):
+    for deck in ("league/lands_top8", "league/eldrazi_aggro"):
         check(any(deck in (r.get("deck_a"), r.get("deck_b")) for r in sp), "self-play played the added %s" % deck)
     vocab = {name: i for i, name in RD.read_json(os.path.join(run.tables, "manifest.json"))["vocab"]}
     ids = [vocab[n] for n in ("Eldrazi Confluence", "Secluded Courtyard") if n in vocab]
@@ -1912,15 +1912,15 @@ def check_benchmark_decks(tmp):
     from rmlearn import benchmark as BM
     from rmlearn import matches as MT
     from rmlearn.corpus import LEAGUE
-    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["eldrazi_aggro"],
+    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["maverick"],
                           heldout=["bant_control", "show_and_tell"])
     check(MT.resolve_decks(None, bin_dir) == list(LEAGUE) and MT.resolve_decks("", bin_dir) == list(LEAGUE),
           "--decks: the default is the ten league decks")
     ld = MT.resolve_decks("league,heldout", bin_dir)
-    check(ld == list(LEAGUE) + ["eldrazi_aggro", "heldout/bant_control", "heldout/show_and_tell"],
+    check(ld == list(LEAGUE) + ["maverick", "heldout/bant_control", "heldout/show_and_tell"],
           "--decks league,heldout: %s" % ld)
-    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,eldrazi_aggro", bin_dir)
-          == ["heldout/bant_control", "burn", "eldrazi_aggro"], "--decks: single stems, each once")
+    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,maverick", bin_dir)
+          == ["heldout/bant_control", "burn", "maverick"], "--decks: single stems, each once")
     check(raises(lambda: MT.resolve_decks("heldout/nope,burn", bin_dir), "no deck heldout/nope")
           and raises(lambda: MT.resolve_decks("burn", bin_dir), "two decks"), "--decks: refusals")
     check(len(MT.deck_pairs(ld)) == 78 and MT.deck_pairs(MT.resolve_decks(None, bin_dir)) == MT.league_pairs(),
@@ -1950,8 +1950,8 @@ def check_benchmark_decks(tmp):
                 "deck_b": MT.deck_stem(opp), "result_a": res, "result_b": -res, "end_reason": "win", "first": "A",
                 "decisions": 10}
     games = [("heldout/bant_control", "burn"), ("heldout/bant_control", "burn"), ("burn", "heldout/bant_control"),
-             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("eldrazi_aggro", "bug"),
-             ("bug", "eldrazi_aggro")]
+             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("maverick", "bug"),
+             ("bug", "maverick")]
     rb = [line(k, d, o, -1 if k % 2 else 1) for k, (d, o) in enumerate(games)]
     ro = [line(k, d, o, (1 if k in (1, 3) else -1 if k % 2 else 1)) for k, (d, o) in enumerate(games)]
     for x in ro:
@@ -1965,7 +1965,7 @@ def check_benchmark_decks(tmp):
             r = MT.game_record(x)
             recs[lab][r["key"]] = {"wins": int(r["result"] > 0), "decisive": 1, "deck": r["deck"], "opp_deck": r["opp_deck"],
                                    "decisions": [x["decisions"]]}
-    decks = ["bug", "burn", "eldrazi_aggro", "heldout/bant_control"]
+    decks = ["bug", "burn", "maverick", "heldout/bant_control"]
     sm = BM.summarize(reps, matches=recs, decks=decks)
     n = sm["policies"]["new"]
     check(sm["decks"] == decks and set(sm["groups"]) == {"league", "league:original", "heldout"}
@@ -1982,10 +1982,10 @@ def check_benchmark_decks(tmp):
           "group deltas: %s" % json.dumps(g)[:600])
     md = BM.format_summary(sm, "t")
     check("## Deck groups" in md and "| plays:heldout |" in md and "## Difference from base, facing each deck" in md
-          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | eldraz | bant_c |" in md,
+          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | maveri | bant_c |" in md,
           "the --decks tables:\n" + md)
     one = BM.summarize(reps, matches=recs)
-    check(one["decks"][:10] == list(LEAGUE) and one["decks"][10:] == ["eldrazi_aggro", "heldout/bant_control"]
+    check(one["decks"][:10] == list(LEAGUE) and one["decks"][10:] == ["maverick", "heldout/bant_control"]
           and set(one["groups"]) == {"league", "league:original", "heldout"}, "the default decks: the league and any played")
     check(BM.deck_groups(list(LEAGUE)) == {}, "no groups over the league decks alone")
 

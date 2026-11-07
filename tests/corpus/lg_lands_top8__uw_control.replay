@@ -1,0 +1,1946 @@
+robomage 0.2
+REPLAY MODE: Using seed 1187322509 from lg_lands_top8__uw_control.rmlog
+REPLAY MODE: Using embedded decks 'league/lands_top8' / 'league/uw_control' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Life from the Loam
+Player A draws Soul-Guide Lantern
+Player A draws Wasteland
+Player A draws Mox Diamond
+Player A draws Malevolent Rumble
+Player A draws Malevolent Rumble
+Player A draws Life from the Loam
+Player B draws Spell Snare
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Wrath of the Skies
+Player B draws Polluted Delta
+Player B draws Misty Rainforest
+Player B draws Swords to Plowshares
+Player B draws Murktide Regent
+Player A hand:
+Mox Diamond
+Life from the Loam
+Life from the Loam
+Soul-Guide Lantern
+Malevolent Rumble
+Malevolent Rumble
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Crop Rotation
+Player A draws Dark Depths
+Player A draws Pithing Needle
+Player A draws Forest
+Player A draws Mox Diamond
+Player A draws Exploration
+Player A draws Yavimaya, Cradle of Growth
+Player B hand:
+Misty Rainforest
+Murktide Regent
+Polluted Delta
+Spell Snare
+Swords to Plowshares
+Tamiyo, Inquisitive Student
+Wrath of the Skies
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Pithing Needle
+Mox Diamond
+Exploration
+Forest
+Dark Depths
+Crop Rotation
+Yavimaya, Cradle of Growth
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Pithing Needle
+|   1: Mox Diamond
+|   2: Exploration
+|   3: Forest
+|   4: Dark Depths
+|   5: Crop Rotation
+|   6: Yavimaya, Cradle of Growth
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Dark Depths
+|   3: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pithing Needle
+|   2: Cast Exploration
+|   3: Cast Crop Rotation
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Exploration)
+Player A activated Forest for 1(G)
+Player A casts Exploration
+Exploration enters the battlefield
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Island
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+|   3: Play Polluted Delta
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Tamiyo, Inquisitive Student)
+Player B activated Island for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+Tamiyo, Inquisitive Student enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 10: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 11: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Dark Depths
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Forest)
+Player A activated Forest for 1(G)
+Player A sacrifices Forest
+Player A casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Karakas
+|   4: Ghost Quarter
+|   5: Dark Depths
+|   6: Talon Gates of Madara
+|   7: Bojuka Bog
+|   8: Blast Zone
+|   9: Urza's Saga
+|   10: Ancient Tomb
+|   11: Yavimaya, Cradle of Growth
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Wasteland
+(REPLAY) [T2 | Upkeep | Player A] Input: 13
+| >> Player A: 13 (Thespian's Stage)
+Player A shuffles their library
+Player A puts Thespian's Stage to the battlefield
+Player A draws Thespian's Stage
+| decision 13: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Play Thespian's Stage
+|   3: Cast Pithing Needle
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Thespian's Stage)
+Player A played Thespian's Stage
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Cast Pithing Needle
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Pithing Needle)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Pithing Needle
+Pithing Needle enters the battlefield
+Choose a card name for Pithing Needle:
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Consign to Memory
+|   2: Name card: Flooded Strand
+|   3: Name card: Flow State
+|   4: Name card: Force of Will
+|   5: Name card: Ponder
+|   6: Name card: Swords to Plowshares
+|   7: Name card: Tamiyo, Inquisitive Student
+|   8: Name card: Wasteland
+|   9: Name card: Tundra
+|   10: Name card: Wrath of the Skies
+|   11: Name card: Containment Priest
+|   12: Name card: Flusterstorm
+|   13: Name card: Force of Negation
+|   14: Name card: Island
+|   15: Name card: Lórien Revealed
+|   16: Name card: Misty Rainforest
+|   17: Name card: Murktide Regent
+|   18: Name card: Polluted Delta
+|   19: Name card: Prismatic Ending
+|   20: Name card: The One Ring
+|   21: Name card: Triumph of Saint Katherine
+|   22: Name card: Tune the Narrative
+|   23: Name card: Geist of Saint Traft
+|   24: Name card: Lavinia, Azorius Renegade
+|   25: Name card: Meticulous Archive
+|   26: Name card: Mystic Sanctuary
+|   27: Name card: Plains
+|   28: Name card: Spell Pierce
+|   29: Name card: Spell Snare
+|   30: Name card: Surgical Extraction
+|   31: Name card: Teferi, Time Raveler
+(REPLAY) [T2 | First Main | Player A] Input: 7
+| >> Player A: 7 (Name card: Tamiyo, Inquisitive Student)
+Player A names card: Tamiyo, Inquisitive Student
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T2 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Island
+|   1: Dark Depths
+|   2: Yavimaya, Cradle of Growth
+|   3: Thespian's Stage
+|   4: Thespian's Stage
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Dark Depths)
+Targeting choice 1
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Dark Depths for 1(G)
+Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+Player A sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws The One Ring
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Polluted Delta
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Meticulous Archive
+|   3: Mystic Sanctuary
+|   4: Tundra
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Meticulous Archive)
+Player B shuffles their library
+Player B puts Meticulous Archive to the battlefield
+Meticulous Archive enters tapped.
+Meticulous Archive triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Force of Will
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Force of Will on top of library)
+
+--- Declare Attackers (Player B) ---
+| decision 24: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm attackers
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 5 (Player A) --------
+Player A draws Boseiju, Who Endures
+| decision 25: Player A (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T4 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 26: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Activate Boseiju, Who Endures from hand (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Boseiju, Who Endures)
+Player A played Boseiju, Who Endures
+| decision 27: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 28: Player A (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 29: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Marit Lage token [20/20] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Marit Lage token -> Player B
+| decision 30: Player A (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Marit Lage token [20/20]
+Your creatures:
+| decision 31: Player B (game 0, turn 4, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Tamiyo, Inquisitive Student [0/3]
+|   1: Confirm blockers
+(REPLAY) [T4 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Tamiyo, Inquisitive Student [0/3])
+Select attacker for Tamiyo, Inquisitive Student to block:
+| auto: Player B: Marit Lage token [20/20]
+Tamiyo, Inquisitive Student blocking Marit Lage token.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Marit Lage token [20/20]
+Your creatures:
+  (assigned) Tamiyo, Inquisitive Student [0/3] blocking Marit Lage token
+| auto: Player B: Confirm blockers
+
+Blockers declared:
+  Tamiyo, Inquisitive Student blocking Marit Lage token
+| decision 32: Player A (game 0, turn 4, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Marit Lage token deals 20 damage to Tamiyo, Inquisitive Student
+--- End Combat Damage ---
+
+Tamiyo, Inquisitive Student is destroyed (lethal damage)
+| decision 33: Player A (game 0, turn 4, COMBAT_DAMAGE, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Combat Damage | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 34: Player A (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 35: Player A (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 36: Player A (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 37: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| auto: Player B: Marit Lage token
+Targeting choice 0
+Player B activated Meticulous Archive for 1(W)
+Player B casts Swords to Plowshares targeting Marit Lage token
+| decision 38: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Marit Lage token is moved to exile
+Resolving ability (category: GainLife, amount: 20)
+Player A gains 20 life (now at 40)
+Marit Lage (token) is put into exile and ceases to exist.
+| decision 39: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player B draws Force of Will
+| decision 40: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 42: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+| decision 43: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 44: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Tundra
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tundra)
+Player B shuffles their library
+Player B puts Tundra to the battlefield
+| decision 45: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 46: Player A (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Begin Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 47: Player A (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 48: Player A (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | End of Combat | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 49: Player A (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | Second Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 50: Player A (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T5 | End Step | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 51: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Player A draws Crop Rotation
+| decision 52: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T6 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 53: Player A (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Sacrifice Boseiju, Who Endures
+|   1: Sacrifice Yavimaya, Cradle of Growth
+|   2: Sacrifice Thespian's Stage
+(REPLAY) [T6 | Draw | Player A] Input: 1
+| >> Player A: 1 (Sacrifice Yavimaya, Cradle of Growth)
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A sacrifices Yavimaya, Cradle of Growth
+Player A casts Crop Rotation
+| decision 54: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player B: Crop Rotation
+Targeting choice 0
+| decision 55: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Exile Murktide Regent
+|   1: Exile Spell Snare
+(REPLAY) [T6 | Draw | Player B] Input: 0
+| >> Player B: 0 (Exile Murktide Regent)
+Player B pays 1 life
+Player B exiles Murktide Regent
+Player B casts Force of Will targeting Crop Rotation
+Resolving ability (category: Counter)
+Crop Rotation is countered
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Brainstorm
+| decision 56: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T7 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Flooded Strand
+Player B draws Force of Negation
+Player B draws Flooded Strand
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 57: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Flooded Strand
+|   2: Force of Negation
+|   3: Spell Snare
+|   4: The One Ring
+|   5: Wrath of the Skies
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+Player B chooses a card from Player B hand:
+| decision 58: Player B (game 0, turn 7, DRAW, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Force of Negation
+|   2: Spell Snare
+|   3: The One Ring
+|   4: Wrath of the Skies
+(REPLAY) [T7 | Draw | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+| decision 59: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Wrath of the Skies
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Wrath of the Skies)
+Choose X value (0-0):
+| auto: Player B: X = 0
+Player B chooses X = 0
+Player B activated Meticulous Archive for 1(W)
+Player B activated Tundra for 1(W)
+Player B casts Wrath of the Skies
+Resolving ability (category: PutCounter, amount: 0)
+Resolving ability (category: ChooseNumber)
+| auto: Player B: 0
+Player B chooses 0.
+Resolving ability (category: DestroyAll)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Crop Rotation
+| decision 60: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T8 | Draw | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 61: Player A (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Sacrifice Boseiju, Who Endures
+|   1: Sacrifice Thespian's Stage
+(REPLAY) [T8 | Draw | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Boseiju, Who Endures)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A sacrifices Boseiju, Who Endures
+Player A casts Crop Rotation
+| decision 62: Player B (game 0, turn 8, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Negation (alternate cost)
+(REPLAY) [T8 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Negation (alternate cost))
+Choose target for Force of Negation:
+| auto: Player B: Crop Rotation
+Targeting choice 0
+| auto: Player B: Exile Spell Snare
+Player B exiles Spell Snare
+Player B casts Force of Negation targeting Crop Rotation
+Resolving ability (category: Counter)
+Crop Rotation is countered
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+Player B draws Flooded Strand
+| decision 63: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 64: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 65: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Plains
+|   4: Tundra
+(REPLAY) [T9 | First Main | Player B] Input: 4
+| >> Player B: 4 (Tundra)
+Player B shuffles their library
+Player B puts Tundra to the battlefield
+| decision 66: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast The One Ring
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast The One Ring)
+Player B activated Island for 1(U)
+Player B activated Meticulous Archive for 1(U)
+Player B activated Tundra for 1(U)
+Player B activated Tundra for 1(U)
+Player B casts The One Ring
+The One Ring enters the battlefield
+The One Ring triggered
+| decision 67: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate The One Ring (PutCounter)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 1).
+Resolving ability (category: Draw, amount: 1)
+Player B draws Lórien Revealed
+Resolving ability (category: Pump)
+Player B gains protection from everything until their next turn.
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Sphere of Resistance
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+The One Ring triggered
+| decision 68: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate The One Ring (PutCounter)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+| decision 69: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 2).
+Resolving ability (category: Draw, amount: 2)
+Player B draws Brainstorm
+Player B draws Wrath of the Skies
+| decision 70: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+| decision 71: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Swords to Plowshares
+Player B draws Lórien Revealed
+Player B draws Plains
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 72: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Lórien Revealed
+|   1: Lórien Revealed
+|   2: Plains
+|   3: Swords to Plowshares
+|   4: Wrath of the Skies
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Plains)
+Player B puts Plains to top of library
+Player B chooses a card from Player B hand:
+| decision 73: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Lórien Revealed
+|   1: Lórien Revealed
+|   2: Swords to Plowshares
+|   3: Wrath of the Skies
+(REPLAY) [T11 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Swords to Plowshares)
+Player B puts Swords to Plowshares to top of library
+| decision 74: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 14)
+| decision 75: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Swords to Plowshares
+| decision 76: Player B (game 0, turn 11, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 77: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Wrath of the Skies
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Wrath of the Skies)
+Choose X value (0-1):
+| decision 78: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: X = 0
+|   1: X = 1
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (X = 1)
+Player B chooses X = 1
+Player B activated Meticulous Archive for 1(W)
+Player B activated Tundra for 1(W)
+Player B activated Tundra for 1(U)
+Player B casts Wrath of the Skies
+Resolving ability (category: PutCounter, amount: 1)
+Player B gets 1 ENERGY counter(s) (now 1).
+Resolving ability (category: ChooseNumber)
+| decision 79: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: 0
+|   1: 1
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (1)
+Player B chooses 1.
+Resolving ability (category: DestroyAll)
+Player B pays 1 energy.
+Pithing Needle is destroyed
+Exploration is destroyed
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Skateboard
+| decision 80: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Skateboard
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Skateboard)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Skateboard
+Skateboard enters the battlefield
+Choose target for Skateboard:
+| decision 81: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Island
+|   1: Meticulous Archive
+|   2: The One Ring
+|   3: Tundra
+|   4: Tundra
+|   5: Skateboard
+|   6: Thespian's Stage
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Island)
+Targeting choice 0
+Skateboard triggered
+Resolving ability (category: Tap)
+No creatures eligible to attack.
+
+-------- TURN 14 (Player B) --------
+The One Ring triggered
+| decision 82: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate The One Ring (PutCounter)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+| decision 83: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 3).
+Resolving ability (category: Draw, amount: 3)
+Player B draws Plains
+Player B draws Tune the Narrative
+Player B draws Geist of Saint Traft
+| decision 84: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tune the Narrative
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Tune the Narrative)
+Player B activated Island for 1(U)
+Player B casts Tune the Narrative
+| decision 85: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+| decision 86: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: LoseLife, amount: 3)
+Player B loses 3 life (now at 11)
+| decision 87: Player B (game 0, turn 13, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Wasteland
+| decision 88: Player B (game 0, turn 13, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Lórien Revealed from hand (ChangeZone)
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 89: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Wasteland
+|   3: Cast Geist of Saint Traft
+|   4: Cast Ponder
+|   5: Activate Lórien Revealed from hand (ChangeZone)
+|   6: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Geist of Saint Traft)
+Player B activated Meticulous Archive for 1(W)
+Player B activated Tundra for 1(U)
+Player B activated Tundra for 1(U)
+Player B casts Geist of Saint Traft
+Geist of Saint Traft enters the battlefield
+| decision 90: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Plains
+|   2: Play Wasteland
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Plains)
+Player B played Plains
+| decision 91: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T13 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Lórien Revealed from hand (ChangeZone))
+Player B activated Plains for 1(W)
+Player B activates Lórien Revealed from hand
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 92: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+|   3: Tundra
+(REPLAY) [T13 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tundra)
+Player B shuffles their library
+Player B reveals Tundra and puts it to hand
+No creatures eligible to attack.
+
+-------- TURN 15 (Player A) --------
+Player A draws Life from the Loam
+No creatures eligible to attack.
+
+-------- TURN 16 (Player B) --------
+The One Ring triggered
+| decision 93: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate The One Ring (PutCounter)
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+| decision 94: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 4).
+Resolving ability (category: Draw, amount: 4)
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Flooded Strand
+Player B draws Tune the Narrative
+| decision 95: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Tune the Narrative
+|   3: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Cast Tune the Narrative)
+Player B activated Island for 1(U)
+Player B casts Tune the Narrative
+| decision 96: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Flow State
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 4).
+| decision 97: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: LoseLife, amount: 4)
+Player B loses 4 life (now at 7)
+| decision 98: Player B (game 0, turn 15, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Misty Rainforest
+| decision 99: Player B (game 0, turn 15, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 100: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Misty Rainforest
+|   3: Play Tundra
+|   4: Play Wasteland
+|   5: Cast Flow State
+|   6: Cast Ponder
+|   7: Cast Swords to Plowshares
+|   8: Cast Tamiyo, Inquisitive Student
+|   9: Cast Tamiyo, Inquisitive Student
+|   10: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 5
+| >> Player B: 5 (Cast Flow State)
+Player B activated Meticulous Archive for 1(U)
+Player B activated Plains for 1(W)
+Player B casts Flow State
+| decision 101: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate Lórien Revealed from hand (ChangeZone)
+(REPLAY) [T15 | First Main | Player B] Input: 2
+| >> Player B: 2 (Activate Lórien Revealed from hand (ChangeZone))
+Player B activated Tundra for 1(U)
+Player B activates Lórien Revealed from hand
+| decision 102: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 103: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Mystic Sanctuary
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Island)
+Player B shuffles their library
+Player B reveals Island and puts it to hand
+| decision 104: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 105: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Brainstorm
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Brainstorm)
+| auto: Player B: Flooded Strand
+Player B puts Brainstorm into hand.
+Player B puts Flooded Strand into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 106: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Play Island
+|   4: Play Misty Rainforest
+|   5: Play Tundra
+|   6: Play Wasteland
+|   7: Cast Brainstorm
+|   8: Cast Ponder
+|   9: Cast Swords to Plowshares
+|   10: Cast Tamiyo, Inquisitive Student
+|   11: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T15 | First Main | Player B] Input: 7
+| >> Player B: 7 (Cast Brainstorm)
+Player B activated Tundra for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Ponder
+Player B draws Force of Will
+Player B draws The One Ring
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 107: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Flooded Strand
+|   2: Force of Will
+|   3: Island
+|   4: Misty Rainforest
+|   5: Ponder
+|   6: Ponder
+|   7: Swords to Plowshares
+|   8: Tamiyo, Inquisitive Student
+|   9: Tamiyo, Inquisitive Student
+|   10: The One Ring
+|   11: Tundra
+|   12: Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+Player B chooses a card from Player B hand:
+| decision 108: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Force of Will
+|   2: Island
+|   3: Misty Rainforest
+|   4: Ponder
+|   5: Ponder
+|   6: Swords to Plowshares
+|   7: Tamiyo, Inquisitive Student
+|   8: Tamiyo, Inquisitive Student
+|   9: The One Ring
+|   10: Tundra
+|   11: Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Player B puts Flooded Strand to top of library
+| decision 109: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+|   3: Play Tundra
+|   4: Play Wasteland
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+| decision 110: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Ponder
+|   3: Cast Tamiyo, Inquisitive Student
+|   4: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Island for 1(U)
+Player B casts Ponder
+| decision 111: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 112: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Ponder
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Choose which card goes 2 from top:
+| decision 113: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Ponder
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+| decision 114: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T15 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+
+--- Declare Attackers (Player B) ---
+| decision 115: Player B (game 0, turn 15, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Geist of Saint Traft [2/2]
+|   1: Confirm attackers
+(REPLAY) [T15 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Geist of Saint Traft [2/2])
+Geist of Saint Traft attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Geist of Saint Traft [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Geist of Saint Traft -> Player A
+Geist of Saint Traft triggered
+Resolving ability (category: Token)
+Token created: 4/4 Angel (tapped and attacking)
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Geist of Saint Traft deals 2 damage to Player A (now at 38 life)
+  Angel token deals 4 damage to Player A (now at 34 life)
+--- End Combat Damage ---
+
+Delayed trigger fires.
+Resolving ability (category: ExileTokens)
+Angel is exiled at end of combat.
+Angel (token) is put into exile and ceases to exist.
+
+--- Discard to hand size (Player B) ---
+Hand (10 cards, must discard to 7):
+| decision 116: Player B (game 0, turn 15, CLEANUP, Player B active)
+| menu:
+|   0: Force of Will
+|   1: Misty Rainforest
+|   2: Ponder
+|   3: Ponder
+|   4: Swords to Plowshares
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+|   7: The One Ring
+|   8: Tundra
+|   9: Wasteland
+(REPLAY) [T15 | Cleanup | Player B] Input: 1
+| >> Player B: 1 (Misty Rainforest)
+Player B discards Misty Rainforest.
+
+--- Discard to hand size (Player B) ---
+Hand (9 cards, must discard to 7):
+| decision 117: Player B (game 0, turn 15, CLEANUP, Player B active)
+| menu:
+|   0: Force of Will
+|   1: Ponder
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Tamiyo, Inquisitive Student
+|   5: Tamiyo, Inquisitive Student
+|   6: The One Ring
+|   7: Tundra
+|   8: Wasteland
+(REPLAY) [T15 | Cleanup | Player B] Input: 6
+| >> Player B: 6 (The One Ring)
+Player B discards The One Ring.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 118: Player B (game 0, turn 15, CLEANUP, Player B active)
+| menu:
+|   0: Force of Will
+|   1: Ponder
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Tamiyo, Inquisitive Student
+|   5: Tamiyo, Inquisitive Student
+|   6: Tundra
+|   7: Wasteland
+(REPLAY) [T15 | Cleanup | Player B] Input: 5
+| >> Player B: 5 (Tamiyo, Inquisitive Student)
+Player B discards Tamiyo, Inquisitive Student.
+
+-------- TURN 17 (Player A) --------
+Player A draws Yavimaya, Cradle of Growth
+| decision 119: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+| decision 120: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Sphere of Resistance
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 121: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Forest
+|   3: Dark Depths
+|   4: Yavimaya, Cradle of Growth
+|   5: Thespian's Stage
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Life from the Loam
+| decision 122: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T16 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player B: Life from the Loam
+Targeting choice 0
+| decision 123: Player B (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Ponder
+|   1: Exile Ponder
+|   2: Exile Tamiyo, Inquisitive Student
+(REPLAY) [T16 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Ponder)
+Player B pays 1 life
+Player B exiles Ponder
+Player B casts Force of Will targeting Life from the Loam
+Resolving ability (category: Counter)
+Life from the Loam is countered
+No creatures eligible to attack.
+
+-------- TURN 18 (Player B) --------
+The One Ring triggered
+| decision 124: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Activate The One Ring (PutCounter)
+(REPLAY) [T17 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+| decision 125: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 5).
+Resolving ability (category: Draw, amount: 5)
+Player B draws Flooded Strand
+Player B draws Flooded Strand
+Player B draws Mystic Sanctuary
+Player B draws Murktide Regent
+Player B draws Flow State
+| decision 126: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: LoseLife, amount: 5)
+Player B loses 5 life (now at 1)
+| decision 127: Player B (game 0, turn 17, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T17 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Force of Will
+| decision 128: Player B (game 0, turn 17, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T17 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 129: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Play Mystic Sanctuary
+|   4: Play Tundra
+|   5: Play Wasteland
+|   6: Cast Flow State
+|   7: Cast Murktide Regent
+|   8: Cast Ponder
+|   9: Cast Swords to Plowshares
+|   10: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T17 | First Main | Player B] Input: 6
+| >> Player B: 6 (Cast Flow State)
+Player B activated Island for 1(U)
+Player B activated Plains for 1(W)
+Player B casts Flow State
+| decision 130: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Swords to Plowshares
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 131: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Tamiyo, Inquisitive Student
+|   2: Flow State
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Tamiyo, Inquisitive Student)
+| decision 132: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Flow State
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Flow State)
+Player B puts Tamiyo, Inquisitive Student into hand.
+Player B puts Flow State into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 133: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Play Mystic Sanctuary
+|   4: Play Tundra
+|   5: Play Wasteland
+|   6: Cast Flow State
+|   7: Cast Murktide Regent
+|   8: Cast Ponder
+|   9: Cast Swords to Plowshares
+|   10: Cast Tamiyo, Inquisitive Student
+|   11: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T17 | First Main | Player B] Input: 6
+| >> Player B: 6 (Cast Flow State)
+Player B activated Island for 1(U)
+Player B activated Meticulous Archive for 1(U)
+Player B casts Flow State
+| decision 134: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Swords to Plowshares
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 135: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Spell Pierce
+|   1: Force of Negation
+|   2: Flow State
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Force of Negation)
+| decision 136: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Spell Pierce
+|   1: Flow State
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Flow State)
+Player B puts Force of Negation into hand.
+Player B puts Flow State into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 137: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Play Mystic Sanctuary
+|   4: Play Tundra
+|   5: Play Wasteland
+|   6: Cast Flow State
+|   7: Cast Murktide Regent
+|   8: Cast Ponder
+|   9: Cast Swords to Plowshares
+|   10: Cast Tamiyo, Inquisitive Student
+|   11: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T17 | First Main | Player B] Input: 6
+| >> Player B: 6 (Cast Flow State)
+Player B activated Tundra for 1(U)
+Player B activated Tundra for 1(U)
+Player B casts Flow State
+| decision 138: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 139: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Swords to Plowshares
+|   2: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Swords to Plowshares)
+| decision 140: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Player B puts Swords to Plowshares into hand.
+Player B puts Wasteland into hand.
+Player B puts 1 card(s) on the bottom of their library.
+| decision 141: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Flooded Strand
+|   3: Play Mystic Sanctuary
+|   4: Play Tundra
+|   5: Play Wasteland
+|   6: Play Wasteland
+(REPLAY) [T17 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 142: Player B (game 0, turn 17, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 143: Player B (game 0, turn 17, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player B) ---
+| decision 144: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Geist of Saint Traft [2/2]
+|   1: Confirm attackers
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Geist of Saint Traft [2/2])
+Geist of Saint Traft attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Geist of Saint Traft [2/2] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Geist of Saint Traft -> Player A
+Geist of Saint Traft triggered
+| decision 145: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Token)
+Token created: 4/4 Angel (tapped and attacking)
+| decision 146: Player B (game 0, turn 17, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 147: Player B (game 0, turn 17, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Geist of Saint Traft deals 2 damage to Player A (now at 32 life)
+  Angel token deals 4 damage to Player A (now at 28 life)
+--- End Combat Damage ---
+
+| decision 148: Player B (game 0, turn 17, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Delayed trigger fires.
+| decision 149: Player B (game 0, turn 17, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ExileTokens)
+Angel is exiled at end of combat.
+Angel (token) is put into exile and ceases to exist.
+| decision 150: Player B (game 0, turn 17, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 151: Player B (game 0, turn 17, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 152: Player B (game 0, turn 17, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T17 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Discard to hand size (Player B) ---
+Hand (13 cards, must discard to 7):
+| decision 153: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Flooded Strand
+|   1: Force of Negation
+|   2: Force of Will
+|   3: Murktide Regent
+|   4: Mystic Sanctuary
+|   5: Ponder
+|   6: Swords to Plowshares
+|   7: Swords to Plowshares
+|   8: Tamiyo, Inquisitive Student
+|   9: Tamiyo, Inquisitive Student
+|   10: Tundra
+|   11: Wasteland
+|   12: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 0
+| >> Player B: 0 (Flooded Strand)
+Player B discards Flooded Strand.
+
+--- Discard to hand size (Player B) ---
+Hand (12 cards, must discard to 7):
+| decision 154: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Force of Negation
+|   1: Force of Will
+|   2: Murktide Regent
+|   3: Mystic Sanctuary
+|   4: Ponder
+|   5: Swords to Plowshares
+|   6: Swords to Plowshares
+|   7: Tamiyo, Inquisitive Student
+|   8: Tamiyo, Inquisitive Student
+|   9: Tundra
+|   10: Wasteland
+|   11: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 3
+| >> Player B: 3 (Mystic Sanctuary)
+Player B discards Mystic Sanctuary.
+
+--- Discard to hand size (Player B) ---
+Hand (11 cards, must discard to 7):
+| decision 155: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Force of Negation
+|   1: Force of Will
+|   2: Murktide Regent
+|   3: Ponder
+|   4: Swords to Plowshares
+|   5: Swords to Plowshares
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+|   8: Tundra
+|   9: Wasteland
+|   10: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 8
+| >> Player B: 8 (Tundra)
+Player B discards Tundra.
+
+--- Discard to hand size (Player B) ---
+Hand (10 cards, must discard to 7):
+| decision 156: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Force of Negation
+|   1: Force of Will
+|   2: Murktide Regent
+|   3: Ponder
+|   4: Swords to Plowshares
+|   5: Swords to Plowshares
+|   6: Tamiyo, Inquisitive Student
+|   7: Tamiyo, Inquisitive Student
+|   8: Wasteland
+|   9: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 2
+| >> Player B: 2 (Murktide Regent)
+Player B discards Murktide Regent.
+
+--- Discard to hand size (Player B) ---
+Hand (9 cards, must discard to 7):
+| decision 157: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Force of Negation
+|   1: Force of Will
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Swords to Plowshares
+|   5: Tamiyo, Inquisitive Student
+|   6: Tamiyo, Inquisitive Student
+|   7: Wasteland
+|   8: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 6
+| >> Player B: 6 (Tamiyo, Inquisitive Student)
+Player B discards Tamiyo, Inquisitive Student.
+
+--- Discard to hand size (Player B) ---
+Hand (8 cards, must discard to 7):
+| decision 158: Player B (game 0, turn 17, CLEANUP, Player B active)
+| menu:
+|   0: Force of Negation
+|   1: Force of Will
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Swords to Plowshares
+|   5: Tamiyo, Inquisitive Student
+|   6: Wasteland
+|   7: Wasteland
+(REPLAY) [T17 | Cleanup | Player B] Input: 5
+| >> Player B: 5 (Tamiyo, Inquisitive Student)
+Player B discards Tamiyo, Inquisitive Student.
+
+-------- TURN 19 (Player A) --------
+| decision 159: Player B (game 0, turn 18, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 160: Player A (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Draw a card
+|   1: Dredge Life from the Loam (mill 3)
+(REPLAY) [T18 | Draw | Player A] Input: 1
+| >> Player A: 1 (Dredge Life from the Loam (mill 3))
+Player A mills Yavimaya, Cradle of Growth.
+Player A mills The Tabernacle at Pendrell Vale.
+Player A mills Dark Depths.
+Player A dredges Life from the Loam (milled 3)
+| decision 161: Player B (game 0, turn 18, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 162: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Life from the Loam
+|   2: Cast Sphere of Resistance
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 163: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Boseiju, Who Endures
+|   2: Forest
+|   3: Dark Depths
+|   4: Yavimaya, Cradle of Growth
+|   5: The Tabernacle at Pendrell Vale
+|   6: Thespian's Stage
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Life from the Loam
+| decision 164: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Negation (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+|   3: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Negation (alternate cost))
+Choose target for Force of Negation:
+| auto: Player B: Life from the Loam
+Targeting choice 0
+| decision 165: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Force of Will
+|   1: Exile Ponder
+(REPLAY) [T18 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Force of Will)
+Player B exiles Force of Will
+Player B casts Force of Negation targeting Life from the Loam
+| decision 166: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Counter)
+Life from the Loam is countered
+| decision 167: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 168: Player B (game 0, turn 18, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 169: Player B (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 170: Player B (game 0, turn 18, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 171: Player B (game 0, turn 18, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 172: Player B (game 0, turn 18, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T18 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 20 (Player B) --------
+The One Ring triggered
+| decision 173: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Flooded Strand (ChangeZone)
+|   4: Activate The One Ring (PutCounter)
+(REPLAY) [T19 | Upkeep | Player B] Input: 4
+| >> Player B: 4 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+| decision 174: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 6).
+Resolving ability (category: Draw, amount: 6)
+Player B draws Teferi, Time Raveler
+Player B draws Force of Will
+Player B draws Ponder
+Player B draws Wasteland
+Player B draws Polluted Delta
+Player B draws Wasteland
+| decision 175: Player B (game 0, turn 19, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+|   2: Cast Swords to Plowshares
+|   3: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T19 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: LoseLife, amount: 6)
+Player B loses 6 life (now at -5)
+
+Player B has -5 life - Player A wins!
+GAME_RESULT: 1 Player A wins

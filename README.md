@@ -70,7 +70,7 @@ cd bin
 
 At the terminal prompt a number selects a choice (every choice is logged); `--player A|B` shows
 hidden information from that seat's view only. Deck names are paths under
-`bin/resources/decks/` without `.dk` (`delver`, `league/ur_delver`). A human seat against an
+`bin/resources/decks/` without `.dk` (`delver`, `league/ur_tempo`). A human seat against an
 agent is plan step 4b's C++ CLI: today a `--player` seat under `--machine` (which any
 `--agent-a/-b` implies) is prompted without its menu being printed.
 
@@ -80,7 +80,7 @@ agent is plan step 4b's C++ CLI: today a `--player` seat under `--machine` (whic
 python3 python/rm_driver.py --player-a scripted --player-b explore \
   --deck-a league/bug --deck-b league/burn --format bo1 --games 10
 python3 python/rm_driver.py --player-a scripted --player-b scripted \
-  --deck-a league/ur_delver --deck-b league/gw_maverick --verbose --out match.txt   # a bo3 match, full transcript
+  --deck-a league/ur_tempo --deck-b league/eldrazi_aggro --verbose --out match.txt   # a bo3 match, full transcript
 ```
 
 Agents: `scripted` (hard), `scripted:easy` / `greedy`, `scripted:random`, `explore`,
