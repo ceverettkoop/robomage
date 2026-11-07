@@ -1,0 +1,4 @@
+{"name": "forge",
+ "why": "CR 401.2, 701.20e, 601.2a: hotseat, Player A's Mystic Forge: A's board lists the top card it looks at and the permission to cast it, B's list neither, only that a look happened; A casts Lotus Petal off the top, B's event line names it, and A's board moves on to the next card, which B's never shows",
+ "args": ["--game-seed", "1", "--hand-a", "Island,Island,Island,Island,Island,Island,Island", "--library-a", "Lotus Petal,Mishra's Bauble,Island", "--battlefield-a", "Mystic Forge", "--hand-b", "Lightning Bolt,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--battlefield-b", "Mountain", "--library-b", "Mountain"],
+ "input": ["0", "0", "0", "0", "0", "0", "8", "0", "0", "0"]}

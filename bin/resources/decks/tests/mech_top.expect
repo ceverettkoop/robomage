@@ -1,0 +1,8 @@
+# M11 (b3): the standing look (Mystic Forge) and what moves the card under it.
+row:TopLibrary
+row:standing_look
+# A cast off the top.
+cast_row:library
+# Its exile ability, and a cloak of the top card.
+effect:Dig
+effect:Cloak

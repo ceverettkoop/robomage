@@ -361,6 +361,10 @@ _CRYPTIC_COAT = "Cryptic Coat"
 _COAT_RETURN_AND_RECAST_MANA = 5   # {1}{U} to return it, {2}{U} to cast it again
 _COAT_MIN_LIBRARY = 10             # each cast takes a card off the library for good
 _CLOAK_POWER = 2                   # what a cloak is already, with ward {2} besides
+_MYSTIC_FORGE = "Mystic Forge"
+_FORGE_ENOUGH_MANA = 5             # a land on top adds nothing past this
+_FORGE_MIN_LIFE = 8                # each exile costs a life
+_FORGE_MIN_LIBRARY = 10            # and a card off the library for good
 _MULTI_MANA_LANDS = frozenset({"Ancient Tomb", "Urza's Workshop"}) | _TRON_LAND_SET
 
 # Reanimator deck cards. Reanimate and Animate Dead are the "put a creature card
@@ -498,6 +502,16 @@ def _coat_return_worthwhile(v) -> bool:
     return (v.is_active and v.in_main and v.stack_empty
             and _count_untapped_mana_sources(v) >= _COAT_RETURN_AND_RECAST_MANA
             and v.library >= _COAT_MIN_LIBRARY)
+
+
+def _forge_exile_worthwhile(v) -> bool:
+    """Mystic Forge's {T}, Pay 1 life: a land we don't need traded for the card under it, which may
+    be one we can cast from there. Only in our own main phase, on a top card the look has shown."""
+    top = v.known_top(1)[0]
+    return (v.is_active and v.in_main and v.stack_empty
+            and top is not None and v.cards.is_land(top)
+            and _count_untapped_mana_sources(v) >= _FORGE_ENOUGH_MANA
+            and v.life >= _FORGE_MIN_LIFE and v.library >= _FORGE_MIN_LIBRARY)
 
 
 def _tapped_multi_mana_lands(v) -> int:
@@ -2529,6 +2543,9 @@ def _activation_holds(v) -> set[int]:
                 holds.add(i)
         elif card == _CRYPTIC_COAT:
             if not _coat_return_worthwhile(v):
+                holds.add(i)
+        elif card == _MYSTIC_FORGE:
+            if not _forge_exile_worthwhile(v):
                 holds.add(i)
         elif card == _BLAST_ZONE:
             plan = plan or _blast_zone_plan(v) or (0, -1)
