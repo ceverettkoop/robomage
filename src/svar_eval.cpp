@@ -819,6 +819,7 @@ static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_conv
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
 
 static int ev_sacrificed_mana_value(const SvarExpr &, const SvarArgs &) {
+    coverage_row("Sacrificed$CardManaCost");
     return cur_game.resolution.sacrificed_mana_value;
 }
 static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }

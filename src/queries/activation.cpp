@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "../classes/game.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "attachments.h"
 #include "battlefield.h"
@@ -246,6 +247,8 @@ bool activation_limit_reached(const Permanent &perm, const Ability &ab) {
 void count_activation(Permanent &perm, const Ability &ab) {
     bool own = false, loyalty = false;
     for (const ActivationRule &rule : ab.def->activation_rules) {
+        if (rule.kind == ActivationRule::CONDITION) coverage_row(rule.condition->name);
+        if (rule.kind == ActivationRule::PER_LIFETIME) coverage_row("activation_per_lifetime");
         if (rule.kind != ActivationRule::PER_TURN && rule.kind != ActivationRule::PER_LIFETIME) continue;
         (rule.counted == ActivationRule::LOYALTY_ABILITIES ? loyalty : own) = true;
     }
