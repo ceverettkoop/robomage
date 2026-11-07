@@ -106,14 +106,13 @@ struct DrawReplacementOption {
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts);
 
-// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player`
-// draws for a single "would draw a card" event, summed over every DRAW_ADD replacement on
-// `player`'s battlefield permanents whose CheckSVar condition currently holds ("as long as you
-// have one or fewer cards in hand"). 0 = no additive replacement applies (the common case). A
-// pure ECS read (battlefield scan + SVar evaluation) with no prompt, evaluated at the draw site
-// BEFORE the base draw so the condition sees the pre-draw hand. The caller performs `bonus`
-// extra plain draws after the base draw — those extra draws are part of the same replaced event
-// (614.5) and are NOT re-passed through this replacement.
+// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player` draws
+// for a "would draw one or more cards" event, summed over every DRAW_ADD replacement on `player`'s
+// battlefield permanents whose CheckSVar condition currently holds ("as long as you have one or
+// fewer cards in hand"). 0 = no additive replacement applies (the common case). A pure ECS read
+// (battlefield scan + SVar evaluation) with no prompt, evaluated once as the event starts, so the
+// condition sees the pre-draw hand. Every card of the event, the extra ones too, is then a draw of
+// its own (CR 121.2), with its own replacement effects.
 int draw_count_bonus(Zone::Ownership player);
 
 // Runs what `r`'s ReplaceWith$ names in place of the event (CR 614.6), as an ability of `source`

@@ -666,13 +666,6 @@ void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
     }
 }
 
-void Orderer::perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event) {
-    int draw_bonus = replacement::draw_count_bonus(player);
-    perform_draw(player, fire_draw_event);
-    for (int i = 0; i < draw_bonus && !cur_game.ended; i++)
-        perform_draw(player, fire_draw_event);
-}
-
 // actual effect here; replacement (dredge) handled here, triggers handled by callers
 void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
@@ -685,16 +678,11 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
         rev.affected_player = player;
         replacement::dispatch(rev);
         if (rev.draw_replaced) {
-            // The draw was replaced by a dredge, so no card is drawn — the additive bonus, which
-            // modifies the *draw*, does not apply. (No vocab card combines dredge with an additive
-            // draw replacement, so their 616.1 co-application order is not modeled.)
             apply_dredge(player, rev.dredge_source, rev.dredge_mill);
             return;
         }
     }
-    // The non-dredge case draws the base card plus any additive-draw-replacement bonus
-    // through the shared helper (CR 614.1/614.5, Quantum Riddler).
-    perform_draw_with_bonus(player, fire_draw_event);
+    perform_draw(player, fire_draw_event);
 }
 
 void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {

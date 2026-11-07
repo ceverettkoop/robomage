@@ -554,7 +554,7 @@ struct Game {
         struct PendingDrawRT {
             bool active = false;
             Zone::Ownership player = Zone::UNKNOWN;
-            int remaining = 0;
+            DrawBatch batch;
         };
         // Suspended decisions (see pending_query.h / resolution_frame.h): the decision parked for
         // the main loop to emit, and the persisted state of each flow that can park one midway.

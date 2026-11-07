@@ -52,8 +52,8 @@ std::string amass_subtype(const AbilityDef &def);
 
 // Draw `total` cards for `owner` one at a time, offering the dredge
 // draw-replacement (CR 702.52a) before each draw through `ctx` (suspendable).
-// `done` is the caller's persisted progress counter (a field of its frame rt),
-// so a resume re-enters the parked dredge question mid-batch. Returns false
+// `batch` is the caller's persisted progress (a field of its frame rt), so a resume
+// re-enters the parked dredge question mid-batch. Returns false
 // when a dredge ask suspended (the caller returns SUSPENDED mutating nothing);
 // true when every remaining draw completed (or the game ended mid-batch,
 // mirroring Orderer::draw's per-draw ended bail). Blocking contexts prompt
@@ -61,7 +61,7 @@ std::string amass_subtype(const AbilityDef &def);
 // sylvan_library's draw-2. `decision_source` (the resolving ability's source) is
 // the pending-decision context of each dredge question. Defined in effect_draw.cpp.
 bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                              Zone::Ownership owner, size_t &done, size_t total,
+                              Zone::Ownership owner, DrawBatch &batch, size_t total,
                               Entity decision_source);
 // CR 702.26b/g: phase permanent `e` out directly — it is removed from combat (CR 506.4) and every
 // Aura/Equipment attached to it phases out indirectly with it. `entities` is the iterating

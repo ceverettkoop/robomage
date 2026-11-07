@@ -75,9 +75,16 @@ struct RearrangeRt {
     size_t pick = 0;              // next slot pick
     bool placed = false;          // forced last card already placed (exactly once)
 };
+// A draw event's cards, one at a time through their replacement effects, so that a question about
+// one of them can suspend mid-event. `remaining` is read as the event starts, an additive
+// replacement's extra cards included (replacement::draw_count_bonus).
+struct DrawBatch {
+    bool started = false;
+    size_t remaining = 0;
+};
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
-    size_t draws_done = 0;        // draw-2 progress (a dredge question may suspend mid-batch)
+    DrawBatch draws;              // the draw-2 (a dredge question may suspend mid-batch)
     std::vector<Entity> drawn_in_hand;  // choose-from candidates
     std::vector<Entity> chosen;         // the (up to) 2 chosen cards
     size_t to_choose = 0;         // how many to choose (resolved once)
@@ -235,7 +242,7 @@ struct DrawRt {
     std::vector<Zone::Ownership> owners;
     size_t owner_idx = 0;
     size_t total = 0;
-    size_t done = 0;
+    DrawBatch batch;              // the current owner's draws
 };
 // change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
 // artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each

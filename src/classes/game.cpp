@@ -458,7 +458,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // 702.52a) parks as a loop-top decision instead of blocking.
                     pending.draw.active = true;
                     pending.draw.player = active_player;
-                    pending.draw.remaining = 1;
                     resume_pending_draws(*this, orderer);
                     // A dredge question parked the draw: return with the pass
                     // flags left true and the post-switch epilogue below DEFERRED
@@ -651,6 +650,10 @@ void Game::finish_suspended_turn_draw() {
 
 void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
     Game::PendingDrawRT &pd = game.pending.draw;
+    if (!pd.batch.started) {
+        pd.batch.started = true;
+        pd.batch.remaining = 1 + static_cast<size_t>(replacement::draw_count_bonus(pd.player));
+    }
     while (pd.active) {
         // A latched TURN_DRAW answer from the previous arm: apply it first —
         // draw normally (option 0) or one dredge — restoring the pre-arm
@@ -671,30 +674,25 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             game.priority.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
             if (choice == 0) {
-                // The base draw plus any additive-draw-replacement bonus (CR 614.1/614.5,
-                // Quantum Riddler) is applied inside the shared helper.
-                orderer->perform_draw_with_bonus(pd.player);
+                orderer->perform_draw(pd.player);
             } else {
                 orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
                                       opts[static_cast<size_t>(choice) - 1].mill);
             }
-            pd.remaining--;
+            pd.batch.remaining--;
             continue;
         }
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
         // draw ends the game mid-batch).
-        if (pd.remaining <= 0 || game.ended) {
+        if (pd.batch.remaining == 0 || game.ended) {
             pd = Game::PendingDrawRT{};
             return;
         }
         std::vector<replacement::DrawReplacementOption> opts;
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(pd.player, &opts);
         if (menu.empty()) {
-            // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch. The additive draw replacement
-            // (CR 614.1/614.5, Quantum Riddler) bonus is applied inside the helper.
-            orderer->perform_draw_with_bonus(pd.player);
-            pd.remaining--;
+            orderer->perform_draw(pd.player);
+            pd.batch.remaining--;
             continue;
         }
         // Park the dredge question for the loop top (tag TURN_DRAW): persist

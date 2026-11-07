@@ -17,19 +17,21 @@ extern Coordinator global_coordinator;
 namespace effects {
 
 bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                              Zone::Ownership owner, size_t &done, size_t total,
+                              Zone::Ownership owner, DrawBatch &batch, size_t total,
                               Entity decision_source) {
-    for (; done < total; done++) {
+    if (!batch.started) {
+        batch.started = true;
+        batch.remaining = total + static_cast<size_t>(replacement::draw_count_bonus(owner));
+    }
+    while (batch.remaining > 0) {
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
         // draw ends the game mid-batch).
         if (cur_game.ended) return true;
         std::vector<replacement::DrawReplacementOption> opts;
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(owner, &opts);
         if (menu.empty()) {
-            // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch. The additive draw replacement
-            // (CR 614.1/614.5, Quantum Riddler) bonus is applied inside the helper.
-            orderer->perform_draw_with_bonus(owner);
+            orderer->perform_draw(owner);
+            batch.remaining--;
             continue;
         }
         // One dredge question per draw (CR 702.52a / 614.1a), asked on the
@@ -39,11 +41,12 @@ bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
         int choice = ctx.ask(menu, owner, decision_source);
         if (choice < 0 && decision_suspended()) return false;
         if (choice == 0) {
-            orderer->perform_draw_with_bonus(owner);
+            orderer->perform_draw(owner);
         } else {
             orderer->apply_dredge(owner, opts[static_cast<size_t>(choice) - 1].source,
                                   opts[static_cast<size_t>(choice) - 1].mill);
         }
+        batch.remaining--;
     }
     return true;
 }
@@ -76,8 +79,8 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         rt.init = true;
     }
     // The active player performs all of their draws first (CR 121.2c).
-    for (; rt.owner_idx < rt.owners.size(); ++rt.owner_idx, rt.done = 0)
-        if (!draw_n_with_replacements(ctx, orderer, rt.owners[rt.owner_idx], rt.done, rt.total, ab.source.lki_entity()))
+    for (; rt.owner_idx < rt.owners.size(); ++rt.owner_idx, rt.batch = DrawBatch{})
+        if (!draw_n_with_replacements(ctx, orderer, rt.owners[rt.owner_idx], rt.batch, rt.total, ab.source.lki_entity()))
             return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }
