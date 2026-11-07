@@ -604,6 +604,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             Ability trigger_ab(&ab);
             trigger_ab.source = ObjectRef::of(entity);
             trigger_ab.controller = ctrl;
+            if (mode->capture) mode->capture(trigger_ab, ev);
 
             // A leaves-the-battlefield ability that operates on the cards the source had exiled
             // (Skyclave Apparition's TrigToken sizes/owns the Illusion by the exiled card, and

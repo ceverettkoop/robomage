@@ -16,6 +16,7 @@ struct ObjectSpec {
         UNREAD,   // a name without a row: no reader acts on it (--parse-report's *.Defined findings)
 
         SELF,                // the ability's source
+        TRIGGERED_CARD,      // the object whose event fired it, else its source
         REMEMBERED,          // the objects the resolution remembers
         DELAY_REMEMBERED,    // the objects a delayed trigger captured, restored as remembered
         IMPRINTED,           // the objects the resolution imprinted (a filter's set; no Defined$ name)

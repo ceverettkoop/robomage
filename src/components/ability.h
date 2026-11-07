@@ -861,9 +861,11 @@ struct Ability {
     // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
     ObjectRef ninjutsu_attack_target;
 
-    // The spell whose cast fired this triggered ability (Defined$ TriggeredCardLKICopy on a SpellCast
-    // trigger); it may have left the stack by resolution, so read through lki_entity().
-    ObjectRef cast_spell;
+    // The object whose event fired this triggered ability (Defined$ TriggeredCard, TriggeredCardLKICopy):
+    // the spell cast, the card that moved, the permanent tapped, as the row's capture found it. It may
+    // have moved again by resolution, so last-known reads go through lki_entity(). Empty when no row
+    // took one.
+    ObjectRef triggered_card;
 
     int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
 

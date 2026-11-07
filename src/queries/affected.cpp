@@ -37,6 +37,7 @@ struct DefinedRow {
 
 static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static void objects_source(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_triggered_card(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_targets(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_remembered(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_imprinted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
@@ -78,7 +79,7 @@ static const DefinedRow kDefinedRows[] = {
     {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
-    // TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed zones and fired
+    // TriggeredNewCard(LKICopy) — the object that changed zones and fired
     // this trigger, referenced in its NEW zone. For a Card.Self ChangesZone trigger (CR 603.6e) the
     // triggering object IS the ability's own source (e.g. Triumph of Saint Katherine's dies-trigger,
     // which exiles itself from the graveyard as the head of a "Descend"-style recursion), so bind
@@ -87,8 +88,10 @@ static const DefinedRow kDefinedRows[] = {
     // graveyard-recursion cards.
     {"TriggeredNewCardLKICopy", ObjectSpec::SELF, Refers::OBJECT, objects_source},
     {"TriggeredNewCard", ObjectSpec::SELF, Refers::OBJECT, objects_source},
-    {"TriggeredCardLKICopy", ObjectSpec::SELF, Refers::OBJECT, objects_source},
-    {"TriggeredCard", ObjectSpec::SELF, Refers::OBJECT, objects_source},
+    // TriggeredCard(LKICopy) — the object the trigger's row captured from its event; an engine-built
+    // trigger's, none captured, is its source.
+    {"TriggeredCardLKICopy", ObjectSpec::TRIGGERED_CARD, Refers::OBJECT, objects_triggered_card},
+    {"TriggeredCard", ObjectSpec::TRIGGERED_CARD, Refers::OBJECT, objects_triggered_card},
 
     {"Remembered", ObjectSpec::REMEMBERED, Refers::OBJECT, objects_remembered},
     // ChosenCard — the cards a ChooseCard of this resolution chose (Drop of Honey's destroy; the set
@@ -196,6 +199,14 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
 
 static void objects_source(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {
     if (Entity e = ctx.source.get()) out.push_back(e);
+}
+
+static void objects_triggered_card(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out) {
+    if (!ctx.ability || ctx.ability->triggered_card.empty()) {
+        objects_source(spec, ctx, out);
+        return;
+    }
+    if (Entity e = ctx.ability->triggered_card.get()) out.push_back(e);
 }
 
 static void objects_targets(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {

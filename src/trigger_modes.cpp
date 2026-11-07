@@ -59,7 +59,8 @@ static bool match_becomes_target(const TriggerEvent &fired);
 static bool match_taps(const TriggerEvent &fired);
 static bool match_attacks(const TriggerEvent &fired);
 static bool match_combat_damage(const TriggerEvent &fired);
-static void capture_spell_cast(Ability &ab, const Event &ev);
+static void bind_triggered_card(Ability &ab, const ObjectRef &card);
+static void capture_triggered_card(Ability &ab, const Event &ev);
 static void capture_combat_damage(Ability &ab, const Event &ev);
 static void capture_attacks(Ability &ab, const Event &ev);
 static void capture_becomes_target(Ability &ab, const Event &ev);
@@ -540,8 +541,16 @@ static bool match_combat_damage(const TriggerEvent &fired) {
            source_controller(fired.ev.GetParam<Entity>(Params::ENTITY)) == fired.controller;
 }
 
-static void capture_spell_cast(Ability &ab, const Event &ev) {
-    if (ev.HasParam(Params::ENTITY)) ab.cast_spell = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+// `card` onto the ability and everything that resolves as part of it.
+static void bind_triggered_card(Ability &ab, const ObjectRef &card) {
+    ab.triggered_card = card;
+    for (Ability &sub : ab.subabilities) bind_triggered_card(sub, card);
+    for (Ability &mode : ab.charm_choices) bind_triggered_card(mode, card);
+}
+
+// The event's ENTITY, the object it happened to, as the object it is now.
+static void capture_triggered_card(Ability &ab, const Event &ev) {
+    if (ev.HasParam(Params::ENTITY)) bind_triggered_card(ab, ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY)));
 }
 
 // For combat damage triggers, capture the damage amount.
@@ -576,12 +585,12 @@ static void capture_becomes_target(Ability &ab, const Event &ev) {
 
 static const TriggerMode kTriggerModes[] = {
     {"ChangesZone", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards",
-        card_read_move, nullptr, nullptr, match_changes_zone},
+        card_read_move, nullptr, nullptr, match_changes_zone, capture_triggered_card},
     {"ChangesZoneAll", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards",
-        card_read_move, nullptr, nullptr, match_changes_zone},
+        card_read_move, nullptr, nullptr, match_changes_zone, capture_triggered_card},
     {"Phase", 0, bind_phase, "Phase ValidPlayer"},
     {"SpellCast", Events::SPELL_CAST, bind_spell_cast, "ValidCard ValidActivatingPlayer ValidSA ActivatorThisTurnCast",
-        card_read_spell_cast, nullptr, nullptr, match_spell_cast, capture_spell_cast},
+        card_read_spell_cast, nullptr, nullptr, match_spell_cast, capture_triggered_card},
     {"DamageDone", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_done, "ValidSource ValidTarget CombatDamage", nullptr,
         source_read_self, "Player", match_combat_damage, capture_combat_damage},
     {"DamageAll", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_all, "ValidSource ValidTarget CombatDamage", nullptr,
@@ -589,12 +598,13 @@ static const TriggerMode kTriggerModes[] = {
     {"Drawn", Events::PLAYER_DREW_CARD, bind_drawn, "ValidCard FirstCardInDrawStep Number", card_read_drawn, nullptr,
         nullptr, match_drawn},
     {"LandPlayed", Events::LAND_PLAYED, bind_land_played, "ValidCard Origin", card_read_move, nullptr, nullptr,
-        match_land_played},
+        match_land_played, capture_triggered_card},
     {"Attacks", Events::CREATURE_ATTACKED, bind_attacks, "ValidCard Attacked", card_read_attacks, nullptr, nullptr,
         match_attacks, capture_attacks},
     {"AttackersDeclared", Events::ATTACKERS_DECLARED, bind_attackers_declared, "AttackingPlayer"},
     {"TapsForMana", Events::TAPPED_FOR_MANA, bind_taps_for_mana, "ValidCard Activator", card_read_creature},
-    {"Taps", Events::BECAME_TAPPED, bind_taps, "ValidCard", card_read_whole, nullptr, nullptr, match_taps},
+    {"Taps", Events::BECAME_TAPPED, bind_taps, "ValidCard", card_read_whole, nullptr, nullptr, match_taps,
+        capture_triggered_card},
     {"BecomesTarget", Events::BECAME_TARGET, bind_becomes_target, "ValidSource ValidTarget", nullptr,
         source_read_targeting, "Card.Self", match_becomes_target, capture_becomes_target, true},
     {"BecomeMonstrous", Events::BECAME_MONSTROUS, bind_become_monstrous, "ValidCard", card_read_self},

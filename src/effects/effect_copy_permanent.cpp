@@ -111,7 +111,7 @@ HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     (void)orderer;
     (void)ctx;
     const Entity copier = ab.def->clone_target_targeted ? ab.target.get() : ab.source.get();
-    const Entity original = ab.def->clone_target_targeted ? ab.cast_spell.lki_entity() : ab.target.get();
+    const Entity original = ab.def->clone_target_targeted ? ab.triggered_card.lki_entity() : ab.target.get();
     if (!is_battlefield_permanent(copier)) {
         game_log("Clone: nothing is left to become a copy\n");
         return HandlerResult::DONE_RUN_SUBS;
