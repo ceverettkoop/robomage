@@ -87,8 +87,6 @@ struct TypeEffect {
     const std::vector<Type> *animate_types = nullptr;
     bool animate_creature = false;
 };
-static std::vector<Type> parse_self_added_types(const std::string &spec);
-static std::vector<Type> types_added_by_static(const StaticAbility &sa);
 static bool is_type_changing_static(const StaticAbility &sa);
 static std::set<Type> copiable_type_line(Entity e, const Permanent &perm);
 static size_t static_timestamp(const ActiveStatic &a);
@@ -254,7 +252,7 @@ static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership control
 }
 
 int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
-    bool is_creature = is_creature_card(card_data);
+    bool is_creature = is_creature_card(off_battlefield_face(card_data));
     // Caster's spells already cast this turn — the "other spells" the relative surcharge counts
     // (Damping Sphere). Evaluated once; 0 when the caster is unknown or has no Player component.
     int spells_cast_this_turn = 0;
@@ -305,7 +303,7 @@ static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership c
         if (!cost_static_reaches(sa, as.controller, caster)) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
         if (!sa.reduce_cost_filter.empty()) {
-            if (!card_matches_filter(card_data, sa.reduce_cost_filter, cast_ctx)) continue;
+            if (!card_matches_filter(off_battlefield_face(card_data), sa.reduce_cost_filter, cast_ctx)) continue;
         }
         fn(sa, as.controller);
     }
@@ -376,7 +374,7 @@ int active_cost_floor_for(const CardData &card_data) {
         if (as.sa()->category != "SetCost" || !as.sa()->set_cost_raise_to) continue;
         // An empty filter means the floor applies to every spell (Trinisphere: ValidCard$ Card).
         if (!as.sa()->set_cost_filter.empty()) {
-            if (!card_matches_filter(card_data, as.sa()->set_cost_filter, MatchCtx{})) continue;
+            if (!card_matches_filter(off_battlefield_face(card_data), as.sa()->set_cost_filter, MatchCtx{})) continue;
         }
         floor = std::max(floor, as.sa()->set_cost_min);
     }
@@ -1231,7 +1229,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
                         auto &z2 = global_coordinator.GetComponent<Zone>(e2);
                         if (z2.owner != perm_ref.controller) continue;
-                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
+                        const CardData &cd2 = off_battlefield_face(global_coordinator.GetComponent<CardData>(e2));
                         if (!is_creature_card(cd2)) continue;
                         for (auto &t : cd2.types) {
                             if (t.kind != SUBTYPE) continue;
@@ -1529,45 +1527,6 @@ static const AbilityDef *keyword_triggered_ability(const std::string &keyword) {
 // set to a Mountain keeps the Creature type the earthbend gave it). Regenerates subtype-derived
 // mana abilities after types are final.
 
-// Parse a " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") into Type objects,
-// classifying each token as TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is
-// (all_types / all_subtypes / all_supertypes). Used by every layer-4 static applier.
-static std::vector<Type> parse_self_added_types(const std::string &spec) {
-    std::vector<Type> out;
-    size_t p = 0;
-    while (p < spec.size()) {
-        size_t sep = spec.find(" & ", p);
-        if (sep == std::string::npos) sep = spec.size();
-        std::string name = spec.substr(p, sep - p);
-        if (!name.empty()) {
-            Type t;
-            t.name = name;
-            if (const std::string *entry = subtype_entry(name)) {
-                t.name = *entry;
-                t.kind = SUBTYPE;
-            } else if (all_types.find(name) != all_types.end()) {
-                t.kind = TYPE;
-            } else if (all_supertypes.find(name) != all_supertypes.end()) {
-                t.kind = SUPERTYPE;
-            } else {
-                t.kind = SUBTYPE;
-            }
-            out.push_back(t);
-        }
-        p = (sep < spec.size()) ? sep + 3 : sep;
-    }
-    return out;
-}
-
-// The types a layer-4 static adds: its AddType$ list, or every nonbasic land type for the
-// "is every nonbasic land type" CDA (Planar Nexus: AddType$ AllNonBasicLandType, CR 205.3i).
-static std::vector<Type> types_added_by_static(const StaticAbility &sa) {
-    if (sa.add_type != "AllNonBasicLandType") return parse_self_added_types(sa.add_type);
-    std::vector<Type> out;
-    for (const std::string &t : nonbasic_land_types()) out.push_back({SUBTYPE, t});
-    return out;
-}
-
 // Is this a layer-4 (type-changing) continuous static?
 static bool is_type_changing_static(const StaticAbility &sa) {
     return sa.category == "Continuous" && !sa.add_type.empty();
@@ -1687,7 +1646,7 @@ static void sync_self_animate_creature(const ActiveStatic &a) {
     if (!is_type_changing_static(sa) || static_is_general(sa)) return;
     if (affected_is_attached_target(sa) || sa.characteristic_defining) return;
     bool adds_creature = false;
-    for (const auto &t : parse_self_added_types(sa.add_type))
+    for (const auto &t : parse_added_types(sa.add_type))
         if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
     if (!adds_creature || !is_battlefield_permanent(a.entity)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);

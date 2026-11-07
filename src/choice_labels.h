@@ -18,9 +18,10 @@
 // corpus read.
 
 // How an unless-cost is paid: {N} generic mana or exact pips (default), N life (Ward—Pay life,
-// CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), or N energy ({E},
-// CR 122.1c — Static Prison's "unless you pay {E}").
-enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
+// CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), N energy ({E},
+// CR 122.1c — Static Prison's "unless you pay {E}"), or sacrifice a permanent (Grist's "you may
+// sacrifice a creature. When you do").
+enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY, SACRIFICE };
 
 // The effect an unless-cost governs, named from the resolving ability's category.
 enum class UnlessEffect {
@@ -28,6 +29,7 @@ enum class UnlessEffect {
     DESTROY,    // Destroy: "destroy this creature unless you pay" (The Tabernacle at Pendrell Vale)
     SACRIFICE,  // Sacrifice: "sacrifice CARDNAME unless you pay {E}" (Static Prison)
     COPY,       // CopySpell: "that player may pay to copy this spell" (Chain Lightning)
+    REFLEXIVE,  // ImmediateTrigger: "when you do" (Grist): the ability's source is what triggers
 };
 
 // What an unless-cost prompt is about: the effect, the object it affects (the spell countered,

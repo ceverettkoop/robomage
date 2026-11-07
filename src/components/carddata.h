@@ -89,6 +89,11 @@ struct CardData{
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
     std::vector<OverlayFace> overlay_faces;  // one per SpellOverlay that changes its characteristics
+    // What its characteristic-defining abilities make the card wherever it isn't a permanent (CR
+    // 604.3): Grist's 1/1 Insect creature. Null for a card with none; built by build_overlay_faces.
+    std::shared_ptr<CardData> off_battlefield;
+    // A characteristic-defining ability counts its P/T as it is read (Nethergoyf): card_power_toughness.
+    bool has_counted_pt = false;
     // AlternateMode:Modal — a MODAL double-faced card (MDFC, CR 712.x): the player chooses,
     // when playing it from hand, which face to cast/play (front spell OR back face). Unlike a
     // transform DFC (Delver/Ajani), an MDFC is not a transforming permanent — the chosen face

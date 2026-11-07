@@ -284,7 +284,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller) {
 // The type line of what `paid_for` pays for: the face offered for a cast still to be announced, else
 // the spell or the object as it is now (CR 709.3, 712.8f, 715.3b).
 static const std::set<Type> &payee_types(ManaPayee paid_for) {
-    return paid_for.face ? paid_for.face->types : effective_types(paid_for.entity);
+    return paid_for.face ? off_battlefield_face(*paid_for.face).types : effective_types(paid_for.entity);
 }
 
 // Check if restricted mana (Cavern of Souls) can be used to pay for a spell.

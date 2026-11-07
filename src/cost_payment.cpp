@@ -153,6 +153,7 @@ static std::string cost_offer_text(const CostParts &cost);
 static PayStatus pay_trigger_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_trigger_energy(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
+static PayStatus offer_unless_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static PayStatus offer_unless_resource(const CostPayer &who, FrameCtx &ctx);
 static PayStatus offer_unless_mana(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 
@@ -522,6 +523,8 @@ static PayStatus pay_step(
             switch (who.unless->kind) {
                 case UnlessPayKind::DISCARD:
                     return offer_unless_discard(who, ctx, orderer);
+                case UnlessPayKind::SACRIFICE:
+                    return offer_unless_sacrifice(who, ctx, orderer);
                 case UnlessPayKind::LIFE:
                 case UnlessPayKind::ENERGY:
                     return offer_unless_resource(who, ctx);
@@ -1056,6 +1059,30 @@ static PayStatus offer_trigger_energy(const CostPayer &who, FrameCtx &ctx, const
 // the graveyard (a public zone — every viewer sees them). The yes/no answer and the discard-count
 // progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from the
 // LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
+// A permanent to sacrifice, or none: one question, with a row for each that could go. The menu
+// re-derives from the live board, so a parked answer needs nothing kept. With none, nothing is asked.
+static PayStatus offer_unless_sacrifice(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    const UnlessTerms &terms = *who.unless;
+    const std::vector<Entity> pool =
+        controlled_permanents_matching(who.payer, *terms.sacrifice, orderer->mEntities, who.source);
+    if (pool.empty()) return PayStatus::DECLINED;
+    std::vector<LegalAction> menu;
+    for (Entity e : pool) {
+        LegalAction la(PASS_PRIORITY, e, "Sacrifice " + entity_name(e));
+        la.category = ActionCategory::SACRIFICE_PERMANENT;
+        menu.push_back(la);
+    }
+    menu.push_back(unless_decline_action(terms.subject, terms.kind));
+    const int choice = ctx.ask(std::move(menu), who.payer, who.source);
+    if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+    if (choice == static_cast<int>(pool.size())) return PayStatus::DECLINED;
+    const Entity chosen = pool[static_cast<size_t>(choice)];
+    coverage_cost(CostPart::SACRIFICE, "unless");
+    game_log("%s sacrifices %s\n", player_name(who.payer).c_str(), entity_name(chosen).c_str());
+    orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+    return PayStatus::PAID;
+}
+
 static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     const UnlessTerms &terms = *who.unless;
     UnlessRt local_rt;

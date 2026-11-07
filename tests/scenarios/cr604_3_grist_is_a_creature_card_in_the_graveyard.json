@@ -1,0 +1,35 @@
+{
+  "name": "cr604_3_grist_is_a_creature_card_in_the_graveyard",
+  "why": "CR 604.3, 202.1: a characteristic-defining ability functions in every zone: Grist in a graveyard is a creature card, so Reanimate may target it. It enters as a planeswalker with its loyalty: on the battlefield the ability's ExcludeZone$ stops it.",
+  "hand_a": [
+    "Reanimate"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Reanimate",
+    "A:target:Grist"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Grist, the Hunger Tide is moved to the battlefield",
+    "Player A loses 3 life"
+  ],
+  "expect_menu": [
+    "Activate Grist"
+  ]
+}

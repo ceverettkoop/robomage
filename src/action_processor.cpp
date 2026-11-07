@@ -2430,13 +2430,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells
             {
-                bool is_creature_spell = false;
-                for (const auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") {
-                        is_creature_spell = true;
-                        break;
-                    }
-                if (!is_creature_spell) {
+                if (!type_set_has(effective_types(spell_entity), "Creature")) {
                     Event cast_ev(Events::NONCREATURE_SPELL_CAST);
                     Entity caster_entity = get_player_entity(caster);
                     cast_ev.SetParam(Params::ENTITY, spell_entity);
@@ -2459,7 +2453,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // spells this turn" count.
                 bool spell_is_creature = false;
                 bool spell_is_instant_or_sorcery = false;
-                for (auto &t : card_data.types)
+                for (auto &t : effective_types(spell_entity))
                     if (t.kind == TYPE) {
                         if (t.name == "Creature") spell_is_creature = true;
                         if (t.name == "Instant" || t.name == "Sorcery") spell_is_instant_or_sorcery = true;

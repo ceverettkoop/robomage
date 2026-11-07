@@ -1,0 +1,34 @@
+{
+  "name": "cr604_3_cavern_of_souls_names_insect_for_grist",
+  "why": "CR 604.3: Grist is an Insect creature card, so Cavern of Souls offers Insect, and its mana pays for the Insect creature spell Grist is.",
+  "hand_a": [
+    "Grist the Hunger Tide",
+    "Cavern of Souls"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Swamp"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:play:Cavern of Souls",
+    "desc:Insect",
+    "A:cast:Grist"
+  ],
+  "max_decisions": 8,
+  "expect_menu": [
+    "Choose creature type: Insect"
+  ],
+  "expect": [
+    "Player A casts Grist"
+  ]
+}

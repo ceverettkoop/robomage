@@ -14,6 +14,7 @@
 #include "../queries/spells.h"
 #include "../systems/orderer.h"
 #include "../resolution.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -50,6 +51,19 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
                     break;
                 }
             }
+        }
+
+        // UnlessCost$ with UnlessSwitched$ True: "you may sacrifice a creature. When you do, ..."
+        // (Grist, CR 603.12). What is paid decides whether it triggers.
+        if (fire && !ab.def->unless_cost.empty()) {
+            const CostParts &cost = ab.def->unless_cost;
+            const Entity src = ab.source.lki_entity();
+            bool suspended = false;
+            const bool declined = run_unless_loop(unless_amount(cost), ab.controller, orderer, src, src, ctx, suspended,
+                                                  UnlessSubject{UnlessEffect::REFLEXIVE, src, ab.def->unless_switched},
+                                                  unless_pay_kind(cost), nullptr, &cost.filter(CostPart::SACRIFICE));
+            if (suspended) return HandlerResult::SUSPENDED;
+            fire = !declined;
         }
 
         // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to

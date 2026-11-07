@@ -14,6 +14,7 @@
 extern Coordinator global_coordinator;
 
 UnlessPayKind unless_pay_kind(const CostParts &cost) {
+    if (cost.has(CostPart::SACRIFICE)) return UnlessPayKind::SACRIFICE;
     if (cost.has(CostPart::ENERGY)) return UnlessPayKind::ENERGY;
     if (cost.has(CostPart::DISCARD)) return UnlessPayKind::DISCARD;
     return cost.has(CostPart::LIFE) ? UnlessPayKind::LIFE : UnlessPayKind::MANA;
@@ -21,6 +22,8 @@ UnlessPayKind unless_pay_kind(const CostParts &cost) {
 
 size_t unless_amount(const CostParts &cost) {
     switch (unless_pay_kind(cost)) {
+        case UnlessPayKind::SACRIFICE:
+            return static_cast<size_t>(cost.count(CostPart::SACRIFICE));
         case UnlessPayKind::ENERGY:
             return static_cast<size_t>(cost.energy());
         case UnlessPayKind::DISCARD:
@@ -43,7 +46,7 @@ bool pay_switched_energy(const Ability &ab) {
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
     Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
-    UnlessPayKind kind, const ManaValue *cost_pips) {
+    UnlessPayKind kind, const ManaValue *cost_pips, const FilterSpec *sacrifice) {
     suspended = false;
 
     // The offer in progress, for the state format's pending_cost (queries/pending_cost.h); it
@@ -61,6 +64,8 @@ bool run_unless_loop(
         case UnlessPayKind::DISCARD:
             offer.discard = static_cast<int>(cost);
             break;
+        case UnlessPayKind::SACRIFICE:
+            break;
         default:
             if (cost_pips && !cost_pips->empty())
                 offer.remaining = *cost_pips;
@@ -70,7 +75,7 @@ bool run_unless_loop(
     }
     CostPaymentScope offer_scope(offer, &suspended);
 
-    const UnlessTerms terms{cost, kind, cost_pips, subject};
+    const UnlessTerms terms{cost, kind, cost_pips, subject, sacrifice};
     CostPayer who(CostPath::UNLESS, controller, decision_source, ManaPayee(paid_for, ManaPurpose::OTHER), nullptr, nullptr);
     who.unless = &terms;
     const PayStatus paid = run_cost_parts(who, ctx, orderer);

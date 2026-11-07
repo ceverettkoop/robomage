@@ -1,0 +1,38 @@
+{
+  "name": "cr603_12_grist_declines_the_sacrifice",
+  "why": "CR 603.12: the sacrifice is a choice: declined, nothing triggers, and the loyalty stays paid.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide",
+    "Scryb Ranger"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:ImmediateTrigger",
+    "A:desc:Don't sacrifice"
+  ],
+  "max_decisions": 7,
+  "expect_not": [
+    "Grizzly Bears is destroyed",
+    "reflexive trigger"
+  ]
+}

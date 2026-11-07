@@ -605,7 +605,7 @@ static bool resolution_allows(const CastOffer &offer) {
     if (!terms || !terms->valid_sa) return true;
     MatchCtx ctx;
     ctx.controller = offer.window.caster;
-    return card_matches_filter(offer.face, *terms->valid_sa, ctx);
+    return card_matches_filter(off_battlefield_face(offer.face), *terms->valid_sa, ctx);
 }
 
 // What `terms` puts in place of the mana cost of `face`.

@@ -83,7 +83,7 @@ static std::vector<LegalAction> vocab_name_card_choices(
     for (int i = 0; i < CARD_VOCAB_SIZE; i++) {
         const CardData *cd = vocab_front_card_data(i);
         if (cd == nullptr) continue;
-        if (!valid_filter.empty() && !card_matches_filter(*cd, valid_filter)) continue;
+        if (!valid_filter.empty() && !card_matches_filter(off_battlefield_face(*cd), valid_filter)) continue;
         for (const std::string &name : card_names(*cd)) cards.push_back({name, card_vocab_entries[i].index});
     }
     std::sort(cards.begin(), cards.end());

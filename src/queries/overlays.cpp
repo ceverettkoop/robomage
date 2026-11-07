@@ -11,6 +11,7 @@
 #include "affected.h"
 #include "characteristics.h"
 #include "filters.h"
+#include "types.h"
 
 static bool has_overload(const CardData &card);
 static void target_reads_each(AbilityDef &ability);
@@ -114,6 +115,27 @@ uint32_t spell_overlay_variant_mask(SpellOverlay kind) {
     return variant < 0 ? 0 : 1u << variant;
 }
 
+// A characteristic-defining ability's power or toughness: a literal is written on the face, anything
+// else is counted as it is read (card_power_toughness).
+static void read_defined_pt(const std::string &value, uint32_t &field, bool &counted) {
+    if (value.empty()) return;
+    if (value.find_first_not_of("0123456789") == std::string::npos) field = static_cast<uint32_t>(std::stoul(value));
+    else counted = true;
+}
+
+// What `card`'s characteristic-defining abilities make it wherever it isn't a permanent (CR 604.3).
+static void build_off_battlefield_face(CardData &card) {
+    for (const StaticAbility &sa : card.static_abilities) {
+        if (!sa.characteristic_defining) continue;
+        if (!card.off_battlefield) card.off_battlefield = std::make_shared<CardData>(card);
+        CardData &face = *card.off_battlefield;
+        for (const Type &t : types_added_by_static(sa)) face.types.insert(t);
+        read_defined_pt(sa.set_power_svar, face.power, card.has_counted_pt);
+        read_defined_pt(sa.set_toughness_svar, face.toughness, card.has_counted_pt);
+    }
+    if (card.off_battlefield) card.off_battlefield->has_counted_pt = card.has_counted_pt;
+}
+
 void build_overlay_faces(CardData &card) {
     for (const SpellOverlayRow &row : kSpellOverlayRows) {
         if (!row.has || !row.has(card)) continue;
@@ -122,4 +144,5 @@ void build_overlay_faces(CardData &card) {
         card.overlay_faces.push_back({row.kind, face});
     }
     if (card.is_split && card.backside) card.combined = combined_halves(card, *card.backside);
+    build_off_battlefield_face(card);
 }

@@ -595,7 +595,7 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             auto &z = coordinator.GetComponent<Zone>(e);
             if (z.owner != player_owner) continue;
             if (!coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = coordinator.GetComponent<CardData>(e);
+            const CardData &cd = off_battlefield_face(coordinator.GetComponent<CardData>(e));
             bool is_creature = false;
             for (auto &t : cd.types)
                 if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }

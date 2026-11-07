@@ -742,7 +742,8 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
                    (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
         case CostForm::UNLESS:
             return part.kind == CostPart::MANA || part.kind == CostPart::ENERGY ||
-                   (part.kind == CostPart::DISCARD && part.filter == "Card");
+                   (part.kind == CostPart::DISCARD && part.filter == "Card") ||
+                   (part.kind == CostPart::SACRIFICE && !part.is_self());
     }
     return false;
 }
@@ -2007,7 +2008,8 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 // The handlers that run an UnlessCost$ (run_unless_loop, DestroyAll's energy payment); on any other
 // effect it is a parse finding, and the effect happens unconditionally.
 static bool unless_cost_read_by(const std::string &category) {
-    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "CopyPermanent", "DestroyAll", "DealDamage"})
+    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "CopyPermanent", "DestroyAll", "DealDamage",
+                          "ImmediateTrigger"})
         if (category == c) return true;
     return false;
 }
@@ -2032,6 +2034,12 @@ static void read_unless_cost(AbilityDef &ability, const std::string &value) {
         return;
     }
     ability.unless_cost = parse_cost(value, CostForm::UNLESS, "UnlessCost$ " + value);
+    // Only a reflexive trigger's offer pays a sacrifice, of one permanent.
+    const int sacrifices = ability.unless_cost.count(CostPart::SACRIFICE);
+    if (sacrifices != 0 && (ability.category != "ImmediateTrigger" || sacrifices != 1)) {
+        parse_finding("ability_param", ability.category + ".UnlessCost", "UnlessCost$ " + value + " is not offered");
+        ability.unless_cost = CostParts{};
+    }
 }
 
 // Applies a single key/value parameter to an ability struct.
@@ -2521,7 +2529,8 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // DealDamage reads only the form that pays before it deals.
     if (key == "UnlessCost") return category != "DealDamage" || ability.unless_switched;
     if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility" ||
-                                        category == "DealDamage" || category == "CopyPermanent";
+                                        category == "DealDamage" || category == "CopyPermanent" ||
+                                        category == "ImmediateTrigger";
     if (key == "UnlessResolveSubs") return category == "CopyPermanent" && value == "WhenNotPaid";
     if (key == "Chooser") return value == "You";
     if (key == "RememberObjects") {

@@ -1,0 +1,39 @@
+{
+  "name": "cr604_3_grist_ultimate_counts_grist_in_the_graveyard",
+  "why": "CR 604.3: Grist's -5 counts the creature cards in your graveyard, a Grist there among them. +1 mills two Grists, for loyalty 6; next turn -5 costs Player B 2 life.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grist the Hunger Tide",
+    "Grist the Hunger Tide",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Repeat",
+    "A:desc:LoseLife"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player B loses 2 life"
+  ]
+}

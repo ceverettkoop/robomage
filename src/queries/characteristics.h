@@ -8,6 +8,7 @@
 #include "../components/carddata.h"
 #include "../components/permanent.h"
 #include "../components/spell.h"
+#include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "types.h"
@@ -52,11 +53,25 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
     return cd;
 }
 
+// The card `cd` as it is anywhere but the battlefield: its printed face, under what its
+// characteristic-defining abilities make it there (CR 604.3). For a card with no entity to ask, one
+// about to be cast or named.
+inline const CardData &off_battlefield_face(const CardData &cd) {
+    return cd.off_battlefield ? *cd.off_battlefield : cd;
+}
+
 // The characteristics of the card `e` while it isn't a permanent: on the stack those it was cast
-// with, in any other zone a split card's two halves combined (CR 709.3b, 709.4).
+// with, in any other zone a split card's two halves combined (CR 709.3b, 709.4), and what a
+// characteristic-defining ability makes it in either (CR 604.3). A card on the battlefield reads as
+// printed: a Grist there is the planeswalker it says it is.
 inline const CardData &card_characteristics(Entity e, const CardData &cd) {
-    if (global_coordinator.entity_has_component<Spell>(e)) return active_face(e, cd);
-    return cd.combined ? *cd.combined : cd;
+    const CardData &face = global_coordinator.entity_has_component<Spell>(e) ? active_face(e, cd)
+                           : cd.combined                                     ? *cd.combined
+                                                                             : cd;
+    if (!face.off_battlefield) return face;
+    const bool in_play = global_coordinator.entity_has_component<Zone>(e) &&
+                         global_coordinator.GetComponent<Zone>(e).location == Zone::BATTLEFIELD;
+    return in_play ? face : *face.off_battlefield;
 }
 
 // ── One object in any zone (CR 109.3) ─────────────────────────────────────────
@@ -72,7 +87,20 @@ struct ObjectCharacteristics {
     bool has_pt = false;  // a card always has its printed P/T; a head type guard scopes P/T filters
     int power = 0;
     int toughness = 0;
+    // A card's characteristic-defining ability counts its P/T, so power and toughness are read
+    // through card_power_toughness when asked. A count filters cards, this one among them, so it
+    // can't be taken as the characteristics are read.
+    bool counted_pt = false;
 };
+
+struct PowerToughness {
+    int power = 0;
+    int toughness = 0;
+};
+
+// The P/T of the card `e` where it is, as card_characteristics reads it, with what a
+// characteristic-defining ability counts there (CR 604.3: Nethergoyf in a graveyard or a hand).
+PowerToughness card_power_toughness(Entity e, const CardData &cd);
 
 // `cd` as printed, on the face `e` shows; with e == 0, the face `cd` on its own.
 ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd);

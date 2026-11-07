@@ -366,6 +366,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Hogaak, Arisen Necropolis", 441},
     {"Frenzied Baloth", 442},
     {"Painter's Servant", 443},
+    {"Grist, the Hunger Tide", 444},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -411,6 +412,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"c_3_3_a_golem", "Golem", 919},                                 // Legion Extruder
     {"c_2_2_a_robot", "Robot", 920},                                 // Melded Moxite
     {"g_1_1_insect", "Insect", 921},                                 // Springheart Nantuko
+    {"bg_1_1_insect", "Insect", 922},                                // Grist, the Hunger Tide
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

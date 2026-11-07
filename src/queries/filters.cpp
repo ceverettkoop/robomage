@@ -45,6 +45,7 @@ struct CharView {
     int cmc = 0;                             // mana value (always from the card; CR 112.7)
     bool has_pt = false;                     // object has power/toughness
     int power = 0, toughness = 0;
+    bool counted_pt = false;                 // read them through view_pt
     bool on_battlefield = false;
     bool is_token = false;
     Zone::Ownership controller = Zone::UNKNOWN;
@@ -930,14 +931,21 @@ static bool ev_cmc_bound(const CharView &v, const Qualifier &q, const MatchCtx &
     return ctx.cmc_bound < 0 || compare_qualifier(v.cmc, q, ctx.cmc_bound);
 }
 
+// The power or toughness a qualifier compares (ObjectCharacteristics::counted_pt).
+static int view_pt(const CharView &v, const Qualifier &q) {
+    if (!v.counted_pt) return q.of_power ? v.power : v.toughness;
+    const PowerToughness pt = card_power_toughness(v.entity, global_coordinator.GetComponent<CardData>(v.entity));
+    return q.of_power ? pt.power : pt.toughness;
+}
+
 static bool ev_pt_vs_x(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
     if (!v.has_pt || ctx.x_bound == INT_MIN) return false;
-    return compare_qualifier(q.of_power ? v.power : v.toughness, q, ctx.x_bound);
+    return compare_qualifier(view_pt(v, q), q, ctx.x_bound);
 }
 
 // A P/T filter never matches a P/T-less object.
 static bool ev_pt_literal(const CharView &v, const Qualifier &q) {
-    return v.has_pt && compare_qualifier(q.of_power ? v.power : v.toughness, q, q.number);
+    return v.has_pt && compare_qualifier(view_pt(v, q), q, q.number);
 }
 
 static bool ev_counters(const CharView &v, const Qualifier &q) {
@@ -978,6 +986,7 @@ static void read_characteristics(CharView &v, ObjectCharacteristics &&c) {
     v.has_pt = c.has_pt;
     v.power = c.power;
     v.toughness = c.toughness;
+    v.counted_pt = c.counted_pt;
 }
 
 // What a card view holds beside the object's characteristics.

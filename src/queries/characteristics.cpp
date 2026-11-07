@@ -5,8 +5,10 @@
 #include "../components/ability.h"
 #include "../components/creature.h"
 #include "../components/token.h"
+#include "../svar_eval.h"
 #include "battlefield.h"
 #include "lki.h"
+#include "players.h"
 
 static int token_vocab_idx(Entity e);
 static int last_known_vocab_idx(Entity e);
@@ -29,7 +31,21 @@ ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd) {
     c.has_pt = true;
     c.power = static_cast<int>(face.power);
     c.toughness = static_cast<int>(face.toughness);
+    c.counted_pt = e != 0 && face.has_counted_pt;
     return c;
+}
+
+PowerToughness card_power_toughness(Entity e, const CardData &cd) {
+    const CardData &face = card_characteristics(e, cd);
+    PowerToughness pt{static_cast<int>(face.power), static_cast<int>(face.toughness)};
+    if (!face.has_counted_pt) return pt;
+    const Zone::Ownership controller = source_controller(e);
+    for (const StaticAbility &sa : face.static_abilities) {
+        if (!sa.characteristic_defining) continue;
+        if (!sa.set_power_svar.empty()) pt.power = evaluate_svar(sa.set_power_svar, controller, e);
+        if (!sa.set_toughness_svar.empty()) pt.toughness = evaluate_svar(sa.set_toughness_svar, controller, e);
+    }
+    return pt;
 }
 
 ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd) {
@@ -135,10 +151,8 @@ int effective_power(Entity e) {
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e))
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).power);
     if (const LastKnownInfo *lki = lki_for(e)) return lki->power;
-    if (global_coordinator.entity_has_component<CardData>(e)) {
-        const CardData &cd = global_coordinator.GetComponent<CardData>(e);
-        return static_cast<int>(card_characteristics(e, cd).power);
-    }
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_power_toughness(e, global_coordinator.GetComponent<CardData>(e)).power;
     return 0;
 }
 
@@ -146,10 +160,8 @@ int effective_toughness(Entity e) {
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e))
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).toughness);
     if (const LastKnownInfo *lki = lki_for(e)) return lki->toughness;
-    if (global_coordinator.entity_has_component<CardData>(e)) {
-        const CardData &cd = global_coordinator.GetComponent<CardData>(e);
-        return static_cast<int>(card_characteristics(e, cd).toughness);
-    }
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_power_toughness(e, global_coordinator.GetComponent<CardData>(e)).toughness;
     return 0;
 }
 

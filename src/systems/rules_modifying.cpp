@@ -75,7 +75,8 @@ static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const C
     if (as.sa()->only_sorcery_speed || !as.condition_met || caster == as.controller) return -1;
     MatchCtx ctx;
     ctx.controller = caster;  // "you" reference for the ValidCard$ filter
-    if (!as.sa()->cant_cast_filter.empty() && !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
+    if (!as.sa()->cant_cast_filter.empty() &&
+        !card_matches_filter(off_battlefield_face(card), as.sa()->cant_cast_filter, ctx))
         return -1;  // creature / land spells are unaffected
     static const FilterSpec lands_you_control("Land.YouCtrl");
     return count_battlefield_matching(lands_you_control, caster, 0);
@@ -124,7 +125,7 @@ bool damage_cant_be_prevented(bool is_combat) {
 }
 
 bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneValue cast_from) {
-    bool card_is_creature = is_creature_card(card);
+    bool card_is_creature = is_creature_card(off_battlefield_face(card));
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa()->category != "CantBeCast") continue;
@@ -181,7 +182,7 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         if (!as.sa()->cant_cast_filter.empty()) {
             MatchCtx ctx;
             ctx.controller = caster;
-            if (card_matches_filter(card, as.sa()->cant_cast_filter, ctx)) return true;
+            if (card_matches_filter(off_battlefield_face(card), as.sa()->cant_cast_filter, ctx)) return true;
         }
     }
     return false;
@@ -221,7 +222,7 @@ bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
         if (perm.filter.empty()) return true;
         MatchCtx ctx;
         ctx.controller = caster;
-        if (card_matches_filter(card, perm.filter, ctx)) return true;
+        if (card_matches_filter(off_battlefield_face(card), perm.filter, ctx)) return true;
     }
     return false;
 }
