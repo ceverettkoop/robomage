@@ -4861,9 +4861,8 @@ static bool trigger_value_read(const TriggerMode &mode, const TriggerLine &t, co
 }
 
 // Reports the params of a bound trigger line that its mode's reader does not honour: a key the mode
-// does not read, or a value of one it does. The zones it functions from are checked against the
-// scans: only a Phase trigger has a graveyard scan, and every mode reads the gates and optionality
-// of bind_trigger_line.
+// does not read, or a value of one it does. Every mode reads the gates and optionality of
+// bind_trigger_line.
 static void trigger_form_findings(const std::string &line, const TriggerLine &t) {
     static const char *const kEveryMode[] = {"Mode", "Execute", "TriggerDescription", "Secondary", "TriggerZones",
         "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "Revolt", "ResolvedLimit",
@@ -4871,8 +4870,6 @@ static void trigger_form_findings(const std::string &line, const TriggerLine &t)
     const TriggerMode &mode = *trigger_mode_named(t.mode);
     const std::string zones = param_value(line, "TriggerZones");
     const bool floating = zones.find("Command") != std::string::npos;
-    if (zones.find("Graveyard") != std::string::npos && t.mode != "Phase")
-        parse_finding("trigger_zone", "TriggerZones:Graveyard", t.mode + " has no graveyard scan");
     size_t pos = 0;
     std::string key, value;
     while (next_param(line, pos, key, value)) {
