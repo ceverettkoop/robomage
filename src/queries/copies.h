@@ -26,6 +26,10 @@ CardData copied_card(Entity original, const CopyOverlay &overlay);
 // applies. Its own card goes on the entry (EntryInfo::printed_card), for the Permanent.
 void enter_as_copy(Entity entering, Entity original, const CopyOverlay &overlay);
 
+// The permanent `permanent` has `values` now, the same object as before: its name, types and
+// Creature follow them at once, its abilities at the next state-based pass.
+void permanent_takes_values(Entity permanent, const CardData &values);
+
 // CR 707.2 / 707.9b in-place copy: `permanent` becomes a copy of `original` while staying the SAME
 // object, overwriting its copiable characteristics (name, types, abilities, keywords, static
 // abilities) and leaving non-copiable state untouched (707.2): same entity, counters, tapped state

@@ -177,6 +177,15 @@ static void token_becomes_copy(Entity permanent, Permanent &perm, Entity origina
     sync_creature(permanent, tok.types, tok.power, tok.toughness, tok.keywords);
 }
 
+void permanent_takes_values(Entity permanent, const CardData &values) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
+    perm.name = values.name;
+    perm.types = values.types;
+    perm.abilities.clear();         // re-derived from the new CardData next SBA pass
+    perm.static_abilities.clear();  // re-derived from the new CardData next SBA pass
+    sync_creature(permanent, values.types, values.power, values.toughness, values.keywords);
+}
+
 void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, bool until_eot) {
     auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
     if (until_eot) coverage_row("copy_until_eot");
@@ -207,11 +216,7 @@ void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, 
     if (until_eot && !perm.copy_eot_card)
         perm.copy_eot_card = first_copy ? perm.printed_card : std::make_shared<const CardData>(card);
     card = new_cd;
-    perm.name = new_cd.name;
-    perm.types = new_cd.types;
-    perm.abilities.clear();         // re-derived from the new CardData next SBA pass
-    perm.static_abilities.clear();  // re-derived from the new CardData next SBA pass
-    sync_creature(permanent, new_cd.types, new_cd.power, new_cd.toughness, new_cd.keywords);
+    permanent_takes_values(permanent, new_cd);
     game_log("%s becomes a copy of %s.\n", old_name.c_str(), new_cd.name.c_str());
 }
 
@@ -232,12 +237,7 @@ void end_copy_until_eot(Entity permanent) {
     card = *perm.copy_eot_card;
     if (perm.copy_eot_card == perm.printed_card) perm.printed_card.reset();
     perm.copy_eot_card.reset();
-    const CardData &face = active_face(permanent, card);
-    perm.name = face.name;
-    perm.types = face.types;
-    perm.abilities.clear();
-    perm.static_abilities.clear();
-    sync_creature(permanent, face.types, face.power, face.toughness, face.keywords);
+    permanent_takes_values(permanent, active_face(permanent, card));
     game_log("%s is no longer a copy.\n", perm.name.c_str());
 }
 
