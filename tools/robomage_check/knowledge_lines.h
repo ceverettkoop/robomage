@@ -15,7 +15,7 @@
 //
 // with the facts object (zone, owner, colors), attacked (an object that attacked this turn), face_down
 // (a face-down object's zone, card and characteristics as the frame shows them), exhausted (an object's ability at its limit), meta, seen, pool, position, known_hand and stack_target as that
-// module's docstring lists them, mana (a nonempty pool), mana_unit (a pool_mana row) and speed (a player who has one).
+// module's docstring lists them, mana (a nonempty pool), mana_unit (a pool_mana row), speed (a player who has one) and pending_cost (a cost being paid).
 
 namespace rmcheck {
 

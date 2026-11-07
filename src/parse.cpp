@@ -654,7 +654,8 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
 }
 
 // <name><N/Filter[/label]>: N objects matching Filter; CARDNAME for the filter is the source, and
-// Discard's Hand the whole hand (Discard<0/Hand>, Lion's Eye Diamond).
+// Discard's Hand the whole hand, whatever its N: Discard<0/Hand> (Lion's Eye Diamond),
+// Discard<1/Hand> (Phyrexian Dragon Engine).
 static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part) {
     std::vector<std::string> args;
     if (!cost_token_arg(tok, name, args) || args.size() < 2) return false;
@@ -662,9 +663,10 @@ static bool read_cost_filter_token(const std::string &tok, const char *name, Cos
     if (!read_cost_count(args[0], part.count)) return false;
     if (args[1] == "CARDNAME")
         part.object = ObjectSpec(ObjectSpec::SELF);
-    else if (kind == CostPart::DISCARD && args[1] == "Hand")
+    else if (kind == CostPart::DISCARD && args[1] == "Hand") {
         part.whole_hand = true;
-    else
+        part.count = 0;
+    } else
         part.filter = args[1];
     return true;
 }
@@ -716,7 +718,7 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // and of an exile only itself, from the zone it is activated in; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
 // Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
 // (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
-// Sac<1/CARDNAME>, mana and a discard of N matching cards (pay_trigger_cost); an ImmediateTrigger
+// Sac<1/CARDNAME>, mana, a discard of N matching cards and of the hand (pay_trigger_cost); an ImmediateTrigger
 // Sac<1/CARDNAME> and PayEnergy<N>. An alternative cost
 // pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
 // fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
@@ -752,8 +754,7 @@ static bool cost_form_pays(CostForm form, const CostPart &part) {
                    (sacrifices_one && part.is_self());
         case CostForm::TRIGGERED:
             return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self()) ||
-                   part.kind == CostPart::MANA ||
-                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
+                   part.kind == CostPart::MANA || (part.kind == CostPart::DISCARD && !part.is_self());
         case CostForm::ALTERNATIVE:
             return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self()) ||
                    (part.kind == CostPart::RETURN && !part.is_self()) ||
@@ -864,6 +865,11 @@ static bool parse_card_file(const std::string &path, CardData &card) {
     }
 
     parse_card_face(front_script, card);
+    // A half of a meld pair with no ALTERNATE block (Phyrexian Dragon Engine) is a plain face: the
+    // meld action and the melded back are its other half's (CR 712.4a), and it never transforms
+    // (CR 712.4c). The half that holds them isn't built.
+    if (!back_script.empty() && value_from_script(front_script, "AlternateMode") == "Meld")
+        parse_finding("layout", "Meld", "AlternateMode:Meld is read as a transforming card");
 
     // Parse the DFC back face as a complete second face so a transformed permanent
     // (Delver -> Insectile Aberration, Ajani Pariah -> Avenger) has its own name,
@@ -918,7 +924,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.is_adventure = alternate_mode == "Adventure";
     card.is_prepare = alternate_mode == "Prepare";
     if (!alternate_mode.empty() && alternate_mode != "Modal" && alternate_mode != "Split" &&
-        alternate_mode != "DoubleFaced" && !card.is_adventure && !card.is_prepare)
+        alternate_mode != "DoubleFaced" && alternate_mode != "Meld" && !card.is_adventure && !card.is_prepare)
         parse_finding("layout", alternate_mode, "AlternateMode:" + alternate_mode + " is read as a transforming card");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));

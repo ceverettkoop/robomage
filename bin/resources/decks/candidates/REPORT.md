@@ -30,8 +30,8 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
+| painter | Painter | 1.0 | combo | 41 | 1 | 0 | 0 | implement |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
-| painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -39,9 +39,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
-| Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
 
 ## Unlock order (greedy: the next cheapest deck given what is already implemented)
 
@@ -62,15 +60,15 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 13 | lands_top8 | - | 0 | 0 | 13 |
 | 14 | maverick | - | 0 | 0 | 14 |
 | 15 | mystic_forge | - | 0 | 0 | 15 |
-| 16 | reanimator_top8 | - | 0 | 0 | 16 |
-| 17 | show_and_tell | - | 0 | 0 | 17 |
-| 18 | stoneblade | - | 0 | 0 | 18 |
-| 19 | storm | - | 0 | 0 | 19 |
-| 20 | ur_tempo | - | 0 | 0 | 20 |
-| 21 | uwx_control | - | 0 | 0 | 21 |
-| 22 | welder_cam | - | 0 | 0 | 22 |
-| 23 | doomsday | Empower | 3 | 3 | 23 |
-| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 14 | 24 |
+| 16 | painter | - | 0 | 0 | 16 |
+| 17 | reanimator_top8 | - | 0 | 0 | 17 |
+| 18 | show_and_tell | - | 0 | 0 | 18 |
+| 19 | stoneblade | - | 0 | 0 | 19 |
+| 20 | storm | - | 0 | 0 | 20 |
+| 21 | ur_tempo | - | 0 | 0 | 21 |
+| 22 | uwx_control | - | 0 | 0 | 22 |
+| 23 | welder_cam | - | 0 | 0 | 23 |
+| 24 | doomsday | Empower | 3 | 3 | 24 |
 
 ## Per deck
 
@@ -184,14 +182,13 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 0 new; clean: -
 
 
+### painter — Painter (1.0%, combo)
+
+41 cards, 1 new; clean: Phyrexian Dragon Engine
+
+
 ### doomsday — Doomsday (4.0%, combo)
 
 33 cards, 1 new; clean: -
 
 - Theorist's Proxy: Empower
-
-### painter — Painter (1.0%, combo)
-
-41 cards, 1 new; clean: -
-
-- Phyrexian Dragon Engine: Discard-a-card activation cost; Meld (CR 712)

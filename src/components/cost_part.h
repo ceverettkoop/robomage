@@ -58,7 +58,7 @@ struct CostPart {
     ObjectSpec object;        // SELF for CARDNAME; DEFAULT when `filter` picks
     ManaValue mana;           // MANA's pips
     std::vector<HybridPip> hybrid;  // MANA's hybrid pips (CR 107.4e)
-    bool whole_hand = false;  // DISCARD: Discard<0/Hand>
+    bool whole_hand = false;  // DISCARD: Discard<N/Hand>, read with `count` 0
     int min_types = 0;        // EXILE_FROM_GRAVEYARD: distinct card types among the cards exiled
     TapToPay tap_to_pay = TapToPay::NONE;  // MANA: what the token lets its payer tap toward it
 

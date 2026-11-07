@@ -286,6 +286,7 @@ static const CostStep kTriggerSteps[] = {
     {CostStep::SNAPSHOT},
     {CostStep::TRIGGER_MANA},
     {CostStep::MOVE_ITEMS},
+    {CostStep::DISCARD_HAND},
 };
 static const CostStep kImmediateTriggerSteps[] = {{CostStep::TRIGGER_ENERGY}};
 static const CostStep kUnlessSteps[] = {{CostStep::UNLESS_OFFER}};
@@ -386,7 +387,8 @@ PayStatus pay_trigger_cost(const Ability &ab, FrameCtx &ctx, const std::shared_p
     offer.trigger = true;
     offer.paid_for = named;
     offer.remaining = ab.def->cost.mana();
-    offer.discard = ab.def->cost.count(CostPart::DISCARD) - run.discards_chosen;
+    offer.discard = ab.def->cost.discards_hand() ? static_cast<int>(orderer->get_hand(ab.controller).size())
+                                                 : ab.def->cost.count(CostPart::DISCARD) - run.discards_chosen;
     bool parked = false;
     std::optional<CostPaymentScope> scope;
     if (trigger_cost_offered(ab.def->cost)) scope.emplace(offer, &parked);
@@ -981,7 +983,8 @@ static void discard_self(const CostPayer &who, const std::shared_ptr<Orderer> &o
     coverage_cost(CostPart::DISCARD, "self");
 }
 
-// Discard hand cost (Lion's Eye Diamond).
+// Discard hand cost (Lion's Eye Diamond, Phyrexian Dragon Engine's trigger). An empty hand pays it:
+// nothing is owed, so CR 118.3 refuses nothing.
 static void discard_hand(const CostPayer &who, const std::shared_ptr<Orderer> &orderer) {
     if (!who.cost->discards_hand()) return;
     coverage_cost(CostPart::DISCARD, "hand");
@@ -1037,7 +1040,8 @@ static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, cons
 }
 
 // "You may discard a card", "you may pay {B}" (CR 603.5): offered only when the controller can pay
-// (CR 118.3), and on no answer of yes the rest of the ability doesn't happen.
+// (CR 118.3), and on no answer of yes the rest of the ability doesn't happen. "If you do" reads the
+// choice, not what moved (CR 118.12), so "discard your hand" on an empty hand is offered and pays.
 static PayStatus offer_trigger_cost(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
     if (!trigger_cost_offered(*who.cost)) return PayStatus::PAID;
     CostCheck check(who.payer, who.source, orderer);
@@ -1056,9 +1060,13 @@ static std::string cost_offer_text(const CostParts &cost) {
     if (!cost.mana().empty()) text = "pay " + mana_value_text(cost.mana());
     if (cost.life() > 0) text += (text.empty() ? "pay " : " and ") + std::to_string(cost.life()) + " life";
     const int discards = cost.count(CostPart::DISCARD);
-    if (discards > 0) {
+    if (discards > 0 || cost.discards_hand()) {
         if (!text.empty()) text += " and ";
-        text += "discard " + (discards == 1 ? std::string("a card") : std::to_string(discards) + " cards");
+        text += "discard ";
+        if (cost.discards_hand())
+            text += "your hand";
+        else
+            text += discards == 1 ? std::string("a card") : std::to_string(discards) + " cards";
     }
     return text;
 }

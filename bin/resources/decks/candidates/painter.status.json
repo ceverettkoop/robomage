@@ -18,49 +18,27 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [],
-    "mechanics": {
-     "Discard-a-card activation cost": {
-      "cards": [
-       "Phyrexian Dragon Engine"
-      ],
-      "findings": [
-       "cost:Discard"
-      ],
-      "size": "M"
-     },
-     "Meld (CR 712)": {
-      "cards": [
-       "Phyrexian Dragon Engine"
-      ],
-      "findings": [
-       "layout:Meld"
-      ],
-      "size": "L"
-     }
-    },
-    "needs": {
-     "Phyrexian Dragon Engine": [
-      "Discard-a-card activation cost",
-      "Meld (CR 712)"
-     ]
-    },
+    "clean": [
+     "Phyrexian Dragon Engine"
+    ],
+    "mechanics": {},
+    "needs": {},
     "new_cards": [
      "Phyrexian Dragon Engine"
     ],
-    "size_points": 11
+    "size_points": 0
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
     "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (11 points)",
-   "time": "2026-11-07T12:28:02"
+   "summary": "1 new card(s): 1 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:31:33"
   },
   "diff": {
    "detail": {
@@ -81,23 +59,18 @@
    "time": "2026-11-07T12:28:02"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Discard-a-card activation cost",
-     "Meld (CR 712)"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
     "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
    },
-   "result": "pending",
-   "summary": "2 mechanic(s) to implement: Discard-a-card activation cost, Meld (CR 712)",
-   "time": "2026-11-07T12:28:02"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T13:31:33"
   },
   "parse": {
    "detail": {
@@ -107,20 +80,7 @@
       "faces": [
        "Phyrexian Dragon Engine"
       ],
-      "findings": [
-       {
-        "detail": "AlternateMode:Meld is read as a transforming card",
-        "kind": "layout",
-        "line": "",
-        "name": "Meld"
-       },
-       {
-        "detail": "Cost$ Discard<1/Hand>",
-        "kind": "cost",
-        "line": "T:Mode$ ChangesZone | Origin$ Graveyard | Destination$ Battlefield | TriggerZones$ Battlefield | ValidCard$ Card.Self+YouOwn | Execute$ TrigDraw | TriggerDescription$ When CARDNAME enters from your graveyard, you may discard your hand. If you do, draw three cards.",
-        "name": "Discard"
-       }
-      ],
+      "findings": [],
       "layout": "normal",
       "script": "cardsfolder/p/phyrexian_dragon_engine.txt",
       "tokens": [],
@@ -133,14 +93,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
     "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-07T12:28:02"
+   "summary": "1 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:31:33"
   },
   "provision": {
    "detail": {

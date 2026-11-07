@@ -140,6 +140,10 @@ static void identity_facts(
     const Rows pending(f, s, "pending");
     for (size_t r = 0; r < pending.size(); ++r)
         out->push_back("pending " + pending.name(r, pending.col("tag")) + " card=" + shown(pending, r, pending.col("source_card")));
+    const Rows cost(f, s, "pending_cost");
+    for (size_t r = 0; r < cost.size(); ++r)
+        out->push_back("pending_cost " + cost.name(r, cost.col("part")) +
+                       " discard=" + std::to_string(cost.u(r, cost.col("rem_discard"))));
     const Rows menu(f, s, "menu");
     for (size_t r = 0; r < menu.size(); ++r)
         out->push_back("menu " + menu.name(r, menu.col("category")) + " card=" + shown(menu, r, menu.col("source_card")) +
