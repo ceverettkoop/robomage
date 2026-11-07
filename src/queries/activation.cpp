@@ -1,5 +1,7 @@
 #include "activation.h"
 
+#include <algorithm>
+
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
 #include "attachments.h"
@@ -10,6 +12,7 @@
 // What a rule reads of one activation: who activates, from what, and whether a sorcery could be
 // cast now. `source` is the object the ability is activated from, 0 if unknown.
 struct ActivationAttempt {
+    const Ability &ab;
     Entity source;
     Zone::Ownership controller;
     const EntitySet &entities;
@@ -27,6 +30,9 @@ static bool condition_can_equip(const ActivationAttempt &attempt);
 static bool condition_attached(const ActivationAttempt &attempt);
 static bool condition_never(const ActivationAttempt &attempt);
 static bool activation_rule_allows(const ActivationRule &rule, const ActivationAttempt &attempt);
+static const ActivationCount *find_count(const Permanent &perm, const AbilityDef *def, Entity granted_by_static);
+static const ActivationCount *rule_count(const ActivationRule &rule, const ActivationAttempt &attempt);
+static void bump_count(Permanent &perm, const AbilityDef *def, Entity granted_by_static);
 
 static const ActivationCondition kActivationConditions[] = {
     {"Metalcraft", condition_metalcraft},
@@ -139,16 +145,95 @@ static bool activation_rule_allows(const ActivationRule &rule, const ActivationA
             return attempt.sorcery_window;
         case ActivationRule::CONDITION:
             return rule.condition->met(attempt);
+        case ActivationRule::PER_TURN: {
+            const ActivationCount *count = rule_count(rule, attempt);
+            return !count || count->this_turn < rule.limit;
+        }
+        case ActivationRule::PER_LIFETIME: {
+            const ActivationCount *count = rule_count(rule, attempt);
+            return !count || count->lifetime < rule.limit;
+        }
     }
     return false;
 }
 
 bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities,
     bool sorcery_window) {
-    const ActivationAttempt attempt{source, controller, entities, sorcery_window};
+    const ActivationAttempt attempt{ab, source, controller, entities, sorcery_window};
     for (const ActivationRule &rule : ab.def->activation_rules)
         if (!activation_rule_allows(rule, attempt)) return false;
-    return ab.def->activation_limit <= 0 || ab.activations_this_turn < ab.def->activation_limit;
+    return true;
+}
+
+static const ActivationCount *find_count(const Permanent &perm, const AbilityDef *def, Entity granted_by_static) {
+    for (const ActivationCount &count : perm.activation_counts)
+        if (count.def == def && count.granted_by_static == granted_by_static) return &count;
+    return nullptr;
+}
+
+// The count `rule` limits, for the object the attempt activates from; null when there is none yet,
+// or no permanent to hold one (a card activated from its hand).
+static const ActivationCount *rule_count(const ActivationRule &rule, const ActivationAttempt &attempt) {
+    if (!global_coordinator.entity_has_component<Permanent>(attempt.source)) return nullptr;
+    const Permanent &perm = global_coordinator.GetComponent<Permanent>(attempt.source);
+    return rule.counted == ActivationRule::LOYALTY_ABILITIES
+               ? find_count(perm, nullptr, 0)
+               : find_count(perm, attempt.ab.def, attempt.ab.granted_by_static);
+}
+
+static void bump_count(Permanent &perm, const AbilityDef *def, Entity granted_by_static) {
+    for (ActivationCount &count : perm.activation_counts)
+        if (count.def == def && count.granted_by_static == granted_by_static) {
+            ++count.this_turn;
+            ++count.lifetime;
+            return;
+        }
+    perm.activation_counts.push_back(ActivationCount{def, granted_by_static, 1, 1});
+}
+
+void reset_permanent_activations_this_turn(Permanent &perm) {
+    std::vector<ActivationCount> &counts = perm.activation_counts;
+    if (counts.empty()) return;
+    for (ActivationCount &count : counts) count.this_turn = 0;
+    counts.erase(std::remove_if(counts.begin(), counts.end(),
+                     [](const ActivationCount &count) {
+                         if (!count.def) return true;
+                         for (const ActivationRule &rule : count.def->activation_rules)
+                             if (rule.kind == ActivationRule::PER_LIFETIME) return false;
+                         return true;
+                     }),
+        counts.end());
+}
+
+int activations_this_turn(const Permanent &perm, const Ability &ab) {
+    const ActivationCount *count = find_count(perm, ab.def, ab.granted_by_static);
+    return count ? count->this_turn : 0;
+}
+
+int activation_turn_limit(const AbilityDef &def) {
+    for (const ActivationRule &rule : def.activation_rules)
+        if (rule.kind == ActivationRule::PER_TURN && rule.counted == ActivationRule::THIS_ABILITY) return rule.limit;
+    return 0;
+}
+
+void count_activation(Permanent &perm, const Ability &ab) {
+    bool own = false, loyalty = false;
+    for (const ActivationRule &rule : ab.def->activation_rules) {
+        if (rule.kind != ActivationRule::PER_TURN && rule.kind != ActivationRule::PER_LIFETIME) continue;
+        (rule.counted == ActivationRule::LOYALTY_ABILITIES ? loyalty : own) = true;
+    }
+    if (own) bump_count(perm, ab.def, ab.granted_by_static);
+    if (loyalty) bump_count(perm, nullptr, 0);
+}
+
+void forget_counts_of_lost_abilities(Permanent &perm) {
+    for (ActivationCount &count : perm.activation_counts) {
+        if (!count.def || count.this_turn == 0) continue;
+        bool kept = false;
+        for (const Ability &ab : perm.abilities)
+            kept = kept || (ab.def == count.def && ab.granted_by_static == count.granted_by_static);
+        if (!kept) count.this_turn = 0;
+    }
 }
 
 bool source_can_tap(Entity source) {

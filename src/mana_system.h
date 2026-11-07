@@ -10,6 +10,7 @@
 
 #include "classes/action.h"
 #include "classes/colors.h"
+#include "components/activation_rule.h"
 #include "components/filter_spec.h"
 #include "components/mana_unit.h"
 #include "components/tap_to_pay.h"
@@ -85,14 +86,6 @@ bool ability_is_mana(const Ability &ab);
 // priority alone, a player's choice (CR 605.3a), through the activation flow, which pays any part
 // and suspends for its pick; its mana then floats. No payer taps it.
 bool mana_cost_paid_at_priority(const Ability &ab);
-
-// Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
-// if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities
-// (category "AddMana") are keyed by tap-cost + color, since one permanent can expose several
-// AddMana abilities of different colors; every other activated ability is keyed by its
-// return-to-hand cost (Return<N/Type>). Shared by the spell/ability processor and both mana
-// payers so the (formerly four-times duplicated) match rule lives in one place.
-void increment_activation_count(Permanent &perm, const Ability &ability);
 
 // Narrative style for the mana-production line each activation path emits. The three
 // call paths historically log slightly different strings (verb, printed amount, symbol
@@ -219,7 +212,7 @@ struct ManaPaymentSnapshot {
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
     std::vector<std::pair<Entity, Zone::Ownership>> exerted_state;  // entity, who had exerted it
-    std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
+    std::vector<std::pair<Entity, std::vector<ActivationCount>>> activation_counts;  // entity, its counts
 };
 
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);

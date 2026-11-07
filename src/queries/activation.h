@@ -10,23 +10,30 @@
 #include "../ecs/entity.h"
 #include "../ecs/entity_set.h"
 
-// Activations counted against a permanent's once-per-turn gates: every ability's
-// ActivationLimit$ counter (Ability::activations_this_turn, only advanced for a limited
-// ability) summed, plus 1 if one of its loyalty abilities was activated (CR 606.3). Both
-// reset for every battlefield permanent at each untap step (reset_permanent_activations_this_turn).
+// Activations counted against a permanent's per-turn limits: every limited ability's, and one
+// for its loyalty abilities' if one was activated (CR 606.3). They reset for every battlefield
+// permanent at each untap step (reset_permanent_activations_this_turn).
 inline int permanent_activations_this_turn(const Permanent &perm) {
-    int n = perm.loyalty_ability_activated_this_turn ? 1 : 0;
-    for (const auto &ab : perm.abilities) n += ab.activations_this_turn;
+    int n = 0;
+    for (const ActivationCount &count : perm.activation_counts) n += count.this_turn;
     return n;
 }
 
-// Clear the once-per-turn activation gates counted by permanent_activations_this_turn. Called
-// for every battlefield permanent, whichever player controls it, as each turn begins: "Activate
-// only once each turn" (CR 602.5b) counts the opponent's turns too.
-inline void reset_permanent_activations_this_turn(Permanent &perm) {
-    for (auto &ab : perm.abilities) ab.activations_this_turn = 0;
-    perm.loyalty_ability_activated_this_turn = false;
-}
+// Clear the per-turn counts summed by permanent_activations_this_turn; a per-lifetime count stays.
+// Called for every battlefield permanent, whichever player controls it, as each turn begins:
+// "Activate only once each turn" (CR 602.5b) counts the opponent's turns too.
+void reset_permanent_activations_this_turn(Permanent &perm);
+
+// How often `ab` of `perm` counted toward its own limits this turn.
+int activations_this_turn(const Permanent &perm, const Ability &ab);
+// The N of `def`'s own "only N times each turn" rule (ActivationLimit$); 0 when it has none.
+int activation_turn_limit(const AbilityDef &def);
+// Records an activation of `ab` of `perm`: one toward each limit of its rules. A no-op for an
+// ability with no limit.
+void count_activation(Permanent &perm, const Ability &ab);
+// A count lasts as long as `perm` has its ability: the count of one it no longer has this turn is
+// dropped. Runs at the end of each continuous-effects pass.
+void forget_counts_of_lost_abilities(Permanent &perm);
 
 // Number of this turn's triggered-ability resolutions whose source is `source`
 // (Game::ability_resolution_counts — the Count$ResolvedThisTurn value, Scythecat Cub).
@@ -71,9 +78,9 @@ bool activation_condition_known(const std::string &name);
 // Is `def` activated only as a sorcery (CR 602.5d)?
 bool activates_as_sorcery(const AbilityDef &def);
 
-// Do `ab`'s rules let `controller` activate it from `source` now (CR 602.5), and isn't the
-// per-turn activation limit reached? `sorcery_window` is whether a sorcery could be cast: the
-// mana-source enumeration leaves it set, no mana ability having a timing rule. Shared by that
+// Do `ab`'s rules let `controller` activate it from `source` now (CR 602.5)? `sorcery_window` is
+// whether a sorcery could be cast: the mana-source enumeration leaves it set, no mana ability
+// having a timing rule. Shared by that
 // enumeration and the non-mana activated-ability offers, whichever zone the source is in; a {T}
 // in the cost is source_can_tap's.
 bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities,

@@ -2197,7 +2197,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // gated activations name their condition here without retagging.
         ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named(value)));
     } else if (key == "ActivationLimit") {
-        ability.activation_limit = std::stoi(value);
+        ability.activation_rules.push_back(ActivationRule::per_turn(std::stoi(value)));
     } else if (key == "ReduceCost") {
         // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
         // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
@@ -2244,8 +2244,12 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // the ENTERS_TAPPED replacement, so the flag needs no field.
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
-        // CR 606.3: a loyalty ability is activated only as a sorcery could be cast.
-        if (ability.is_loyalty_ability) ability.activation_rules.push_back(ActivationRule::as_sorcery());
+        // CR 606.3: a loyalty ability is activated only as a sorcery could be cast, and once each
+        // turn among all its permanent's loyalty abilities.
+        if (ability.is_loyalty_ability) {
+            ability.activation_rules.push_back(ActivationRule::as_sorcery());
+            ability.activation_rules.push_back(ActivationRule::per_turn(1, ActivationRule::LOYALTY_ABILITIES));
+        }
     } else if (key == "Cost") {
         read_ability_cost(value, ability);
     } else if (key == "ConditionCheckSVar") {

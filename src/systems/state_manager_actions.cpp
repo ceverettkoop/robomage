@@ -469,9 +469,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ++ability_index;
             if (ab.def->ability_type != AbilityDef::ACTIVATED) continue;
             if (ab.def->activation_zone != -1) continue;  // functions from another zone (CR 113.6b): hand, graveyard
-            // Loyalty abilities (606.3): once per turn per permanent across all its loyalty
-            // abilities.
-            if (ab.def->is_loyalty_ability && permanent.loyalty_ability_activated_this_turn) continue;
             // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
             // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve
             // off-stack. None go on the stack.

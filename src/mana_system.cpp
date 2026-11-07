@@ -805,11 +805,7 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         snap.tapped_state.push_back({entity, permanent.is_tapped});
         snap.exerted_state.push_back({entity, permanent.exerted_by});
-        for (size_t i = 0; i < permanent.abilities.size(); i++) {
-            if (permanent.abilities[i].def->kind == EffectKind::AddMana) {
-                snap.activation_counts.push_back({entity, i, permanent.abilities[i].activations_this_turn});
-            }
-        }
+        snap.activation_counts.push_back({entity, permanent.activation_counts});
     }
     return snap;
 }
@@ -830,12 +826,9 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         global_coordinator.GetComponent<Permanent>(entity).exerted_by = exerter;
     }
-    for (auto &[entity, idx, old_count] : snap.activation_counts) {
+    for (auto &[entity, counts] : snap.activation_counts) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (idx < permanent.abilities.size()) {
-            permanent.abilities[idx].activations_this_turn = old_count;
-        }
+        global_coordinator.GetComponent<Permanent>(entity).activation_counts = counts;
     }
 }
 
@@ -975,21 +968,6 @@ static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership c
     coverage_cost(CostPart::MANA, "tap_to_pay");
 }
 
-void increment_activation_count(Permanent &perm, const Ability &ability) {
-    if (ability.def->activation_limit <= 0) return;
-    for (auto &perm_ab : perm.abilities) {
-        if (perm_ab.def->kind != ability.def->kind) continue;
-        // Mana abilities are keyed by tap/color; other activated abilities by return cost.
-        bool match = (ability.def->kind == EffectKind::AddMana)
-                         ? (perm_ab.def->cost.taps() == ability.def->cost.taps() && perm_ab.color == ability.color)
-                         : (perm_ab.def->cost.filter(CostPart::RETURN) == ability.def->cost.filter(CostPart::RETURN));
-        if (match) {
-            perm_ab.activations_this_turn++;
-            break;
-        }
-    }
-}
-
 // The production half of a mana-ability activation — everything AFTER costs are paid.
 // See mana_system.h for the contract. Shared by activate_mana_source (payer paths and
 // the pay-unless loop) and the priority-menu activation path, whose costs are paid by
@@ -1054,7 +1032,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
             resolve_ability(sub_ab, orderer);
         }
     }
-    if (commit && perm) increment_activation_count(*perm, ab);
+    if (commit && perm) count_activation(*perm, ab);
 }
 
 // Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half is

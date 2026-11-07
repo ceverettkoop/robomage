@@ -1785,8 +1785,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             }
             game.take_action();
 
-            // Increment activation counter for limited abilities (e.g. Scryb Ranger)
-            increment_activation_count(permanent, ability);
+            // Count it toward its limits (Scryb Ranger's, a loyalty ability's)
+            count_activation(permanent, ability);
             // if target remains legal checked at resolution
             pa = Game::PendingActivation{};
             return;

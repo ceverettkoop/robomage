@@ -866,20 +866,17 @@ static bool resources_payable(const CostPayer &who) {
     return can_pay_life(player, run.life + std::max(0, run.life_x)) && player_energy(player) >= run.energy;
 }
 
-// Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source planeswalker, and
-// mark the per-permanent once-per-turn gate (606.3). The ability still goes on the stack and resolves
-// later; the loyalty change is the cost, paid now.
+// Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source planeswalker.
+// The ability still goes on the stack and resolves later; the loyalty change is the cost, paid now.
 static void pay_loyalty(const CostPayer &who) {
     const AbilityDef &def = *who.ability->def;
     if (!def.is_loyalty_ability || !global_coordinator.entity_has_component<Permanent>(who.source)) return;
-    auto &perm = global_coordinator.GetComponent<Permanent>(who.source);
     // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at activation; the
     // part carries only the sign. A fixed cost uses its count as-is.
     const int loyalty_delta = def.cost.loyalty_is_x()
                                   ? (def.cost.loyalty() < 0 ? -who.announced->x_paid : who.announced->x_paid)
                                   : def.cost.loyalty();
     const int loyalty = add_counters(who.source, "LOYALTY", loyalty_delta);
-    perm.loyalty_ability_activated_this_turn = true;
     game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n", entity_name(who.source).c_str(), loyalty_delta,
         loyalty);
     coverage_cost(CostPart::LOYALTY);

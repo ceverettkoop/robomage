@@ -54,10 +54,10 @@ struct Permanent {
     // naturally when the source leaves the battlefield (a fresh Permanent on re-entry starts
     // empty). General over the StoreSVar/CheckSVar scratch-int idiom.
     std::map<std::string, int> stored_svars;
-    // 606.3: a loyalty ability can be activated only if no loyalty ability of THIS
-    // permanent has been activated this turn. The gate is per-permanent (across all its
-    // loyalty abilities), not per-ability, so it can't reuse Ability::activations_this_turn.
-    bool loyalty_ability_activated_this_turn = false;
+    // How often this object's limited abilities were activated (ActivationRule): its own, so a
+    // new object (CR 400.7) starts with none, and through a change of controller (CR 602.5b) it
+    // keeps them. Read and written through queries/activation.h.
+    std::vector<ActivationCount> activation_counts;
     // 701.37b: monstrous is a per-permanent designation with no rules meaning of its own — a
     // marker the monstrosity action and "becomes monstrous" triggers identify. Once set it
     // stays until the permanent leaves the battlefield (so it resets naturally when a new

@@ -51,6 +51,7 @@
 #include "replacement_effects.h"
 #include "continuous_effects.h"
 #include "../effects/effects.h"
+#include "../queries/activation.h"
 #include "../queries/affected.h"
 #include "orderer.h"
 #include "../state_format/events.h"
@@ -107,22 +108,8 @@ template <typename Fn>
 static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn);
 static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target);
 
-// Per-pass runtime state of one static-granted ability, snapshotted before the grant is
-// stripped so it can be carried onto the freshly re-parsed copy in the same pass. Keyed by
-// (recipient permanent, granting static, ability identity) — mirroring restore_mana_state's
-// (entity, ability-identity) keying for normal mana abilities — so the ActivationLimit$
-// counter (Ability::activations_this_turn) survives the rebuild instead of resetting to 0
-// every continuous-effects pass. Without this a granted limited-activation ability could be
-// activated more than its ActivationLimit$ allows (CR 602.5). The ability is held by value so
-// identical_activated_ability can match it against the rebuilt copy regardless of vector index.
-struct GrantedAbilityRuntime {
-    Entity recipient = 0;
-    Entity granted_by_static = 0;
-    Ability ability;  // the pre-strip granted instance (carries activations_this_turn)
-};
-static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
-                               const std::vector<GrantedAbilityRuntime> &saved_runtime);
-static void grant_ability(Entity e, Ability copy, const std::vector<GrantedAbilityRuntime> &saved_runtime);
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities);
+static void grant_ability(Entity e, Ability copy);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -2111,19 +2098,9 @@ void StateManager::apply_layer6_ability_effects() {
 // runs unconditionally (even with no statics) so a grant left by a source that just left the
 // battlefield is cleaned up.
 // Put `copy`, granted by a static, on permanent `e`, unless it has one the same.
-static void grant_ability(Entity e, Ability copy, const std::vector<GrantedAbilityRuntime> &saved_runtime) {
+static void grant_ability(Entity e, Ability copy) {
     auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
     copy.source = ObjectRef::of(e);
-    // Carry over this pass's runtime counter from the pre-strip instance of the same grant on the
-    // same recipient, so ActivationLimit$ is enforced across the whole turn even though continuous
-    // effects rebuild the ability every pass (CR 602.5).
-    for (auto &saved : saved_runtime) {
-        if (saved.recipient != e) continue;
-        if (saved.granted_by_static != copy.granted_by_static) continue;
-        if (!saved.ability.identical_activated_ability(copy.def)) continue;
-        copy.activations_this_turn = saved.ability.activations_this_turn;
-        break;
-    }
     // De-dupe: skip if an identical ability (granted or intrinsic) already exists on the recipient,
     // so a land that already has "{T}: Add {C}" isn't given a duplicate.
     for (auto &existing : abilities)
@@ -2133,8 +2110,7 @@ static void grant_ability(Entity e, Ability copy, const std::vector<GrantedAbili
 
 // Every permanent static `a` affects gets the activated abilities of the cards it names: those that
 // function on the battlefield, as a permanent has them (object_abilities).
-static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
-                               const std::vector<GrantedAbilityRuntime> &saved_runtime) {
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities) {
     const StaticAbility &sa = *a.sa();
     const std::vector<Entity> targets = static_targets(a, entities);
     if (targets.empty()) return;
@@ -2149,23 +2125,25 @@ static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
             Ability granted(def);
             granted.granted_by_static = a.entity;
             granted.granted_from = ObjectRef::of(card);
-            for (Entity e : targets) grant_ability(e, granted, saved_runtime);
+            for (Entity e : targets) grant_ability(e, granted);
         }
     }
 }
 
+void StateManager::forget_lost_ability_counts() {
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (!perm.activation_counts.empty()) forget_counts_of_lost_abilities(perm);
+    }
+}
+
 void StateManager::apply_layer6_ability_grants() {
-    // Phase 1: remove all previously static-granted abilities from every battlefield permanent,
-    // snapshotting their per-pass runtime counters first so Phase 2's rebuild doesn't clobber them.
-    std::vector<GrantedAbilityRuntime> saved_runtime;
+    // Phase 1: remove all previously static-granted abilities from every battlefield permanent.
+    // What they were activated stays on the Permanent, keyed to the grant (ActivationCount).
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-        for (auto &ab : abilities) {
-            if (ab.granted_by_static == 0) continue;
-            if (ab.activations_this_turn == 0) continue;  // nothing to preserve
-            saved_runtime.push_back({entity, ab.granted_by_static, ab});
-        }
         abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                        [](const Ability &ab) { return ab.granted_by_static != 0; }),
                         abilities.end());
@@ -2187,13 +2165,13 @@ void StateManager::apply_layer6_ability_grants() {
         if (granted.def->category.empty()) continue;  // unparsable body — grant nothing
         granted.granted_by_static = a.entity;
 
-        for (Entity e : targets) grant_ability(e, granted, saved_runtime);
+        for (Entity e : targets) grant_ability(e, granted);
     }
 
     // Phase 2b: GainsAbilitiesOf$ (Agatha's Soul Cauldron).
     for (auto &a : g_active_statics) {
         if (a.suppressed || !a.condition_met || a.sa()->category != "Continuous") continue;
-        if (!a.sa()->gains_abilities_of.empty()) grant_abilities_of(a, mEntities, saved_runtime);
+        if (!a.sa()->gains_abilities_of.empty()) grant_abilities_of(a, mEntities);
     }
 
     // Phase 3: re-grant from each active AddTrigger$ static whose condition is met (The Tabernacle

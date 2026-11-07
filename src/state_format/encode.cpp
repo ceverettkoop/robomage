@@ -504,7 +504,7 @@ static void write_card_abilities(
                 const CardData *face = cd && a.face == rmstate::Face::BACK && cd->backside ? cd->backside.get() : cd;
                 r.u8(static_cast<uint64_t>(a.def->kind)).text(a.def->ref_key).text(cost_text(a.def->script_line));
                 r.u8(a.def->cost.taps() ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
-                r.u8(u8_count(a.def->activation_limit)).text(a.def->script_line);
+                r.u8(u8_count(activation_turn_limit(*a.def))).text(a.def->script_line);
             } else {
                 const uint32_t line = a.stat ? a.stat->script_line : a.repl->script_line;
                 r.u8(NONE8).text("").text("").u8(0).u8(static_cast<uint64_t>(rmstate::Timing::ANY)).u8(0);
@@ -923,9 +923,11 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
             r.u32(h);
             const Entity lent_by = ab.granted_from.get();
             put_abref(r, ab.def, lent_by != 0 ? visible_card_id(lent_by, c.viewer) : ab_card, e);
-            const bool exhausted = ab.def->activation_limit > 0 && ab.activations_this_turn >= ab.def->activation_limit;
+            const int activated = activations_this_turn(*perm, ab);
+            const int limit = activation_turn_limit(*ab.def);
+            const bool exhausted = limit > 0 && activated >= limit;
             r.u8(printed && ab.granted_by_static == 0 ? 0 : 1)
-                .u8(u8_count(ab.activations_this_turn))
+                .u8(u8_count(activated))
                 .u8(exhausted ? 1 : 0);
         }
         // A triggered ability with a limit each turn, once it has triggered.

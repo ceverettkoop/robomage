@@ -93,6 +93,7 @@ void StateManager::apply_continuous_effects(Game &game) {
         // left the battlefield). Flush the recompute and return — matches the old
         // early-out in apply_static_ability_effects.
         recompute_battlefield_pt();
+        forget_lost_ability_counts();
         return;
     }
 
@@ -112,4 +113,5 @@ void StateManager::apply_continuous_effects(Game &game) {
 
     // Rule 613.11: rules-modifying continuous effects, applied after everything else.
     apply_rules_modifying_effects();
+    forget_lost_ability_counts();
 }

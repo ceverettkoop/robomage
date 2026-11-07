@@ -132,10 +132,11 @@ struct AbilityDef {
     FilterSpec sac_valid;         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
-    // What restricts activating it (CR 602.5): SorcerySpeed$ True, Activation$ <condition>, a
-    // loyalty ability's timing, a keyword's. Every rule must allow an activation, read at
-    // activation-legality time (activation_source_ready). General: a future gated activation
-    // (Threshold, Delirium, …) adds a row to queries/activation.cpp's table of conditions.
+    // What restricts activating it (CR 602.5): SorcerySpeed$ True, Activation$ <condition>,
+    // ActivationLimit$ N, a loyalty ability's timing and limit, a keyword's. Every rule must allow
+    // an activation, read at activation-legality time (activation_source_ready). General: a future
+    // gated activation (Threshold, Delirium, …) adds a row to queries/activation.cpp's table of
+    // conditions.
     std::vector<ActivationRule> activation_rules;
     // Monstrosity$ N on an AB$/DB$ PutCounter (CR 701.37): "Monstrosity N" = if this permanent
     // isn't monstrous, put N +1/+1 counters on it and it becomes monstrous. Parsed by
@@ -152,7 +153,6 @@ struct AbilityDef {
     // The keyword an ability derived from a keyword line stands for, shown as its action label
     // ("Equip", "Reconfigure", "Unattach"); empty for an ability from an A: line.
     std::string keyword_label = "";
-    int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag; a loyalty
     // cost of 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so never infer
     // loyalty-ness from the cost. Paid by modifying the source's own loyalty at activation. An X
@@ -868,8 +868,6 @@ struct Ability {
     // have moved again by resolution, so last-known reads go through lki_entity(). Empty when no row
     // took one.
     ObjectRef triggered_card;
-
-    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
 
     Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
 
