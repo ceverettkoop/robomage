@@ -1483,7 +1483,7 @@ Meld with one half missing; each new field across a snapshot.
 - Update CLAUDE.md's architecture notes for what changed, and `docs/rules_deviations.md`. Known so far: its
   key files omit `src/resolution_memory.{h,cpp}`, `src/cost_payment.{h,cpp}`, `src/components/chosen_cost.h`, `src/cast_options.{h,cpp}`, `src/components/cast_option.h` and
   `src/queries/permissions.{h,cpp}`, `src/components/effect_object.h` and `src/trigger_modes.{h,cpp}`, its `src/coverage`
-  line omits the `row` kind, and its machine protocol section still names `prompt_mana_payment` (now `pay_mana_cost`).
+  line omits the `row` kind, and its machine protocol section still names `prompt_mana_payment` (now `pay_mana_cost`). Also `src/components/activation_rule.h`, `src/target_gate.{h,cpp}`, `src/queries/face_down.{h,cpp}` and `src/components/face_down_card.h` in the key files, `copies` in the queries list, `src/components/mana_unit.h`, the `--play` verbs `convoke:`, `divide:`, `morph:` and `turn-up:` in the grammar table, and the `--face-down-a/-b` preset and scenario keys `face_down_a/b`.
 - Make an amount SVar `is_runtime_amount_expr` doesn't list a finding, or read it from the SVar table: today it
   is silently 0 (M4's Done note).
 
