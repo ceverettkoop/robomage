@@ -244,6 +244,7 @@ static const CostStep kActivationSteps[] = {
     {CostStep::TAP},
     {CostStep::EXERT},
     {CostStep::OWE_ACTIVATION},
+    {CostStep::TAP_TO_PAY},
     {CostStep::FLOAT_LEAVING},
     {CostStep::PAY_MANA},
     {CostStep::CHECK_RESOURCES},
@@ -784,7 +785,7 @@ static void choose_delve_exile(const CostPayer &who, Entity e) {
     run.items.push_back(std::move(item));
 }
 
-// Convoke (CR 702.51a, 601.2h): the permanents a TapToPay that asks taps, one at a time, the rows
+// Convoke (CR 702.51a, 601.2h), Waterbend (CR 701.67a): the permanents a TapToPay that asks taps, one at a time, the rows
 // re-derived from the live board at each pass. Each pays a pip of the cost at once, the snapshot
 // undoing it if the payment is reversed; the player stops once mana can pay the rest. Mana pays what
 // is left, with nothing more tapped.

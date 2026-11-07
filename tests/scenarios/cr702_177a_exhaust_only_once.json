@@ -1,0 +1,53 @@
+{
+  "name": "cr702_177a_exhaust_only_once",
+  "why": "CR 702.177a: an exhaust ability is activated only once: unlike each turn, Invasion Submersible's count lasts past the untap step, so on turn 3 it offers nothing; the object_ability row reads exhausted",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:done"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^-------- TURN 3"
+  ],
+  "expect_count": {
+    "Player A's Invasion Submersible ability ": 1
+  },
+  "expect_dump": [
+    "^A .*exhausted self",
+    "^B .*exhausted opp"
+  ]
+}

@@ -28,6 +28,8 @@ void reset_permanent_activations_this_turn(Permanent &perm);
 int activations_this_turn(const Permanent &perm, const Ability &ab);
 // The N of `def`'s own "only N times each turn" rule (ActivationLimit$); 0 when it has none.
 int activation_turn_limit(const AbilityDef &def);
+// Has `ab` of `perm` used up a limit of its own, each turn or for as long as the object exists?
+bool activation_limit_reached(const Permanent &perm, const Ability &ab);
 // Records an activation of `ab` of `perm`: one toward each limit of its rules. A no-op for an
 // ability with no limit.
 void count_activation(Permanent &perm, const Ability &ab);

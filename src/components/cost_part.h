@@ -55,6 +55,7 @@ struct CostPart {
     std::vector<HybridPip> hybrid;  // MANA's hybrid pips (CR 107.4e)
     bool whole_hand = false;  // DISCARD: Discard<0/Hand>
     int min_types = 0;        // EXILE_FROM_GRAVEYARD: distinct card types among the cards exiled
+    TapToPay tap_to_pay = TapToPay::NONE;  // MANA: what the token lets its payer tap toward it
 
     static CostPart of(Kind kind, int count = 0) {
         CostPart part;

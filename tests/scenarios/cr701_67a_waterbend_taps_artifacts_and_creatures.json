@@ -1,0 +1,51 @@
+{
+  "name": "cr701_67a_waterbend_taps_artifacts_and_creatures",
+  "why": "CR 701.67a: for each generic mana in a waterbend cost its payer may tap an untapped artifact or creature instead: Invasion Submersible pays {3} with a Bears, a Mox Opal and itself and no mana; three +1/+1 counters make the 0/0 Vehicle a 3/3 artifact creature (CR 301.7b)",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Grizzly Bears",
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:Grizzly Bears",
+    "A:waterbend:Mox Opal"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "taps Grizzly Bears for Waterbend",
+    "taps Mox Opal for Waterbend",
+    "taps Invasion Submersible for Waterbend"
+  ],
+  "expect_not": [
+    "Invasion Submersible is (destroyed|put into)"
+  ]
+}

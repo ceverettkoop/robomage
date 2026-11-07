@@ -925,12 +925,9 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
             r.u32(h);
             const Entity lent_by = ab.granted_from.get();
             put_abref(r, ab.def, lent_by != 0 ? visible_card_id(lent_by, c.viewer) : ab_card, e);
-            const int activated = activations_this_turn(*perm, ab);
-            const int limit = activation_turn_limit(*ab.def);
-            const bool exhausted = limit > 0 && activated >= limit;
             r.u8(printed && ab.granted_by_static == 0 ? 0 : 1)
-                .u8(u8_count(activated))
-                .u8(exhausted ? 1 : 0);
+                .u8(u8_count(activations_this_turn(*perm, ab)))
+                .u8(activation_limit_reached(*perm, ab) ? 1 : 0);
         }
         // A triggered ability with a limit each turn, once it has triggered.
         for (const CardAbility &a : own) {

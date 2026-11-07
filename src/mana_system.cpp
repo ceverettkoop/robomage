@@ -73,7 +73,7 @@ static bool restriction_allows(const ManaRestriction &restriction, const std::st
 static const std::string &source_chosen_type(Entity source);
 static bool mana_source_usable_for(const Ability &ab, Entity source_entity, ManaPayee paid_for);
 static const TapToPayRule &tap_to_pay_rule(TapToPay how);
-static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller, Entity paid_for);
+static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller);
 static bool tap_pays_pip(const TapToPayRule &rule, Entity e, Colors pip);
 static ManaValue::const_iterator pip_paid_by_tap(const TapToPayRule &rule, Entity e, const ManaValue &owed);
 static ManaValue::const_iterator pip_left_payable(const TapToPayRule &rule, Entity e, Zone::Ownership controller,
@@ -890,14 +890,15 @@ static const TapToPayRule &tap_to_pay_rule(TapToPay how) {
         {"Improvise", FilterSpec("Artifact"), TapToPayRule::GENERIC, false},
         // CR 702.51a: each creature tapped pays for {1} or one mana of its color.
         {"Convoke", FilterSpec("Creature"), TapToPayRule::GENERIC_OR_OWN_COLOR, true},
+        // CR 701.67a: each artifact or creature tapped pays for {1}.
+        {"Waterbend", FilterSpec("Artifact,Creature"), TapToPayRule::GENERIC, true},
     };
     return kRules[static_cast<size_t>(how) - 1];
 }
 
 // Can `controller` tap `e` under `rule`? The spell being paid for is on the stack, not the
 // battlefield; an ability's source is on the battlefield, and may help pay for it.
-static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller, Entity paid_for) {
-    if (e == paid_for) return false;
+static bool can_tap_to_pay(const TapToPayRule &rule, Entity e, Zone::Ownership controller) {
     if (!is_battlefield_permanent(e, controller)) return false;
     if (global_coordinator.GetComponent<Permanent>(e).is_tapped) return false;
     return permanent_matches_filter(e, rule.eligible);
@@ -940,7 +941,7 @@ std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaV
     const TapToPayRule &rule = tap_to_pay_rule(how);
     std::vector<LegalAction> rows;
     for (Entity e : orderer->mEntities) {
-        if (!can_tap_to_pay(rule, e, controller, paid_for.entity)) continue;
+        if (!can_tap_to_pay(rule, e, controller)) continue;
         if (pip_left_payable(rule, e, controller, owed, paid_for, how, orderer) == owed.end()) continue;
         const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
         LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");
@@ -966,6 +967,7 @@ static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership c
     game_log("%s taps %s for %s.\n", player_name(controller).c_str(),
              global_coordinator.GetComponent<Permanent>(e).name.c_str(), rule.keyword);
     coverage_cost(CostPart::MANA, "tap_to_pay");
+    coverage_cost(CostPart::MANA, rule.keyword);
 }
 
 // The production half of a mana-ability activation — everything AFTER costs are paid.
@@ -1520,7 +1522,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
         size_t fewest = SIZE_MAX;
         for (auto e : orderer->mEntities) {
             if (e == exclude_entity || tapped_entities.count(e)) continue;
-            if (!can_tap_to_pay(rule, e, controller, paid_for.entity) || !tap_pays_pip(rule, e, pip)) continue;
+            if (!can_tap_to_pay(rule, e, controller) || !tap_pays_pip(rule, e, pip)) continue;
             const size_t colors = pip == GENERIC ? 0 : effective_colors(e).size();
             if (colors >= fewest) continue;
             chosen = e;
@@ -1820,7 +1822,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
         if (tap != TapToPay::NONE) {
             const TapToPayRule &rule = tap_to_pay_rule(tap);
             for (auto e : orderer->mEntities) {
-                if (!can_tap_to_pay(rule, e, controller, paid_for.entity)) continue;
+                if (!can_tap_to_pay(rule, e, controller)) continue;
                 if (pip_paid_by_tap(rule, e, remaining) == remaining.end()) continue;
                 auto &perm = global_coordinator.GetComponent<Permanent>(e);
                 LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");

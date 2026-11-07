@@ -1,0 +1,57 @@
+{
+  "name": "cr733_1_a_reversed_waterbend_untaps_what_it_tapped",
+  "why": "CR 733.1: a payment reversed while its mana is owed untaps what a waterbend tap paid, so the Bears can be tapped for the activation made next",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "offer_cancel": true,
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Grizzly Bears",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:Grizzly Bears",
+    "A:waterbend:done",
+    "A:desc:Cancel",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Payment cancelled"
+  ],
+  "expect_count": {
+    "taps Grizzly Bears for Waterbend": 2
+  }
+}

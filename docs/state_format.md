@@ -842,7 +842,7 @@ computes neither outside its legal-action enumeration.
 | | ability | abref | | |
 | | `granted` | u8 | `bool` | not in its card's own list, or granted by a static |
 | | `activations_turn` | u8 | `count` | limit state |
-| | `exhausted` | u8 | `bool` | its limit is reached this turn |
+| | `exhausted` | u8 | `bool` | a limit of its own is reached: each turn, or for as long as the object exists (exhaust, CR 702.177a) |
 | `object_provenance` (29) | `obj`, `src` | u32 | `handle` | register 1, coarse: one row per kind of continuous effect the permanent records it is under (a copy; Animate types, keywords, abilities, set P/T; end-of-turn keyword grants and removals; ability removal; static, end-of-turn and counter P/T changes; P/T switch). Static abilities' contributions keep no source, so `src` is 0 |
 | | `src_card` | u16 | `card` | none (no source recorded) |
 | | `layer` | u8 | `enum:layer` | CR 613 layer / sublayer |

@@ -1,0 +1,57 @@
+{
+  "name": "cr702_177a_exhaust_a_new_object_may_activate_again",
+  "why": "CR 702.177a, 400.7: flickered, Invasion Submersible is a new object: not a creature any more, with no counters, and it may be activated again",
+  "hand_a": [
+    "Flickerwisp"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:done",
+    "A:cast:Flickerwisp",
+    "A:target:Invasion Submersible",
+    "A:desc:No target",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:done"
+  ],
+  "max_decisions": 20,
+  "expect_count": {
+    "Player A's Invasion Submersible ability ": 2
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "cr603_submersible_returns_up_to_one_other_nonland_permanent",
+  "why": "Invasion Submersible's enters trigger: up to one other target nonland permanent, so neither a land nor itself is offered, and none may be chosen",
+  "hand_a": [
+    "Invasion Submersible"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Invasion Submersible",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Grizzly Bears is moved to"
+  ],
+  "expect_menu": [
+    "No target"
+  ],
+  "expect_menu_not": [
+    "^Island",
+    "^Forest",
+    "^Invasion Submersible"
+  ]
+}

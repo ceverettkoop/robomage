@@ -550,13 +550,23 @@ static CostParts parse_cost(const std::string &cost_str, CostForm form, const st
         cost.set_free();
         return cost;
     }
+    size_t tap_pips = 0;  // the mana of a token that lets its payer tap toward it
     for (const std::string &tok : cost_tokens(cost_str)) {
         CostPart part;
-        if (read_cost_token(tok, part) && cost_form_pays(form, part))
+        if (read_cost_token(tok, part) && cost_form_pays(form, part)) {
             cost.add(part);
-        else
+            if (part.tap_to_pay != TapToPay::NONE) {
+                cost.set_tap_to_pay(part.tap_to_pay);
+                tap_pips = part.mana.size();
+            }
+        } else {
             parse_finding("cost", cost_finding_name(tok), context);
+        }
     }
+    // CR 701.67b: a tap pays only for the generic mana of the waterbend cost, and the payer doesn't
+    // tell a pip of it from the rest of the total.
+    if (tap_pips != 0 && (cost.mana().size() != tap_pips || !cost.hybrid().empty() || cost.x_pips() != 0))
+        parse_finding("cost", "Waterbend", context + ": beside other mana");
     return cost;
 }
 
@@ -600,6 +610,15 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
         part = CostPart::of(CostPart::LIFE);
         part.count_is_x = args[0] == "X";
         return part.count_is_x || read_cost_count(args[0], part.count);
+    }
+    if (cost_token_arg(tok, "Waterbend", args)) {
+        // Waterbend<N> — pay {N}, tapping an artifact or creature for any of it (CR 701.67a).
+        int generic = 0;
+        if (args.size() != 1 || !read_cost_count(args[0], generic) || generic == 0) return false;
+        part = CostPart::of(CostPart::MANA);
+        for (int i = 0; i < generic; i++) part.mana.insert(GENERIC);
+        part.tap_to_pay = TapToPay::WATERBEND;
+        return true;
     }
     if (cost_token_arg(tok, "PayEnergy", args)) {
         // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
@@ -688,6 +707,8 @@ static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
 // mana, energy or a discard of N cards of the payer's choice (run_discard_unless takes any card).
 static bool cost_form_pays(CostForm form, const CostPart &part) {
     const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
+    // A cost's own TapToPay is asked for by the steps of an activation.
+    if (part.tap_to_pay != TapToPay::NONE && form != CostForm::ACTIVATED) return false;
     // Hybrid pips are announced where announce_hybrid_pips is called; anywhere else they are a finding.
     if (!part.hybrid.empty() && form != CostForm::ACTIVATED && form != CostForm::ALTERNATIVE) return false;
     const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
@@ -2205,6 +2226,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named("AttackedThisTurn")));
             ability.activation_rules.push_back(ActivationRule::per_turn(1));
         }
+    } else if (key == "Exhaust") {
+        // Exhaust$ True (CR 702.177a): "Activate only once."
+        if (value == "True") ability.activation_rules.push_back(ActivationRule::per_lifetime(1));
     } else if (key == "ReduceCost") {
         // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
         // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is

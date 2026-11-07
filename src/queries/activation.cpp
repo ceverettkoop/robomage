@@ -232,6 +232,17 @@ int activation_turn_limit(const AbilityDef &def) {
     return 0;
 }
 
+bool activation_limit_reached(const Permanent &perm, const Ability &ab) {
+    const ActivationCount *count = find_count(perm, ab.def, ab.granted_by_static);
+    if (!count) return false;
+    for (const ActivationRule &rule : ab.def->activation_rules) {
+        if (rule.counted != ActivationRule::THIS_ABILITY) continue;
+        if (rule.kind == ActivationRule::PER_TURN && count->this_turn >= rule.limit) return true;
+        if (rule.kind == ActivationRule::PER_LIFETIME && count->lifetime >= rule.limit) return true;
+    }
+    return false;
+}
+
 void count_activation(Permanent &perm, const Ability &ab) {
     bool own = false, loyalty = false;
     for (const ActivationRule &rule : ab.def->activation_rules) {

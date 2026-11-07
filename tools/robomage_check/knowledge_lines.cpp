@@ -130,6 +130,13 @@ static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &
                        " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
         if (objects.u(r, objects.col("attacked")) != 0) out->push_back("attacked " + owner);
     }
+    const Rows abilities(f, s, "object_ability");
+    for (size_t r = 0; r < abilities.size(); ++r) {
+        if (abilities.u(r, abilities.col("exhausted")) == 0) continue;
+        for (size_t o = 0; o < objects.size(); ++o)
+            if (objects.u(o, objects.col("handle")) == abilities.u(r, abilities.col("obj")))
+                out->push_back("exhausted " + rel_text(objects.u(o, objects.col("owner_rel"))));
+    }
 }
 
 // A nonempty pool as the player row counts it, and each pool_mana row.
