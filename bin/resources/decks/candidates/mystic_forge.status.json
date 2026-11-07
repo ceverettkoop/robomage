@@ -43,7 +43,7 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
+    "engine": "808db5f55ee77c782953766a7e158966b7aa8df7654b19cffea812e07cd2c7b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -51,7 +51,7 @@
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
-   "time": "2026-11-07T10:23:46"
+   "time": "2026-11-07T11:07:43"
   },
   "diff": {
    "detail": {
@@ -79,7 +79,7 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
+    "engine": "808db5f55ee77c782953766a7e158966b7aa8df7654b19cffea812e07cd2c7b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -87,7 +87,7 @@
    },
    "result": "pending",
    "summary": "1 mechanic(s) to implement: Start your engines! (speed)",
-   "time": "2026-11-07T10:23:46"
+   "time": "2026-11-07T11:07:43"
   },
   "parse": {
    "detail": {
@@ -123,14 +123,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
+    "engine": "808db5f55ee77c782953766a7e158966b7aa8df7654b19cffea812e07cd2c7b8",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-07T10:23:46"
+   "time": "2026-11-07T11:07:43"
   },
   "provision": {
    "detail": {

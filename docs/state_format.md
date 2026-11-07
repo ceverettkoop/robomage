@@ -95,7 +95,18 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 - Continuous reveals (e.g. "play with the top card of your library revealed") are windows that
   last as long as the effect. No card has one today except the chosen companion, revealed
   outside the game while it stays there.
-- A card exiled face down gets a face-down look window for each player who could see it in its
+- A standing look (`STANDING_LOOK`) is the window a `MayLookAt$` static gives on a library's top
+  card (Mystic Forge's "any time"), shown to the static's controller alone. It is derived, not
+  kept: `sync_standing_looks` brings the windows into line with what the statics give right now as
+  every decision is asked, before its menu and frames, and no mover knows of it. So at every
+  decision the window is on the live top card. A card that stops being on top without moving (a
+  put-back over it) loses its window with a `reveal_end`; one that moves, as any window's card;
+  a shuffle ends it as any other. No new top card gets a window while a spell is being cast, an
+  ability activated or a special action taken (CR 401.5), so a card under one cast off the top is
+  not seen until the cast is done, and a reversed cast shows it never. Between two decisions the
+  window can lag: a card on top only in the middle of a resolution is not looked at. An effect's
+  own look at the same card is a window of its own and ends on its own terms, so a frame may list
+  both.
   hidden zone just before (its owner's hand, or a look or reveal window). A card exiled face
   down from a public zone gets none (CR 406.3 covers a card looked at and then exiled). The
   window ends when the card leaves exile or is turned face up (no engine effect shuffles a
@@ -111,8 +122,9 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
   the moment it is on the battlefield, not before. A seat that knew the top card goes on knowing it
   by its own record, not by a frame: the other player's `object` row shows no card, whatever that
   seat saw, and the unit its sidecar held at the top of the library moves to the face-down pool
-  with what it knew (`docs/knowledge_store.md`). A window open at that moment would name the card
-  in the move's event for that seat, and end with the move; no vocab effect cloaks with one open.
+  with what it knew (`docs/knowledge_store.md`). A window open at that moment names the card in the
+  move's event for that seat, and ends with the move: a standing look is the one a cloak meets, and
+  its looker controls the permanent, so CR 708.5 shows the card anyway.
 - The snapshot shows exactly the cards in the viewer's windows.
 
 ## 4. Snapshot
@@ -202,11 +214,11 @@ closes the batch with the range.
 | `draw` | player, count, opening-hand flag (opening-hand and mulligan draws are not draws for "drawn this turn"); per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window. Each card drawn is its own `draw` event (count 1, so a draw link's index is 0), always from top 0 |
 | `library_place` | closes an order-hidden batch: batch, library owner, range (anchor, pos, count), order known (false) |
 | `reveal_start` / `reveal_end` | cards (handles, zone, owner, library positions, card ids), revealed to whom, source effect; per card, a draw link (`seq` of the `draw` event and the card's index in it) when the reveal shows a card as the one just drawn (e.g. Miracle). `reveal_end` also closes a look window. A window that ends because its card moved has no `reveal_end`; the move ends it |
-| `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it. A non-looker gets each card's position when the look is at known positions (the top N, the whole library), and position unknown when the looker picked the card out by identity (a search's find, kept in view after the shuffle) |
+| `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it. A non-looker gets each card's position when the look is at known positions (the top N, the whole library), and position unknown when the looker picked the card out by identity (a search's find, kept in view after the shuffle) A standing look is a `look` to the looker at each new top card, and to the other seat once, as the look at that library starts: a reordering it can't see must not tell it the top card changed |
 | `shuffle` | library owner |
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
 | `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle`. Emitted once the pick is made, per searched hidden zone (a library, a sideboard, another player's hand; a pick from the searcher's own hand, such as a put-back, is no search), with the cards found in that zone; the `look` at the searched zone comes first |
-| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity. A card cast face down (CR 708.4) moves with the face-down flag and no identity for anyone who couldn't see it where it was, and a reversed proposal of one returns it with a `zone_move` that shows none: nothing was revealed. A card cloaked from a library (CR 701.58a) is a `play_from_hidden` with the flag: its position for every viewer, its card for the controller and for a seat that saw it as it moved |
+| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity. A card cast off a library's top returns to the top, at its exact position, the other seat keeping what it saw (CR 733.1: a reveal isn't reversed). A card cast face down (CR 708.4) moves with the face-down flag and no identity for anyone who couldn't see it where it was, and a reversed proposal of one returns it with a `zone_move` that shows none: nothing was revealed. A card cloaked from a library (CR 701.58a) is a `play_from_hidden` with the flag: its position for every viewer, its card for the controller and for a seat that saw it as it moved |
 | `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is. `face_up` is `SetState`'s `TurnFaceUp` or the special action that turns a morph or a cloak up (CR 702.37e, 701.58b): the same handle, the card to both seats |
 | `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
 | `game_end` / `match_end` | game number, winner (or draw); match wins per player. `game_end` is queued when the game's loop ends, after the game's last events; `match_end` after the last `game_end` (a single game is a match of one game) |
@@ -920,7 +932,7 @@ computes neither outside its legal-action enumeration.
 | | `duration` | u8 | `enum:duration` | from the resolved effect behind it (end of turn, until your next turn); STATIC when a battlefield static gives it |
 | | `source_card` | u16 | `card` | a floating trigger's creator |
 | | `filter` | text | `text` | a cast-as-though-it-had-flash permission's filter |
-| `play_permission` (39): per graveyard / exile object and player | `obj` | u32 | `handle` | |
+| `play_permission` (39): per graveyard, exile or looked-at library object and player | `obj` | u32 | `handle` | |
 | | `player` | seat | | who may play it |
 | | `kind` | u8 | `enum:permission_kind` | one row per source of `play_permissions` (`Permission`) |
 | | `resource` | u8 | `enum:permission_resource` | an exile grant's resource (`ImpulseCastPermission`: NORMAL → MANA); MANA otherwise |
@@ -1073,7 +1085,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
 | `link_kind` | EXILED_WITH, RETURNABLE |
 | `player_effect_kind` | PROTECTION_FROM_EVERYTHING, CANT_GAIN_LIFE, HEXPROOF_FROM, SPELLS_CANT_BE_COUNTERED, CAST_AS_FLASH, SORCERY_SPEED_ONLY, FLOATING_TRIGGER, RESOLVED_EFFECT |
-| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED, GRAVEYARD_SELF (the `Permission` bits, in bit order) |
+| `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED, GRAVEYARD_SELF, LIBRARY (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
 | `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard), BARGAINED, FACE_DOWN |
@@ -1093,7 +1105,7 @@ engine's own definitions, each a name function that switches over every enumerat
 (`zone`), `Zone::Ownership` (`seat`: UNKNOWN, PLAYER_A, PLAYER_B), `Colors` (`color`, NO_COLOR
 included), `MandatoryChoice` (`mandatory_choice`), `Game::DayNight` (`day_night`),
 `PendingQuery::Tag` (`pending_tag`), `Game::RevealWindow::Kind` (`window_kind`: REVEAL, LOOK,
-FACE_DOWN_LOOK, CONTINUOUS_REVEAL), `Game::RevealWindow::End` (`window_end`: RESOLUTION,
+FACE_DOWN_LOOK, CONTINUOUS_REVEAL, STANDING_LOOK), `Game::RevealWindow::End` (`window_end`: RESOLUTION,
 STACK_OBJECT, LEAVES_ZONE), `DelayedTriggerLink::FireKind` (`fire_kind`: FIRE_UPKEEP …
 FIRE_LEAVES_BATTLEFIELD), `EffectKind` (`effect_kind`: None, then the categories of
 `effect_kinds.def`, included as an X-macro). The type lists `all_types`, `all_subtypes`,

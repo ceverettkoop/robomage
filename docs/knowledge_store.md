@@ -179,8 +179,8 @@ enter or leave above them and converts between top and bottom.
 | `library_place` | the batch's units occupy the stated range; since their order is hidden, the range becomes one unordered pool holding them (known identities pinned as pool contents). The batch's cards are placed at the end the range names as they arrive (the `library_place` is in the same frame: one instruction, no decision in between), so later cards' source positions count them as the engine does |
 | `reveal_start` | pin the identities at the stated zone and positions. A card with a draw link pins the unit that draw brought in, and so the library position it was drawn from (Miracle). A shown hand or sideboard card lands on a distinct unit: the one its handle already names, else an unhandled unit known to be that card, else one split off the sub-pools that can hold it |
 | `reveal_end` | nothing to forget: recall keeps the pinned facts; visibility ends but knowledge stays |
-| `look` (by the viewer) | pin identities at positions. A search's find is shown at its position in the already-shuffled library; when it leaves, the two parts of the run around it rejoin (they are interchangeable) |
-| `look` (by the opponent) | no identity; marks that the opponent knows those positions (for agents; no constraint). A card's position is unknown (span 0) when the opponent looked at it by identity (a search's find after the shuffle) |
+| `look` (by the viewer) | pin identities at positions. A search's find is shown at its position in the already-shuffled library; when it leaves, the two parts of the run around it rejoin (they are interchangeable). A standing look (Mystic Forge) is a `look` at each new top card: nothing else of the sidecar knows of it, so a card seen on top and then shuffled in is in the library's contents at no position, by `shuffle`'s rule |
+| `look` (by the opponent) | no identity; marks that the opponent knows those positions (for agents; no constraint). A card's position is unknown (span 0) when the opponent looked at it by identity (a search's find after the shuffle). The opponent's standing look comes once, as it starts |
 | `reorder` | the reordered range becomes one unordered pool, unless the viewer saw the result (then each position is pinned) |
 | `shuffle` | all positions of that library merge into one unordered remainder pool; position facts are dropped; contents facts are kept |
 | `search` | nothing by itself (a look at the whole zone, when there is one, comes as `look`); the cards leave as `zone_move`s, usually followed by a `shuffle` |
@@ -523,12 +523,13 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
     enumeration (same units, grouped by library position and zone) and against the solver on the
     compacted network;
   - N random two-player event streams through `Knowledge` (the opponent's draws, hand reveals,
-    put-backs, casts, top reveals, scries, mills, shuffles; the viewer's draws, looks and
-    put-backs), plus every fourth seed with compaction off: after each frame, both players' pools
+    put-backs, casts, top reveals, scries, mills, shuffles; the viewer's draws, looks, shuffles and
+    put-backs, and in the even seeds a standing look: the viewer shown its top card after each
+    step), plus every fourth seed with compaction off: after each frame, both players' pools
     against the enumeration of that instance's network and against the simulated truth;
   - sculpted: the section 7 example from a hand also holding two unknown cards, a game 2 under a
     closed decklist (a `LOWER` root), a game 2 with open decklists (the registered 15 split
-    between deck and sideboard).
+    between deck and sideboard), a look that outlives a shuffle.
 
   A check passes when the solver's bounds contain the enumeration's and, when it reports exact,
   equal them on every card. `--exactness 50`: 1,756 solver checks (all exact and equal) and 268
