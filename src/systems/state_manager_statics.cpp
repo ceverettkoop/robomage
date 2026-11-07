@@ -2130,14 +2130,6 @@ static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities)
     }
 }
 
-void StateManager::forget_lost_ability_counts() {
-    for (auto entity : mEntities) {
-        if (!is_battlefield_permanent(entity)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (!perm.activation_counts.empty()) forget_counts_of_lost_abilities(perm);
-    }
-}
-
 void StateManager::apply_layer6_ability_grants() {
     // Phase 1: remove all previously static-granted abilities from every battlefield permanent.
     // What they were activated stays on the Permanent, keyed to the grant (ActivationCount).

@@ -1,0 +1,66 @@
+{
+  "name": "cr602_5b_once_each_turn_outlasts_losing_the_ability",
+  "why": "CR 602.5b: a restriction on an ability's use stays with its object, so Quirion Ranger, activated and then under a Humility that leaves the same turn, has its ability back and can't activate it again this turn; the count was on the ability instance Humility erased",
+  "hand_a": [
+    "Humility",
+    "Force of Vigor"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Quirion Ranger",
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:activate:Quirion Ranger",
+    "A:target:Grizzly Bears@own",
+    "A:return:Forest",
+    "A:pass",
+    "A:cast:Humility",
+    "A:pass",
+    "A:cast:Force of Vigor",
+    "A:target:Humility@own"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Humility is destroyed",
+    "^-------- TURN 2"
+  ],
+  "expect_count": {
+    "^Player A's Quirion Ranger ability ": 1
+  }
+}

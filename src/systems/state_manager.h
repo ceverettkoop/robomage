@@ -201,7 +201,6 @@ private:
     void apply_type_changing_effects();           // layer 4 (613.1d)
     void sync_subtype_mana_abilities();           // layer 4 epilogue: derived mana abilities track current basic land subtypes within the SAME pass
     void apply_layer6_ability_effects();          // layer 6 (613.1f): keyword grant/removal
-    void forget_lost_ability_counts();            // what a permanent lost, it no longer counts
     void apply_layer6_ability_grants();           // layer 6 (613.1f): AddAbility$ activated-ability grants (Petrified Hamlet)
     void recompute_abilities(Game& game);         // layer 6 (613.1f): erase activated/keyword abilities removed by an ability-removal effect
     void apply_layer7_pt_effects();               // layer 7 (613.4): CDA set + additive P/T

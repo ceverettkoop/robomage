@@ -31,9 +31,6 @@ int activation_turn_limit(const AbilityDef &def);
 // Records an activation of `ab` of `perm`: one toward each limit of its rules. A no-op for an
 // ability with no limit.
 void count_activation(Permanent &perm, const Ability &ab);
-// A count lasts as long as `perm` has its ability: the count of one it no longer has this turn is
-// dropped. Runs at the end of each continuous-effects pass.
-void forget_counts_of_lost_abilities(Permanent &perm);
 
 // Number of this turn's triggered-ability resolutions whose source is `source`
 // (Game::ability_resolution_counts — the Count$ResolvedThisTurn value, Scythecat Cub).

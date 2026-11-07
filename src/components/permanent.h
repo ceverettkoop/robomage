@@ -55,8 +55,8 @@ struct Permanent {
     // empty). General over the StoreSVar/CheckSVar scratch-int idiom.
     std::map<std::string, int> stored_svars;
     // How often this object's limited abilities were activated (ActivationRule): its own, so a
-    // new object (CR 400.7) starts with none, and through a change of controller (CR 602.5b) it
-    // keeps them. Read and written through queries/activation.h.
+    // new object (CR 400.7) starts with none, and through a change of controller or the loss of
+    // the ability (CR 602.5b) it keeps them. Read and written through queries/activation.h.
     std::vector<ActivationCount> activation_counts;
     // 701.37b: monstrous is a per-permanent designation with no rules meaning of its own — a
     // marker the monstrosity action and "becomes monstrous" triggers identify. Once set it

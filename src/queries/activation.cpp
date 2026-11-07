@@ -226,15 +226,6 @@ void count_activation(Permanent &perm, const Ability &ab) {
     if (loyalty) bump_count(perm, nullptr, 0);
 }
 
-void forget_counts_of_lost_abilities(Permanent &perm) {
-    for (ActivationCount &count : perm.activation_counts) {
-        if (!count.def || count.this_turn == 0) continue;
-        bool kept = false;
-        for (const Ability &ab : perm.abilities)
-            kept = kept || (ab.def == count.def && ab.granted_by_static == count.granted_by_static);
-        if (!kept) count.this_turn = 0;
-    }
-}
 
 bool source_can_tap(Entity source) {
     if (!global_coordinator.entity_has_component<Permanent>(source)) return false;
