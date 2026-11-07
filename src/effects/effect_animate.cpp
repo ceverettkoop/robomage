@@ -28,7 +28,6 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<ObjectRef> &animated);
 static void change_keywords_until_eot(const Ability &ab, Entity tgt);
 static bool changes_keywords_alone(const AbilityDef &def);
 
@@ -125,7 +124,7 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
         animated.push_back(ObjectRef::of(tgt));
     }
-    if (ab.def->animate_sacrifice_at_eot && !animated.empty()) register_sacrifice_at_end_step(ab, animated);
+    register_at_eot_move(ab, animated);
     return HandlerResult::DONE_RUN_SUBS;
 }
 
@@ -287,10 +286,9 @@ void animate_permanent(const Ability &ab, Entity tgt) {
     }
 }
 
-// AtEOT$ Sacrifice (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever
-// is active (CR 603.7), that sacrifices exactly the permanents `animated` still on the battlefield
-// as the objects they were (CR 400.7: one that left and returned is a new object and stays).
-static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<ObjectRef> &animated) {
+// See declaration in effects.h.
+void register_at_eot_move(const Ability &ab, const std::vector<ObjectRef> &objects) {
+    if (ab.def->at_eot == AtEotMove::NONE || objects.empty()) return;
     Ability fire_ab(keyed_ability_def("animate_sacrifice_at_eot", [] {
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
@@ -301,7 +299,7 @@ static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<
         d.destination = Zone::GRAVEYARD;
         return d;
     }));
-    fire_ab.restore_remembered_exiled_with = animated;  // resolve() seeds the remembered set to them
+    fire_ab.restore_remembered_exiled_with = objects;  // resolve() seeds the remembered set to them
     fire_ab.source = ab.source;
 
     DelayedTrigger dt;

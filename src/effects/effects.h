@@ -117,6 +117,11 @@ void apply_animate_creature_bootstrap(Entity e);
 // permanent `e`: DB$ Animate's per-object step, also run for an Animate recorded on a card's
 // entry once its Permanent exists (EntryInfo::animates). Defined in effect_animate.cpp.
 void animate_permanent(const Ability &ab, Entity e);
+// AtEOT$ (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever is active
+// (CR 603.7), that moves exactly `objects` still on the battlefield as the objects they were (CR
+// 400.7: one that left and returned is a new object and stays), as `ab`'s definition says. Nothing
+// for a definition with no AtEOT$. Defined in effect_animate.cpp.
+void register_at_eot_move(const Ability &ab, const std::vector<ObjectRef> &objects);
 // Lapse the Duration$ UntilYourNextTurn Animate (Karn, the Great Creator +1) on permanent `e` if
 // `active_player` created it; call from that player's untap step for each permanent. Defined in
 // effect_animate.cpp.

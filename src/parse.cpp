@@ -2324,7 +2324,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack): sacrifice it at the next end step. Any
         // other value is an unmodelled param.
         if (value == "Sacrifice") {
-            ability.animate_sacrifice_at_eot = true;
+            ability.at_eot = AtEotMove::SACRIFICE;
         } else {
             warning("Unrecognized ability param: AtEOT$ " + value + (card_name.empty() ? "" : " (card: " + card_name + ")"));
             parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);

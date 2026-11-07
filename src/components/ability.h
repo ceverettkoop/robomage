@@ -22,6 +22,9 @@
 #include <vector>
 
 
+// What AtEOT$ does to the permanents an effect made or animated at the next end step.
+enum class AtEotMove { NONE, SACRIFICE };
+
 // Identity of a delayed triggered ability (CR 603.7), stamped once by
 // register_delayed_trigger (queries/delayed_triggers.h) onto the DelayedTrigger's fire ability. It rides
 // the fire ability unchanged when the trigger fires onto the stack, so the observation's
@@ -322,9 +325,9 @@ struct AbilityDef {
     // (Animate Dead's Enchant swap, with RemoveKeywords$) is not listed: the reanimation and
     // Attach chain anchor the aura, so the swap is cosmetic.
     std::vector<std::string> animate_keywords;
-    // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack): sacrifice the animated permanent at the
-    // beginning of the next end step (a delayed trigger, CR 603.7).
-    bool animate_sacrifice_at_eot = false;
+    // AtEOT$ Sacrifice (Sneak Attack): where the permanents this effect made or animated go at the
+    // beginning of the next end step (a delayed trigger, CR 603.7). AtEotMove::NONE when nothing moves them.
+    AtEotMove at_eot = AtEotMove::NONE;
     int animate_base_power = 0;
     int animate_base_toughness = 0;
     std::string animate_power_expr;        // resolved runtime expr (empty when numeric)
