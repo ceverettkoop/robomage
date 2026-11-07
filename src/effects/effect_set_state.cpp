@@ -10,6 +10,7 @@
 #include "../queries/visibility.h"
 #include "../queries/affected.h"
 #include "../state_format/events.h"
+#include "../transform.h"
 
 extern Coordinator global_coordinator;
 
@@ -44,6 +45,10 @@ static void set_object_state(const Ability &ab, Entity subject) {
         z.is_face_down = true;
         obs_face_turned(subject, false);
         game_log("%s is turned face down.\n", entity_name(subject).c_str());
+    } else if (ab.def->set_state_mode == "Transform") {
+        // CR 701.27f: not one that transformed since this ability went on the stack (Delver of
+        // Secrets, which its PeekAndReveal has just transformed).
+        if (ability_may_transform_source(ab)) transform_permanent(subject);
     }
 }
 

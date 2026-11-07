@@ -1,0 +1,43 @@
+{
+  "name": "cr707_2_myriad_pools_a_creature_stops_being_one_for_the_turn",
+  "why": "CR 707.2, 514.2: Llanowar Elves becomes a copy of an artifact spell: no creature, no attack; it is a 1/1 Elves again at cleanup.",
+  "hand_a": [
+    "Chromatic Star"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Llanowar Elves"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chromatic Star",
+    "A:target:Llanowar Elves",
+    "A:pass"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Llanowar Elves becomes a copy of Chromatic Star",
+    "No creatures eligible to attack",
+    "Llanowar Elves is no longer a copy"
+  ]
+}

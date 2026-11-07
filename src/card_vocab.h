@@ -374,6 +374,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Reflection of Kiki-Jiki", 449},
     {"Lazotep Quarry", 450},
     {"Mockingbird", 451},
+    {"The Everflowing Well", 452},
+    {"The Myriad Pools", 453},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

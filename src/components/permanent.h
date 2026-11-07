@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+struct Token;
+
 struct Permanent {
     std::string name;
     std::set<Type> types;
@@ -237,6 +239,11 @@ struct Permanent {
     // the card's CardData as it leaves, after last-known information is captured. Null for a
     // permanent that is not a copy. Shared and immutable, so snapshot copies stay cheap.
     std::shared_ptr<const CardData> printed_card;
+    // What a copy effect lasting until end of turn replaced (The Myriad Pools, CR 514.2), put back at
+    // cleanup: the card's values, or a token's. The first such effect of the turn stashes them, so
+    // what lasts past it (a Thespian's Stage's copy) comes back and a second one leaves them alone.
+    std::shared_ptr<const CardData> copy_eot_card;
+    std::shared_ptr<const Token> copy_eot_token;
 };
 
 #endif /* PERMANENT_H */

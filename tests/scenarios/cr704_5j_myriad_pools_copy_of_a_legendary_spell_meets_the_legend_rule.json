@@ -1,0 +1,44 @@
+{
+  "name": "cr704_5j_myriad_pools_copy_of_a_legendary_spell_meets_the_legend_rule",
+  "why": "CR 704.5j, 707.2: a Forest that is a copy of the legendary spell shares its name with the permanent it becomes: the legend rule asks which stays.",
+  "hand_a": [
+    "Thalia Guardian of Thraben"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Plains",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Thalia",
+    "A:target:Forest"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Forest becomes a copy of Thalia, Guardian of Thraben"
+  ],
+  "expect_menu": [
+    "Keep"
+  ]
+}

@@ -1001,6 +1001,16 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                 ev.HasParam(Params::ENTITY)) {
                 if (type_set_has(effective_types(ev.GetParam<Entity>(Params::ENTITY)), "Creature")) continue;
             }
+            // ValidCard$ Permanent, ValidSA$ Spell.ManaFromCard.StrictlySelf on a SpellCast trigger
+            // (The Myriad Pools): a permanent spell, cast with mana this source made.
+            if (ev.GetType() == Events::SPELL_CAST && ev.HasParam(Params::ENTITY)) {
+                const Entity spell = ev.GetParam<Entity>(Params::ENTITY);
+                if (ab.trigger_valid_card_permanent && !is_permanent_type_line(effective_types(spell))) continue;
+                if (ab.trigger_mana_from_self &&
+                    (!global_coordinator.entity_has_component<Spell>(spell) ||
+                     mana_from(global_coordinator.GetComponent<Spell>(spell).chosen.mana_paid, entity) == 0))
+                    continue;
+            }
             // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
             if (ev.GetType() == Events::PLAYER_DREW_CARD) {
                 // ValidCard$ Card.OppOwn — the drawn card must be owned by an
@@ -1129,6 +1139,8 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                     trigger_ab.unless_payer = seat_of_player(src_player);
                 }
             }
+            if (ev.GetType() == Events::SPELL_CAST && ev.HasParam(Params::ENTITY))
+                trigger_ab.cast_spell = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
             // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
             // fired this trigger. Capture it from the event as the ability's target.
             if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_SPELL) && ev.HasParam(Params::ENTITY))

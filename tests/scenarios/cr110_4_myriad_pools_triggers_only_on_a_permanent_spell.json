@@ -1,0 +1,41 @@
+{
+  "name": "cr110_4_myriad_pools_triggers_only_on_a_permanent_spell",
+  "why": "CR 110.4a: ValidCard$ Permanent: an instant cast with its mana fires nothing.",
+  "hand_a": [
+    "Brainstorm"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Brainstorm"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player A casts Brainstorm"
+  ],
+  "expect_not": [
+    "The Myriad Pools triggered"
+  ]
+}

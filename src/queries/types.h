@@ -66,6 +66,12 @@ inline bool type_set_has(const std::set<Type> &types, const std::string &type_na
 }
 inline bool is_planeswalker(const std::set<Type> &types) { return type_set_has(types, "Planeswalker"); }
 
+// Does the type list hold a permanent card type (CR 110.4a)? A permanent spell's (The Myriad Pools).
+inline bool is_permanent_type_line(const std::set<Type> &types) {
+    return type_set_has(types, "Artifact") || type_set_has(types, "Battle") || type_set_has(types, "Creature") ||
+           type_set_has(types, "Enchantment") || type_set_has(types, "Land") || type_set_has(types, "Planeswalker");
+}
+
 // True if the type list carries the "Legendary" supertype (drives the legend rule, 704.5j).
 inline bool has_legendary_supertype(const std::set<Type> &types) {
     for (const auto &t : types)

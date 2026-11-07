@@ -4,9 +4,13 @@
 #include <vector>
 
 #include "../cli_output.h"
+#include "../classes/game.h"
 #include "../components/carddata.h"
+#include "../components/creature.h"
+#include "../components/damage.h"
 #include "../components/entry_info.h"
 #include "../components/permanent.h"
+#include "../components/spell.h"
 #include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "characteristics.h"
@@ -19,6 +23,10 @@ static void apply_copy_overlay(Values &values, const CopyOverlay &overlay);
 static CardData card_of_token(const Token &tok);
 static CardData copiable_card(Entity original);
 static void set_mana_value(CardData &cd, int mana_value);
+static void sync_creature(Entity e, const std::set<Type> &types, uint32_t power, uint32_t toughness,
+                          const std::vector<std::string> &keywords);
+static void token_becomes_copy(Entity permanent, Permanent &perm, Entity original, const CopyOverlay &overlay,
+                               bool until_eot);
 
 // What `overlay` sets on the copied values: a token's or a card's.
 template <typename Values>
@@ -72,6 +80,8 @@ static CardData copiable_card(Entity original) {
     if (!global_coordinator.entity_has_component<CardData>(original))
         return card_of_token(global_coordinator.GetComponent<Token>(original));
     const CardData &card = global_coordinator.GetComponent<CardData>(original);
+    // A spell's copiable values are those of the face cast (CR 707.2).
+    if (global_coordinator.entity_has_component<Spell>(original)) return active_face(original, card);
     if (!global_coordinator.entity_has_component<Permanent>(original) ||
         !global_coordinator.GetComponent<Permanent>(original).transformed)
         return card;
@@ -104,6 +114,7 @@ Token copied_token(Entity original, const CopyOverlay &overlay) {
     Token tok;
     if (global_coordinator.entity_has_component<Token>(original)) {
         tok = global_coordinator.GetComponent<Token>(original);
+        if (!tok.copied_script.empty()) tok.script_name = tok.copied_script;
         apply_copy_overlay(tok, overlay);
         return tok;
     }
@@ -131,12 +142,58 @@ Token copied_token(Entity original, const CopyOverlay &overlay) {
     return tok;
 }
 
-void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay) {
+// A permanent that takes on new values has their Creature: base P/T, or none (CR 613.1a).
+static void sync_creature(Entity e, const std::set<Type> &types, uint32_t power, uint32_t toughness,
+                          const std::vector<std::string> &keywords) {
+    if (!type_set_has(types, "Creature")) {
+        if (global_coordinator.entity_has_component<Creature>(e)) global_coordinator.RemoveComponent<Creature>(e);
+        if (global_coordinator.entity_has_component<Damage>(e)) global_coordinator.RemoveComponent<Damage>(e);
+        return;
+    }
+    if (!global_coordinator.entity_has_component<Creature>(e)) {
+        Creature cr;
+        cr.keywords = keywords;
+        global_coordinator.AddComponent(e, cr);
+        global_coordinator.AddComponent(e, Damage{});
+    }
+    auto &cr = global_coordinator.GetComponent<Creature>(e);
+    cr.base_power = static_cast<int>(power);
+    cr.base_toughness = static_cast<int>(toughness);
+    recompute_pt(cr);
+}
+
+// A token takes the copied values on its Token, its own identity kept.
+static void token_becomes_copy(Entity permanent, Permanent &perm, Entity original, const CopyOverlay &overlay,
+                               bool until_eot) {
+    Token &tok = global_coordinator.GetComponent<Token>(permanent);
+    if (until_eot && !perm.copy_eot_token) perm.copy_eot_token = std::make_shared<const Token>(tok);
+    Token copied = copied_token(original, overlay);
+    copied.copied_script = copied.script_name;
+    copied.script_name = tok.script_name;
+    tok = copied;
+    perm.name = tok.name;
+    perm.types = tok.types;
+    set_token_permanent_abilities(permanent, tok, perm);
+    sync_creature(permanent, tok.types, tok.power, tok.toughness, tok.keywords);
+}
+
+void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, bool until_eot) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
+    if (until_eot) coverage_row("copy_until_eot");
+    const std::string old_name = perm.name;
+    // A permanent that came this turn is summoning sick the moment it is a creature (CR 302.6).
+    if (perm.entered_on_turn == cur_game.turn_state.turn) perm.has_summoning_sickness = true;
+    if (!global_coordinator.entity_has_component<CardData>(permanent)) {
+        token_becomes_copy(permanent, perm, original, overlay, until_eot);
+        game_log("%s becomes a copy of %s.\n", old_name.c_str(), perm.name.c_str());
+        return;
+    }
+    CardData &card = global_coordinator.GetComponent<CardData>(permanent);
     // Captured BEFORE the overwrite, so the copy keeps "…except it has this ability." and can
     // re-clone later.
     std::vector<const AbilityDef *> retained;
     if (overlay.gains_this_ability) {
-        for (const auto &a : global_coordinator.GetComponent<CardData>(permanent).abilities)
+        for (const auto &a : card.abilities)
             if (a->kind == EffectKind::Clone) retained.push_back(a);
     }
 
@@ -145,17 +202,43 @@ void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay) 
     CardData new_cd = copied_card(original, overlay);
     for (const auto &a : retained) new_cd.abilities.push_back(a);
 
-    auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
-    if (!perm.printed_card)
-        perm.printed_card =
-            std::make_shared<const CardData>(global_coordinator.GetComponent<CardData>(permanent));
-    global_coordinator.GetComponent<CardData>(permanent) = new_cd;
-    std::string old_name = perm.name;
+    const bool first_copy = !perm.printed_card;
+    if (first_copy) perm.printed_card = std::make_shared<const CardData>(card);
+    if (until_eot && !perm.copy_eot_card)
+        perm.copy_eot_card = first_copy ? perm.printed_card : std::make_shared<const CardData>(card);
+    card = new_cd;
     perm.name = new_cd.name;
     perm.types = new_cd.types;
     perm.abilities.clear();         // re-derived from the new CardData next SBA pass
     perm.static_abilities.clear();  // re-derived from the new CardData next SBA pass
+    sync_creature(permanent, new_cd.types, new_cd.power, new_cd.toughness, new_cd.keywords);
     game_log("%s becomes a copy of %s.\n", old_name.c_str(), new_cd.name.c_str());
+}
+
+void end_copy_until_eot(Entity permanent) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(permanent);
+    if (perm.copy_eot_token) {
+        Token &tok = global_coordinator.GetComponent<Token>(permanent);
+        tok = *perm.copy_eot_token;
+        perm.copy_eot_token.reset();
+        perm.name = tok.name;
+        perm.types = tok.types;
+        set_token_permanent_abilities(permanent, tok, perm);
+        sync_creature(permanent, tok.types, tok.power, tok.toughness, tok.keywords);
+        game_log("%s is no longer a copy.\n", perm.name.c_str());
+    }
+    if (!perm.copy_eot_card) return;
+    CardData &card = global_coordinator.GetComponent<CardData>(permanent);
+    card = *perm.copy_eot_card;
+    if (perm.copy_eot_card == perm.printed_card) perm.printed_card.reset();
+    perm.copy_eot_card.reset();
+    const CardData &face = active_face(permanent, card);
+    perm.name = face.name;
+    perm.types = face.types;
+    perm.abilities.clear();
+    perm.static_abilities.clear();
+    sync_creature(permanent, face.types, face.power, face.toughness, face.keywords);
+    game_log("%s is no longer a copy.\n", perm.name.c_str());
 }
 
 void end_copy_effect(Entity permanent) {

@@ -32,8 +32,14 @@ void enter_as_copy(Entity entering, Entity original, const CopyOverlay &overlay)
 // and attachments. So the next state-based pass re-derives its activated, mana, triggered and static
 // abilities from the new characteristics (apply_permanent_components + apply_land_abilities). Its
 // printed CardData is stashed on Permanent::printed_card (first copy only, so a re-copy keeps the
-// original printed identity) for end_copy_effect.
-void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay);
+// original printed identity) for end_copy_effect. A token becomes the copy through its Token, keeping
+// its identity (Token::script_name). `until_eot` (Clone's Duration$ UntilEndOfTurn): the copy ends at
+// cleanup (end_copy_until_eot). Its Creature follows the copied values at once: base P/T, or none.
+void become_copy(Entity permanent, Entity original, const CopyOverlay &overlay, bool until_eot = false);
+
+// CR 514.2: what a copy effect until end of turn replaced comes back: `permanent`'s values, and its
+// Creature with them. No-op for a permanent with none.
+void end_copy_until_eot(Entity permanent);
 
 // Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed
 // CardData back on the card and its printed name/types on the (about-to-be-stripped) Permanent,

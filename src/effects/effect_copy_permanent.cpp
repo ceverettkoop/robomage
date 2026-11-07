@@ -103,24 +103,27 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 // Depths becomes a Dark Depths with ZERO ice counters (the ice counters come from Dark Depths'
 // etbCounter, which applies only on ENTRY, never on becoming a copy), so its Mode$ Always state
 // trigger sees no ice counters and fires. Orderer::add_to_zone ends the copy effect when the
-// permanent leaves the battlefield (CR 400.7).
+// permanent leaves the battlefield (CR 400.7). CloneTarget$ Targeted (The Myriad Pools) is the
+// other way round: the target becomes a copy of the spell that fired the trigger, whether or not
+// that spell is still on the stack (Defined$ TriggeredCardLKICopy), and a target left unchosen
+// ("up to one") copies nothing.
 HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
-    Entity src = ab.source.get();  // the permanent that becomes a copy
-    Entity tgt = ab.target.get();  // the land being copied
-    if (!is_battlefield_permanent(src) || !global_coordinator.entity_has_component<CardData>(src)) {
-        game_log("Clone: source is no longer on the battlefield\n");
+    const Entity copier = ab.def->clone_target_targeted ? ab.target.get() : ab.source.get();
+    const Entity original = ab.def->clone_target_targeted ? ab.cast_spell.lki_entity() : ab.target.get();
+    if (!is_battlefield_permanent(copier)) {
+        game_log("Clone: nothing is left to become a copy\n");
         return HandlerResult::DONE_RUN_SUBS;
     }
-    // CR 608.2b re-verify the target: a nontoken land still on the battlefield.
-    if (tgt == 0 || !is_battlefield_permanent(tgt) ||
-        !global_coordinator.entity_has_component<CardData>(tgt)) {
+    // CR 608.2b re-verify the target: a land still on the battlefield. The Myriad Pools' spell may
+    // have left the stack: its card holds the values.
+    if (original == 0 || (!ab.def->clone_target_targeted && !is_battlefield_permanent(original))) {
         game_log("Clone: target land is no longer valid\n");
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    become_copy(src, tgt, ab.def->copy_overlay);
+    become_copy(copier, original, ab.def->copy_overlay, ab.def->clone_until_eot);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

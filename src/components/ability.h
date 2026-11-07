@@ -377,6 +377,10 @@ struct AbilityDef {
     // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated
     // NONCREATURE_SPELL_CAST event (fired before), so a count gate sees the current cast counted.
     bool trigger_valid_card_non_creature = false;
+    // ValidCard$ Permanent on a SpellCast trigger (The Myriad Pools): a permanent spell.
+    bool trigger_valid_card_permanent = false;
+    // ValidSA$ Spell.ManaFromCard.StrictlySelf: mana this source made was spent on the spell.
+    bool trigger_mana_from_self = false;
     // Mode$ ChangesZoneAll ("whenever one or more cards ...") — a single BATCH trigger (CR
     // 603.2c): it fires exactly ONCE per group of simultaneous matching zone changes, not once
     // per card. The trigger scan dedupes it to one firing per event batch (Moonshadow).
@@ -524,6 +528,10 @@ struct AbilityDef {
     FilterSpec choose_card_filter;
     // The expression of a Clone's Choices$ mana-value bound (Mockingbird's Count$CastTotalManaSpent).
     std::string clone_cmc_expr;
+    // CloneTarget$ Targeted (The Myriad Pools): the target becomes the copy, of the spell that fired
+    // the trigger, where a plain Clone's source becomes a copy of its target.
+    bool clone_target_targeted = false;
+    bool clone_until_eot = false;  // Clone's Duration$ UntilEndOfTurn: end_copy_until_eot at cleanup
     Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
@@ -849,6 +857,10 @@ struct Ability {
     // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
     // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
     ObjectRef ninjutsu_attack_target;
+
+    // The spell whose cast fired this triggered ability (Defined$ TriggeredCardLKICopy on a SpellCast
+    // trigger); it may have left the stack by resolution, so read through lki_entity().
+    ObjectRef cast_spell;
 
     int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
 

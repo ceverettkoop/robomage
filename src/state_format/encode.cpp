@@ -775,8 +775,9 @@ static int copied_card_id(Entity e, const Permanent &perm) {
         return copied.token_script.empty() ? card_name_to_index(copied.name) : token_script_to_index(copied.token_script);
     }
     if (global_coordinator.entity_has_component<Token>(e)) {
-        const std::string &copied = global_coordinator.GetComponent<Token>(e).copied_card;
-        if (!copied.empty()) return card_name_to_index(copied);
+        const Token &tok = global_coordinator.GetComponent<Token>(e);
+        if (!tok.copied_script.empty()) return token_script_to_index(tok.copied_script);
+        if (!tok.copied_card.empty()) return card_name_to_index(tok.copied_card);
     }
     return -1;
 }
@@ -958,7 +959,8 @@ static void write_provenance(const Ctx &c, Entity e, uint32_t h) {
     using rmstate::Duration;
     using rmstate::Layer;
     const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
-    if (perm.printed_card) put_provenance(c, h, Layer::COPY, Duration::PERMANENT);
+    if (perm.printed_card || perm.copy_eot_token)
+        put_provenance(c, h, Layer::COPY, perm.copy_eot_card || perm.copy_eot_token ? Duration::END_OF_TURN : Duration::PERMANENT);
     if (!perm.animate_added_types.empty() || perm.animate_make_creature)
         put_provenance(
             c, h, Layer::TYPE, perm.animate_until_my_turn ? Duration::UNTIL_YOUR_NEXT_TURN : Duration::PERMANENT);

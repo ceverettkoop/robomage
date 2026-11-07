@@ -1,0 +1,48 @@
+{
+  "name": "cr603_2_myriad_pools_triggers_only_on_its_own_mana",
+  "why": "CR 106.1, 603.2: 'using mana produced by The Myriad Pools': a permanent spell paid with other mana fires nothing.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Forest",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grizzly Bears",
+    "A:tap:Forest",
+    "A:tap:Forest"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Grizzly Bears"
+  ],
+  "expect_not": [
+    "The Myriad Pools triggered"
+  ]
+}

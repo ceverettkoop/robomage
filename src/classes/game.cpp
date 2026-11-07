@@ -17,6 +17,7 @@
 #include "../queries/activation.h"
 #include "../queries/battlefield.h"
 #include "../queries/combat.h"
+#include "../queries/copies.h"
 #include "../queries/counters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
@@ -161,6 +162,7 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
         if (global_coordinator.entity_has_component<Permanent>(entity)) {
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             perm.removed_keywords_eot.clear();
+            end_copy_until_eot(entity);
             if (perm.animate_set_pt_eot) {
                 perm.animate_set_pt_eot = false;
                 if (global_coordinator.entity_has_component<Creature>(entity)) {

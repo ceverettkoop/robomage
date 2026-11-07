@@ -2341,6 +2341,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         std::string normalized = value;
         std::replace(normalized.begin(), normalized.end(), ',', ' ');
         for (const auto &t : parse_types(normalized)) ability.animate_types.push_back(t);
+    } else if (key == "CloneTarget" && ability.category == "Clone") {
+        ability.clone_target_targeted = (value == "Targeted");
+    } else if (key == "Duration" && ability.category == "Clone") {
+        ability.clone_until_eot = (value == "UntilEndOfTurn");
     } else if (key == "Duration" && ability.category == "Animate") {
         ability.animate_duration_permanent = (value == "Permanent");
         // Duration$ UntilYourNextTurn (Karn +1): a longer-than-EOT continuous effect that
@@ -2595,6 +2599,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
         return value == "Any" || value.rfind("Combo", 0) == 0 || effects::produced_pips(value) > 0;
     if (key == "AtEOT") return category == "Animate" || category == "CopyPermanent" || (category == "Token" && value == "ExileCombat");
     if (key == "GainControl") return category == "ChangeZone";
+    if (key == "CloneTarget") return value == "Targeted";
     return true;
 }
 
@@ -2604,6 +2609,7 @@ static bool duration_read(const AbilityDef &ability, const std::string &value) {
     const std::string &category = ability.category;
     if (category == "Animate") return value == "Permanent" || value == "UntilYourNextTurn" || value == "UntilEndOfTurn";
     if (category == "ChangeZone") return value == "UntilHostLeavesPlay";
+    if (category == "Clone") return value == "UntilEndOfTurn";
     if (category == "Pump") {
         const auto *pp = std::get_if<PumpParams>(&ability.params);
         return value == "UntilEndOfTurn" || (value == "UntilYourNextTurn" && pp && pp->grant_protection_from_everything);
@@ -3452,6 +3458,7 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (value == "Opponent") ability.trigger_valid_player_is_opponent = true;
         } else if (key == "ValidSA") {
             read_mana_spent_filter(value, ability);
+            if (value == "Spell.ManaFromCard.StrictlySelf") ability.trigger_mana_from_self = true;
             if (value.find("YouCtrl") != std::string::npos) t.player_is_you = true;
         } else if (key == "Origin") {
             t.origin = trigger_zone_filter(value);
@@ -3584,6 +3591,7 @@ static void read_trigger_valid_card(const std::string &value,
     ability.trigger_valid_card = value;
     if (filter_has_head(value, "Creature"))          t.valid_card_creature     = true;
     if (filter_names_token(value, "nonCreature"))    t.valid_card_non_creature = true;
+    if (filter_has_head(value, "Permanent"))         ability.trigger_valid_card_permanent = true;
     if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
     // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
     // Card.wasCastByYou+Self).
@@ -4972,7 +4980,7 @@ static bool trigger_value_read(const TriggerLine &t, const std::string &key, con
     if (key == "ValidTarget") return value == (mode == "BecomesTarget" ? "Card.Self" : "Player");
     if (key == "ValidPlayer") return value == "You" || value == "Player";
     if (key == "ValidActivatingPlayer") return value == "You" || value == "Player" || value == "Opponent";
-    if (key == "ValidSA") return value == "Spell" || value.rfind("Spell.ManaSpent ", 0) == 0;
+    if (key == "ValidSA") return value == "Spell" || value == "Spell.ManaFromCard.StrictlySelf" || value.rfind("Spell.ManaSpent ", 0) == 0;
     if (key == "Activator" || key == "AttackingPlayer") return value == "You" || value == "Player";
     if (key == "Attacked") return value == "You,Planeswalker.YouCtrl";
     if (key == "CombatDamage") return value == "True";
@@ -4994,7 +5002,7 @@ static bool trigger_valid_card_read(const std::string &mode, const std::string &
         if (filter_names_token(value, "nonCreature") &&
             (filter_names_token(value, "Colorless") || value.find("cmc") != std::string::npos))
             return false;
-        return filter_reads_only(value, {"Card", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
+        return filter_reads_only(value, {"Card", "Permanent", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
     }
     if (mode == "Drawn") return filter_reads_only(value, {"Card", "OppOwn", "YouCtrl"});
     if (mode == "Attacks") return value == "Card.Self" || (floating && value == "Creature.OppCtrl");

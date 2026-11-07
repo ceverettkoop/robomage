@@ -15,6 +15,7 @@
 #include "../ecs/entity.h"
 
 struct CardData;
+struct Permanent;
 
 // Token entities have Zone + Permanent + Creature + Damage + Token on the battlefield.
 // They have no CardData. When a token leaves the battlefield it is destroyed entirely.
@@ -48,6 +49,9 @@ struct Token {
     // The card a token copy copied: the face its characteristics came from. Empty for a scripted
     // token and a copy of one, which keeps its script's name in `script_name`.
     std::string copied_card;
+    // The script of the token a token that became a copy copied: its own stays in `script_name`, the
+    // object it physically is.
+    std::string copied_script;
     // A copy of a preparation card keeps its prepare spell (CR 722.2b) and "enters prepared".
     std::shared_ptr<const CardData> prepare_spell;
     bool enters_prepared = false;
@@ -61,5 +65,10 @@ struct Token {
 // repeated SBE passes over an already-bootstrapped token do not advance it.
 void bootstrap_token_components(Entity tok_entity, const Token &tok,
                                 Zone::Ownership controller, size_t &timestamp);
+
+// The token's activated and static abilities onto its Permanent, replacing what it had (a card's
+// are read from Permanent::abilities, not the source component; triggered abilities stay on
+// Token::abilities, where the trigger scan reads them).
+void set_token_permanent_abilities(Entity tok_entity, const Token &tok, Permanent &perm);
 
 #endif /* TOKEN_H */
