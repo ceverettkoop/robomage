@@ -1,6 +1,6 @@
 {
  "deck": "lands_top8",
- "location": "candidates",
+ "location": "league",
  "source": {
   "archetype_id": 36,
   "deck_id": 904235,
@@ -35,6 +35,32 @@
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
    "time": "2026-11-06T12:35:24"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/lands_top8:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_lands_top8",
+    "out_dir": "ci_out/onboard_lands_top8"
+   },
+   "inputs": {
+    "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-06T16:09:41"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-06T16:11:03"
   },
   "diff": {
    "detail": {
@@ -108,6 +134,28 @@
    "result": "ok",
    "summary": "Lands, 5.0% (control), 61 main + 15 side",
    "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "233516ab129cc7df2f0163600c9c6c14cff74a57c9c1f78fa2292dd3b0ebf1d2",
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-06T16:03:21"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "a9693f69619c1c2ca3fb75557c920e45855a6afa61c905a61868ac5bb15856ae"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-06T16:03:18"
   }
  }
 }

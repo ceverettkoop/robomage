@@ -9,12 +9,12 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
 | bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | baseline |
-| death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | implement |
+| death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | designate |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 0 | 0 | 0 | implement |
 | eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | baseline |
-| lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | implement |
+| lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | designate |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
-| ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | implement |
+| ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | elves | Elves | 2.0 | combo | 32 | 1 | 1 | 1 | capability |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 1 | 1 | 1 | capability |
