@@ -2301,7 +2301,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         else if (value == "Graveyard") ability.choose_card_zone = Zone::GRAVEYARD;
         else if (value == "Hand") ability.choose_card_zone = Zone::HAND;
         else if (value == "Library") ability.choose_card_zone = Zone::LIBRARY;
-    } else if (key == "Types" && ability.category == "Animate") {
+    } else if (key == "Types" && (ability.category == "Animate" || ability.category == "AnimateAll")) {
         // DB$ Animate | Types$ Angel [Cleric ...] — the type/subtype list the animated permanent
         // gains "in addition to its other types" (Guide of Souls: "Angel"; The Fantasticar:
         // "Creature,Artifact"). Forge separates this list with COMMAS (unlike the printed Types:
@@ -2329,7 +2329,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             warning("Unrecognized ability param: AtEOT$ " + value + (card_name.empty() ? "" : " (card: " + card_name + ")"));
             parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
         }
-    } else if ((key == "Power" || key == "Toughness") && ability.category == "Animate") {
+    } else if ((key == "Power" || key == "Toughness") && (ability.category == "Animate" || ability.category == "AnimateAll")) {
         // AB$ Animate | Power$/Toughness$ — the animated creature's base P/T. A bare integer is
         // the literal base; any other token is an SVar key resolved post-parse (Karn: Power$ X,
         // X = Targeted$CardManaCost → the target's mana value).
@@ -3011,7 +3011,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
     // the animate target at resolution. A token that is not an SVar key is left as no dynamic
     // expr (the numeric base, parsed by apply_param_to_ability, stands).
-    if (ability.category == "Animate") {
+    if (ability.category == "Animate" || ability.category == "AnimateAll") {
         for (int which = 0; which < 2; which++) {
             const std::string tok = svar_key_param(text, which == 0 ? "Power" : "Toughness");
             std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;

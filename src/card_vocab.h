@@ -368,6 +368,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Painter's Servant", 443},
     {"Grist, the Hunger Tide", 444},
     {"Agatha's Soul Cauldron", 445},
+    {"Allosaurus Shepherd", 446},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

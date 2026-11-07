@@ -956,10 +956,11 @@ static void write_provenance(const Ctx &c, Entity e, uint32_t h) {
     if (perm.animate_set_pt)
         put_provenance(
             c, h, Layer::PT_SET, perm.animate_until_my_turn ? Duration::UNTIL_YOUR_NEXT_TURN : Duration::PERMANENT);
+    if (perm.animate_set_pt_eot) put_provenance(c, h, Layer::PT_SET, Duration::END_OF_TURN);
     if (!global_coordinator.entity_has_component<Creature>(e)) return;
     const Creature &cr = global_coordinator.GetComponent<Creature>(e);
     if (!cr.eot_keywords.empty()) put_provenance(c, h, Layer::ABILITY, Duration::END_OF_TURN);
-    if (cr.has_set_pt) put_provenance(c, h, Layer::PT_SET, Duration::STATIC);
+    if (cr.has_set_pt && !perm.animate_set_pt_eot) put_provenance(c, h, Layer::PT_SET, Duration::STATIC);
     if (cr.static_power_bonus != 0 || cr.static_toughness_bonus != 0)
         put_provenance(c, h, Layer::PT_MODIFY, Duration::STATIC);
     if (cr.eot_power_bonus != 0 || cr.eot_toughness_bonus != 0 || cr.prowess_bonus != 0)

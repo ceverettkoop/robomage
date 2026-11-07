@@ -161,6 +161,14 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
         if (global_coordinator.entity_has_component<Permanent>(entity)) {
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             perm.removed_keywords_eot.clear();
+            if (perm.animate_set_pt_eot) {
+                perm.animate_set_pt_eot = false;
+                if (global_coordinator.entity_has_component<Creature>(entity)) {
+                    auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                    cr.has_set_pt = false;
+                    recompute_pt(cr);
+                }
+            }
             // "Until end of turn" Animate (CR 514.2) lapses now: erase the
             // EOT-added types, and if this EOT animate is what made a noncreature
             // permanent a creature (a crewed-by-trigger Vehicle like The

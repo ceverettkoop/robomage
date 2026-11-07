@@ -12,6 +12,7 @@
 #include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../queries/affected.h"
@@ -153,6 +154,15 @@ static bool changes_keywords_alone(const AbilityDef &def) {
 }
 
 // See declaration in effects.h.
+void set_pt_from_eot_animate(const Permanent &perm, Creature &cr) {
+    if (!perm.animate_set_pt_eot) return;
+    if (perm.animate_set_pt && perm.animate_timestamp > perm.animate_timestamp_eot) return;
+    cr.has_set_pt = true;
+    cr.set_power = perm.animate_power_eot;
+    cr.set_toughness = perm.animate_toughness_eot;
+}
+
+// See declaration in effects.h.
 void animate_permanent(const Ability &ab, Entity tgt) {
     change_keywords_until_eot(ab, tgt);
     if (changes_keywords_alone(*ab.def)) return;
@@ -202,19 +212,30 @@ void animate_permanent(const Ability &ab, Entity tgt) {
     // now (Karn: Targeted$CardManaCost → the target's mana value at resolution). We snapshot at
     // resolution rather than tracking a live characteristic-defining value: mana value is a fixed
     // printed characteristic of a noncreature artifact, so the snapshot equals the CDA reading in
-    // practice and matches how the existing animate effect stores base P/T as plain ints. Only
-    // applied for persistent/until-turn durations (the rest-of-game animate_* fields persist; no
-    // EOT-duration card needs a set P/T, and animate_set_pt is not cleared at cleanup).
-    if (ab.def->animate_has_pt && !eot) {
+    // practice and matches how the existing animate effect stores base P/T as plain ints.
+    if (ab.def->animate_has_pt) {
         int base_p = ab.def->animate_base_power;
         int base_t = ab.def->animate_base_toughness;
         if (!ab.def->animate_power_expr.empty())
             base_p = static_cast<int>(evaluate_amount(ab.def->animate_power_expr, ab.controller, 0, tgt));
         if (!ab.def->animate_toughness_expr.empty())
             base_t = static_cast<int>(evaluate_amount(ab.def->animate_toughness_expr, ab.controller, 0, tgt));
-        perm.animate_set_pt = true;
-        perm.animate_power = base_p;
-        perm.animate_toughness = base_t;
+        if (eot) {
+            perm.animate_set_pt_eot = true;
+            perm.animate_power_eot = base_p;
+            perm.animate_toughness_eot = base_t;
+            coverage_row("animate_eot_base_pt");
+            if (global_coordinator.entity_has_component<Creature>(tgt)) {
+                auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+                set_pt_from_eot_animate(perm, cr);
+                recompute_pt(cr);
+            }
+            game_log("%s has base power and toughness %d/%d until end of turn.\n", perm.name.c_str(), base_p, base_t);
+        } else {
+            perm.animate_set_pt = true;
+            perm.animate_power = base_p;
+            perm.animate_toughness = base_t;
+        }
     }
 
     // Becoming a creature: a card whose Types$ adds Creature to a noncreature permanent (The
@@ -230,8 +251,17 @@ void animate_permanent(const Ability &ab, Entity tgt) {
     }
 
     // Keywords$ (layer 6): a Duration$ Permanent grant joins the rest-of-game keywords the
-    // layer-6 rebuild merges every pass (Sneak Attack's Haste). No vocab card grants keywords for
-    // a shorter duration.
+    // layer-6 rebuild merges every pass (Sneak Attack's Haste); an end-of-turn one, the creature's
+    // until-end-of-turn keywords (Shallow Grave's).
+    if (eot && !ab.def->animate_keywords.empty() && global_coordinator.entity_has_component<Creature>(tgt)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+        cr.eot_keywords_timestamp = perm.animate_timestamp_eot;
+        for (const std::string &kw : ab.def->animate_keywords) {
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
+            game_log("%s gains %s until end of turn.\n", perm.name.c_str(), kw.c_str());
+        }
+    }
     if (permanent_dur)
         for (const std::string &kw : ab.def->animate_keywords)
             if (std::find(perm.animate_added_keywords.begin(), perm.animate_added_keywords.end(), kw) ==

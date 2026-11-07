@@ -1047,6 +1047,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
             std::vector<std::string> entry_keywords;  // what its spell gained until end of turn
+            std::vector<Ability> entry_animates;      // Animate effects that resolved on it before its Permanent existed
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -1091,7 +1092,6 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm.entered_on_turn = game.turn_state.turn;
                 // Attachments chosen before it entered (EntryInfo): an Equipment a DB$ Attach
                 // attached to it, an Aura's enchant object.
-                std::vector<Ability> entry_animates;
                 if (EntryInfo *entry = find_entry_info(entity)) {
                     attach_on_entry(entity, *entry, perm);
                     entry_animates.swap(entry->animates);
@@ -1099,8 +1099,6 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 }
                 drop_entry_info_if_consumed(entity);
                 global_coordinator.AddComponent(entity, perm);
-                // Animate effects that resolved on it before its Permanent existed (EntryInfo).
-                for (const Ability &a : entry_animates) effects::animate_permanent(a, entity);
                 game.entering_together.insert(entity);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
@@ -1186,6 +1184,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
+            // Animate effects that resolved on it before its Permanent existed (EntryInfo), once it
+            // has the Creature an end-of-turn keyword lands on.
+            for (const Ability &a : entry_animates) effects::animate_permanent(a, entity);
             // Impending (CR 702.175d-e): a permanent that entered for its impending cost ISN'T a
             // creature while it still has time counters (it is on the battlefield only as its other
             // types). The same Creature/Damage strip the reconfigure suppression uses applies here,
@@ -1833,6 +1834,7 @@ void StateManager::gather_active_statics(Game &game) {
             cr.has_set_pt = false;
             cr.set_power = 0;
             cr.set_toughness = 0;
+            effects::set_pt_from_eot_animate(perm, cr);
             // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
             // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
             // Humility) are not sticky — mirrors the static_*_bonus rebuild above. The base
@@ -2474,6 +2476,7 @@ void StateManager::apply_layer7_pt_effects() {
                 // values (already the creature's base) stand.
                 const auto &perm = global_coordinator.GetComponent<Permanent>(entity);
                 if (perm.animate_set_pt && perm.animate_timestamp > winner_ts) continue;
+                if (perm.animate_set_pt_eot && perm.animate_timestamp_eot > winner_ts) continue;
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
                 cr.set_power = !winner->sa()->set_power_svar.empty()

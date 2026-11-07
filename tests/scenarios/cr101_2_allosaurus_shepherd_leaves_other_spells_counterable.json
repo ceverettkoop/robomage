@@ -1,0 +1,49 @@
+{
+  "name": "cr101_2_allosaurus_shepherd_leaves_other_spells_counterable",
+  "why": "CR 101.2: Allosaurus Shepherd keeps only green spells its controller controls from being countered: its controller's Lightning Bolt and the opponent's green spell are countered as ever.",
+  "hand_a": [
+    "Lightning Bolt",
+    "Counterspell"
+  ],
+  "library_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Mountain",
+    "Allosaurus Shepherd"
+  ],
+  "hand_b": [
+    "Counterspell",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt",
+    "B:cast:Grizzly Bears",
+    "A:cast:Counterspell",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 40,
+  "expect": [
+    "Lightning Bolt is countered",
+    "Grizzly Bears is countered"
+  ]
+}

@@ -23,6 +23,9 @@ class Orderer;
 // parked a decision through `ctx.ask` (see resolution_frame.h) and must be
 // re-entered with the latched answer; it propagates as ResolveStatus::SUSPENDED
 // up through resolve_top.
+struct Permanent;
+struct Creature;
+
 namespace effects {
 
 using EffectHandler = HandlerResult (*)(Ability &, std::shared_ptr<Orderer>, FrameCtx &);
@@ -117,6 +120,9 @@ void apply_animate_creature_bootstrap(Entity e);
 // permanent `e`: DB$ Animate's per-object step, also run for an Animate recorded on a card's
 // entry once its Permanent exists (EntryInfo::animates). Defined in effect_animate.cpp.
 void animate_permanent(const Ability &ab, Entity e);
+// The base P/T an until-end-of-turn Animate gave `perm` (layer 7b), into `cr`'s set slot, unless a
+// lasting Animate's later timestamp overrides it (CR 613.7b). Defined in effect_animate.cpp.
+void set_pt_from_eot_animate(const Permanent &perm, Creature &cr);
 // AtEOT$ (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever is active
 // (CR 603.7), that moves exactly `objects` still on the battlefield as the objects they were (CR
 // 400.7: one that left and returned is a new object and stays), as `ab`'s definition says. Nothing

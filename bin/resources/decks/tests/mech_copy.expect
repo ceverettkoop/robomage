@@ -1,0 +1,3 @@
+# M8 (b2): copies and end-of-turn animation.
+# An until-end-of-turn base P/T (Allosaurus Shepherd).
+row:animate_eot_base_pt

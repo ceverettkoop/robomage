@@ -1,0 +1,14 @@
+{
+  "name": "cr101_2_allosaurus_shepherd_cant_be_countered",
+  "why": "CR 101.2: Allosaurus Shepherd's first replacement: this spell can't be countered.",
+  "hand_a": ["Allosaurus Shepherd"],
+  "library_a": ["Forest", "Forest"],
+  "battlefield_a": ["Forest"],
+  "hand_b": ["Counterspell"],
+  "library_b": ["Island", "Island"],
+  "battlefield_b": ["Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Allosaurus Shepherd", "B:cast:Counterspell", "B:target:Allosaurus Shepherd"],
+  "max_decisions": 10,
+  "expect": ["can't be countered"],
+  "expect_not": ["Allosaurus Shepherd is countered"]
+}

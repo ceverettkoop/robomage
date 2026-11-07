@@ -153,6 +153,11 @@ struct Permanent {
     std::vector<Type> animate_added_types_eot;
     bool animate_make_creature_eot = false;
     size_t animate_timestamp_eot = 0;  // CR 613.7b timestamp of the latest EOT Animate above
+    // The base P/T an EOT Animate set (layer 7b, Allosaurus Shepherd's 5/5): read into
+    // Creature::set_power / set_toughness at each pass's rebuild, cleared at cleanup.
+    bool animate_set_pt_eot = false;
+    int animate_power_eot = 0;
+    int animate_toughness_eot = 0;
 
     // DB$/AB$ Animate with Duration$ UntilYourNextTurn (Karn, the Great Creator +1: "Until your
     // next turn, ... becomes an artifact creature with power and toughness each equal to its mana
