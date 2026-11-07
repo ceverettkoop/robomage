@@ -1011,6 +1011,41 @@ Quarry, Fable's copies, The Everflowing Well, Allosaurus Shepherd.
 Blast style targeting reading it; that colour in a hidden zone does not leak through a frame. Grist as a
 creature card in the graveyard for reanimation filters. Copy of a copy.
 
+**Progress (2026-11-06).** Unit (a), the inert migration. Nothing here changes what the engine does; (b) extends these seams.
+
+- **`ObjectCharacteristics`** (`src/queries/characteristics.h`): types, colors, P/T. `permanent_characteristics` reads what the layers left, `card_object_characteristics` a card where it is, `printed_characteristics` the printed face for a static's own filter; the filter's views read them. **`effective_types`** and **`object_abilities`** answer in any zone. None reads last-known information, unlike `effective_colors`: a card in a new zone is a new object (CR 400.7), and a graveyard count taken in the resolution that killed an animated land must not read Creature.
+- **Static scope.** `static_reaches` (`StaticRead::LIVE`, `CARD`, `PRINTED`) and `static_reaches_face` ask about one object; `static_targets` enumerates. The plan's five readers were `static_defined_covers`' five callers: `setcolor_override_for`, `land_type_setter_affects`, `removal_affects`, `entering_object_loses_abilities`, `free_cast_grant`. A sixth bypassed it too, `ability_grant_targets`: its `NamedCard` reading is `affected_permanents_for_static`'s now. Every read of `Affected$`, `AffectedDefined$` and `AffectedZone$` outside the parser sits in one block of `state_manager_statics.cpp`.
+- **`CopyOverlay`** (`src/components/copy_overlay.h`, on `AbilityDef`): Offspring's 1/1 and `GainThisAbility$`. `src/queries/copies.h` has `copied_token`, `become_copy`, `end_copy_effect`; a new exception is a field and a line of `apply_copy_overlay`.
+- **`AnimateAll`** goes through `animate_permanent`. `changes_keywords_alone` stops it there while it names no type or P/T, so Shadowspear takes no timestamp.
+- **`kBlockRestrictions`,** a row each: can't be blocked this turn, landwalk, shadow, flying and reach, protection, `CantBlockBy`. Menace is `minimum_blockers`: it restricts the declaration, and no pair of blocker and attacker shows it.
+
+What stayed, and why:
+
+- **`AffectedZone$` on a `LIVE` read** stays unread, as today. Vocab statics show the change is safe, but it is (b)'s.
+- **`Affected$` under `AffectedDefined$`** restricts the object in `static_reaches` and not in `static_targets`, which reads the named object alone: Kaito's `Permanent.counters_GE1_LOYALTY`, equipment's `Creature`. Unifying them is a behaviour question.
+- **`card_view` of a battlefield permanent** reads it as a card: `card_matches_filter` on one is printed, as it was.
+- **`effective_power` and `effective_toughness`** read the front face off the battlefield, not `card_characteristics`: Petty Theft on the stack is 3/1 there.
+- **A spell's front-face readers:** `trigger_valid_card_non_creature` and `src/mana_system.cpp`'s restrictions. `effective_types` answers differently for an Adventure or a modal back face (`docs/rules_deviations.md` §2.5), so that is a fix of its own.
+- **`ChangeZoneAll StaticEffect$`** has no implementation, and is no copy: Ghost Vacuum's static adds a type and sets P/T on the cards moved, so it belongs with `Animate`, not `CopyOverlay`.
+- **Clone** copies a nontoken permanent's whole `CardData`, front face up, and `copied_token` the face it shows. Each kept its reading.
+- **Cards scanned as a pool** (`Orderer`'s and Cavern's subtype lists) read printed types on purpose.
+
+**(b) must:**
+
+- `AddColor$`: beside `setcolor_override_for`, read by `card_object_characteristics` and `effective_colors`. `encode.cpp` writes `card_colors(face)` in the `CARDS` frame and `effective_colors` per object, so a color in a hidden zone is the leak to test.
+- A characteristic-defining static off the battlefield: `g_active_statics` and `ActiveStatic::sa()` hold battlefield and emblem sources alone. Grist can be a face built at parse that `card_characteristics` returns off the battlefield, which every reader here takes up; `effective_types` returns a reference, so anything computed per object needs another shape.
+- `ExcludeZone$`, and `AffectedZone$` on `LIVE`: `object_in_affected_zone`, one line each.
+- `GainsAbilitiesOf$`: `object_abilities` over the exiled cards, in `apply_layer6_ability_grants`, whose bodies have no SVars today.
+- `CopyOverlay` fields: `AddKeywords$`, `SetPower$`, `SetToughness$`, `SetColor$`, `SetCreatureTypes$`, `AddTypes$`; `CopyPermanent`'s `ValidTgts$` and `Defined$ Remembered` (`copied_token` takes a card in any zone), `AtEOT$`.
+- `Clone`'s `Duration$`: `end_copy_effect` at cleanup, and `Defined$` / `CloneTarget$` the other way round from Thespian's Stage. Copying a token: `become_copy` needs a `CardData`, which a token hasn't got.
+- `K:ETBReplacement:Copy`: `become_copy` as it enters, its replacement picking the original.
+- An `Animate` of end-of-turn duration: `animate_permanent` skips `animate_has_pt` and `Keywords$` for one, which Allosaurus Shepherd and Shallow Grave need, and the parser reads no `AnimateAll` `Power$`, `Toughness$`, `Types$`.
+- `HIDDEN CARDNAME can't block.`: a row of `kBlockRestrictions`.
+
+Evidence. Each of the five commits: 509 explore games (bo1, 15 bo3, `--no-auto-mana`, every league pair, the held-out decks, each `mech_` fixture; 3.1 million lines of `--narrative --trace-decisions`, capped at 2,500 decisions) hash for hash the same as `92ab1ff1`'s binary, which reran identically. `replay` byte-identical, `make registry` a no-op, `--parse-report @vocab` the same bytes, `tests/corpus` and `tests/cli` unmoved. Neither landwalk nor menace has a scenario, so each was compared by hand on both binaries: Street Wraith against Swamp and Forest, and Alpha Deathclaw and Sire of Seven Deaths over three Bears, 80 games and 24 menace releases, no difference.
+
+Unproved. Release `bench` wasn't compared. `static_reaches` adds a call per permanent per general static, and `affected_permanents_for_static` builds a `FilterSpec` per call for Petrified Hamlet. Several unifications hold for the vocab and token scripts alone, by reading them: an empty `Affected$`, `AffectedZone$` read for an entering card, a Self `AddAbility$`, `effective_types` of split halves that differ. The `actor` tier's torch part was skipped.
+
 ### M9. Effect objects, triggers and replacements (L)
 
 **Also here.** CR 610.3: the return of an "until" exile is a one-shot effect immediately after the event, but `register_exile_until_host_leaves` fires it as a delayed trigger, so players get priority first and a host that re-enters at once orders it among that entry's triggers (Portable Hole under Displacer Kitten; in `docs/rules_deviations.md`). Scenario that re-blink in both orderings.
