@@ -53,6 +53,9 @@ const AbilityDef *parse_granted_trigger(const std::string &trigger_line,
 // action_processor.cpp) so both paths enforce the same cost shapes.
 CostParts parse_ward_cost(const std::string &arg);
 
+// Records a finding against the script line in scope, while a findings parse runs.
+void parse_finding(const char *kind, const std::string &name, const std::string &detail);
+
 // ── Parser findings (--parse-report, parse_report.h) ─────────────────────────────────────────
 //
 // Something a script says that the parser met and does not model: an ability category with no
