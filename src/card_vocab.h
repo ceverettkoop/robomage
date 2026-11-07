@@ -377,6 +377,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"The Everflowing Well", 452},
     {"The Myriad Pools", 453},
     {"Ghost Vacuum", 454},
+    {"Renegade Rallier", 455},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

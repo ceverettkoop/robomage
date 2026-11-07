@@ -3515,6 +3515,15 @@ static TriggerLine read_trigger_line(const std::string &line,
             t.intervening_if = true;
         } else if (key == "PresentCompare") {
             t.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+        } else if (key == "Revolt") {
+            // Revolt$ True: the intervening-if (603.4) "if a permanent you controlled left the
+            // battlefield this turn", on the player flag Count$Revolt reads.
+            if (value == "True") {
+                t.condition_present = "Count$Revolt.1.0";
+                t.intervening_if = true;
+            } else {
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+            }
         } else if (key == "CheckSVar") {
             auto it = svars.find(value);
             const std::string svdef = (it != svars.end()) ? it->second : std::string();
@@ -4824,7 +4833,7 @@ static bool trigger_value_read(const TriggerMode &mode, const TriggerLine &t, co
 // of bind_trigger_line.
 static void trigger_form_findings(const std::string &line, const TriggerLine &t) {
     static const char *const kEveryMode[] = {"Mode", "Execute", "TriggerDescription", "Secondary", "TriggerZones",
-        "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "ResolvedLimit",
+        "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "Revolt", "ResolvedLimit",
         "NoResolvingCheck", "Static"};
     const TriggerMode &mode = *trigger_mode_named(t.mode);
     const std::string zones = param_value(line, "TriggerZones");

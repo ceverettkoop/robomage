@@ -797,7 +797,10 @@ static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_conv
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
 static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }
 
-static bool cond_revolt(const SvarArgs &a) { return revolt_this_turn(a.controller); }
+static bool cond_revolt(const SvarArgs &a) {
+    coverage_row("revolt");
+    return revolt_this_turn(a.controller);
+}
 static bool cond_gift_promised(const SvarArgs &) { return current_gift_promised(); }
 static bool cond_threshold(const SvarArgs &a) {
     return zone_objects(zoned_entities(), Zone::GRAVEYARD, a.controller).size() >= 7;
