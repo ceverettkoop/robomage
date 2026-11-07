@@ -1,0 +1,48 @@
+{
+  "name": "cr714_2_reflection_of_kiki_jiki_is_no_saga",
+  "why": "CR 714.2, 712.8e: chapter III returns Fable transformed: its back face is no Saga, so it takes no lore counter as it enters or later, has no chapters and isn't sacrificed.",
+  "hand_a": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Fable of the Mirror-Breaker"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Discard no more"
+  ],
+  "max_decisions": 60,
+  "expect_order": [
+    "Fable of the Mirror-Breaker chapter 3 triggers",
+    "Reflection of Kiki-Jiki enters transformed",
+    "TURN 5"
+  ],
+  "expect_count": {
+    "gets 1 lore counter": 2
+  },
+  "expect_not": [
+    "Reflection of Kiki-Jiki chapter",
+    "is sacrificed"
+  ]
+}

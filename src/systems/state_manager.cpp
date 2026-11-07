@@ -361,7 +361,7 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
         // ("Sacrifice after III/IV") confirms the creature Saga is sacrificed, so they agree.
         // Layer-6 ability removal: a Saga turned into a Mountain (Magus of the Moon,
         // CR 305.7) is no longer a Saga — 714.4 doesn't sacrifice it, even at full lore.
-        if (cd && card_is_saga(*cd) && !perm.abilities_removed &&
+        if (cd && card_is_saga(active_face(entity, *cd)) && !perm.abilities_removed &&
             get_counters(entity, "LORE") >= static_cast<int>(cd->saga_chapters.size()) &&
             perm.saga_chapters_in_flight == 0)
             out.put_into_graveyard(entity, name + " is sacrificed (final chapter completed).");

@@ -1,0 +1,49 @@
+{
+  "name": "cr707_2_reflection_copies_a_token_with_its_attack_trigger",
+  "why": "CR 707.2, 111.1: copying a token: the Goblin Shaman token chapter I made is copied with its 'whenever this creature attacks, create a Treasure', and the copy has haste.",
+  "hand_a": [
+    "Fable of the Mirror-Breaker"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Reflection of Kiki-Jiki",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fable of the Mirror-Breaker",
+    "A:activate:Reflection of Kiki-Jiki",
+    "A:attack:Goblin Shaman",
+    "A:attack:done"
+  ],
+  "max_decisions": 16,
+  "expect_order": [
+    "Token created: 2/2 Goblin Shaman",
+    "Token copy created: 2/2 Goblin Shaman",
+    "Goblin Shaman token attacking Player B",
+    "Goblin Shaman token triggered",
+    "Token created: 0/0 Treasure"
+  ]
+}

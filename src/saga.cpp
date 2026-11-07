@@ -10,6 +10,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "queries/battlefield.h"
+#include "queries/characteristics.h"
 #include "queries/counters.h"
 
 extern Coordinator global_coordinator;
@@ -58,7 +59,7 @@ void decrement_saga_in_flight(const Ability &ab) {
 void saga_put_precombat_lore_counters(Zone::Ownership active, const EntitySet &entities) {
     for (auto e : battlefield_permanents(entities, active)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (!card_is_saga(global_coordinator.GetComponent<CardData>(e))) continue;
+        if (!card_is_saga(active_face(e, global_coordinator.GetComponent<CardData>(e)))) continue;
         saga_add_lore_counters(e, 1);
     }
 }

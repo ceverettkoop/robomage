@@ -1118,7 +1118,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // flag the fresh Permanent: a Saga entering under Magus of the Moon enters as a
                 // Mountain — no lore counter, no chapter I (the flag-based gates in saga.cpp cover
                 // later turns).
-                if (card_is_saga(card_data) && !entering_object_loses_abilities(entity))
+                if (card_is_saga(*face) && !entering_object_loses_abilities(entity))
                     saga_add_lore_counters(entity, 1);
                 // "This creature enters prepared" (CR 722.3a), a replacement of the card's own.
                 if (card_data.is_prepare && face->enters_prepared && !entering_object_loses_abilities(entity))
