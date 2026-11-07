@@ -1,0 +1,31 @@
+{
+  "name": "cr704_5f_an_empty_hearse_crewed_dies",
+  "why": "CR 604.3, 704.5f: Unlicensed Hearse's power and toughness are the cards exiled with it, none yet. A 0/0 Vehicle is fine until it's a creature; crewed, it's put into its owner's graveyard.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "desc:Crew Unlicensed Hearse",
+    "crew:Grizzly Bears"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "becomes a Creature",
+    "Unlicensed Hearse dies \\(zero toughness\\)"
+  ]
+}

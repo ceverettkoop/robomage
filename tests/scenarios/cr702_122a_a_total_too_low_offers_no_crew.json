@@ -1,0 +1,31 @@
+{
+  "name": "cr702_122a_a_total_too_low_offers_no_crew",
+  "why": "CR 118.3, 702.122a: one 1-power creature can't pay Crew 2, so the crew row isn't offered.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse",
+    "Flying Men"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu": [
+    "Activate Unlicensed Hearse"
+  ],
+  "expect_menu_not": [
+    "Crew Unlicensed Hearse"
+  ]
+}

@@ -2209,6 +2209,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             Zone::ZoneValue zone;
             if (Zone::from_script_name(name, zone)) ability.add_target_zone(zone);
         }
+    } else if (key == "TargetsWithSameController") {
+        ability.targets_same_controller = value == "True";
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {

@@ -391,6 +391,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Invasion Submersible", 466},
     {"Sink into Stupor", 467},
     {"Soporific Springs", 468},
+    {"Unlicensed Hearse", 469},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

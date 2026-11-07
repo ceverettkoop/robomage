@@ -186,6 +186,9 @@ struct AbilityDef {
     // spell/ability target a card there even though its category isn't ChangeZone (e.g. Surgical
     // Extraction's SP$ Pump vehicle), and target enumeration offer graveyard cards.
     uint32_t target_zones = 0;
+    // TargetsWithSameController$ True — every target has the same controller, a card's being its
+    // owner (CR 108.4a): Unlicensed Hearse's "from a single graveyard".
+    bool targets_same_controller = false;
     bool targets_in(Zone::ZoneValue zone) const { return (target_zones >> zone) & 1u; }
     void add_target_zone(Zone::ZoneValue zone) { target_zones |= 1u << zone; }
     // GainControl$ True — a ChangeZone that puts a card onto the battlefield does so under the

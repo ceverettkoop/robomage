@@ -159,6 +159,7 @@ static bool read_zone_filter(const std::string &rest, SvarExpr &x, Zone::ZoneVal
 static bool read_valid_hand(const std::string &rest, SvarExpr &x);
 static bool read_valid_graveyard(const std::string &rest, SvarExpr &x);
 static bool read_valid_library(const std::string &rest, SvarExpr &x);
+static bool read_valid_exile(const std::string &rest, SvarExpr &x);
 static bool read_valid_stack(const std::string &rest, SvarExpr &x);
 static bool read_player_count(const std::string &rest, SvarExpr &x);
 
@@ -306,6 +307,9 @@ static const SvarRow kSvarRows[] = {
     // Count$ValidExile ... $CardTypes — distinct card types among the cards exiled with `source`
     // (Keen-Eyed Curator's exiled-with pile).
     filter_row("Count$ValidExile", read_card_types_clause, set_cards_exiled_with, Aggregate::DISTINCT_CARD_TYPES),
+    // Count$ValidExile <filter> — the number of cards in exile matching it (Unlicensed Hearse: the
+    // cards exiled with it).
+    filter_row("Count$ValidExile", read_valid_exile, set_zone_cards, Aggregate::COUNT),
     // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
     set_read_row("Count$TypeInYourYard.", read_no_dollar, set_your_yard_of_type, Aggregate::COUNT),
     set_row("Count$CardTypesInAllGraveyards", set_graveyard_cards, nullptr, Aggregate::DISTINCT_CARD_TYPES),
@@ -738,6 +742,7 @@ static bool read_zone_filter(const std::string &rest, SvarExpr &x, Zone::ZoneVal
 }
 
 static bool read_valid_hand(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::HAND); }
+static bool read_valid_exile(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::EXILE); }
 static bool read_valid_graveyard(const std::string &rest, SvarExpr &x) {
     return read_zone_filter(rest, x, Zone::GRAVEYARD);
 }
@@ -1020,6 +1025,7 @@ static void set_stack_cards(const SvarExpr &x, const SvarArgs &a, std::vector<En
 static void set_zone_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
     MatchCtx ctx;
     ctx.controller = a.controller;
+    ctx.source = a.source;
     for (Entity e : zone_objects(zoned_entities(), x.zone, Zone::UNKNOWN))
         if (card_matches_filter(e, x.filter, ctx)) out.push_back(e);
 }

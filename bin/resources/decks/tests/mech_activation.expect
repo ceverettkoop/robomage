@@ -1,8 +1,9 @@
 # M10 (b1): activations. Boast (Broadside Bombardiers: the AttackedThisTurn row, the cost's sacrificed
 # mana value), Exhaust and Waterbend (Invasion Submersible: a lifetime limit, a TapToPay row on an
-# activation). Crew's cost:TAP_OTHERS joins when Unlicensed Hearse does.
+# activation). Crew (Unlicensed Hearse: tapping other creatures for a cost).
 row:AttackedThisTurn
 row:Sacrificed$CardManaCost
 row:activation_per_lifetime
 cost:MANA.Waterbend
 cost:MANA.tap_chosen
+cost:TAP_OTHERS

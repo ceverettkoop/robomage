@@ -1,0 +1,52 @@
+{
+  "name": "cr604_3_unlicensed_hearse_counts_the_cards_exiled_with_it",
+  "why": "CR 604.3: exiling two cards makes Unlicensed Hearse 2/2, so crewed on a later turn it survives and attacks for 2. Up to two: the second pick may end the choice, here it doesn't.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "graveyard_b": [
+    "Island",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Unlicensed Hearse",
+    "A:target:Island",
+    "A:target:Lightning Bolt",
+    "B:play:Island",
+    "A:play:Mountain",
+    "A:desc:Crew Unlicensed Hearse",
+    "A:crew:Grizzly Bears",
+    "A:attack:Unlicensed Hearse",
+    "A:attack:done"
+  ],
+  "max_decisions": 40,
+  "expect": [
+    "Unlicensed Hearse deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "Unlicensed Hearse dies"
+  ],
+  "hand_b": [
+    "Island"
+  ]
+}
