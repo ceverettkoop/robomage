@@ -13,6 +13,7 @@
 #include "../classes/action.h"
 #include "../cli_output.h"
 #include "../coverage.h"
+#include "../effects/effects.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -122,6 +123,7 @@ void Orderer::move_object(
     bool destination_occupied = false;  // the owner's destination zone holds another card (bottom placement)
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
     bool with_void_counter = false;
+    const ObjectRef moved = ObjectRef::of(target);
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
     // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
@@ -361,6 +363,26 @@ void Orderer::move_object(
     obs_info.opening = opts.opening_draw;
     obs_info.on_bottom = on_bottom;
     obs_end_move(obs_move, target, handle_move.after_handle, obs_info);
+    if (origin == Zone::BATTLEFIELD && destination != Zone::BATTLEFIELD) end_until_exiles(moved);
+}
+
+// See declaration in orderer.h.
+void Orderer::end_until_exiles(const ObjectRef &host) {
+    std::vector<DelayedTrigger> ended;
+    auto &waiting = cur_game.delayed_triggers;
+    for (auto it = waiting.begin(); it != waiting.end();) {
+        if (it->one_shot_return && it->watched == host) {
+            ended.push_back(std::move(*it));
+            it = waiting.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    for (const DelayedTrigger &wait : ended) {
+        const Entity card = wait.ability.restore_remembered_exiled_with.front().get();
+        if (card != 0 && global_coordinator.GetComponent<Zone>(card).location == Zone::EXILE)
+            effects::return_until_exiled(shared_from_this(), card, wait.ability.def->destination);
+    }
 }
 
 // See declaration in orderer.h.

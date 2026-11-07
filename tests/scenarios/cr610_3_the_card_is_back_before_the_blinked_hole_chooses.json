@@ -1,0 +1,66 @@
+{
+  "name": "cr610_3_the_card_is_back_before_the_blinked_hole_chooses",
+  "why": "CR 610.3: the return of an 'until' exile is a one-shot effect immediately after the event: blink Portable Hole with Displacer Kitten after its new enters trigger has resolved and the card is back before the next trigger chooses, each time, with nothing on the stack for it",
+  "hand_a": [
+    "Portable Hole",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Plains",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Lotus Petal",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Portable Hole",
+    "A:target:No target",
+    "A:target:Grizzly Bears@opp",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:Portable Hole",
+    "A:target:Grizzly Bears@opp",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:Portable Hole",
+    "A:target:Lotus Petal@opp"
+  ],
+  "max_decisions": 30,
+  "expect_order": [
+    "^Grizzly Bears is moved to exile",
+    "^Grizzly Bears is moved to the battlefield",
+    "^Portable Hole is moved to the battlefield",
+    "^Grizzly Bears is moved to exile",
+    "^Grizzly Bears is moved to the battlefield",
+    "^Portable Hole is moved to the battlefield",
+    "^Lotus Petal is moved to exile"
+  ],
+  "expect_not": [
+    "Delayed trigger fires"
+  ],
+  "expect_menu": [
+    "^Grizzly Bears$",
+    "^Lotus Petal$"
+  ]
+}

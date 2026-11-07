@@ -40,8 +40,8 @@
   "max_decisions": 13,
   "expect_order": [
     "^Grizzly Bears is moved to exile",
-    "^Portable Hole is destroyed",
-    "^Grizzly Bears is moved to the battlefield"
+    "^Grizzly Bears is moved to the battlefield",
+    "^Portable Hole is destroyed"
   ],
   "expect_menu_not": [
     "^Air Elemental$",

@@ -37,17 +37,16 @@
     "A:cast:Lightning Bolt",
     "A:target:Player B",
     "A:target:Portable Hole",
-    "A:desc:Delayed trigger",
     "A:target:Lotus Petal@opp"
   ],
-  "max_decisions": 18,
+  "max_decisions": 17,
   "expect": [
     "^Lotus Petal is moved to exile"
   ],
   "expect_order": [
     "^Grizzly Bears is moved to exile",
+    "^Grizzly Bears is moved to the battlefield",
     "^Portable Hole is moved to exile",
-    "^Portable Hole is moved to the battlefield",
-    "^Grizzly Bears is moved to the battlefield"
+    "^Portable Hole is moved to the battlefield"
   ]
 }

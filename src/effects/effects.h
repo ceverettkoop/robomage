@@ -96,6 +96,9 @@ int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_
 // with no legal object stays where it is (CR 303.4f/g). `fctx` carries that pick (see
 // change_zone_move). Returns the zone the card is in afterwards. Defined in effect_change_zone.cpp.
 Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e);
+// CR 610.3: the second one-shot effect of an "until" exile, `card` back from exile to `to` under
+// its owner's control. It happens within a zone move, so an Aura's choice of what to enchant blocks.
+void return_until_exiled(const std::shared_ptr<Orderer> &orderer, Entity card, Zone::ZoneValue to);
 // ChangeType$ Remembered.sameName / Targeted.sameName mover, shared by change_zone
 // (force_all=false) and change_zone_all (force_all=true).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all);

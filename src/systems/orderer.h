@@ -4,6 +4,7 @@
 #include "../ecs/system.h"
 #include "../ecs/entity.h"
 #include "../components/zone.h"
+#include "../object_ref.h"
 #include <vector>
 #include <memory>
 
@@ -137,6 +138,9 @@ private:
     // add_to_zone), reported as an observation event (state_format/events.h).
     void move_object(
         bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts);
+    // CR 610.3: `host` has just left the battlefield, so the second one-shot effect of each "until"
+    // exile waiting on it happens, all before anything else does (610.3d).
+    void end_until_exiles(const ObjectRef &host);
     // Draw a single card for `player`, first offering any available dredge
     // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
     // loss if the library is empty.

@@ -72,6 +72,9 @@ struct DelayedTrigger {
     // "when X leaves, do Y" delayed trigger; empty = not object-watched (the phase-based default).
     ObjectRef watched;                // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match `watched` leaving the battlefield, not a phase
+    // CR 610.3: no trigger but the wait for an "until" exile's event. `watched` leaving returns the
+    // card at once (Orderer::move_object), with nothing on the stack.
+    bool one_shot_return = false;
     // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
     // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
     // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a

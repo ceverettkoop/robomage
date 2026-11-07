@@ -49,6 +49,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
                                         const Ability &ab, Entity e, Zone::ZoneValue dest,
                                         bool enters_transformed = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
+static const char *destination_label(Zone::ZoneValue destination);
 static bool in_declared_origin(const Ability &ab, Entity e);
 static bool linked_exile_host_gone(const Ability &ab);
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
@@ -161,19 +162,30 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     return global_coordinator.GetComponent<Zone>(e).location;
 }
 
+void return_until_exiled(const std::shared_ptr<Orderer> &orderer, Entity card, Zone::ZoneValue to) {
+    static const Ability no_move_params;
+    const std::string name = object_display_name(card);
+    const Zone::ZoneValue landed = change_zone_move(orderer, FrameCtx::blocking(), no_move_params, card, to);
+    if (landed == Zone::BATTLEFIELD) {
+        Zone &zone = global_coordinator.GetComponent<Zone>(card);
+        zone.controller = zone.owner;  // CR 610.3c
+    }
+    if (landed == to) game_log("%s is moved to %s\n", name.c_str(), destination_label(to));
+}
+
 Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e) {
     static const Ability no_move_params;
     return change_zone_move(orderer, fctx, no_move_params, e, Zone::BATTLEFIELD);
 }
 
-// CR 603.6e linked exile-and-return ("exile ... until [host] leaves the battlefield"). Records
-// that `host` exiled `card` from `origin` under a Duration$ UntilHostLeavesPlay, and registers a
-// delayed trigger that RETURNS the card when the host leaves the battlefield. The return goes
+// CR 610.3 linked exile-and-return ("exile ... until [host] leaves the battlefield"). Records that
+// `host` exiled `card` from `origin` under a Duration$ UntilHostLeavesPlay, and waits for the host's
+// leaving, when Orderer::move_object returns the card (effects::return_until_exiled). The return goes
 // back to `origin`: a HAND card to its owner's hand, a BATTLEFIELD permanent onto the battlefield
-// under its owner's control (a fresh object — re-entry triggers fire normally). Reused by Cloak
-// and Dagger (a revealed hand card or the chosen creature) and by the single-target-permanent
-// exilers Sheltered by Ghosts / Static Prison (origin BATTLEFIELD). One trigger is registered per
-// exiled card, so each card carries its own origin even when a host exiles several.
+// under its owner's control (a fresh object: re-entry triggers fire normally). Reused by Cloak and
+// Dagger (a revealed hand card or the chosen creature) and by the single-target-permanent exilers
+// Sheltered by Ghosts / Static Prison (origin BATTLEFIELD). One wait is registered per exiled card,
+// so each card carries its own origin even when a host exiles several.
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin) {
     if (host == 0 || card == 0) return;
     // Only a card that is now in exile is linked: a token that left the battlefield ceases to
@@ -188,10 +200,9 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     if (global_coordinator.entity_has_component<Permanent>(host))
         global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(ObjectRef::of(card));
 
-    // The fire ability returns this one card from exile to its origin zone. Seeding
-    // restore_remembered_exiled_with makes resolve() set the remembered set to exactly this card,
-    // and the Defined$ Remembered move (source = card) sends it to fire_ab.destination under its
-    // owner's control (owner = the card's Zone.owner).
+    // The wait's ability names what the return does: this one card, from exile to its origin zone.
+    // It is never put on the stack (CR 610.3): frames report it as a waiting delayed trigger, and
+    // returnable_exiled_card reads it as the card's way back.
     Ability fire_ab(keyed_ability_def(
         "return_from_exile:" + std::to_string(static_cast<int>(origin)), [origin] {
             AbilityDef d;
@@ -213,7 +224,17 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.fire_on_turn = cur_game.turn_state.turn;
     dt.watched = ObjectRef::of(host);
     dt.fire_on_leave_battlefield = true;
+    dt.one_shot_return = true;
     register_delayed_trigger(dt, dt.watched);
+}
+
+// How a move's log line names where the card went.
+static const char *destination_label(Zone::ZoneValue destination) {
+    return destination == Zone::BATTLEFIELD ? "the battlefield"
+           : destination == Zone::LIBRARY   ? "top of library"
+           : destination == Zone::GRAVEYARD ? "graveyard"
+           : destination == Zone::HAND      ? "hand"
+                                            : "exile";
 }
 
 // True if `e` sits in one of the ability's declared Origin$ zones, or the ability declares none
@@ -388,11 +409,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         ab.def->destination == Zone::BATTLEFIELD && ab.def->valid_tgts == "N_A")
         return each_player_put_from_hand(ab, orderer, fctx);
 
-    const char *dest_str = ab.def->destination == Zone::BATTLEFIELD ? "the battlefield"
-                           : ab.def->destination == Zone::LIBRARY   ? "top of library"
-                           : ab.def->destination == Zone::GRAVEYARD ? "graveyard"
-                           : ab.def->destination == Zone::HAND      ? "hand"
-                                                               : "exile";
+    const char *dest_str = destination_label(ab.def->destination);
 
     // Targeted ChangeZone (e.g. Swords to Plowshares, Faerie Macabre, Life from the
     // Loam): move target(s) directly. A targeted ability with no chosen targets (e.g.
