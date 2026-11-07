@@ -6,6 +6,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../queries/affected.h"
@@ -38,7 +39,7 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     }
 
     for (auto e : to_sac) {
-        const std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+        const std::string nm = permanent_label(e);
         const Zone::Ownership owner = global_coordinator.GetComponent<Permanent>(e).controller;
         orderer->add_to_zone(false, e, Zone::GRAVEYARD);
         game_log("%s sacrifices %s.\n", player_name(owner).c_str(), nm.c_str());

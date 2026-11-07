@@ -499,8 +499,7 @@ static PayStatus pay_step(
             return pay_from_working_pool(who);
         case CostStep::MANA_ABILITY_SACRIFICE:
             if (who.commit && who.cost->self(CostPart::SACRIFICE)) {
-                game_log("%s sacrifices %s\n", player_name(who.payer).c_str(),
-                    global_coordinator.GetComponent<Permanent>(who.source).name.c_str());
+                game_log("%s sacrifices %s\n", player_name(who.payer).c_str(), permanent_label(who.source).c_str());
                 orderer->add_to_zone(false, who.source, Zone::GRAVEYARD);
             }
             break;
@@ -653,7 +652,7 @@ static std::vector<Entity> pick_pool(
 
 static std::string item_name(const PickRule &rule, Entity e) {
     return rule.kind == CostPart::SACRIFICE || rule.kind == CostPart::RETURN
-               ? global_coordinator.GetComponent<Permanent>(e).name
+               ? permanent_label(e)
                : global_coordinator.GetComponent<CardData>(e).name;
 }
 
@@ -863,7 +862,7 @@ static void exert_source(const CostPayer &who) {
     if (!who.commit || !who.cost->has(CostPart::EXERT)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(who.source);
     perm.exerted_by = who.payer;
-    game_log("%s exerts %s\n", player_name(who.payer).c_str(), perm.name.c_str());
+    game_log("%s exerts %s\n", player_name(who.payer).c_str(), permanent_label(who.source).c_str());
     coverage_cost(CostPart::EXERT);
 }
 
@@ -1018,7 +1017,7 @@ static PayStatus pay_trigger_sacrifice(const CostPayer &who, FrameCtx &ctx, cons
     if (!who.cost->self(CostPart::SACRIFICE)) return PayStatus::PAID;
     const Entity src = who.source;
     const std::string sname = !who.source_gone && global_coordinator.entity_has_component<Permanent>(src)
-                                  ? global_coordinator.GetComponent<Permanent>(src).name
+                                  ? permanent_label(src)
                                   : std::string("it");
     if (who.source_gone || !is_battlefield_permanent(src)) {
         game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());

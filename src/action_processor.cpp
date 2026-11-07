@@ -652,8 +652,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (!cr.must_attack || cr.is_attacking) continue;
         cr.is_attacking = true;
         cr.attack_target = ObjectRef::of(defending_entity);
-        game_log("%s must attack and is declared as an attacker.\n",
-            global_coordinator.GetComponent<Permanent>(entity).name.c_str());
+        game_log("%s must attack and is declared as an attacker.\n", permanent_label(entity).c_str());
     }
 
     // Selection loop — only un-declared creatures are offered each iteration.
@@ -1760,10 +1759,10 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (!pa.stack_ab.target.empty()) {
                 std::string tgt_names = chosen_targets_display(pa.stack_ab);
                 game_log("%s's %s ability targeting %s is on the stack\n",
-                    player_name(controller).c_str(), permanent.name.c_str(), tgt_names.c_str());
+                    player_name(controller).c_str(), permanent_label(permanent_entity).c_str(), tgt_names.c_str());
             } else {
                 game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(),
-                         permanent.name.c_str());
+                         permanent_label(permanent_entity).c_str());
             }
             game.take_action();
 

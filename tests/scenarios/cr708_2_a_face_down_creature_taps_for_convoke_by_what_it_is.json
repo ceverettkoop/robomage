@@ -1,0 +1,46 @@
+{
+  "name": "cr708_2_a_face_down_creature_taps_for_convoke_by_what_it_is",
+  "why": "CR 708.2a, 702.51a: a face-down creature has no name, so its Convoke row and the log call it a face-down creature rather than leaving a blank, and it pays only for generic mana, having no color.",
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "face_down_a": [
+    "Goblin Guide"
+  ],
+  "graveyard_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Hogaak",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Face-down"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A taps Face-down creature for Convoke"
+  ],
+  "expect_menu": [
+    "Tap Face-down creature \\(Convoke\\)"
+  ],
+  "expect_menu_not": [
+    "Tap  \\(Convoke\\)"
+  ]
+}

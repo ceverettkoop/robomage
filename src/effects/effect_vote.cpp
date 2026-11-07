@@ -8,6 +8,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
@@ -73,8 +74,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     // the pre-ask log is arm-only.
     std::vector<LegalAction> picks;
     for (auto e : candidates) {
-        const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
-        LegalAction la(PASS_PRIORITY, e, "Vote to exile " + nm);
+        LegalAction la(PASS_PRIORITY, e, "Vote to exile " + permanent_label(e));
         la.category = ActionCategory::CHOOSE_CARD;
         la.card_is_public = true;
         picks.push_back(la);
@@ -87,8 +87,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
     report_object(ab, EffectObjects::VOTED, chosen);
-    game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
-             global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
+    game_log("%s votes for %s.\n", player_name(ab.controller).c_str(), permanent_label(chosen).c_str());
     return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
 }
 

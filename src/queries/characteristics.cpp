@@ -226,6 +226,11 @@ std::vector<std::string> card_names(const CardData &cd) {
     return names;
 }
 
+std::string permanent_label(Entity e) {
+    const std::string &name = global_coordinator.GetComponent<Permanent>(e).name;
+    return name.empty() ? entity_name(e) : name;
+}
+
 std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<FaceDownCard>(e)) return "Face-down creature";
     if (global_coordinator.entity_has_component<Permanent>(e)) {

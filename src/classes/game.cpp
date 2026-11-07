@@ -16,6 +16,7 @@
 #include "../error.h"
 #include "../queries/activation.h"
 #include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
 #include "../queries/combat.h"
 #include "../queries/copies.h"
 #include "../queries/counters.h"
@@ -418,14 +419,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // permanent with one or more STUN counters stays tapped and sheds one
                             // counter rather than untapping; otherwise it untaps normally.
                             if (exerted) {
-                                game_log("%s doesn't untap: it was exerted.\n", permanent.name.c_str());
+                                game_log("%s doesn't untap: it was exerted.\n", permanent_label(entity).c_str());
                             } else if (!rev.skip_untap) {
                                 // Counter type is stored verbatim from the script's CounterType$
                                 // (Forge writes "STUN", CR 122.1d), so match that exact key.
                                 if (permanent.is_tapped && get_counters(entity, "STUN") > 0) {
                                     add_counters(entity, "STUN", -1);
                                     game_log("%s has a stun counter removed instead of untapping.\n",
-                                             permanent.name.c_str());
+                                             permanent_label(entity).c_str());
                                 } else {
                                     permanent.is_tapped = false;
                                 }

@@ -624,7 +624,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
         if (!mana_source_affordable(player, entity, ab, orderer)) continue;
         const std::string mana = std::string(" for (") + mana_symbol_str(ab.color) + ")";
         std::string desc = global_coordinator.entity_has_component<Permanent>(entity)
-                               ? "Tap " + global_coordinator.GetComponent<Permanent>(entity).name + mana
+                               ? "Tap " + permanent_label(entity) + mana
                                : "Exile " + global_coordinator.GetComponent<CardData>(entity).name + mana;
         if (ab.def->cost.has(CostPart::EXERT)) desc = "Tap and exert" + desc.substr(3) + " x" + std::to_string(ab.def->amount);
         if (mana_cost_paid_at_priority(ab)) desc = "Pay the cost of" + desc.substr(3);
@@ -943,8 +943,7 @@ std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaV
     for (Entity e : orderer->mEntities) {
         if (!can_tap_to_pay(rule, e, controller)) continue;
         if (pip_left_payable(rule, e, controller, owed, paid_for, how, orderer) == owed.end()) continue;
-        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
-        LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");
+        LegalAction la(PASS_PRIORITY, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
         la.category = ActionCategory::PAYING_COSTS;
         rows.push_back(la);
     }
@@ -964,8 +963,7 @@ static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership c
                            ManaValue::const_iterator pip) {
     tap_permanent(e);
     remaining.erase(pip);
-    game_log("%s taps %s for %s.\n", player_name(controller).c_str(),
-             global_coordinator.GetComponent<Permanent>(e).name.c_str(), rule.keyword);
+    game_log("%s taps %s for %s.\n", player_name(controller).c_str(), permanent_label(e).c_str(), rule.keyword);
     coverage_cost(CostPart::MANA, "tap_to_pay");
     coverage_cost(CostPart::MANA, rule.keyword);
 }
@@ -1824,8 +1822,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             for (auto e : orderer->mEntities) {
                 if (!can_tap_to_pay(rule, e, controller)) continue;
                 if (pip_paid_by_tap(rule, e, remaining) == remaining.end()) continue;
-                auto &perm = global_coordinator.GetComponent<Permanent>(e);
-                LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (" + rule.keyword + ")");
+                LegalAction la(PASS_PRIORITY, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
             }

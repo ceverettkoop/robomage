@@ -2,6 +2,7 @@
 
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../ecs/coordinator.h"
 #include "../queries/battlefield.h"
 #include "../queries/affected.h"
@@ -20,7 +21,7 @@ HandlerResult tap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     for (Entity e : affected_objects(ab)) {
         if (!is_battlefield_permanent(e)) continue;
         if (tap_permanent(e))
-            game_log("%s is tapped.\n", global_coordinator.GetComponent<Permanent>(e).name.c_str());
+            game_log("%s is tapped.\n", permanent_label(e).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

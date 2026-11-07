@@ -4,6 +4,7 @@
 
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../ecs/coordinator.h"
 #include "../queries/battlefield.h"
 #include "../queries/affected.h"
@@ -25,7 +26,7 @@ HandlerResult untap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         if (!is_battlefield_permanent(t)) continue;
         auto &tperm = global_coordinator.GetComponent<Permanent>(t);
         tperm.is_tapped = false;
-        game_log("%s untaps\n", tperm.name.c_str());
+        game_log("%s untaps\n", permanent_label(t).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

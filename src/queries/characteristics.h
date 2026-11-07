@@ -226,6 +226,10 @@ inline bool is_planeswalker_permanent(Entity e) {
 // characteristics.cpp.
 std::string entity_name(Entity e);
 
+// What a menu row or the log calls the permanent `e`: its name, or entity_name's word for what has
+// none (CR 708.2a, 707.2). Differs from entity_name in leaving a token's name as it is.
+std::string permanent_label(Entity e);
+
 // Card vocab index of an object or an ability's source (card_vocab.h), by its name as it is now:
 // a permanent's current name, a token's token-band index (else TOKEN_SENTINEL), a card's CardData
 // name; an ability entity resolves to its source. A source that ceased to exist (a token, CR 111.7)

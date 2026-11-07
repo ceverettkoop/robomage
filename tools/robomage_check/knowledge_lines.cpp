@@ -27,6 +27,8 @@ static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s,
 static void object_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 static size_t rows_of_object(const Rows &table, uint64_t handle);
+static void identity_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 
 static std::string card_of(const SeatNames &n, int64_t cid) {
     auto it = n.cards.find(cid);
@@ -121,6 +123,32 @@ static void facts(
             "known_hand " + card_name(n, kh, r, kh.col("card")) + " x" + std::to_string(kh.u(r, kh.col("copies"))));
     stack_target_facts(f, s, n, out);
     mana_facts(f, s, out);
+    identity_facts(f, s, n, out);
+}
+
+// Where a card column shows an identity outside the object table: a stack row, a menu row (its text
+// too), and each card of the frame's events.
+static void identity_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    const auto shown = [&n](const Rows &t, size_t r, int c) {
+        return t.null(r, c) ? std::string("none") : card_name(n, t, r, c);
+    };
+    const Rows stack(f, s, "stack");
+    for (size_t r = 0; r < stack.size(); ++r)
+        out->push_back("stack " + stack.name(r, stack.col("kind")) + " card=" + shown(stack, r, stack.col("source_card")) +
+                       " variant=" + std::to_string(stack.u(r, stack.col("variant"))));
+    const Rows menu(f, s, "menu");
+    for (size_t r = 0; r < menu.size(); ++r)
+        out->push_back("menu " + menu.name(r, menu.col("category")) + " card=" + shown(menu, r, menu.col("source_card")) +
+                       " text=" + menu.text(r, menu.col("description")));
+    const Rows events(f, s, "event");
+    const Rows cards(f, s, "event_card");
+    for (size_t r = 0; r < cards.size(); ++r) {
+        const size_t e = static_cast<size_t>(cards.u(r, cards.col("event")));
+        out->push_back("event " + events.name(e, events.col("kind")) + " " + events.name(e, events.col("zone")) + ">" +
+                       events.name(e, events.col("to_zone")) + " card=" + shown(cards, r, cards.col("card")) +
+                       " face_down=" + std::to_string(cards.u(r, cards.col("face_down"))));
+    }
 }
 
 // How many rows of the child table `table` are the object `handle`'s.

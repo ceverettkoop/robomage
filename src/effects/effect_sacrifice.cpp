@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
@@ -53,8 +54,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
         choices.push_back(la);
     }
     for (auto e : candidates) {
-        const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
-        LegalAction la(PASS_PRIORITY, e, "Sacrifice " + nm);
+        LegalAction la(PASS_PRIORITY, e, "Sacrifice " + permanent_label(e));
         la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }
@@ -73,7 +73,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
         return 0;
     }
 
-    std::string name = global_coordinator.GetComponent<Permanent>(chosen).name;
+    std::string name = permanent_label(chosen);
     orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
     game_log("%s sacrifices %s.\n", player_name(sacrificer).c_str(), name.c_str());
     return chosen;
@@ -93,7 +93,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
 static Entity sacrifice_self(const Ability &ab, std::shared_ptr<Orderer> orderer) {
     Entity src = ab.source.get();
     if (src == 0 || !is_battlefield_permanent(src)) return 0;
-    std::string name = global_coordinator.GetComponent<Permanent>(src).name;
+    std::string name = permanent_label(src);
     orderer->add_to_zone(false, src, Zone::GRAVEYARD);
     game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), name.c_str());
     return src;
