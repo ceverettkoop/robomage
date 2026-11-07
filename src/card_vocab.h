@@ -382,6 +382,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Pyrogoyf", 457},
     {"Hawkeye's Bow", 458},
     {"Chrome Mox", 459},
+    {"Tezzeret, Cruel Captain", 460},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

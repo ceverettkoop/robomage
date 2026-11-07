@@ -101,11 +101,11 @@ void apply_animate_creature_bootstrap(Entity e) {
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
     // ability's own source; Defined$ Remembered (Sneak Attack: the creature it just put onto the
-    // battlefield) every remembered permanent; otherwise the chosen/inherited target (Guide of
-    // Souls).
+    // battlefield) every remembered permanent; Defined$ Targeted.<qualifiers> the target if it
+    // matches (Tezzeret's emblem); otherwise the chosen/inherited target (Guide of Souls).
     const ObjectSpec &spec = ab.def->defined;
     std::vector<Entity> objects;
-    if (spec.is(ObjectSpec::SELF) || spec.is_remembered()) {
+    if (spec.is(ObjectSpec::SELF) || spec.is(ObjectSpec::TARGETED_MATCHING) || spec.is_remembered()) {
         objects = resolve_objects(spec, ResolveCtx::of(ab));
     } else {
         objects.push_back(ab.target.get());

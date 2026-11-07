@@ -23,7 +23,8 @@ using ReadByFn = bool (*)(const AbilityDef &ability);
 
 enum class Refers : uint8_t { OBJECT, PLAYER, OBJECT_OR_PLAYER };
 
-// One Defined$ name. A name ending in a space is a prefix whose remainder is the spec's filter.
+// One Defined$ name. A name ending in a space is a prefix whose remainder is the spec's filter; one
+// ending in a dot is too, the remainder qualifiers of Card.
 struct DefinedRow {
     const char *name;  // null for the kinds no script spells
     ObjectSpec::Kind kind;
@@ -39,6 +40,7 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static void objects_source(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_triggered_card(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_targets(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_targets_matching(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_remembered(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_imprinted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_chosen_cards(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
@@ -109,6 +111,9 @@ static const DefinedRow kDefinedRows[] = {
     // alone, the one reader that tells the names apart.
     {"Targeted", ObjectSpec::TARGETED, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr,
      true},
+    // Targeted.<qualifiers> — that target, if it matches now (Tezzeret, Cruel Captain: "If it's an
+    // artifact creature, put a +1/+1 counter on it").
+    {"Targeted.", ObjectSpec::TARGETED_MATCHING, Refers::OBJECT, objects_targets_matching, nullptr, nullptr, true},
     {"ParentTarget", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target,
      nullptr, true},
     {"Parent", ObjectSpec::PARENT_TARGET, Refers::OBJECT_OR_PLAYER, objects_targets, players_chain_target, nullptr,
@@ -252,6 +257,14 @@ static void objects_enchanted(const ObjectSpec &, const ResolveCtx &ctx, std::ve
     if (enchanted != 0) out.push_back(enchanted);
 }
 
+static void objects_targets_matching(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out) {
+    std::vector<Entity> targets;
+    objects_targets(spec, ctx, targets);
+    const MatchCtx match{ctx.controller, ctx.source.lki_entity()};
+    for (Entity e : targets)
+        if (permanent_matches_filter(e, spec.filter, match)) out.push_back(e);
+}
+
 static void objects_valid(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out) {
     const MatchCtx match{ctx.controller, ctx.source.lki_entity()};
     for (Entity e : zoned_entities())
@@ -346,7 +359,7 @@ static const DefinedRow *row_named(const std::string &value) {
     for (const DefinedRow &row : kDefinedRows) {
         if (!row.name) continue;
         const size_t len = std::strlen(row.name);
-        const bool prefix = row.name[len - 1] == ' ';
+        const bool prefix = row.name[len - 1] == ' ' || row.name[len - 1] == '.';
         if (prefix ? value.compare(0, len, row.name) == 0 : value == row.name) return &row;
     }
     return nullptr;
@@ -391,7 +404,7 @@ ObjectSpec parse_object_spec(const std::string &value) {
     if (!row) return ObjectSpec(ObjectSpec::UNREAD);
     ObjectSpec spec(row->kind);
     const size_t len = std::strlen(row->name);
-    if (value.size() > len) spec.filter = value.substr(len);
+    if (value.size() > len) spec.filter = (row->name[len - 1] == '.' ? "Card." : "") + value.substr(len);
     return spec;
 }
 

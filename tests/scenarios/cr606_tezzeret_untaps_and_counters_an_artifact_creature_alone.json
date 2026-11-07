@@ -1,0 +1,61 @@
+{
+  "name": "cr606_tezzeret_untaps_and_counters_an_artifact_creature_alone",
+  "why": "CR 606, 608.2c: Tezzeret's [0] untaps target artifact or creature and puts a +1/+1 counter on it only if it's an artifact creature; a land is no target",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Tezzeret Cruel Captain",
+    "Haywire Mite",
+    "Grizzly Bears",
+    "Lotus Petal",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:[0]",
+    "A:target:Haywire Mite",
+    "A:attack:done",
+    "A:desc:[0]",
+    "A:target:Grizzly Bears",
+    "A:play:Island",
+    "A:attack:done",
+    "A:desc:[0]",
+    "A:target:Lotus Petal"
+  ],
+  "max_decisions": 60,
+  "expect": [
+    "Put 1 \\+1/\\+1 counter",
+    "Lotus Petal untaps"
+  ],
+  "expect_count": {
+    "^Put 1 \\+1/\\+1 counter": 1
+  },
+  "expect_menu_not": [
+    "^Island$"
+  ]
+}

@@ -1311,7 +1311,7 @@ static void write_player_effects(const Ctx &c, Zone::Ownership p) {
     if (fx.may_cast_sorceries_as_flash && !resolved) put(PlayerEffectKind::CAST_AS_FLASH, 0, Duration::STATIC, -1, "");
     if (fx.restricted_to_sorcery_speed) put(PlayerEffectKind::SORCERY_SPEED_ONLY, 0, Duration::STATIC, -1, "");
     for (const EffectObject &object : re.effect_objects)
-        if (object.controller == p)
+        if (object.controller == p && !object.is_emblem())  // an emblem has its own row
             for (size_t i = 0; i < object.triggers.size(); ++i)
                 put(PlayerEffectKind::FLOATING_TRIGGER, 0, Duration::END_OF_TURN, object.source_vocab_idx, "");
 }

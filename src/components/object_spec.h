@@ -22,6 +22,7 @@ struct ObjectSpec {
         IMPRINTED,           // the objects the resolution imprinted (a filter's set; no Defined$ name)
         CHOSEN_CARDS,        // the cards the resolution chose
         TARGETED,            // the target its parent chose
+        TARGETED_MATCHING,   // that target, while it matches `filter`
         PARENT_TARGET,       // the same; only ChangeZone tells the two apart
         TRIGGERED_ATTACKER,  // bound as the target when it triggered
         TRIGGERED_SPELL,     // bound as the target when it triggered
@@ -47,7 +48,7 @@ struct ObjectSpec {
     };
 
     Kind kind = DEFAULT;
-    FilterSpec filter;  // Valid / ValidHand <filter>'s filter; empty for every other kind
+    FilterSpec filter;  // Valid / ValidHand / Targeted.<filter>'s filter; empty for every other kind
 
     ObjectSpec() = default;
     explicit ObjectSpec(Kind k) : kind(k) {}

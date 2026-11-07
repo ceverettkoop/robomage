@@ -2604,7 +2604,7 @@ static bool duration_read(const AbilityDef &ability, const std::string &value) {
         return value == "UntilEndOfTurn" || (value == "UntilYourNextTurn" && pp && pp->grant_protection_from_everything);
     }
     if (category != "Effect") return false;
-    if (value == "Permanent") return !ability.effect_statics.empty();
+    if (value == "Permanent") return !ability.effect_statics.empty() || !ability.effect_floating_triggers.empty();
     if (value == "UntilTheEndOfYourNextTurn") return ability.effect_may_play_from_exile;
     return value == "UntilYourNextTurn" && (!ability.effect_floating_triggers.empty() || ability.effect_cast_with_flash);
 }
