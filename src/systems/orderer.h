@@ -20,6 +20,11 @@ public:
     // its Zone::is_face_down flag is set (its identity stays hidden from the opponent until an
     // effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down = false);
+
+    // CR 708.3: `card` is turned face down as `how` says (a face-down row of kSpellOverlayRows) and
+    // put onto the battlefield, and true. What would enter is that face, so a rule or effect that
+    // keeps it off the battlefield leaves the card as it was, where it was, and false (CR 701.58f).
+    bool put_onto_battlefield_face_down(Entity card, SpellOverlay how);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
@@ -122,11 +127,13 @@ public:
 private:
     // How move_object reports and finishes a move: `library_depth` sinks a card put on top of a
     // library below that many cards (put_in_library_at_depth); `draw` reports it as a draw, an
-    // opening-hand or mulligan draw when `opening_draw` (perform_draw).
+    // opening-hand or mulligan draw when `opening_draw` (perform_draw); `face_down` turns it over as
+    // it goes (put_onto_battlefield_face_down).
     struct MoveOptions {
             size_t library_depth = 0;
             bool draw = false;
             bool opening_draw = false;
+            SpellOverlay face_down = SpellOverlay::NONE;
     };
     // The one zone move behind add_to_zone, put_in_library_at_depth and perform_draw (see
     // add_to_zone), reported as an observation event (state_format/events.h).

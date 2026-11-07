@@ -2,6 +2,7 @@
 #define COST_PART_H
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "../classes/colors.h"
@@ -23,6 +24,9 @@ struct HybridPip {
     int generic_alt = 0;         // generic-mana alternative count (twobrid: 2; color-hybrid: 0)
     int mana_value = 1;          // contribution to mana value (CMC)
 };
+
+// One hybrid pip as it is printed: "{W/U}", "{2/W}".
+std::string hybrid_pip_text(const HybridPip &pip);
 
 // One part of a cost (CR 118, 601.2f-h, 602.2b) as the script's cost string names it: "T", "2 R",
 // "PayLife<2>", "Sac<1/Creature>". Parsed once, by parse_cost, onto the immutable definition that
@@ -116,5 +120,8 @@ class CostParts {
         bool free_ = false;
         TapToPay tap_to_pay_ = TapToPay::NONE;
 };
+
+// A cost's mana as it is printed: its plain pips, then its hybrid ones.
+std::string mana_cost_text(const CostParts &cost);
 
 #endif /* COST_PART_H */

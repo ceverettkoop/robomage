@@ -213,5 +213,8 @@ EFFECT_KIND(Branch, "Branch", branch)
 // "Change the target of target spell or ability" (CR 115.7a): pick another for it as this resolves.
 EFFECT_KIND(ChangeTargets, "ChangeTargets", change_targets)
 
+// "Cloak the top card of your library" (CR 701.58): put it onto the battlefield face down.
+EFFECT_KIND(Cloak, "Cloak", cloak)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

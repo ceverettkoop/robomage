@@ -234,15 +234,7 @@ static std::string printed_mana_cost(const CardData &cd) {
     for (int i = 0; i < cd.x_pip_count; ++i) out += "{X}";
     const bool other_pips = cd.x_pip_count > 0 || !cd.hybrid_mana.empty() || !cd.phyrexian_mana.empty();
     if (!cd.mana_cost.empty() || (!other_pips && !is_land_card(cd))) out += mana_value_text(cd.mana_cost);
-    for (const HybridPip &pip : cd.hybrid_mana) {
-        out += "{";
-        if (pip.generic_alt > 0) out += std::to_string(pip.generic_alt);
-        for (size_t i = 0; i < pip.colors.size(); ++i) {
-            if (i > 0 || pip.generic_alt > 0) out += "/";
-            out += mana_symbol_str(pip.colors[i]);
-        }
-        out += "}";
-    }
+    for (const HybridPip &pip : cd.hybrid_mana) out += hybrid_pip_text(pip);
     for (Colors c : cd.phyrexian_mana) out += std::string("{") + mana_symbol_str(c) + "/P}";
     return out;
 }

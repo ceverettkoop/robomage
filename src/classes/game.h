@@ -486,7 +486,7 @@ struct Game {
         enum class SpecialAction : uint8_t {
             SUSPEND,    // CR 702.62a: exile the card with its time counters
             COMPANION,  // CR 702.139a: bring the companion to hand
-            TURN_FACE_UP,  // CR 702.37e: turn the face-down permanent face up
+            TURN_FACE_UP,  // CR 702.37e, 701.58b: turn the face-down permanent face up
         };
         struct PendingSpecialAction {
             bool active = false;
@@ -494,6 +494,8 @@ struct Game {
             SpecialAction kind = SpecialAction::SUSPEND;
             Zone::Ownership payer = Zone::UNKNOWN;  // who took it (CR 116.2)
             ManaValue cost;
+            std::vector<HybridPip> hybrid;  // the pips `cost` is yet to be announced with (CR 107.4e)
+            size_t hybrid_next = 0;
             ManaPaymentSnapshot mana_snap;  // restored when the payment fails
             ManaPaymentRT mana;
         };

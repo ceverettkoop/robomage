@@ -47,6 +47,7 @@ static void objects_chosen_cards(const ObjectSpec &spec, const ResolveCtx &ctx, 
 static void objects_exiled_with(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_enchanted(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_equipped(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
+static void objects_top_of_library(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_valid(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void objects_valid_hand(const ObjectSpec &spec, const ResolveCtx &ctx, std::vector<Entity> &out);
 static void players_you(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
@@ -68,6 +69,7 @@ static bool read_by_reveal_or_pump(const AbilityDef &ability);
 static bool read_by_choose_card_or_reveal(const AbilityDef &ability);
 static bool read_by_each_player(const AbilityDef &ability);
 static bool read_by_no_ability(const AbilityDef &ability);
+static bool read_by_cloak(const AbilityDef &ability);
 static const DefinedRow *row_named(const std::string &value);
 static const DefinedRow &row_of(ObjectSpec::Kind kind);
 static bool row_read_by(const DefinedRow &row, const AbilityDef *ability);
@@ -147,6 +149,9 @@ static const DefinedRow kDefinedRows[] = {
     {"ExiledWith", ObjectSpec::EXILED_WITH, Refers::OBJECT, objects_exiled_with},
     {"Enchanted", ObjectSpec::ENCHANTED, Refers::OBJECT, objects_enchanted, nullptr, read_by_copy_permanent_or_change_zone, false, true},
     {"Equipped", ObjectSpec::EQUIPPED, Refers::OBJECT, objects_equipped, nullptr, read_by_no_ability, false, true},
+    // TopOfLibrary — the top card of the ability's controller's library, none from an empty one
+    // (Cryptic Coat's "cloak the top card of your library").
+    {"TopOfLibrary", ObjectSpec::TOP_OF_LIBRARY, Refers::OBJECT, objects_top_of_library, nullptr, read_by_cloak},
     // ReplacedCard — a ReplaceWith$ move (Mox Diamond, Leyline of the Void): the replacement
     // dispatcher applies it to its event's own object, so no resolver reads this.
     {"ReplacedCard", ObjectSpec::REPLACED_CARD, Refers::OBJECT},
@@ -289,6 +294,10 @@ static void objects_equipped(const ObjectSpec &, const ResolveCtx &ctx, std::vec
     if (Entity e = global_coordinator.GetComponent<Permanent>(equipment).equipped_to.get()) out.push_back(e);
 }
 
+static void objects_top_of_library(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {
+    if (Entity top = library_top(ctx.controller)) out.push_back(top);
+}
+
 static void players_you(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out) {
     out.push_back(ctx.controller);
 }
@@ -363,6 +372,7 @@ static bool read_by_each_player(const AbilityDef &ability) {
 }
 
 static bool read_by_no_ability(const AbilityDef &) { return false; }
+static bool read_by_cloak(const AbilityDef &ability) { return ability.category == "Cloak"; }
 
 static const DefinedRow *row_named(const std::string &value) {
     for (const DefinedRow &row : kDefinedRows) {

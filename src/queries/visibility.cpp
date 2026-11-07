@@ -80,10 +80,12 @@ static bool in_hidden_zone(Entity card) {
 // What `viewer` sees of `card` by the zone rules alone, without a window.
 static bool sees_without_window(Entity card, Zone::Ownership viewer) {
     if (!is_seat(viewer) || !global_coordinator.entity_has_component<Zone>(card)) return true;
-    // CR 708.5: the controller may look at a face-down permanent or spell; a face-down card in any
-    // other zone is seen only through a window (CR 406.3).
-    if (is_face_down(card)) return face_down_card(card) && source_controller(card) == viewer;
     const Zone &z = global_coordinator.GetComponent<Zone>(card);
+    // CR 708.5: the controller may look at a face-down permanent or spell, so not at a card still on
+    // its way out of a library; a face-down card in any other zone is seen only through a window
+    // (CR 406.3).
+    if (is_face_down(card))
+        return face_down_card(card) && is_public_zone(z.location) && source_controller(card) == viewer;
     if (is_public_zone(z.location)) return true;
     return (z.location == Zone::HAND || z.location == Zone::SIDEBOARD) && z.owner == viewer;
 }

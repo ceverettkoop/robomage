@@ -152,10 +152,11 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer);
 static void count_cast_modes(const Game::PendingCast &pc, const CardData &front, Entity spell_entity);
 static const char *grant_row(const CastGrant &grant);
-// Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
-// drive it: its payment, then the move, or on a failed payment nothing.
+// Begin a special action paid for in mana, suspending a card, bringing a companion to hand or turning
+// a permanent face up, and drive it: its payment, then what it does, or on a failed payment nothing.
+// `hybrid`: the pips of its cost beside `cost`.
 static void begin_special_action(Game &game, Entity card, Game::SpecialAction kind, const ManaValue &cost,
-                                 std::shared_ptr<Orderer> orderer);
+                                 std::shared_ptr<Orderer> orderer, const std::vector<HybridPip> &hybrid = {});
 static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::shared_ptr<Orderer> orderer,
                                int resume_choice);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
@@ -2532,7 +2533,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
 // See forward declaration at top of file.
 static void begin_special_action(Game &game, Entity card, Game::SpecialAction kind, const ManaValue &cost,
-                                 std::shared_ptr<Orderer> orderer) {
+                                 std::shared_ptr<Orderer> orderer, const std::vector<HybridPip> &hybrid) {
     Game::PendingSpecialAction &sa = game.pending.special_action;
     if (sa.active) fatal_error("SPECIAL_ACTION with a special action already being paid for");
     sa = Game::PendingSpecialAction{};
@@ -2541,6 +2542,7 @@ static void begin_special_action(Game &game, Entity card, Game::SpecialAction ki
     sa.kind = kind;
     sa.payer = priority_seat();
     sa.cost = cost;
+    sa.hybrid = hybrid;
     sa.mana_snap = snapshot_mana_state(sa.payer, orderer);
     run_special_action(sa, game, orderer, -1);
 }
@@ -2551,7 +2553,12 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
     const Entity card = sa.card;
     const Zone::Ownership payer = sa.payer;
     FrameCtx ctx = FrameCtx::flow(PendingQuery::SPECIAL_ACTION, resume_choice);
-    const PayStatus paid = pay_mana_cost(sa.mana, payer, sa.cost, ManaPayee(card, ManaPurpose::OTHER), ctx, orderer);
+    const ManaPayee payee(card, ManaPurpose::OTHER);
+    HybridAnnouncement announcement{payer, card, payee, &sa.hybrid, &sa.hybrid_next, &sa.cost};
+    PayStatus paid = announce_hybrid_pips(announcement, ctx, orderer);
+    if (paid == PayStatus::SUSPENDED) return;
+    sa.hybrid.clear();
+    if (paid == PayStatus::PAID) paid = pay_mana_cost(sa.mana, payer, sa.cost, payee, ctx, orderer);
     if (paid == PayStatus::SUSPENDED) return;
     if (paid == PayStatus::FAILED) {
         restore_mana_state(payer, sa.mana_snap, orderer);
@@ -2610,11 +2617,14 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 break;
             }
 
-            // TURN FACE UP (CR 702.37e, 116.2b): no stack, so nothing can respond to it, and the
-            // cost is the card's under it, shown as it is paid. The gate verified it can be paid.
+            // TURN FACE UP (CR 702.37e, 701.58b, 116.2b): no stack, so nothing can respond to it,
+            // and the cost is the card's under it, shown as it is paid. The gate verified it can
+            // be paid; the row's ordinal says which procedure when there are two.
             if (action.turn_face_up) {
-                begin_special_action(game, action.source_entity, Game::SpecialAction::TURN_FACE_UP,
-                                     turn_up_costs(action.source_entity).front().mana(), orderer);
+                const std::vector<CostParts> costs = turn_up_costs(action.source_entity);
+                const CostParts &cost = costs[static_cast<size_t>(std::max(action.option_ordinal, 0))];
+                begin_special_action(game, action.source_entity, Game::SpecialAction::TURN_FACE_UP, cost.mana(),
+                                     orderer, cost.hybrid());
                 break;
             }
 

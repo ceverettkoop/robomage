@@ -38,6 +38,14 @@ std::vector<Entity> zone_objects(const EntitySet &entities, Zone::ZoneValue zone
     return out;
 }
 
+Entity library_top(Zone::Ownership owner) {
+    for (Entity e : zoned_entities()) {
+        const Zone &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location == Zone::LIBRARY && z.owner == owner && z.distance_from_top == 0) return e;
+    }
+    return 0;
+}
+
 int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entity except) {
     std::set<std::string> type_names;
     for (auto entity : entities) {

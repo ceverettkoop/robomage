@@ -9,6 +9,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../parse.h"
 #include "../state_format/schema.h"
 #include "affected.h"
 #include "characteristics.h"
@@ -25,7 +26,9 @@ static bool has_bestow(const CardData &card);
 static void bestow_aura(CardData &face);
 static bool has_morph(const CardData &card);
 static void no_characteristics_but_2_2(CardData &face);
+static void cloaked_2_2(CardData &face);
 static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs);
+static void turns_up_as_cloaked(const CardData &card, std::vector<CostParts> &costs);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
     // kind                   name         variant                                            resolved_to      has           change                     resolved         stays  copy   face_down  turns_up
@@ -35,6 +38,7 @@ static const SpellOverlayRow kSpellOverlayRows[] = {
     {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,               nullptr,         true,  false, false, nullptr},
     {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, true,  false, nullptr},
     {SpellOverlay::FACE_DOWN, "face_down", static_cast<int>(rmstate::CastVariant::FACE_DOWN), Zone::GRAVEYARD, has_morph,    no_characteristics_but_2_2, nullptr,        true,  false, true,  turns_up_for_morph},
+    {SpellOverlay::CLOAKED,   "cloaked",   -1,                                                Zone::GRAVEYARD, nullptr,      cloaked_2_2,               nullptr,         true,  false, true,  turns_up_as_cloaked},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }
@@ -127,9 +131,31 @@ static void no_characteristics_but_2_2(CardData &face) {
     face.toughness = 2;
 }
 
+// CR 701.58a: what a face-down object has, and ward {2}. The face holds it as a card's own printed
+// ward, so it is a copiable value (CR 708.2) and goes when the card is turned face up.
+static void cloaked_2_2(CardData &face) {
+    no_characteristics_but_2_2(face);
+    face.ward_cost = parse_ward_cost("2");
+    face.keywords.push_back("Ward");
+}
+
 // CR 702.37e: a card with morph, for its morph cost.
 static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs) {
     if (card.has_morph) costs.push_back(card.morph_cost);
+}
+
+// CR 701.58b, c: a creature card with a mana cost, for that cost, X in it being 0 (CR 107.3h); and a
+// card with morph either way. Two procedures of one cost are one choice.
+static void turns_up_as_cloaked(const CardData &card, std::vector<CostParts> &costs) {
+    turns_up_for_morph(card, costs);
+    if (!is_creature_card(card) || card.no_mana_cost) return;
+    CostPart mana = CostPart::of(CostPart::MANA);
+    mana.mana = card.mana_cost;
+    mana.mana.insert(card.phyrexian_mana.begin(), card.phyrexian_mana.end());
+    mana.hybrid = card.hybrid_mana;
+    CostParts cost;
+    cost.add(mana);
+    if (costs.empty() || costs.front().mana() != cost.mana() || !cost.hybrid().empty()) costs.push_back(cost);
 }
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }

@@ -37,6 +37,7 @@
 //   sb-in:<card>  sb-out:<card>  sb-done                                   sideboarding (bo3)
 //   companion:<card>             companion to hand                         (COMPANION)
 //   turn-up:<card>               turn a face-down permanent face up        (TURN_FACE_UP)
+//                                (the first row of a cloaked morph card's two; desc: names the other)
 //   sacrifice: return: x: discard: color: name: exile:  <text>        the matching choice category
 //   mode:<text>                  a mode by its text, a whole row's before a part of one  (CHOOSE_MODE)
 //   mode:done                    choose no further mode ("choose one or more")  (CONFIRM_MODES)

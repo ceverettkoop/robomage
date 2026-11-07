@@ -30,6 +30,7 @@ struct ObjectSpec {
         EXILED_WITH,         // the card the source exiled
         ENCHANTED,           // the object the source Aura enchants
         EQUIPPED,            // the object the source Equipment is attached to
+        TOP_OF_LIBRARY,      // the top card of the controller's library
         REPLACED_CARD,       // the object a replacement effect's event acts on
         VALID,               // every permanent matching `filter`
         VALID_HAND,          // every card in a hand matching `filter`

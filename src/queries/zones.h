@@ -30,6 +30,9 @@ void bind_zoned_entities(const EntitySet &entities);
 std::vector<Entity> zone_objects(
     const EntitySet &entities, Zone::ZoneValue zone, Zone::Ownership owner = Zone::UNKNOWN);
 
+// The top card of `owner`'s library; 0 for an empty one.
+Entity library_top(Zone::Ownership owner);
+
 // ── Cards outside the battlefield ─────────────────────────────────────────────
 
 // CR 400.2: the graveyard, battlefield, stack and exile are public zones; the library and hand

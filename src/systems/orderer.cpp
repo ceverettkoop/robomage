@@ -119,6 +119,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     move_object(on_bottom, target, destination, exile_face_down, MoveOptions{});
 }
 
+bool Orderer::put_onto_battlefield_face_down(Entity card, SpellOverlay how) {
+    MoveOptions opts;
+    opts.face_down = how;
+    move_object(false, card, Zone::BATTLEFIELD, false, opts);
+    return global_coordinator.GetComponent<Zone>(card).location == Zone::BATTLEFIELD;
+}
+
 void Orderer::move_object(
     bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts) {
     size_t back = 0;
@@ -126,6 +133,7 @@ void Orderer::move_object(
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
     bool with_void_counter = false;
     const ObjectRef moved = ObjectRef::of(target);
+    if (opts.face_down != SpellOverlay::NONE) enter_face_down(target, opts.face_down);
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
     // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
@@ -142,6 +150,7 @@ void Orderer::move_object(
             // 614.13 — the move is prevented; the card remains in its origin zone, and an entry
             // onto the battlefield it was headed for doesn't happen.
             if (destination == Zone::BATTLEFIELD) drop_entry_info(target);
+            if (opts.face_down != SpellOverlay::NONE) take_card_back(target);
             return;
         }
         destination = rev.destination;

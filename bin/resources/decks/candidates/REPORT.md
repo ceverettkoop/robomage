@@ -23,6 +23,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | designate |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
+| stoneblade | Stoneblade | 1.0 | control | 38 | 0 | 0 | 0 | implement |
 | storm | Storm | 3.0 | combo | 30 | 0 | 0 | 0 | implement |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
@@ -31,7 +32,6 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
 | painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 2 | 2 | 11 | capability |
-| stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 1 | 20 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -44,7 +44,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
 | Play from the top of the library (Mystic Forge) | L | 1 | - | Mystic Forge | `filter:TopLibrary`, `static_form:MayPlay.Library`, `static_param:MayLookAt` | look at and cast the top card: a new public-to-one-seat zone view for the state format |
-| Face-down permanents (Morph, Cloak; CR 708) | XL | 1 | stoneblade | Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 
 ## Unlock order (greedy: the next cheapest deck given what is already implemented)
 
@@ -65,15 +64,15 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 13 | maverick | - | 0 | 0 | 13 |
 | 14 | reanimator_top8 | - | 0 | 0 | 14 |
 | 15 | show_and_tell | - | 0 | 0 | 15 |
-| 16 | storm | - | 0 | 0 | 16 |
-| 17 | ur_tempo | - | 0 | 0 | 17 |
-| 18 | uwx_control | - | 0 | 0 | 18 |
-| 19 | welder_cam | - | 0 | 0 | 19 |
-| 20 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 20 |
-| 21 | doomsday | Empower | 3 | 6 | 21 |
-| 22 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 22 |
-| 23 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 23 |
-| 24 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 45 | 24 |
+| 16 | stoneblade | - | 0 | 0 | 16 |
+| 17 | storm | - | 0 | 0 | 17 |
+| 18 | ur_tempo | - | 0 | 0 | 18 |
+| 19 | uwx_control | - | 0 | 0 | 19 |
+| 20 | welder_cam | - | 0 | 0 | 20 |
+| 21 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 21 |
+| 22 | doomsday | Empower | 3 | 6 | 22 |
+| 23 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 23 |
+| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 24 |
 
 ## Per deck
 
@@ -152,6 +151,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 0 new; clean: -
 
 
+### stoneblade — Stoneblade (1.0%, control)
+
+38 cards, 0 new; clean: -
+
+
 ### storm — Storm (3.0%, combo)
 
 30 cards, 0 new; clean: -
@@ -196,9 +200,3 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 - Mystic Forge: Play from the top of the library (Mystic Forge)
 - Perilous Snare: Start your engines! (speed)
-
-### stoneblade — Stoneblade (1.0%, control)
-
-38 cards, 1 new; clean: -
-
-- Cryptic Coat: Face-down permanents (Morph, Cloak; CR 708)

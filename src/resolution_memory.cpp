@@ -49,6 +49,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::REVEALED_HAND}},
     {"RememberPumped", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::PUMPED}},
+    {"RememberCloaked", ParamForm::IS_TRUE, EffectKind::None,
+        {MemorySlot::REMEMBERED, MemoryAction::APPEND, EffectObjects::MOVED}},
     {"RememberFound", ParamForm::IS_TRUE, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::FOUND}},
     {"RememberChosen", ParamForm::IS_TRUE, EffectKind::None,

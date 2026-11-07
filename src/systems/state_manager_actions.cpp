@@ -143,13 +143,15 @@ static void offer_turn_face_up(std::vector<LegalAction> &actions, Entity entity,
                                std::shared_ptr<Orderer> orderer) {
     const CardData *under = face_down_card(entity);
     if (!under || payment_blocked(entity)) return;
-    for (const CostParts &cost : turn_up_costs(entity)) {
+    const std::vector<CostParts> costs = turn_up_costs(entity);
+    for (size_t i = 0; i < costs.size(); ++i) {
         CostCheck check(player, entity, orderer);
         check.payee = ManaPayee(entity, ManaPurpose::OTHER);
-        if (!can_pay(cost, check)) continue;
-        LegalAction la(SPECIAL_ACTION, entity, "Turn " + under->name + " face up (" + mana_value_text(cost.mana()) + ")");
+        if (!can_pay(costs[i], check)) continue;
+        LegalAction la(SPECIAL_ACTION, entity, "Turn " + under->name + " face up (" + mana_cost_text(costs[i]) + ")");
         la.category = ActionCategory::TURN_FACE_UP;
         la.turn_face_up = true;
+        if (costs.size() > 1) la.option_ordinal = static_cast<int>(i);
         actions.push_back(la);
     }
 }

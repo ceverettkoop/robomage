@@ -1,5 +1,21 @@
 #include "cost_part.h"
 
+std::string hybrid_pip_text(const HybridPip &pip) {
+    std::string out = "{";
+    if (pip.generic_alt > 0) out += std::to_string(pip.generic_alt);
+    for (size_t i = 0; i < pip.colors.size(); ++i) {
+        if (i > 0 || pip.generic_alt > 0) out += "/";
+        out += mana_symbol_str(pip.colors[i]);
+    }
+    return out + "}";
+}
+
+std::string mana_cost_text(const CostParts &cost) {
+    std::string out = cost.mana().empty() && !cost.hybrid().empty() ? "" : mana_value_text(cost.mana());
+    for (const HybridPip &pip : cost.hybrid()) out += hybrid_pip_text(pip);
+    return out;
+}
+
 void CostParts::add(const CostPart &part) {
     if (part.kind == CostPart::MANA && part.mana.empty() && part.hybrid.empty()) return;
     const bool merges = part.kind == CostPart::MANA || part.kind == CostPart::X_MANA;
