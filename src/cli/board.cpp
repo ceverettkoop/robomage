@@ -305,9 +305,9 @@ static bool is_creature(const Frame &f, size_t row) {
     return (f.obj.u(row, f.obj.col("types")) & f.creature_bit) != 0;
 }
 
-// "2/2" for a creature whose card the viewer sees, else "".
+// "2/2" for what the viewer sees to be a creature, a face-down one included, else "".
 static std::string power_toughness(const Frame &f, size_t row) {
-    if (f.obj.card(row, f.obj.col("card")) < 0 || !is_creature(f, row)) return "";
+    if (!is_creature(f, row)) return "";
     return std::to_string(f.obj.s(row, f.obj.col("power"))) + "/" +
            std::to_string(f.obj.s(row, f.obj.col("toughness")));
 }

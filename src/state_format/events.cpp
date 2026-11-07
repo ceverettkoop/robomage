@@ -339,7 +339,7 @@ void obs_end_move(const ObsMoveCapture &cap, Entity e, const uint32_t after_hand
             if (c.handle_after == 0 && individually_identifiable(e, viewer)) c.handle_after = handle_of(viewer, e);
             c.card = identity_visible(e, viewer) ? visible_card_id(e, viewer) : seen.card;
             c.from = seen.from;
-            c.face_down = z.location == Zone::EXILE && is_face_down(e);
+            c.face_down = is_face_down(e);
             c.token = cap.token;
             c.hand_subset = cap.hand_subset;
             if (info.draw) {

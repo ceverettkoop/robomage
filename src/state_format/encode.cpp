@@ -769,7 +769,8 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
 // The card a copy effect made permanent `e` a copy of: -1 for no copy, or a copy of a scripted token.
 static int copied_card_id(Entity e, const Permanent &perm) {
     if (perm.printed_card && global_coordinator.entity_has_component<CardData>(e)) {
-        const CardData &copied = global_coordinator.GetComponent<CardData>(e);
+        const CardData *under = face_down_card(e);
+        const CardData &copied = under ? *under : global_coordinator.GetComponent<CardData>(e);
         return copied.token_script.empty() ? card_name_to_index(copied.name) : token_script_to_index(copied.token_script);
     }
     if (global_coordinator.entity_has_component<Token>(e)) {
@@ -780,8 +781,9 @@ static int copied_card_id(Entity e, const Permanent &perm) {
     return -1;
 }
 
-// One object row. The characteristic columns are filled only when the viewer can see the
-// object's identity (a face-down object shows only where it is and its public status).
+// One object row. The characteristic columns are filled only when the viewer can see them
+// (characteristics_visible): a face-down exiled card shows only where it is and its public status,
+// a face-down permanent or spell what it is face down, and neither its card or what comes of it.
 // `stack_pos` is a stack object's position from the top (0 = top), else -1.
 static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
@@ -792,10 +794,11 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                              : nullptr;
     const int card = visible_card_id(e, c.viewer);
     const bool visible = identity_visible(e, c.viewer);
+    const bool shown = visible || characteristics_visible(e, c.viewer);
     // A prepared copy (CR 722.3c) is no card, as a token is none.
     const bool is_token = (perm && perm->is_token) || global_coordinator.entity_has_component<Token>(e) ||
                           global_coordinator.entity_has_component<PreparedCopy>(e);
-    const CardData *cd = visible ? object_card_data(e) : nullptr;
+    const CardData *cd = shown ? object_card_data(e) : nullptr;
 
     Row r = c.w.row(TableId::OBJECT);
     r.u32(h).u8(static_cast<uint64_t>(z.location));
@@ -824,7 +827,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                             : nullptr;
     r.u16(dmg ? u16_count(static_cast<int64_t>(dmg->damage_counters)) : 0)
         .u8(dmg && dmg->has_deathtouch_damage ? 1 : 0);
-    if (visible) {
+    if (shown) {
         const Token *tok =
             global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
         const CardData *face = cd ? &object_face(e, *cd) : nullptr;
@@ -868,8 +871,9 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         .u8(perm && perm->evoked ? 1 : 0)
         .u8(perm && perm->cast_with_escape ? 1 : 0);
     r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
+    // Kept only for a card that reads it, so that it is kept says which card.
     for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
-        r.u8(perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
+        r.u8(visible && perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
     r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
     r.u8(perm && perm->overlay == SpellOverlay::BESTOW ? 1 : 0);
     r.u8(perm && perm->prepared ? 1 : 0);
@@ -882,11 +886,10 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     const bool on_bf = z.location == Zone::BATTLEFIELD && global_coordinator.entity_has_component<Permanent>(e);
     const Permanent *perm = on_bf ? &global_coordinator.GetComponent<Permanent>(e) : nullptr;
-    const bool visible = identity_visible(e, c.viewer);
     // Counters are public even on a face-down object.
     const CounterMap &counters = perm ? perm->counters : z.counters;
     for (const auto &kv : counters) c.w.row(TableId::OBJECT_COUNTER).u32(h).text(kv.first).u16(u16_count(kv.second));
-    if (!visible) return;
+    if (!characteristics_visible(e, c.viewer)) return;
 
     const CardData *cd = object_card_data(e);
     const Token *tok =
@@ -1039,7 +1042,7 @@ static void write_combat(const Ctx &c, const std::vector<Entity> &battlefield) {
 // characteristics are public (CR 608.2h).
 static int write_lki(const Ctx &c, Entity departed) {
     const LastKnownInfo *lki = departed_lki_for(departed);
-    if (!lki || lki->name.empty()) return -1;
+    if (!lki) return -1;
     const int row = static_cast<int>(c.w.row_count(TableId::LKI));
     const int card =
         lki->is_token ? token_script_to_index(lki->token_script) : physical_card_of(card_name_to_index(lki->name));

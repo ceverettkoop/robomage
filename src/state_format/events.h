@@ -52,7 +52,7 @@ struct ObsEventCard {
         int card = -1;                         // card id when the viewer saw the identity, else -1
         ObsLibPos from;                        // position in a library before the event
         ObsLibPos to;                          // position in a library after it
-        bool face_down = false;                // exiled face down
+        bool face_down = false;                // face down where it is, or where it moved to
         bool token = false;                    // a token or a spell copy
         uint8_t hand_subset = rmstate::NONE8;  // rmstate::HandSubset for a card leaving a hand
         uint32_t draw_seq = 0;                 // reveal_start: seq of the draw that brought it (0 none)
