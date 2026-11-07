@@ -3396,6 +3396,9 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     ability.trigger_mode = t.mode;
     const bool mode_bound = bind_trigger_line(t, ability);
     if (mode_bound) trigger_form_findings(line, t);
+    // It resolves inside the trigger scan, which can't suspend: no card's body asks anything.
+    if (t.is_static && (t.optional || (!ability.valid_tgts.empty() && ability.valid_tgts != "N_A")))
+        parse_finding("trigger_form", t.mode + ".Static", "a Static$ True ability that asks is blocking");
     if (!mode_bound)
         parse_finding("trigger_mode", t.mode, "no event binding: the trigger is dropped");
     else if (ability.trigger_on == 0 && !ability.trigger_state_condition)
@@ -3431,9 +3434,12 @@ static TriggerLine read_trigger_line(const std::string &line,
             // permanent for mana fires this ("whenever YOU tap ...").
             if (value == "You") t.player_is_you = true;
         } else if (key == "Static") {
-            // Static$ True on a TapsForMana trigger: it is a mana-additional effect that does
-            // not use the stack (CR 605.1a) — resolved immediately by the mana system.
-            if (value == "True") t.is_static = true;
+            // Static$ True: the ability never uses the stack. It resolves as the trigger scan finds
+            // it (fire_trigger), a TapsForMana one inside the mana system (CR 605.1a).
+            if (value == "True")
+                t.is_static = true;
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "AttackingPlayer") {
             // Mode$ AttackersDeclared | AttackingPlayer$ You — the trigger fires only when
             // the player who declared attackers is this ability's controller ("whenever you attack").
@@ -3661,12 +3667,9 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     ability.trigger_resolved_limit = t.resolved_limit;
     // NoResolvingCheck$ True — the trigger's condition is not rechecked as the ability resolves.
     ability.trigger_no_resolving_check = t.no_resolving_check;
-    // Static$ True on a phase or zone-change trigger (Animate Dead's leave-battlefield
-    // ClearRemembered cleanup) is a bookkeeping trigger that resolves immediately off the stack —
-    // it never uses the stack like a normal triggered ability (CR 605.1a-style). The TapsForMana
-    // static path has its own dedicated flag (trigger_taps_for_mana_static) and inline mana-system
-    // handling, so it is excluded here. General over any Static$ True phase/ChangesZone trigger.
-    if (t.is_static && t.mode != "TapsForMana") ability.trigger_static_offstack = true;
+    // Static$ True (Animate Dead's leave-battlefield ClearRemembered cleanup) is a bookkeeping trigger
+    // that resolves immediately off the stack in any mode; the mode's row may take it over.
+    ability.trigger_static_offstack = t.is_static;
     // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
     ability.trigger_from_graveyard = t.from_graveyard;
 

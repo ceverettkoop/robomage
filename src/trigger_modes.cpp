@@ -156,6 +156,7 @@ static void bind_taps_for_mana(const TriggerMode &mode, const TriggerLine &t, Ab
     ability.trigger_valid_card_is_creature = t.valid_card_creature;
     ability.trigger_valid_player_is_controller = t.player_is_you;
     ability.trigger_taps_for_mana_static = t.is_static;
+    ability.trigger_static_offstack = false;
 }
 
 static void bind_becomes_target(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
