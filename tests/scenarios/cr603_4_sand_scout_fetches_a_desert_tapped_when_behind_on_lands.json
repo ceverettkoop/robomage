@@ -1,0 +1,44 @@
+{
+  "name": "cr603_4_sand_scout_fetches_a_desert_tapped_when_behind_on_lands",
+  "why": "CR 603.4, 701.23: Sand Scout's ETB is an intervening-if comparing an opponent's lands with yours (CheckSVar$ Y | SVarCompare$ GTX, Y = PlayerCountOpponents$HighestValid Land.YouCtrl, each player its own \"you\"): B's three lands beat A's two, so A searches for a Desert, Lazotep Quarry, which enters tapped.",
+  "hand_a": [
+    "Sand Scout",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Lazotep Quarry",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Sand Scout",
+    "A:search:Lazotep Quarry"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Sand Scout triggered",
+    "Lazotep Quarry enters tapped"
+  ]
+}

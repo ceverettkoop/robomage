@@ -378,6 +378,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"The Myriad Pools", 453},
     {"Ghost Vacuum", 454},
     {"Renegade Rallier", 455},
+    {"Sand Scout", 456},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -425,6 +426,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"g_1_1_insect", "Insect", 921},                                 // Springheart Nantuko
     {"bg_1_1_insect", "Insect", 922},                                // Grist, the Hunger Tide
     {"r_2_2_goblin_shaman_treasure", "Goblin Shaman", 923},          // Fable of the Mirror-Breaker
+    {"rgw_1_1_sand_warrior", "Sand Warrior", 924},                   // Sand Scout
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

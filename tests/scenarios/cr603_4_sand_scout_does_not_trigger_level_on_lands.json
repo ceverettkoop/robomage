@@ -1,0 +1,38 @@
+{
+  "name": "cr603_4_sand_scout_does_not_trigger_level_on_lands",
+  "why": "CR 603.4: \"if an opponent controls more lands than you\": with two lands each Sand Scout's enters ability doesn't trigger.",
+  "hand_a": [
+    "Sand Scout"
+  ],
+  "library_a": [
+    "Plains",
+    "Lazotep Quarry",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Sand Scout"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Sand Scout enters the battlefield"
+  ],
+  "expect_not": [
+    "Sand Scout triggered"
+  ]
+}

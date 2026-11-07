@@ -21,6 +21,24 @@ bool trigger_resolved_limit_reached(const Ability &ab) {
     return false;
 }
 
+int triggers_this_turn(const AbilityDef *def, Entity source) {
+    const auto *counts = cur_game.limited_trigger_counts.find(source);
+    if (!counts) return 0;
+    for (const Game::LimitedTrigger &lt : *counts)
+        if (lt.def == def) return lt.count;
+    return 0;
+}
+
+void count_limited_trigger(const AbilityDef *def, Entity source) {
+    std::vector<Game::LimitedTrigger> &counts = cur_game.limited_trigger_counts[source];
+    for (Game::LimitedTrigger &lt : counts)
+        if (lt.def == def) {
+            ++lt.count;
+            return;
+        }
+    counts.push_back({def, 1});
+}
+
 void count_resolution(const Ability &ab, bool from_stack) {
     if (from_stack && ab.def->ability_type == AbilityDef::TRIGGERED) cur_game.ability_resolution_counts[ab.source]++;
     if (ab.def->trigger_resolved_limit <= 0) return;

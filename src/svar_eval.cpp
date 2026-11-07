@@ -116,6 +116,7 @@ struct SvarExpr {
     bool you_own = false, opp_own = false;  // a graveyard count scoped to one player's
     bool both_players = false;    // PlayerCount's players: both seats, else the opponent
     bool lost_life = false;       // PlayerCount's property; else `text` compares spells cast
+    bool highest_valid = false;   // PlayerCount's HighestValid: the most `filter` matches among them
 };
 
 struct SvarStep {
@@ -310,6 +311,9 @@ static const SvarRow kSvarRows[] = {
     filter_row("Count$ValidHand", read_valid_hand, set_zone_cards, Aggregate::COUNT),
     filter_row("Count$ValidGraveyard", read_valid_graveyard, set_zone_cards, Aggregate::COUNT),
     filter_row("Count$ValidLibrary", read_valid_library, set_zone_cards, Aggregate::COUNT),
+    // PlayerCount<Players>$HasPropertyLostLifeThisTurn / Condition<cmp> SpellsCastThisTurn: how many
+    // of them qualify. PlayerCount<Players>$HighestValid <filter>: the most permanents any of them
+    // has matching it, each as its "you".
     read_row("PlayerCount", read_player_count, ev_players_with_property),
 };
 
@@ -748,6 +752,12 @@ static bool read_player_count(const std::string &rest, SvarExpr &x) {
     if (players == "Opponents" || players == "RegisteredOpponents") x.both_players = false;
     else if (players == "Players") x.both_players = true;
     else return false;
+    static const std::string kHighestValid = "HighestValid ";
+    if (starts_with(prop, kHighestValid.c_str())) {
+        x.highest_valid = true;
+        x.filter = FilterSpec(prop.substr(kHighestValid.size()));
+        return true;
+    }
     x.lost_life = prop == "HasPropertyLostLifeThisTurn";
     const std::string spells_cond = "Condition", spells_metric = " SpellsCastThisTurn";
     const bool spells = starts_with(prop, "Condition") && ends_with(prop, spells_metric);
@@ -890,7 +900,11 @@ static int ev_players_with_property(const SvarExpr &x, const SvarArgs &a) {
     for (Zone::Ownership seat : seats) {
         const Player *pl = player_of(seat);
         if (!pl) continue;
-        if (x.lost_life) {
+        if (x.highest_valid) {
+            // Each player's own "you": Land.YouCtrl counts that player's lands (Sand Scout).
+            coverage_row("highest_valid");
+            count = std::max(count, count_battlefield_matching(x.filter, seat, a.source));
+        } else if (x.lost_life) {
             if (pl->life_lost_this_turn > 0) count++;
         } else if (compare_svar(static_cast<int>(pl->spells_cast_this_turn), x.text)) {
             count++;

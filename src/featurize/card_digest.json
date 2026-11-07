@@ -416,6 +416,7 @@
 {"id":453,"name":"The Myriad Pools","digest":"43a43faea453af31"},
 {"id":454,"name":"Ghost Vacuum","digest":"291a22a543eb65a3"},
 {"id":455,"name":"Renegade Rallier","digest":"704c95e31d26074d"},
+{"id":456,"name":"Sand Scout","digest":"f92b0f78d4381485"},
 {"id":900,"name":"Orc Army","digest":"92bd63e23c33bf12"},
 {"id":901,"name":"Construct","digest":"4a82576f764923f0"},
 {"id":902,"name":"Eldrazi Spawn","digest":"a63ca3e8a2ffb670"},
@@ -439,5 +440,6 @@
 {"id":920,"name":"Robot","digest":"62f74a29182e6f23"},
 {"id":921,"name":"Insect","digest":"e510e3ab73564e9b"},
 {"id":922,"name":"Insect","digest":"8f5489f1688daaa3"},
-{"id":923,"name":"Goblin Shaman","digest":"e08376fe7e4220fa"}
+{"id":923,"name":"Goblin Shaman","digest":"e08376fe7e4220fa"},
+{"id":924,"name":"Sand Warrior","digest":"2beb858f9192f0f8"}
 ]}

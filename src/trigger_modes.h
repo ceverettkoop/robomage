@@ -35,6 +35,7 @@ struct TriggerLine {
     bool exclude_first_draw_step = false;
     bool optional = false;            // OptionalDecider$
     int resolved_limit = 0;           // ResolvedLimit$ N
+    int turn_limit = 0;               // ActivationLimit$ N
     bool no_resolving_check = false;  // NoResolvingCheck$ True
     bool combat_damage_only = false;  // CombatDamage$ True
     bool from_graveyard = false;      // TriggerZones$ Graveyard
@@ -44,6 +45,7 @@ struct TriggerLine {
     bool intervening_if = false;
     std::string condition_present;
     std::string condition_compare;
+    std::string condition_compare_expr;
 };
 
 // One event met by one triggered ability of `source`, controlled by `controller`.

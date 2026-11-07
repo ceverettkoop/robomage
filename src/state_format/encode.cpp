@@ -931,6 +931,15 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
                 .u8(u8_count(ab.activations_this_turn))
                 .u8(exhausted ? 1 : 0);
         }
+        // A triggered ability with a limit each turn, once it has triggered.
+        for (const CardAbility &a : own) {
+            const int triggered = a.def ? triggers_this_turn(a.def, e) : 0;
+            if (triggered == 0) continue;
+            Row r = c.w.row(TableId::OBJECT_ABILITY);
+            r.u32(h);
+            put_abref(r, a.def, ab_card, e);
+            r.u8(0).u8(u8_count(triggered)).u8(triggered >= a.def->trigger_turn_limit ? 1 : 0);
+        }
         write_provenance(c, e, h);
         for (const ObjectRef &linked : perm->exiled_with) {
             const uint32_t lh = handle(c, linked.get());

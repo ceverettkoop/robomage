@@ -191,6 +191,8 @@ struct FaceAbilityDefs {
 static TriggerLine read_trigger_line(const std::string& line,
                                      const std::map<std::string, std::string>& svars,
                                      AbilityDef& ability);
+static void read_svar_compare(const std::string &value, const std::map<std::string, std::string> &svars,
+                              TriggerLine &t);
 static int trigger_zone_filter(const std::string& value);
 static void read_mana_spent_filter(const std::string& value, AbilityDef& ability);
 static void read_trigger_valid_card(const std::string& value,
@@ -2961,6 +2963,9 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end()) {
                 AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                 if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
+                // A trigger's count is kept by its source, and an effect object has none.
+                if (trig.trigger_turn_limit > 0)
+                    parse_finding("trigger_param", "ActivationLimit", "on an Effect: " + it->second);
             } else {
                 parse_finding("svar_missing", svar_name, "Triggers$ names no SVar");
             }
@@ -3483,6 +3488,12 @@ static TriggerLine read_trigger_line(const std::string &line,
                 t.resolved_limit = std::stoi(value);
             else
                 parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+        } else if (key == "ActivationLimit") {
+            // ActivationLimit$ N: "this ability triggers only N times each turn", for this source.
+            if (!value.empty() && value.find_first_not_of("0123456789") == std::string::npos)
+                t.turn_limit = std::stoi(value);
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "NoResolvingCheck") {
             // NoResolvingCheck$ True: the trigger's condition is checked when the trigger event
             // occurs and not again at resolution (Moonshadow's "while" condition, part of the
@@ -3552,12 +3563,24 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (!ability.stored_svar_gate_name.empty())
                 ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
             else
-                t.condition_compare = value;  // explicit compare for the CheckSVar count gate
+                read_svar_compare(value, svars, t);  // explicit compare for the CheckSVar count gate
         } else if (!trigger_param_assumed(key, value)) {
             parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         }
     }
     return t;
+}
+
+// A trigger's SVarCompare$: a comparator with its integer, or (Sand Scout's GTX) with an SVar on its
+// right-hand side, kept as that SVar's expression.
+static void read_svar_compare(const std::string &value, const std::map<std::string, std::string> &svars,
+                              TriggerLine &t) {
+    t.condition_compare = value;
+    if (value.size() < 3) return;
+    auto rhs = svars.find(value.substr(2));
+    if (rhs == svars.end()) return;
+    t.condition_compare = value.substr(0, 2);
+    t.condition_compare_expr = rhs->second;
 }
 
 // The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone).
@@ -3660,6 +3683,7 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
         ability.intervening_if = true;
         ability.condition_present = t.condition_present;
         ability.condition_compare = t.condition_compare;
+        ability.condition_compare_expr = t.condition_compare_expr;
     }
     // OptionalDecider$ You ("At the beginning of your upkeep, you may ...") makes the whole
     // triggered ability optional at resolution, independent of the trigger mode (Aether
@@ -3668,6 +3692,7 @@ static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     // ResolvedLimit$ N — an intervening-if (CR 603.4) on how often the ability has resolved this
     // turn, checked as the trigger is collected and again as it resolves.
     ability.trigger_resolved_limit = t.resolved_limit;
+    ability.trigger_turn_limit = t.turn_limit;
     // NoResolvingCheck$ True — the trigger's condition is not rechecked as the ability resolves.
     ability.trigger_no_resolving_check = t.no_resolving_check;
     // Static$ True (Animate Dead's leave-battlefield ClearRemembered cleanup) is a bookkeeping trigger
@@ -4834,7 +4859,7 @@ static bool trigger_value_read(const TriggerMode &mode, const TriggerLine &t, co
 static void trigger_form_findings(const std::string &line, const TriggerLine &t) {
     static const char *const kEveryMode[] = {"Mode", "Execute", "TriggerDescription", "Secondary", "TriggerZones",
         "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "Revolt", "ResolvedLimit",
-        "NoResolvingCheck", "Static"};
+        "ActivationLimit", "NoResolvingCheck", "Static"};
     const TriggerMode &mode = *trigger_mode_named(t.mode);
     const std::string zones = param_value(line, "TriggerZones");
     const bool floating = zones.find("Command") != std::string::npos;

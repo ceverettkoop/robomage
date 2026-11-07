@@ -938,6 +938,14 @@ static void match_event_triggers(const TriggerHost &host, const std::vector<cons
 static void fire_trigger(Ability &trigger_ab, Zone::Ownership controller, Entity source, const std::string &label,
                          const std::string &log_line, std::shared_ptr<Orderer> orderer,
                          std::vector<PendingTrigger> &pending) {
+    // ActivationLimit$: "this ability triggers only once each turn".
+    if (trigger_ab.def->trigger_turn_limit > 0) {
+        if (triggers_this_turn(trigger_ab.def, source) >= trigger_ab.def->trigger_turn_limit) {
+            coverage_row("trigger_turn_limit");
+            return;
+        }
+        count_limited_trigger(trigger_ab.def, source);
+    }
     if (trigger_ab.def->trigger_static_offstack) {
         coverage_trigger(trigger_ab);
         resolve_ability(trigger_ab, orderer);

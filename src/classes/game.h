@@ -281,6 +281,12 @@ struct Game {
         };
         // Per source object; a new object (CR 400.7) starts with none. Cleared each turn.
         ObjectMap<std::vector<LimitedResolution>> limited_resolution_counts;
+        // How often each ActivationLimit$ triggered ability of a source object triggered this turn.
+        struct LimitedTrigger {
+            const AbilityDef *def = nullptr;
+            int count = 0;
+        };
+        ObjectMap<std::vector<LimitedTrigger>> limited_trigger_counts;
         // The persisted resolve() continuation of the resolving spell or ability
         // (resolution_frame.h): a resolution that parked a decision resumes from it.
         ResolutionFrame resolution;

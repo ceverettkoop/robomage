@@ -45,6 +45,12 @@ bool trigger_resolved_limit_reached(const Ability &ab);
 // (Game::ability_resolution_counts).
 void count_resolution(const Ability &ab, bool from_stack);
 
+// How many times the ActivationLimit$ ability `def` of `source` triggered this turn, as the object
+// `source` is now.
+int triggers_this_turn(const AbilityDef *def, Entity source);
+// Records that `def` of `source` triggered: one toward its ActivationLimit$.
+void count_limited_trigger(const AbilityDef *def, Entity source);
+
 // ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
 // Named gates that make an activated ability illegal to activate unless the named
 // condition holds for its controller. Parsed from Activation$ <name>; evaluated at

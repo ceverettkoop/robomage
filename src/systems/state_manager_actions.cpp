@@ -336,9 +336,13 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // / player state, NOT board presence, so route every Count$ condition through the shared
     // SVar evaluator and compare, rather than falling through to the permanent-presence scan
     // below — where the raw "Count$..." string would be read as a permanent type name.
-    if (ab.def->condition_present.text().rfind("Count$", 0) == 0)
-        return compare_svar(evaluate_svar(ab.def->condition_present, caster, ab.source.lki_entity()),
-                            compare);
+    if (ab.def->condition_present.text().rfind("Count$", 0) == 0 ||
+        ab.def->condition_present.text().rfind("PlayerCount", 0) == 0) {
+        const Entity source = ab.source.lki_entity();
+        const int value = evaluate_svar(ab.def->condition_present, caster, source);
+        if (ab.def->condition_compare_expr.empty()) return compare_svar(value, compare);
+        return apply_svar_op(value, compare, evaluate_svar(ab.def->condition_compare_expr, caster, source));
+    }
 
     // A board-presence condition (Birthing Ritual's Creature.YouCtrl, Edge of Autumn's
     // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the
