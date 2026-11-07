@@ -1607,6 +1607,10 @@ Unproved. Release `bench` wasn't compared; the `actor` tier's torch part was ski
 - Make an amount SVar `is_runtime_amount_expr` doesn't list a finding, or read it from the SVar table: today it
   is silently 0 (M4's Done note).
 
+**Progress (2026-11-07).** Unit (a), the amount SVars and the Goyfs.
+
+- **`amount_expr`.** An amount SVar body that `resolve_amount_svar` neither resolves (combat damage, a conditional or delirium amount, a compare of SVars) nor keeps for runtime is a parse finding now, `amount_expr:<head>`. Over the vocab, which holds every candidate deck's cards, it names one card: Surgical Extraction, its three `TargetedController$CardsIn<zone>` amounts. M4's others (Galvanic Discharge, Broadside Bombardiers, Pyrogoyf, Shatterskull Smashing, The Stone Brain) were fixed in their units. Surgical Extraction played right regardless: the same-name mover moves every match when it has no number.
+
 ## 6. Risks
 
 - **Migration size.** M2, M5 and M7 rewrite core paths with no user-visible gain until later commits. The

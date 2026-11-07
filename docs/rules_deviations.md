@@ -173,6 +173,7 @@ Two cards are recognised by a fingerprint of their script and handled by special
 ### 2.8 Script params of vocab cards the parser does not read
 `robomage --parse-report @vocab` (`src/parse_report.h`) lists what the parser meets in a card's script and models nowhere; for the vocab these are the only findings, recorded in `tests/parse_report/vocab.json` and checked by the gate's `vocab` tier (a fix removes the finding there and the entry here).
 - **Ajani, Nacatl Pariah — `ability_param:ImmediateTrigger.TriggerAmount`.** `TriggerAmount$ Remembered$Amount` on his back face's reflexive ability is how many times it triggers. It triggers once, which is right: the ability makes one token, and no effect here makes more.
+- **Surgical Extraction — `amount_expr:TargetedController$CardsInGraveyard`, `…CardsInHand`, `…CardsInLibrary`.** Each of its three `ChangeZone` links caps its move at `ChangeNum$`, the number of cards in that zone of the target's owner. The evaluator has no `TargetedController$` set, so the parser drops the amount. Play is unaffected: the same-name mover (`change_zone_same_name`) moves every match when it has no number, and every match is at most the zone's size.
 
 ---
 

@@ -3290,7 +3290,13 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         return;
     }
     const std::string expanded = expand_svar_head(sv, svars);
-    if (is_runtime_amount_expr(expanded)) ability.dynamic_amount_expr = expanded;
+    if (is_runtime_amount_expr(expanded)) {
+        ability.dynamic_amount_expr = expanded;
+        return;
+    }
+    parse_finding("amount_expr", expanded.substr(0, expanded.find(' ')),
+                  ability.category + ": " + it->first + " = " + sv +
+                      " is not kept for runtime: the amount falls back to its default");
 }
 
 // Where the ".<yes>.<no>" tail of a delirium-conditional amount starts in `sv`: right after
