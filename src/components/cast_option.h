@@ -32,6 +32,7 @@ enum class CastCost : uint8_t {
     IMPENDING,     // CR 702.175: enters with time counters, and isn't a creature until they're gone
     WARP,          // exiled at the next end step (a delayed trigger), then castable from exile later
                    // for its normal cost
+    MORPH,         // CR 702.37c: {3}, cast face down, a row of SpellOverlay::FACE_DOWN
 };
 
 // What an effect lets a card be cast for (CR 118.9). ENERGY / LIFE: `amount` of that resource rather

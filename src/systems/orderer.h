@@ -52,7 +52,7 @@ public:
     //   rewind_cast_move: CR 601.5 / 733.1 — the proposal was reversed: the card returns to the
     //     zone and position `origin` records, as the same object it was, with no zone-change
     //     event. Its identity stays known to both players (it was revealed on the stack).
-    Zone begin_cast_move(Entity card, Zone::Ownership caster);
+    Zone begin_cast_move(Entity card, Zone::Ownership caster, SpellOverlay overlay);
     void complete_cast_move(Entity card, const Zone &origin);
     void rewind_cast_move(Entity card, const Zone &origin);
     // Create a standalone ability entity and place it on the stack. `ability` must

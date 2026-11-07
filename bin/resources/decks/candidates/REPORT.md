@@ -26,12 +26,12 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | storm | Storm | 3.0 | combo | 30 | 0 | 0 | 0 | implement |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
+| welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
 | painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 2 | 2 | 11 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 1 | 20 | capability |
-| welder_cam | Welder Cam | 2.0 | combo | 33 | 1 | 1 | 20 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -40,11 +40,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
 | Start your engines! (speed) | M | 2 | artifacts_prison | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
-| Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | stoneblade, welder_cam | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
 | Play from the top of the library (Mystic Forge) | L | 1 | - | Mystic Forge | `filter:TopLibrary`, `static_form:MayPlay.Library`, `static_param:MayLookAt` | look at and cast the top card: a new public-to-one-seat zone view for the state format |
+| Face-down permanents (Morph, Cloak; CR 708) | XL | 1 | stoneblade | Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 
 ## Unlock order (greedy: the next cheapest deck given what is already implemented)
 
@@ -68,12 +68,12 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 16 | storm | - | 0 | 0 | 16 |
 | 17 | ur_tempo | - | 0 | 0 | 17 |
 | 18 | uwx_control | - | 0 | 0 | 18 |
-| 19 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 19 |
-| 20 | doomsday | Empower | 3 | 6 | 20 |
-| 21 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 21 |
-| 22 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 22 |
-| 23 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 45 | 23 |
-| 24 | welder_cam | - | 0 | 45 | 24 |
+| 19 | welder_cam | - | 0 | 0 | 19 |
+| 20 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 20 |
+| 21 | doomsday | Empower | 3 | 6 | 21 |
+| 22 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 22 |
+| 23 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 23 |
+| 24 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 45 | 24 |
 
 ## Per deck
 
@@ -167,6 +167,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 28 cards, 0 new; clean: -
 
 
+### welder_cam — Welder Cam (2.0%, combo)
+
+33 cards, 0 new; clean: -
+
+
 ### artifacts_prison — Artifacts Prison (2.0%, control)
 
 30 cards, 1 new; clean: -
@@ -197,9 +202,3 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 38 cards, 1 new; clean: -
 
 - Cryptic Coat: Face-down permanents (Morph, Cloak; CR 708)
-
-### welder_cam — Welder Cam (2.0%, combo)
-
-33 cards, 1 new; clean: -
-
-- Aphetto Alchemist: Face-down permanents (Morph, Cloak; CR 708)

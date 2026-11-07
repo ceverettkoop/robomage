@@ -24,6 +24,7 @@
 #include "../queries/copies.h"
 #include "../queries/entry.h"
 #include "../queries/face_down.h"
+#include "../queries/overlays.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
 #include "../queries/players.h"
@@ -442,7 +443,7 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
 }
 
 // See declaration in orderer.h.
-Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
+Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster, SpellOverlay overlay) {
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const Zone origin = z;
     // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
@@ -469,6 +470,8 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, origin_gen);
     z.is_face_down = false;
+    // CR 708.4: turned face down before it is put onto the stack, so nothing sees the card go there.
+    if (spell_overlay(overlay).face_down) enter_face_down(card, overlay);
     handles_end_move(handle_move, card);
     obs_end_move(obs_move, card, handle_move.after_handle, ObsMoveInfo{});
     return origin;
@@ -507,6 +510,8 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     }
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const uint64_t stack_gen = z.obj_gen;
+    // A spell cast face down never showed its card: it returns as what it was where it was.
+    if (face_down_card(card)) take_card_back(card);
     z = origin;
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.

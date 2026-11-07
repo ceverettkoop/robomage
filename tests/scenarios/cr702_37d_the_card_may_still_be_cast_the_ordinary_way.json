@@ -1,0 +1,49 @@
+{
+  "name": "cr702_37d_the_card_may_still_be_cast_the_ordinary_way",
+  "why": "CR 702.37a, d: morph lets the card be cast face down; it takes nothing from the cast for its mana cost, so both rows are offered, and the ordinary one makes the 1/2 it is.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Aphetto"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Aphetto Alchemist enters the battlefield"
+  ],
+  "expect_not": [
+    "Face-down creature"
+  ],
+  "expect_menu": [
+    "^Cast Aphetto Alchemist$",
+    "Cast Aphetto Alchemist face down"
+  ],
+  "expect_dump_not": [
+    "face_down "
+  ]
+}

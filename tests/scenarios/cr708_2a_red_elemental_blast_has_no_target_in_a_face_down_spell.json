@@ -1,0 +1,46 @@
+{
+  "name": "cr708_2a_red_elemental_blast_has_no_target_in_a_face_down_spell",
+  "why": "CR 708.4: effects that care about a spell see the face-down spell, which has no color; Red Elemental Blast can't target it, blue as the card is, and in the variant it can target the card cast the ordinary way.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Red Elemental Blast",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Face-down creature enters the battlefield"
+  ],
+  "expect_menu_not": [
+    "Cast Red Elemental Blast"
+  ]
+}

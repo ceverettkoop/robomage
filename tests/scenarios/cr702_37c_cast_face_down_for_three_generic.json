@@ -1,0 +1,63 @@
+{
+  "name": "cr702_37c_cast_face_down_for_three_generic",
+  "why": "CR 702.37c, 708.4: a morph card is cast face down for {3} rather than its mana cost, which three lands of no color it needs will pay; on the stack and in play it is a nameless 2/2, and its card shows to its controller alone.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Face-down creature",
+    "Face-down creature enters the battlefield"
+  ],
+  "expect_not": [
+    "Player A casts Aphetto",
+    "Aphetto Alchemist enters"
+  ],
+  "expect_menu": [
+    "Cast Aphetto Alchemist face down \\(morph\\)"
+  ],
+  "expect_menu_not": [
+    "^Cast Aphetto Alchemist$"
+  ],
+  "expect_dump": [
+    "^A .*stack SPELL card=Aphetto Alchemist",
+    "^B .*stack SPELL card=none",
+    "^A .*face_down self BATTLEFIELD card=Aphetto Alchemist pt=2/2 types=[0-9]+ mv=0 subtypes=0 keywords=0 abilities=0$",
+    "^B .*face_down opp BATTLEFIELD card=none pt=2/2 types=[0-9]+ mv=0 subtypes=0 keywords=0 abilities=0$"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen .*|known_hand )Aphetto"
+  ]
+}

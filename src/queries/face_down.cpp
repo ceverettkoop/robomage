@@ -13,7 +13,6 @@
 #include "overlays.h"
 
 static void set_card_aside(Entity card, SpellOverlay how);
-static void take_card_back(Entity e);
 
 // `card` lies on the face `how` gives it, its card under it.
 static void set_card_aside(Entity card, SpellOverlay how) {
@@ -23,8 +22,7 @@ static void set_card_aside(Entity card, SpellOverlay how) {
     global_coordinator.GetComponent<Zone>(card).is_face_down = true;
 }
 
-// `e` is the card under it again.
-static void take_card_back(Entity e) {
+void take_card_back(Entity e) {
     global_coordinator.GetComponent<CardData>(e) = *global_coordinator.GetComponent<FaceDownCard>(e).card;
     global_coordinator.RemoveComponent<FaceDownCard>(e);
     global_coordinator.GetComponent<Zone>(e).is_face_down = false;

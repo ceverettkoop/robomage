@@ -167,6 +167,11 @@ struct CardData{
     bool has_suspend = false;
     int suspend_count = 0;               // N time counters the card is exiled with
     CostParts suspend_cost;              // mana paid to begin the suspend process
+    // K:Morph:<cost> (CR 702.37): the card may be cast face down for {3} (SpellOverlay::FACE_DOWN),
+    // and the permanent that makes turned face up for `morph_cost`, which is read from the card
+    // under it (face_down_card).
+    bool has_morph = false;
+    CostParts morph_cost;
     // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the
     // gift to an opponent (an optional choice, not a cost); if promised, the opponent receives the
     // gift as the spell resolves, before its other effects. gift_abilities holds the parsed gift

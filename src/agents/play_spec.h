@@ -16,6 +16,7 @@
 //
 //   pass                         pass priority / take the first choice    (PASS_PRIORITY)
 //   cast:<card>                  cast a spell                              (CAST_SPELL)
+//   morph:<card>                 cast it face down                         (CAST_SPELL, FACE_DOWN variant)
 //   play:<card> | land:<card>    play a land                               (PLAY_LAND)
 //   activate:<card>[@side]       activate an ability                       (ACTIVATE_ABILITY)
 //   target:<card|text>[@side]    choose a target                           (SELECT_TARGET)
@@ -61,6 +62,7 @@ struct MenuAction {
         std::optional<std::string> card;
         int controller = -1;  // 1 own, 0 opp, -1 none
         std::string description;
+        bool face_down = false;  // a cast of the card face down
 };
 
 // The menu of `v` as the resolver reads it.

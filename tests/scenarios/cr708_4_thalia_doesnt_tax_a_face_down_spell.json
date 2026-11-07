@@ -1,0 +1,42 @@
+{
+  "name": "cr708_4_thalia_doesnt_tax_a_face_down_spell",
+  "why": "CR 708.4: what applies to casting a spell with these characteristics applies: it is a creature spell, so Thalia's tax on noncreature spells doesn't, and three lands cast it.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Thalia Guardian of Thraben"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Face-down creature enters the battlefield"
+  ]
+}

@@ -170,6 +170,7 @@ static void determine_grant_cost(Game::PendingCast &pc, const CardData &card_dat
 static void determine_flashback_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static void determine_escape_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static void determine_alternative_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
+static void determine_morph_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster);
 static const CastCostRow kCastCostRows[] = {
     {determine_mana_cost, Game::PendingCast::KICKER},            // MANA_COST
     {determine_mana_cost, Game::PendingCast::KICKER},            // NO_MANA_COST
@@ -180,8 +181,9 @@ static const CastCostRow kCastCostRows[] = {
     {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // EVOKE
     {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // IMPENDING
     {determine_alternative_cost, Game::PendingCast::ALT_HYBRID}, // WARP
+    {determine_morph_cost, Game::PendingCast::KICKER},           // MORPH
 };
-static_assert(sizeof(kCastCostRows) / sizeof(kCastCostRows[0]) == static_cast<size_t>(CastCost::WARP) + 1,
+static_assert(sizeof(kCastCostRows) / sizeof(kCastCostRows[0]) == static_cast<size_t>(CastCost::MORPH) + 1,
               "a row per CastCost");
 // Can `caster` pay `extra`, an optional additional cost (CR 601.2b), on top of what the spell `pc` is
 // casting has committed to? `with_extra` is the mana the cast comes to with it.
@@ -230,7 +232,7 @@ static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, s
 // See forward declaration at top of file.
 static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
                        std::shared_ptr<Orderer> orderer) {
-    pc.cast_origin = orderer->begin_cast_move(pc.spell_entity, caster);
+    pc.cast_origin = orderer->begin_cast_move(pc.spell_entity, caster, pc.chosen.option.overlay);
     // The spell has the characteristics of the face being cast from the moment it is on the
     // stack (CR 601.2a, 712.8f), so active_face reads them throughout the proposal.
     Spell spell;
@@ -1853,6 +1855,12 @@ static void determine_alternative_cost(Game::PendingCast &pc, const CardData &ca
     pc.cost_to_pay = card_data.alt_cost.cost.mana();
 }
 
+// A CR 702.37c cast: {3} rather than its mana cost, an alternative cost, so a SetCost floor and what
+// a tax on the spell it now is adds apply (CR 118.9d, 601.2f).
+static void determine_morph_cost(Game::PendingCast &pc, const CardData &card_data, Zone::Ownership caster) {
+    pc.cost_to_pay = floored_alt_mana_cost(card_data, face_down_cast_cost().mana(), caster, pc.chosen.option.zone);
+}
+
 // Drive the persisted cast to its next prompt, cancellation, or completion.
 // resume_choice < 0 = fresh entry from process_action; >= 0 = the latched
 // answer for the prompt pc.step armed. Every statement keeps the blocking
@@ -2384,18 +2392,19 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::FINISH: {
-            // Log cast with target if applicable
+            // Log cast with target if applicable. A face-down spell has no name (CR 708.2a).
+            const std::string spell_name = entity_name(spell_entity);
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
                 Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target.lki_entity();
                 if (tgt != 0) {
                     std::string tgt_name = target_display_name(cur_game, tgt);
                     game_log("%s casts %s targeting %s\n", player_name(caster).c_str(),
-                        card_data.name.c_str(), tgt_name.c_str());
+                        spell_name.c_str(), tgt_name.c_str());
                 } else {
-                    game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+                    game_log("%s casts %s\n", player_name(caster).c_str(), spell_name.c_str());
                 }
             } else {
-                game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+                game_log("%s casts %s\n", player_name(caster).c_str(), spell_name.c_str());
             }
 
             // The spell becomes cast (CR 601.2i): its Spell component (added with the caster
@@ -2408,7 +2417,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             if (mana_makes_uncounterable(pc.chosen.mana_paid)) spell.cant_be_countered = true;
             spell.keywords_until_eot = keywords_from_mana(pc.chosen.mana_paid, spell_entity);
             for (const std::string &keyword : spell.keywords_until_eot) {
-                game_log("%s gains %s until end of turn.\n", card_data.name.c_str(), keyword.c_str());
+                game_log("%s gains %s until end of turn.\n", spell_name.c_str(), keyword.c_str());
                 coverage_row("mana_rider_keyword");
             }
             // Check card's own replacement effects for "can't be countered" (Long Goodbye).

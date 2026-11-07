@@ -7,6 +7,7 @@
 #include "../components/zone.h"
 #include "../ecs/entity.h"
 
+class CostParts;
 struct CardData;
 
 // ── What a cast changes on the spell ────────────────────────────────────────────
@@ -40,6 +41,9 @@ const SpellOverlayRow &spell_overlay(SpellOverlay kind);
 
 // The cast_variant bit `kind` sets on a menu row and a stack row; 0 for none.
 uint32_t spell_overlay_variant_mask(SpellOverlay kind);
+
+// CR 702.37a: what a card is cast face down for, rather than its mana cost.
+const CostParts &face_down_cast_cost();
 
 // The characteristics of an object face down as the row of `kind` says, built once.
 const CardData &face_down_face(SpellOverlay kind);

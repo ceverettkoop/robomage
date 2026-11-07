@@ -1,0 +1,47 @@
+{
+  "name": "cr708_4_veil_of_summer_sees_no_blue_in_a_face_down_spell",
+  "why": "CR 708.4: the cast records the spell it was: a face-down Alchemist adds no blue to what Veil of Summer asks about, and in the variant the ordinary cast does, so Veil draws.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Veil of Summer",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "B:cast:Veil of Summer"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Player B casts Veil of Summer"
+  ],
+  "expect_not": [
+    "Player B draws"
+  ]
+}

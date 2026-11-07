@@ -35,6 +35,10 @@ inline const CardData *face_down_card(Entity e) {
 // as nothing else and its Permanent keeps `how` (EntryInfo::overlay).
 void enter_face_down(Entity card, SpellOverlay how);
 
+// `e`, a face-down spell whose proposal was reversed, is the card under it again, as if it had
+// never been turned over (CR 733.1).
+void take_card_back(Entity e);
+
 // CR 708.2a: `e` is turned face down where it is, and true. A permanent stays the same object and
 // has the characteristics of `how` from now on; a card in exile is hidden by its Zone. False, and
 // nothing happens, for what is already face down (CR 708.2b) and for a token

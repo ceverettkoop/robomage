@@ -229,6 +229,7 @@ static AbilityDef keyword_activated_ability(const std::string& category, Zone::Z
                                             const std::string& cost);
 static AbilityDef keyword_self_trigger(const std::string& category, EventId event);
 static void kw_companion(const std::string& kw_line, KeywordContext& ctx);
+static void kw_morph(const std::string& kw_line, KeywordContext& ctx);
 static void kw_enchant(const std::string& kw_line, KeywordContext& ctx);
 static void kw_ward(const std::string& kw_line, KeywordContext& ctx);
 static void kw_affinity(const std::string& kw_line, KeywordContext& ctx);
@@ -364,6 +365,7 @@ static const KeywordEntry kKeywordTable[] = {
     {"Annihilator", KeywordEntry::PREFIX, kw_annihilator},
     {"Protection:", KeywordEntry::PREFIX, kw_protection},
     {"Escalate:", KeywordEntry::PREFIX, kw_escalate},
+    {"Morph:", KeywordEntry::PREFIX, kw_morph},
 };
 static void parse_card_face_body(const std::string& front_script, CardData& card,
                                  FaceAbilityDefs& face_defs);
@@ -1369,6 +1371,14 @@ static void kw_suspend(const std::string &kw_line, KeywordContext &ctx) {
         ctx.card.suspend_cost = keyword_mana_cost(rest.substr(colon + 1), "Suspend");
     }
     ctx.card.keywords.push_back("Suspend");
+}
+
+// K:Morph:<cost> — Morph (CR 702.37a). The cast face down for {3} is a row of the cast table, and
+// the turn up for <cost> a special action; neither is a cost of the printed card.
+static void kw_morph(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.has_morph = true;
+    ctx.card.morph_cost = keyword_mana_cost(keyword_arg(kw_line), "Morph");
+    ctx.card.keywords.push_back("Morph");
 }
 
 // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The

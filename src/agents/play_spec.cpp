@@ -141,6 +141,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
     static const std::map<std::string, std::set<std::string>> table = {
         {"pass", {"PASS_PRIORITY"}},
         {"cast", {"CAST_SPELL"}},
+        {"morph", {"CAST_SPELL"}},
         {"play", {"PLAY_LAND"}},
         {"land", {"PLAY_LAND"}},
         {"activate", {"ACTIVATE_ABILITY"}},
@@ -268,6 +269,7 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
     if (!intent.cats.empty() && !intent.cats.count(a.category)) return false;
     if (!intent.side.empty() && intent.side != controller_word(a.controller)) return false;
     if (!intent.color.empty() && a.category != intent.color) return false;
+    if (intent.verb == "morph" ? !a.face_down : intent.verb == "cast" && a.face_down) return false;
     if (intent.keyword == "done")
         return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS" || a.category == "CONFIRM_MODES" ||
                (a.category == "PAYING_COSTS" && !a.card.has_value());
@@ -301,6 +303,7 @@ std::vector<MenuAction> resolver_menu(const DecisionView &v) {
         if (cid >= 0) a.card = ascii_fold_card_name(v.cards().face_name(cid));
         a.controller = v.menu_controller(i);
         a.description = v.description(i);
+        a.face_down = v.casts_face_down(i);
     }
     return out;
 }

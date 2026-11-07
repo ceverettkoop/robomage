@@ -41,6 +41,8 @@ DecisionView::DecisionView(const SeatStream &stream, const rmstate::DecodedFrame
     k_triggered_ = stream.enum_value("stack_kind", "TRIGGERED");
     const int back = stream.enum_value("cast_variant", "BACK_FACE");
     back_face_bit_ = back >= 0 ? (1ull << back) : 0;
+    const int face_down = stream.enum_value("cast_variant", "FACE_DOWN");
+    face_down_bit_ = face_down >= 0 ? (1ull << face_down) : 0;
     for (size_t r = 0; r < object_.rows(); ++r) objects_.emplace(object_.u(r, o_handle_), r);
     stack_by_pos_.resize(stack_.rows());
     for (size_t r = 0; r < stack_.rows(); ++r) stack_by_pos_[r] = r;

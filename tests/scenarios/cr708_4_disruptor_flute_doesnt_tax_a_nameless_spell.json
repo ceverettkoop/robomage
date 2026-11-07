@@ -1,0 +1,50 @@
+{
+  "name": "cr708_4_disruptor_flute_doesnt_tax_a_nameless_spell",
+  "why": "CR 708.4, 702.37c: the tax on a name reads the spell's name, and a face-down spell has none: with Disruptor Flute on Aphetto Alchemist the card's own cast needs {4}{U} and the face-down one still {3}.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Disruptor Flute",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Disruptor Flute",
+    "B:name:Aphetto",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Face-down creature enters the battlefield"
+  ],
+  "expect_menu_not": [
+    "^Cast Aphetto Alchemist$"
+  ]
+}

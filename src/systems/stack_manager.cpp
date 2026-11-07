@@ -221,6 +221,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             orderer->remove_from_stack(top_entity, Zone::GRAVEYARD);
         } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
+            const std::string entering = entity_name(top_entity);
             // Carry how it was cast onto its entry before the Spell component (which records
             // it) is removed; apply_permanent_components hands each fact to the Permanent.
             if (global_coordinator.entity_has_component<Spell>(top_entity))
@@ -240,7 +241,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = entering_controller;
             // TODO ETB event here
-            game_log("%s enters the battlefield\n", face.name.c_str());
+            game_log("%s enters the battlefield\n", entering.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool fizzled = false;

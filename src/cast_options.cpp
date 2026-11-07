@@ -15,6 +15,7 @@
 #include "queries/characteristics.h"
 #include "queries/costs.h"
 #include "queries/filters.h"
+#include "queries/overlays.h"
 #include "queries/permissions.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
@@ -88,6 +89,8 @@ static bool spectacle_offered(CastOffer &offer);
 static bool warp_offered(CastOffer &offer);
 static bool overload_offered(CastOffer &offer);
 static bool bestow_offered(CastOffer &offer);
+static bool morph_offered(CastOffer &offer);
+static bool exile_morph_offered(CastOffer &offer);
 static bool plain_alternative_offered(CastOffer &offer);
 static bool offspring_offered(CastOffer &offer);
 static bool free_cast_offered(CastOffer &offer);
@@ -132,6 +135,7 @@ static const CastSection kCastSections[] = {
         {"alternative",     CastCost::ALTERNATIVE,  false, 1, " (alternate cost)",     Zone::GRAVEYARD, plain_alternative_offered},
         {"overload",        CastCost::ALTERNATIVE,  false, 1, " (overload)",           Zone::GRAVEYARD, overload_offered, SpellOverlay::OVERLOAD},
         {"bestow",          CastCost::ALTERNATIVE,  false, 1, " (bestow)",             Zone::GRAVEYARD, bestow_offered, SpellOverlay::BESTOW},
+        {"morph",           CastCost::MORPH,        false, 1, " face down (morph)",    Zone::GRAVEYARD, morph_offered, SpellOverlay::FACE_DOWN},
         {"offspring",       CastCost::MANA_COST,    true,  2, " (offspring)",          Zone::GRAVEYARD, offspring_offered},
         {"hand_free",       CastCost::NO_MANA_COST, false, 8, " without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"hand_free_offspring", CastCost::NO_MANA_COST, true, 8, " without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
@@ -163,6 +167,7 @@ static const CastSection kCastSections[] = {
     // only the graveyard owner and never a land (601.1).
     {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::FRONT, nullptr, nullptr, {
         {"graveyard_cast",  CastCost::MANA_COST,    false, 6, " (from graveyard)",     Zone::GRAVEYARD, mana_cost_offered},
+        {"graveyard_morph", CastCost::MORPH,        false, 6, " face down (morph, from graveyard)", Zone::GRAVEYARD, morph_offered, SpellOverlay::FACE_DOWN},
         {"graveyard_free",  CastCost::NO_MANA_COST, false, 8, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"graveyard_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from graveyard) without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
@@ -186,6 +191,7 @@ static const CastSection kCastSections[] = {
     // only under a "play" grant that allows lands).
     {Zone::EXILE, Permission::EXILE_GRANT, CastFace::FRONT, cast_from_exile, offer_exile_land, {
         {"exile_mana_cost", CastCost::MANA_COST,    false, 7, " (from exile)",         Zone::GRAVEYARD, exile_mana_cost_offered},
+        {"exile_morph",     CastCost::MORPH,        false, 7, " face down (morph, from exile)", Zone::GRAVEYARD, exile_morph_offered, SpellOverlay::FACE_DOWN},
         {"exile_resource",  CastCost::GRANT,        false, 7, " (from exile)",         Zone::GRAVEYARD, exile_resource_offered},
         {"exile_no_cost",   CastCost::GRANT,        false, 7, " (from exile, no cost)", Zone::GRAVEYARD, exile_no_cost_offered},
         {"exile_free",      CastCost::NO_MANA_COST, false, 8, " (from exile) without paying its mana cost", Zone::GRAVEYARD, exile_free_offered},
@@ -517,6 +523,13 @@ static bool overload_offered(CastOffer &offer) { return offer.face.alt_cost.is_o
 
 static bool bestow_offered(CastOffer &offer) { return offer.face.alt_cost.is_bestow && alternative_offered(offer); }
 
+// CR 702.37c: the card has morph, and the 2/2 it would be may be cast for {3}. `offer.face` is that
+// 2/2, so what stops or taxes it (CR 708.4) is what stops or taxes this row.
+static bool morph_offered(CastOffer &offer) {
+    return overlay_face(global_coordinator.GetComponent<CardData>(offer.card), SpellOverlay::FACE_DOWN) &&
+           offer_castable(offer) && replacing_cost_payable(offer, face_down_cast_cost());
+}
+
 // Any other alternative cost. Miracle (CR 702.94) is never a normal priority-menu cast: it is
 // castable ONLY through the dedicated immediate "cast it for its miracle cost / do not cast" decision
 // presented right when its linked triggered ability resolves (proc_mandatory_choice's miracle-cast
@@ -652,6 +665,11 @@ static bool exile_free_offspring_offered(CastOffer &offer) {
     return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && free_offspring_offered(offer);
 }
 
+// A grant to cast it for its own costs leaves them open to an alternative cost (CR 702.37c).
+static bool exile_morph_offered(CastOffer &offer) {
+    return offer_grant(offer).resource == Game::ImpulseCastPermission::NORMAL && morph_offered(offer);
+}
+
 static bool exile_adventure_offered(CastOffer &offer) {
     return !offer_grant(offer).on_an_adventure && exile_mana_cost_offered(offer);
 }
@@ -742,7 +760,9 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
             CastOffer overlaid{card, cast_face(printed, how), section.zone, window};
             CastOffer &asked = row.overlay == SpellOverlay::NONE ? offer : overlaid;
             if (resolution_allows(asked) && row.offered(asked)) {
-                actions.push_back(row_action(row, section, card, "Cast " + asked.face.name + row.label));
+                // A row that casts it face down still says which card, to the player it offers it to.
+                const std::string &name = asked.face.name.empty() ? printed.name : asked.face.name;
+                actions.push_back(row_action(row, section, card, "Cast " + name + row.label));
                 if (row.cost == CastCost::GRANT)
                     actions.back().option.grant =
                         window.resolution ? resolution_grant(*window.resolution, asked.face) : offer_grant(asked).grant();
