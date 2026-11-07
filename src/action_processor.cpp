@@ -2565,7 +2565,7 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
         if (face_down_card(card)) {
             const CardData &under = *face_down_card(card);
             game_log("%s pays %s and turns %s face up.\n", player_name(payer).c_str(),
-                     mana_value_text(under.morph_cost.mana()).c_str(), under.name.c_str());
+                     mana_value_text(sa.cost).c_str(), under.name.c_str());
             turn_face_up(card);
             close_windows_on_face_up(card);
             obs_face_turned(card, true);
@@ -2614,7 +2614,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // cost is the card's under it, shown as it is paid. The gate verified it can be paid.
             if (action.turn_face_up) {
                 begin_special_action(game, action.source_entity, Game::SpecialAction::TURN_FACE_UP,
-                                     face_down_card(action.source_entity)->morph_cost.mana(), orderer);
+                                     turn_up_costs(action.source_entity).front().mana(), orderer);
                 break;
             }
 

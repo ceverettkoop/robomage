@@ -101,7 +101,8 @@ struct LegalAction {
         // the source entity Hand -> Exile, and records the time counters.
         bool suspend_action = false;
         // SPECIAL_ACTION that turns the face-down permanent `source_entity` face up (CR 702.37e,
-        // 116.2b): the processor pays the morph cost of the card under it, and it is the same object.
+        // 116.2b): the processor pays what its overlay row asks of the card under it, and it is the
+        // same object.
         bool turn_face_up = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card

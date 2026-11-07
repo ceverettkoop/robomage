@@ -2,6 +2,7 @@
 #define QUERIES_OVERLAYS_H
 
 #include <cstdint>
+#include <vector>
 
 #include "../components/cast_option.h"
 #include "../components/zone.h"
@@ -35,6 +36,9 @@ struct SpellOverlayRow {
         // it has for it: the way an object came to be face down is a row, so what it is given
         // that way (CR 708.2) is that row's.
         bool face_down;
+        // What a permanent lying face down this way may be turned face up for, with `card` under
+        // it: a cost for each procedure the rules give it, none when it can't be. Null elsewhere.
+        void (*turns_up)(const CardData &card, std::vector<CostParts> &costs);
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);
@@ -47,6 +51,10 @@ const CostParts &face_down_cast_cost();
 
 // The characteristics of an object face down as the row of `kind` says, built once.
 const CardData &face_down_face(SpellOverlay kind);
+
+// What the face-down permanent `e` may be turned face up for, its row's question about the card
+// under it; none for anything else.
+std::vector<CostParts> turn_up_costs(Entity e);
 
 // Gives the parsed `card` the faces of the overlays it has, and a split card its combined
 // characteristics.

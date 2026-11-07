@@ -34,6 +34,7 @@
 #include "../queries/counters.h"
 #include "../queries/filters.h"
 #include "../queries/lki.h"
+#include "../queries/overlays.h"
 #include "../queries/permissions.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
@@ -141,13 +142,16 @@ static std::string zone_activation_label(const AbilityDef &def, const std::strin
 static void offer_turn_face_up(std::vector<LegalAction> &actions, Entity entity, Zone::Ownership player,
                                std::shared_ptr<Orderer> orderer) {
     const CardData *under = face_down_card(entity);
-    if (!under || !under->has_morph || payment_blocked(entity)) return;
-    const ManaValue &cost = under->morph_cost.mana();
-    if (!can_pay_mana(player, cost, ManaPayee(entity, ManaPurpose::OTHER), orderer)) return;
-    LegalAction la(SPECIAL_ACTION, entity, "Turn " + under->name + " face up (" + mana_value_text(cost) + ")");
-    la.category = ActionCategory::TURN_FACE_UP;
-    la.turn_face_up = true;
-    actions.push_back(la);
+    if (!under || payment_blocked(entity)) return;
+    for (const CostParts &cost : turn_up_costs(entity)) {
+        CostCheck check(player, entity, orderer);
+        check.payee = ManaPayee(entity, ManaPurpose::OTHER);
+        if (!can_pay(cost, check)) continue;
+        LegalAction la(SPECIAL_ACTION, entity, "Turn " + under->name + " face up (" + mana_value_text(cost.mana()) + ")");
+        la.category = ActionCategory::TURN_FACE_UP;
+        la.turn_face_up = true;
+        actions.push_back(la);
+    }
 }
 
 // Chosen targets of every stack object that would destroy or exile a battlefield

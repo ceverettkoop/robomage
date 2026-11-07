@@ -8,9 +8,11 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/permanent.h"
 #include "../state_format/schema.h"
 #include "affected.h"
 #include "characteristics.h"
+#include "face_down.h"
 #include "filters.h"
 #include "types.h"
 
@@ -23,15 +25,16 @@ static bool has_bestow(const CardData &card);
 static void bestow_aura(CardData &face);
 static bool has_morph(const CardData &card);
 static void no_characteristics_but_2_2(CardData &face);
+static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
-    // kind                   name         variant                                            resolved_to      has           change                     resolved         stays  copy   face_down
-    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, false, false},
-    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell,            nullptr,         false, false, false},
-    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,                   on_an_adventure, false, false, false},
-    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,               nullptr,         true,  false, false},
-    {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, true,  false},
-    {SpellOverlay::FACE_DOWN, "face_down", static_cast<int>(rmstate::CastVariant::FACE_DOWN), Zone::GRAVEYARD, has_morph,    no_characteristics_but_2_2, nullptr,        true,  false, true},
+    // kind                   name         variant                                            resolved_to      has           change                     resolved         stays  copy   face_down  turns_up
+    {SpellOverlay::NONE,      "",          -1,                                                Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, false, false, nullptr},
+    {SpellOverlay::OVERLOAD,  "overload",  static_cast<int>(rmstate::CastVariant::OVERLOAD),  Zone::GRAVEYARD, has_overload, overload_spell,            nullptr,         false, false, false, nullptr},
+    {SpellOverlay::ADVENTURE, "adventure", static_cast<int>(rmstate::CastVariant::ADVENTURE), Zone::EXILE,     nullptr,      nullptr,                   on_an_adventure, false, false, false, nullptr},
+    {SpellOverlay::BESTOW,    "bestow",    static_cast<int>(rmstate::CastVariant::BESTOW),    Zone::GRAVEYARD, has_bestow,   bestow_aura,               nullptr,         true,  false, false, nullptr},
+    {SpellOverlay::PREPARE,   "prepared",  static_cast<int>(rmstate::CastVariant::PREPARED),  Zone::GRAVEYARD, nullptr,      nullptr,                   nullptr,         false, true,  false, nullptr},
+    {SpellOverlay::FACE_DOWN, "face_down", static_cast<int>(rmstate::CastVariant::FACE_DOWN), Zone::GRAVEYARD, has_morph,    no_characteristics_but_2_2, nullptr,        true,  false, true,  turns_up_for_morph},
 };
 
 static bool has_overload(const CardData &card) { return card.alt_cost.is_overload; }
@@ -124,6 +127,11 @@ static void no_characteristics_but_2_2(CardData &face) {
     face.toughness = 2;
 }
 
+// CR 702.37e: a card with morph, for its morph cost.
+static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs) {
+    if (card.has_morph) costs.push_back(card.morph_cost);
+}
+
 const SpellOverlayRow &spell_overlay(SpellOverlay kind) { return kSpellOverlayRows[static_cast<size_t>(kind)]; }
 
 uint32_t spell_overlay_variant_mask(SpellOverlay kind) {
@@ -152,6 +160,15 @@ const CardData &face_down_face(SpellOverlay kind) {
         return built;
     }();
     return faces[static_cast<size_t>(kind)];
+}
+
+std::vector<CostParts> turn_up_costs(Entity e) {
+    std::vector<CostParts> costs;
+    const CardData *under = face_down_card(e);
+    if (!under || !global_coordinator.entity_has_component<Permanent>(e)) return costs;
+    const SpellOverlayRow &row = spell_overlay(global_coordinator.GetComponent<Permanent>(e).overlay);
+    if (row.turns_up) row.turns_up(*under, costs);
+    return costs;
 }
 
 // A characteristic-defining ability's power or toughness: a literal is written on the face, anything
