@@ -54,8 +54,6 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
-                                bool allow_done, TargetAsker &asker);
 static std::string chosen_targets_display(const Ability &ab);
 // The largest X a variable life cost (Toxic Deluge: "pay X life") may be announced as (CR 601.2b,
 // 119.4): the life left after the cast's other life costs, lowered while the spell's mana could
@@ -1109,13 +1107,8 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
     return cap;
 }
 
-// One target pick through `asker` (the shared machine's single-decision step).
-// Returns the chosen index, or a negative value when the ask parked a pending
-// query (the caller suspends; a resumed re-entry rebuilds the identical menu
-// and the asker consumes the latched answer). The pending-decision context is
-// the asking source, exactly the PendingDecisionScope the blocking path held.
-static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
-                                bool allow_done, TargetAsker &asker) {
+int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done,
+                         TargetAsker &asker) {
     // Name the spell/ability asking for the target so the prompt is meaningful
     // before it resolves — otherwise the log only reveals what it was after the
     // target is chosen and the object goes on the stack. Arm-time only: a

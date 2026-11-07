@@ -141,6 +141,14 @@ Ability cast_gate_probe(const Ability& tmpl, Entity card_entity, Zone::Ownership
 // Caller must ensure has_legal_targets() is true before calling.
 void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
+// One target pick through `asker` (the shared machine's single-decision step), from `valid_targets`.
+// Returns the chosen index, or a negative value when the ask parked a pending
+// query (the caller suspends; a resumed re-entry rebuilds the identical menu
+// and the asker consumes the latched answer). The pending-decision context is
+// the asking source, exactly the PendingDecisionScope the blocking path held.
+int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done,
+                         TargetAsker &asker);
+
 // Suspension-aware form of select_target (the shared target sub-machine; see
 // TargetSelectRT / TargetAsker in resolution_frame.h). One call per resume:
 // stamps the dynamic min/max bounds once (rt.active), then asks one pick at a

@@ -98,18 +98,28 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
     return false;
 }
 
+// One kind of stack object TargetType$ names: an alternative containing `name`, the first such row.
+struct StackAlternative {
+    const char *name;
+    bool (*matches)(const std::string &alt, Entity cand);
+};
+static const StackAlternative kStackAlternatives[] = {
+    {"Activated", stack_ability_alt_matches},
+    {"Triggered", stack_ability_alt_matches},
+    {"Spell", stack_spell_alt_matches},
+};
+
 // TargetType$ is an OR list of stack-object alternatives — split on commas and accept the
 // candidate if ANY alternative matches it (CR 115.1 target restrictions are satisfied by any
 // one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
 // Memory (Spell.Colorless,Triggered) off one matcher.
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand) {
-    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true)) {
-        bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
-                               alt.find("Triggered") != std::string::npos);
-        bool is_spell_alt = (alt.find("Spell") != std::string::npos);
-        if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
-        if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
-    }
+    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true))
+        for (const StackAlternative &row : kStackAlternatives)
+            if (alt.find(row.name) != std::string::npos) {
+                if (row.matches(alt, cand)) return true;
+                break;
+            }
     return false;
 }
 
@@ -312,7 +322,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // The {X} of its cost, announced before its targets (CR 602.2b), is a cmc<OP>X qualifier's
     // bound (Lazotep Quarry's cmcEQX). Before the announcement the qualifier passes.
     if (ab.def->cost.has(CostPart::X_MANA) && (cur_game.pending.activation.active || cur_game.resolution.active))
-        ctx.cmc_bound = current_x_paid();
+        ctx.cmc_bound = ab.x_paid >= 0 ? ab.x_paid : current_x_paid();
     const FilterSpec spec = target_filter(ab.def->valid_tgts);
 
     // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
@@ -424,9 +434,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     const std::string &vt = ability.def->valid_tgts;
 
     // Stack targets: spells (counterspells) or standalone abilities (Stifle)
-    if (ability.def->target_type == "Spell" ||
-        ability.def->target_type.find("Activated") != std::string::npos ||
-        ability.def->target_type.find("Triggered") != std::string::npos) {
+    if (targets_stack_objects(*ability.def)) {
         add_stack_targets(ability, orderer, priority_player, valid_targets);
         return valid_targets;
     }
