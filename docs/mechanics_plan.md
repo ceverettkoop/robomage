@@ -1374,6 +1374,49 @@ turn-up as a special action; Morph (CR 702.37), Cloak (CR 701.58); the reveal wh
 the knowledge sidecar's exactness on a look that outlives a shuffle; a face-down object copied, bounced, and
 blinked; identity withheld in the opponent's frames through every transition.
 
+**Progress (2026-11-07).** Unit (a), the inert migration. No card, keyword, prompt or decision; the one new thing a run can do is a preset.
+
+- **`is_face_down`** (`src/queries/face_down.h`) is the one read of `Zone::is_face_down`, for exile, the battlefield and the stack. `face_down_card` is the card under a face-down permanent or spell.
+- **Characteristics.** `SpellOverlay::FACE_DOWN` is a row of `kSpellOverlayRows`, whose new `face_down` column says its `change` writes what the object is given; `face_down_face` builds each such face once. While an object lies face down its entity's own `CardData` *is* that face and the card waits on a `FaceDownCard` component. So `effective_*`, `active_face`, `object_abilities`, the filter's views, the layers, `object_mana_value`, `Permanent::name` and the 190-odd direct `CardData` reads find the CR 708.2 values with no branch, and the hot paths don't change at all. `Permanent::overlay` and `EntryInfo::overlay` say which row.
+- **Moves.** `enter_face_down` (before a Permanent exists, CR 708.3), `turn_face_down` (CR 708.2b, `permanent_takes_values`, shared with copies), `turn_face_up` (CR 708.8), `reveal_as_it_leaves`. `Orderer::move_object` calls the last: to any zone but the battlefield the object is the card again *before* `obs_begin_move`, so its `zone_move` shows it to every viewer, a hand or library too, and the scramble sees a public card. A resolving face-down spell keeps the flag. `reveal_face_down_objects` before `game_end` (CR 708.9). `lki.abilities_removed` stops the dies look-back, which reads the restored card.
+- **Copies.** A copy of one reads its blank `CardData`: a face-up 2/2 with no name (the CR 707.2 example). One that becomes a copy holds the copied values under it (`face_down_becomes_copy`, CR 708.10).
+- **`--face-down-a/-b`**, a zone preset through `enter_face_down` and `place_on_battlefield`, in the RMLOG header and refused by `--actor`; scenario keys `face_down_a/b`; the `expect_dump` fact `face_down` (zone, card, P/T, types, mana value, child row counts).
+- **Self-checks.** `permute_identities` turns each face-down holder over, so the scramble and the permutation move the card under it with the other hidden cards. `selfcheck_knowledge.cpp` and `Loc::FACE_DOWN` needed nothing: the pool is keyed by handle in any public zone, and `c.face_down` now says so in any zone.
+
+Every path a card's identity takes to a viewer, and what it reads:
+
+| path | reads |
+|---|---|
+| `object.card`, `stack.card`, `reveal.card`, `pending.card`, `pending_cost.card`, `delayed_subject.card`, `delayed_trigger.creator_card`, `event.source_card`, `event_card.card`, `menu.card` | `visible_card_id` → `identity_visible` → `card_identity` → `physical_card_id` (`face_down_card`) |
+| `object.power` … `mana_value`, `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`, `object_link` | `characteristics_visible`, then the blank `CardData`: public by CR 708.2, so the rows equal for both seats |
+| `object.transformed`, `copy_of`, `chosen_*`, `spent_*` | `identity_visible` |
+| `abref`s (`card`, `index`, `key`) of `object_ability`, `stack`, `menu`, `delayed_trigger` | the card id above; the blank's empty ability list makes a granted ability's row no card |
+| `lki` rows | `write_lki`: a nameless 2/2, card none; `write_stack_lki` by what the viewer saw |
+| `emblem`, `player_effect`, `creator_vocab_idx` | `source_vocab_idx`: `Permanent::name`, empty, so -1 |
+| `canonical_object_order` | the name only where `identity_visible` (its tie: below) |
+| `menu.description` | `description_hides_identity`; and the text is `entity_name`'s "Face-down creature" |
+| `--trace-decisions`, the CLI | the seat's decoded frames |
+| `--trace-handles`, `--trace-visibility` | `identity_visible`, `entity_name` |
+| narrative | `entity_name`; `reveal_as_it_leaves` names the card as it goes |
+| `k_*` | the seat's frames alone |
+
+None bypasses the one query. A frame carries no `game_log` text.
+
+What stayed, and why:
+
+- **The timestamp tie** (`docs/state_format.md` §6) is not closed. Morph resolves alone and cloaks are one at a time (CR 701.58e), so nothing reaches it, and obj_gen would only move it to the mover's order. The seam is `apply_permanent_components`' `perm.timestamp_entered_battlefield`.
+- **A token turned face down** does nothing, and **a card exiled face down** keeps its printed characteristics for what reads them: `docs/rules_deviations.md` §3. Blanking it is a change of behaviour, and no unit here needs it.
+- **`Permanent::name` reads in menu text** (`mana_system.cpp`'s "Tap …", `cost_payment.cpp`) are blank for a face-down object, not wrong: a tapped Convoke row reads "Tap  (Convoke)". `entity_name` adds " token", so routing them moves the corpus.
+- **Library.** `kPermissionRows`, `permission_kind` and `window_kind` appended values move the registry: (b3)'s.
+
+Where the plan was off. "As an M8 overlay" read through `active_face` would be a branch at some 45 direct reads of a permanent or spell's `CardData`, and one more each time a reader is added; a missed one is a card that plays wrong with a clean parse report. Turning the card over keeps the row, the overlay fields and `cast_face`, and inverts where the card sits. The price is that the scramble's `PermuteComponents<CardData>` needs `turn_over_face_down`. The frame didn't withhold only identity: a face-down object's 2/2, keywords and rows are public, and today's `if (!visible)` hid them, which is why `characteristics_visible` exists. `Zone::controller` isn't kept by a change of control: `source_controller` is what CR 708.5 reads.
+
+**(b1) Morph must:** `K:Morph` at parse and a row of `kCastSections` with `SpellOverlay::FACE_DOWN` (give the row `has`, so `cast_face` answers while the cast is proposed; append `cast_variant`); `enter_face_down` in `Orderer::begin_cast_move`, where `z.is_face_down = false` is, and `rewind_cast_move` must take the card back (make `take_card_back` public); `Spell`'s `Ability` from the face, so `write_stack`'s `put_abref` has no spell ability to name; `Player::spell_colors_cast_this_turn` and the noncreature counts from the face; `stack_manager`'s log; `turn_face_up` as a special action, the card's morph cost read from `face_down_card`, then `close_windows_on_face_up` and `obs_face_turned`. **(b2) Cloak must:** a `SpellOverlay::CLOAKED` row, `change` the blank plus ward {2} (`ward_cost`), `face_down = true`; `category:Cloak`; `enter_face_down` before the move from a library, which `move_object` then keeps. **(b3) the look must:** `Game::RevealWindow::STANDING_LOOK` and `permission_kind`'s Library, `make registry`; M7's three rows above.
+
+Evidence. `make check` before each commit. `29619fe6`, `95447d84`, `cd8c31bf`, `1ee5ede4`, `355059ee`, `85e56bdb`, each: 348 explore games (116 bo1, 116 `explore:patient` bo3, 116 `--no-auto-mana`, all league, heldout and `mech_` decks, `--narrative --trace-decisions`, capped at 2,500) hash for hash the same as `2d48a706`'s binary. At the end 87 games' `--rmstate-dump` bytes the same, `tests/corpus`, `tests/cli`, `tests/open_vocab` and `tests/parse_report` unmoved, `make registry` a no-op, all 71 frozen logs replay but `a9-m18276`, at 352. No layout change: `object` slot 90 stays the last, and `registry.json` is unchanged. Nine `cr708_` and `cr707_` scenarios, each at `--selfcheck-state-sample 1`. By removal, each fails its scenarios: the identity read, the controller's look (the scramble catches it: `ERROR: selfcheck-state scramble`), `characteristics_visible`, the look-back, both reveals, the face's power. 261 games with two face-down cards a side under `--selfcheck-knowledge --selfcheck-state-sample 1`, no error; `scripted` over them, 20 games. A scratch build, not committed, turned a third of the permanents over at every untap and cast every other creature spell face down: 522 games under the same checks, no error, and in 30 games counted 468 turned down, 268 up, 49 spells face down, 47 of them resolving, 173 reveals. The debug `bench`: 1,509 to 1,531 us engine alone, 2,785 to 2,797 with frames, one run each.
+
+Unproved. Release `bench` wasn't compared; no read path changed, `move_object` gained three component checks and `entity_name` one. `SetState`'s `TurnFaceDown` and `TurnFaceUp` on a permanent and a face-down spell ran only on that scratch build; no committed path reaches them. `spent_*`'s gate and a change of control have no card; `face_down_becomes_copy` hasn't run. The `actor` tier's torch part was skipped.
+
 ### M12. Designations and subsystems (L)
 
 **Today.** Each per-player or per-object field is hand-added across component, schema and encoder.

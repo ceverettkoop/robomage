@@ -70,7 +70,7 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 | Battlefield, stack, graveyard | full | full | CR 400.2 |
 | Exile, face up | full | full | CR 406.3 |
 | Exile, face down | identity visible to each player in that card's **look window**: a player who looked at the card before it was exiled face down, or whom an instruction allows to look, may keep looking until it leaves exile. In practice this is usually the owner | same rule, so usually hidden | CR 406.3 |
-| Face-down permanent or spell | full (controller may look) | face-down characteristics only; the object is still distinguishable | CR 708.5, 708.6 |
+| Face-down permanent or spell | its card (the controller may look) and its face-down characteristics | its face-down characteristics, what effects give it and its public status, never its card; the object is still distinguishable | CR 708.2, 708.5, 708.6 |
 | Hand | full | count, plus identities of cards in a current reveal window | CR 402.3 |
 | Library | count, plus cards in a current look/reveal window | count, plus cards in a current reveal window | CR 401.2, 401.3 |
 | Sideboard (bo3) | own contents | count only | registered list is open (below); post-board configuration is hidden |
@@ -100,6 +100,12 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
   down from a public zone gets none (CR 406.3 covers a card looked at and then exiled). The
   window ends when the card leaves exile or is turned face up (no engine effect shuffles a
   pile in exile).
+- A face-down permanent or spell needs no window: its controller sees the card by the rule, the
+  other player doesn't, and a change of controller changes who sees it. It is revealed as it leaves
+  for any other zone but the battlefield (CR 708.9): it is turned up before the move, so the
+  `zone_move` shows the card to every viewer, a move to a hidden zone included. At the end of a game
+  every face-down permanent and spell left is revealed (`reveal_face_down_objects`: a reveal to all,
+  before `game_end`).
 - The snapshot shows exactly the cards in the viewer's windows.
 
 ## 4. Snapshot
@@ -194,7 +200,7 @@ closes the batch with the range.
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
 | `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle`. Emitted once the pick is made, per searched hidden zone (a library, a sideboard, another player's hand; a pick from the searcher's own hand, such as a put-back, is no search), with the cards found in that zone; the `look` at the searched zone comes first |
 | `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity |
-| `face_down` / `face_up` | handle; identity at face-up. Exiling face down is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is |
+| `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is |
 | `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
 | `game_end` / `match_end` | game number, winner (or draw); match wins per player. `game_end` is queued when the game's loop ends, after the game's last events; `match_end` after the last `game_end` (a single game is a match of one game) |
 
@@ -259,7 +265,8 @@ built for the viewer drains its queue into `event` / `event_card` / `event_playe
 - **Turn.** The game's turn counter (`Game::turn_state.turn`): 0 during the pregame and the first
   turn.
 - `reorder` has no engine site (rearrangements are library → library `zone_move`s), and
-  `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses.
+  `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses; the `--face-down-a/-b`
+  presets enter face down, a created object's `zone_move` with the flag.
 
 ## 6. Handles
 
@@ -320,9 +327,12 @@ issue, link and retirement (`HANDLE:`).
   to their history. Arrival order is deliberately not used for an opponent's hand: it would say
   which copy was drawn when. A face-down object never reaches this tie (its zone order,
   timestamp or arrival is unique). One caveat sits in the engine, not here: permanents that
-  enter together get their battlefield timestamps in entity order (the state-based pass that
-  builds them walks entity ids). That is harmless while their identities are public; it would
-  leak for face-down permanents entering together, which no vocab card makes.
+  enter together get their battlefield timestamps in entity order (the state-based pass,
+  `apply_permanent_components`, walks entity ids, and `perm.timestamp_entered_battlefield` is
+  written there). That is harmless while their identities are public; it would leak for face-down
+  permanents entering together, entity ids being deck-list order. Nothing does that: Morph resolves
+  alone and cards are cloaked one at a time (CR 701.58e). A card that puts two face down at once
+  must give them their timestamps in an order the entity id plays no part in.
 
 ## 7. Actor side: the knowledge sidecar
 
@@ -525,7 +535,7 @@ that also answers simulated ones (a search agent's).
   random among those cards' places (zone and library position: entity ids move, as a
   determinizer's would), the seat's own hidden library cards among their positions, and then the
   identities of all cards hidden from the seat are shuffled per owner (a card in a window shown
-  only to the other player keeps its place but not its identity; a face-down exiled card keeps
+  only to the other player keeps its place but not its identity; a face-down object keeps
   its place, and the objects that refer to it, with another identity). Every card in a live
   window keeps its place. Owners, zone sizes, identity stamps and the handle tables stay as they
   were; the seat's frame must be the same bytes. Everything is put back exactly (saved `Zone`s,
@@ -825,10 +835,13 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `attacked` | u8 | `bool` | it was declared as an attacker this turn (CR 508.1k), not put onto the battlefield attacking (CR 508.4) |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
 
-A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,
-`chosen_type`, `chosen_color`) and its `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`
-and `object_link` rows are filled only when the viewer can see the object's identity; a
-face-down object shows its zone, seats, position, public status and counters. Phased-out
+A row's characteristic columns (`power` … `mana_value`) and its `object_subtype`, `object_keyword`,
+`object_ability`, `object_provenance` and `object_link` rows are filled only when the viewer can see
+them (`characteristics_visible`): whatever identity they can see, and a face-down permanent or spell,
+which every viewer sees as what it is face down: a 2/2 with what effects gave it. `transformed`,
+`copy_of`, `chosen_name`, `chosen_type`, `chosen_color` and `spent_*` say something of the card (a
+permanent keeps the mana spent on it only if its card reads that), so they follow the identity. A
+face-down exiled card shows its zone, seats, position, public status and counters. Phased-out
 permanents are included and flagged (the encoder reads `Permanent::is_phased_out` directly). No `can_attack` or `chosen_color` column: the engine
 computes neither outside its legal-action enumeration.
 | `object_subtype` (25) | `obj`, `subtype` | u32, u16 | `handle`, `enum:subtype` | post-layer |

@@ -65,7 +65,8 @@ consistent form for every kind of agent.
   see is **anonymous**.
 - The model never tracks *which* anonymous unit is which; it tracks **pools**. A pool is a set
   of anonymous units the viewer cannot tell apart: the opponent's hand, a stretch of library
-  positions with no known order, the opponent's sideboard, a face-down exiled card.
+  positions with no known order, the opponent's sideboard, a face-down card (exiled, or a
+  face-down permanent or spell).
 - A **unit with known identity** sits in a pool as a fixed value: a revealed card still in the
   opponent's hand, or a known card at a known library position.
 
@@ -184,7 +185,7 @@ enter or leave above them and converts between top and bottom.
 | `shuffle` | all positions of that library merge into one unordered remainder pool; position facts are dropped; contents facts are kept |
 | `search` | nothing by itself (a look at the whole zone, when there is one, comes as `look`); the cards leave as `zone_move`s, usually followed by a `shuffle` |
 | `cast_from_hidden` / `play_from_hidden` | as `zone_move` to a public zone |
-| `face_down` / `face_up` | a face-down card is an anonymous singleton pool (with its source constraint), keyed by its handle; face-up pins it. Exiling face down is a `zone_move` with the face-down flag, with the same pool |
+| `face_down` / `face_up` | a face-down card, in exile, on the battlefield or on the stack, is an anonymous singleton pool (with its source constraint), keyed by its handle; face-up pins it. Any entry face down is a `zone_move` with the face-down flag, with the same pool. A face-down permanent or spell leaving is a `zone_move` naming the card (CR 708.9), which pins the unit; so does the reveal at the end of a game |
 | mulligan (hand to library, shuffle, draw 7, London bottoming) | composed of the rules above |
 | `game_end` / `match_end` | match memory updated; networks reset at the next `game_start` |
 
