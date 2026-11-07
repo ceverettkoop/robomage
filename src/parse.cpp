@@ -898,6 +898,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.has_x_cost = (card.x_pip_count > 0);
     card.types_text = value_from_script(front_script, "Types");
     card.types = parse_types(card.types_text);
+    card.is_equipment = card.types.count(Type{SUBTYPE, "Equipment"}) > 0;
     // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
     // playable from hand (front spell OR back face). Only the front face carries this line; the
     // back face (parsed from the ALTERNATE block) leaves it false. Distinct from a transform DFC.
@@ -1315,7 +1316,6 @@ static void kw_sunburst(const std::string &, KeywordContext &ctx) {
 // card (resolved by effects::attach), gated on the Equipment being able to equip some
 // creature (CR 301.5c).
 static void kw_equip(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.is_equipment = true;
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
     ctx.card.keywords.push_back("Equip");
 }
@@ -1327,7 +1327,6 @@ static void kw_equip(const std::string &kw_line, KeywordContext &ctx) {
 // equip-attach machinery; is_reconfigure additionally lets it equip while a creature
 // (CR 301.5c) and makes it stop being a creature while attached (CR 702.151b).
 static void kw_reconfigure(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.is_equipment = true;
     ctx.card.is_reconfigure = true;
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));

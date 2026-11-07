@@ -149,7 +149,7 @@ struct CardData{
     CostParts flashback_cost;            // what the cast path pays of the flashback cost: its mana, PayLife<N> and Sac<1/Type>
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)
     CostParts escape_cost;               // the escape cost (e.g. {2}{B} and an ExileFromGrave group-type cost)
-    bool is_equipment = false;           // has a K:Equip (or K:Reconfigure) line
+    bool is_equipment = false;           // has the Equipment subtype, with an equip keyword or not
     // Reconfigure (CR 702.151): an Equipment keyword on a creature card. Its attach and unattach
     // abilities are parsed onto `abilities` like Equip's; is_reconfigure additionally lets it
     // equip while it is a creature (CR 301.5c) and makes the permanent stop being a creature
