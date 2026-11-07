@@ -313,9 +313,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");
     printf("                      Start with these permanents on the battlefield\n");
     printf("  --graveyard-a <cards>    --graveyard-b <cards>\n");
-    printf("                      Start with these cards in the graveyard\n");
+    printf("                      Start with these cards in the graveyard, from the top down\n");
     printf("  --exile-a <cards>        --exile-b <cards>\n");
-    printf("                      Start with these cards in exile\n");
+    printf("                      Start with these cards in exile, from the top down\n");
     printf("  --sideboard-a <cards>    --sideboard-b <cards>\n");
     printf("                      Add these cards to the sideboard\n");
     printf("  --life-a <n>        --life-b <n>\n");

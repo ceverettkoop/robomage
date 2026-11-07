@@ -880,7 +880,10 @@ std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_
         Entity card_id = coordinator.CreateEntity();
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
-        coordinator.AddComponent(card_id, Zone(zone, owner, owner));
+        Zone placed_zone(zone, owner, owner);
+        // A graveyard and exile are piles: the list reads from the top down.
+        if (zone == Zone::GRAVEYARD || zone == Zone::EXILE) placed_zone.distance_from_top = placed.size();
+        coordinator.AddComponent(card_id, placed_zone);
         obs_object_created(card_id);
         placed.push_back(card_id);
     }
