@@ -1,0 +1,12 @@
+{
+  "name": "cr111_1_goblin_welder_sacrifices_an_artifact_token",
+  "why": "CR 111.1, Remembered$Valid: a token is an object with no card. Goblin Welder's condition read the remembered objects as cards, so a Robot token counted as nothing and the Branch took its false side; it counts, and Mox Opal returns.",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_a": ["Goblin Welder", "Melded Moxite", "Mountain", "Mountain", "Mountain"],
+  "graveyard_a": ["Mox Opal"],
+  "library_b": ["Island", "Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:activate:Melded Moxite", "A:activate:Goblin Welder", "A:target:Mox Opal"],
+  "max_decisions": 12,
+  "expect": ["Player A sacrifices Robot", "Mox Opal is moved to the battlefield"]
+}

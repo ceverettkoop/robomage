@@ -812,10 +812,11 @@ static int ev_aggregate(const SvarExpr &x, const SvarArgs &a) {
     if (!x.row && !x.filter.empty()) {
         MatchCtx mctx;
         mctx.controller = a.controller;  // "you" reference for YouCtrl/OppCtrl in any filter
+        mctx.source = a.source;
+        // Each as it is where it is: a permanent by its live characteristics, a token included.
         objects.erase(std::remove_if(objects.begin(), objects.end(),
                                      [&](Entity e) {
-                                         return !global_coordinator.entity_has_component<CardData>(e) ||
-                                                !card_matches_filter(e, x.filter, mctx);  // ',' = OR over the filters
+                                         return !object_matches_filter(e, x.filter, mctx);  // ',' = OR over the filters
                                      }),
                       objects.end());
     }
