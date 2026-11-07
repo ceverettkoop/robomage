@@ -32,6 +32,7 @@ struct ReplacementEvent {
         DRAW_CARD,           // a player is about to draw a card
         UNTAP,               // a permanent is about to untap during its controller's untap step
         PRODUCE_MANA,        // a permanent is about to produce mana from being tapped (Damping Sphere)
+        COUNTER,             // an object on the stack is about to be countered
     };
 
     Type type;
@@ -46,10 +47,12 @@ struct ReplacementEvent {
     int  etb_p1p1 = 0;                                 // counters to add when the permanent enters (614.1c); count of etb_counter_type
     std::string etb_counter_type = "P1P1";             // kind of "enters with" counter ("P1P1", "CHARGE", ...)
 
+    // COUNTER: `entity` is the object, `affected_player` its controller; `prevented` the outcome.
+
     // MOVE_TO_ZONE in/out
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
     Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
-    bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
+    bool prevented = false;                            // 614.13/CantHappen — the event doesn't happen: a move leaves the card in its origin zone (Grafdigger's Cage), a counter leaves the spell on the stack (Hexing Squelcher)
     bool with_void_counter = false;                    // out: the card is exiled with a void counter (Dauthi Voidwalker); the caller records it on the new object
     // DISCARD_ELSE_GRAVEYARD additional cost (Mox Diamond / Chrome Mox): the card the affected
     // player chose to discard as this permanent enters. dispatch() has no orderer, so the caller

@@ -7,6 +7,7 @@
 #include "../components/carddata.h"
 #include "../components/permanent.h"
 #include "../coverage.h"
+#include "../svar_eval.h"
 #include "battlefield.h"
 #include "characteristics.h"
 #include "filters.h"
@@ -108,32 +109,6 @@ const Ability &stack_object_ability(Entity stack_object) {
     return global_coordinator.GetComponent<Ability>(stack_object);
 }
 
-bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities) {
-    if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
-    Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)
-                                     ? global_coordinator.GetComponent<Spell>(spell).caster
-                                     : Zone::UNKNOWN;
-    for (auto e : battlefield_permanents(entities)) {
-        Zone::Ownership perm_ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
-        for (const auto &r : permanent_replacement_effects(e)) {
-            if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) continue;
-            // Controller scope is read from the spell's caster (the matcher can't read it for a
-            // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.
-            if (r.valid_sa_filter.text().find("YouCtrl") != std::string::npos) {
-                if (spell_ctrl != perm_ctrl) continue;
-            } else if (r.valid_sa_filter.text().find("OppCtrl") != std::string::npos) {
-                if (spell_ctrl == perm_ctrl || spell_ctrl == Zone::UNKNOWN) continue;
-            }
-            // Any remaining type/characteristic qualifiers on the filter (head "Spell", color,
-            // type) are checked against the spell's printed characteristics.
-            MatchCtx ctx;
-            ctx.controller = perm_ctrl;
-            if (card_matches_filter(spell, r.valid_sa_filter, ctx)) return true;
-        }
-    }
-    return false;
-}
-
 // True if `r` is a continuous CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
 // controller-scoped spell filter covering every spell `player` controls, given that the
 // replacement's source is controlled by `source_ctrl`.
@@ -143,6 +118,65 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
     if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.applies_to_self_only) return false;
     if (r.valid_sa_filter == "Spell.YouCtrl") return source_ctrl == player;
     if (r.valid_sa_filter == "Spell.OppCtrl") return source_ctrl != player;
+    return false;
+}
+
+bool counter_replacement_covers(const Effect::Replacement &r, Zone::Ownership source_ctrl, Entity object,
+                                Zone::Ownership object_ctrl) {
+    if (global_coordinator.entity_has_component<Spell>(object) &&
+        unfiltered_counter_protection_covers(r, source_ctrl, object_ctrl))
+        return true;
+    if (!r.from_battlefield || !global_coordinator.entity_has_component<CardData>(object)) return false;
+    Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(object)
+                                     ? global_coordinator.GetComponent<Spell>(object).caster
+                                     : Zone::UNKNOWN;
+    // Controller scope is read from the spell's caster (the matcher can't read it for a
+    // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.
+    if (r.valid_sa_filter.text().find("YouCtrl") != std::string::npos) {
+        if (spell_ctrl != source_ctrl) return false;
+    } else if (r.valid_sa_filter.text().find("OppCtrl") != std::string::npos) {
+        if (spell_ctrl == source_ctrl || spell_ctrl == Zone::UNKNOWN) return false;
+    }
+    // Any remaining type/characteristic qualifiers on the filter (head "Spell", color,
+    // type) are checked against the spell's printed characteristics.
+    MatchCtx ctx;
+    ctx.controller = source_ctrl;
+    return card_matches_filter(object, r.valid_sa_filter, ctx);
+}
+
+// Map a Forge PresentZone$ token to its zone value (only the non-battlefield zones a spell-
+// mastery-style condition reads by printed characteristics). Defaults to the graveyard, which
+// is what every "spell mastery" card counts.
+static Zone::ZoneValue present_zone_value(const std::string &zone) {
+    if (zone == "Exile")   return Zone::EXILE;
+    if (zone == "Hand")    return Zone::HAND;
+    if (zone == "Library") return Zone::LIBRARY;
+    return Zone::GRAVEYARD;
+}
+
+bool spell_uncounterable_by_own_condition(Entity spell, const EntitySet &entities) {
+    if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
+    if (!global_coordinator.entity_has_component<Spell>(spell)) return false;
+    Zone::Ownership caster = global_coordinator.GetComponent<Spell>(spell).caster;
+    if (caster == Zone::UNKNOWN) return false;
+    const auto &cd = global_coordinator.GetComponent<CardData>(spell);
+    for (const auto &r : cd.replacement_effects) {
+        if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.from_battlefield) continue;
+        if (r.cant_counter_present.empty()) continue;  // unconditional self form is a cast-time stamp
+        Zone::ZoneValue zone = present_zone_value(r.cant_counter_zone);
+        MatchCtx mctx;
+        mctx.controller = caster;  // the "you" reference for the filter's YouOwn qualifier
+        int count = 0;
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone || z.owner != caster) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (card_matches_filter(e, r.cant_counter_present, mctx)) count++;  // ',' = OR over filters
+        }
+        if (compare_svar(count, r.cant_counter_compare.empty() ? "GE1" : r.cant_counter_compare))
+            return true;
+    }
     return false;
 }
 

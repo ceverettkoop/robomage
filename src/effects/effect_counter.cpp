@@ -14,55 +14,13 @@
 #include "../queries/spells.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
+#include "../systems/replacement_effects.h"
 #include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
 namespace effects {
-
-// Map a Forge PresentZone$ token to its zone value (only the non-battlefield zones a spell-
-// mastery-style condition reads by printed characteristics). Defaults to the graveyard, which
-// is what every "spell mastery" card counts.
-static Zone::ZoneValue present_zone_value(const std::string &zone) {
-    if (zone == "Exile")   return Zone::EXILE;
-    if (zone == "Hand")    return Zone::HAND;
-    if (zone == "Library") return Zone::LIBRARY;
-    return Zone::GRAVEYARD;
-}
-
-// A spell with a CONDITIONAL self "can't be countered" replacement (spell mastery — Exquisite
-// Firecraft: "this spell can't be countered if there are two or more instant and/or sorcery cards
-// in your graveyard"). Unlike the unconditional self form (stamped onto Spell::cant_be_countered
-// at cast), the gate is re-evaluated HERE, as the countering effect would resolve (CR 614.13 — the
-// replacement fires now), reading the caster's zone at this moment. Returns true iff some
-// CANT_BE_COUNTERED replacement on the spell's own card carries an IsPresent$/PresentZone$/
-// PresentCompare$ gate that currently holds. `entities` is the iterating system's mEntities.
-static bool spell_uncounterable_by_own_condition(Entity spell, const EntitySet &entities) {
-    if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
-    if (!global_coordinator.entity_has_component<Spell>(spell)) return false;
-    Zone::Ownership caster = global_coordinator.GetComponent<Spell>(spell).caster;
-    if (caster == Zone::UNKNOWN) return false;
-    const auto &cd = global_coordinator.GetComponent<CardData>(spell);
-    for (const auto &r : cd.replacement_effects) {
-        if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.from_battlefield) continue;
-        if (r.cant_counter_present.empty()) continue;  // unconditional self form is a cast-time stamp
-        Zone::ZoneValue zone = present_zone_value(r.cant_counter_zone);
-        MatchCtx mctx;
-        mctx.controller = caster;  // the "you" reference for the filter's YouOwn qualifier
-        int count = 0;
-        for (auto e : entities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            const auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != zone || z.owner != caster) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (card_matches_filter(e, r.cant_counter_present, mctx)) count++;  // ',' = OR over filters
-        }
-        if (compare_svar(count, r.cant_counter_compare.empty() ? "GE1" : r.cant_counter_compare))
-            return true;
-    }
-    return false;
-}
 
 bool target_color_condition_met(const Ability &ab, Entity target) {
     if (ab.def->condition_present.empty()) return true;
@@ -123,23 +81,18 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 if (suspended) return HandlerResult::SUSPENDED;
             }
 
-            // Can't be countered check — either a cast-time stamp (Cavern of Souls / a "this spell
-            // can't be countered" self replacement), a continuous battlefield static covering the
-            // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13), or a
-            // protection covering every spell the controller controls (the shared
-            // player_spells_cant_be_countered query the observation also reads). Each of these
-            // protects spells only: a non-spell target (an activated or triggered ability, Stifle)
-            // stays counterable even while its controller's spells can't be countered (Veil of
-            // Summer).
-            bool target_is_spell = global_coordinator.entity_has_component<Spell>(tgt);
-            if (do_counter &&
-                ((target_is_spell && global_coordinator.GetComponent<Spell>(tgt).cant_be_countered) ||
-                 spell_uncounterable_by_static(tgt, orderer->mEntities) ||
-                 spell_uncounterable_by_own_condition(tgt, orderer->mEntities) ||
-                 (target_is_spell && player_spells_cant_be_countered(target_controller, orderer->mEntities)))) {
-                std::string name = entity_name(tgt);
-                game_log("%s can't be countered\n", name.c_str());
-                do_counter = false;
+            // Can't be countered (CR 614.13): the replacement dispatcher says what covers it.
+            if (do_counter) {
+                ReplacementEvent rev;
+                rev.type = ReplacementEvent::COUNTER;
+                rev.entity = tgt;
+                rev.affected_player = target_controller;
+                replacement::dispatch(rev);
+                if (rev.prevented) {
+                    std::string name = entity_name(tgt);
+                    game_log("%s can't be countered\n", name.c_str());
+                    do_counter = false;
+                }
             }
 
             if (do_counter) {
