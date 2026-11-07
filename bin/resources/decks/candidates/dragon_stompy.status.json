@@ -131,7 +131,7 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -139,7 +139,7 @@
    },
    "result": "ok",
    "summary": "7 new card(s): 0 clean, 7 need 7 mechanic(s) (17 points)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "diff": {
    "detail": {
@@ -179,7 +179,7 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -187,7 +187,7 @@
    },
    "result": "pending",
    "summary": "7 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Effect with a continuous static, Fable of the Mirror-Breaker, Self-or-other zone triggers (Pyrogoyf)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "parse": {
    "detail": {
@@ -408,14 +408,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "7 new card(s), 7 with findings (17 findings), 0 without a script",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "provision": {
    "detail": {

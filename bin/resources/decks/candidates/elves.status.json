@@ -44,7 +44,7 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -52,7 +52,7 @@
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "diff": {
    "detail": {
@@ -80,7 +80,7 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -88,7 +88,7 @@
    },
    "result": "pending",
    "summary": "1 mechanic(s) to implement: AnimateAll power, toughness and types",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "parse": {
    "detail": {
@@ -130,14 +130,14 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (3 findings), 0 without a script",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "provision": {
    "detail": {

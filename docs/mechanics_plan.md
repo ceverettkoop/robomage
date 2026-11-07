@@ -982,6 +982,8 @@ Unproved. The `actor` tier's torch part was skipped and `robomage_nn` not rebuil
 
 That delta on a stack ability is noise: an ability has no subtypes to lose. Every checkpoint trained with it, so it stays.
 
+**League consolidation (2026-11-06), after the stage gate.** The newer list of each near copy replaces the older: `ur_tempo`, `lands_top8` and `death_and_taxes` are designated into `league/` (`onboard.py` stages 7 to 10; the campaign 1,443 games each, repeated over the final league, no error and one draw, reviewed: Archon of Cruelty's trigger takes `lands_top8` to -1 life and draws from reanimator's empty library in one resolution, a true CR 104.4a draw; stage 11's baseline waits for a policy run), and `ur_delver`, `lands`, `bw_dnt` and `gw_maverick` are deleted. `maverick` joins after M9. The league is ten decks: bug, burn, death_and_taxes, eldrazi_aggro, lands_top8, reanimator, ur_tempo, uw_control, wrb_energy, wubg_doomsday, which `LEAGUE` now names, so `eldrazi_aggro` is a default deck and gw_maverick's references went to it. The corpus has 56 games, its league part nine decks without `eldrazi_aggro` as before. The guides cover nine decks, the three replacements' sections rewritten and not yet reviewed (`docs/sideboard_guides.md`).
+
 ### M8. A characteristics view across zones (L)
 
 **Today.** Continuous effects come from battlefield permanents and emblems and mostly reach the

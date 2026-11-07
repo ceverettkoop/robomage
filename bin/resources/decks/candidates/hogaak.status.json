@@ -52,7 +52,7 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -60,7 +60,7 @@
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (4 points)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "diff": {
    "detail": {
@@ -89,7 +89,7 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -97,7 +97,7 @@
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Enters as a copy (Mockingbird), Mana spent on casting (Count$CastTotalManaSpent)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "parse": {
    "detail": {
@@ -133,14 +133,14 @@
    },
    "inputs": {
     "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "provision": {
    "detail": {

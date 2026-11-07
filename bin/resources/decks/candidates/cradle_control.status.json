@@ -67,7 +67,7 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -75,7 +75,7 @@
    },
    "result": "ok",
    "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (7 points)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "diff": {
    "detail": {
@@ -106,7 +106,7 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -114,7 +114,7 @@
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, UnlessCost on more effects",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "parse": {
    "detail": {
@@ -187,14 +187,14 @@
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "2 new card(s), 2 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "provision": {
    "detail": {

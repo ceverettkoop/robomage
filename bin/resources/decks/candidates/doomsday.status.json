@@ -57,7 +57,7 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -65,7 +65,7 @@
    },
    "result": "ok",
    "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "diff": {
    "detail": {
@@ -94,7 +94,7 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
@@ -102,7 +102,7 @@
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Empower, Next-spell effect (Theorist's Proxy)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "parse": {
    "detail": {
@@ -168,14 +168,14 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
     "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
    },
    "result": "ok",
    "summary": "1 new card(s), 1 with findings (7 findings), 0 without a script",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T16:30:06"
   },
   "provision": {
    "detail": {
