@@ -202,6 +202,11 @@ struct DelayedTriggerParams {
     // Targeted, in cur_game.resolution.memory.remembered at registration); Origin$/Destination$ on the
     // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
     bool mode_changes_zone = false;
+    // Mode$ SpellCast (Theorist's Proxy's "the next spell you cast this turn"): fires at the next
+    // spell its controller casts, ValidActivatingPlayer$ You, ValidCard$ Card. Static$ True: it
+    // resolves off the stack as the spell is cast (off_stack).
+    bool mode_spell_cast = false;
+    bool off_stack = false;
     // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —
     // "this turn"); if the watched object has not moved by end of turn the trigger expires unfired.
     bool this_turn = false;

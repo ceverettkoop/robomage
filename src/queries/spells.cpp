@@ -115,7 +115,7 @@ const Ability &stack_object_ability(Entity stack_object) {
 static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player) {
-    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.applies_to_self_only) return false;
+    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.applies_to_self_only || r.protects_remembered) return false;
     if (r.valid_sa_filter == "Spell.YouCtrl") return source_ctrl == player;
     if (r.valid_sa_filter == "Spell.OppCtrl") return source_ctrl != player;
     return false;

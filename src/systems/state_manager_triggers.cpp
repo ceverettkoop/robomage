@@ -232,8 +232,10 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             auto &dt = game.delayed_triggers[i];
             bool matched = false;
             bool expired = false;
+            ObjectRef fired_on;
             for (const auto &ev : events) {
                 if (ev.GetType() != dt.fire_on) continue;
+                if (dt.fire_on == Events::SPELL_CAST) fired_on = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
                 // Entity-watched "when THIS permanent leaves the battlefield" delayed trigger
                 // (CR 603.6e, the earthbend return-tapped trigger): match only the watched
                 // entity changing zone from the battlefield. Skip the phase/owner gating below,
@@ -291,6 +293,13 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                     global_coordinator.entity_has_component<Zone>(departed) &&
                     is_public_zone(global_coordinator.GetComponent<Zone>(departed).location))
                     trigger_ab.source = ObjectRef::of(departed);
+                if (dt.off_stack) {
+                    trigger_ab.triggered_card = fired_on;
+                    coverage_trigger(trigger_ab);
+                    resolve_ability(trigger_ab, orderer);
+                    to_remove.push_back(i);
+                    continue;
+                }
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ctrl;

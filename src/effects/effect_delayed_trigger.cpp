@@ -101,6 +101,19 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         return HandlerResult::DONE_NO_SUBS;
     }
 
+    if (dp && dp->mode_spell_cast) {
+        DelayedTrigger dt;
+        dt.ability = fire_ab;
+        dt.fire_on = Events::SPELL_CAST;
+        dt.owner_entity = owner_entity;
+        dt.restrict_player = owner_entity;
+        dt.fire_on_turn = cur_game.turn_state.turn;
+        dt.expires_end_of_turn = dp->this_turn;
+        dt.off_stack = dp->off_stack;
+        register_delayed_trigger(dt, ab.source);
+        return HandlerResult::DONE_NO_SUBS;
+    }
+
     uint32_t event_id = phase.empty() ? Events::UPKEEP_BEGAN : phase_string_to_event(phase);
 
     DelayedTrigger dt;
@@ -153,8 +166,13 @@ bool parse_delayed_trigger(AbilityDef &ab, const std::string &key, const std::st
     if (key == "Mode") {
         if (value == "ChangesZone")
             effect_params<DelayedTriggerParams>(ab).mode_changes_zone = true;
+        if (value == "SpellCast")
+            effect_params<DelayedTriggerParams>(ab).mode_spell_cast = true;
         return true;
     }
+    if (key == "Static") { effect_params<DelayedTriggerParams>(ab).off_stack = (value == "True"); return true; }
+    // ValidActivatingPlayer$ You restates a Mode$ SpellCast's own watch: its controller's next spell.
+    if (key == "ValidActivatingPlayer") return value == "You";
     if (key == "NextTurn") { effect_params<DelayedTriggerParams>(ab).next_turn = (value == "True"); return true; }
     if (key == "Phase")    { effect_params<DelayedTriggerParams>(ab).phase = value; return true; }
     if (key == "Execute")  { effect_params<DelayedTriggerParams>(ab).execute_svar = value; return true; }

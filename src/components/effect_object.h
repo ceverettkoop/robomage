@@ -42,12 +42,19 @@ struct EffectObject {
     std::vector<ObjectRef> remembered;  // RememberObjects$: what its abilities' IsRemembered reads
 
     bool is_emblem() const { return duration == Duration::GAME; }
+    // Does it remember `e`, still the object it was (CR 400.7)?
+    bool remembers(Entity e) const {
+        for (const ObjectRef &ref : remembered)
+            if (e != 0 && ref.get() == e) return true;
+        return false;
+    }
     // Does it hold a static or a replacement no row of the state format says by kind, so that a
     // frame can only name the card that made it (Sundering Eruption, Gaea's Will)?
     bool reported_by_card_alone() const {
         if (!statics.empty()) return true;
         for (const Effect::Replacement &r : replacements)
-            if (r.kind != Effect::Replacement::CANT_BE_COUNTERED && r.kind != Effect::Replacement::PREVENT_COMBAT_DAMAGE)
+            if ((r.kind != Effect::Replacement::CANT_BE_COUNTERED && r.kind != Effect::Replacement::PREVENT_COMBAT_DAMAGE) ||
+                r.protects_remembered)
                 return true;
         return false;
     }

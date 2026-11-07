@@ -437,7 +437,8 @@ void collect_counter(const ReplacementEvent &ev, const AppliedSet &applied, std:
     for_each_replacement(
         Effect::Replacement::CANT_BE_COUNTERED, Zone::UNKNOWN,
         [&](const ReplacementSource &src, const Effect::Replacement &r, size_t) {
-            covered = covered || counter_replacement_covers(r, src.controller, ev.entity, ev.affected_player);
+            covered = covered || (r.protects_remembered ? spell && src.object->remembers(ev.entity)
+                                                        : counter_replacement_covers(r, src.controller, ev.entity, ev.affected_player));
         });
     if (covered && !already_applied(applied, c)) out.push_back(c);
 }

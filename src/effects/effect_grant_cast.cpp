@@ -10,6 +10,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/players.h"
@@ -24,7 +25,7 @@ static bool grant_may_play_from_exile(const Ability &ab);
 static bool grant_cant_be_blocked(const Ability &ab);
 static bool grant_cant_gain_life(const Ability &ab);
 static bool grant_cast_with_flash(const Ability &ab);
-static bool remembered_shield_object(const Ability &ab, EffectObject &object);
+static bool remembered_shield_object(const EffectObject &object);
 
 // How long the object of `def` lasts: Duration$ Permanent is an emblem (CR 114), Duration$
 // UntilYourNextTurn ends at the controller's untap (game.cpp), and the Forge default is cleanup.
@@ -44,6 +45,9 @@ static EffectObject effect_object_of(const Ability &ab) {
     object.source_vocab_idx = source_vocab_idx(object.source);
     object.statics = ab.def->effect_statics;
     object.replacements = ab.def->effect_replacements;
+    if (!ab.def->effect_remember.is(ObjectSpec::DEFAULT))
+        for (Entity e : resolve_filter_objects(ab.def->effect_remember, ResolveCtx::of(ab)))
+            object.remembered.push_back(ObjectRef::of(e));
     for (const AbilityDef &trig : ab.def->effect_floating_triggers) {
         Ability ft(&trig);
         ft.controller = ab.controller;
@@ -64,20 +68,18 @@ static void log_effect_object(const Ability &ab, const EffectObject &object) {
         game_log("A floating triggered ability is created%s.\n",
                  object.duration == EffectObject::Duration::UNTIL_YOUR_NEXT_TURN ? " until your next turn"
                                                                                  : " until end of turn");
+    if (!object.remembered.empty()) return;
     if (ab.def->has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED))
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
 }
 
 // DB$ Effect | ReplacementEffects$ <DamageDone/Prevent shields> | RememberObjects$ Targeted (Maze
 // of Ith): all combat damage the remembered creature would deal (ValidSource$ Card.IsRemembered)
-// and/or be dealt (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). It is the
-// ability's inherited target (RememberObjects$ Targeted also stashed it in the remembered set).
-// False, with no shield to make, when no such creature is left.
-static bool remembered_shield_object(const Ability &ab, EffectObject &object) {
-    Entity who = ab.target.get();
-    if (who == 0 && !cur_game.resolution.memory.remembered.empty()) who = cur_game.resolution.memory.remembered.front().get();
+// and/or be dealt (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). False, with no
+// shield to make, when no such creature is left.
+static bool remembered_shield_object(const EffectObject &object) {
+    const Entity who = object.remembered.empty() ? 0 : object.remembered.front().get();
     if (who == 0 || !global_coordinator.entity_has_component<Creature>(who)) return false;
-    object.remembered.push_back(ObjectRef::of(who));
     game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n", entity_name(who).c_str());
     return true;
 }
@@ -211,7 +213,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     EffectObject object = effect_object_of(ab);
     const bool shield = ab.def->has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
     const bool holds_abilities = !object.statics.empty() || !object.triggers.empty() || !object.replacements.empty();
-    if (holds_abilities && (!shield || remembered_shield_object(ab, object))) {
+    if (holds_abilities && (!shield || remembered_shield_object(object))) {
         log_effect_object(ab, object);
         cur_game.resolved_effects.add(std::move(object));
     }

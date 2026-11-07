@@ -44,6 +44,9 @@ struct Effect {
         // caster relative to this permanent's controller, since a stack spell has no Permanent
         // controller for the filter matcher to read.
         bool from_battlefield = false;      // ActiveZones$ Battlefield — a continuous battlefield static
+        // CANT_BE_COUNTERED on an effect object, ValidCard$ Card.IsRemembered: it protects what the
+        // object remembers and nothing else (Theorist's Proxy's "the next spell you cast").
+        bool protects_remembered = false;
         FilterSpec valid_sa_filter;   // ValidSA$ spec the replacement protects from being countered
         // CANT_BE_COUNTERED spell-mastery gate (Exquisite Firecraft: "this spell can't be
         // countered if there are two or more instant and/or sorcery cards in your graveyard").

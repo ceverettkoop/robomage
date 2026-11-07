@@ -571,6 +571,7 @@ struct AbilityDef {
     // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
+    ObjectSpec effect_remember;               // RememberObjects$ on an Effect: what its object remembers
 
     // StaticAbilities$ <SVar>: the continuous statics an Effect holds, parsed here ("Ninjas you
     // control get +1/+1." on Kaito's [+1]). The GrantCast handler puts them on the EffectObject it

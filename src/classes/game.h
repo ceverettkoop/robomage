@@ -75,6 +75,9 @@ struct DelayedTrigger {
     // CR 610.3: no trigger but the wait for an "until" exile's event. `watched` leaving returns the
     // card at once (Orderer::move_object), with nothing on the stack.
     bool one_shot_return = false;
+    // Static$ True: it resolves as its event happens, off the stack (fired on the spell of a
+    // Mode$ SpellCast, which its ability finds as the triggered card).
+    bool off_stack = false;
     // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
     // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
     // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a

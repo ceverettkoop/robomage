@@ -166,6 +166,7 @@ static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement
 static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_cant_counter_remembered(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_effect_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r);
 static bool take_direct_amount_expr(AbilityDef& ability);
@@ -2152,6 +2153,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // the ability controller's control, not its owner's (Animate Dead's reanimation). CR 110.2a.
         ability.gain_control = (value == "True");
     } else if (key == "RememberObjects") {
+        // What an Effect's object remembers (EffectObject::remembered), for its abilities' IsRemembered.
+        if (ability.category == "Effect") ability.effect_remember = parse_object_spec(value);
         // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
         // can't-be-blocked effect remembers the creature it applies to).
         if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
@@ -2497,7 +2500,11 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // Voidwalker): tells Forge to drop a remembered object from the effect once it leaves the named
     // zone. The exile-play permission already covers a card only while it stays in exile
     // (play_permissions).
-    if (key == "ForgetOnMoved") return ability.effect_may_play_from_exile && value == "Exile";
+    // An object the effect's object remembers is held by identity, so it is forgotten as it moves
+    // whatever the zone (CR 400.7): what a spell's protection needs of ForgetOnMoved$ Stack.
+    if (key == "ForgetOnMoved")
+        return (ability.effect_may_play_from_exile && value == "Exile") ||
+               (ability.has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED) && value == "Stack");
     // ExileOnMoved$ <zone>: the Effect ends when its object leaves that zone. Each grant of
     // grant_cast is kept on the object's own state or by identity, and ends with it: the
     // can't-be-blocked mark and a prevention shield on the battlefield (Kappa Cannoneer, Maze of
@@ -2565,7 +2572,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "RememberObjects") {
         for (const char *name : {"Targeted", "Self", "RememberedLKI", "ChosenCard"})
             if (value.find(name) != std::string::npos) return true;
-        return category == "Effect" && value == "Remembered";
+        return category == "Effect" && (value == "Remembered" || value == "TriggeredCard");
     }
     if (key == "TgtZone")
         return value == "Graveyard" || value == "Battlefield" || (value == "Stack" && !ability.target_type.empty());
@@ -4523,6 +4530,14 @@ static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Repla
     return true;
 }
 
+// Theorist's Proxy's AntiMagic: the spell the Effect remembers can't be countered.
+static bool row_effect_cant_counter_remembered(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || l.valid_card_filter != "Card.IsRemembered" || l.valid_sa_filter != "Spell") return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.protects_remembered = true;
+    return true;
+}
+
 // Maze of Ith's RPrevent1/RPrevent2: prevent all combat damage dealt by (ValidSource$) or to
 // (ValidTarget$) the object the Effect remembers (CR 615).
 static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r) {
@@ -4564,6 +4579,7 @@ static const struct {
     {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false, "ValidCard ManaAmount ReplaceWith ActiveZones"},
     {"Untap", ReplacementHost::CARD, row_skip_untap_self, false, "ValidCard ValidStepTurnToController Layer"},
     {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false, "ValidSA Layer"},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_counter_remembered, false, "ValidCard ValidSA Layer"},
     {"Moved", ReplacementHost::EFFECT, row_effect_exile_instead_of_graveyard, false,
      "ValidCard Destination ReplaceWith ActiveZones"},
     {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false, "Prevent IsCombat ValidSource ValidTarget"},
