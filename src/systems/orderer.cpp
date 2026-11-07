@@ -20,6 +20,7 @@
 #include "../components/permanent.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/copies.h"
 #include "../queries/entry.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
@@ -43,7 +44,6 @@
 #include "../components/types.h"
 
 // --- file-local helpers (forward declarations) ---
-static void restore_printed_card(Entity target);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -265,7 +265,7 @@ void Orderer::move_object(
                 global_coordinator.entity_has_component<CardData>(target))
                 lki.copied_card = std::make_shared<const CardData>(
                     global_coordinator.GetComponent<CardData>(target));
-            restore_printed_card(target);
+            end_copy_effect(target);
         }
     }
 
@@ -551,22 +551,6 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 }
 
 extern bool no_shuffle;
-
-// Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed
-// CardData back on the card and its printed name/types on the (about-to-be-stripped) Permanent,
-// so every reader between now and the state-based strip sees the card itself. No-op for a
-// permanent that is not a copy.
-static void restore_printed_card(Entity target) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(target);
-    if (!perm.printed_card) return;
-    if (global_coordinator.entity_has_component<CardData>(target))
-        global_coordinator.GetComponent<CardData>(target) = *perm.printed_card;
-    perm.name = perm.printed_card->name;
-    perm.types = perm.printed_card->types;
-    perm.abilities.clear();
-    perm.static_abilities.clear();
-    perm.printed_card.reset();
-}
 
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
     Zone::Ownership owner = Zone::PLAYER_A;

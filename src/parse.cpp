@@ -1498,6 +1498,9 @@ static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
     AbilityDef tok = keyword_self_trigger("CopyPermanent", Events::CARD_CHANGED_ZONE);
     tok.trigger_zone_destination = Zone::BATTLEFIELD;
     tok.is_offspring_token = true;
+    tok.copy_overlay.sets_pt = true;  // "except it's 1/1"
+    tok.copy_overlay.power = 1;
+    tok.copy_overlay.toughness = 1;
     tok.defined = ObjectSpec(ObjectSpec::SELF);  // copies its own source (no targeting)
     ctx.face_defs.abilities.push_back(tok);
 }
@@ -2059,8 +2062,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.valid_tgts = value;
     } else if (key == "GainThisAbility") {
         // GainThisAbility$ True on an AB$ Clone (Thespian's Stage): the in-place copy retains this
-        // very ability ("...except it has this ability."). CR 706.2. Consumed by the clone handler.
-        ability.gain_this_ability = (value == "True");
+        // very ability ("...except it has this ability."). CR 707.9a. Consumed by become_copy.
+        ability.copy_overlay.gains_this_ability = (value == "True");
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
