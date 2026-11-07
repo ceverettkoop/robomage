@@ -403,6 +403,13 @@ static bool match_spell_cast(const TriggerEvent &fired) {
     const Event &ev = fired.ev;
     const bool has_spell = ev.HasParam(Params::ENTITY);
     const Entity spell = has_spell ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+    // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
+    if (ab.trigger_kicked_index > 0) {
+        if (!has_spell || !global_coordinator.entity_has_component<Spell>(spell)) return false;
+        const std::vector<bool> &kicked = global_coordinator.GetComponent<Spell>(spell).chosen.kicked;
+        const size_t index = static_cast<size_t>(ab.trigger_kicked_index - 1);
+        if (index >= kicked.size() || !kicked[index]) return false;
+    }
     // ValidCard$ Card.nonCreature (The Fantasticar): the cast spell must NOT be a creature spell.
     if (ab.trigger_valid_card_non_creature && has_spell && type_set_has(effective_types(spell), "Creature"))
         return false;

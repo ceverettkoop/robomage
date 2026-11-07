@@ -638,31 +638,27 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // spell, [if it was kicked with its [N] kicker,] ..." fires on SPELL_CAST of the spell
     // ITSELF, while it sits on the stack — not from the battlefield — so the battlefield scan
     // above never sees it. The source is the cast spell entity (the event's ENTITY); read its
-    // own CardData abilities for a trigger_only_self SPELL_CAST trigger and, when the trigger
-    // names a kicker (trigger_kicked_index > 0), gate it on that kicker having been paid
-    // (ChosenCost::kicked). General over any self-cast / kicked-N SpellCast trigger.
+    // own CardData abilities for a trigger_only_self SPELL_CAST trigger, matched by its row.
+    // General over any self-cast / kicked-N SpellCast trigger.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::SPELL_CAST) continue;
         if (!ev.HasParam(Params::ENTITY)) continue;
         Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
         if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
         if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
-        const auto &spell = global_coordinator.GetComponent<Spell>(spell_e);
-        Zone::Ownership ctrl = spell.caster;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Spell>(spell_e).caster;
         const std::string ent_name = entity_name(spell_e);
+        const TriggerMode *mode = trigger_mode_on(Events::SPELL_CAST);
         for (const auto &ab : global_coordinator.GetComponent<CardData>(spell_e).abilities) {
             if (ab->ability_type != AbilityDef::TRIGGERED) continue;
             if (ab->trigger_on != Events::SPELL_CAST) continue;
             if (!ab->trigger_only_self) continue;  // ValidCard$ Card.Self — only the cast spell itself
-            // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
-            if (ab->trigger_kicked_index > 0) {
-                size_t idx = static_cast<size_t>(ab->trigger_kicked_index - 1);
-                if (idx >= spell.chosen.kicked.size() || !spell.chosen.kicked[idx]) continue;
-            }
+            if (mode->match && !mode->match({*ab, spell_e, ctrl, ev})) continue;
 
             Ability trigger_ab(ab);
             trigger_ab.source = ObjectRef::of(spell_e);
             trigger_ab.controller = ctrl;
+            if (mode->capture) mode->capture(trigger_ab, ev);
 
             // Storm (CR 702.40a): lock in the copy count = number of OTHER spells cast before
             // this one this turn, by EITHER player. The per-player cast counters were already
