@@ -126,13 +126,19 @@ bool interchangeable_cards(Entity a, Entity b) {
         global_coordinator.GetComponent<CardData>(a).name !=
             global_coordinator.GetComponent<CardData>(b).name)
         return false;
-    if (za.location != Zone::GRAVEYARD && za.location != Zone::LIBRARY) return false;
-    for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
-        PlayPermissions pa = play_permissions(a, player);
-        PlayPermissions pb = play_permissions(b, player);
-        if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
-            return false;
-        if (za.location == Zone::LIBRARY && identity_visible(a, player) != identity_visible(b, player)) return false;
+    if (za.location == Zone::GRAVEYARD) {
+        for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+            PlayPermissions pa = play_permissions(a, player);
+            PlayPermissions pb = play_permissions(b, player);
+            if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
+                return false;
+        }
+        return true;
     }
-    return true;
+    if (za.location == Zone::LIBRARY) {
+        for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B})
+            if (identity_visible(a, seat) != identity_visible(b, seat)) return false;
+        return true;
+    }
+    return false;
 }

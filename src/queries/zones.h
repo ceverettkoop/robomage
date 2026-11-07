@@ -61,10 +61,9 @@ int graveyard_card_count(Zone::Ownership owner, const EntitySet &entities, Entit
 
 // Whether `a` and `b` are interchangeable cards to choose between: two copies of the same card in
 // the same player's graveyard, playable from there by the same players on the same terms
-// (play_permissions), or in the same player's library (a search, a Doomsday pile) on the same
-// terms, where each seat sees both of them or neither right now (identity_visible,
-// queries/visibility.h: a reveal window still open). A seat that sees only one of them, such as
-// an opponent looking at one
+// (play_permissions), or in the same player's library (a search, a Doomsday pile) where each
+// seat sees both of them or neither right now (identity_visible, queries/visibility.h: a reveal
+// window still open). A seat that sees only one of them, such as an opponent looking at one
 // in a reveal window, could tell the choices apart; what a seat remembers of a window that has
 // closed is its knowledge sidecar's, not the engine's. Choosing one or the other makes no
 // difference to the game or to what either seat sees, so a choice menu offers one of them.

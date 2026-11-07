@@ -145,12 +145,12 @@ struct StaticAbility {
     bool may_cast_self_from_graveyard = false;
     // MayPlay$ True over the top card of a library (Mystic Forge: "You may cast artifact spells and
     // colorless spells from the top of your library"): the cards Affected$ designates, read as the
-    // spell each would be, may be cast from there by the static's controller, their owner. A card
-    // in a library has no controller, so `affected` says "you own".
+    // spell each would be, may be cast from there by the static's controller, their owner.
     bool may_play_from_library = false;
     // MayLookAt$ You over the top card of a library (Mystic Forge: "You may look at the top card of
     // your library any time"): the static's controller sees what Affected$ designates for as long
-    // as the static applies (visibility.h: sync_standing_looks). `affected` as above.
+    // as the static applies (visibility.h: sync_standing_looks). A card in a library has no
+    // controller, so `affected` says "you own".
     bool may_look_at = false;
     // S:Mode$ ManaRestriction (Hogaak: "You can't spend mana to cast this spell"): the objects whose
     // mana may be spent to cast the spell that has it, ValidSource$; with InvertValidSource$, those

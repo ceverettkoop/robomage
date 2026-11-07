@@ -51,7 +51,13 @@
   "expect": [
     "Player A casts Ponder"
   ],
-  "expect_dump": [],
+  "expect_dump": [
+    "^A d=8 .*reveal LOOK LIBRARY pos=1 card=Lotus Petal",
+    "^A d=8 .*reveal STANDING_LOOK LIBRARY pos=0 card=Mishra's Bauble"
+  ],
+  "expect_dump_not": [
+    "^B d=(8|9|10|11) .*event LOOK"
+  ],
   "engine_flags": [
     "--selfcheck-knowledge",
     "--selfcheck-state-sample",

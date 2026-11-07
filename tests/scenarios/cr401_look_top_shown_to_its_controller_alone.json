@@ -48,7 +48,8 @@
     "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Lotus Petal",
     "^A .*position self top0 = Lotus Petal",
     "^A .*event LOOK LIBRARY> card=Lotus Petal",
-    "^B .*event LOOK LIBRARY> card=none"
+    "^B .*event LOOK LIBRARY> card=none",
+    "^A .*permission self LIBRARY card=Lotus Petal"
   ],
   "expect_dump_not": [
     "^B .*reveal ",

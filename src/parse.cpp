@@ -4238,7 +4238,6 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
         return;
     }
     if (reaches_a_library_top(sa) && !sa.may_play_with_flash) {
-        sa.affected = owner_relative_filter(sa.affected);
         sa.may_play_from_library = true;
         return;
     }

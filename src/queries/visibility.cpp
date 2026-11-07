@@ -369,8 +369,7 @@ LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer) {
     if (!is_seat(viewer) || identity_visible(card, viewer)) return exact;
     bool hidden_window = false;
     for (const Window &w : cur_game.reveal_windows) {
-        // A standing look is on the top card, which every player can tell from the others.
-        if (w.kind == Window::STANDING_LOOK || window_card(w) != card || window_shown_to(w, viewer)) continue;
+        if (window_card(w) != card || window_shown_to(w, viewer)) continue;
         if (!w.position_public) return LibrarySpan{0, 0};
         hidden_window = true;
     }
@@ -380,7 +379,7 @@ LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer) {
     size_t lo = z.distance_from_top, hi = z.distance_from_top;
     for (const Window &w : cur_game.reveal_windows) {
         const Entity other = window_card(w);
-        if (other == 0 || w.kind == Window::STANDING_LOOK || window_shown_to(w, viewer) || !w.position_public) continue;
+        if (other == 0 || window_shown_to(w, viewer) || !w.position_public) continue;
         const Zone &oz = global_coordinator.GetComponent<Zone>(other);
         if (oz.location != Zone::LIBRARY || oz.owner != z.owner || identity_visible(other, viewer)) continue;
         lo = std::min(lo, oz.distance_from_top);
