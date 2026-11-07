@@ -75,6 +75,10 @@ static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
 static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
+// The test-harness presets set up the position a run starts from: its first game alone.
+static bool presets_apply_to_this_game();
+// The zone presets, placed.
+static void place_zone_presets(EcsSystems &sys, Game::PregameState &pg);
 static std::vector<std::string> padded_library(
     const std::vector<std::string> &hand, const std::vector<std::string> &library);
 static std::string deck_line_name(const std::string &card);
@@ -444,9 +448,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     cur_game.obs_events = std::move(obs_events);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
-    if (life_a_override >= 0)
+    if (life_a_override >= 0 && presets_apply_to_this_game())
         global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total = life_a_override;
-    if (life_b_override >= 0)
+    if (life_b_override >= 0 && presets_apply_to_this_game())
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
     obs_game_start(player_a_goes_first);
@@ -1032,6 +1036,36 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
     return out;
 }
 
+static bool presets_apply_to_this_game() { return match_game_number <= 0; }
+
+static void place_zone_presets(EcsSystems &sys, Game::PregameState &pg) {
+    // place pre-set battlefield permanents
+    if (!battlefield_a_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    if (!battlefield_b_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    // pre-set graveyard cards (test harness): no Permanent/Creature components are
+    // attached, so they are skipped by the summoning-sickness clear below.
+    if (!graveyard_a_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
+    if (!graveyard_b_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
+    // pre-set exile / sideboard ("outside the game") cards so zone-change effects
+    // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
+    if (!exile_a_cards.empty())
+        sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
+    if (!exile_b_cards.empty())
+        sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
+    if (!sideboard_a_cards.empty())
+        sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
+    if (!sideboard_b_cards.empty())
+        sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
+}
+
 // Promptless fiat setup: test-harness presets, companions, and the preplaced-
 // permanent SBE pass. The gate runs INSIDE the main loop, so a preplaced
 // permanent's ETB choice (Cavern's choose-type, Disruptor Flute's name-a-card)
@@ -1042,31 +1076,7 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
 static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b) {
     Game::PregameState &pg = cur_game.pregame;
     if (!pg.fiat_placed) {
-        // place pre-set battlefield permanents
-        if (!battlefield_a_cards.empty()) {
-            auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
-            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
-        }
-        if (!battlefield_b_cards.empty()) {
-            auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
-            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
-        }
-        // pre-set graveyard cards (test harness): no Permanent/Creature components are
-        // attached, so they are skipped by the summoning-sickness clear below.
-        if (!graveyard_a_cards.empty())
-            sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
-        if (!graveyard_b_cards.empty())
-            sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
-        // pre-set exile / sideboard ("outside the game") cards so zone-change effects
-        // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
-        if (!exile_a_cards.empty())
-            sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
-        if (!exile_b_cards.empty())
-            sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
-        if (!sideboard_a_cards.empty())
-            sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
-        if (!sideboard_b_cards.empty())
-            sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
+        if (presets_apply_to_this_game()) place_zone_presets(sys, pg);
         // Companion (CR 702.139): instantiate each player's chosen companion as a sideboard
         // entity (if not already one) and record it, gated on the starting deck meeting the
         // companion's restriction.
