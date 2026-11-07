@@ -48,6 +48,7 @@
 #include "systems/state_manager_internal.h"
 #include "targeting.h"
 #include "svar_eval.h"
+#include "target_gate.h"
 #include "unless_payment.h"
 
 extern Coordinator global_coordinator;
@@ -123,7 +124,6 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static std::vector<Entity> chosen_targets_of(Entity targeting_entity);
 // Leave out of a target pick's candidate pool those `gate` refuses (run_target_select); the pool
 // is kept whole when it refuses every candidate.
-static void apply_target_gate(std::vector<Entity> &pool, const TargetPickGate *gate);
 // Could the cast `pc` pay its cost (CR 601.2f) with `candidate` added to the targets chosen so far,
 // a ValidTarget$-conditioned cost reduction applied for them? The target gate of a cast whose
 // cost such a reduction lowers.
@@ -1201,7 +1201,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
 
     if (rt.effective_max <= 1) {
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-        apply_target_gate(valid_targets, gate);
+        apply_target_gate(valid_targets, TargetPick{ability, 0, gate});
         if (select_single_target(ability, valid_targets, false, asker) < 0)
             return TargetStatus::SUSPENDED;
         rt = TargetSelectRT{};
@@ -1213,17 +1213,12 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     // minimum is ALSO X (TargetMin$ X = TargetMax$ X), this becomes "exactly X target ..."
     // (Candelabra of Tawnos, Hide on the Ceiling): the loop neither offers "Done" nor stops
     // before X targets have been chosen, and clamps at X. X (x_paid) was chosen before targets
-    // (CR 601.2b), so it is known here. The candidate pool is re-derived each pick as
-    // build_valid_targets minus the already-chosen targets — byte-identical to the former
-    // erase-chosen running pool, since nothing mutates between picks, and re-derivable on a
-    // resume for free.
+    // (CR 601.2b), so it is known here. The candidate pool is re-derived each pick through the
+    // gate's rows, which see the targets already chosen: nothing mutates between picks, so it is
+    // re-derivable on a resume for free.
     for (int i = rt.picked; i < rt.effective_max; i++) {
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-        for (const ObjectRef &chosen : ability.targets)
-            valid_targets.erase(
-                std::remove(valid_targets.begin(), valid_targets.end(), chosen.get()),
-                valid_targets.end());
-        apply_target_gate(valid_targets, gate);
+        apply_target_gate(valid_targets, TargetPick{ability, rt.picked, gate});
         if (valid_targets.empty()) break;
         bool can_stop = (i >= rt.effective_min);
         if (select_single_target(ability, valid_targets, can_stop, asker) < 0)
@@ -1236,15 +1231,6 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     if (!ability.targets.empty()) ability.target = ability.targets[0];
     rt = TargetSelectRT{};
     return TargetStatus::DONE;
-}
-
-// See forward declaration at top of file.
-static void apply_target_gate(std::vector<Entity> &pool, const TargetPickGate *gate) {
-    if (gate == nullptr) return;
-    std::vector<Entity> kept;
-    for (Entity e : pool)
-        if ((*gate)(e)) kept.push_back(e);
-    if (!kept.empty()) pool = std::move(kept);
 }
 
 int BlockingTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
@@ -2331,9 +2317,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             };
             // A cost reduced only for some targets (Mystical Dispute): a target is offered only
             // when the cost it leaves can be paid.
-            const TargetPickGate cost_gate = [&pc, &card_data, caster, orderer](Entity candidate) {
+            const TargetPickGate cost_gate{[&pc, &card_data, caster, orderer](Entity candidate) {
                 return target_cost_payable(pc, card_data, caster, candidate, orderer);
-            };
+            }};
             if (run_announce(pc.ability, pc.announce, asker, orderer, caster, false,
                     card_data.has_escalate ? &escalate_gate : nullptr,
                     pc.target_cost_reduction ? &cost_gate : nullptr) == AnnounceStatus::SUSPENDED)
@@ -2357,9 +2343,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (!pc.tsel.active)
                     pc.enchant_ab = enchant_target_ability(spell_entity, card_data, caster);
                 FlowTargetAsker asker(game, caster, resume_choice);
-                const TargetPickGate cost_gate = [&pc, &card_data, caster, orderer](Entity candidate) {
+                const TargetPickGate cost_gate{[&pc, &card_data, caster, orderer](Entity candidate) {
                     return target_cost_payable(pc, card_data, caster, candidate, orderer);
-                };
+                }};
                 if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster,
                         pc.target_cost_reduction ? &cost_gate : nullptr) != TargetStatus::DONE)
                     return;
