@@ -198,6 +198,7 @@ static bool ev_exiled_with_source(const CharView &v, const Qualifier &q, const M
 static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_equipped_by(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -293,6 +294,9 @@ static const QualifierRow kQualifierRows[] = {
     // "AttachedTo <filter>": the object is attached to a permanent the filter matches (Springheart
     // Nantuko's "attached to a creature you control"). The filter runs to the next '+'.
     parsed_relative_row("AttachedTo ", NameForm::PREFIX, parse_attached_to, ev_attached_to),
+    // EquippedBy — the object the filter's source is attached to (Hawkeye's Bow's "equipped creature").
+    // One that has left matches as it last was: a creature tapped and sacrificed by one cost.
+    relative_row("EquippedBy", ev_equipped_by),
     relative_row("YouCtrl", ev_you_ctrl),
     relative_row("OppCtrl", ev_opp_ctrl),
     // "ControlledBy TriggeredDefendingPlayer" (Forge): the object is controlled by the defending
@@ -835,6 +839,15 @@ static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx
     if (!v.on_battlefield || !global_coordinator.entity_has_component<Permanent>(v.entity)) return false;
     const Entity host = global_coordinator.GetComponent<Permanent>(v.entity).equipped_to.get();
     return host != 0 && permanent_matches_filter(host, FilterSpec(q.text), ctx);
+}
+
+static bool ev_equipped_by(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
+    if (v.entity == 0 || !global_coordinator.entity_has_component<Permanent>(ctx.source)) return false;
+    coverage_row("EquippedBy");
+    if (global_coordinator.GetComponent<Permanent>(ctx.source).equipped_to.get() == v.entity) return true;
+    if (is_battlefield_permanent(v.entity)) return false;
+    const LastKnownInfo *lki = departed_lki_for(v.entity);
+    return lki && refs_contain(lki->attached, ctx.source);
 }
 
 static bool ev_you_ctrl(const CharView &v, const Qualifier &, const MatchCtx &ctx) {

@@ -1,0 +1,45 @@
+{
+  "name": "cr701_26_hawkeyes_bow_pings_when_the_equipped_creature_attacks",
+  "why": "CR 701.26a, Hawkeye's Bow: attacking taps the equipped creature, which deals 1 damage to each opponent, and it fights as a 3/2. Goblin Guide, attacking beside it unequipped, doesn't.",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Hawkeye's Bow",
+    "Grizzly Bears",
+    "Goblin Guide",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Hawkeye's Bow",
+    "A:target:Grizzly Bears",
+    "A:attack:Grizzly Bears",
+    "A:attack:Goblin Guide",
+    "A:attack:done"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Grizzly Bears deals 1 damage to Player B \\(now at 19 life\\)",
+    "Grizzly Bears deals 3 damage to Player B"
+  ],
+  "expect_count": {
+    "Hawkeye's Bow triggered": 1
+  }
+}

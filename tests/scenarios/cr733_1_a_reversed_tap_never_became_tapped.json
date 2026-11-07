@@ -1,0 +1,51 @@
+{
+  "name": "cr733_1_a_reversed_tap_never_became_tapped",
+  "why": "CR 733.1, 701.26a: a payment reversed un-taps Llanowar Elves as though it was never tapped, so Hawkeye's Bow doesn't trigger: restore_mana_state drops the tap's unread event. Paid for again, it does.",
+  "hand_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Hawkeye's Bow",
+    "Llanowar Elves",
+    "Mountain",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "offer_cancel": true,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Hawkeye's Bow",
+    "A:target:Llanowar Elves",
+    "A:tap:Mountain",
+    "A:pass",
+    "A:cast:Grizzly Bears",
+    "A:tap:Llanowar Elves",
+    "A:desc:Cancel",
+    "A:attack:done"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Payment cancelled|cancel"
+  ],
+  "expect_not": [
+    "Hawkeye's Bow triggered"
+  ]
+}

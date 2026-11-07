@@ -77,6 +77,8 @@ void strip_permanent_components(Entity entity, const EntitySet &entities) {
             auto &attached = global_coordinator.GetComponent<Permanent>(e);
             if (attached.equipped_to.lki_entity() != entity) continue;
             attached.equipped_to = ObjectRef{};
+            if (const auto lki = cur_game.last_known_info.find(entity); lki != cur_game.last_known_info.end())
+                lki->second.attached.push_back(ObjectRef::of(e));
             const bool is_aura = global_coordinator.entity_has_component<CardData>(e) &&
                                  !global_coordinator.GetComponent<CardData>(e).enchant_filter.empty();
             if (!is_aura) game_log("%s becomes unattached\n", entity_name(e).c_str());

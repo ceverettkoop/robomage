@@ -380,6 +380,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Renegade Rallier", 455},
     {"Sand Scout", 456},
     {"Pyrogoyf", 457},
+    {"Hawkeye's Bow", 458},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

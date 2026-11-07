@@ -115,6 +115,9 @@ struct LastKnownInfo {
     std::set<Type> types;                  // its type line (types, subtypes, supertypes)
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
+    // What was attached to it as it left (strip_permanent_components, which ends those links): "equipped
+    // creature" of a creature a cost tapped and sacrificed.
+    std::vector<ObjectRef> attached;
     std::vector<ObjectRef> exiled_with;    // Permanent::exiled_with snapshot — the cards this permanent
                                            // had exiled, so a leaves-the-battlefield ability (Skyclave
                                            // Apparition's TrigToken) can still find them after the
