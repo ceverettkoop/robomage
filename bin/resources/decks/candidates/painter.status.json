@@ -18,89 +18,69 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [
-     "Phyrexian Dragon Engine"
-    ],
+    "clean": [],
     "mechanics": {},
     "needs": {},
-    "new_cards": [
-     "Phyrexian Dragon Engine"
-    ],
+    "new_cards": [],
     "size_points": 0
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
-   "summary": "1 new card(s): 1 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-11-07T13:31:33"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:48:42"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 40,
+    "in_vocab": 41,
     "no_script": [],
-    "not_in_vocab": [
-     "Phyrexian Dragon Engine"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
-   "summary": "41 cards: 40 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-07T12:28:02"
+   "summary": "41 cards: 41 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:42"
   },
   "implement": {
    "detail": {},
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-11-07T13:31:33"
+   "time": "2026-11-07T13:48:42"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Phyrexian Dragon Engine": {
-      "card": "Phyrexian Dragon Engine",
-      "faces": [
-       "Phyrexian Dragon Engine"
-      ],
-      "findings": [],
-      "layout": "normal",
-      "script": "cardsfolder/p/phyrexian_dragon_engine.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "85e0141b3a6ca60f89dada66a058f80b3b4e4c8c485da677d8ee67afeffa7ea7",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
-   "summary": "1 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-11-07T13:31:33"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:48:42"
   },
   "provision": {
    "detail": {
@@ -114,11 +94,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T12:28:02"
+   "time": "2026-11-07T13:48:42"
   },
   "scrape": {
    "detail": {

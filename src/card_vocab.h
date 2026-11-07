@@ -402,6 +402,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Mystic Forge", 477},
     {"Perilous Snare", 478},
     {"Theorist's Proxy", 479},
+    {"Phyrexian Dragon Engine", 480},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

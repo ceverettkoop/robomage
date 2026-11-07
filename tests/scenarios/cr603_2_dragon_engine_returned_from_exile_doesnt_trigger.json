@@ -1,0 +1,61 @@
+{
+  "name": "cr603_2_dragon_engine_returned_from_exile_doesnt_trigger",
+  "why": "CR 603.2, 610.3: exiled by Perilous Snare and back when the Snare goes, it enters from exile",
+  "hand_b": [
+    "Abrade"
+  ],
+  "hand_a": [
+    "Perilous Snare"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Phyrexian Dragon Engine",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Perilous Snare",
+    "A:target:Phyrexian Dragon Engine",
+    "A:pass",
+    "B:cast:Abrade",
+    "B:desc:Destroy target artifact",
+    "B:target:Perilous Snare"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Phyrexian Dragon Engine is moved to exile",
+    "Phyrexian Dragon Engine is moved to the battlefield"
+  ],
+  "expect_not": [
+    "Phyrexian Dragon Engine triggered"
+  ],
+  "expect_menu_not": [
+    "discard your hand"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

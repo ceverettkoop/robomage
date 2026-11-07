@@ -1,0 +1,55 @@
+{
+  "name": "cr118_12_dragon_engine_declined_discards_and_draws_nothing",
+  "why": "CR 118.12: declined, the hand stays and nothing is drawn",
+  "hand_a": [
+    "Island",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Phyrexian Dragon Engine",
+    "A:desc:Decline"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "declines to discard your hand"
+  ],
+  "expect_not": [
+    "Player A discards",
+    "Resolving ability \\(category: Draw"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "name": "cr118_12_dragon_engine_on_an_empty_hand_still_draws_three",
+  "why": "CR 118.3, 118.12: an empty hand is a whole hand: the cost owes nothing, as Lion's Eye Diamond's does, so the choice is offered, and \"if you do\" reads the choice: three cards",
+  "hand_a": [
+    "Island"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Lion's Eye Diamond"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:play:Island",
+    "A:desc:Lion's Eye Diamond for (R)",
+    "A:desc:Tap Mountain",
+    "A:desc:Tap Mountain",
+    "A:activate:Phyrexian Dragon Engine",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 12,
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "expect_count": {
+    "Player A draws": 3,
+    "Player A discards": 6
+  },
+  "expect_order": [
+    "Player A sacrifices Lion's Eye Diamond",
+    "Phyrexian Dragon Engine triggered",
+    "Player A draws"
+  ],
+  "expect_menu": [
+    "Accept: discard your hand"
+  ],
+  "expect_dump": [
+    "^A .*pending_cost TRIGGER discard=0$"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

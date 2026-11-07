@@ -1,0 +1,50 @@
+{
+  "name": "cr603_2_dragon_engine_cast_doesnt_trigger",
+  "why": "CR 603.2: cast from hand it enters from the stack",
+  "hand_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Phyrexian Dragon Engine"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "Phyrexian Dragon Engine enters the battlefield"
+  ],
+  "expect_not": [
+    "Phyrexian Dragon Engine triggered"
+  ],
+  "expect_menu_not": [
+    "discard your hand"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

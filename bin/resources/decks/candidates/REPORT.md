@@ -24,6 +24,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | designate |
 | maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | designate |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
+| painter | Painter | 1.0 | combo | 41 | 0 | 0 | 0 | implement |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 0 | 0 | 0 | implement |
@@ -31,7 +32,6 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
-| painter | Painter | 1.0 | combo | 41 | 1 | 0 | 0 | implement |
 
 ## Mechanics ranked by the decks that need them
 
@@ -151,6 +151,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 32 cards, 0 new; clean: -
 
 
+### painter — Painter (1.0%, combo)
+
+41 cards, 0 new; clean: -
+
+
 ### reanimator_top8 — Reanimator (3.0%, combo)
 
 28 cards, 0 new; clean: -
@@ -184,8 +189,3 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 ### welder_cam — Welder Cam (2.0%, combo)
 
 33 cards, 0 new; clean: -
-
-
-### painter — Painter (1.0%, combo)
-
-41 cards, 1 new; clean: Phyrexian Dragon Engine

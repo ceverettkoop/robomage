@@ -1,0 +1,57 @@
+{
+  "name": "cr603_2_dragon_engine_reanimated_from_your_graveyard_triggers",
+  "why": "CR 603.2: the trigger is \"enters from your graveyard\", not unearth's: your own Reanimate reaches it, and with no unearth the Engine stays past the end step",
+  "hand_a": [
+    "Reanimate",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Reanimate",
+    "A:target:Phyrexian Dragon Engine",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 22,
+  "expect_order": [
+    "Phyrexian Dragon Engine triggered",
+    "Player A discards Island",
+    "Player A draws"
+  ],
+  "expect_not": [
+    "Phyrexian Dragon Engine is moved to exile",
+    "is unearthed"
+  ],
+  "expect": [
+    "TURN 2 \\(Player B\\)"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

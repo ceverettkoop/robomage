@@ -1,0 +1,65 @@
+{
+  "name": "cr702_84a_dragon_engine_killed_while_unearthed_is_exiled",
+  "why": "CR 702.84a, 603.2: Bolted with its trigger on the stack it is exiled instead of put into the graveyard, and the trigger still offers the discard, which doesn't need the Engine",
+  "hand_a": [
+    "Island"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Phyrexian Dragon Engine",
+    "B:pass",
+    "B:cast:Lightning Bolt",
+    "B:target:Phyrexian Dragon Engine",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 9,
+  "expect_order": [
+    "Lightning Bolt deals 3 damage to Phyrexian Dragon Engine",
+    "Phyrexian Dragon Engine is destroyed",
+    "Player A discards Island",
+    "Player A draws"
+  ],
+  "expect_count": {
+    "Player A draws": 3
+  },
+  "expect_dump_final": [
+    "^A .*object self EXILE"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}
