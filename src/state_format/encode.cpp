@@ -1499,7 +1499,8 @@ int menu_row_card(const LegalAction &la, Zone::Ownership viewer) {
     const Entity src = la.source_entity;
     if (src != 0 && global_coordinator.entity_has_component<Player>(src)) return -1;
     if (la.named_card >= 0) return la.named_card;
-    return la.card_is_public ? public_card_id(src) : visible_card_id(src, viewer);
+    // A row every player may read shows no card lying face down (CR 708.5).
+    return la.card_is_public && !face_down_card(src) ? public_card_id(src) : visible_card_id(src, viewer);
 }
 
 std::string menu_row_description(const LegalAction &la, Zone::Ownership viewer) {
