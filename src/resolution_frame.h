@@ -77,10 +77,15 @@ struct RearrangeRt {
 };
 // A draw event's cards, one at a time through their replacement effects, so that a question about
 // one of them can suspend mid-event. `remaining` is read as the event starts, an additive
-// replacement's extra cards included (replacement::draw_count_bonus).
+// replacement's extra cards included (replacement::draw_count_bonus). While `body` is set, the
+// ReplaceWith$ that replaces the current card is under way, resolving as a frame level so that it
+// can ask (replacement::draw_body).
 struct DrawBatch {
     bool started = false;
     size_t remaining = 0;
+    const AbilityDef *body = nullptr;
+    ObjectRef body_source;
+    Zone::Ownership body_controller = Zone::UNKNOWN;
 };
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
@@ -338,7 +343,7 @@ struct TriggerPlacementRT {
 // resolve_child's push of the child level, and deque push_back/pop_back never
 // invalidate references to other elements.
 struct FrameLevel {
-    enum ChildKind { ROOT, SUB, GIFT, CHARM_MODE, REPEAT_SUB, IMMEDIATE };
+    enum ChildKind { ROOT, SUB, GIFT, CHARM_MODE, REPEAT_SUB, IMMEDIATE, REPLACEMENT };
     ChildKind kind = ROOT;
     int child_index = 0;   // index into the parent's child list (subabilities, charm modes, ...)
     int iter_index = 0;    // iteration counter for repeated children (repeat_each, gift loop)

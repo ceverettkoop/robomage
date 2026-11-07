@@ -31,6 +31,7 @@
 #include "../input_logger.h"
 #include "../resolution.h"
 #include "../svar_eval.h"
+#include "orderer.h"
 #include "state_manager.h"
 
 static std::string etb_counter_kind(const StaticAbility &sa, Entity entering);
@@ -82,6 +83,8 @@ struct ReplacementSource {
     std::string name() const {
         return object ? entity_name(object->source) : global_coordinator.GetComponent<Permanent>(entity).name;
     }
+    // What a menu row names it by: an effect object has only the card that made it.
+    Entity menu_entity() const { return object ? object->source : entity; }
     // The candidate index of its `i`th replacement: an effect object has no entity to tell it from
     // another, so its id goes in, clear of the indices a card uses.
     int index(size_t i) const {
@@ -438,7 +441,7 @@ void collect_counter(const ReplacementEvent &ev, const AppliedSet &applied, std:
     if (covered && !already_applied(applied, c)) out.push_back(c);
 }
 
-// DRAW_CARD has its own menu (dispatch_draw); every other event is collected here.
+// A draw has its own menu (collect_draw_replacements); every other event is collected here.
 std::vector<Candidate> collect(const ReplacementEvent &ev, const AppliedSet &applied) {
     std::vector<Candidate> out;
     switch (ev.type) {
@@ -447,7 +450,6 @@ std::vector<Candidate> collect(const ReplacementEvent &ev, const AppliedSet &app
         case ReplacementEvent::UNTAP: collect_untap(ev, applied, out); break;
         case ReplacementEvent::PRODUCE_MANA: collect_produce_mana(ev, applied, out); break;
         case ReplacementEvent::COUNTER: collect_counter(ev, applied, out); break;
-        case ReplacementEvent::DRAW_CARD: break;
     }
     return out;
 }
@@ -685,33 +687,6 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
     return eligible[static_cast<size_t>(pick)];
 }
 
-// Dredge (702.52a / 614.1a): an optional, exclusive draw replacement. The drawing
-// player may replace the draw with one dredge from their graveyard, or decline.
-// BLOCKING form, kept for the unconverted draw sites (mulligan redraws, where a
-// dredge card cannot yet be in the graveyard); the turn-based draw and the
-// resolution-time draw handlers ask the same menu through the suspension
-// framework instead (resume_pending_draws / draw_n_with_replacements).
-void dispatch_draw(ReplacementEvent &ev) {
-    std::vector<replacement::DrawReplacementOption> opts;
-    std::vector<LegalAction> actions =
-        replacement::collect_draw_replacements(ev.affected_player, &opts);
-    if (actions.empty()) return;
-
-    // The drawing player makes the dredge decision — route/observe/record from
-    // their perspective, which may differ from the current priority holder (a
-    // draw can be forced by an opponent's effect).
-    bool prev_priority = cur_game.priority.player_a_has_priority;
-    cur_game.priority.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
-    int choice = InputLogger::instance().get_input(actions);
-    cur_game.priority.player_a_has_priority = prev_priority;
-    if (choice == 0) return;  // chose to draw normally
-
-    const replacement::DrawReplacementOption &chosen = opts[static_cast<size_t>(choice - 1)];
-    ev.draw_replaced = true;
-    ev.dredge_source = chosen.source;
-    ev.dredge_mill = chosen.mill;
-}
-
 }  // namespace
 
 // The kind of counter an EtbCounter static adds. Sunburst's follows the card's own types, whatever
@@ -729,27 +704,60 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
     opts->clear();
     std::vector<LegalAction> actions;
     const EntitySet &entities = zoned_entities();
-    size_t lib = zone_objects(entities, Zone::LIBRARY, player).size();
+    const size_t lib = zone_objects(entities, Zone::LIBRARY, player).size();
+    for_each_replacement(
+        Effect::Replacement::DRAW_REPLACED, player,
+        [&](const ReplacementSource &src, const Effect::Replacement &r, size_t) {
+            if (r.draw_from_empty_library && lib != 0) return;
+            LegalAction la(PASS_PRIORITY, src.menu_entity(), src.name() + ": replace the draw");
+            la.category = ActionCategory::CHOOSE_REPLACEMENT;
+            actions.push_back(la);
+            opts->push_back({src.entity, 0, r.replace_with, src.controller});
+        });
+    const bool must_replace = !actions.empty();
+    std::vector<DrawReplacementOption> dredges;
     for (Entity e : zone_objects(entities, Zone::GRAVEYARD, player)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib)
-            opts->push_back({e, cd.dredge});
+        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib) dredges.push_back({e, cd.dredge, nullptr, player});
     }
-    if (opts->empty()) return actions;
+    if (dredges.empty()) return actions;
 
-    // Option 0 is always "draw normally" so the default (index 0) keeps the draw.
-    LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
-    draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
-    actions.push_back(draw_act);
-    for (const DrawReplacementOption &o : *opts) {
+    if (!must_replace) {
+        LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
+        draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
+        actions.push_back(draw_act);
+        opts->push_back({});
+    }
+    for (const DrawReplacementOption &o : dredges) {
         auto &cd = global_coordinator.GetComponent<CardData>(o.source);
         LegalAction la(PASS_PRIORITY, o.source,
                        "Dredge " + cd.name + " (mill " + std::to_string(o.mill) + ")");
         la.category = ActionCategory::CHOOSE_REPLACEMENT;
         actions.push_back(la);
+        opts->push_back(o);
     }
     return actions;
+}
+
+void take_draw_option(Orderer &orderer, Zone::Ownership player, const DrawReplacementOption &option, DrawBatch &batch) {
+    if (option.body) {
+        batch.body = option.body;
+        batch.body_source = ObjectRef::of(option.source);
+        batch.body_controller = option.controller;
+        return;
+    }
+    if (option.mill > 0) orderer.apply_dredge(player, option.source, option.mill);
+    else orderer.perform_draw(player);
+    batch.remaining--;
+}
+
+Ability draw_body(const DrawBatch &batch) {
+    Ability body(batch.body);
+    body.source = batch.body_source;
+    body.controller = batch.body_controller;
+    body.replacing_an_event = true;
+    return body;
 }
 
 int draw_count_bonus(Zone::Ownership player) {
@@ -769,23 +777,9 @@ int draw_count_bonus(Zone::Ownership player) {
     return bonus;
 }
 
-void run_replace_with(const Effect::Replacement &r, Entity source, Zone::Ownership controller,
-                      std::shared_ptr<Orderer> orderer) {
-    Ability body(r.replace_with);
-    body.source = ObjectRef::of(source);
-    body.controller = controller;
-    body.replacing_an_event = true;
-    resolve_ability(body, orderer);
-}
-
 size_t choose_one_prompt_count() { return g_choose_one_prompts; }
 
 void dispatch(ReplacementEvent &ev) {
-    if (ev.type == ReplacementEvent::DRAW_CARD) {
-        dispatch_draw(ev);
-        return;
-    }
-
     // 616.1 / 616.1f: apply one applicable replacement at a time, re-evaluating the
     // remaining applicable effects each pass, until none are left.
     AppliedSet applied;

@@ -637,6 +637,13 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // without re-deriving the question at all.
                     break;
                 case PendingQuery::RESOLUTION: {
+                    // What replaced a turn-based draw asked: the draw batch re-enters it.
+                    if (cur_game.pending.draw.active) {
+                        resume_pending_draws(cur_game, sys.orderer);
+                        if (cur_game.pending.query.active) continue;
+                        cur_game.finish_suspended_turn_draw();
+                        break;
+                    }
                     // Suspended again (a follow-up ask armed a new query): loop
                     // back so the pending branch emits it before anything runs.
                     if (reenter_suspended_resolution(sys)) continue;

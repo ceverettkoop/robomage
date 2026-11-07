@@ -1,0 +1,78 @@
+{
+  "name": "cr121_6a_jace_wins_at_the_turn_draw_from_an_empty_library",
+  "why": "CR 121.6a, 104.3a: Jace, Wielder of Mysteries replaces the turn's draw from an empty library with a win",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Jace Wielder of Mysteries"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:[+1]",
+    "A:target:Player A",
+    "A:play:Island",
+    "A:desc:[+1]",
+    "A:target:Player A",
+    "A:play:Island",
+    "A:discard:Island",
+    "A:play:Island"
+  ],
+  "max_decisions": 40,
+  "expect_result": "A",
+  "expect_not": [
+    "attempts to draw"
+  ]
+}

@@ -84,13 +84,12 @@ public:
     void draw(Zone::Ownership player, size_t ct, bool fire_draw_event = true);
     // The post-replacement half of a single draw: move the top library card to hand
     // (or set the decked-out loss on an empty library), with the draw logs and the
-    // PLAYER_DREW_CARD event. Called directly by the suspendable draw loops
-    // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
-    // question is settled; draw_one routes through it after its blocking dispatch.
+    // PLAYER_DREW_CARD event. Called by the suspendable draw loops
+    // (resume_pending_draws, effects::draw_n_with_replacements) once the replacement
+    // question is settled.
     void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
     // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
-    // graveyard to hand, and log — the replaced draw's outcome. Shared by the
-    // blocking draw_one path and the suspendable draw loops.
+    // graveyard to hand, and log — the replaced draw's outcome.
     void apply_dredge(Zone::Ownership player, Entity source, int mill_ct);
     // Move the top `ct` cards of a player's library to their graveyard. Returns the
     // milled entities in mill order (top first).
@@ -134,11 +133,6 @@ private:
     // CR 610.3: `host` has just left the battlefield, so the second one-shot effect of each "until"
     // exile waiting on it happens, all before anything else does (610.3d).
     void end_until_exiles(const ObjectRef &host);
-    // Draw a single card for `player`, first offering any available dredge
-    // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
-    // loss if the library is empty.
-    void draw_one(Zone::Ownership player, bool fire_draw_event = true);
-
 };
 
 #endif /* ORDERER_H */

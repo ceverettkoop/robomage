@@ -108,6 +108,13 @@ static void frame_finish() {
     supersede_departed_cards();
 }
 
+ResolveStatus StackManager::resolve_off_stack(const Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Ability &work = frame_enter(0, ab);
+    if (resolve_ability(work, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
+    frame_finish();
+    return ResolveStatus::DONE;
+}
+
 // CR 702.103e: as a bestowed Aura spell begins resolving with an illegal target, it ceases to be
 // bestowed and goes on resolving as the creature spell it is. True if that happened.
 bool StackManager::spell_ceases_to_be_overlaid(Entity spell) {

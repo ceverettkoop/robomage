@@ -1355,7 +1355,7 @@ static void kw_chapter(const std::string &kw_line, KeywordContext &ctx) {
 
 // K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
 // milling N cards and returning this card to hand. Value stored on CardData;
-// the replacement is offered in Orderer::draw.
+// the replacement is offered by replacement::collect_draw_replacements.
 static void kw_dredge(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
     ctx.card.keywords.push_back("Dredge");
@@ -4401,16 +4401,15 @@ static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replace
 }
 
 // Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in it, you
-// win the game instead." (CR 104.3a/121.4). A draw-event replacement whose ReplaceWith$ SVar is a
-// DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw (checked at the empty-draw
-// site in Orderer::perform_draw). The row stands for a win alone: any other body at that site is
-// a finding, not a body to run.
+// win the game instead." (CR 104.3a, 121.6). The controller's own draw, from an empty library; what
+// replaces it is the ReplaceWith$ body, offered with the other replacements of that draw
+// (replacement::collect_draw_replacements).
 static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r) {
     if (!l.replace_with_win || !l.valid_player_you || !l.active_zones_battlefield) return false;
     if (l.cant_counter_present != "Card.YouOwn" || l.cant_counter_zone != "Library" || l.cant_counter_compare != "EQ0")
         return false;
-    r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
-    r.applies_to_self_only = false;  // scoped to the controller at the draw site
+    r.kind = Effect::Replacement::DRAW_REPLACED;
+    r.draw_from_empty_library = true;
     return true;
 }
 

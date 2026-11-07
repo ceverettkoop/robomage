@@ -2,6 +2,7 @@
 #define STACK_MANAGER_H
 
 #include "../ecs/system.h"
+#include "../resolution_frame.h"
 #include "../ecs/entity.h"
 #include "../components/zone.h"
 #include <memory>
@@ -16,6 +17,10 @@ public:
     static void init();
     bool is_empty();
     void resolve_top(std::shared_ptr<Orderer> orderer);
+    // Resolves `ab` with nothing on the stack (what replaces a turn-based draw) in a frame of its
+    // own, so a question it asks can park. SUSPENDED leaves the frame armed; a later call, with
+    // the answer latched, carries on the frame's copy and ignores `ab`.
+    static ResolveStatus resolve_off_stack(const Ability &ab, std::shared_ptr<Orderer> orderer);
 
 private:
     static bool aura_spell_target_illegal(Entity spell);

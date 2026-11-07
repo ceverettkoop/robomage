@@ -655,10 +655,17 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         pd.batch.remaining = 1 + static_cast<size_t>(replacement::draw_count_bonus(pd.player));
     }
     while (pd.active) {
-        // A latched TURN_DRAW answer from the previous arm: apply it first —
-        // draw normally (option 0) or one dredge — restoring the pre-arm
-        // priority seat exactly as the blocking prompt's post-get_input
-        // restore did.
+        // What replaces the card is under way: it resolves in a frame of its own, nothing being
+        // on the stack, so a question it asks parks like any resolution's and comes back here.
+        if (pd.batch.body) {
+            const Ability body = replacement::draw_body(pd.batch);
+            if (StackManager::resolve_off_stack(body, orderer) == ResolveStatus::SUSPENDED) return;
+            pd.batch.body = nullptr;
+            pd.batch.remaining--;
+            continue;
+        }
+        // A latched TURN_DRAW answer from the previous arm: apply it first — restoring the pre-arm
+        // priority seat exactly as the blocking prompt's post-get_input restore did.
         if (game.pending.query.active) {
             PendingQuery &pq = game.pending.query;
             if (pq.tag != PendingQuery::TURN_DRAW || !pq.answered)
@@ -673,13 +680,7 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             int choice = pq.answer;
             game.priority.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
-            if (choice == 0) {
-                orderer->perform_draw(pd.player);
-            } else {
-                orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
-                                      opts[static_cast<size_t>(choice) - 1].mill);
-            }
-            pd.batch.remaining--;
+            replacement::take_draw_option(*orderer, pd.player, opts[static_cast<size_t>(choice)], pd.batch);
             continue;
         }
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
@@ -693,6 +694,10 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         if (menu.empty()) {
             orderer->perform_draw(pd.player);
             pd.batch.remaining--;
+            continue;
+        }
+        if (menu.size() == 1) {  // a lone replacement that must apply: no question
+            replacement::take_draw_option(*orderer, pd.player, opts[0], pd.batch);
             continue;
         }
         // Park the dredge question for the loop top (tag TURN_DRAW): persist
