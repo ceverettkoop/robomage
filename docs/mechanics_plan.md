@@ -1205,3 +1205,11 @@ Reviewed by reading the diff; M0 confirms them through the replay tier.
 | AI-only keys | Cabal Therapy, Natural Order, Fiend Artisan | no rules effect |
 | `Activator$ Player.NonActive` → `Player.!Active` | Defense Grid | not read either way: `static_param:Activator` (M5) |
 | `SVar:SacMe:1` added | Clue token | AI hint |
+
+## After the plan: an MCP server for LLM play
+
+Design an MCP server so an LLM can drive one seat of a game against the model, and use those games as a benchmark. Not designed yet, and not part of M0 to M13.
+
+What it can build on: `--machine` gives a seat its own frames with hidden information withheld and takes a menu row as its reply; `src/cli/board.h` already renders those frames as text; `nn:` plays the other seat; a decision log replays each game.
+
+The design has to settle how a game's state and menu reach the LLM as tools, how the benchmark is scored (decks, seeds, formats, games per pairing, and how it sits beside `rmtrain bench`), and how a long game fits an LLM's context and budget.
