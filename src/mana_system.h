@@ -80,6 +80,11 @@ void tap_to_pay_chosen(Entity e, Zone::Ownership controller, ManaValue &owed, Ma
 // "is this a mana ability?" gate (action processor, legal-action enumeration, mana-source
 // collection) classifies ManaReflected consistently and none push it onto the stack.
 bool ability_is_mana(const Ability &ab);
+// Does mana ability `ab` cost what a payment's own steps don't pay: another permanent to sacrifice
+// or return, or energy (CostPath::MANA_ABILITY pays neither)? Such an ability is activated at
+// priority alone, a player's choice (CR 605.3a), through the activation flow, which pays any part
+// and suspends for its pick; its mana then floats. No payer taps it.
+bool mana_cost_paid_at_priority(const Ability &ab);
 
 // Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
 // if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities

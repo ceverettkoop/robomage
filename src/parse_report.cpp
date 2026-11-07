@@ -291,14 +291,16 @@ static void check_cmc_bounds(const std::string &spec, const std::string &key, co
 }
 
 // Does the reader of filter param `key` supply a cmc bound? cmcLEX reads the X paid everywhere; a
-// ChangeType$ search, a SpellCast trigger's ValidCard$ and a DestroyAll resolve a named SVar, and
-// the mana-value gates of ConditionPresent$ and Dig's ChangeValid$ read cmcLE<SVar>.
+// ChangeType$ search, a SpellCast trigger's ValidCard$ and a DestroyAll resolve a named SVar, the
+// mana-value gates of ConditionPresent$ and Dig's ChangeValid$ read cmcLE<SVar>, and ValidTgts$
+// reads the X of the ability's own cost.
 static bool cmc_bound_supplied(const std::string &op, const std::string &bound, const std::string &key,
                                const std::string &body) {
     if (op == "LE" && bound == "X") return true;
     if (key == "ChangeType") return true;
     if (key == "ValidCard") return body.find("Mode$ SpellCast") != std::string::npos;
     if (key == "ValidCards") return body.find("$ DestroyAll") != std::string::npos;
+    if (key == "ValidTgts") return bound == "X" && body.find("Cost$ X") != std::string::npos;
     return op == "LE" && (key == "ConditionPresent" || key == "ChangeValid");
 }
 

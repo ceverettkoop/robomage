@@ -379,6 +379,13 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Mana
     return restriction_allows(restriction, source_chosen_type(source_entity), paid_for);
 }
 
+// See mana_system.h.
+bool mana_cost_paid_at_priority(const Ability &ab) {
+    const CostParts &cost = ab.def->cost;
+    return (cost.has(CostPart::SACRIFICE) && !cost.self(CostPart::SACRIFICE)) || cost.has(CostPart::RETURN) ||
+           cost.has(CostPart::ENERGY);
+}
+
 bool ability_is_mana(const Ability &ab) {
     if (ab.def->ability_type != AbilityDef::ACTIVATED) return false;
     // CR 605.1a / 606.3: a loyalty ability (a planeswalker's activated ability with a loyalty
@@ -425,7 +432,7 @@ static bool mana_ability_available_now(Entity e, const Ability &ab, Zone::Owners
     // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
     // mid-cost-payment. Callers listing actions for a player who holds priority pass
     // include_instant_speed; the affordability/payment callers leave it false.
-    if (ab.def->instant_speed && !include_instant_speed) return false;
+    if ((ab.def->instant_speed || mana_cost_paid_at_priority(ab)) && !include_instant_speed) return false;
     // Activation$ gate (CR 602.5; e.g. Mox Opal's Metalcraft), untapped and not summoning-sick
     // for a {T} cost, activation limit.
     if (!activation_source_ready(ab, e, player, entities)) return false;
@@ -443,7 +450,8 @@ static bool mana_source_affordable(Zone::Ownership player, Entity source, const 
                                    std::shared_ptr<Orderer> orderer) {
     CostCheck check(player, source, orderer);
     check.estimate_mana = true;
-    check.unchecked = kAllButMana;
+    check.unchecked = kAllButMana & ~(CostParts::kind_bit(CostPart::SACRIFICE) | CostParts::kind_bit(CostPart::RETURN) |
+                                      CostParts::kind_bit(CostPart::ENERGY));
     return can_pay(ab.def->cost, check);
 }
 
@@ -558,6 +566,7 @@ ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities) 
             if (!mana_ability_available_now(entity, ab, player, entities,
                                             /*include_instant_speed=*/true, /*life_reserve=*/0))
                 continue;
+            if (mana_cost_paid_at_priority(ab)) continue;
             // A ManaReflected source whose color set is empty (Mox Amber with no legendary,
             // or only colorless ones) produces nothing, so note_color leaves it uncounted —
             // matching collect_available_mana_sources, which offers no action for it.
@@ -603,6 +612,7 @@ std::vector<LegalAction> collect_mana_legal_actions(
                                ? "Tap " + global_coordinator.GetComponent<Permanent>(entity).name + mana
                                : "Exile " + global_coordinator.GetComponent<CardData>(entity).name + mana;
         if (ab.def->cost.has(CostPart::EXERT)) desc = "Tap and exert" + desc.substr(3) + " x" + std::to_string(ab.def->amount);
+        if (mana_cost_paid_at_priority(ab)) desc = "Pay the cost of" + desc.substr(3);
         LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
         la.category = mana_action_category(ab.color);
         actions.push_back(la);

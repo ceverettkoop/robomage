@@ -505,10 +505,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield). A rider that gives
         // a keyword is a fourth: the payer never chooses it, its mana being no more than the tap's
-        // (Arena of Glory).
+        // (Arena of Glory). A cost no payment pays is a fifth (Lazotep Quarry's sacrifice).
         const ManaRider *rider = ma.ability.def->mana_rider;
         if (auto_mana && !ma.ability.def->instant_speed && ma.ability.def->activation_zone == -1 &&
-            !(rider && !rider->keyword.empty()) &&
+            !(rider && !rider->keyword.empty()) && !mana_cost_paid_at_priority(ma.ability) &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

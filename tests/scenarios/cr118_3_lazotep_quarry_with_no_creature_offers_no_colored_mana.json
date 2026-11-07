@@ -1,0 +1,37 @@
+{
+  "name": "cr118_3_lazotep_quarry_with_no_creature_offers_no_colored_mana",
+  "why": "CR 118.3: a cost can't be paid without what it takes: with no creature to sacrifice the any-color ability isn't offered, auto-mana or not.",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu_not": [
+    "Pay the cost of Lazotep Quarry"
+  ]
+}

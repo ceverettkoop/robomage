@@ -80,6 +80,9 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
 // offer gate's payment_blocked guard and reverse the activation.
 static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer);
+// With `x` announced, does the activation in `pa` still have a legal target (CR 602.2b: a cmcEQX
+// target has to exist for the X announced)? True for an ability whose targets don't read X.
+static bool x_leaves_a_target(Game::PendingActivation &pa, size_t x, std::shared_ptr<Orderer> orderer);
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster, const ManaValue &mana);
 static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCast &pc, const CardData &card_data);
 // The menu of the forms of `card_data`'s additional cost that can be paid (CR 601.2b).
@@ -422,6 +425,19 @@ static void fail_activation_payment(Game::PendingActivation &pa,
     cur_game.priority.payment_fail_counts[pa.source_entity]++;
     game_log("Payment cancelled.\n");
     rewind_activation(pa, orderer);
+}
+
+static bool x_leaves_a_target(Game::PendingActivation &pa, size_t x, std::shared_ptr<Orderer> orderer) {
+    bool reads_x = false;
+    for (const FilterCmcBound &bound : filter_cmc_bounds(pa.stack_ab.def->valid_tgts))
+        reads_x = reads_x || bound.names_svar;
+    if (!reads_x) return true;
+    coverage_row("cmc_bound_x_target");
+    const int announced = pa.stack_ab.x_paid;
+    pa.stack_ab.x_paid = static_cast<int>(x);
+    const bool legal = has_legal_targets(pa.stack_ab, orderer);
+    pa.stack_ab.x_paid = announced;
+    return legal;
 }
 
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1568,37 +1584,42 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // to the mana cost paid at PAY. Arms with the activated card as the
             // pending-decision source.
             if (!is_mana_ability && ability.def->cost.has(CostPart::X_MANA)) {
+                ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
+                const std::vector<HybridPip> &pips = ability.def->cost.hybrid();
+                // Each hybrid pip takes one mana at the least, its color not yet known.
+                ManaValue with_pips = base_cost;
+                for (size_t i = 0; i < pips.size(); i++) with_pips.insert(GENERIC);
+                // The source's own tap is part of this ability's cost, so its mana
+                // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
+                // counting its own {C}). Each {X} in the cost is paid separately, so a
+                // {X}{X} ability can only afford half the budget (CR 601.2b).
+                Entity x_exclude = ability.def->cost.taps() ? permanent_entity : 0;
+                size_t max_x = max_available_mana(controller, with_pips, orderer, x_exclude);
+                size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
+                max_x /= x_pips;
+                max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
+                                      x_exclude, orderer, /*has_delve=*/false,
+                                      ability.def->cost.tap_to_pay(), pips);
+                std::vector<LegalAction> x_actions;
+                for (size_t xv = 0; xv <= max_x; xv++) {
+                    if (!x_leaves_a_target(pa, xv, orderer)) continue;
+                    LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                    la.category = ActionCategory::CHOOSE_X;
+                    la.option_ordinal = static_cast<int>(xv);  // the chosen X value
+                    x_actions.push_back(la);
+                }
                 if (resume_choice >= 0) {
-                    pa.x_activation = static_cast<size_t>(resume_choice);
+                    pa.x_activation = static_cast<size_t>(x_actions[static_cast<size_t>(resume_choice)].option_ordinal);
                     resume_choice = -1;
                     pa.stack_ab.x_paid = static_cast<int>(pa.x_activation);
                     game_log("%s chooses X = %zu\n", player_name(controller).c_str(),
                              pa.x_activation);
                 } else {
-                    ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
-                    const std::vector<HybridPip> &pips = ability.def->cost.hybrid();
-                    // Each hybrid pip takes one mana at the least, its color not yet known.
-                    ManaValue with_pips = base_cost;
-                    for (size_t i = 0; i < pips.size(); i++) with_pips.insert(GENERIC);
-                    // The source's own tap is part of this ability's cost, so its mana
-                    // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
-                    // counting its own {C}). Each {X} in the cost is paid separately, so a
-                    // {X}{X} ability can only afford half the budget (CR 601.2b).
-                    Entity x_exclude = ability.def->cost.taps() ? permanent_entity : 0;
-                    size_t max_x = max_available_mana(controller, with_pips, orderer, x_exclude);
-                    size_t x_pips = std::max<size_t>(1, ability.def->cost.x_pips());
-                    max_x /= x_pips;
-                    max_x = payable_max_x(controller, base_cost, max_x, x_pips, ability_payee,
-                                          x_exclude, orderer, /*has_delve=*/false,
-                                          ability.def->cost.tap_to_pay(), pips);
-                    game_log("Choose X value (0-%zu):\n", max_x);
-                    std::vector<LegalAction> x_actions;
-                    for (size_t xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-                        la.category = ActionCategory::CHOOSE_X;
-                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
-                        x_actions.push_back(la);
+                    if (x_actions.empty()) {
+                        fail_activation_payment(pa, orderer);
+                        return;
                     }
+                    game_log("Choose X value (0-%zu):\n", max_x);
                     arm_flow_query(PendingQuery::ACTIVATION, std::move(x_actions),
                                    controller, permanent_entity);
                     return;
@@ -1700,6 +1721,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::FINISH: {
             // MANA ABILITY
             if (is_mana_ability) {
+                if (mana_cost_paid_at_priority(ability)) coverage_row("mana_sacrifice_at_priority");
                 // Costs were already paid above (PAY_COSTS). The shared production core handles the rest: amount eval
                 // (dynamic amounts like Gaea's Cradle / Urza's Workshop), ProduceMana
                 // replacement, pool insert, TapsForMana triggers, narrative, SubAbility$ riders

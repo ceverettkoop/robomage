@@ -372,6 +372,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Shallow Grave", 447},
     {"Fable of the Mirror-Breaker", 448},
     {"Reflection of Kiki-Jiki", 449},
+    {"Lazotep Quarry", 450},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

@@ -1,0 +1,41 @@
+{
+  "name": "cr605_3a_lazotep_quarry_is_no_source_a_payment_taps",
+  "why": "CR 118.3, 605.3a: no payer sacrifices a creature unasked: with a creature and the Quarry alone, a red spell can't be cast from the menu, whatever mana its {C} makes, and the auto-payer takes the plain {C} row.",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Pay the cost of Lazotep Quarry for \\(R\\)"
+  ],
+  "expect_menu_not": [
+    "Cast Lightning Bolt"
+  ]
+}

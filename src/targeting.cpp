@@ -295,6 +295,10 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     ctx.controller = caster;
     ctx.source = ab.source.lki_entity();
     ctx.resolve = &resolve;
+    // The {X} of its cost, announced before its targets (CR 602.2b), is a cmc<OP>X qualifier's
+    // bound (Lazotep Quarry's cmcEQX). Before the announcement the qualifier passes.
+    if (ab.def->cost.has(CostPart::X_MANA) && (cur_game.pending.activation.active || cur_game.resolution.active))
+        ctx.cmc_bound = current_x_paid();
     const FilterSpec spec = target_filter(ab.def->valid_tgts);
 
     // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both

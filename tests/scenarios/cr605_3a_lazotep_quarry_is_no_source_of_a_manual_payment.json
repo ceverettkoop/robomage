@@ -1,0 +1,44 @@
+{
+  "name": "cr605_3a_lazotep_quarry_is_no_source_of_a_manual_payment",
+  "why": "CR 605.3a, 118.3: under --no-auto-mana too: a manual payment lists only sources it can pay for; the sacrifice is a priority activation.",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Pay the cost of Lazotep Quarry for \\(R\\)"
+  ],
+  "expect_menu_not": [
+    "Cast Lightning Bolt"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ]
+}

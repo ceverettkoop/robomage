@@ -8,3 +8,7 @@ row:copy_add_keywords
 effect:CopyPermanent
 trigger:Delayed
 category:DISCARD
+# A token copy with its types set, a mana ability's sacrifice (Lazotep Quarry).
+row:copy_set_creature_types
+row:cmc_bound_x_target
+row:mana_sacrifice_at_priority
