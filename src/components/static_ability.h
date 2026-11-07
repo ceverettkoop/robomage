@@ -116,6 +116,9 @@ struct StaticAbility {
     // declared as a blocker of an attacker matching cant_block_attacker (ValidAttacker$).
     FilterSpec cant_block_attacker;
     FilterSpec cant_block_blocker;
+    // CantPreventDamage (Frenzied Baloth, CR 615.12): IsCombat$ True says only combat damage can't be
+    // prevented; with none, no damage can.
+    bool cant_prevent_combat_only = false;
     // CantBeActivated fields (category = "CantBeActivated"):
     FilterSpec cant_activate_card_filter;  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):

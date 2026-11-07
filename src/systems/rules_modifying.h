@@ -29,6 +29,10 @@ namespace rules_mod {
 bool activation_prohibited(Entity source);
 bool mana_activation_prohibited(Entity permanent);
 
+// CantPreventDamage (Frenzied Baloth): is this damage, combat damage or not, unpreventable (CR
+// 615.12)? A prevention effect still applies to it and prevents none of it.
+bool damage_cant_be_prevented(bool is_combat);
+
 // CantBeCast: may `caster` not cast `card` right now? The spell's printed characteristics are
 // read from `card` (its type line short-circuits the nonCreature filter; its mana value and
 // {X}-cost flag drive the characteristic-based prohibitions — Gaddock Teeg). `cast_from` is the

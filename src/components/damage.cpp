@@ -13,6 +13,7 @@
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
 #include "../mana_system.h"
+#include "../systems/rules_modifying.h"
 
 #include <string>
 
@@ -70,6 +71,7 @@ static std::string recipient_name(Entity recipient) {
 
 // True (and logged) when a prevention effect stops all of this damage (CR 615, 702.16e).
 static bool damage_prevented(Entity source, Entity recipient, size_t amount, bool is_combat) {
+    if (rules_mod::damage_cant_be_prevented(is_combat)) return false;  // CR 615.12
     Coordinator &coord = Coordinator::global();
     const char *indent = is_combat ? "  " : "";
     // CR 615: a combat-damage prevention shield (Maze of Ith) on the source or the recipient.

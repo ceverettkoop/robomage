@@ -114,6 +114,15 @@ bool activation_prohibited(Entity source) {
     return false;
 }
 
+bool damage_cant_be_prevented(bool is_combat) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        const StaticAbility &sa = *as.sa();
+        if (sa.category == "CantPreventDamage" && (is_combat || !sa.cant_prevent_combat_only)) return true;
+    }
+    return false;
+}
+
 bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneValue cast_from) {
     bool card_is_creature = is_creature_card(card);
     for (const auto &as : g_active_statics) {

@@ -1,0 +1,45 @@
+{
+  "name": "cr101_2_frenzied_baloth_cant_be_countered",
+  "why": "CR 101.2: 'This spell can't be countered': Counterspell may target Frenzied Baloth, and resolves without countering it. Its haste and trample then take effect: it attacks the turn it arrives and tramples over a 2/2.",
+  "hand_a": [
+    "Frenzied Baloth"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Frenzied Baloth",
+    "B:cast:Counterspell",
+    "B:target:Frenzied Baloth",
+    "A:attack:Frenzied Baloth",
+    "A:attack:done",
+    "B:block:Grizzly Bears",
+    "B:block:done"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "Frenzied Baloth deals 1 damage to Player B"
+  ],
+  "expect_not": [
+    "Frenzied Baloth is countered"
+  ]
+}

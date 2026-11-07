@@ -4034,6 +4034,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.cant_block_attacker = value;
             } else if (key == "ValidBlocker" && sa.category == "CantBlockBy") {
                 sa.cant_block_blocker = value;
+            } else if (key == "IsCombat" && sa.category == "CantPreventDamage") {
+                sa.cant_prevent_combat_only = (value == "True");
             } else if (key == "CharacteristicDefining") {
                 sa.characteristic_defining = (value == "True");
             } else if (key == "SetPower") {
@@ -4687,7 +4689,7 @@ static bool alt_cost_param_assumed(const std::string &key, const std::string &va
 static bool static_mode_modelled(const std::string &mode) {
     static const char *const kModes[] = {"Continuous", "CantBeActivated", "CantBeCast", "RaiseCost", "ReduceCost",
         "SetCost", "MustAttack", "ManaConvert", "ManaRestriction", "DisableTriggers", "CantAttack", "CantBlockBy",
-        "EtbCounter"};
+        "CantPreventDamage", "EtbCounter"};
     for (const char *m : kModes)
         if (mode == m) return true;
     return false;
@@ -4715,6 +4717,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         {"CantBeActivated", false, "ValidCard ValidSA AffectedZone Activator"},
         {"CantAttack", true, "ValidCard Target"},
         {"CantBlockBy", true, "ValidAttacker ValidBlocker"},
+        {"CantPreventDamage", true, "IsCombat"},
         {"MustAttack", true, "ValidCreature"},
         {"DisableTriggers", false, "ValidCause ValidMode Destination"},
         {"ManaConvert", false, "ManaConversion"},
