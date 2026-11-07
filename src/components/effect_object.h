@@ -42,6 +42,15 @@ struct EffectObject {
     std::vector<ObjectRef> remembered;  // RememberObjects$: what its abilities' IsRemembered reads
 
     bool is_emblem() const { return duration == Duration::GAME; }
+    // Does it hold a static or a replacement no row of the state format says by kind, so that a
+    // frame can only name the card that made it (Sundering Eruption, Gaea's Will)?
+    bool reported_by_card_alone() const {
+        if (!statics.empty()) return true;
+        for (const Effect::Replacement &r : replacements)
+            if (r.kind != Effect::Replacement::CANT_BE_COUNTERED && r.kind != Effect::Replacement::PREVENT_COMBAT_DAMAGE)
+                return true;
+        return false;
+    }
     // Is all combat damage dealt by (or to) what it remembers prevented (CR 615)?
     bool prevents_combat_damage_by() const {
         for (const Effect::Replacement &r : replacements)

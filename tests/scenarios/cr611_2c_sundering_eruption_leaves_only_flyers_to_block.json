@@ -1,0 +1,73 @@
+{
+  "name": "cr611_2c_sundering_eruption_leaves_only_flyers_to_block",
+  "why": "CR 509.1b, 611.2c: \"Creatures without flying can't block this turn\" modifies no characteristic, so it reaches every creature without flying for the turn, one that comes later too, and ends at cleanup (CR 514.2); a flyer may block",
+  "hand_a": [
+    "Sundering Eruption"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Containment Priest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Haywire Mite"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Plains",
+    "Plains",
+    "Grizzly Bears",
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Sundering Eruption",
+    "A:target:Forest@opp",
+    "B:search:Plains",
+    "B:cast:Containment Priest",
+    "A:attack:Haywire Mite",
+    "A:attack:done",
+    "B:block:Air Elemental"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Forest is destroyed",
+    "Plains is moved to the battlefield|Player B searches|Plains",
+    "Air Elemental blocking Haywire Mite"
+  ],
+  "expect_menu": [
+    "^Air Elemental \\[4/4\\]$"
+  ],
+  "expect_menu_not": [
+    "^Containment Priest \\[",
+    "^Grizzly Bears \\["
+  ],
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

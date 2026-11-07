@@ -335,6 +335,7 @@ static bool block_static_prohibits(Entity blocker, Entity attacker) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met) continue;
         const StaticAbility &sa = *as.sa();
+        if (sa.cant_block && static_reaches(as, blocker, StaticRead::LIVE)) return true;
         if (sa.category != "CantBlockBy") continue;
         MatchCtx ctx;
         ctx.controller = as.controller;

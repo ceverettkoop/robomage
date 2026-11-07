@@ -118,6 +118,8 @@ struct StaticAbility {
     // every creature). Empty x_svar = the filter has no dynamic X.
     FilterSpec cant_attack_filter;
     std::string cant_attack_x_svar = "";
+    // AddHiddenKeyword$ CARDNAME can't block.: what it reaches can't be declared as a blocker.
+    bool cant_block = false;
     // CantBlockBy fields (category = "CantBlockBy"; Brazen Borrower): a combat restriction, CR
     // 509.1b: a creature matching cant_block_blocker (ValidBlocker$; empty: any creature) can't be
     // declared as a blocker of an attacker matching cant_block_attacker (ValidAttacker$).

@@ -2629,7 +2629,7 @@ static void ability_form_findings(const AbilityDef &ability, const std::string &
 // An Effect's static is honoured only as one of the forms parse_ability_text resolves.
 static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars) {
     if (ability.category != "Effect") return;
-    const bool emblem = !ability.effect_statics.empty();
+    const bool holds_static = !ability.effect_statics.empty();
     const std::string &name = ability.effect_static_ability;
     if (name.empty()) return;
     const auto it = svars.find(name);
@@ -2643,7 +2643,7 @@ static void effect_form_findings(const AbilityDef &ability, const std::map<std::
     const bool may_play = param_value(body, "MayPlay") == "True";
     const bool remembered = filter_names_token(param_value(body, "Affected"), "IsRemembered");
     const bool read = (may_play && zone == "Exile") || (may_play && zone == "Graveyard" && remembered && ability.target_in_graveyard) ||
-                      (emblem && mode == "Continuous") || mode == "CantGainLife" || mode == "CastWithFlash" ||
+                      (holds_static && mode == "Continuous") || mode == "CantGainLife" || mode == "CastWithFlash" ||
                       (name == "Unblockable" && mode == "CantBlockBy" && param_value(body, "ValidAttacker") == "Card.IsRemembered");
     if (read) return;
     if (may_play)
@@ -3099,16 +3099,16 @@ static void resolve_effect_static_svars(AbilityDef &ability, const std::string &
     auto it = svars.find(ability.effect_static_ability);
     if (it == svars.end()) return;
     const std::string &body = it->second;
-    // Emblem (CR 114): an Effect that grants a permanent continuous static to its controller —
-    // Kaito's "[+1]: You get an emblem with 'Ninjas you control get +1/+1.'"; Tamiyo, Seasoned
-    // Scholar's ultimate "You get an emblem with 'You have no maximum hand size.'"
-    // (StaticAbilities$ <SVar> + Duration$ Permanent). Resolve the named continuous static SVar
-    // into a StaticAbility and store it on the ability; the Effect handler creates a player-owned
-    // emblem carrying it at resolution. Distinguished from the transient StaticAbilities$ Effects
-    // (Unblockable, Ugin's MayPlay) by Duration$ Permanent — those are EOT/until-leaves and
-    // handled by their own flags.
-    if (text.find("Duration$ Permanent") != std::string::npos &&
-        body.find("Mode$ Continuous") != std::string::npos) {
+    // A continuous static the Effect's object holds: an emblem's (Kaito's "[+1]: You get an emblem
+    // with 'Ninjas you control get +1/+1.'"; Tamiyo, Seasoned Scholar's ultimate), or one for the
+    // Effect's duration (Sundering Eruption's "Creatures without flying can't block this turn.").
+    // Resolve the named SVar into a StaticAbility on the ability for the GrantCast handler. A play
+    // permission over cards the Effect remembers or in exile is no such static: its grant is typed
+    // (Light Up the Stage, Emry), kept per card.
+    const bool may_play = param_value(body, "MayPlay") == "True";
+    const bool typed_grant = may_play && (param_value(body, "AffectedZone") == "Exile" ||
+                                          filter_names_token(param_value(body, "Affected"), "IsRemembered"));
+    if (param_value(body, "Mode") == "Continuous" && !typed_grant) {
         StaticAbility est = parse_one_static_ability(body, svars);
         if (!est.category.empty()) ability.effect_statics.push_back(est);
     }
@@ -3769,6 +3769,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     sa.set_max_hand_size = std::stoi(value);
                 else
                     static_value_finding(sa, key, value);
+            } else if (key == "AddHiddenKeyword") {
+                // "CARDNAME can't block." is a rule of the game, not an ability the creature has
+                // (CR 509.1b, 611.2c): Humility takes nothing away, and it reaches a creature that
+                // comes later. Read by the block restrictions (rules_mod::block_prohibited).
+                if (value == "CARDNAME can't block.") sa.cant_block = true;
+                else static_value_finding(sa, key, value);
             } else if (key == "AddAbility") {
                 // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
                 // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
@@ -4709,7 +4715,8 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         const char *keys;
     } kModeKeys[] = {
         {"Continuous", true,
-         "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar "
+         "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddHiddenKeyword AddAbility "
+         "AddTrigger AddSVar "
          "AddType GainsAbilitiesOf GainsAbilitiesOfZones "
          "SetPower SetToughness SetColor AddColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
          "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
