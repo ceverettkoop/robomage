@@ -23,16 +23,13 @@ PlayerEffects player_effects(Zone::Ownership player, const EntitySet &entities) 
     for (const auto &perm : cur_game.resolved_effects.cast_with_flash_permissions)
         if (perm.controller == player) fx.may_cast_sorceries_as_flash = true;
     fx.restricted_to_sorcery_speed = rules_mod::opponent_sorcery_speed_locked(player);
-    for (const auto &emb : cur_game.resolved_effects.emblems) {
-        if (emb.controller != player || emb.source_vocab_idx < 0) continue;
-        if (std::find(fx.emblem_vocab_idx.begin(), fx.emblem_vocab_idx.end(),
-                      emb.source_vocab_idx) == fx.emblem_vocab_idx.end())
-            fx.emblem_vocab_idx.push_back(emb.source_vocab_idx);
-    }
-    for (const auto &ft : cur_game.resolved_effects.floating_triggers) {
-        if (ft.controller != player || ft.floating_creator_vocab_idx < 0) continue;
-        fx.floating_trigger_vocab_idx = ft.floating_creator_vocab_idx;
-        break;
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects) {
+        if (object.controller != player || object.source_vocab_idx < 0) continue;
+        if (object.is_emblem() && std::find(fx.emblem_vocab_idx.begin(), fx.emblem_vocab_idx.end(),
+                                            object.source_vocab_idx) == fx.emblem_vocab_idx.end())
+            fx.emblem_vocab_idx.push_back(object.source_vocab_idx);
+        if (fx.floating_trigger_vocab_idx < 0 && !object.triggers.empty())
+            fx.floating_trigger_vocab_idx = object.source_vocab_idx;
     }
     return fx;
 }

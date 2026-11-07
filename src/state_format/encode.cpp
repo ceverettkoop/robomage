@@ -1301,17 +1301,19 @@ static void write_player_effects(const Ctx &c, Zone::Ownership p) {
         }
     if (fx.may_cast_sorceries_as_flash && !resolved) put(PlayerEffectKind::CAST_AS_FLASH, 0, Duration::STATIC, -1, "");
     if (fx.restricted_to_sorcery_speed) put(PlayerEffectKind::SORCERY_SPEED_ONLY, 0, Duration::STATIC, -1, "");
-    for (const Ability &t : re.floating_triggers)
-        if (t.controller == p)
-            put(PlayerEffectKind::FLOATING_TRIGGER, 0, Duration::END_OF_TURN, t.floating_creator_vocab_idx, "");
+    for (const EffectObject &object : re.effect_objects)
+        if (object.controller == p)
+            for (size_t i = 0; i < object.triggers.size(); ++i)
+                put(PlayerEffectKind::FLOATING_TRIGGER, 0, Duration::END_OF_TURN, object.source_vocab_idx, "");
 }
 
 // Emblems, player effects, play permissions and damage shields (register 18).
 static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_cards) {
-    for (const Emblem &em : cur_game.resolved_effects.emblems) {
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects) {
+        if (!object.is_emblem()) continue;
         Row r = c.w.row(TableId::EMBLEM);
-        put_seat(r, em.controller, c.self);
-        r.u16(card_or_none(physical_card_of(em.source_vocab_idx)));
+        put_seat(r, object.controller, c.self);
+        r.u16(card_or_none(physical_card_of(object.source_vocab_idx)));
     }
     write_player_effects(c, c.self);
     write_player_effects(c, opponent_of(c.self));

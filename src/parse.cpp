@@ -2970,8 +2970,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         // Eorlingas!'s monarch trigger; Tamiyo, Seasoned Scholar's +2, whose Duration$ the
         // GrantCast handler applies to it). Each named SVar holds a trigger line (Mode$ ... |
         // Execute$ ...); parse it like a card's T: line so it carries the same trigger metadata and
-        // its Execute$ effect, and store it on the Effect to be registered (controller-bound) into
-        // cur_game.resolved_effects.floating_triggers at resolution.
+        // its Execute$ effect, and store it on the Effect to be put (controller-bound) on an
+        // EffectObject at resolution.
         for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
             auto it = svars.find(svar_name);
             if (it != svars.end()) {

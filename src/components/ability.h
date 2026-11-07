@@ -575,8 +575,8 @@ struct AbilityDef {
     // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
     // its controller an emblem carrying the named continuous static ("Ninjas you control get
     // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
-    // GrantCast handler creates a player-owned Emblem (cur_game.resolved_effects.emblems) carrying them — an
-    // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
+    // GrantCast handler creates a player-owned EffectObject carrying them — an unremovable,
+    // zoneless source whose statics are gathered into g_active_statics each SBA pass.
     std::vector<StaticAbility> effect_emblem_statics;
 
     // DB$ Effect | StaticAbilities$ <SVar> where the named static is a MayPlay$ True continuous
@@ -602,9 +602,9 @@ struct AbilityDef {
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
     // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
-    // a full TRIGGERED Ability and held here; the GrantCast handler registers a copy in
-    // cur_game.resolved_effects.floating_triggers (controller bound) so the trigger scan fires it through the
-    // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
+    // a full TRIGGERED Ability and held here; the GrantCast handler puts a copy on an EffectObject
+    // (controller bound) so the trigger scan fires it through the normal trigger system, then it
+    // lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<AbilityDef> effect_floating_triggers;
 
@@ -908,8 +908,8 @@ struct Ability {
 
     // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
     // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
-    // GrantCast handler on the copy it pushes into cur_game.resolved_effects.floating_triggers, with its vocab idx
-    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
+    // GrantCast handler on the copy it puts on an EffectObject, with its vocab idx captured at
+    // that moment. 0 / -1 on every other ability. Read by the observation's
     // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
     // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
     Entity floating_creator = 0;

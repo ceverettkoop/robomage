@@ -404,11 +404,9 @@ int active_cost_floor_for(const CardData &card_data) {
 
 StaticAbility *ActiveStatic::sa() const {
     static StaticAbility inert;
-    if (emblem >= 0) {
-        if (static_cast<size_t>(emblem) < cur_game.resolved_effects.emblems.size()) {
-            auto &list = cur_game.resolved_effects.emblems[static_cast<size_t>(emblem)].statics;
-            if (index < list.size()) return &list[index];
-        }
+    if (effect_object >= 0) {
+        if (EffectObject *object = cur_game.resolved_effects.find(effect_object))
+            if (index < object->statics.size()) return &object->statics[index];
     } else if (is_battlefield_permanent(entity)) {
         auto &list = global_coordinator.GetComponent<Permanent>(entity).static_abilities;
         if (index < list.size()) return &list[index];
@@ -1642,9 +1640,9 @@ static std::set<Type> copiable_type_line(Entity e, const Permanent &perm) {
 }
 
 // Timestamp of a static ability's continuous effect (CR 613.7a): its source permanent's; an
-// emblem's statics (no permanent) sort first.
+// effect object's statics (no permanent) sort first.
 static size_t static_timestamp(const ActiveStatic &a) {
-    if (a.emblem < 0 && global_coordinator.entity_has_component<Permanent>(a.entity))
+    if (a.effect_object < 0 && global_coordinator.entity_has_component<Permanent>(a.entity))
         return global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield;
     return 0;
 }
@@ -1844,7 +1842,7 @@ void StateManager::apply_type_changing_effects() {
         if (s.suppressed || !s.condition_met) continue;
         if (!is_type_changing_static(*s.sa()) || !s.sa()->remove_land_types) continue;
         for (auto &a : g_active_statics)
-            if (!a.suppressed && a.emblem < 0 && land_type_setter_affects(s, a.entity))
+            if (!a.suppressed && a.effect_object < 0 && land_type_setter_affects(s, a.entity))
                 a.suppressed = true;
     }
 
@@ -1946,14 +1944,13 @@ void StateManager::gather_active_statics(Game &game) {
             g_active_statics.push_back({entity, -1, i, perm.controller, false, false});
     }
 
-    // Emblems (CR 114): zoneless, unremovable continuous-effect sources owned by a player. Their
-    // statics are gathered with entity 0 (no Permanent) and the emblem owner as controller, so the
-    // layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through the same
-    // path as a battlefield anthem.
-    for (size_t e = 0; e < game.resolved_effects.emblems.size(); e++)
-        for (size_t i = 0; i < game.resolved_effects.emblems[e].statics.size(); i++)
-            g_active_statics.push_back(
-                {0, static_cast<int>(e), i, game.resolved_effects.emblems[e].controller, false, false});
+    // Effect objects: zoneless, unremovable continuous-effect sources owned by a player (CR 114,
+    // 611.2). Their statics are gathered with entity 0 (no Permanent) and the object's controller,
+    // so the layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through
+    // the same path as a battlefield anthem.
+    for (const EffectObject &object : game.resolved_effects.effect_objects)
+        for (size_t i = 0; i < object.statics.size(); i++)
+            g_active_statics.push_back({0, object.id, i, object.controller, false, false});
 
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
@@ -2288,7 +2285,7 @@ bool entering_object_loses_abilities(Entity entity) {
     const CardData &face = entering_face(entity, global_coordinator.GetComponent<CardData>(entity));
     const bool nonbasic_land = is_land_card(face) && !has_basic_supertype(face.types);
     for (const auto &a : g_active_statics) {
-        if (a.suppressed || !a.condition_met || (a.emblem < 0 && a.entity == entity)) continue;
+        if (a.suppressed || !a.condition_met || (a.effect_object < 0 && a.entity == entity)) continue;
         const StaticAbility &sa = *a.sa();
         if (sa.category != "Continuous") continue;
         if (!sa.remove_all_abilities && !(sa.remove_land_types && nonbasic_land)) continue;

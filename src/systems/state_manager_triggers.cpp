@@ -296,59 +296,60 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // one supported floating trigger is "Mode$ DamageAll | ValidSource$ Creature.YouCtrl |
     // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
     // more creatures the trigger's controller controls deal combat damage to one or more players.
-    for (const auto &ft : game.resolved_effects.floating_triggers) {
-        // Mode$ Attacks hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2:
-        // "whenever a creature an opponent controls attacks you or a planeswalker you control, it
-        // gets -1/-0"). Fires once per matching attacker (CREATURE_ATTACKED), binding the attacker
-        // as the effect's (Pump) target. The Attacked$ You,Planeswalker.YouCtrl clause is satisfied
-        // whenever an opponent's creature attacks, in the two-player engine (the only defender it
-        // can have is this effect's controller or their planeswalker).
-        if (ft.def->trigger_on == Events::CREATURE_ATTACKED) {
+    for (const EffectObject &object : game.resolved_effects.effect_objects)
+        for (const Ability &ft : object.triggers) {
+            // Mode$ Attacks hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2:
+            // "whenever a creature an opponent controls attacks you or a planeswalker you control, it
+            // gets -1/-0"). Fires once per matching attacker (CREATURE_ATTACKED), binding the attacker
+            // as the effect's (Pump) target. The Attacked$ You,Planeswalker.YouCtrl clause is satisfied
+            // whenever an opponent's creature attacks, in the two-player engine (the only defender it
+            // can have is this effect's controller or their planeswalker).
+            if (ft.def->trigger_on == Events::CREATURE_ATTACKED) {
+                for (const auto &ev : events) {
+                    if (ev.GetType() != Events::CREATURE_ATTACKED) continue;
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    Entity attacker = ev.GetParam<Entity>(Params::ENTITY);
+                    // ValidCard$ Creature.OppCtrl — the attacker is controlled by an opponent of the
+                    // effect's controller.
+                    if (ft.def->trigger_attacker_opp_ctrl &&
+                        source_controller(attacker) == ft.controller) continue;
+                    Ability trigger_ab = ft;
+                    trigger_ab.controller = ft.controller;
+                    // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
+                    if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_ATTACKER)) trigger_ab.target = ObjectRef::of(attacker);
+                    PendingTrigger pt;
+                    pt.ab = trigger_ab;
+                    pt.controller = ft.controller;
+                    pt.source = 0;
+                    pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
+                    pt.log_line = "A floating triggered ability triggers.";
+                    pending.push_back(pt);
+                }
+                continue;
+            }
+            if (ft.def->trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+            bool matched = false;
             for (const auto &ev : events) {
-                if (ev.GetType() != Events::CREATURE_ATTACKED) continue;
-                if (!ev.HasParam(Params::ENTITY)) continue;
-                Entity attacker = ev.GetParam<Entity>(Params::ENTITY);
-                // ValidCard$ Creature.OppCtrl — the attacker is controlled by an opponent of the
-                // effect's controller.
-                if (ft.def->trigger_attacker_opp_ctrl &&
-                    source_controller(attacker) == ft.controller) continue;
-                Ability trigger_ab = ft;
-                trigger_ab.controller = ft.controller;
-                // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
-                if (trigger_ab.def->defined.is(ObjectSpec::TRIGGERED_ATTACKER)) trigger_ab.target = ObjectRef::of(attacker);
-                PendingTrigger pt;
-                pt.ab = trigger_ab;
-                pt.controller = ft.controller;
-                pt.source = 0;
-                pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
-                pt.log_line = "A floating triggered ability triggers.";
-                pending.push_back(pt);
+                if (ev.GetType() != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+                if (ft.def->trigger_damage_source_youctrl) {
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    Entity dmg_src = ev.GetParam<Entity>(Params::ENTITY);
+                    if (source_controller(dmg_src) != ft.controller) continue;
+                }
+                matched = true;
+                break;
             }
-            continue;
+            if (!matched) continue;
+            Ability trigger_ab = ft;
+            trigger_ab.controller = ft.controller;
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = ft.controller;
+            pt.source = 0;
+            pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
+            pt.log_line = "A floating triggered ability triggers.";
+            pending.push_back(pt);
         }
-        if (ft.def->trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
-        bool matched = false;
-        for (const auto &ev : events) {
-            if (ev.GetType() != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
-            if (ft.def->trigger_damage_source_youctrl) {
-                if (!ev.HasParam(Params::ENTITY)) continue;
-                Entity dmg_src = ev.GetParam<Entity>(Params::ENTITY);
-                if (source_controller(dmg_src) != ft.controller) continue;
-            }
-            matched = true;
-            break;
-        }
-        if (!matched) continue;
-        Ability trigger_ab = ft;
-        trigger_ab.controller = ft.controller;
-        PendingTrigger pt;
-        pt.ab = trigger_ab;
-        pt.controller = ft.controller;
-        pt.source = 0;
-        pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
-        pt.log_line = "A floating triggered ability triggers.";
-        pending.push_back(pt);
-    }
 
     // The monarch's inherent sourceless triggered abilities (CR 725.2): "At the beginning of the
     // monarch's end step, that player draws a card" and "Whenever a creature deals combat damage to

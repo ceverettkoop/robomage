@@ -35,6 +35,26 @@ bool Game::ready_to_resolve() {
     return priority.a_has_passed && priority.b_has_passed;
 }
 
+void Game::ResolvedEffects::add(EffectObject object) {
+    object.id = next_effect_object_id++;
+    effect_objects.push_back(std::move(object));
+}
+
+EffectObject *Game::ResolvedEffects::find(int id) {
+    for (EffectObject &object : effect_objects)
+        if (object.id == id) return &object;
+    return nullptr;
+}
+
+void Game::ResolvedEffects::end(EffectObject::Duration duration, Zone::Ownership controller) {
+    effect_objects.erase(std::remove_if(effect_objects.begin(), effect_objects.end(),
+                                        [&](const EffectObject &object) {
+                                            return object.duration == duration &&
+                                                   (controller == Zone::UNKNOWN || object.controller == controller);
+                                        }),
+                         effect_objects.end());
+}
+
 bool Game::combat_damage_prevented(Entity source, Entity target) const {
     for (const auto &shield : resolved_effects.combat_damage_prevention_shields) {
         const Entity creature = shield.creature.get();
@@ -201,16 +221,10 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
 
     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
     resolved_effects.may_cast_this_turn.clear();
-    // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
-    // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
-    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
-    // survives cleanup — it is removed at its controller's next untap step instead.
-    {
-        auto &floating = resolved_effects.floating_triggers;
-        floating.erase(std::remove_if(floating.begin(), floating.end(),
-                                      [](const Ability &ft) { return !ft.def->duration_until_your_next_turn; }),
-                       floating.end());
-    }
+    // "This turn" effect objects (Forth Eorlingas!'s become-monarch trigger, CR 603.7e) last
+    // only their turn of creation. A Duration$ UntilYourNextTurn one (Tamiyo, Seasoned Scholar's
+    // +2) survives cleanup: it ends at its controller's next untap step instead.
+    resolved_effects.end(EffectObject::Duration::END_OF_TURN);
     // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
     // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
     // "until the end of your next turn") survives this cleanup and is removed at the
@@ -352,18 +366,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return p.until_your_next_turn && p.controller == active_player;
                                        }),
                         resolved_effects.cast_with_flash_permissions.end());
-                    // Lapse any "until your next turn" floating triggered ability this player
-                    // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
-                    // — its duration ends as the controller's next turn begins (CR 611.2).
-                    {
-                        auto &floating = resolved_effects.floating_triggers;
-                        floating.erase(std::remove_if(floating.begin(), floating.end(),
-                                                      [active_player](const Ability &ft) {
-                                                          return ft.def->duration_until_your_next_turn &&
-                                                                 ft.controller == active_player;
-                                                      }),
-                                       floating.end());
-                    }
+                    // Lapse any "until your next turn" effect object this player created (Tamiyo,
+                    // Seasoned Scholar's +2 "until your next turn, whenever ...") — its duration
+                    // ends as the controller's next turn begins (CR 611.2).
+                    resolved_effects.end(EffectObject::Duration::UNTIL_YOUR_NEXT_TURN, active_player);
                     // Phase in phased-out permanents controlled by active player (CR 702.26a).
                     // An Aura or Equipment that phased out indirectly phases in only along with
                     // the permanent it is attached to (CR 702.26g), inside effects::phase_in.

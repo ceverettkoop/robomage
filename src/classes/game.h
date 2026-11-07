@@ -38,6 +38,7 @@ typedef enum Step {
 
 #include "../components/ability.h"
 #include "../components/chosen_cost.h"
+#include "../components/effect_object.h"
 #include "../cost_payment.h"
 #include "../ecs/entity.h"
 #include "../ecs/entity_set.h"
@@ -164,23 +165,6 @@ enum MandatoryChoice {
 // The number of MandatoryChoice kinds (the state format's mandatory_choice table), derived from
 // the enum's last value.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
-
-// An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
-// and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
-// (Kaito's [+1] "Ninjas you control get +1/+1."). Its statics are gathered into g_active_statics
-// every SBA pass with the owner as their controller, so they apply through the normal layer
-// engine without the emblem being a real (targetable, counted, destructible) permanent. Persists
-// for the rest of the game; a fresh Game (new game of a match) starts with none.
-struct Emblem {
-    Zone::Ownership controller = Zone::PLAYER_A;
-    std::vector<StaticAbility> statics;
-    // The card whose ability created the emblem (Kaito, Bane of Nightmares; Tamiyo, Seasoned
-    // Scholar) and its vocab idx captured at creation. The emblem's identity in the observation's
-    // player-effects block. Display-only (the vocab idx is what the observation reads), so a plain
-    // Entity.
-    Entity source = 0;
-    int source_vocab_idx = -1;
-};
 
 struct Game {
         Game() {};
@@ -783,16 +767,20 @@ struct Game {
             std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
             ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
             ObjectMap<ImpulseCastPermission> impulse_cast_permission;
-            // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
-            // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
-            // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
-            // the trigger scan (collect_triggered_abilities) tests them against drained events just like
-            // a permanent's triggered ability. Cleared at the cleanup step so they last only their
-            // turn of creation. General over any until-end-of-turn floating triggered ability.
-            std::vector<Ability> floating_triggers;
-            // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
-            // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
-            std::vector<Emblem> emblems;
+            // The effect objects in play, in creation order: emblems (CR 114) and the Effects that
+            // carry floating triggered abilities (CR 603.7e-style "this turn" triggers, created by
+            // a DB$ Effect | Triggers$ <SVar>, e.g. Forth Eorlingas!'s become-monarch-on-combat-
+            // damage), which the trigger scan (collect_triggered_abilities) tests against drained
+            // events just like a permanent's triggered ability.
+            std::vector<EffectObject> effect_objects;
+            int next_effect_object_id = 0;
+
+            // Puts `object` into play under a fresh id.
+            void add(EffectObject object);
+            // The effect object with `id`, or nullptr once it has ended.
+            EffectObject *find(int id);
+            // Ends every effect object of `duration`, or only `controller`'s when one is named.
+            void end(EffectObject::Duration duration, Zone::Ownership controller = Zone::UNKNOWN);
         };
         ResolvedEffects resolved_effects;
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass

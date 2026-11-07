@@ -17,6 +17,18 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static EffectObject effect_object_of(const Ability &ab, EffectObject::Duration duration);
+
+// The effect object `ab` creates: its controller and source, lasting `duration`, holding nothing yet.
+static EffectObject effect_object_of(const Ability &ab, EffectObject::Duration duration) {
+    EffectObject object;
+    object.controller = ab.controller;
+    object.duration = duration;
+    object.source = ab.source.lki_entity();
+    object.source_vocab_idx = source_vocab_idx(object.source);
+    return object;
+}
+
 namespace effects {
 
 // AB$ Effect granting "you may cast that card this turn" (Emry, Lurker of the Loch).
@@ -39,12 +51,9 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // their owner (see gather_active_statics), so they apply through the normal layer engine. The
     // statics were parsed onto the ability at parse time. General over any emblem-making Effect.
     if (!ab.def->effect_emblem_statics.empty()) {
-        Emblem emblem;
-        emblem.controller = ab.controller;
+        EffectObject emblem = effect_object_of(ab, EffectObject::Duration::GAME);
         emblem.statics = ab.def->effect_emblem_statics;
-        emblem.source = ab.source.lki_entity();
-        emblem.source_vocab_idx = source_vocab_idx(ab.source.lki_entity());
-        cur_game.resolved_effects.emblems.push_back(std::move(emblem));
+        cur_game.resolved_effects.add(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
@@ -52,27 +61,23 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
     // ability (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage
     // to one or more players this turn, you become the monarch", CR 603.7e-style). Each parsed
-    // trigger is bound to this effect's controller and pushed into cur_game.resolved_effects.floating_triggers,
-    // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
-    // over any DB$ Effect that names a Triggers$ SVar.
+    // trigger is bound to this effect's controller on an effect object, where the trigger scan
+    // fires it like any triggered ability. General over any DB$ Effect that names a Triggers$ SVar.
     if (!ab.def->effect_floating_triggers.empty()) {
         // Duration$ UntilYourNextTurn (Tamiyo, Seasoned Scholar's +2 Effect) extends the floating
         // trigger past the end of this turn — it persists until the start of the controller's next
         // turn (removed at their untap, see game.cpp). The Forge default (no flag) lapses at cleanup.
         bool until_next_turn = ab.def->duration_until_your_next_turn;
+        EffectObject object = effect_object_of(ab, until_next_turn ? EffectObject::Duration::UNTIL_YOUR_NEXT_TURN
+                                                                   : EffectObject::Duration::END_OF_TURN);
         for (const auto &trig : ab.def->effect_floating_triggers) {
-            const AbilityDef *ft_def = &trig;
-            if (trig.duration_until_your_next_turn != until_next_turn)
-                ft_def = derived_ability_def(&trig, "until_your_next_turn", until_next_turn,
-                                             [until_next_turn](AbilityDef &d) {
-                                                 d.duration_until_your_next_turn = until_next_turn;
-                                             });
-            Ability ft(ft_def);
+            Ability ft(&trig);
             ft.controller = ab.controller;
-            ft.floating_creator = ab.source.lki_entity();
-            ft.floating_creator_vocab_idx = source_vocab_idx(ab.source.lki_entity());
-            cur_game.resolved_effects.floating_triggers.push_back(ft);
+            ft.floating_creator = object.source;
+            ft.floating_creator_vocab_idx = object.source_vocab_idx;
+            object.triggers.push_back(std::move(ft));
         }
+        cur_game.resolved_effects.add(std::move(object));
         game_log("A floating triggered ability is created%s.\n",
                  until_next_turn ? " until your next turn" : " until end of turn");
         return HandlerResult::DONE_RUN_SUBS;
