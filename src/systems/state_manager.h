@@ -52,17 +52,18 @@ extern std::vector<ActiveStatic> g_active_statics;
 // ── A static's scope (CR 611.3, 613.1) ─────────────────────────────────────────
 // What a static reaches is answered in one place. static_targets (state_manager_statics.cpp)
 // enumerates the objects a layer applies it to; static_reaches and static_reaches_face ask about
-// one object. No other reader looks at Affected$, AffectedDefined$ or AffectedZone$.
+// one object. No other reader looks at Affected$, AffectedDefined$, AffectedZone$ or ExcludeZone$.
 
 // How a scope question reads the object it asks about.
 enum class StaticRead {
     LIVE,     // a battlefield permanent, by its live characteristics
-    CARD,     // a card where it is, as a filter reads it there; AffectedZone$ applies
-    PRINTED,  // a card as printed, a token by a color-free test; AffectedZone$ applies. For a
-              // color-setting static, whose own filter can't read the colors it decides
+    CARD,     // a card where it is, as a filter reads it there
+    PRINTED,  // a card as printed, a token by a color-free test. For a color-setting static, whose
+              // own filter can't read the colors it decides
 };
 
-// Does static `as` reach `e`, read as `read`? AffectedDefined$ decides first, naming the one object
+// Does static `as` reach `e`, read as `read`? `e` must be in a zone it reaches (AffectedZone$, by
+// default the battlefield, less ExcludeZone$). AffectedDefined$ decides first, naming the one object
 // it covers, then Affected$ restricts that further; a static with no Affected$ reaches all it
 // covers. The filter's "you" is the static's controller, and its "this" the static's source.
 bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read);

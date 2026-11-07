@@ -649,11 +649,14 @@ static bool static_defined_covers(const ActiveStatic &as, Entity e) {
     return std::find(objects.begin(), objects.end(), e) != objects.end();
 }
 
-// Is `e` in a zone static `sa`'s AffectedZone$ names? An object with no Zone is in none.
+// Is `e` in a zone static `sa` reaches? Those AffectedZone$ names, less those ExcludeZone$ names; an
+// ExcludeZone$ alone reaches every other zone. An object with no Zone is in none.
 static bool object_in_affected_zone(const StaticAbility &sa, Entity e) {
     const bool has_zone = global_coordinator.entity_has_component<Zone>(e);
-    return affected_zone_matches(sa.affected_zone,
-                                 has_zone ? global_coordinator.GetComponent<Zone>(e).location : Zone::LIBRARY, has_zone);
+    const Zone::ZoneValue zone = has_zone ? global_coordinator.GetComponent<Zone>(e).location : Zone::LIBRARY;
+    if (sa.exclude_zone.empty()) return affected_zone_matches(sa.affected_zone, zone, has_zone);
+    if (has_zone && affected_zone_matches(sa.exclude_zone, zone, has_zone)) return false;
+    return affected_zone_matches(sa.affected_zone.empty() ? "All" : sa.affected_zone, zone, has_zone);
 }
 
 // The filter context of static `as`: its controller the YouCtrl/OppCtrl reference (CR 109.5), its
@@ -677,7 +680,7 @@ static bool printed_object_matches(const ActiveStatic &as, Entity e) {
 // See declaration in state_manager.h.
 bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read) {
     const StaticAbility &sa = *as.sa();
-    if (read != StaticRead::LIVE && !object_in_affected_zone(sa, e)) return false;
+    if (!object_in_affected_zone(sa, e)) return false;
     if (!static_defined_covers(as, e)) return false;
     if (sa.affected.empty()) return true;
     switch (read) {
@@ -722,12 +725,15 @@ static std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as
 // The objects a continuous static affects (CR 613.1 / 611.3a), for every layer that applies it:
 // a general Affected$ filter's matching permanents (affected_permanents_for_static), the
 // permanent its AffectedDefined$ names as what its source is attached to, or else (Self / no
-// Affected$) the source itself.
+// Affected$) the source itself; each only in a zone the static reaches.
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities) {
     const StaticAbility &sa = *a.sa();
     if (static_is_general(sa)) return affected_permanents_for_static(a, entities);
     std::vector<Entity> objects = resolve_objects(sa.affected_defined, ResolveCtx::of_static(a.controller, a.entity));
     if (affected_is_attached_target(sa) && !objects.empty() && !is_battlefield_permanent(objects.front())) return {};
+    objects.erase(std::remove_if(objects.begin(), objects.end(),
+                                 [&sa](Entity e) { return !object_in_affected_zone(sa, e); }),
+                  objects.end());
     return objects;
 }
 
@@ -2358,6 +2364,7 @@ void StateManager::apply_layer7_pt_effects() {
               (!a.sa()->set_power_svar.empty() || !a.sa()->set_toughness_svar.empty())))
             continue;
         if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+        if (!object_in_affected_zone(*a.sa(), a.entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
         cr.base_power = !a.sa()->set_power_svar.empty()
             ? evaluate_svar(a.sa()->set_power_svar, a.controller, a.entity) : 0;

@@ -4061,6 +4061,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.set_color = value;
             } else if (key == "AffectedZone") {
                 sa.affected_zone = value;
+            } else if (key == "ExcludeZone") {
+                sa.exclude_zone = value;
             } else if (key == "ManaConversion") {
                 // ManaConvert static (Mycosynth Lattice): AnyType->AnyColor lets any mana pay any
                 // colored pip. Read by any_mana_as_any_color_active during mana payment.
@@ -4701,7 +4703,8 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         const char *keys;
     } kModeKeys[] = {
         {"Continuous", true,
-         "Affected AffectedDefined AffectedZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar AddType "
+         "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar "
+         "AddType "
          "SetPower SetToughness SetColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
          "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
          "CharacteristicDefining"},

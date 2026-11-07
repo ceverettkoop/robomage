@@ -204,6 +204,7 @@ struct StaticAbility {
     // list reuses the same field. Consumed by setcolor_override_for (state_manager_statics.cpp).
     std::string set_color = "";             // SetColor$ Colorless | White | "White Blue" | ...
     std::string affected_zone = "";         // AffectedZone$ All | Battlefield | Graveyard | ...
+    std::string exclude_zone = "";          // ExcludeZone$: zones taken out of what the static reaches
 
     // Mana-spending conversion (category = "ManaConvert"; CR 609.4 / 106.6). ManaConversion$
     // AnyType->AnyColor (Mycosynth Lattice's "Players may spend mana as though it were mana of
