@@ -97,11 +97,11 @@ struct ReplacementSource {
 // that has lost its abilities — to Humility / Toxicrene (CR 613.1f) or as a land set to a basic land
 // type (CR 305.7) — generates none: a Containment Priest under Humility exiles nothing.
 template <typename Fn>
-void for_each_replacement(Effect::Replacement::Kind kind, Zone::Ownership ctrl, Fn fn, bool even_if_removed = false) {
+void for_each_replacement(Effect::Replacement::Kind kind, Zone::Ownership ctrl, Fn fn) {
     for (Entity e : zoned_entities()) {
         if (!is_battlefield_permanent(e, ctrl)) continue;
         const auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.abilities_removed && !even_if_removed) continue;
+        if (perm.abilities_removed) continue;
         const auto &reps = permanent_replacement_effects(e);
         const ReplacementSource source{e, nullptr, perm.controller};
         for (size_t i = 0; i < reps.size(); i++)
@@ -434,8 +434,7 @@ void collect_counter(const ReplacementEvent &ev, const AppliedSet &applied, std:
         Effect::Replacement::CANT_BE_COUNTERED, Zone::UNKNOWN,
         [&](const ReplacementSource &src, const Effect::Replacement &r, size_t) {
             covered = covered || counter_replacement_covers(r, src.controller, ev.entity, ev.affected_player);
-        },
-        /*even_if_removed=*/true);
+        });
     if (covered && !already_applied(applied, c)) out.push_back(c);
 }
 

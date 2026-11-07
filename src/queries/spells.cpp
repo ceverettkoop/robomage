@@ -190,9 +190,10 @@ bool effect_object_protects_spells_of(Zone::Ownership player) {
 bool player_spells_cant_be_countered(Zone::Ownership player, const EntitySet &entities) {
     if (effect_object_protects_spells_of(player)) return true;
     for (auto e : battlefield_permanents(entities)) {
-        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.abilities_removed) continue;  // CR 613.1f: it generates no replacement effects
         for (const auto &r : permanent_replacement_effects(e))
-            if (unfiltered_counter_protection_covers(r, ctrl, player)) return true;
+            if (unfiltered_counter_protection_covers(r, perm.controller, player)) return true;
     }
     return false;
 }

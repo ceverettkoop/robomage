@@ -1,0 +1,49 @@
+{
+  "name": "cr614_a_hexing_squelcher_protects_your_spells",
+  "why": "CR 101.2: Hexing Squelcher's \"Spells you control can't be countered\", the case the Humility scenario turns off.",
+  "battlefield_a": [
+    "Mountain",
+    "Hexing Squelcher"
+  ],
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Lightning Bolt can't be countered"
+  ],
+  "expect_not": [
+    "Lightning Bolt is countered"
+  ]
+}
