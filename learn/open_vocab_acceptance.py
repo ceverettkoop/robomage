@@ -146,18 +146,28 @@ def featurize(work, engine, rmfeat, names, jobs):
     order = np.argsort(rows, kind="stable")
     seat, omni, rows = seat.select(order), omni.select(order), rows[order]
     menu = idx["menu_offsets"]
-    if not np.array_equal(seat.sizes["a"], menu[rows + 1] - menu[rows]):
-        raise SystemExit("open_vocab_acceptance: the replayed menus are not the fixture's")
+    moved = rows[seat.sizes["a"] != menu[rows + 1] - menu[rows]]
+    recorded = recorded_decisions()
+    moved = [int(r) for r in moved if recorded is None or str(int(r)) in recorded]
+    if moved:
+        raise SystemExit("open_vocab_acceptance: the replayed menus are not the fixture's: rows %s" % moved)
     return seat, omni, rows, p.tables
 
 
-def recorded_only(seat, omni, rows):
-    """The decisions ``tests/open_vocab/inputs.json`` records (a decision whose inputs moved intentionally is
-    dropped from it, ``inputs --drop-moved``); (seat, omniscient, rows, how many were left out)."""
+def recorded_decisions():
+    """The decisions ``tests/open_vocab/inputs.json`` records, by fixture row (a decision whose inputs or menu
+    moved intentionally is dropped from it, ``inputs --drop-moved``); None with no file."""
     if not os.path.exists(INPUTS):
-        return seat, omni, rows, 0
+        return None
     with open(INPUTS) as fp:
-        kept = json.load(fp)["decisions"]
+        return json.load(fp)["decisions"]
+
+
+def recorded_only(seat, omni, rows):
+    """The decisions ``recorded_decisions`` holds; (seat, omniscient, rows, how many were left out)."""
+    kept = recorded_decisions()
+    if kept is None:
+        return seat, omni, rows, 0
     pick = np.array([i for i, r in enumerate(rows.tolist()) if str(r) in kept], np.int64)
     return seat.select(pick), omni.select(pick), rows[pick], len(rows) - len(pick)
 
