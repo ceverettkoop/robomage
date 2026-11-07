@@ -1,0 +1,15 @@
+# M8 (b1): characteristics across zones.
+# A color chosen as a permanent enters, added in every zone (Painter's Servant).
+category:CHOOSE_COLOR
+row:add_color
+# A characteristic-defining ability off the battlefield (Grist, Nethergoyf).
+row:off_battlefield_face
+# Reflexive sacrifice offered, and the repeat (Grist).
+cost:SACRIFICE.unless
+trigger:Reflexive
+effect:Repeat
+# Layer-6 grants and the scoped conversion (Agatha's Soul Cauldron).
+row:gains_abilities_of
+row:mana_convert_scoped
+# Combat damage that can't be prevented (Frenzied Baloth).
+row:cant_prevent_damage

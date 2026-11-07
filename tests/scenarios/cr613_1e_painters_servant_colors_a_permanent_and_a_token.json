@@ -1,34 +1,51 @@
 {
   "name": "cr613_1e_painters_servant_colors_a_permanent_and_a_token",
-  "why": "CR 613.1e, 111.1: 'permanents' takes in a token, which is no card: under Painter's Servant set to red Blue Elemental Blast can destroy green Grizzly Bears.",
+  "why": "CR 613.1e, 111.1: 'permanents' takes in a token, which is no card: under Painter's Servant set to red Blue Elemental Blast can destroy Grizzly Bears and the black-green Insect Grist makes, and Grist itself, a permanent too.",
   "hand_a": [
-    "Blue Elemental Blast"
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
   ],
   "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Painter's Servant",
+    "Grist the Hunger Tide",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
     "Island",
     "Island"
   ],
-  "battlefield_a": [
-    "Island",
-    "Painter's Servant"
-  ],
-  "library_b": [
-    "Forest",
-    "Forest"
-  ],
   "battlefield_b": [
-    "Grizzly Bears"
+    "Island"
   ],
   "play": [
     "A:keep",
     "B:keep",
     "A:color:Red",
-    "A:cast:Blue Elemental Blast",
-    "A:mode:Destroy target red permanent",
-    "A:target:Grizzly Bears"
+    "A:desc:Repeat",
+    "B:pass",
+    "B:cast:Blue Elemental Blast",
+    "B:mode:Destroy target red permanent",
+    "B:target:Insect"
   ],
-  "max_decisions": 10,
+  "max_decisions": 12,
   "expect": [
-    "Grizzly Bears is destroyed"
+    "Insect token is destroyed"
+  ],
+  "expect_menu": [
+    "Grizzly Bears",
+    "Painter's Servant"
   ]
 }

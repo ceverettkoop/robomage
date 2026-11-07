@@ -26,6 +26,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../game_driver.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
@@ -550,6 +551,7 @@ bool apply_color_statics(Entity e, std::set<Colors> &colors) {
     for (const ActiveStatic *as : effects) {
         if (!as->sa()->set_color.empty()) colors = parse_setcolor_spec(as->sa()->set_color);
         const std::set<Colors> added = added_colors(*as);
+        if (!added.empty()) coverage_row("add_color");
         colors.insert(added.begin(), added.end());
     }
     return !effects.empty();
@@ -561,7 +563,10 @@ static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for) {
     const StaticAbility &sa = *as.sa();
     if (sa.mana_convert_activated && paid_for.purpose != ManaPurpose::ACTIVATE) return false;
     if (sa.mana_convert_you && source_controller(paid_for.entity) != as.controller) return false;
-    return sa.mana_convert_card.empty() || object_matches_filter(paid_for.entity, sa.mana_convert_card, static_match_ctx(as));
+    if (sa.mana_convert_card.empty()) return true;
+    if (!object_matches_filter(paid_for.entity, sa.mana_convert_card, static_match_ctx(as))) return false;
+    coverage_row("mana_convert_scoped");
+    return true;
 }
 
 bool any_mana_as_any_color_active(const ManaPayee &paid_for) {
@@ -2076,6 +2081,7 @@ static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
         if (!object_matches_filter(card, sa.gains_abilities_of, ctx)) continue;
         for (const AbilityDef *def : object_abilities(card)) {
             if (def->ability_type != AbilityDef::ACTIVATED || def->activation_zone != -1) continue;
+            coverage_row("gains_abilities_of");
             Ability granted(def);
             granted.granted_by_static = a.entity;
             granted.granted_from = ObjectRef::of(card);

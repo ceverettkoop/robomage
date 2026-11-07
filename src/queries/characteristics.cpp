@@ -5,6 +5,7 @@
 #include "../components/ability.h"
 #include "../components/creature.h"
 #include "../components/token.h"
+#include "../coverage.h"
 #include "../svar_eval.h"
 #include "battlefield.h"
 #include "lki.h"
@@ -32,6 +33,7 @@ ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd) {
     c.power = static_cast<int>(face.power);
     c.toughness = static_cast<int>(face.toughness);
     c.counted_pt = e != 0 && face.has_counted_pt;
+    if (e != 0 && &face == cd.off_battlefield.get()) coverage_row("off_battlefield_face");
     return c;
 }
 
