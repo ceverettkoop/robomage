@@ -26,9 +26,9 @@ bool targets_still_legal(const Ability &ab);
 // its chained sub-abilities', then each chosen mode's and what that mode chains.
 std::vector<const Ability *> announced_instructions(const Ability &ab);
 // CR 608.2b, for a stack object as it resolves: are all its targets, for every instance of the word
-// "target" on it, its chained instructions and its chosen modes, illegal? Its own count when it
-// targets, even with none chosen and one required; another instruction's count once chosen. False
-// with no target at all.
+// "target" on it, its chained instructions and its chosen modes, illegal? Its own count even with
+// none chosen when one is required; an instruction that chose none and could count for nothing
+// (CR 115.6). False with no target at all.
 bool every_target_illegal(const Ability &ab);
 
 // The legal targets for `ability` from `priority_player`'s perspective, in menu order: opponent

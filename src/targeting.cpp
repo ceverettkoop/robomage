@@ -388,12 +388,11 @@ std::vector<const Ability *> announced_instructions(const Ability &ab) {
 }
 
 bool every_target_illegal(const Ability &ab) {
-    const bool own = ab.def->valid_tgts != "N_A";
-    if (own && targets_still_legal(ab)) return false;
-    bool chosen = own;
+    bool chosen = false;
     for (const Ability *part : announced_instructions(ab)) {
-        if (part == &ab) continue;
-        if (part->def->valid_tgts == "N_A" || (part->target.empty() && part->targets.empty())) continue;
+        if (part->def->valid_tgts == "N_A") continue;
+        const bool none_chosen = part->target.empty() && part->targets.empty();
+        if (none_chosen && (part != &ab || part->target_min == 0)) continue;
         if (targets_still_legal(*part)) return false;
         chosen = true;
     }

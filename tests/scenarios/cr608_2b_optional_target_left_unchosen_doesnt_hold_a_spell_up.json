@@ -1,0 +1,13 @@
+{
+  "name": "cr608_2b_optional_target_left_unchosen_doesnt_hold_a_spell_up",
+  "why": "CR 115.6, 608.2b: Into the Flood Maw with its gift promised chooses no target for its first instruction, so with the permanent it did target gone every target is illegal: it doesn't resolve, and the gift isn't given (CR 702.176c).",
+  "hand_a": ["Into the Flood Maw"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Mishra's Bauble", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Into the Flood Maw", "A:choice:Accept", "A:target:Mishra's Bauble", "B:activate:Mishra's Bauble", "B:target:Player A"],
+  "max_decisions": 12,
+  "expect": ["ChangeZone fizzles"],
+  "expect_not": ["Fish", "Resolving ability \\(category: ChangeZone"]
+}
