@@ -39,6 +39,7 @@
 #include "../queries/players.h"
 #include "../queries/prepared.h"
 #include "../queries/types.h"
+#include "../queries/static_conditions.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -1948,30 +1949,19 @@ void StateManager::gather_active_statics(Game &game) {
 
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
-    bool need_delirium_a = false, need_delirium_b = false;
+    StaticConditionAnswers conditions;
     game.may_look_statics = false;
     for (auto &a : g_active_statics) {
         game.may_look_statics = game.may_look_statics || a.sa()->may_look_at;
-        if (a.sa()->condition == "Delirium") {
-            if (a.controller == Zone::PLAYER_A) need_delirium_a = true;
-            else                                need_delirium_b = true;
-        }
-    }
-    bool delirium_a = need_delirium_a ? check_delirium(Zone::PLAYER_A, mEntities) : false;
-    bool delirium_b = need_delirium_b ? check_delirium(Zone::PLAYER_B, mEntities) : false;
-
-    for (auto &a : g_active_statics) {
+        const StaticConditionRow *condition =
+            a.sa()->condition.empty() ? nullptr : static_condition_row(a.sa()->condition);
         if (a.sa()->condition.empty() && a.sa()->check_svar_expr.empty()) {
             // No Condition$/CheckSVar$ — provisionally true (a present-only IsPresent$ static
             // lands here and is gated by the present-count AND below); an unconditional static
             // stays true.
             a.condition_met = true;
-        } else if (a.sa()->condition == "Delirium") {
-            a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
-        } else if (a.sa()->condition == "PlayerTurn") {
-            // Active during the source controller's own turn (Voice of Victory).
-            bool a_turn = cur_game.turn_state.player_a_turn;
-            a.condition_met = (a.controller == Zone::PLAYER_A) ? a_turn : !a_turn;
+        } else if (condition) {
+            a.condition_met = conditions.met(*condition, a.controller, mEntities);
         } else if (!a.sa()->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.

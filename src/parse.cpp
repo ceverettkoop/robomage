@@ -27,6 +27,7 @@
 #include "queries/affected.h"
 #include "queries/filters.h"
 #include "queries/overlays.h"
+#include "queries/static_conditions.h"
 #include "queries/types.h"
 #include "resolution_memory.h"
 #include "str_util.h"
@@ -4951,8 +4952,8 @@ static void static_value_finding(const StaticAbility &sa, const std::string &key
 // The forms of a whole static line its reader does not honour, each named for what is ignored.
 static void static_form_findings(const StaticAbility &sa, const std::string &line,
                                  const std::map<std::string, std::string> &svars) {
-    // The two gate kinds ActiveStatic::condition_met evaluates by name.
-    if (!sa.condition.empty() && sa.condition != "Delirium" && sa.condition != "PlayerTurn")
+    // The gates ActiveStatic::condition_met evaluates by name.
+    if (!sa.condition.empty() && !static_condition_row(sa.condition))
         static_value_finding(sa, "Condition", sa.condition);
     // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
     if (sa.category == "Continuous") {
