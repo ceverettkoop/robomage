@@ -232,6 +232,7 @@ static const char *window_kind_name(Game::RevealWindow::Kind v) {
         C(LOOK)
         C(FACE_DOWN_LOOK)
         C(CONTINUOUS_REVEAL)
+        C(STANDING_LOOK)
     }
 #undef C
     return nullptr;
@@ -331,7 +332,7 @@ std::vector<rmstate::EnumTable> engine_enums() {
     out.push_back(enum_table("day_night", Game::DN_NEITHER, Game::DN_NIGHT, day_night_name));
     out.push_back(enum_table("pending_tag", PendingQuery::NONE, PendingQuery::TRIGGER_PLACE, pending_tag_name));
     out.push_back(
-        enum_table("window_kind", Game::RevealWindow::REVEAL, Game::RevealWindow::CONTINUOUS_REVEAL, window_kind_name));
+        enum_table("window_kind", Game::RevealWindow::REVEAL, Game::RevealWindow::STANDING_LOOK, window_kind_name));
     out.push_back(
         enum_table("window_end", Game::RevealWindow::RESOLUTION, Game::RevealWindow::LEAVES_ZONE, window_end_name));
     out.push_back(enum_table(

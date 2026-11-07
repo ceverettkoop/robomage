@@ -1,0 +1,63 @@
+{
+  "name": "cr401_5_the_new_top_card_can_t_be_looked_at_until_the_spell_is_cast",
+  "why": "CR 401.5: the top card changes as a spell is cast from it, and the new top card can't be looked at until the spell becomes cast (CR 601.2i): at X's announcement A's frame has no look, and after the cast it does.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Chalice of the Void",
+    "Mishra's Bauble",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chalice of the Void",
+    "A:x:1"
+  ],
+  "max_decisions": 8,
+  "expect_dump": [
+    "^A d=6 .*menu CHOOSE_X",
+    "^A d=7 .*reveal STANDING_LOOK LIBRARY pos=0 card=Mishra's Bauble"
+  ],
+  "expect_dump_not": [
+    "^A d=6 .*reveal ",
+    "^A d=6 .*(card=|= )Mishra's Bauble"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

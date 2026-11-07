@@ -1,0 +1,69 @@
+{
+  "name": "cr701_20e_one_look_with_two_forges",
+  "why": "CR 611.3: two Forges give one look: one window, and when one leaves the look stands, with no reveal_end.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Abrade",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Mystic Forge"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Mystic Forge"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Mystic Forge is destroyed"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Lotus Petal"
+  ],
+  "expect_dump_not": [
+    "^A .*event REVEAL_END"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

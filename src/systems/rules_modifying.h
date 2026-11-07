@@ -108,6 +108,17 @@ bool may_play_lands_from_graveyard(Zone::Ownership player);
 bool may_cast_spells_from_graveyard(Zone::Ownership player);
 // Does a permanent's static say so for lands, which lasts past this turn, and not an Effect's alone?
 bool graveyard_land_permission_outlasts_turn(Zone::Ownership player);
+// Does a static let `player` cast `card`, read as the spell `face` would be (CR 601.3e), from the
+// library it is in (Mystic Forge)?
+bool may_cast_from_library(Zone::Ownership player, Entity card, const CardData &face);
+
+// One look a MayLookAt$ static gives right now: `looker` may see `card`, a library's top card.
+struct StandingLook {
+    Entity card = 0;
+    Zone::Ownership looker = Zone::UNKNOWN;
+};
+// Every look the statics give right now, read off each library's live top card, in library order.
+std::vector<StandingLook> standing_looks();
 
 // How many lands `player` may still play this turn (CR 305.2 plus AdjustLandPlays
 // statics), clamped at 0 — `land_play_limit` is the per-turn allowance (1 + bonus),

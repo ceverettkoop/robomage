@@ -417,6 +417,30 @@ bool graveyard_land_permission_outlasts_turn(Zone::Ownership player) {
     return false;
 }
 
+bool may_cast_from_library(Zone::Ownership player, Entity card, const CardData &face) {
+    const bool own_face = &face == &global_coordinator.GetComponent<CardData>(card);
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met || as.controller != player) continue;
+        if (!as.sa()->may_play_from_library) continue;
+        if (own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_face(as, card, face, Zone::LIBRARY))
+            return true;
+    }
+    return false;
+}
+
+std::vector<StandingLook> standing_looks() {
+    std::vector<StandingLook> looks;
+    for (Zone::Ownership owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        const Entity top = library_top(owner);
+        if (top == 0) continue;
+        for (const auto &as : g_active_statics) {
+            if (as.suppressed || !as.condition_met || !as.sa()->may_look_at) continue;
+            if (static_reaches(as, top, StaticRead::CARD)) looks.push_back({top, as.controller});
+        }
+    }
+    return looks;
+}
+
 bool etb_triggers_suppressed(Entity entering) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)

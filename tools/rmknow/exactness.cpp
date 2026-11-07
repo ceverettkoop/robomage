@@ -6,12 +6,14 @@
 //     compacted network's worlds (projected onto the same units) and the solver on the compacted
 //     network;
 //   - random event streams: a simulated two-player game (the opponent's draws, hand reveals,
-//     put-backs, casts, top reveals, scries, mills and shuffles, the viewer's own draws and looks)
-//     fed to the sidecar as frames, with compaction on and off. After every frame each player's
+//     put-backs, casts, top reveals, scries, mills and shuffles, the viewer's own draws, looks and
+//     shuffles, and in every other stream a standing look: the viewer shown its top card as each
+//     step leaves it) fed to the sidecar as frames, with compaction on and off. After every frame each player's
 //     reported pools are compared with the enumeration of that sidecar's own network, and with the
 //     simulated truth;
 //   - sculpted cases: the §4.2 put-back example, a put-back from a partly known hand, a game 2
-//     under a closed decklist (lower-bound root) and with open decklists (the registered 75 split).
+//     under a closed decklist (lower-bound root) and with open decklists (the registered 75 split),
+//     a look that outlives a shuffle.
 // A check passes when the solver's bounds contain the enumeration's (soundness) and, when the
 // solver reports exact, equal them on every card. `rmknow --exactness N` runs N synthetic histories,
 // N compacted streams and every fourth seed's uncompacted stream (deterministic seeds) plus the
@@ -471,6 +473,7 @@ static void stream_case(Tally &t, uint64_t seed, bool compaction) {
     };
     check(0);
     const int steps = 8 + rng.below(8);
+    const bool standing_look = seed % 2 == 0;
     for (int step = 1; step <= steps; ++step) {
         const uint16_t turn = static_cast<uint16_t>(step);
         const int r = rng.below(100);
@@ -526,9 +529,12 @@ static void stream_case(Tally &t, uint64_t seed, bool compaction) {
             s.draw(A, lib_a.front(), h, false, turn);
             hand_a.emplace_back(lib_a.front(), h);
             lib_a.erase(lib_a.begin());
-        } else if (r < 96 && lib_a.size() > 1) {  // A looks at the top two
+        } else if (r < 93 && lib_a.size() > 1) {  // A looks at the top two
             s.shown(EventKind::LOOK, A, Zn::LIBRARY,
                 {Stream::card(lib_a[0], 0, 0, Stream::top(0)), Stream::card(lib_a[1], 0, 0, Stream::top(1))}, turn);
+        } else if (r < 96 && lib_a.size() > 1) {  // A shuffles
+            s.shuffle(A);
+            shuffle(lib_a);
         } else if (!hand_a.empty()) {  // A puts a card from hand on top
             const size_t at = static_cast<size_t>(rng.below(static_cast<int>(hand_a.size())));
             s.move(EventKind::ZONE_MOVE, A, Zn::HAND, Zn::LIBRARY,
@@ -536,6 +542,8 @@ static void stream_case(Tally &t, uint64_t seed, bool compaction) {
             lib_a.insert(lib_a.begin(), hand_a[at].first);
             hand_a.erase(hand_a.begin() + static_cast<std::ptrdiff_t>(at));
         }
+        if (standing_look && !lib_a.empty())
+            s.shown(EventKind::LOOK, A, Zn::LIBRARY, {Stream::card(lib_a.front(), 0, 0, Stream::top(0))}, turn);
         if (rng.chance(70) || step == steps) {
             s.frame();
             check(step);
@@ -616,6 +624,21 @@ static void sculpted(Tally &t) {
         s.shown(EventKind::REVEAL_START, B, Zn::LIBRARY, {Stream::card(FOW, 0, 81, Stream::top(0))});
         s.frame();
         check_all(k, "sculpted open-decklist game 2", true);
+    }
+    // A look that outlives a shuffle: the card seen on top is known to be in the library, at no
+    // position; the next card looked at is on top.
+    {
+        knowledge::Knowledge k;
+        begin(k, {{FOW, 1}, {DAZE, 1}, {FILL, 10}}, {{FILL, 12}}, false, 0);
+        Stream s(k);
+        s.game_start(12, 12);
+        s.shown(EventKind::LOOK, A, Zn::LIBRARY, {Stream::card(FOW, 0, 0, Stream::top(0))});
+        s.shuffle(A);
+        s.shown(EventKind::LOOK, A, Zn::LIBRARY, {Stream::card(DAZE, 0, 0, Stream::top(0))});
+        s.frame();
+        check_all(k, "sculpted look that outlives a shuffle", true);
+        for (const knowledge::KPositionRow &row : k.rows().positions)
+            if (row.card == FOW) t.fail("sculpted look that outlives a shuffle: the card seen keeps a position");
     }
 }
 

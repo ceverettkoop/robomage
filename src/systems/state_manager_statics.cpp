@@ -1942,7 +1942,9 @@ void StateManager::gather_active_statics(Game &game) {
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
     bool need_delirium_a = false, need_delirium_b = false;
+    game.may_look_statics = false;
     for (auto &a : g_active_statics) {
+        game.may_look_statics = game.may_look_statics || a.sa()->may_look_at;
         if (a.sa()->condition == "Delirium") {
             if (a.controller == Zone::PLAYER_A) need_delirium_a = true;
             else                                need_delirium_b = true;

@@ -1,0 +1,65 @@
+{
+  "name": "cr401_look_follows_brainstorms_put_back",
+  "why": "CR 401.2: Brainstorm draws three and puts two back: the look moves to the put-back top card with no move of the card it was on.",
+  "hand_a": [
+    "Brainstorm",
+    "Grizzly Bears",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Island"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Urza's Bauble",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Brainstorm",
+    "A:desc:Grizzly Bears",
+    "A:desc:Tormod's Crypt"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A casts Brainstorm"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Tormod's Crypt"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen \\w+ |known_hand |= )Tormod's Crypt",
+    "^B .*(card=|seen \\w+ |known_hand |= )Grizzly Bears"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

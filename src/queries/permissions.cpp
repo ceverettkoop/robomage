@@ -39,6 +39,7 @@ static bool exile_grant_expires(const PermissionQuery &q);
 static void exile_grant_spent(Entity card);
 static bool prepared_copy_covers(const PermissionQuery &q);
 static bool graveyard_self_static(const PermissionQuery &q);
+static bool library_static(const PermissionQuery &q);
 static unsigned zones_with_rows();
 
 static const PermissionRow kPermissionRows[] = {
@@ -50,6 +51,7 @@ static const PermissionRow kPermissionRows[] = {
     {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires, exile_grant_spent},
     {Permission::PREPARED,       Zone::EXILE,     false,      prepared_copy_covers,   never_expires,       prepared_copy_cast},
     {Permission::GRAVEYARD_SELF, Zone::GRAVEYARD, true,       graveyard_self_static,  never_expires,       nullptr},
+    {Permission::LIBRARY,        Zone::LIBRARY,   true,       library_static,         never_expires,       nullptr},
 };
 
 static const unsigned kZonesWithRows = zones_with_rows();
@@ -109,11 +111,17 @@ static bool prepared_copy_covers(const PermissionQuery &q) {
 
 static bool graveyard_self_static(const PermissionQuery &q) { return q.cd.may_cast_from_graveyard; }
 
+static bool library_static(const PermissionQuery &q) {
+    return rules_mod::may_cast_from_library(q.player, q.card, q.cd);
+}
+
 PlayPermissions play_permissions(Entity card, Zone::Ownership player) {
     PlayPermissions out;
     if (!global_coordinator.entity_has_component<Zone>(card)) return out;
     const Zone &zone = global_coordinator.GetComponent<Zone>(card);
     if (!(kZonesWithRows & (1u << zone.location))) return out;
+    // A library's rows reach its top card alone (MayPlay$ over a library names nothing else).
+    if (zone.location == Zone::LIBRARY && zone.distance_from_top != 0) return out;
     if (!global_coordinator.entity_has_component<CardData>(card)) return out;
     const PermissionQuery q{card, global_coordinator.GetComponent<CardData>(card), player};
     // A source that outlives this turn's cleanup clears this; it starts true and is only

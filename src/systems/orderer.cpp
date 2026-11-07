@@ -455,10 +455,9 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
 Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster, SpellOverlay overlay) {
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const Zone origin = z;
-    // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
-    // library.
+    // Every cast-offering path casts from a hand, graveyard, exile or the top of a library.
     if (origin.location != Zone::HAND && origin.location != Zone::GRAVEYARD &&
-        origin.location != Zone::EXILE)
+        origin.location != Zone::EXILE && origin.location != Zone::LIBRARY)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
                     std::to_string(static_cast<int>(origin.location)));
     const ObsMoveCapture obs_move = obs_begin_move(card);
@@ -508,8 +507,9 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     const ObsMoveCapture obs_move = obs_begin_move(card);
     HandleMove handle_move = handles_begin_move(card);
     close_zone_gap(card);
-    // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
-    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
+    // Reopen the card's old slot in its ordered zone (each is per-owner).
+    if (origin.location == Zone::LIBRARY) coverage_row("cast_rewound_to_library");
+    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE || origin.location == Zone::LIBRARY) {
         for (auto &&e : mEntities) {
             if (e == card) continue;
             auto &cz = global_coordinator.GetComponent<Zone>(e);

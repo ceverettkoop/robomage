@@ -46,6 +46,12 @@ Entity library_top(Zone::Ownership owner) {
     return 0;
 }
 
+bool is_library_top(Entity card) {
+    if (!global_coordinator.entity_has_component<Zone>(card)) return false;
+    const Zone &z = global_coordinator.GetComponent<Zone>(card);
+    return z.location == Zone::LIBRARY && z.distance_from_top == 0;
+}
+
 int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entity except) {
     std::set<std::string> type_names;
     for (auto entity : entities) {
@@ -120,19 +126,13 @@ bool interchangeable_cards(Entity a, Entity b) {
         global_coordinator.GetComponent<CardData>(a).name !=
             global_coordinator.GetComponent<CardData>(b).name)
         return false;
-    if (za.location == Zone::GRAVEYARD) {
-        for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
-            PlayPermissions pa = play_permissions(a, player);
-            PlayPermissions pb = play_permissions(b, player);
-            if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
-                return false;
-        }
-        return true;
+    if (za.location != Zone::GRAVEYARD && za.location != Zone::LIBRARY) return false;
+    for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        PlayPermissions pa = play_permissions(a, player);
+        PlayPermissions pb = play_permissions(b, player);
+        if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
+            return false;
+        if (za.location == Zone::LIBRARY && identity_visible(a, player) != identity_visible(b, player)) return false;
     }
-    if (za.location == Zone::LIBRARY) {
-        for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B})
-            if (identity_visible(a, seat) != identity_visible(b, seat)) return false;
-        return true;
-    }
-    return false;
+    return true;
 }

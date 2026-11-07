@@ -144,6 +144,18 @@ static void identity_facts(
     for (size_t r = 0; r < menu.size(); ++r)
         out->push_back("menu " + menu.name(r, menu.col("category")) + " card=" + shown(menu, r, menu.col("source_card")) +
                        " text=" + menu.text(r, menu.col("description")));
+    const Rows reveal(f, s, "reveal");
+    for (size_t r = 0; r < reveal.size(); ++r)
+        out->push_back("reveal " + reveal.name(r, reveal.col("window")) + " " + reveal.name(r, reveal.col("zone")) +
+                       " pos=" + std::to_string(reveal.u(r, reveal.col("pos"))) +
+                       " card=" + shown(reveal, r, reveal.col("card")));
+    const Rows objects(f, s, "object");
+    const Rows permissions(f, s, "play_permission");
+    for (size_t r = 0; r < permissions.size(); ++r)
+        for (size_t o = 0; o < objects.size(); ++o)
+            if (objects.u(o, objects.col("handle")) == permissions.u(r, permissions.col("obj")))
+                out->push_back("permission " + rel_text(permissions.u(r, permissions.col("player_rel"))) + " " +
+                               permissions.name(r, permissions.col("kind")) + " card=" + shown(objects, o, objects.col("card")));
     const Rows events(f, s, "event");
     const Rows cards(f, s, "event_card");
     for (size_t r = 0; r < cards.size(); ++r) {

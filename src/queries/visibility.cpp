@@ -14,10 +14,12 @@
 #include "../components/permanent.h"
 #include "../components/token.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
 #include "../state_format/events.h"
 #include "../state_format/handles.h"
+#include "../systems/rules_modifying.h"
 #include "characteristics.h"
 #include "entry.h"
 #include "face_down.h"
@@ -26,6 +28,10 @@
 #include "zones.h"
 
 using Window = Game::RevealWindow;
+
+// The bit of Game::standing_lookers for `looker` looking at `library`'s top card.
+static uint8_t standing_look_bit(Zone::Ownership looker, Zone::Ownership library);
+static bool proposal_in_progress();
 
 static bool is_seat(Zone::Ownership p);
 static Entity window_card(const Window &w);
@@ -95,13 +101,15 @@ static bool outlives(Window::End a, Window::End b) {
     return static_cast<int>(a) > static_cast<int>(b);
 }
 
-// Opens one window; true when it is new (not already open, possibly extended, nor needed).
+// Opens one window; true when it is new (not already open, possibly extended, nor needed). A
+// standing look and a window an effect opens are kept apart, each ending on its own terms.
 static bool open_window(Entity card, Zone::Ownership audience, Window::Kind kind, Window::End until,
     Entity stack_object, bool position_public) {
     if (card == 0 || !in_hidden_zone(card)) return false;
     if (is_seat(audience) && sees_without_window(card, audience)) return false;
     for (Window &w : cur_game.reveal_windows) {
         if (window_card(w) != card || w.audience != audience) continue;
+        if ((w.kind == Window::STANDING_LOOK) != (kind == Window::STANDING_LOOK)) continue;
         if (outlives(until, w.until)) {
             w.kind = kind;
             w.until = until;
@@ -129,7 +137,7 @@ static void open_windows(const std::vector<Entity> &cards, Zone::Ownership audie
     std::vector<Entity> opened;
     for (Entity card : cards)
         if (open_window(card, audience, kind, until, stack_object, position_public)) opened.push_back(card);
-    obs_windows_opened(opened, audience, kind == Window::LOOK, position_public, draw_link);
+    obs_windows_opened(opened, audience, kind == Window::LOOK, position_public, draw_link, true);
 }
 
 // `cards` in an order every player could derive: a library from the top, other zones by card name
@@ -214,6 +222,8 @@ static const char *kind_word(Window::Kind kind) {
             return "face-down-look";
         case Window::CONTINUOUS_REVEAL:
             return "continuous-reveal";
+        case Window::STANDING_LOOK:
+            return "standing-look";
     }
     return "window";
 }
@@ -359,7 +369,8 @@ LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer) {
     if (!is_seat(viewer) || identity_visible(card, viewer)) return exact;
     bool hidden_window = false;
     for (const Window &w : cur_game.reveal_windows) {
-        if (window_card(w) != card || window_shown_to(w, viewer)) continue;
+        // A standing look is on the top card, which every player can tell from the others.
+        if (w.kind == Window::STANDING_LOOK || window_card(w) != card || window_shown_to(w, viewer)) continue;
         if (!w.position_public) return LibrarySpan{0, 0};
         hidden_window = true;
     }
@@ -369,7 +380,7 @@ LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer) {
     size_t lo = z.distance_from_top, hi = z.distance_from_top;
     for (const Window &w : cur_game.reveal_windows) {
         const Entity other = window_card(w);
-        if (other == 0 || window_shown_to(w, viewer) || !w.position_public) continue;
+        if (other == 0 || w.kind == Window::STANDING_LOOK || window_shown_to(w, viewer) || !w.position_public) continue;
         const Zone &oz = global_coordinator.GetComponent<Zone>(other);
         if (oz.location != Zone::LIBRARY || oz.owner != z.owner || identity_visible(other, viewer)) continue;
         lo = std::min(lo, oz.distance_from_top);
@@ -436,6 +447,39 @@ void reveal_until_leaves_stack(Entity card, Entity stack_object) {
 
 void reveal_continuously(Entity card) {
     open_windows({card}, Zone::UNKNOWN, Window::CONTINUOUS_REVEAL, Window::LEAVES_ZONE, 0, true, false);
+}
+
+static uint8_t standing_look_bit(Zone::Ownership looker, Zone::Ownership library) {
+    return static_cast<uint8_t>(1u << ((looker == Zone::PLAYER_A ? 0 : 2) + (library == Zone::PLAYER_A ? 0 : 1)));
+}
+
+static bool proposal_in_progress() {
+    const Game::PendingDecisions &pd = cur_game.pending;
+    return pd.cast.active || pd.activation.active || pd.special_action.active;
+}
+
+void sync_standing_looks() {
+    if (cur_game.ended || (!cur_game.may_look_statics && cur_game.standing_lookers == 0)) return;
+    const std::vector<rules_mod::StandingLook> looks = rules_mod::standing_looks();
+    close_windows_if(
+        [&looks](const Window &w, Entity card) {
+            if (w.kind != Window::STANDING_LOOK) return false;
+            for (const rules_mod::StandingLook &look : looks)
+                if (look.card == card && look.looker == w.audience) return false;
+            return true;
+        },
+        "off the top", true);
+    if (proposal_in_progress()) return;
+    uint8_t lookers = 0;
+    for (const rules_mod::StandingLook &look : looks) {
+        const uint8_t bit = standing_look_bit(look.looker, global_coordinator.GetComponent<Zone>(look.card).owner);
+        if (open_window(look.card, look.looker, Window::STANDING_LOOK, Window::LEAVES_ZONE, 0, true)) {
+            coverage_row("standing_look");
+            obs_windows_opened({look.card}, look.looker, true, true, false, !(cur_game.standing_lookers & bit));
+        }
+        lookers |= bit;
+    }
+    cur_game.standing_lookers = lookers;
 }
 
 HiddenViewers hidden_identity_viewers(Entity card) {

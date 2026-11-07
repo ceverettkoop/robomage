@@ -20,17 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Play from the top of the library (Mystic Forge)": {
-      "cards": [
-       "Mystic Forge"
-      ],
-      "findings": [
-       "filter:TopLibrary",
-       "static_form:MayPlay.Library",
-       "static_param:MayLookAt"
-      ],
-      "size": "L"
-     },
      "Start your engines! (speed)": {
       "cards": [
        "Perilous Snare"
@@ -43,116 +32,66 @@
      }
     },
     "needs": {
-     "Mystic Forge": [
-      "Play from the top of the library (Mystic Forge)"
-     ],
      "Perilous Snare": [
       "Start your engines! (speed)"
      ]
     },
     "new_cards": [
-     "Mystic Forge",
      "Perilous Snare"
     ],
-    "size_points": 11
+    "size_points": 3
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "15cf2ab46fe0e010f4be4b8b67837d728e82aa161f3daf7f1daec17ed983080c",
+    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "f1eb368c08692013cbb8e8355a8d24e2ab2c54b963e7f4f9ddd8b420ac653cf0"
+    "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (11 points)",
-   "time": "2026-11-07T09:11:52"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
+   "time": "2026-11-07T10:23:46"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 30,
+    "in_vocab": 31,
     "no_script": [],
     "not_in_vocab": [
-     "Mystic Forge",
      "Perilous Snare"
     ]
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "f1eb368c08692013cbb8e8355a8d24e2ab2c54b963e7f4f9ddd8b420ac653cf0"
+    "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "ok",
-   "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-07T09:11:51"
+   "summary": "32 cards: 31 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-07T10:23:46"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Play from the top of the library (Mystic Forge)",
      "Start your engines! (speed)"
     ]
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "15cf2ab46fe0e010f4be4b8b67837d728e82aa161f3daf7f1daec17ed983080c",
+    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "f1eb368c08692013cbb8e8355a8d24e2ab2c54b963e7f4f9ddd8b420ac653cf0"
+    "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Play from the top of the library (Mystic Forge), Start your engines! (speed)",
-   "time": "2026-11-07T09:11:52"
+   "summary": "1 mechanic(s) to implement: Start your engines! (speed)",
+   "time": "2026-11-07T10:23:46"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Mystic Forge": {
-      "card": "Mystic Forge",
-      "faces": [
-       "Mystic Forge"
-      ],
-      "findings": [
-       {
-        "detail": "Continuous MayLookAt$ You",
-        "kind": "static_param",
-        "line": "S:Mode$ Continuous | Affected$ Card.TopLibrary+YouCtrl | AffectedZone$ Library | MayLookAt$ You | Description$ You may look at the top card of your library any time.",
-        "name": "MayLookAt"
-       },
-       {
-        "detail": "a permission to play Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand from Library",
-        "kind": "static_form",
-        "line": "S:Mode$ Continuous | Affected$ Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand | AffectedZone$ Library | MayPlay$ True | Description$ You may cast artifact spells and colorless spells from the top of your library.",
-        "name": "MayPlay.Library"
-       },
-       {
-        "detail": "Affected$ Card.TopLibrary+YouCtrl",
-        "kind": "filter",
-        "line": "S:Mode$ Continuous | Affected$ Card.TopLibrary+YouCtrl | AffectedZone$ Library | MayLookAt$ You | Description$ You may look at the top card of your library any time.",
-        "name": "TopLibrary"
-       },
-       {
-        "detail": "Affected$ Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand",
-        "kind": "filter",
-        "line": "S:Mode$ Continuous | Affected$ Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand | AffectedZone$ Library | MayPlay$ True | Description$ You may cast artifact spells and colorless spells from the top of your library.",
-        "name": "TopLibrary"
-       },
-       {
-        "detail": "Affected$ Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand",
-        "kind": "filter",
-        "line": "S:Mode$ Continuous | Affected$ Artifact.TopLibrary+YouCtrl+nonLand,Card.TopLibrary+Colorless+YouCtrl+nonLand | AffectedZone$ Library | MayPlay$ True | Description$ You may cast artifact spells and colorless spells from the top of your library.",
-        "name": "TopLibrary"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/m/mystic_forge.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Perilous Snare": {
       "card": "Perilous Snare",
       "faces": [
@@ -184,14 +123,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "15cf2ab46fe0e010f4be4b8b67837d728e82aa161f3daf7f1daec17ed983080c",
+    "engine": "d40d94baabc2ae336de6ea1be55339f3e601eb41b6f65729d9f65f1a884a1d57",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "f1eb368c08692013cbb8e8355a8d24e2ab2c54b963e7f4f9ddd8b420ac653cf0"
+    "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
-   "time": "2026-11-07T09:11:51"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-07T10:23:46"
   },
   "provision": {
    "detail": {
@@ -205,11 +144,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "f1eb368c08692013cbb8e8355a8d24e2ab2c54b963e7f4f9ddd8b420ac653cf0"
+    "vocab": "f847f4148a46179f66644669cd635a471dc13c624c66f2370bca816a51762122"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T09:11:51"
+   "time": "2026-11-07T10:23:46"
   },
   "scrape": {
    "detail": {

@@ -112,6 +112,8 @@ std::vector<FilterCmcBound> filter_cmc_bounds(const FilterSpec &spec);
 // one of its OR alternatives ("Creature" in "Creature.Other+YouCtrl").
 bool filter_names_token(const std::string &spec, const std::string &token);
 bool filter_has_head(const std::string &spec, const std::string &head);
+// Whether each of `spec`'s OR alternatives has `token` among its tokens.
+bool filter_every_alternative_names(const std::string &spec, const std::string &token);
 
 // A filter spec for cards outside the battlefield and the stack, where a card's controller is its
 // owner (CR 108.4a): every YouCtrl / OppCtrl token becomes YouOwn / OppOwn.

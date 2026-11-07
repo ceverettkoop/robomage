@@ -227,9 +227,10 @@ void obs_note_miracle_draw(Entity card);
 // players): a reveal_start, or a look when `look`, per zone, for every viewer. `position_public`:
 // the windows opened on library positions every player knows (the top N, the whole library);
 // false for a card picked out by identity. `draw_link`: the reveal shows a card as the one just
-// drawn (the miracle reveal).
-void obs_windows_opened(
-    const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public, bool draw_link);
+// drawn (the miracle reveal). `to_others`: with false, a seat outside `audience` hears nothing (a
+// standing look moving on to the next top card).
+void obs_windows_opened(const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public,
+    bool draw_link, bool to_others);
 // One window that is closing.
 struct ObsClosedWindow {
         Entity card = 0;

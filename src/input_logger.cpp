@@ -21,6 +21,7 @@
 #include "error.h"
 #include "game_driver.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
 #include "queries/zones.h"
 #include "state_format/dump.h"
 #include "state_format/selfcheck.h"
@@ -390,6 +391,7 @@ static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction
 }
 
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
+    sync_standing_looks();
     std::vector<size_t> kept = distinct_choice_indices(actions);
     if (kept.size() == actions.size()) return choose(actions);
     std::vector<LegalAction> menu;

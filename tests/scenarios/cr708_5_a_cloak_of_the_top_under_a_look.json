@@ -1,0 +1,70 @@
+{
+  "name": "cr708_5_a_cloak_of_the_top_under_a_look",
+  "why": "CR 708.5, 701.58a: the first window a cloak meets open: the look is on the card cloaked, so the move shows it to A, who may look at it as the controller; B sees a face-down card; the look moves on to the next card.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Springheart Nantuko",
+    "Mishra's Bauble",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A cloaks Springheart Nantuko"
+  ],
+  "expect_dump": [
+    "^A .*event PLAY_FROM_HIDDEN LIBRARY>BATTLEFIELD card=Springheart Nantuko face_down=1",
+    "^B .*event PLAY_FROM_HIDDEN LIBRARY>BATTLEFIELD card=none face_down=1",
+    "^B .*face_down opp BATTLEFIELD card=none"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Mishra's Bauble"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen \\w+ |known_hand |= )Springheart Nantuko",
+    "^B .*(card=|seen \\w+ |known_hand |= )Mishra's Bauble"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

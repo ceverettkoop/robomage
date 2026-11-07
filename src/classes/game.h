@@ -670,9 +670,11 @@ struct Game {
         // 701.20a), a look only to the looker (CR 701.20e), and a player who looked at a card that
         // is then exiled face down may keep looking at it until it leaves exile (CR 406.3). Every
         // window ends when its card changes zones or its library is shuffled (CR 701.20d), and as
-        // its `until` says.
+        // its `until` says. A standing look is the window a MayLookAt$ static gives on a library's
+        // top card: sync_standing_looks keeps it on the live top card, and its card leaving the top
+        // ends it too.
         struct RevealWindow {
-            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL };
+            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL, STANDING_LOOK };
             enum End : uint8_t {
                 RESOLUTION,    // the resolution in progress (or top-level effect) finishes
                 STACK_OBJECT,  // `stack_object` leaves the stack (CR 701.20a, 702.94b)
@@ -690,6 +692,12 @@ struct Game {
         };
         // The open reveal windows, in the order they opened (visibility.cpp keeps them).
         std::vector<RevealWindow> reveal_windows;
+        // Whether a gathered static has MayLookAt$ (gather_active_statics), so that a game without
+        // one asks nothing at a decision.
+        bool may_look_statics = false;
+        // The standing looks going on as of the last sync_standing_looks: a bit per looker and
+        // library (visibility.cpp).
+        uint8_t standing_lookers = 0;
         // One viewer's handle table (src/state_format/handles.h): the opaque per-viewer id of each
         // object the viewer can individually identify right now (docs/state_format.md §6). A handle
         // names one object (CR 400.7: the object a zone change makes is a new one), is retired as

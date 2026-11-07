@@ -40,6 +40,9 @@ enum class Permission : uint8_t {
     PREPARED,
     // a card in its owner's graveyard whose own static says it may be cast from there (Hogaak)
     GRAVEYARD_SELF,
+    // the top card of its owner's library while a static lets the owner cast it from there (Mystic
+    // Forge), read live: the permission is on whatever card is on top now
+    LIBRARY,
     NONE,  // no permission is needed: a card in its owner's hand
 };
 

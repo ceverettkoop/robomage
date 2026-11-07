@@ -467,8 +467,8 @@ static std::vector<std::vector<Item>> group_by(const std::vector<Item> &items, K
     return groups;
 }
 
-void obs_windows_opened(
-    const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public, bool draw_link) {
+void obs_windows_opened(const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public,
+    bool draw_link, bool to_others) {
     if (!reporting() || cards.empty()) return;
     const ObsEventState &st = cur_game.obs_events;
     const auto zone_key = [](Entity c) {
@@ -478,6 +478,7 @@ void obs_windows_opened(
     for (const std::vector<Entity> &group : group_by(cards, zone_key)) {
         const Zone &gz = global_coordinator.GetComponent<Zone>(group.front());
         for (Zone::Ownership viewer : VIEWERS) {
+            if (!to_others && is_seat(viewer) && viewer != audience) continue;
             emit(viewer, [&] {
                 ObsEvent ev = new_event(look ? EventKind::LOOK : EventKind::REVEAL_START, viewer);
                 if (look) ev.player = audience;

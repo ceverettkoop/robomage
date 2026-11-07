@@ -30,8 +30,8 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
+| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 1 | 1 | 3 | capability |
 | painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
-| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 2 | 2 | 11 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -39,11 +39,10 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Start your engines! (speed) | M | 2 | artifacts_prison | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
+| Start your engines! (speed) | M | 2 | artifacts_prison, mystic_forge | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
-| Play from the top of the library (Mystic Forge) | L | 1 | - | Mystic Forge | `filter:TopLibrary`, `static_form:MayPlay.Library`, `static_param:MayLookAt` | look at and cast the top card: a new public-to-one-seat zone view for the state format |
 
 ## Unlock order (greedy: the next cheapest deck given what is already implemented)
 
@@ -70,9 +69,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 19 | uwx_control | - | 0 | 0 | 19 |
 | 20 | welder_cam | - | 0 | 0 | 20 |
 | 21 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 21 |
-| 22 | doomsday | Empower | 3 | 6 | 22 |
-| 23 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 23 |
-| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 24 |
+| 22 | mystic_forge | - | 0 | 3 | 22 |
+| 23 | doomsday | Empower | 3 | 6 | 23 |
+| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 17 | 24 |
 
 ## Per deck
 
@@ -188,15 +187,14 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 - Theorist's Proxy: Empower
 
+### mystic_forge — Mystic Forge (2.0%, combo)
+
+32 cards, 1 new; clean: -
+
+- Perilous Snare: Start your engines! (speed)
+
 ### painter — Painter (1.0%, combo)
 
 41 cards, 1 new; clean: -
 
 - Phyrexian Dragon Engine: Discard-a-card activation cost; Meld (CR 712)
-
-### mystic_forge — Mystic Forge (2.0%, combo)
-
-32 cards, 2 new; clean: -
-
-- Mystic Forge: Play from the top of the library (Mystic Forge)
-- Perilous Snare: Start your engines! (speed)

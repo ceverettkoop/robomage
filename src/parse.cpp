@@ -143,6 +143,8 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string& scri
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static StaticAbility parse_one_static_ability(const std::string& line, const std::map<std::string, std::string>& svars);
 static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission);
+static bool reaches_a_library_top(const StaticAbility &sa);
+static void resolve_may_look_form(StaticAbility &sa);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 struct ReplacementLine;
@@ -3859,6 +3861,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     std::set<std::string> unread_keys;  // keys already reported by the branch chain below
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
     bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
+    bool may_look_at = false;           // MayLookAt$ You (resolve_may_look_form)
     bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
     std::string affected_defined;       // AffectedDefined$, read with the whole line parsed
     size_t param_pos = 0;
@@ -4111,6 +4114,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     sa.adjust_land_plays = std::stoi(value);
                 else
                     static_value_finding(sa, key, value);
+            } else if (key == "MayLookAt" && value == "You") {
+                may_look_at = true;
             } else if (key == "MayPlay") {
                 may_play = (value == "True");
             } else if (key == "MayPlayWithoutManaCost") {
@@ -4179,6 +4184,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
     if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
+    if (may_look_at) resolve_may_look_form(sa);
     if (!static_effect_zone_modelled(sa))
         parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
     static_form_findings(sa, line, svars);
@@ -4231,8 +4237,30 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
         sa.may_play_from_graveyard = true;
         return;
     }
+    if (reaches_a_library_top(sa) && !sa.may_play_with_flash) {
+        sa.affected = owner_relative_filter(sa.affected);
+        sa.may_play_from_library = true;
+        return;
+    }
     for (const std::string &z : zones)
         parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected.text() + " from " + z);
+}
+
+// A static over library cards that names only top cards: the one place in a library a player can
+// be allowed to look at or cast from without a search.
+static bool reaches_a_library_top(const StaticAbility &sa) {
+    return sa.affected_zone == "Library" && filter_every_alternative_names(sa.affected, "TopLibrary");
+}
+
+// A Continuous MayLookAt$ You static: a standing look at a library's top card, the only look of its
+// kind the engine has. Over another zone it is the finding static_form MayLookAt.<zone>.
+static void resolve_may_look_form(StaticAbility &sa) {
+    if (!reaches_a_library_top(sa)) {
+        parse_finding("static_form", "MayLookAt." + sa.affected_zone, "a standing look at " + sa.affected.text());
+        return;
+    }
+    sa.affected = owner_relative_filter(sa.affected);
+    sa.may_look_at = true;
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
@@ -4889,7 +4917,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
          "AddTrigger AddSVar "
          "AddType GainsAbilitiesOf GainsAbilitiesOfZones "
          "SetPower SetToughness SetColor AddColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
-         "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
+         "AdjustLandPlays MayLookAt MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
          "CharacteristicDefining"},
         {"RaiseCost", false, "Amount Type Relative Activator ValidCard"},
         {"ReduceCost", false, "Amount Type Activator ValidCard ValidTarget"},

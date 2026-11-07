@@ -200,6 +200,7 @@ static const std::vector<ObjectRef> *cards_exiled_by(Entity source);
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_was_exiled_with_source(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_top_library(const CharView &v, const Qualifier &q);
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_equipped_by(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -453,6 +454,8 @@ static const QualifierRow kQualifierRows[] = {
     // TopGraveyardCreature — the creature card nearest the top of its owner's graveyard (Shallow
     // Grave; a card put there goes on top, CR 404.1).
     relative_row("TopGraveyardCreature", ev_top_graveyard_creature),
+    // TopLibrary — the top card of its owner's library (Mystic Forge).
+    local_row("TopLibrary", ev_top_library),
     elsewhere_row("sameName"),
     elsewhere_row("Remembered"),
     elsewhere_row("TargetedCard"),
@@ -1028,6 +1031,12 @@ static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &, cons
     return true;
 }
 
+static bool ev_top_library(const CharView &v, const Qualifier &) {
+    if (v.entity == 0 || !is_library_top(v.entity)) return false;
+    coverage_row("TopLibrary");
+    return true;
+}
+
 static bool ev_counters(const CharView &v, const Qualifier &q) {
     return v.entity != 0 && compare_qualifier(object_counters(v.entity, q.text), q, q.number);
 }
@@ -1250,6 +1259,19 @@ bool filter_names_token(const std::string &spec, const std::string &token) {
     for (const auto &t : filter_tokens(spec))
         if (t.first == token) return true;
     return false;
+}
+
+bool filter_every_alternative_names(const std::string &spec, const std::string &token) {
+    bool named = false, any = false;
+    for (const auto &t : filter_tokens(spec)) {
+        if (t.second) {
+            if (any && !named) return false;
+            named = false;
+            any = true;
+        }
+        named = named || t.first == token;
+    }
+    return any && named;
 }
 
 static std::string owner_relative_text(const std::string &spec) {

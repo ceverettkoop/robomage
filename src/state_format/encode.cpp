@@ -1324,7 +1324,7 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
         for (Zone::Ownership p : {c.self, opponent_of(c.self)}) {
             const PlayPermissions perm = play_permissions(e, p);
             if (!perm.playable()) continue;
-            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::GRAVEYARD_SELF); ++bit) {
+            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::LIBRARY); ++bit) {
                 if (!(perm.sources & (1u << bit))) continue;
                 rmstate::PermissionResource resource = rmstate::PermissionResource::MANA;
                 int amount = 0;
@@ -1630,7 +1630,7 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
     std::vector<std::pair<uint32_t, Entity>> objects;
     std::vector<Entity> battlefield;
     std::vector<std::pair<size_t, Entity>> stack;
-    std::vector<Entity> zone_cards;  // graveyard and exile cards (play permissions)
+    std::vector<Entity> zone_cards;  // graveyard, exile and looked-at library cards (play permissions)
     for (Entity e : zoned_entities()) {
         const Zone &z = global_coordinator.GetComponent<Zone>(e);
         ZoneCounts &zc = counts[is_seat(z.owner) ? z.owner : 0];
@@ -1659,7 +1659,8 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
         if (z.location == Zone::BATTLEFIELD && global_coordinator.entity_has_component<Permanent>(e))
             battlefield.push_back(e);
         if (z.location == Zone::STACK) stack.push_back({z.distance_from_top, e});
-        if (z.location == Zone::GRAVEYARD || z.location == Zone::EXILE) zone_cards.push_back(e);
+        if (z.location == Zone::GRAVEYARD || z.location == Zone::EXILE || z.location == Zone::LIBRARY)
+            zone_cards.push_back(e);
     }
     std::sort(objects.begin(), objects.end());
     std::sort(stack.begin(), stack.end());

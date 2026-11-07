@@ -180,4 +180,17 @@ void close_windows_on_shuffle(Zone::Ownership owner);
 // object that has since left the stack.
 void close_resolution_windows(Entity resolving);
 
+// ── Standing looks ────────────────────────────────────────────────────────────────────────────
+
+// Brings the STANDING_LOOK windows into line with what the MayLookAt$ statics give right now
+// (rules_mod::standing_looks), the one place they change: whatever moved a library's cards, and
+// whatever ended a static, the window is on the live top card at every decision and no mover
+// knows of it. A card leaving the top loses its window, as any window on a card that moves does;
+// a new top card gets one, except while a spell is being cast, an ability activated or a special
+// action taken (CR 401.5): it can't be looked at until that is done. A look is reported to the
+// looker at each new card. The other player is told once, as a look at that library starts, and
+// not as it moves on: a reordering they can't see must not tell them that the top card changed.
+// Called as every decision is asked (InputLogger::get_input), before its menu and frames.
+void sync_standing_looks();
+
 #endif /* QUERIES_VISIBILITY_H */

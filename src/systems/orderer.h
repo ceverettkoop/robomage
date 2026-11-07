@@ -48,7 +48,7 @@ public:
     // The three stages of the card's move while it is cast (CR 601.2a / 601.2i / 733.1). The
     // card moves when the proposal begins, but its zone change becomes an EVENT only once the
     // spell becomes cast, so a proposal that is reversed leaves no trace behind.
-    //   begin_cast_move: CR 601.2a — move `card` from its hand, graveyard or exile to the top of
+    //   begin_cast_move: CR 601.2a — move `card` from its hand, graveyard, exile or library to the top of
     //     the stack, controlled by `caster`, as a new object (CR 400.7) whose identity is public.
     //     Returns the card's Zone as it was, for complete_cast_move / rewind_cast_move.
     //   complete_cast_move: CR 601.2i — the spell became cast: the move's CARD_CHANGED_ZONE event

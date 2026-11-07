@@ -216,6 +216,12 @@ static const CastSection kCastSections[] = {
     {Zone::EXILE, Permission::EXILE_GRANT, CastFace::BACK, cast_as_adventure, nullptr, {
         {"exile_adventure", CastCost::MANA_COST,    false, 7, " (from exile)",         Zone::GRAVEYARD, exile_adventure_offered, SpellOverlay::ADVENTURE},
     }},
+    // The top card of a library a static lets its owner cast (Mystic Forge), for its own costs at the
+    // timing its type allows. A land is not cast (CR 601.1), and no static plays one from there.
+    {Zone::LIBRARY, Permission::LIBRARY, CastFace::FRONT, cast_from_front, nullptr, {
+        {"library",         CastCost::MANA_COST,    false, 10, " (from library)",      Zone::GRAVEYARD, mana_cost_offered},
+        {"library_free",    CastCost::NO_MANA_COST, false, 8, " (from library) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
+    }},
 };
 
 // The casts a resolution offers (CR 608.2g), not priority: miracle_castable says whether a miracle's
@@ -735,7 +741,7 @@ static void offer_suspend(CastOffer &offer, std::vector<LegalAction> &actions) {
 // The menu row of `row`, offered for `card`. The ordinal tells the cast variants apart (0 normal,
 // 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback, 5 escape,
 // 6 cast-from-graveyard permission, 7 impulse / free cast from exile, 8 without paying its mana cost
-// under a free-cast static, 9 fused).
+// under a free-cast static, 9 fused, 10 from the top of a library).
 static LegalAction row_action(const CastRow &row, const CastSection &section, Entity card, const std::string &desc) {
     LegalAction la(CAST_SPELL, card, desc);
     la.category = ActionCategory::CAST_SPELL;

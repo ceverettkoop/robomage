@@ -399,6 +399,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Untimely Malfunction", 474},
     {"Aphetto Alchemist", 475},
     {"Cryptic Coat", 476},
+    {"Mystic Forge", 477},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
