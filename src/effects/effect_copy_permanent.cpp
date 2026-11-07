@@ -11,6 +11,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/characteristics.h"
 #include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/copies.h"
@@ -50,7 +51,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     // Copy the source permanent itself, then override the copy's P/T to 1/1.
     if (ab.def->is_offspring_token) {
         Token tok = copied_token(ab.source.lki_entity(), ab.def->copy_overlay);
-        if (tok.name.empty()) return HandlerResult::DONE_RUN_SUBS;
+        if (tok.types.empty()) return HandlerResult::DONE_RUN_SUBS;
         put_token_copy(tok, ctrl, orderer);
         game_log("Offspring token copy created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -88,9 +89,11 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     std::vector<ObjectRef> created;
     for (auto src : sources) {
         Token tok = copied_token(src, ab.def->copy_overlay);
-        if (tok.name.empty()) continue;
-        created.push_back(ObjectRef::of(put_token_copy(tok, ctrl, orderer)));
-        game_log("Token copy created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
+        // Nothing to copy has no types; a copy of a face-down creature has no name (CR 707.2).
+        if (tok.types.empty()) continue;
+        const Entity copy = put_token_copy(tok, ctrl, orderer);
+        created.push_back(ObjectRef::of(copy));
+        game_log("Token copy created: %u/%u %s\n", tok.power, tok.toughness, permanent_label(copy).c_str());
     }
     register_at_eot_move(ab, created);
     return paid && ab.def->unless_subs_when_not_paid ? HandlerResult::DONE_NO_SUBS : HandlerResult::DONE_RUN_SUBS;

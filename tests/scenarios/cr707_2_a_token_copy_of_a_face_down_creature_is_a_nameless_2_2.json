@@ -1,0 +1,51 @@
+{
+  "name": "cr707_2_a_token_copy_of_a_face_down_creature_is_a_nameless_2_2",
+  "why": "CR 707.2: Reflection of Kiki-Jiki's token copies what the face-down creature is: a nameless 2/2 with haste; it copies no card, so it shows none, to anyone.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Reflection of Kiki-Jiki",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Reflection"
+  ],
+  "max_decisions": 8,
+  "expect_dump_not": [
+    "^B .*(card=|seen .*|known_hand )Aphetto"
+  ],
+  "expect": [
+    "Token copy created: 2/2 Nameless creature"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect_not": [
+    "Aphetto Alchemist"
+  ]
+}
