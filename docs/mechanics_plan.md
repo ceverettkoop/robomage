@@ -1263,6 +1263,45 @@ Fury, Shatterskull Smashing, ChangeTargets (CR 115.7, Untimely Malfunction).
 **Test.** Division with one target, and with a target illegal at resolution (CR 608.2); Exhaust across a flicker
 (a new object may activate again); Boast with and without attacking; Welder with one target gone.
 
+**Progress (2026-11-07).** Unit (a), the inert migration. Nothing here changes what the engine does but one bug fix, named below; (b) extends these seams.
+
+- **`ActivationRule`** (`src/components/activation_rule.h`): a list on `AbilityDef`, every row of which must allow an activation. `TIMING`, `CONDITION`, `PER_TURN`, `PER_LIFETIME`. `sorcery_speed_only`, `activation_condition` and `activation_limit` are gone, and a loyalty ability is two rows, sorcery timing and `PER_TURN` 1 counted across its permanent's loyalty abilities, so the branch in `determine_legal_actions` is gone too. One reader, `activation_source_ready`. The frame's `Timing` reads the list, and the three `keyword_label` comparisons went: every one of those abilities already had the row.
+- **Named conditions** are `kActivationConditions` (`src/queries/activation.cpp`). `Activation$` is recognised from that table, and an unknown name gets a row that never holds, as it did.
+- **`Permanent::activation_counts`**: one count per ability (definition and granting static, CR 602.5c) and one for the loyalty abilities together, this turn and over the object's lifetime. It replaces the loyalty bool, `Ability::activations_this_turn`, `GrantedAbilityRuntime`'s carry across a grant's rebuild, and `increment_activation_count`'s match on kind and colour or return cost. A fresh Permanent starts empty, which is CR 400.7; a reset keeps a count only for a definition with a `PER_LIFETIME` row. A loyalty activation counts as it finishes, like any other: no decision falls between its cost and there. `restore_mana_state` restores the whole list, nothing but a mana ability counting during a payment.
+- **`kTargetGateRows`** (`src/target_gate.{h,cpp}`): run at every pick of every stack object. `distinct` (CR 115.3) is the erase `run_target_select` did inline, `cost_payable` (CR 601.2f) the old gate and the one row that gives way when it refuses everything. `TargetPickGate` is now what a caller asks of a candidate. A row that refuses adds a `--coverage` key.
+- **`every_target_illegal`** (`src/targeting.cpp`): the two walks over the chain are one query, and `prune_illegal_targets` is its own step.
+
+Where the plan was off. **Also here is out of date:** `be364860` and `06a80a7a` already made a stack object fizzle only with every target illegal, own and chained, and `docs/rules_deviations.md` says so. What's left is in the list below. "Cross-target constraints do not exist" missed CR 115.3, inline in the pick loop, and the cost gate; those are the only two. Two per-turn mechanisms was right, with timing and conditions as two more.
+
+Bug. CR 602.5b: a count lived on the ability instance, so Quirion Ranger under a Humility that left the same turn could activate again, as could a grant lost and regained. `01427de1` kept that with `forget_counts_of_lost_abilities`, which the fix removes. `cr602_5b_once_each_turn_outlasts_losing_the_ability` fails without it. A scenario can't assert a menu by position, so it shows this by reaching turn 2 inside its cap: with no Ranger row, A's priority windows aren't asked.
+
+What stayed, and why:
+
+- **M9's `ActivationLimit$` on a trigger** shares nothing. Its source can be in any zone, so it has no Permanent to count on, and `CARD_ABILITY`'s limit column reads 0 for a trigger: folding `trigger_turn_limit` into the rule moves frames. It also clears at `reset_turn_counters`, not the untap step.
+- **`instant_speed`** isn't a timing rule. It says which mana abilities a payer leaves alone.
+- **`is_loyalty_ability`** stays: the cost, the label and `ability_is_mana` read it. It no longer gates an activation.
+- **A mana ability's timing.** The mana enumeration passes no window, so a `TIMING` row on one wouldn't be read, as `sorcery_speed_only` wasn't. No script has one.
+- **`ControlledBy ParentTarget`** stays a filter row: it reads one candidate against the bound player, not a group.
+- **A frame's limit and exhausted columns** read only an ability's own `PER_TURN` row, so a loyalty ability's stay 0, as they were.
+
+**(b) must:**
+
+- Boast: `Boast$ True` is `per_turn(1)` and a new condition row. Nothing records that a creature attacked this turn; that needs a field on a component, reset each turn, and in the snapshot. Say whether it needs a frame column.
+- Exhaust: `Exhaust$ True` is `per_lifetime(1)`. The exhausted column should read it (same column, more values). The test wants a flicker and, now the count outlasts it, a passing Humility.
+- Waterbend and Crew, from M5's tables: a `TapToPay` row and a cost token, and an activation that taps other creatures. `Count$ValidExile`, `Count$xPaid/Twice`, `Sacrificed$CardManaCost/Plus.2`, `Imprinted$Valid`, `sharesControllerWith Imprinted` and Welder's `Branch` are M10's by M3's and M4's tables.
+- Group rows: `TargetsWithSameController$` (a graveyard's owner, CR 108.4a), `TargetsWithDefinedController$ ParentTargetedController`. `TargetPick` holds one ability, so the second needs the parent's target, from `run_announce`'s SUBS stage.
+- A `required` row can empty a pool. The multi-target loop stops, but `select_single_target` then has an empty menu. And nothing checks a group for existence: `can_activate_now`, `spell_has_castable_targets` and `has_legal_targets` see each instruction alone, so Welder needs a pair, not one of each.
+- `DIVIDE_DAMAGE`: at announcement and placement, resumable in `AnnounceRT`, per-target amounts on the `Ability`, a share lost with a target pruned at resolution (CR 601.2d, 603.3d).
+- Targets across zones: `target_in_graveyard` is one bool, and `targets_graveyard_card` and `build_valid_targets` branch on it. `TgtZone$ Stack,Battlefield` (Sink into Stupor), `PumpZone$`.
+- ChangeTargets (CR 115.7) picks through the same rows; `SpellAbility.singleTarget` is a new `TargetType$`. `HIDDEN CARDNAME can't block.` is a `kBlockRestrictions` row (Untimely Malfunction).
+- CR 608.2b, three gaps, all moves. A sub-ability's illegal target skips what is chained to it (`resolve_ability`'s TODO). `every_target_illegal` doesn't read modes, so a charm with every target illegal still resolves. An optional own target left unchosen counts as legal, so a spell with that and every chained target illegal resolves. Welder with one target gone is the test. Update `docs/rules_deviations.md`.
+
+**Split.** More than one unit. (b1), activations: Boast, Exhaust, Waterbend, Crew: Broadside Bombardiers, Invasion Submersible. (b2), targets: group rows, division, zones, ChangeTargets, CR 608.2b: Fury, Shatterskull Smashing, Goblin Welder, Unlicensed Hearse, Sink into Stupor, Untimely Malfunction.
+
+Evidence. Each of the four inert commits: 1,018 explore games (80 bo3, 182 `--no-auto-mana`, every league pair, the held-out decks, each `mech_` fixture, `mav`, `candidates/elves` and `candidates/storm`; 8.4 million lines of `--narrative --trace-decisions`, capped at 2,500 decisions) hash for hash the same as `49f16531`'s binary, and 85 of them their `--rmstate-dump` bytes. They reach the moved paths: 1,119 loyalty activations in 215 games, 209 Ranger or Symbiote activations in 34, 2,013 multi-target "Done" rows in 191, 1,575 Equip rows in 140, 75 Unearth rows in 8, 1,228 fizzles in 537. `--parse-report` the same bytes over `@vocab` and all 430 provisioned card names; all 635 scenarios' output and dumps the same, which reran identically on the base; `tests/corpus` and `tests/cli` unmoved. `make registry` at the end a no-op, and the `vocab` tier green at each commit. The fix moves none of those games or scenarios; its new scenario fails on `49f16531`'s binary. Legal-action cost: 56 corpus replays, nine rounds alternating, 0.856 s of user time before and 0.847 s after, medians; that is a replay, not the bench, and of the end state, not `01427de1` with its extra pass.
+
+Unproved. Release `bench` wasn't compared. The `actor` tier's torch part was skipped. **`PER_LIFETIME` runs nowhere:** no row sets it until (b). **The mana half of the count:** no script has a limited mana ability, so the count in `produce_mana_from_ability` and the whole-list restore are read by nothing, and keying by definition rather than colour was shown only by that absence. `cost_payable` refuses in no explore game; only the four Mystical Dispute scenarios reach it. `prune_illegal_targets`' line prints in no explore game either, and no scenario asserts it. A limited ability on a permanent that becomes a copy of the same card kept its count from `01427de1` on, where the instance lost it; the fix makes that the rule, and no vocab line reaches it.
+
 ### M11. Face-down objects and standing looks (XL)
 
 **Today.** `Zone::is_face_down` exists for exile, and visibility, the state format's FACE_DOWN pool and
