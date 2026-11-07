@@ -8,11 +8,14 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
+| artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 0 | 0 | 0 | implement |
 | bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | baseline |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 0 | 0 | 0 | implement |
+| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 0 | 0 | 0 | implement |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 0 | 0 | 0 | implement |
 | death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | designate |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 0 | 0 | 0 | implement |
+| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 0 | 0 | 0 | implement |
 | eldrazi_aggro | Eldrazi Aggro | 5.0 | aggro | 22 | 0 | 0 | 0 | baseline |
 | elves | Elves | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
 | hogaak | Hogaak | 2.0 | combo | 28 | 0 | 0 | 0 | implement |
@@ -23,15 +26,12 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | storm | Storm | 3.0 | combo | 30 | 0 | 0 | 0 | implement |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
-| artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 1 | 1 | 1 | capability |
-| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 1 | 1 | 1 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
-| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 2 | 1 | 3 | capability |
+| painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 2 | 2 | 11 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 1 | 20 | capability |
-| welder_cam | Welder Cam | 2.0 | combo | 33 | 2 | 4 | 27 | capability |
-| painter | Painter | 1.0 | combo | 41 | 5 | 9 | 30 | capability |
+| welder_cam | Welder Cam | 2.0 | combo | 33 | 1 | 1 | 20 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -39,16 +39,8 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Targets in several zones | S | 2 | artifacts_blue, cloudpost_tron_ramp | Sink into Stupor | `ability_param:ChangeZone.TgtZone` | TgtZone$ Stack,Battlefield (Sink into Stupor) |
-| filter:sharesControllerWith Remembered | S | 2 | - | Goblin Welder | - |  |
-| Branch effect (DB$ Branch) | M | 2 | - | Goblin Welder | `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `category:Branch` | a conditional sub-ability chain; Goblin Welder |
-| Divided damage (CR 601.2d) | M | 2 | dragon_stompy | Fury, Shatterskull Smashing | `ability_param:DealDamage.DividedAsYouChoose`, `svar_expr:Count$xPaid/Twice` | Fury, Shatterskull Smashing: divide damage among targets at cast |
-| Goblin Welder swap | M | 2 | - | Goblin Welder | `ability_param:Pump.ImprintCards`, `ability_param:Pump.PumpZone`, `ability_param:Pump.TargetsWithDefinedController`, `filter:sharesControllerWith Imprinted` | targets in a graveyard and on the battlefield with the same controller, swapped at resolution |
 | Start your engines! (speed) | M | 2 | artifacts_prison | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
-| Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | stoneblade | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
-| Can't-block restrictions (CantBlockBy) | M | 1 | - | Untimely Malfunction | `keyword:HIDDEN CARDNAME can't block.` | Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack |
-| Change targets (CR 115.7) | M | 1 | - | Untimely Malfunction | `category:ChangeTargets` | Untimely Malfunction's redirect mode |
-| Crew and vehicles (CR 702.122) | M | 1 | - | Unlicensed Hearse | `ability_param:ChangeZone.TargetsWithSameController`, `svar_expr:Count$ValidExile` | Unlicensed Hearse: a vehicle whose P/T counts cards exiled with it |
+| Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | stoneblade, welder_cam | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
@@ -58,32 +50,37 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | step | deck | new mechanics | their points | cumulative points | decks playable |
 |---|---|---|---|---|---|
-| 1 | bant_control | - | 0 | 0 | 1 |
-| 2 | boros_aggro | - | 0 | 0 | 2 |
-| 3 | cradle_control | - | 0 | 0 | 3 |
-| 4 | death_and_taxes | - | 0 | 0 | 4 |
-| 5 | dimir_tempo | - | 0 | 0 | 5 |
-| 6 | eldrazi_aggro | - | 0 | 0 | 6 |
-| 7 | elves | - | 0 | 0 | 7 |
-| 8 | hogaak | - | 0 | 0 | 8 |
-| 9 | lands_top8 | - | 0 | 0 | 9 |
-| 10 | maverick | - | 0 | 0 | 10 |
-| 11 | reanimator_top8 | - | 0 | 0 | 11 |
-| 12 | show_and_tell | - | 0 | 0 | 12 |
-| 13 | storm | - | 0 | 0 | 13 |
-| 14 | ur_tempo | - | 0 | 0 | 14 |
-| 15 | uwx_control | - | 0 | 0 | 15 |
-| 16 | artifacts_blue | Targets in several zones | 1 | 1 | 16 |
-| 17 | cloudpost_tron_ramp | - | 0 | 1 | 17 |
-| 18 | artifacts_prison | Start your engines! (speed) | 3 | 4 | 18 |
-| 19 | doomsday | Empower | 3 | 7 | 19 |
-| 20 | dragon_stompy | Divided damage (CR 601.2d) | 3 | 10 | 20 |
-| 21 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 18 | 21 |
-| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 38 | 22 |
-| 23 | welder_cam | Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered | 7 | 45 | 23 |
-| 24 | painter | Can't-block restrictions (CantBlockBy); Change targets (CR 115.7); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 20 | 65 | 24 |
+| 1 | artifacts_blue | - | 0 | 0 | 1 |
+| 2 | bant_control | - | 0 | 0 | 2 |
+| 3 | boros_aggro | - | 0 | 0 | 3 |
+| 4 | cloudpost_tron_ramp | - | 0 | 0 | 4 |
+| 5 | cradle_control | - | 0 | 0 | 5 |
+| 6 | death_and_taxes | - | 0 | 0 | 6 |
+| 7 | dimir_tempo | - | 0 | 0 | 7 |
+| 8 | dragon_stompy | - | 0 | 0 | 8 |
+| 9 | eldrazi_aggro | - | 0 | 0 | 9 |
+| 10 | elves | - | 0 | 0 | 10 |
+| 11 | hogaak | - | 0 | 0 | 11 |
+| 12 | lands_top8 | - | 0 | 0 | 12 |
+| 13 | maverick | - | 0 | 0 | 13 |
+| 14 | reanimator_top8 | - | 0 | 0 | 14 |
+| 15 | show_and_tell | - | 0 | 0 | 15 |
+| 16 | storm | - | 0 | 0 | 16 |
+| 17 | ur_tempo | - | 0 | 0 | 17 |
+| 18 | uwx_control | - | 0 | 0 | 18 |
+| 19 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 19 |
+| 20 | doomsday | Empower | 3 | 6 | 20 |
+| 21 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 14 | 21 |
+| 22 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 25 | 22 |
+| 23 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 45 | 23 |
+| 24 | welder_cam | - | 0 | 45 | 24 |
 
 ## Per deck
+
+### artifacts_blue — Artifacts Blue (2.0%, aggro)
+
+33 cards, 0 new; clean: -
+
 
 ### bant_control — Bant Control (2.0%, control)
 
@@ -93,6 +90,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 ### boros_aggro — Boros Aggro (6.0%, aggro)
 
 31 cards, 0 new; clean: -
+
+
+### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
+
+29 cards, 0 new; clean: -
 
 
 ### cradle_control — Cradle Control (1.0%, control)
@@ -108,6 +110,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 ### dimir_tempo — Dimir Tempo (10.0%, aggro)
 
 31 cards, 0 new; clean: -
+
+
+### dragon_stompy — Dragon Stompy (1.0%, aggro)
+
+22 cards, 0 new; clean: -
 
 
 ### eldrazi_aggro — Eldrazi Aggro (5.0%, aggro)
@@ -160,18 +167,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 28 cards, 0 new; clean: -
 
 
-### artifacts_blue — Artifacts Blue (2.0%, aggro)
-
-33 cards, 1 new; clean: -
-
-- Sink into Stupor: Targets in several zones
-
-### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
-
-29 cards, 1 new; clean: -
-
-- Sink into Stupor: Targets in several zones
-
 ### artifacts_prison — Artifacts Prison (2.0%, control)
 
 30 cards, 1 new; clean: -
@@ -184,12 +179,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 - Theorist's Proxy: Empower
 
-### dragon_stompy — Dragon Stompy (1.0%, aggro)
+### painter — Painter (1.0%, combo)
 
-22 cards, 2 new; clean: -
+41 cards, 1 new; clean: -
 
-- Fury: Divided damage (CR 601.2d)
-- Shatterskull Smashing: Divided damage (CR 601.2d)
+- Phyrexian Dragon Engine: Discard-a-card activation cost; Meld (CR 712)
 
 ### mystic_forge — Mystic Forge (2.0%, combo)
 
@@ -206,17 +200,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 ### welder_cam — Welder Cam (2.0%, combo)
 
-33 cards, 2 new; clean: -
+33 cards, 1 new; clean: -
 
 - Aphetto Alchemist: Face-down permanents (Morph, Cloak; CR 708)
-- Goblin Welder: Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered
-
-### painter — Painter (1.0%, combo)
-
-41 cards, 5 new; clean: -
-
-- Fury: Divided damage (CR 601.2d)
-- Goblin Welder: Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered
-- Phyrexian Dragon Engine: Discard-a-card activation cost; Meld (CR 712)
-- Unlicensed Hearse: Crew and vehicles (CR 702.122)
-- Untimely Malfunction: Can't-block restrictions (CantBlockBy); Change targets (CR 115.7)

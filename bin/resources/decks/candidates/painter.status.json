@@ -20,74 +20,12 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Branch effect (DB$ Branch)": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "ability_param:Branch.BranchConditionSVar",
-       "ability_param:Branch.BranchConditionSVarCompare",
-       "ability_param:Branch.FalseSubAbility",
-       "ability_param:Branch.TrueSubAbility",
-       "category:Branch"
-      ],
-      "size": "M"
-     },
-     "Can't-block restrictions (CantBlockBy)": {
-      "cards": [
-       "Untimely Malfunction"
-      ],
-      "findings": [
-       "keyword:HIDDEN CARDNAME can't block."
-      ],
-      "size": "M"
-     },
-     "Change targets (CR 115.7)": {
-      "cards": [
-       "Untimely Malfunction"
-      ],
-      "findings": [
-       "category:ChangeTargets"
-      ],
-      "size": "M"
-     },
-     "Crew and vehicles (CR 702.122)": {
-      "cards": [
-       "Unlicensed Hearse"
-      ],
-      "findings": [
-       "ability_param:ChangeZone.TargetsWithSameController",
-       "svar_expr:Count$ValidExile"
-      ],
-      "size": "M"
-     },
      "Discard-a-card activation cost": {
       "cards": [
        "Phyrexian Dragon Engine"
       ],
       "findings": [
        "cost:Discard"
-      ],
-      "size": "M"
-     },
-     "Divided damage (CR 601.2d)": {
-      "cards": [
-       "Fury"
-      ],
-      "findings": [
-       "ability_param:DealDamage.DividedAsYouChoose"
-      ],
-      "size": "M"
-     },
-     "Goblin Welder swap": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "ability_param:Pump.ImprintCards",
-       "ability_param:Pump.PumpZone",
-       "ability_param:Pump.TargetsWithDefinedController",
-       "filter:sharesControllerWith Imprinted"
       ],
       "size": "M"
      },
@@ -99,204 +37,71 @@
        "layout:Meld"
       ],
       "size": "L"
-     },
-     "filter:sharesControllerWith Remembered": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "filter:sharesControllerWith Remembered"
-      ],
-      "size": "S"
      }
     },
     "needs": {
-     "Fury": [
-      "Divided damage (CR 601.2d)"
-     ],
-     "Goblin Welder": [
-      "Branch effect (DB$ Branch)",
-      "Goblin Welder swap",
-      "filter:sharesControllerWith Remembered"
-     ],
      "Phyrexian Dragon Engine": [
       "Discard-a-card activation cost",
       "Meld (CR 712)"
-     ],
-     "Unlicensed Hearse": [
-      "Crew and vehicles (CR 702.122)"
-     ],
-     "Untimely Malfunction": [
-      "Can't-block restrictions (CantBlockBy)",
-      "Change targets (CR 115.7)"
      ]
     },
     "new_cards": [
-     "Fury",
-     "Goblin Welder",
-     "Phyrexian Dragon Engine",
-     "Unlicensed Hearse",
-     "Untimely Malfunction"
+     "Phyrexian Dragon Engine"
     ],
-    "size_points": 30
+    "size_points": 11
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (30 points)",
-   "time": "2026-11-07T03:55:38"
+   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (11 points)",
+   "time": "2026-11-07T05:56:22"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 36,
+    "in_vocab": 40,
     "no_script": [],
     "not_in_vocab": [
-     "Fury",
-     "Goblin Welder",
-     "Phyrexian Dragon Engine",
-     "Unlicensed Hearse",
-     "Untimely Malfunction"
+     "Phyrexian Dragon Engine"
     ]
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "41 cards: 36 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-07T03:55:38"
+   "summary": "41 cards: 40 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-07T05:56:22"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Branch effect (DB$ Branch)",
-     "Can't-block restrictions (CantBlockBy)",
-     "Change targets (CR 115.7)",
-     "Crew and vehicles (CR 702.122)",
      "Discard-a-card activation cost",
-     "Divided damage (CR 601.2d)",
-     "Goblin Welder swap",
-     "Meld (CR 712)",
-     "filter:sharesControllerWith Remembered"
+     "Meld (CR 712)"
     ]
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "pending",
-   "summary": "9 mechanic(s) to implement: Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Goblin Welder swap, Meld (CR 712), filter:sharesControllerWith Remembered",
-   "time": "2026-11-07T03:55:38"
+   "summary": "2 mechanic(s) to implement: Discard-a-card activation cost, Meld (CR 712)",
+   "time": "2026-11-07T05:56:22"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Fury": {
-      "card": "Fury",
-      "faces": [
-       "Fury"
-      ],
-      "findings": [
-       {
-        "detail": "DealDamage DividedAsYouChoose$ 4",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Destination$ Battlefield | ValidCard$ Card.Self | Execute$ TrigDamage | TriggerDescription$ When CARDNAME enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.",
-        "name": "DealDamage.DividedAsYouChoose"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/f/fury.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Goblin Welder": {
-      "card": "Goblin Welder",
-      "faces": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       {
-        "detail": "Pump TargetsWithDefinedController$ ParentTargetedController",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.TargetsWithDefinedController"
-       },
-       {
-        "detail": "Pump PumpZone$ Graveyard",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.PumpZone"
-       },
-       {
-        "detail": "Pump ImprintCards$ ThisTargetedCard",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.ImprintCards"
-       },
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch"
-       },
-       {
-        "detail": "Branch BranchConditionSVar$ TargetCheck",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.BranchConditionSVar"
-       },
-       {
-        "detail": "Branch BranchConditionSVarCompare$ GE2",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.BranchConditionSVarCompare"
-       },
-       {
-        "detail": "Branch TrueSubAbility$ DBSacrifice",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.TrueSubAbility"
-       },
-       {
-        "detail": "Branch FalseSubAbility$ DBCleanup",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.FalseSubAbility"
-       },
-       {
-        "detail": "Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "kind": "filter",
-        "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "name": "sharesControllerWith Imprinted"
-       },
-       {
-        "detail": "Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "kind": "filter",
-        "line": "SVar:CheckImprint:Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "name": "sharesControllerWith Remembered"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/goblin_welder.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Phyrexian Dragon Engine": {
       "card": "Phyrexian Dragon Engine",
       "faces": [
@@ -322,72 +127,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Unlicensed Hearse": {
-      "card": "Unlicensed Hearse",
-      "faces": [
-       "Unlicensed Hearse"
-      ],
-      "findings": [
-       {
-        "detail": "ChangeZone TargetsWithSameController$ True",
-        "kind": "ability_param",
-        "line": "A:AB$ ChangeZone | Cost$ T | TargetMin$ 0 | TargetMax$ 2 | TargetsWithSameController$ True | Origin$ Graveyard | Destination$ Exile | TgtPrompt$ Select up to two target cards in a graveyard | ValidTgts$ Card | SpellDescription$ Exile up to two target cards from a single graveyard.",
-        "name": "ChangeZone.TargetsWithSameController"
-       },
-       {
-        "detail": "X = Count$ValidExile Card.ExiledWithSource",
-        "kind": "svar_expr",
-        "line": "SVar:X:Count$ValidExile Card.ExiledWithSource",
-        "name": "Count$ValidExile"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/u/unlicensed_hearse.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Untimely Malfunction": {
-      "card": "Untimely Malfunction",
-      "faces": [
-       "Untimely Malfunction"
-      ],
-      "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:SP$ Charm | Choices$ DBDestroy,DBChangeTargets,DBCantBlock",
-        "name": "ChangeTargets"
-       },
-       {
-        "detail": "granted by Pump",
-        "kind": "keyword",
-        "line": "A:SP$ Charm | Choices$ DBDestroy,DBChangeTargets,DBCantBlock",
-        "name": "HIDDEN CARDNAME can't block."
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/u/untimely_malfunction.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "5 new card(s), 5 with findings (17 findings), 0 without a script",
-   "time": "2026-11-07T03:55:38"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-07T05:56:22"
   },
   "provision": {
    "detail": {
@@ -401,11 +154,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "scrape": {
    "detail": {

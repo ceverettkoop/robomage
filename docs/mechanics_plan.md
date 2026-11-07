@@ -418,7 +418,7 @@ so none landed. The stage is when the card's own last need is met:
 | `ImmediateTrigger ConditionDefined$` | Agatha's Soul Cauldron | M8 | the condition read through the `Defined$` table, not the battlefield scan |
 | `ImmediateTrigger UnlessCost$ Sac<…>`, `Repeat` with no `MaxRepeat$` | Grist, the Hunger Tide | M8 | the cost through `unless_payment`; a bound for CR 732 if a loop can go on with no library to run out |
 | `ForgetImprinted$`, imprint on the source | Chrome Mox | M9 | a `FORGET` row on the imprinted slot; `forget_remembered` covers only the remembered set |
-| `Branch` (`BranchConditionSVar$`, `True` / `FalseSubAbility$`), `ImprintCards$` | Goblin Welder | M10 | the evaluated side persisted in `EffectRuntime`, since a resume that re-derives a different child is fatal |
+| `Branch` (`BranchConditionSVar$`, `True` / `FalseSubAbility$`), `ImprintCards$` | Goblin Welder | M10 | landed in (b2): the evaluated side persisted in `EffectRuntime` (`BranchRt`), since a resume that re-derives a different child is fatal |
 | `UnlessCost$` on Token, `UnlessPayer$ Player.IsRemembered` | none: Acererak the Archlich left the plan | | through `unless_payment`, with a payer per RepeatEach iteration |
 | a suspension inside a `Repeat` iteration | none in `candidates/` | | the first card that prompts in one |
 | an `AtRandom` draw among several | none in `candidates/` | | the first card with more than one candidate |
@@ -622,7 +622,7 @@ What stayed of (c1), and why:
 | Convoke (CR 702.51) | Hogaak, Arisen Necropolis | M7 | done (M7's Done) |
 | Bargain (CR 702.166) | Beseech the Mirror | M7 | done (M7's Done) |
 | Waterbend (CR 701.67) | Invasion Submersible | M10 | done (M10's (b1)). CR 701.67b limits a tap to the generic in the waterbend cost, which the rule table doesn't hold: a token beside other mana is a finding |
-| Crew (CR 702.122) | Unlicensed Hearse | M10 | the cost and keyword done (M10's (b1)); the card waits for (b2) |
+| Crew (CR 702.122) | Unlicensed Hearse | M10 | done (M10's (b1) and (b2)) |
 | `Imprint$` that outlives the resolution, an `ObjectSet` on the permanent | Chrome Mox | M9 | the slot on the source, with `ForgetImprinted$` |
 | `Discard<1/Hand>` on a trigger | Phyrexian Dragon Engine | M12 | `whole_hand` in `TRIGGER`'s table |
 | `Discard<N/...>` on an activation | none provisioned | | one `PickRule` row in `kActivationSteps` and its `cost_form_pays` line |
@@ -1327,6 +1327,35 @@ Evidence. `make check` before each commit. Bombardiers' and the Submersible's sc
 
 Unproved. **Crew has no scenario:** it ran only on a scratch build with Hearse in the vocab, by hand: a sick Bears crewed, two 1-powers and a third past the total, no row at power 1. The new cost part isn't in any fuzz game. The `actor` tier's torch part was skipped and release `bench` not run. The Waterbend finding on a token beside other mana has no script to show it.
 
+**Progress (2026-11-07).** Unit (b2), targets. Sink into Stupor 467 with Soporific Springs 468, Unlicensed Hearse 469, Fury 470, Shatterskull Smashing 471 with Shatterskull, the Hammer Pass 472, Goblin Welder 473, Untimely Malfunction 474: the rest of the M10 row. None was placed elsewhere, and no other card reached zero findings. **M10 is ready for its stage gate.**
+
+- **CR 608.2b, three commits.** `every_target_illegal` reads `announced_instructions` (the object, its chain, each chosen mode and its chain), so a charm with its one target gone doesn't resolve its other modes. An instruction that chose no target and could choose none counts for nothing (CR 115.6). An instruction with its own targets illegal does nothing, its targets cleared for what is chained, and the chain goes on; an illegal target isn't reported to memory rows.
+- **`target_zones`:** `TgtZone$` as a set, `target_in_graveyard` its graveyard bit. `targets_spell_by_zone` is the stack with no `TargetType$`: ValidTgts$ matches the card on the stack through the shared filter, and `add_stack_targets` lists it after the permanents. `Origin$ Battlefield,Stack` needed nothing. `OppCtrl` and `YouCtrl` read a spell's controller; they passed for any card off the battlefield.
+- **Group rows** in `kTargetGateRows`, all required: `same_controller`, `defined_controller`, `leaves_a_target`. `ParentTargetedController` is a row of `kDefinedRows`, reading `Ability::parent_target`, which `run_announce`'s SUBS stage stamps with the last target before it. `leaves_a_target` refuses a first target its chained instruction has nothing to go with, which is both the existence check and what keeps the second menu from being empty. `target_candidates` is the one read: `gift_mode_satisfiable`, `has_legal_targets` and `mode_choosable` go through the rows.
+- **`DIVIDE_DAMAGE`** (category 50). After an instruction's targets, in `announce_targets`, so a cast, an activation and a trigger's placement share it: each target holds one, and each point left is a decision with a row per target, its ordinal what that target holds. A menu is never longer than the targets, and a large X is more decisions, not wider ones. `Ability::target_shares` sits beside the targets; `prune_illegal_targets` drops a share with its target. The total caps the targets (X of 1, one target; X of 0, none). A single target takes it all, with no decision.
+- **`stack_target.share`**, a scalar at slot 2 of that token type, 0 unless divided. No `object` column added: slot 90 stays the last. The board shows it.
+- **ChangeTargets:** `TargetType$ SpellAbility.singleTarget` a row of `kStackAlternatives`, read through `chosen_target_count` (CR 115.9a, an Aura's enchant target included). The handler picks through the object's own legality, from its controller's perspective, and the gate, with a new row `another_target`, on `select_single_target`; the controller of Untimely Malfunction chooses. Nothing else to pick leaves the target. The holder keeps its share. `fire_targeting_hooks` runs for the new target, so Ward triggers.
+- **`HIDDEN CARDNAME can't block.`:** a `kBlockRestrictions` row, read from `eot_keywords`, since it's no ability (CR 611.2c); an appended row of the keyword enum shows it. A Pump now reads all its targets; none in the vocab had two.
+- **`Branch`:** the two sides sit in `subabilities`, counted by `repeat_sub_count`, the side in `BranchRt`. `PumpZone$` says where a Pump applies, replacing the graveyard early return. `Defined$ Imprinted` moves like `Defined$ Remembered`. `ImprintCards$` a memory row, `sharesControllerWith` two filter rows, `Count$ValidExile` a filter row, `/Twice` a step.
+- **`Count$Compare X LT6.X.Z`:** the evaluator had no row for it; every other form is resolved in the parser. `compare_of_svars` writes it as `Count$Compare <value>;<cmp>;<then>;<else>`, a row whose branches are expressions, so `compile_svar` leaves its steps alone.
+- **Prompts.** `divide:` in play_spec, `_divide_damage_choice` in the scripted agent (the row nearest lethal), the board's task line. Explore needs nothing: an unlisted category takes the default weight in both ports. ChangeTargets' pick is a `SELECT_TARGET`.
+- **Fixture:** `decks/tests/mech_targets.dk`, keys `category:DIVIDE_DAMAGE`, `row:divide_among_targets`, `row:divide_one_target`, `row:target_gate:same_controller`, `row:target_gate:defined_controller`, `row:target_gate:leaves_a_target`, `row:target_gate:another_target`, `row:sharesControllerWith`, `effect:Branch`, `effect:ChangeTargets`. `mech_activation` takes Hearse for `cost:TAP_OTHERS`.
+
+Bugs. The three of CR 608.2b, each with its scenario. CR 111.1: `<Set>$Valid` read every object as a card, so a token counted as nothing and Welder's Branch took its false side on a Robot (`cr111_1_goblin_welder_sacrifices_an_artifact_token`); each object now reads as it is where it is. No corpus or fixture decision moved.
+
+Where the plan was off. "Welder with one target gone is the test" for the optional gap: both its targets are required. No provisioned script has an optional target with a chained one in the open, but Into the Flood Maw has it by count, its gift promised: `cr608_2b_optional_target_left_unchosen_doesnt_hold_a_spell_up`, where the Fish was given with the target gone. `Imprinted$Valid` already had its row in `kNamedSets`.
+
+What stayed, and why:
+
+- **`Defined$ ParentTarget` of a player target gone illegal** falls to the controller in `affected_player`. No vocab line reaches it, so it is `docs/rules_deviations.md` §2.5 and not a fix without a proof.
+- **A copy of a divided spell** isn't held to its shares: no copy effect reaches one, §2.5.
+- **Welder's "simultaneously"** is its script's two instructions, §2.5.
+- **`is_runtime_amount_expr`** stays a second list, as (b1) said.
+
+Evidence. `make check` before each commit; the tree of the Malfunction commit was gated before its refactor was split out and was restored byte for byte. Removals, each failing its scenario: the three CR 608.2b changes, `OppCtrl` on a spell, zone targets, `same_controller`, `Count$ValidExile`, a pruned share, `/Twice` and Compare, `defined_controller`, `leaves_a_target`, an illegal target reported to memory (`cr608_2b_goblin_welder_artifact_illegal_but_still_there`, shroud in response), `another_target`, the can't-block row, a Pump's second target, the Ward hook. `tests/corpus`, `tests/cli`, `tests/open_vocab` and `tests/parse_report` unmoved, every `featurize` tier green; the card digest gained eight rows and changed none, so no `inputs` run was needed. `make registry` a no-op at the end. Fixture against itself: 100 bo1, 10 bo3, 30 `--no-auto-mana`, 30 under `--selfcheck-knowledge`, 30 `explore:patient`, no error, no draw; `rm_driver.py` scripted against explore, six bo1 and two bo3 matches. All 71 frozen logs replay but `a9-m18276`, at decision 352, past its cut at 315.
+
+Unproved. The `actor` tier's torch part was skipped and release `bench` not run. Scripted play of a division is checked only by finishing games. `cr115_1b`'s Aura change is the one path through `SingleTarget::entry`, and no target changed by a copy or a mode's sub-ability is tested. A share's frame column is seen on the board by hand; no scenario asserts it. `add_stack_targets` was extracted in Sink's commit, not one of its own.
+
 ### M11. Face-down objects and standing looks (XL)
 
 **Today.** `Zone::is_face_down` exists for exile, and visibility, the state format's FACE_DOWN pool and
@@ -1444,6 +1473,8 @@ A card joins the vocab as soon as every mechanic it needs is implemented (M1's `
 **M9 (b2) (2026-11-07).** The rest of the M9 row entered: Tezzeret, Cruel Captain 460, Sundering Eruption 461 with Volcanic Fissure 462, Hullbreacher 463 with the Treasure token 925, Gaea's Will 464. Theorist's Proxy stays at M12, Empower its only findings. None was placed elsewhere. No other candidate card's findings reached zero: the 15 names left outside the vocab hold one finding at best, each another stage's (Aphetto Alchemist, Fury, Sink into Stupor). All five had parts that reported clean and needed reading: Tezzeret's Animate, Sundering Eruption's hidden keyword, Hullbreacher's first draw, Gaea's Will's missing mana cost. Next free card id 465, token 926.
 
 **M10 (b1) (2026-11-07).** Two of the M10 row entered: Broadside Bombardiers 465, Invasion Submersible 466. Unlicensed Hearse has Crew and waits for (b2), its findings `TargetsWithSameController$` and `Count$ValidExile`. None was placed elsewhere. No other candidate card's findings reached zero: the 12 names left outside the vocab hold one finding at best, each another unit's or stage's (Aphetto Alchemist, Fury, Sink into Stupor). Both had parts that reported clean and needed reading: Bombardiers' amount dealt 0, the Submersible made a creature the turn it came attacked. Next free card id 467, token 926.
+
+**M10 (b2) (2026-11-07).** The rest of the M10 row entered: Sink into Stupor 467 with Soporific Springs 468, Unlicensed Hearse 469, Fury 470, Shatterskull Smashing 471 with Shatterskull, the Hammer Pass 472, Goblin Welder 473, Untimely Malfunction 474. None was placed elsewhere. No other card reached zero findings: the six names left outside the vocab are M11's (Aphetto Alchemist, Cryptic Coat, Mystic Forge) and M12's (Perilous Snare, Phyrexian Dragon Engine, Theorist's Proxy). All had parts that reported clean and needed reading: Sink's `OppCtrl` on a spell, Hearse's second graveyard, Shatterskull's `Count$Compare`, Welder's token, Malfunction's second creature. Next free card id 475, token 926.
 
 | last stage | cards (all stages needed) |
 |---|---|

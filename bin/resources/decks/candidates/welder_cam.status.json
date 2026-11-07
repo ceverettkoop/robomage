@@ -20,19 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Branch effect (DB$ Branch)": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "ability_param:Branch.BranchConditionSVar",
-       "ability_param:Branch.BranchConditionSVarCompare",
-       "ability_param:Branch.FalseSubAbility",
-       "ability_param:Branch.TrueSubAbility",
-       "category:Branch"
-      ],
-      "size": "M"
-     },
      "Face-down permanents (Morph, Cloak; CR 708)": {
       "cards": [
        "Aphetto Alchemist"
@@ -41,96 +28,65 @@
        "keyword:Morph"
       ],
       "size": "XL"
-     },
-     "Goblin Welder swap": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "ability_param:Pump.ImprintCards",
-       "ability_param:Pump.PumpZone",
-       "ability_param:Pump.TargetsWithDefinedController",
-       "filter:sharesControllerWith Imprinted"
-      ],
-      "size": "M"
-     },
-     "filter:sharesControllerWith Remembered": {
-      "cards": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       "filter:sharesControllerWith Remembered"
-      ],
-      "size": "S"
      }
     },
     "needs": {
      "Aphetto Alchemist": [
       "Face-down permanents (Morph, Cloak; CR 708)"
-     ],
-     "Goblin Welder": [
-      "Branch effect (DB$ Branch)",
-      "Goblin Welder swap",
-      "filter:sharesControllerWith Remembered"
      ]
     },
     "new_cards": [
-     "Aphetto Alchemist",
-     "Goblin Welder"
+     "Aphetto Alchemist"
     ],
-    "size_points": 27
+    "size_points": 20
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (27 points)",
-   "time": "2026-11-07T03:55:39"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (20 points)",
+   "time": "2026-11-07T05:56:22"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 31,
+    "in_vocab": 32,
     "no_script": [],
     "not_in_vocab": [
-     "Aphetto Alchemist",
-     "Goblin Welder"
+     "Aphetto Alchemist"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "33 cards: 31 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-07T03:55:39"
+   "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-07T05:56:22"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Branch effect (DB$ Branch)",
-     "Face-down permanents (Morph, Cloak; CR 708)",
-     "Goblin Welder swap",
-     "filter:sharesControllerWith Remembered"
+     "Face-down permanents (Morph, Cloak; CR 708)"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Branch effect (DB$ Branch), Face-down permanents (Morph, Cloak; CR 708), Goblin Welder swap, filter:sharesControllerWith Remembered",
-   "time": "2026-11-07T03:55:39"
+   "summary": "1 mechanic(s) to implement: Face-down permanents (Morph, Cloak; CR 708)",
+   "time": "2026-11-07T05:56:22"
   },
   "parse": {
    "detail": {
@@ -154,94 +110,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Goblin Welder": {
-      "card": "Goblin Welder",
-      "faces": [
-       "Goblin Welder"
-      ],
-      "findings": [
-       {
-        "detail": "Pump TargetsWithDefinedController$ ParentTargetedController",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.TargetsWithDefinedController"
-       },
-       {
-        "detail": "Pump PumpZone$ Graveyard",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.PumpZone"
-       },
-       {
-        "detail": "Pump ImprintCards$ ThisTargetedCard",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Pump.ImprintCards"
-       },
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch"
-       },
-       {
-        "detail": "Branch BranchConditionSVar$ TargetCheck",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.BranchConditionSVar"
-       },
-       {
-        "detail": "Branch BranchConditionSVarCompare$ GE2",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.BranchConditionSVarCompare"
-       },
-       {
-        "detail": "Branch TrueSubAbility$ DBSacrifice",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.TrueSubAbility"
-       },
-       {
-        "detail": "Branch FalseSubAbility$ DBCleanup",
-        "kind": "ability_param",
-        "line": "A:AB$ Pump | Cost$ T | ValidTgts$ Artifact | TgtPrompt$ Select target artifact a player controls | RememberObjects$ ThisTargetedCard | SubAbility$ DBTargetYard | StackDescription$ If both targets are still legal as this ability resolves, {p:TargetedController} simultaneously sacrifices {c:ThisTargetedCard} | SpellDescription$ Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
-        "name": "Branch.FalseSubAbility"
-       },
-       {
-        "detail": "Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "kind": "filter",
-        "line": "SVar:CheckRemem:Remembered$Valid Artifact.sharesControllerWith Imprinted",
-        "name": "sharesControllerWith Imprinted"
-       },
-       {
-        "detail": "Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "kind": "filter",
-        "line": "SVar:CheckImprint:Imprinted$Valid Artifact.sharesControllerWith Remembered",
-        "name": "sharesControllerWith Remembered"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/goblin_welder.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (11 findings), 0 without a script",
-   "time": "2026-11-07T03:55:39"
+   "summary": "1 new card(s), 1 with findings (1 findings), 0 without a script",
+   "time": "2026-11-07T05:56:22"
   },
   "provision": {
    "detail": {
@@ -255,11 +137,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T03:55:39"
+   "time": "2026-11-07T05:56:22"
   },
   "scrape": {
    "detail": {

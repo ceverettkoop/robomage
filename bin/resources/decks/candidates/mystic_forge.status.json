@@ -58,15 +58,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (11 points)",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "diff": {
    "detail": {
@@ -81,11 +81,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "implement": {
    "detail": {
@@ -96,15 +96,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "pending",
    "summary": "2 mechanic(s) to implement: Play from the top of the library (Mystic Forge), Start your engines! (speed)",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "parse": {
    "detail": {
@@ -184,14 +184,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "provision": {
    "detail": {
@@ -205,11 +205,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T03:55:38"
+   "time": "2026-11-07T05:56:22"
   },
   "scrape": {
    "detail": {

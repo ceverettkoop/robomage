@@ -19,113 +19,68 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "Targets in several zones": {
-      "cards": [
-       "Sink into Stupor"
-      ],
-      "findings": [
-       "ability_param:ChangeZone.TgtZone"
-      ],
-      "size": "S"
-     }
-    },
-    "needs": {
-     "Sink into Stupor": [
-      "Targets in several zones"
-     ]
-    },
-    "new_cards": [
-     "Sink into Stupor"
-    ],
-    "size_points": 1
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
-   "time": "2026-11-07T03:55:38"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T05:56:21"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 32,
+    "in_vocab": 33,
     "no_script": [],
-    "not_in_vocab": [
-     "Sink into Stupor"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-07T03:55:37"
+   "summary": "33 cards: 33 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T05:56:21"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Targets in several zones"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: Targets in several zones",
-   "time": "2026-11-07T03:55:38"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T05:56:21"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Sink into Stupor": {
-      "card": "Sink into Stupor",
-      "faces": [
-       "Sink into Stupor",
-       "Soporific Springs"
-      ],
-      "findings": [
-       {
-        "detail": "ChangeZone TgtZone$ Stack,Battlefield",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | ValidTgts$ Permanent.nonLand+OppCtrl,Card.inZoneStack+OppCtrl | TgtZone$ Stack,Battlefield | Origin$ Battlefield,Stack | Destination$ Hand | SpellDescription$ Return target spell or nonland permanent an opponent controls to its owner's hand.",
-        "name": "ChangeZone.TgtZone"
-       }
-      ],
-      "layout": "modal",
-      "script": "cardsfolder/s/sink_into_stupor_soporific_springs.txt",
-      "tokens": [],
-      "vocab": [
-       -1,
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "facb1ebae73f1fd677aea743432cd39f6b53dd9411eb39e03289a32634c87932",
+    "engine": "bdbd8677a122067176564cf351de8fc65953a8838dd1cfacf759c2d62a91321c",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (1 findings), 0 without a script",
-   "time": "2026-11-07T03:55:38"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T05:56:21"
   },
   "provision": {
    "detail": {
@@ -139,11 +94,11 @@
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "4c5c7fc52ffce90e0909185b661fc8331da1767229e427379effab9661b8f8c7"
+    "vocab": "cc482b71d5eb75f1170f111181baa398ca8a8d75a40ef04f9f6a3c6d88b63e29"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T03:55:37"
+   "time": "2026-11-07T05:56:21"
   },
   "scrape": {
    "detail": {
