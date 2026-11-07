@@ -19,7 +19,7 @@ struct Effect {
         enum Kind {
             ENTERS_TAPPED,              // permanent enters the battlefield tapped
             CANT_BE_COUNTERED,          // this spell can't be countered
-            EXILE_INSTEAD_OF_GRAVEYARD, // opponent's cards exiled instead of going to graveyard (Dauthi Voidwalker, Leyline of the Void)
+            EXILE_INSTEAD_OF_GRAVEYARD, // the cards it watches are exiled instead of going to a graveyard (Dauthi Voidwalker, Leyline of the Void)
             EXILE_INSTEAD_OF_ETB,       // 614.1a — a non-token creature that wasn't cast is exiled instead of entering the battlefield (Containment Priest)
             SKIP_UNTAP,                 // 614.1d — a matching permanent doesn't untap during its controller's untap step (Choke)
             PREVENT_ETB_FROM_ZONES,     // 614.13/CantHappen — a creature card moving from a restricted origin zone to the battlefield doesn't enter; it stays put (Grafdigger's Cage)
@@ -69,6 +69,7 @@ struct Effect {
         // much life as the permanent enters to have it enter UNTAPPED instead; declining (or
         // being unable to pay) leaves it entering tapped (CR 614.1d self-replacement + 118.8).
         int tapped_unless_life = 0;
+        FilterSpec valid_card;              // EXILE_INSTEAD_OF_GRAVEYARD: the cards it watches, "you" its controller
         bool with_void_counter = false;     // EXILE_INSTEAD_OF_GRAVEYARD: exile with a void counter (Dauthi Voidwalker) so the controller may later play it; plain exile (Leyline of the Void) leaves it false
         // PREVENT_ETB_FROM_ZONES: the set of origin zones whose creature cards can't enter the battlefield.
         bool prevent_from_graveyard = false;  // Origin$ includes Graveyard

@@ -330,16 +330,14 @@ void collect_move(const ReplacementEvent &ev, const AppliedSet &applied, std::ve
         return;
     }
 
-    // Dauthi Voidwalker etc.: only a graveyard-bound, non-token, owned card is eligible.
+    // Dauthi Voidwalker etc.: only a graveyard-bound card is eligible, and only one the
+    // replacement watches, whose "you" is its controller.
     if (ev.destination != Zone::GRAVEYARD) return;
-    if (global_coordinator.entity_has_component<Token>(ev.entity)) return;
     if (!global_coordinator.entity_has_component<CardData>(ev.entity)) return;
-    auto &tz = global_coordinator.GetComponent<Zone>(ev.entity);
-
-    // The replacement source must be controlled by the opponent of the card's owner.
     for_each_replacement(
-        Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD, opponent_of(tz.owner),
+        Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD, Zone::UNKNOWN,
         [&](const ReplacementSource &src, const Effect::Replacement &r, size_t i) {
+            if (!card_matches_filter(ev.entity, r.valid_card, MatchCtx{src.controller, src.entity})) return;
             Candidate c;
             c.source = src.entity;
             c.kind = EXILE_INSTEAD;

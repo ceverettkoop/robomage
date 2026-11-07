@@ -4144,7 +4144,7 @@ struct ReplacementLine {
     bool layer_cant_happen = false;
     bool untap_step_of_another = false;       // ValidStepTurnToController$ other than You
     bool active_zones_battlefield = false;
-    bool valid_card_opp_non_token = false;
+    std::string valid_card_filter;            // ValidCard$ of a card a Moved replacement watches
     bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
     bool prevent_true = false;                // Prevent$ True: the event simply doesn't happen
     bool is_combat = false;                   // IsCombat$ True
@@ -4215,7 +4215,7 @@ static ReplacementLine read_replacement_line(const std::string &line,
             l.untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
             l.produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
         }
-        else if (key == "ValidCard"   && value == "Card.!token+OppOwn") l.valid_card_opp_non_token = true;
+        else if (key == "ValidCard"   && filter_has_head(value, "Card")) l.valid_card_filter = value;
         // Containment Priest: a non-token creature that wasn't cast.
         else if (key == "ValidCard"   && value == "Creature.!token+!wasCast") l.valid_card_uncast_creature = true;
         else if (key == "Destination" && value == "Battlefield") l.dest_is_battlefield     = true;
@@ -4373,14 +4373,15 @@ static bool row_cant_be_countered_battlefield(const ReplacementLine &l, Effect::
     return true;
 }
 
-// Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles with a void
-// counter; Leyline of the Void plain-exiles — distinguished by the SVar).
+// The cards ValidCard$ names go to exile instead of a graveyard (Dauthi Voidwalker exiles an
+// opponent's with a void counter; Leyline of the Void plain-exiles — distinguished by the SVar).
 static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.dest_is_graveyard || !l.replace_with_exile || !l.valid_card_opp_non_token ||
+    if (!l.dest_is_graveyard || !l.replace_with_exile || l.valid_card_filter.empty() ||
         !l.active_zones_battlefield)
         return false;
     r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
     r.applies_to_self_only = false;
+    r.valid_card = l.valid_card_filter;
     r.with_void_counter = l.replace_with_void_counter;
     return true;
 }
