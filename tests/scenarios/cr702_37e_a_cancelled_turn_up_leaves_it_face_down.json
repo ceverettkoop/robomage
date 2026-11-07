@@ -1,0 +1,58 @@
+{
+  "name": "cr702_37e_a_cancelled_turn_up_leaves_it_face_down",
+  "why": "CR 702.37e: a morph cost not paid turns nothing up: the mana comes back, the object stays face down and hidden, and the row isn't offered again this priority window's way (the payment guard).",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:turn-up:Aphetto",
+    "A:desc:Cancel"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Payment cancelled"
+  ],
+  "expect_dump": [
+    "^A d=5 .*face_down self BATTLEFIELD card=Aphetto Alchemist",
+    "^B d=5 .*face_down opp BATTLEFIELD card=none"
+  ],
+  "expect_dump_not": [
+    "^B .*card=Aphetto"
+  ],
+  "expect_not": [
+    "turns Aphetto Alchemist face up"
+  ]
+}

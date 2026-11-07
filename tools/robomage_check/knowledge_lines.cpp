@@ -126,8 +126,8 @@ static void facts(
     identity_facts(f, s, n, out);
 }
 
-// Where a card column shows an identity outside the object table: a stack row, a menu row (its text
-// too), and each card of the frame's events.
+// Where a card column shows an identity outside the object table: a stack row, the pending decision,
+// a menu row (its text too), and each card of the frame's events.
 static void identity_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
     const auto shown = [&n](const Rows &t, size_t r, int c) {
@@ -137,6 +137,9 @@ static void identity_facts(
     for (size_t r = 0; r < stack.size(); ++r)
         out->push_back("stack " + stack.name(r, stack.col("kind")) + " card=" + shown(stack, r, stack.col("source_card")) +
                        " variant=" + std::to_string(stack.u(r, stack.col("variant"))));
+    const Rows pending(f, s, "pending");
+    for (size_t r = 0; r < pending.size(); ++r)
+        out->push_back("pending " + pending.name(r, pending.col("tag")) + " card=" + shown(pending, r, pending.col("source_card")));
     const Rows menu(f, s, "menu");
     for (size_t r = 0; r < menu.size(); ++r)
         out->push_back("menu " + menu.name(r, menu.col("category")) + " card=" + shown(menu, r, menu.col("source_card")) +

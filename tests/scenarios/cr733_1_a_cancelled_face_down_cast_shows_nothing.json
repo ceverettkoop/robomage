@@ -50,7 +50,9 @@
   ],
   "expect_dump": [
     "^B .*event CAST_FROM_HIDDEN HAND>STACK card=none face_down=1",
-    "^B .*event ZONE_MOVE STACK>HAND card=none face_down=0"
+    "^B .*event ZONE_MOVE STACK>HAND card=none face_down=0",
+    "^A .*pending NONE card=Aphetto Alchemist",
+    "^B .*pending NONE card=none"
   ],
   "expect_not": [
     "revealed as"
