@@ -1,0 +1,48 @@
+{
+  "name": "cr702_179d_speed_rises_on_a_lose_life_effect",
+  "why": "CR 702.179d: a loss by an effect: Tendrils of Agony makes B lose 2 on A's turn",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "hand_a": [
+    "Tendrils of Agony"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Tendrils of Agony",
+    "A:target:Player B"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

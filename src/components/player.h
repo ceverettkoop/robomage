@@ -40,6 +40,9 @@ struct Player {
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
     // Revolt: a permanent this player controlled left the battlefield this turn.
     bool permanent_left_battlefield_this_turn = false;
+    // life_lost_this_turn as the last trigger scan read it: what is above this is life lost since,
+    // whichever way it was lost (collect_speed_triggers). A payment rolled back never reaches a scan.
+    int32_t life_lost_seen = 0;
     // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
     // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes
     // first (so e.g. Jace, Wielder of Mysteries' -8 "then if your library is empty, you win" can
@@ -65,6 +68,7 @@ struct Player {
     void reset_turn_counters() {
         life_gained_this_turn = 0;
         life_lost_this_turn = 0;
+        life_lost_seen = 0;
         lands_played_this_turn = 0;
         spells_cast_this_turn = 0;
         noncreature_spells_cast_this_turn = 0;

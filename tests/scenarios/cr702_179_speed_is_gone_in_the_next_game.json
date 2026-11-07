@@ -1,0 +1,46 @@
+{
+  "name": "cr702_179_speed_is_gone_in_the_next_game",
+  "why": "CR 702.179b, 100.6: speed lasts the game: A's speed in game 1 of a match, none in game 2",
+  "format": "bo3",
+  "battlefield_a": [
+    "Perilous Snare"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:concede:game"
+  ],
+  "max_decisions": 8,
+  "expect_dump": [
+    "^A d=[0-9]+ g0 .* speed self v=1 triggered=0$"
+  ],
+  "expect_dump_not": [
+    " g1 .* speed "
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "name": "cr702_178a_max_speed_ability_is_activated_only_as_a_sorcery",
+  "why": "CR 702.178a, 307.1: speed 4 at A's end step: the ability waits for a main phase of A's: A's end step and all of B's turn offer it nowhere, A holding Bolt mana",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_a": [
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:done",
+    "A:pass",
+    "A:pass",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 74,
+  "expect_order": [
+    "Player A's speed is 3",
+    "Player A's speed is 4",
+    "Player B draws"
+  ],
+  "expect_menu_not": [
+    "Activate Perilous Snare"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

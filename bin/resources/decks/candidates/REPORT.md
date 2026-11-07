@@ -9,6 +9,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 0 | 0 | 0 | implement |
+| artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 0 | 0 | 0 | implement |
 | bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | baseline |
 | boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 0 | 0 | 0 | implement |
 | cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 0 | 0 | 0 | implement |
@@ -21,6 +22,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | hogaak | Hogaak | 2.0 | combo | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | designate |
 | maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | designate |
+| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 0 | 0 | 0 | implement |
@@ -28,9 +30,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
-| artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
-| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 1 | 1 | 3 | capability |
 | painter | Painter | 1.0 | combo | 41 | 1 | 2 | 11 | capability |
 
 ## Mechanics ranked by the decks that need them
@@ -39,7 +39,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Start your engines! (speed) | M | 2 | artifacts_prison, mystic_forge | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
@@ -49,35 +48,40 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | step | deck | new mechanics | their points | cumulative points | decks playable |
 |---|---|---|---|---|---|
 | 1 | artifacts_blue | - | 0 | 0 | 1 |
-| 2 | bant_control | - | 0 | 0 | 2 |
-| 3 | boros_aggro | - | 0 | 0 | 3 |
-| 4 | cloudpost_tron_ramp | - | 0 | 0 | 4 |
-| 5 | cradle_control | - | 0 | 0 | 5 |
-| 6 | death_and_taxes | - | 0 | 0 | 6 |
-| 7 | dimir_tempo | - | 0 | 0 | 7 |
-| 8 | dragon_stompy | - | 0 | 0 | 8 |
-| 9 | eldrazi_aggro | - | 0 | 0 | 9 |
-| 10 | elves | - | 0 | 0 | 10 |
-| 11 | hogaak | - | 0 | 0 | 11 |
-| 12 | lands_top8 | - | 0 | 0 | 12 |
-| 13 | maverick | - | 0 | 0 | 13 |
-| 14 | reanimator_top8 | - | 0 | 0 | 14 |
-| 15 | show_and_tell | - | 0 | 0 | 15 |
-| 16 | stoneblade | - | 0 | 0 | 16 |
-| 17 | storm | - | 0 | 0 | 17 |
-| 18 | ur_tempo | - | 0 | 0 | 18 |
-| 19 | uwx_control | - | 0 | 0 | 19 |
-| 20 | welder_cam | - | 0 | 0 | 20 |
-| 21 | artifacts_prison | Start your engines! (speed) | 3 | 3 | 21 |
-| 22 | mystic_forge | - | 0 | 3 | 22 |
-| 23 | doomsday | Empower | 3 | 6 | 23 |
-| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 17 | 24 |
+| 2 | artifacts_prison | - | 0 | 0 | 2 |
+| 3 | bant_control | - | 0 | 0 | 3 |
+| 4 | boros_aggro | - | 0 | 0 | 4 |
+| 5 | cloudpost_tron_ramp | - | 0 | 0 | 5 |
+| 6 | cradle_control | - | 0 | 0 | 6 |
+| 7 | death_and_taxes | - | 0 | 0 | 7 |
+| 8 | dimir_tempo | - | 0 | 0 | 8 |
+| 9 | dragon_stompy | - | 0 | 0 | 9 |
+| 10 | eldrazi_aggro | - | 0 | 0 | 10 |
+| 11 | elves | - | 0 | 0 | 11 |
+| 12 | hogaak | - | 0 | 0 | 12 |
+| 13 | lands_top8 | - | 0 | 0 | 13 |
+| 14 | maverick | - | 0 | 0 | 14 |
+| 15 | mystic_forge | - | 0 | 0 | 15 |
+| 16 | reanimator_top8 | - | 0 | 0 | 16 |
+| 17 | show_and_tell | - | 0 | 0 | 17 |
+| 18 | stoneblade | - | 0 | 0 | 18 |
+| 19 | storm | - | 0 | 0 | 19 |
+| 20 | ur_tempo | - | 0 | 0 | 20 |
+| 21 | uwx_control | - | 0 | 0 | 21 |
+| 22 | welder_cam | - | 0 | 0 | 22 |
+| 23 | doomsday | Empower | 3 | 3 | 23 |
+| 24 | painter | Discard-a-card activation cost; Meld (CR 712) | 11 | 14 | 24 |
 
 ## Per deck
 
 ### artifacts_blue — Artifacts Blue (2.0%, aggro)
 
 33 cards, 0 new; clean: -
+
+
+### artifacts_prison — Artifacts Prison (2.0%, control)
+
+30 cards, 0 new; clean: -
 
 
 ### bant_control — Bant Control (2.0%, control)
@@ -140,6 +144,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 38 cards, 0 new; clean: -
 
 
+### mystic_forge — Mystic Forge (2.0%, combo)
+
+32 cards, 0 new; clean: -
+
+
 ### reanimator_top8 — Reanimator (3.0%, combo)
 
 28 cards, 0 new; clean: -
@@ -175,23 +184,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 0 new; clean: -
 
 
-### artifacts_prison — Artifacts Prison (2.0%, control)
-
-30 cards, 1 new; clean: -
-
-- Perilous Snare: Start your engines! (speed)
-
 ### doomsday — Doomsday (4.0%, combo)
 
 33 cards, 1 new; clean: -
 
 - Theorist's Proxy: Empower
-
-### mystic_forge — Mystic Forge (2.0%, combo)
-
-32 cards, 1 new; clean: -
-
-- Perilous Snare: Start your engines! (speed)
 
 ### painter — Painter (1.0%, combo)
 

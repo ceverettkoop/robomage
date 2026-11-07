@@ -432,6 +432,8 @@ static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) 
                                 std::to_string(f.pcounter.u(c, f.pcounter.col("count"))));
         if (p.u(r, p.col("monarch"))) extra.push_back("monarch");
         if (p.u(r, p.col("city_blessing"))) extra.push_back("city's blessing");
+        if (const uint64_t speed = p.u(r, p.col("speed")))
+            extra.push_back("speed " + std::to_string(speed - 1) + (p.u(r, p.col("speed_triggered")) ? " (triggered this turn)" : ""));
         if (const uint64_t n = p.u(r, p.col("to_bottom"))) extra.push_back(std::to_string(n) + " to bottom");
         if (const uint64_t n = p.u(r, p.col("extra_turns"))) extra.push_back(plural(n, "extra turn", "extra turns"));
         if (show_wins) extra.push_back("wins " + std::to_string(p.u(r, p.col("match_wins"))));
@@ -495,6 +497,9 @@ static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t contr
     return out;
 }
 
+// The key of the ability a player's speed brings: it has no source to name it by.
+static const char *const kSpeedTriggerKey = "triggered:IncreaseSpeed";
+
 // One stack object: name, kind and controller, X / modes / kicker, targets.
 static std::string stack_item(const Frame &f, size_t row) {
     const agents::Table &s = f.stack;
@@ -502,7 +507,10 @@ static std::string stack_item(const Frame &f, size_t row) {
     const std::optional<std::string> name = f.v.stack_card(row);
     const std::string kind = f.st.enum_name("stack_kind", s.u(row, s.col("kind")));
     // A spell with no card to show lies face down, and its ", face down" says so below.
-    std::string line = name ? *name : kind == "SPELL" ? std::string("spell") : std::string("ability");
+    std::string line = name                                               ? *name
+                       : kind == "SPELL"                                  ? std::string("spell")
+                       : s.text(row, s.col("ab_key")) == kSpeedTriggerKey ? std::string("speed")
+                                                                          : std::string("ability");
     if (kind == "ACTIVATED")
         line += " (activated ability)";
     else if (kind == "TRIGGERED")

@@ -57,6 +57,11 @@ DESIGNATION_TURN(DayNight, day_night, DN_NEITHER, day_night, U8, "enum:day_night
 DESIGNATION_GAME_PLAYER(Entity, monarch_entity, MAX_ENTITIES, monarch, U8, "bool", cur_game.monarch_entity == pe)
 // 702.131c: city's blessing designation, kept for the rest of the game once obtained
 DESIGNATION_PLAYER(bool, has_city_blessing, false, GAME, city_blessing, U8, "bool", pl.has_city_blessing)
+// Their speed (CR 702.179), -1 while they have none (CR 702.179b), read through queries/speed.h. The
+// column is 1 + the speed; 0 none, which isn't speed 0 (CR 702.179a, c).
+DESIGNATION_PLAYER(int, speed, -1, GAME, speed, U8, "count", pl.speed + 1)
+// The ability speed brings has triggered this turn (CR 702.179d: "only once each turn").
+DESIGNATION_PLAYER(bool, speed_triggered, false, TURN, speed_triggered, U8, "bool", pl.speed_triggered)
 
 // ── object ───────────────────────────────────────────────────────────────────────────────────────
 

@@ -1,0 +1,55 @@
+{
+  "name": "cr610_3_perilous_snare_returns_what_it_exiled",
+  "why": "CR 610.3: Snare's exile lasts until it leaves: B destroys Snare and Grizzly Bears comes back at once, no stack between",
+  "hand_a": [
+    "Perilous Snare"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Perilous Snare",
+    "A:target:Grizzly Bears@opp",
+    "B:pass",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Perilous Snare"
+  ],
+  "max_decisions": 9,
+  "expect_order": [
+    "Grizzly Bears is moved to exile",
+    "Grizzly Bears is moved to the battlefield"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

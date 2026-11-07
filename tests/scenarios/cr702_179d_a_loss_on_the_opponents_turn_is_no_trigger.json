@@ -1,0 +1,54 @@
+{
+  "name": "cr702_179d_a_loss_on_the_opponents_turn_is_no_trigger",
+  "why": "CR 702.179d: 'during your turn': B pays life and A burns B on B's turn; A's speed stays 1",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Mountain"
+  ],
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "battlefield_b": [
+    "Polluted Delta"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:land:Forest",
+    "B:activate:Polluted Delta",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 40,
+  "expect": [
+    "Player B pays 1 life",
+    "Lightning Bolt deals 3 damage to Player B"
+  ],
+  "expect_not": [
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ]
+}

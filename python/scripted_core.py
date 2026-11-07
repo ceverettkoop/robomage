@@ -2402,6 +2402,7 @@ _OWN_BENEFIT_TARGETS = frozenset({
     "Scythecat Cub",            # +1/+1 counter on a creature we control
     "Pre-War Formalwear",       # reanimates a creature card, then attaches
     "Mystic Sanctuary",         # an instant / sorcery back on top
+    "Perilous Snare",           # max speed's +1/+1 counter on a creature or Vehicle we control
 })
 
 

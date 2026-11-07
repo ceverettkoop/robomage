@@ -38,6 +38,7 @@
 #include "../queries/filters.h"
 #include "../queries/lki.h"
 #include "../queries/players.h"
+#include "../queries/speed.h"
 #include "../queries/types.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
@@ -145,6 +146,8 @@ struct TriggerHost {
     std::string name;
     const EffectObject *object = nullptr;
 };
+
+static void collect_speed_triggers(std::vector<PendingTrigger> &pending);
 
 // Queue every ability of `host` in `ab_defs` that one of `events` triggers (CR 603.2). An effect
 // object's `ab_defs` are its triggers' definitions, in order.
@@ -752,6 +755,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         }
     }
 
+    collect_speed_triggers(pending);
+
     // ResolvedLimit$ (CR 603.4 intervening-if): an ability that has already resolved its limit's
     // number of times this turn doesn't trigger.
     for (PendingTrigger &pt : pending)
@@ -769,6 +774,33 @@ void StateManager::place_waiting_triggers(Game &game, std::shared_ptr<Orderer> o
     }
     game.waiting_triggers.clear();
     place_triggers_apnap(game, orderer, pending);
+}
+
+// The ability a player's speed brings (CR 702.179d): "Whenever one or more opponents lose life during
+// your turn, if your speed is less than 4, your speed increases by 1. This ability triggers only once
+// each turn." It has no source and its controller is that player. Life lost is read off the one count
+// every loss adds to, damage and payment alike, since the last scan: a scan comes before each
+// state-based-action check, so what it finds was lost while the state it reads held, and a player who
+// gets their speed from that check didn't have the ability when the life was lost.
+static void collect_speed_triggers(std::vector<PendingTrigger> &pending) {
+    for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        Player &pl = global_coordinator.GetComponent<Player>(get_player_entity(seat));
+        Player &opponent = global_coordinator.GetComponent<Player>(get_player_entity(opponent_of(seat)));
+        const bool lost = opponent.life_lost_this_turn > opponent.life_lost_seen;
+        opponent.life_lost_seen = opponent.life_lost_this_turn;
+        if (!lost || !has_speed(pl) || seat != active_seat() || pl.speed_triggered) continue;
+        if (speed_of(pl) >= kMaxSpeed) continue;
+        pl.speed_triggered = true;
+        Ability ab(triggered_effect_def("IncreaseSpeed"));
+        ab.controller = seat;
+        PendingTrigger pt;
+        pt.ab = ab;
+        pt.controller = seat;
+        pt.source = 0;
+        pt.label = "Speed (an opponent lost life)";
+        pt.log_line = "An opponent lost life during " + player_name(seat) + "'s turn: their speed triggers.";
+        pending.push_back(pt);
+    }
 }
 
 static void match_departed_watcher_triggers(const std::vector<Event> &events,

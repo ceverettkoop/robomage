@@ -1,0 +1,242 @@
+robomage 0.2
+Decision log: speed.rmlog
+
+======== Player A to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Plains, Plains, Plains, Plains, Plains, Plains, Plains
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Plains  #1  Basic Land - Plains
+  Plains  #2  Basic Land - Plains
+  Plains  #3  Basic Land - Plains
+  Plains  #4  Basic Land - Plains
+  Plains  #5  Basic Land - Plains
+  Plains  #6  Basic Land - Plains
+  Plains  #7  Basic Land - Plains
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+======== Player B to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Game 1, opening hand (Player A plays first)
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Plains x5
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A's Perilous Snare: created on the battlefield
+  T1: Player A's Grizzly Bears: created on the battlefield
+  T1: Player B's Mountain: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0   speed 1
+Player A's battlefield:
+  Grizzly Bears   2/2  #9
+  Perilous Snare       #8
+Player B's battlefield:
+  Mountain  #10
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Plains x7
+  Player A's library: top: Plains; 2nd from the top: Plains; 3rd from the top: Plains; ...
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Draw: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Perilous Snare: created on the battlefield
+  T1: Player A's Grizzly Bears: created on the battlefield
+  T1: Player B's Mountain: created on the battlefield
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0   speed 1
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Mountain  #10
+Player A's battlefield:
+  Grizzly Bears   2/2  #9
+  Perilous Snare       #8
+Your hand (7):
+  Plains  #1  Basic Land - Plains
+  Plains  #2  Basic Land - Plains
+  Plains  #3  Basic Land - Plains
+  Plains  #4  Basic Land - Plains
+  Plains  #5  Basic Land - Plains
+  Plains  #6  Basic Land - Plains
+  Plains  #7  Basic Land - Plains
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+  Player A's library: top: Plains; 2nd from the top: Plains; 3rd from the top: Plains; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Plains
+  2: Play Plains
+  3: Play Plains
+  4: Play Plains
+  5: Play Plains
+  6: Play Plains
+  7: Play Plains
+Player A [0-7, help]> 
+======== Player B to decide ========
+Game 1, turn 1, First main: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Begin combat: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player A to decide ========
+Game 1, turn 1, Declare attackers: Player A's turn
+Decision: declare attackers (pick each attacker, then confirm)
+  0: Grizzly Bears [2/2]
+  1: Confirm attackers   (or -1)
+Player A [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Declare attackers: Player A's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0   speed 1
+Player A's battlefield:
+  Grizzly Bears   2/2  #9  tapped, attacking
+  Perilous Snare       #8
+Player B's battlefield:
+  Mountain  #10
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Plains x7
+  Player A's library: top: Plains; 2nd from the top: Plains; 3rd from the top: Plains; ...
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Declare blockers: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Since your last decision:
+  life: Player B 20 -> 18
+Game 1, turn 1, Combat damage: Player A's turn; Player B has priority
+  Player B (you)  life 18   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0   speed 1 (triggered this turn)
+Player A's battlefield:
+  Grizzly Bears   2/2  #9  tapped, attacking
+  Perilous Snare       #8
+Player B's battlefield:
+  Mountain  #10
+Stack (top first):
+  1. speed (triggered ability) #11 (Player A)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Plains x7
+  Player A's library: top: Plains; 2nd from the top: Plains; 3rd from the top: Plains; ...
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Combat damage: Player A's turn; Player B has priority
+  Player B (you)  life 18   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0   speed 2 (triggered this turn)
+Player A's battlefield:
+  Grizzly Bears   2/2  #9  tapped, attacking
+  Perilous Snare       #8
+Player B's battlefield:
+  Mountain  #10
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Plains x7
+  Player A's library: top: Plains; 2nd from the top: Plains; 3rd from the top: Plains; ...
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> MAX_DECISIONS: stopped after 12 decisions (--max-decisions; no result)

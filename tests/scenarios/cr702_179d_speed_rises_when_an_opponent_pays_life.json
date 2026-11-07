@@ -1,0 +1,47 @@
+{
+  "name": "cr702_179d_speed_rises_when_an_opponent_pays_life",
+  "why": "CR 702.179d, 119.4: paying life is losing it: B pays 1 for Polluted Delta on A's turn and A's speed rises",
+  "battlefield_a": [
+    "Perilous Snare"
+  ],
+  "battlefield_b": [
+    "Polluted Delta"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:activate:Polluted Delta"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player B pays 1 life",
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ]
+}

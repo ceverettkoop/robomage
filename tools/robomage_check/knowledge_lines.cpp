@@ -206,7 +206,7 @@ static void object_facts(
     }
 }
 
-// A nonempty pool as the player row counts it, and each pool_mana row.
+// A nonempty pool as the player row counts it, each pool_mana row, and a player's speed.
 static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
     const Rows players(f, s, "player");
     for (size_t r = 0; r < players.size(); ++r) {
@@ -216,6 +216,9 @@ static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s,
             if (n) pool += std::string(" ") + color + "=" + std::to_string(n);
         }
         if (!pool.empty()) out->push_back("mana " + rel_text(players.u(r, players.col("player_rel"))) + pool);
+        if (const uint64_t speed = players.u(r, players.col("speed")))
+            out->push_back("speed " + rel_text(players.u(r, players.col("player_rel"))) + " v=" + std::to_string(speed - 1) +
+                           " triggered=" + std::to_string(players.u(r, players.col("speed_triggered"))));
     }
     const Rows pm(f, s, "pool_mana");
     for (size_t r = 0; r < pm.size(); ++r)

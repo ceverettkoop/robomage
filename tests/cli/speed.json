@@ -1,0 +1,4 @@
+{"name": "speed",
+ "why": "CR 702.179a, d: hotseat, Player A's Perilous Snare: A's speed on both boards from the state-based action, Grizzly Bears' damage raises it through the ability on the stack, named though it has no source, and the board says it triggered this turn",
+ "args": ["--game-seed", "1", "--hand-a", "Plains,Plains,Plains,Plains,Plains,Plains,Plains", "--library-a", "Plains,Plains", "--battlefield-a", "Perilous Snare,Grizzly Bears", "--hand-b", "Lightning Bolt,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--library-b", "Mountain,Mountain", "--battlefield-b", "Mountain", "--max-decisions", "12"],
+ "input": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]}

@@ -1,0 +1,59 @@
+{
+  "name": "cr702_179a_start_your_engines_gives_a_speed_of_1",
+  "why": "CR 702.179a-b: A has no speed until a permanent with start your engines! is on the battlefield; the state-based action gives A 1 and B, who controls none, stays without",
+  "hand_a": [
+    "Perilous Snare"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Perilous Snare",
+    "A:target:Grizzly Bears@opp"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "Player A casts Perilous Snare",
+    "Player A's speed is 1"
+  ],
+  "expect_dump": [
+    "^A d=[0-9]+ g0 t[0-9]+ speed self v=1 triggered=0$",
+    "^B d=[0-9]+ g0 t[0-9]+ speed opp v=1 triggered=0$"
+  ],
+  "expect_dump_not": [
+    "^. d=[1-3] .* speed ",
+    "speed .* v=0",
+    "^A .* speed opp ",
+    "^B .* speed self "
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -303,6 +303,9 @@ static const KeywordEntry kKeywordTable[] = {
     {"Equip", KeywordEntry::PREFIX, kw_equip},
     {"Reconfigure", KeywordEntry::PREFIX, kw_reconfigure},
     {"Crew", KeywordEntry::PREFIX, kw_crew},
+    // K:Start your engines (CR 702.179a): the state-based action reads it off the keyword list.
+    {"Start your engines", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) { ctx.card.keywords.push_back("Start your engines"); }},
     {"Impending", KeywordEntry::PREFIX, kw_impending},
     {"Suspend", KeywordEntry::PREFIX, kw_suspend},
     // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may

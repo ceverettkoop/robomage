@@ -1,0 +1,46 @@
+{
+  "name": "cr702_179d_speed_rises_on_combat_damage",
+  "why": "CR 702.179d: A's speed 1 rises to 2 when B takes combat damage on A's turn, through an ability with no source on the stack",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Grizzly Bears deals 2 damage to Player B",
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

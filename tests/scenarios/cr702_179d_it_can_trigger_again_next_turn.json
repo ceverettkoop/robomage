@@ -1,0 +1,54 @@
+{
+  "name": "cr702_179d_it_can_trigger_again_next_turn",
+  "why": "CR 702.179d: once each turn is each turn: a loss on A's next turn triggers again",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 24,
+  "expect_count": [
+    {
+      "pattern": "their speed triggers",
+      "count": 2
+    }
+  ],
+  "expect": [
+    "Player A's speed is 3"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

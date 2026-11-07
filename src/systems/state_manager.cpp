@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../error.h"
 #include "../game_driver.h"
 #include "../queries/attachments.h"
@@ -37,6 +39,7 @@
 #include "../queries/keywords.h"
 #include "../queries/overlays.h"
 #include "../queries/players.h"
+#include "../queries/speed.h"
 #include "../queries/types.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -54,8 +57,12 @@ struct SbaActions {
     std::vector<Entity> unattach;                               // 704.5n / 704.5p
     std::vector<Entity> ends_overlay;                           // 702.103f: an exception to 704.5m
     std::vector<std::pair<Entity, int>> annihilate;             // 704.5q: permanent + N
+    std::set<Zone::Ownership> start_speed;                      // 702.179a: the players it gives a speed of 1
 
-    bool empty() const { return to_graveyard.empty() && unattach.empty() && ends_overlay.empty() && annihilate.empty(); }
+    bool empty() const {
+        return to_graveyard.empty() && unattach.empty() && ends_overlay.empty() && annihilate.empty() &&
+               start_speed.empty();
+    }
     // Records `e` as put into its owner's graveyard, once however many actions apply to it.
     void put_into_graveyard(Entity e, const std::string &log_line) {
         for (const auto &entry : to_graveyard)
@@ -306,6 +313,11 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
                                  : nullptr;
         const std::string name = entity_name(entity);
 
+        // 702.179a: a player who controls a permanent with start your engines! and has no speed.
+        if (!perm.abilities_removed && permanent_has_keyword(entity, "Start your engines") &&
+            !has_speed(global_coordinator.GetComponent<Player>(get_player_entity(perm.controller))))
+            out.start_speed.insert(perm.controller);
+
         if (global_coordinator.entity_has_component<Creature>(entity)) {
             auto &creature = global_coordinator.GetComponent<Creature>(entity);
             if (creature.toughness == 0) {
@@ -442,6 +454,10 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
             if (m == e) return true;
         return false;
     };
+    for (Zone::Ownership who : actions.start_speed) {
+        coverage_row("speed_start");
+        start_speed(who);
+    }
     for (auto [entity, n] : actions.annihilate) {
         if (moving(entity)) continue;
         add_counters(entity, "P1P1", -n);

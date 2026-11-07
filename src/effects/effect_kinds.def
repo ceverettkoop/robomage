@@ -216,5 +216,8 @@ EFFECT_KIND(ChangeTargets, "ChangeTargets", change_targets)
 // "Cloak the top card of your library" (CR 701.58): put it onto the battlefield face down.
 EFFECT_KIND(Cloak, "Cloak", cloak)
 
+// The ability a player's speed brings (CR 702.179d), engine-built: no script names it.
+EFFECT_KIND(IncreaseSpeed, "IncreaseSpeed", increase_speed)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE
