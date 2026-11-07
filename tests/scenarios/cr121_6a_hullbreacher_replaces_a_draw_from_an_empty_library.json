@@ -1,0 +1,38 @@
+{
+  "name": "cr121_6a_hullbreacher_replaces_a_draw_from_an_empty_library",
+  "why": "CR 121.6a: a replacement applies to a draw even with no library to draw from: a player under Hullbreacher doesn't lose for it",
+  "deck_a": "tests/no_library",
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Hullbreacher"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Brainstorm"
+  ],
+  "max_decisions": 10,
+  "expect_count": {
+    "^Token created": 3
+  },
+  "expect_not": [
+    "attempts to draw"
+  ]
+}

@@ -385,6 +385,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tezzeret, Cruel Captain", 460},
     {"Sundering Eruption", 461},
     {"Volcanic Fissure", 462},
+    {"Hullbreacher", 463},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -433,6 +434,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"bg_1_1_insect", "Insect", 922},                                // Grist, the Hunger Tide
     {"r_2_2_goblin_shaman_treasure", "Goblin Shaman", 923},          // Fable of the Mirror-Breaker
     {"rgw_1_1_sand_warrior", "Sand Warrior", 924},                   // Sand Scout
+    {"c_a_treasure_sac", "Treasure", 925},                           // Hullbreacher
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

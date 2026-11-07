@@ -1,0 +1,64 @@
+{
+  "name": "cr121_6_hullbreacher_replaces_a_draw_in_the_upkeep",
+  "why": "Hullbreacher: a card drawn in the upkeep isn't one of the draw step's: it is replaced, and the first card of the draw step that follows is drawn",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "A:attack:done",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "B:cast:Brainstorm"
+  ],
+  "max_decisions": 20,
+  "expect_order": [
+    "TURN 2",
+    "^Token created",
+    "^Token created",
+    "^Token created",
+    "^Player B draws"
+  ]
+}

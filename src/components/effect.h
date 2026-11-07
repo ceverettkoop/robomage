@@ -25,7 +25,7 @@ struct Effect {
             PREVENT_ETB_FROM_ZONES,     // 614.13/CantHappen — a creature card moving from a restricted origin zone to the battlefield doesn't enter; it stays put (Grafdigger's Cage)
             PRODUCE_MANA,               // 614.1 — replaces the mana a matching permanent produces when tapped (Damping Sphere: a land tapped for 2+ produces that much {C})
             DISCARD_ELSE_GRAVEYARD,     // 614.1a self-replacement — as this card would enter, its owner MAY pay an additional discard cost (a matching card); if paid it enters, otherwise it goes to its owner's graveyard instead (Mox Diamond, Chrome Mox)
-            DRAW_REPLACED,              // 121.6 — a card draw is replaced by what ReplaceWith$ says (replace_with): "if you would draw a card while your library has no cards in it, you win the game instead" (Jace, Wielder of Mysteries). Offered beside dredge (collect_draw_replacements).
+            DRAW_REPLACED,              // 121.6 — a card draw is replaced by what ReplaceWith$ says (replace_with): "if you would draw a card while your library has no cards in it, you win the game instead" (Jace, Wielder of Mysteries), an opponent's card made a Treasure (Hullbreacher). Offered beside dredge (collect_draw_replacements).
             DRAW_ADD,                   // 614.1 — a MODIFYING draw replacement: "if you would draw one or more cards, you draw that many plus K instead" (Quantum Riddler). Applies to the source controller's draws while an optional CheckSVar condition holds; adds draw_add cards to the draw event.
             PREVENT_COMBAT_DAMAGE,      // CR 615 — on an effect object: all combat damage dealt by and/or to what it remembers is prevented (Maze of Ith)
         };
@@ -96,8 +96,12 @@ struct Effect {
         int draw_add = 0;
         std::string draw_condition_count_expr = "";
         std::string draw_condition_compare = "";
-        // DRAW_REPLACED: the replacement needs an empty library (Jace; CR 121.6a applies it there).
+        // DRAW_REPLACED: whose draw it replaces (its controller's, or with draw_by_opponent their
+        // opponent's), and when: only from an empty library (Jace; CR 121.6a applies it there), or
+        // not the first card that player draws in their own draw step (Hullbreacher).
+        bool draw_by_opponent = false;
         bool draw_from_empty_library = false;
+        bool draw_not_first_in_step = false;
         // PREVENT_COMBAT_DAMAGE (Maze of Ith's RPrevent1 / RPrevent2): which side of the damage the
         // remembered object is on, ValidSource$ Card.IsRemembered and ValidTarget$ Card.IsRemembered.
         bool prevent_by_remembered = false;

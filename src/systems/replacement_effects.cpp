@@ -35,6 +35,7 @@
 #include "state_manager.h"
 
 static std::string etb_counter_kind(const StaticAbility &sa, Entity entering);
+static bool first_draw_of_draw_step(Zone::Ownership player);
 
 // Internal description of a single applicable replacement effect for one dispatch.
 namespace {
@@ -697,6 +698,12 @@ static std::string etb_counter_kind(const StaticAbility &sa, Entity entering) {
     return sa.counter_type.empty() ? "P1P1" : sa.counter_type;
 }
 
+// Would the card `player` draws now be the first they draw in their own draw step?
+static bool first_draw_of_draw_step(Zone::Ownership player) {
+    return cur_game.turn_state.step == DRAW && active_seat() == player &&
+           global_coordinator.GetComponent<Player>(get_player_entity(player)).cards_drawn_this_draw_step == 0;
+}
+
 namespace replacement {
 
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
@@ -706,9 +713,11 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
     const EntitySet &entities = zoned_entities();
     const size_t lib = zone_objects(entities, Zone::LIBRARY, player).size();
     for_each_replacement(
-        Effect::Replacement::DRAW_REPLACED, player,
+        Effect::Replacement::DRAW_REPLACED, Zone::UNKNOWN,
         [&](const ReplacementSource &src, const Effect::Replacement &r, size_t) {
+            if ((src.controller == player) == r.draw_by_opponent) return;
             if (r.draw_from_empty_library && lib != 0) return;
+            if (r.draw_not_first_in_step && first_draw_of_draw_step(player)) return;
             LegalAction la(PASS_PRIORITY, src.menu_entity(), src.name() + ": replace the draw");
             la.category = ActionCategory::CHOOSE_REPLACEMENT;
             actions.push_back(la);
@@ -742,6 +751,7 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
 
 void take_draw_option(Orderer &orderer, Zone::Ownership player, const DrawReplacementOption &option, DrawBatch &batch) {
     if (option.body) {
+        coverage_replacement("DRAW_REPLACED");
         batch.body = option.body;
         batch.body_source = ObjectRef::of(option.source);
         batch.body_controller = option.controller;

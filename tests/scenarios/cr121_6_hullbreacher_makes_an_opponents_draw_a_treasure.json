@@ -1,0 +1,62 @@
+{
+  "name": "cr121_6_hullbreacher_makes_an_opponents_draw_a_treasure",
+  "why": "CR 121.6, 614.1: Hullbreacher replaces each card an opponent draws with a Treasure token for its controller, one per card, and leaves its controller's own draws alone",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:done",
+    "B:cast:Brainstorm"
+  ],
+  "max_decisions": 14,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect_order": [
+    "^Token created: 0/0 Treasure",
+    "^Token created: 0/0 Treasure",
+    "^Token created: 0/0 Treasure",
+    "^Player B puts Island to top of library"
+  ],
+  "expect_count": {
+    "^Token created": 3,
+    "^Player A draws": 1
+  }
+}

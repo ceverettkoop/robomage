@@ -160,6 +160,7 @@ static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Rep
 static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_by_opponent(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r);
@@ -4127,6 +4128,8 @@ struct ReplacementLine {
     std::string draw_check_svar;      // CheckSVar$ <var>, the count gate's SVar name
     std::string draw_svar_compare;    // SVarCompare$ <cmp>, its comparator (e.g. "LE1")
     bool valid_player_you = false;    // ValidPlayer$ You: the source controller's own draws
+    bool valid_player_opponent = false;       // ValidPlayer$ Opponent: their opponent's
+    bool not_first_in_draw_step = false;      // NotFirstCardInDrawStep$ True
     std::string produce_valid_type;   // ValidCard$ <type> for a ProduceMana replacement ("Land")
     int produce_min_amount = 1;       // ManaAmount$ GEN, the minimum produced amount
     std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
@@ -4193,6 +4196,8 @@ static ReplacementLine read_replacement_line(const std::string &line,
         l.params.emplace_back(key, value);
         if      (key == "Event")       l.event = value;
         else if (key == "ValidPlayer" && value == "You")         l.valid_player_you        = true;
+        else if (key == "ValidPlayer" && value == "Opponent")    l.valid_player_opponent   = true;
+        else if (key == "NotFirstCardInDrawStep" && value == "True") l.not_first_in_draw_step = true;
         else if (key == "CheckSVar")  l.draw_check_svar          = value;
         else if (key == "SVarCompare") l.draw_svar_compare       = value;
         else if (key == "ManaAmount") {
@@ -4419,6 +4424,17 @@ static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r)
     return true;
 }
 
+// Hullbreacher: "If an opponent would draw a card except the first one they draw in each of their
+// draw steps, instead you create a Treasure token." The body runs in place of the draw, for this
+// replacement's controller (CR 121.6).
+static bool row_draw_by_opponent(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_player_opponent || !l.active_zones_battlefield || l.replace_with_body.empty()) return false;
+    r.kind = Effect::Replacement::DRAW_REPLACED;
+    r.draw_by_opponent = true;
+    r.draw_not_first_in_step = l.not_first_in_draw_step;
+    return true;
+}
+
 // Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one or more
 // cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw replacement —
 // Event$ DrawCards, ValidPlayer$ You (the source controller's own draws), whose ReplaceWith$ SVar
@@ -4519,6 +4535,7 @@ static const struct {
      "ValidLKI Origin Destination Prevent Layer ActiveZones"},
     {"Draw", ReplacementHost::CARD, row_draw_empty_win, true,
      "ValidPlayer IsPresent PresentZone PresentCompare ReplaceWith ActiveZones"},
+    {"Draw", ReplacementHost::CARD, row_draw_by_opponent, true, "ValidPlayer NotFirstCardInDrawStep ReplaceWith ActiveZones"},
     {"DrawCards", ReplacementHost::CARD, row_draw_add, false, "ValidPlayer CheckSVar SVarCompare ReplaceWith ActiveZones"},
     {"Untap", ReplacementHost::CARD, row_skip_untap_subtype, false, "ValidCard ValidStepTurnToController Layer ActiveZones"},
     {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false, "ValidCard ManaAmount ReplaceWith ActiveZones"},

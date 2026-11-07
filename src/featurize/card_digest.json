@@ -423,6 +423,7 @@
 {"id":460,"name":"Tezzeret, Cruel Captain","digest":"0922ab331ac5f9ac"},
 {"id":461,"name":"Sundering Eruption","digest":"e0015fa49c32170b"},
 {"id":462,"name":"Volcanic Fissure","digest":"7a79c1221d9f412d"},
+{"id":463,"name":"Hullbreacher","digest":"4126b3e1c365cfb0"},
 {"id":900,"name":"Orc Army","digest":"92bd63e23c33bf12"},
 {"id":901,"name":"Construct","digest":"4a82576f764923f0"},
 {"id":902,"name":"Eldrazi Spawn","digest":"a63ca3e8a2ffb670"},
@@ -447,5 +448,6 @@
 {"id":921,"name":"Insect","digest":"e510e3ab73564e9b"},
 {"id":922,"name":"Insect","digest":"8f5489f1688daaa3"},
 {"id":923,"name":"Goblin Shaman","digest":"e08376fe7e4220fa"},
-{"id":924,"name":"Sand Warrior","digest":"2beb858f9192f0f8"}
+{"id":924,"name":"Sand Warrior","digest":"2beb858f9192f0f8"},
+{"id":925,"name":"Treasure","digest":"579325ce376abaaf"}
 ]}
