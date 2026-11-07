@@ -19,11 +19,8 @@ HandlerResult tap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     (void)orderer;
     for (Entity e : affected_objects(ab)) {
         if (!is_battlefield_permanent(e)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (!perm.is_tapped) {
-            perm.is_tapped = true;
-            game_log("%s is tapped.\n", perm.name.c_str());
-        }
+        if (tap_permanent(e))
+            game_log("%s is tapped.\n", global_coordinator.GetComponent<Permanent>(e).name.c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

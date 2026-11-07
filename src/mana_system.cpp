@@ -953,10 +953,10 @@ void tap_to_pay_chosen(Entity e, Zone::Ownership controller, ManaValue &owed, Ma
 // without any being spent.
 static void tap_to_pay_pip(const TapToPayRule &rule, Entity e, Zone::Ownership controller, ManaValue &remaining,
                            ManaValue::const_iterator pip) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(e);
-    perm.is_tapped = true;
+    tap_permanent(e);
     remaining.erase(pip);
-    game_log("%s taps %s for %s.\n", player_name(controller).c_str(), perm.name.c_str(), rule.keyword);
+    game_log("%s taps %s for %s.\n", player_name(controller).c_str(),
+             global_coordinator.GetComponent<Permanent>(e).name.c_str(), rule.keyword);
     coverage_cost(CostPart::MANA, "tap_to_pay");
 }
 

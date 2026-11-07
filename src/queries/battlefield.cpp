@@ -11,6 +11,13 @@
 #include "filters.h"
 #include "zones.h"
 
+bool tap_permanent(Entity e) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (perm.is_tapped) return false;
+    perm.is_tapped = true;
+    return true;
+}
+
 bool ability_source_on_battlefield(const Ability &ab) {
     const Entity self = ab.source.get();
     return self != 0 && is_battlefield_permanent(self);

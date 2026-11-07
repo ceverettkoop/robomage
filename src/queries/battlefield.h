@@ -54,6 +54,12 @@ inline std::vector<Entity> battlefield_permanents(const EntitySet &entities, Zon
     return out;
 }
 
+// Taps the permanent `e` (CR 701.26a), the one place a permanent on the battlefield becomes
+// tapped: an attacker, a {T} cost, a tap to pay for a spell, a Tap effect. False, and nothing
+// changes, when it was already tapped. A permanent that enters tapped never becomes tapped, so
+// the entry paths set the state themselves. Defined in battlefield.cpp.
+bool tap_permanent(Entity e);
+
 // True if the ability's source is still the object it was when the ability was created (CR
 // 400.7) and is a battlefield permanent (phased-in). Defined in battlefield.cpp.
 bool ability_source_on_battlefield(const Ability &ab);

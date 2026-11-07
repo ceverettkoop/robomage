@@ -426,7 +426,7 @@ static PayStatus pay_step(
             break;
         case CostStep::TAP:
             if (who.commit && who.cost->taps() && global_coordinator.entity_has_component<Permanent>(who.source))
-                global_coordinator.GetComponent<Permanent>(who.source).is_tapped = true;
+                tap_permanent(who.source);
             break;
         case CostStep::EXERT:
             exert_source(who);

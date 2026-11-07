@@ -754,8 +754,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
                  target_display_name(game, cr.attack_target.lki_entity()).c_str());
 
         // Tap the attacker, unless it has vigilance (702.21).
-        if (!creature_has_keyword(cr, "Vigilance"))
-            global_coordinator.GetComponent<Permanent>(entity).is_tapped = true;
+        if (!creature_has_keyword(cr, "Vigilance")) tap_permanent(entity);
 
         // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
         // declaration), so triggers like Mobilize go on the stack for each attacker.
