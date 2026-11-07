@@ -114,6 +114,7 @@ struct SvarExpr {
     ControllerRef controller = ControllerRef::YOU;
     int high = 0, low = 0;        // a <high>.<low> pair
     int literal = 0;
+    std::vector<std::string> branches;  // Count$Compare's left side, comparison, then, else
     bool you_own = false, opp_own = false;  // a graveyard count scoped to one player's
     bool both_players = false;    // PlayerCount's players: both seats, else the opponent
     bool lost_life = false;       // PlayerCount's property; else `text` compares spells cast
@@ -162,8 +163,10 @@ static bool read_valid_library(const std::string &rest, SvarExpr &x);
 static bool read_valid_exile(const std::string &rest, SvarExpr &x);
 static bool read_valid_stack(const std::string &rest, SvarExpr &x);
 static bool read_player_count(const std::string &rest, SvarExpr &x);
+static bool read_compare(const std::string &rest, SvarExpr &x);
 
 static int ev_literal(const SvarExpr &x, const SvarArgs &a);
+static int ev_compare(const SvarExpr &x, const SvarArgs &a);
 static int ev_aggregate(const SvarExpr &x, const SvarArgs &a);
 static int ev_high_low(const SvarExpr &x, const SvarArgs &a);
 static int ev_adamant(const SvarExpr &x, const SvarArgs &a);
@@ -208,6 +211,7 @@ static int prop_mana_value(Entity e);
 static int prop_printed_mana_value(Entity e);
 
 static int step_half_up(int value, int n);
+static int step_twice(int value, int n);
 static int step_plus(int value, int n);
 static int step_times(int value, int n);
 static int step_limit_max(int value, int n);
@@ -328,6 +332,9 @@ static const SvarRow kSvarRows[] = {
     // of them qualify. PlayerCount<Players>$HighestValid <filter>: the most permanents any of them
     // has matching it, each as its "you".
     read_row("PlayerCount", read_player_count, ev_players_with_property),
+    // Count$Compare <value>;<comparison>;<then>;<else>: the parser's form of a Count$Compare whose
+    // sides are SVars, each an expression here (Shatterskull Smashing: X, or twice X from 6).
+    read_row("Count$Compare ", read_compare, ev_compare),
 };
 
 // The sets and properties of <Set>$<Property>, and <Set>$Valid <filter>.
@@ -368,12 +375,14 @@ static const NamedProperty kNamedProperties[] = {
 };
 
 // /Plus.N adds N (Birthing Ritual: 1 plus the sacrificed creature's mana value), /Times.N
-// multiplies (Price of Progress: twice the nonbasic lands), /HalfUp halves rounding up (Doomsday:
+// multiplies (Price of Progress: twice the nonbasic lands), /Twice doubles (Shatterskull Smashing's
+// twice X), /HalfUp halves rounding up (Doomsday:
 // half your life; Tamiyo: half your library), /LimitMax.N caps at N (Flow State: "an instant card"
 // = at most 1), /DivideEvenlyDown.N divides rounding down (Dark Matter Manipulator: each whole seven
 // cards), /NMinus.N is what is left of N (The Stone Brain: up to four cards across its three zones).
 static const SuffixRow kSuffixRows[] = {
     {"HalfUp", false, step_half_up},
+    {"Twice", false, step_twice},
     {"Plus.", true, step_plus},
     {"Times.", true, step_times},
     {"LimitMax.", true, step_limit_max},
@@ -494,6 +503,12 @@ static const CompiledSvar &compiled_svar(const std::string &expr) {
 // Peels the trailing steps, then reads what is left. A '/' that is no step leaves no reading.
 static CompiledSvar compile_svar(const std::string &expr) {
     CompiledSvar c;
+    // A Count$Compare's steps belong to its branches, each compiled on its own.
+    if (starts_with(expr, "Count$Compare ")) {
+        c.base_text = expr;
+        c.recognized = compile_base(expr, c.base);
+        return c;
+    }
     std::string base = expr;
     size_t slash;
     SvarStep step{nullptr, 0};
@@ -741,6 +756,11 @@ static bool read_zone_filter(const std::string &rest, SvarExpr &x, Zone::ZoneVal
     return true;
 }
 
+static bool read_compare(const std::string &rest, SvarExpr &x) {
+    x.branches = split(rest, ';');
+    return x.branches.size() == 4;
+}
+
 static bool read_valid_hand(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::HAND); }
 static bool read_valid_exile(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::EXILE); }
 static bool read_valid_graveyard(const std::string &rest, SvarExpr &x) {
@@ -819,6 +839,12 @@ static int ev_aggregate(const SvarExpr &x, const SvarArgs &a) {
 }
 
 static int ev_high_low(const SvarExpr &x, const SvarArgs &a) { return x.row->condition(a) ? x.high : x.low; }
+
+static int ev_compare(const SvarExpr &x, const SvarArgs &a) {
+    const bool holds = compare_svar(evaluate(compiled_svar(x.branches[0]), a), x.branches[1]);
+    return evaluate(compiled_svar(x.branches[holds ? 2 : 3]), a);
+}
+
 static int ev_x_paid(const SvarExpr &, const SvarArgs &) { return current_x_paid(); }
 static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_converge(); }
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
@@ -1077,6 +1103,7 @@ static int prop_printed_mana_value(Entity e) {
 }
 
 static int step_half_up(int value, int) { return (value + 1) / 2; }
+static int step_twice(int value, int) { return value * 2; }
 static int step_plus(int value, int n) { return value + n; }
 static int step_times(int value, int n) { return value * n; }
 static int step_limit_max(int value, int n) { return std::min(value, n); }

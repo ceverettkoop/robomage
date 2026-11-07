@@ -401,6 +401,7 @@ static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string,
                                 const std::string& card_name);
 static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
                                        const std::map<std::string, std::string>& svars);
+static std::string compare_of_svars(const std::string& sv, const std::map<std::string, std::string>& svars);
 static bool is_runtime_amount_expr(const std::string& sv);
 static size_t delirium_scale_pos(const std::string& sv);
 static void resolve_condition_svars(AbilityDef& ability,
@@ -3093,7 +3094,13 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         svars.find(bound) != svars.end())
         ability.amount_svar = bound;
     resolve_amount_svar(ability, svars, card_name);
-    if (auto *dp = std::get_if<DamageParams>(&ability.params)) resolve_svar_ref(dp->divided_expr, svars);
+    if (auto *dp = std::get_if<DamageParams>(&ability.params)) {
+        const auto it = svars.find(dp->divided_expr);
+        if (it != svars.end()) {
+            const std::string compared = compare_of_svars(it->second, svars);
+            dp->divided_expr = compared.empty() ? it->second : compared;
+        }
+    }
     // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
     // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
     // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
@@ -3227,6 +3234,8 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         return;
     }
     if (resolve_conditional_amount(ability, sv, svars)) return;
+    ability.dynamic_amount_expr = compare_of_svars(sv, svars);
+    if (!ability.dynamic_amount_expr.empty()) return;
     // Delirium-conditional value. Two equivalent Forge spellings, both
     // meaning "<yes> if the caster has delirium, else <no>":
     //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
@@ -3289,6 +3298,20 @@ static bool resolve_conditional_amount(AbilityDef &ability, const std::string &s
     ability.cond_amount_if_true = static_cast<size_t>(std::stoi(tail.substr(d1 + 1, d2 - d1 - 1)));
     ability.amount = static_cast<size_t>(std::stoi(tail.substr(d2 + 1)));
     return true;
+}
+
+// "Count$Compare <SVar> <op><n>.<then>.<else>" with SVars on its branches (Shatterskull Smashing:
+// Count$Compare X LT6.X.Z), as the expression the evaluator reads, each SVar's body in place. ""
+// for any other body: numbers on the branches are resolve_conditional_amount's or delirium's.
+static std::string compare_of_svars(const std::string &sv, const std::map<std::string, std::string> &svars) {
+    const std::string head = "Count$Compare ";
+    if (sv.rfind(head, 0) != 0) return "";
+    const size_t space = sv.find(' ', head.size());
+    if (space == std::string::npos) return "";
+    const std::vector<std::string> tail = split(sv.substr(space + 1), '.');
+    if (tail.size() != 3 || svars.find(tail[1]) == svars.end() || svars.find(tail[2]) == svars.end()) return "";
+    return head + svar_or_literal(svars, sv.substr(head.size(), space - head.size())) + ";" + tail[0] + ";" +
+           svar_or_literal(svars, tail[1]) + ";" + svar_or_literal(svars, tail[2]);
 }
 
 // An amount SVar body that is a runtime expression, kept verbatim for evaluate_amount at

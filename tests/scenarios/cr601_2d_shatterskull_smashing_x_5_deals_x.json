@@ -1,0 +1,44 @@
+{
+  "name": "cr601_2d_shatterskull_smashing_x_5_deals_x",
+  "why": "Shatterskull Smashing: X of 5 is still X, the Count$Compare's other branch.",
+  "hand_a": [
+    "Shatterskull Smashing"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Air Elemental",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shatterskull",
+    "A:x:5",
+    "A:target:Air Elemental",
+    "A:target:Done"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Shatterskull Smashing deals 5 damage to Air Elemental"
+  ]
+}

@@ -393,6 +393,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Soporific Springs", 468},
     {"Unlicensed Hearse", 469},
     {"Fury", 470},
+    {"Shatterskull Smashing", 471},
+    {"Shatterskull, the Hammer Pass", 472},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

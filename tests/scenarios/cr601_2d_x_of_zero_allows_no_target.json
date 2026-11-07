@@ -1,0 +1,37 @@
+{
+  "name": "cr601_2d_x_of_zero_allows_no_target",
+  "why": "CR 601.2d, 115.6: with nothing to divide no target can receive one, so X of 0 chooses none, and no target is asked for.",
+  "hand_a": [
+    "Shatterskull Smashing"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shatterskull",
+    "A:x:0"
+  ],
+  "max_decisions": 7,
+  "expect_not": [
+    "Choose target for Shatterskull Smashing",
+    "Shatterskull Smashing deals"
+  ]
+}
