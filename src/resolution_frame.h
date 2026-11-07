@@ -181,6 +181,8 @@ struct AnnounceRT {
     size_t sub_idx = 0;           // next chained sub-ability to target (SUBS)
     bool pick_in_flight = false;  // the current target choice passed its legality check and is being picked
     TargetSelectRT tsel;          // the in-flight target pick
+    bool dividing = false;        // that pick is done and its division is being announced (CR 601.2d)
+    int divide_left = 0;          // the points still to place, past the one each target holds
 };
 
 // ── Batch 8: container effects (nested resolves as persisted FrameLevels) ───

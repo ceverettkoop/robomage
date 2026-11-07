@@ -1181,6 +1181,9 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         else if (!ability.def->target_max_count_expr.empty())
             effective_max = static_cast<int>(evaluate_amount(
                 ability.def->target_max_count_expr, priority_player, ability.source.lki_entity()));
+        // Each target must receive at least one of what is divided (CR 601.2d).
+        if (divides_among_targets(*ability.def))
+            effective_max = std::min(effective_max, division_total(ability, priority_player));
         int effective_min = effective_target_min(ability, priority_player, orderer, true);
         ability.target_min = effective_min;
         ability.target_max = effective_max;

@@ -1,0 +1,5 @@
+# M10 (b2): targets. Fury (a division among targets, at trigger placement), Sink into Stupor (a
+# spell or a permanent in one target).
+category:DIVIDE_DAMAGE
+row:divide_among_targets
+row:divide_one_target

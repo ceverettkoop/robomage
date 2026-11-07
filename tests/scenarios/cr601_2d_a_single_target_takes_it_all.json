@@ -1,0 +1,44 @@
+{
+  "name": "cr601_2d_a_single_target_takes_it_all",
+  "why": "CR 601.2d: with one target there is nothing to choose: Fury deals all 4 to it, and no decision is asked.",
+  "hand_a": [
+    "Fury"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Flying Men"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fury",
+    "A:target:Grizzly Bears",
+    "A:target:Done"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Fury deals 4 damage to Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "one more damage"
+  ]
+}

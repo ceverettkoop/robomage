@@ -522,6 +522,17 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
     return ab.target_min;
 }
 
+bool divides_among_targets(const AbilityDef &def) {
+    const DamageParams *dp = std::get_if<DamageParams>(&def.params);
+    return dp && dp->divided;
+}
+
+int division_total(const Ability &ab, Zone::Ownership controller) {
+    const DamageParams &dp = std::get<DamageParams>(ab.def->params);
+    if (dp.divided_expr.empty()) return dp.divided_total;
+    return static_cast<int>(evaluate_amount(dp.divided_expr, controller, ab.source.lki_entity()));
+}
+
 bool is_modal(const Ability &ab) { return ab.def->kind == EffectKind::Charm; }
 
 bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,

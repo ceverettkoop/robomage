@@ -229,7 +229,7 @@ static void fizzle(const Ability &ab, const FrameCtx &ctx) {
 // CR 608.2b: a multi-target instruction whose targets are only PARTLY illegal still resolves,
 // affecting only the still-legal targets (a spell that left the stack, a permanent that left the
 // battlefield or gained protection, ...). Prune the illegal ones so every effect handler
-// downstream sees legal targets only.
+// downstream sees legal targets only; what a target was to receive of a division goes with it.
 static void prune_illegal_targets(Ability &ab) {
     if (ab.targets.empty()) return;
     for (size_t i = 0; i < ab.targets.size();) {
@@ -237,6 +237,7 @@ static void prune_illegal_targets(Ability &ab) {
             std::string tname = entity_name(ab.targets[i].lki_entity());
             game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
             ab.targets.erase(ab.targets.begin() + i);
+            if (i < ab.target_shares.size()) ab.target_shares.erase(ab.target_shares.begin() + i);
         } else {
             ++i;
         }

@@ -1,0 +1,42 @@
+{
+  "name": "cr702_74a_fury_evoked_still_divides",
+  "why": "CR 702.74a: evoked by exiling a red card, Fury is sacrificed by its own trigger and its other trigger still deals its 4 divided, the planeswalker included.",
+  "hand_a": [
+    "Fury",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Jace the Mind Sculptor"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:alternate cost",
+    "A:desc:evoke",
+    "A:target:Grizzly Bears",
+    "A:target:Jace",
+    "A:target:Done",
+    "A:divide:Jace",
+    "A:divide:Jace"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Fury deals 1 damage to Grizzly Bears"
+  ],
+  "expect": [
+    "Fury deals 3 damage to Jace"
+  ]
+}

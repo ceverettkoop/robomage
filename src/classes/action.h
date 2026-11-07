@@ -75,9 +75,11 @@ enum class ActionCategory {
     CONFIRM_MODES = 48,        // choose no further mode: "choose one or more" once the fewest modes
                                // are chosen (MinCharmNum$, CR 700.2); paired with CHOOSE_MODE
     CHOOSE_COLOR = 49,         // choose a color as a permanent enters (Painter's Servant)
+    DIVIDE_DAMAGE = 50,        // give one more point of divided damage to this target (CR 601.2d);
+                               // option_ordinal: what it holds so far
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 49;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 50;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

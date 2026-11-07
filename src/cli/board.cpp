@@ -541,6 +541,7 @@ static std::string stack_item(const Frame &f, size_t row) {
             const int cid = has_lki ? f.lki.card(l, f.lki.col("card")) : -1;
             targets.push_back((cid >= 0 ? card_name(f, cid) : std::string("a card")) + " (gone)");
         }
+        if (const uint64_t share = t.u(r, t.col("share"))) targets.back() += " (" + std::to_string(share) + ")";
     }
     if (!extra.empty()) line += ", " + join(extra, ", ");
     if (!targets.empty()) line += "  -> " + join(targets, ", ");
@@ -805,6 +806,7 @@ static std::string category_task(const std::string &category) {
         {"NAME_CARD", "name a card"},
         {"CHOOSE_TYPE", "choose a creature type"},
         {"CHOOSE_COLOR", "choose a color"},
+        {"DIVIDE_DAMAGE", "give a target one more point of the damage"},
         {"KEEP_LEGEND", "choose which legendary permanent to keep"},
         {"ORDER_TRIGGERS", "choose the trigger to put on the stack next"},
         {"CHOOSE_REPLACEMENT", "choose a replacement effect"},

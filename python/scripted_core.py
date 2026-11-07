@@ -144,6 +144,7 @@ _CAT_CHOOSE_CARD = "CHOOSE_CARD"
 _CAT_COMPANION = "COMPANION"
 _CAT_SHUFFLE_NO = "DONT_SHUFFLE"
 _CAT_KEEP_HAND = "KEEP_HAND"
+_CAT_DIVIDE = "DIVIDE_DAMAGE"
 
 # ActionRefZone names (the zone an action's object or player is in, viewer-relative).
 _REF_NONE = "NONE"
@@ -1286,6 +1287,18 @@ def _keep_legend_choice(v) -> int | None:
         ct = p.other_counters if p is not None else float("inf")  # unresolvable — never preferred
         if best_ct is None or ct < best_ct:
             best_i, best_ct = i, ct
+    return best_i
+
+
+def _divide_damage_choice(v) -> int:
+    """One more point of divided damage: to the target that needs the fewest to die, by what it
+    holds so far (each row's ordinal), else the first."""
+    best_i, best_need = 0, None
+    for i in range(v.n):
+        p = v.ref_perm(i)
+        need = (p.toughness if p is not None else 0) - v.ordinal(i)
+        if need > 0 and (best_need is None or need < best_need):
+            best_i, best_need = i, need
     return best_i
 
 
@@ -3002,6 +3015,9 @@ class ScriptedCore:
             pick = _ninjutsu_pick(v)
             if pick is not None:
                 return pick
+
+        if any(c == _CAT_DIVIDE for c in cats):
+            return _divide_damage_choice(v)
 
         # ── Reanimation / lands-combo interceptions ─────────────────────────
         # All card / pending-source gated (no deck-name gate needed): each

@@ -3093,6 +3093,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         svars.find(bound) != svars.end())
         ability.amount_svar = bound;
     resolve_amount_svar(ability, svars, card_name);
+    if (auto *dp = std::get_if<DamageParams>(&ability.params)) resolve_svar_ref(dp->divided_expr, svars);
     // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
     // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
     // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is

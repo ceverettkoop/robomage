@@ -60,6 +60,11 @@ struct DamageParams {
     std::string valid_players = "";  // DamageAll's ValidPlayers$: the players also dealt the
                                      // damage (player_matches_target_spec form; empty = none)
     ObjectSpec source;               // DamageSource$: what deals it; DEFAULT = the ability's source
+    // DividedAsYouChoose$: the total its controller divides among its targets (CR 601.2d), as a
+    // number or an expression read once X is announced.
+    bool divided = false;
+    int divided_total = 0;
+    std::string divided_expr = "";
 };
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".

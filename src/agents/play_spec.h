@@ -19,6 +19,7 @@
 //   play:<card> | land:<card>    play a land                               (PLAY_LAND)
 //   activate:<card>[@side]       activate an ability                       (ACTIVATE_ABILITY)
 //   target:<card|text>[@side]    choose a target                           (SELECT_TARGET)
+//   divide:<card|text>[@side]    give that target one more point of the damage  (DIVIDE_DAMAGE)
 //   attack:<card> | attack:done  declare an attacker / confirm             (SELECT_/CONFIRM_ATTACKERS)
 //   block:<card> | block:done    declare a blocker / confirm               (SELECT_/CONFIRM_BLOCKERS)
 //   mana:<w|u|b|r|g|c> | tap:<land>   tap for mana                         (MANA_*; tap: also the

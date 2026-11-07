@@ -120,7 +120,7 @@ frame (`src/cli/board.h`), and the choice made, on lines starting `| `. `--max-d
 ## Scripts: `--play` and `--actions`
 
 `--play` is a comma-separated list of semantic specs (`keep`, `cast:Lightning Bolt`,
-`target:Grizzly Bears@opp`, `A:attack:Delver`, `sb-out:Daze`, `concede`, …), each resolved
+`target:Grizzly Bears@opp`, `divide:Grizzly Bears@opp`, `A:attack:Delver`, `sb-out:Daze`, `concede`, …), each resolved
 against the live menu of the decision it is applied to; an unmatched or ambiguous spec stops the
 run with `FATAL: --play: …` and the legal menu. Seat keys `A:` / `B:` let each player's line be
 written without sequencing the other seat's passes. The grammar is in

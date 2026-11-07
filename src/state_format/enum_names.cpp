@@ -119,6 +119,7 @@ static const char *action_category_name(ActionCategory v) {
         C(EXILE_FROM_YARD)
         C(CONFIRM_MODES)
         C(CHOOSE_COLOR)
+        C(DIVIDE_DAMAGE)
     }
 #undef C
     return nullptr;

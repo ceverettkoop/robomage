@@ -8,6 +8,8 @@
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "coverage.h"
+#include "systems/state_manager_internal.h"
 #include "targeting.h"
 
 // The display label for mode `idx` of `modal`: its script description, else a positional fallback.
@@ -38,9 +40,23 @@ static LegalAction confirm_modes_action(const Ability &modal, int chosen);
 // trigger's target can come from its event)?
 static bool targets_unchosen(const Ability &ab);
 
-// The target pick of `ab` for the current announce stage. With `remove_unchoosable`, a required
-// target with no legal choice is checked once, before the pick begins, and reported as REMOVED.
-// `target_gate` is run_target_select's.
+// The targets `ab` chose, in the order of its target_shares.
+static std::vector<ObjectRef> chosen_target_list(const Ability &ab);
+
+// Open the division of what `ab` divides among its chosen targets (CR 601.2d, 603.3d): each holds
+// one, and with a single target it holds all. True when points are left to place.
+static bool begin_division(Ability &ab, AnnounceRT &rt, Zone::Ownership controller);
+
+// The menu of one point: a row per target (CR 601.2d), so its length is the number of targets
+// whatever the total. Each row's ordinal is what its target holds so far.
+static std::vector<LegalAction> division_menu(const Ability &ab);
+
+// Place the points left, one decision each; a resumed pick re-derives the identical menu.
+static AnnounceStatus announce_division(Ability &ab, AnnounceRT &rt, TargetAsker &asker);
+
+// The target pick of `ab` for the current announce stage, and the division of what it divides. With
+// `remove_unchoosable`, a required target with no legal choice is checked once, before the pick
+// begins, and reported as REMOVED. `target_gate` is run_target_select's.
 static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker &asker,
     std::shared_ptr<Orderer> orderer, Zone::Ownership controller, bool remove_unchoosable,
     const TargetPickGate *target_gate);
@@ -119,9 +135,59 @@ static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker 
         rt.pick_in_flight = true;
         rt.tsel = TargetSelectRT{};
     }
-    if (run_target_select(ab, rt.tsel, asker, orderer, controller, target_gate) == TargetStatus::SUSPENDED)
+    if (!rt.dividing) {
+        if (run_target_select(ab, rt.tsel, asker, orderer, controller, target_gate) == TargetStatus::SUSPENDED)
+            return AnnounceStatus::SUSPENDED;
+        rt.dividing = begin_division(ab, rt, controller);
+    }
+    if (rt.dividing && announce_division(ab, rt, asker) == AnnounceStatus::SUSPENDED)
         return AnnounceStatus::SUSPENDED;
+    rt.dividing = false;
     rt.pick_in_flight = false;
+    return AnnounceStatus::DONE;
+}
+
+static std::vector<ObjectRef> chosen_target_list(const Ability &ab) {
+    if (!ab.targets.empty()) return ab.targets;
+    if (!ab.target.empty()) return {ab.target};
+    return {};
+}
+
+static bool begin_division(Ability &ab, AnnounceRT &rt, Zone::Ownership controller) {
+    if (!divides_among_targets(*ab.def)) return false;
+    const size_t chosen = chosen_target_list(ab).size();
+    if (chosen == 0) return false;
+    const int total = division_total(ab, controller);
+    coverage_row(chosen == 1 ? "divide_one_target" : "divide_among_targets");
+    ab.target_shares.assign(chosen, 1);
+    if (chosen == 1) ab.target_shares[0] = total;
+    rt.divide_left = chosen == 1 ? 0 : total - static_cast<int>(chosen);
+    return rt.divide_left > 0;
+}
+
+static std::vector<LegalAction> division_menu(const Ability &ab) {
+    const std::vector<ObjectRef> chosen = chosen_target_list(ab);
+    std::vector<LegalAction> menu;
+    for (size_t i = 0; i < chosen.size(); i++) {
+        const Entity target = chosen[i].get();
+        const int share = ab.target_shares[i];
+        LegalAction la(PASS_PRIORITY, target,
+            target_display_name(cur_game, target) + ": one more damage (" + std::to_string(share) + " so far)");
+        la.category = ActionCategory::DIVIDE_DAMAGE;
+        la.option_ordinal = share;
+        menu.push_back(la);
+    }
+    return menu;
+}
+
+static AnnounceStatus announce_division(Ability &ab, AnnounceRT &rt, TargetAsker &asker) {
+    while (rt.divide_left > 0) {
+        if (!asker.resuming()) game_log("Divide the rest (%d):\n", rt.divide_left);
+        const int choice = asker.ask(division_menu(ab), ab.source.lki_entity());
+        if (choice < 0 && decision_suspended()) return AnnounceStatus::SUSPENDED;
+        ab.target_shares[static_cast<size_t>(choice)]++;
+        rt.divide_left--;
+    }
     return AnnounceStatus::DONE;
 }
 

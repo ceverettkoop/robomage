@@ -45,6 +45,12 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
 // ability (CR 700.2) needs its required number of choosable modes (has_choosable_modes).
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer);
 
+// ── Division (CR 601.2d) ─────────────────────────────────────────────────────
+// Does `def` divide something among its targets (DividedAsYouChoose$)?
+bool divides_among_targets(const AbilityDef &def);
+// What `ab`, controlled by `controller`, divides; read once its X is announced.
+int division_total(const Ability &ab, Zone::Ownership controller);
+
 // ── Modes (CR 700.2) ─────────────────────────────────────────────────────────
 // A modal spell or ability ("Choose one —", DB$/SP$/AB$ Charm): its modes live in
 // charm_choices, and the ones announced as it was put on the stack in charm_chosen.

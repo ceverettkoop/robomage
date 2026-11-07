@@ -841,6 +841,11 @@ struct Ability {
 
     std::vector<ObjectRef> targets;    // used when target_max > 1
 
+    // What each chosen target receives of what the ability divides (CR 601.2d, 603.3d), in the
+    // order of `targets` (the one `target` when it holds no list). Empty for an ability that
+    // divides nothing. A share goes with its target when that target is pruned (CR 608.2b).
+    std::vector<int> target_shares;
+
     // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
     // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
     int64_t source_transforms = -1;

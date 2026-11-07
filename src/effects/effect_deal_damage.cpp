@@ -27,6 +27,7 @@ namespace effects {
 
 static Entity damage_source_of(const Ability &ab);
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
+static void deal_divided_damage(Ability &ab);
 
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Galvanic Discharge: "you may pay any amount of {E}", the amount chosen by its ChooseNumber,
@@ -70,12 +71,22 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // ab.targets empty and uses ab.target. Each target is checked independently at resolution, so
     // one target having become illegal (gone from the battlefield, protection) skips only that
     // target without aborting the rest (CR 608.2c).
-    if (!ab.targets.empty()) {
+    if (!ab.target_shares.empty()) {
+        deal_divided_damage(ab);
+    } else if (!ab.targets.empty()) {
         for (Entity tgt : live_entities(ab.targets)) deal_damage_to_target(ab, tgt, dmg);
     } else {
         deal_damage_to_target(ab, ab.target.get(), dmg);
     }
     return HandlerResult::DONE_RUN_SUBS;
+}
+
+// Each target its announced share (CR 601.2d); a share of a target pruned at resolution is gone.
+static void deal_divided_damage(Ability &ab) {
+    const std::vector<ObjectRef> one{ab.target};
+    const std::vector<ObjectRef> &targets = ab.targets.empty() ? one : ab.targets;
+    for (size_t i = 0; i < targets.size() && i < ab.target_shares.size(); i++)
+        deal_damage_to_target(ab, targets[i].get(), static_cast<size_t>(ab.target_shares[i]));
 }
 
 // What deals the damage: the ability's source, or DamageSource$ TriggeredCard(LKICopy)'s object, as it
@@ -119,6 +130,15 @@ bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string
         const ObjectSpec source = parse_object_spec(value);
         if (!source.is(ObjectSpec::TRIGGERED_CARD)) return false;
         effect_params<DamageParams>(ab).source = source;
+        return true;
+    }
+    if (key == "DividedAsYouChoose") {
+        DamageParams &dp = effect_params<DamageParams>(ab);
+        dp.divided = true;
+        if (std::isdigit(static_cast<unsigned char>(value[0])))
+            dp.divided_total = std::stoi(value);
+        else
+            dp.divided_expr = value;  // an SVar, resolved with the ability's others
         return true;
     }
     if (key != "NumDmg") return false;

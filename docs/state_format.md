@@ -726,7 +726,7 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `amount_kind` | u8 | `enum:amount_kind` | variable: the parser kept an expression (an X or count-SVar, `dynamic_amount_expr`; a conditional, delirium-scaled or damage-dealt amount; a `CounterNum$` / `DigNum$` expression); fixed: a nonzero number; else none (a `Draw` with no `NumCards$` is none, as parsed) |
 | | `power_mod`, `toughness_mod` | i16 | `signed` | a Pump / PumpAll's `NumAtt$` / `NumDef$`; a side given as an expression holds its sign (+1 for `+X`, -1 for `-X`) |
 | | `pt_kind` | u8 | `enum:amount_kind` | variable when either side is an expression, fixed when either is nonzero, else none |
-| | `targets` | u16 | `mask:target_class` | what may be targeted (`target_classes`, `src/targeting.h`, on `is_legal_target`'s branches): `TargetType$` → spell / ability; `TgtZone$ Graveyard` or a graveyard-origin ChangeZone → card in a graveyard; else per `ValidTgts$` alternative a player, a permanent card type, every permanent type a `Permanent` / `Card` head's `non<Type>` qualifiers leave, or permanent other (a subtype head); `Any` = creature, planeswalker, battle, player (CR 115.4). `card_other` (hand, library, exile) is never set: no ability targets there. 0 for no targeting (`ValidTgts$` absent) |
+| | `targets` | u16 | `mask:target_class` | what may be targeted (`target_classes`, `src/targeting.h`, on `is_legal_target`'s branches): `TargetType$` → spell / ability; `TgtZone$ Graveyard` or a graveyard-origin ChangeZone → card in a graveyard; else per `ValidTgts$` alternative a spell for an `inZoneStack` one under `TgtZone$ Stack`, a player, a permanent card type, every permanent type a `Permanent` / `Card` head's `non<Type>` qualifiers leave, or permanent other (a subtype head); `Any` = creature, planeswalker, battle, player (CR 115.4). `card_other` (hand, library, exile) is never set: no ability targets there. 0 for no targeting (`ValidTgts$` absent) |
 | | `target_min`, `target_max` | u8 | `count` | `TargetMin$` / `TargetMax$` (default 1/1); 0xFF when the bound is X or a count expression; 0/0 for no targeting |
 | | `n_parts` | u8 | `count` | the ability's `card_ability_part` rows |
 | | `charm_num` | u8 | `count` | modes to choose (`CharmNum$`, default 1) for a `Charm`; 0 otherwise |
@@ -877,6 +877,7 @@ computes neither outside its legal-action enumeration.
 | | `target` | u32 | `handle` | |
 | | `target_player` | seat | | |
 | | `lki` | u16 | `row:lki` | the target left its zone (target 0): its last-known row (register 40); none when it has no last-known information |
+| | `share` | u16 | | what it receives of what the object divides (CR 601.2d); 0 when nothing is divided |
 | `delayed_trigger` (35): waiting and fired ones, in `seq` order | `seq` | u32 | `index` | registration order |
 | | `controller` | seat | | |
 | | `state` | u8 | `enum:delayed_state` | waiting, on the stack |

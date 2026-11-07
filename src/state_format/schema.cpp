@@ -404,6 +404,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_handle(out.back(), "target");
     col_seat(out.back(), "target_player");
     col(out.back(), "lki", Storage::U16, "row:lki");
+    col_count(out.back(), "share", Storage::U16);
 
     add_table(out, TableId::DELAYED_TRIGGER, "delayed_trigger", FrameKind::STATE);
     TableDef &d = out.back();

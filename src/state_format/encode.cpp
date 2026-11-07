@@ -1139,7 +1139,7 @@ static rmstate::StackKind stack_kind(Entity e, const Spell *sp, const Ability *a
 // ability's, its targeting sub-abilities', then each chosen mode's (CR 601.2c).
 static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t h, const Ability &ab) {
     int order = 0;
-    auto put_target = [&](const ObjectRef &t) {
+    auto put_target = [&](const ObjectRef &t, int share) {
         if (t.lki_entity() == 0) return;
         const Entity live = t.get();
         int lki_row = live == 0 ? write_lki(c, t.lki_entity()) : -1;
@@ -1149,25 +1149,23 @@ static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t 
         if (live != 0 && global_coordinator.entity_has_component<Player>(live)) {
             r.u8(static_cast<uint64_t>(rmstate::TargetKind::PLAYER)).u32(0);
             put_seat(r, seat_of_player(live), c.self);
-            r.u16(NONE16);
+            r.u16(NONE16).u16(u16_count(share));
             return;
         }
         r.u8(static_cast<uint64_t>(rmstate::TargetKind::OBJECT)).u32(handle(c, live));
         put_seat(r, Zone::UNKNOWN, c.self);
-        r.u16(lki_row < 0 ? NONE16 : u16_count(lki_row));
+        r.u16(lki_row < 0 ? NONE16 : u16_count(lki_row)).u16(u16_count(share));
     };
-    auto targets_of = [](const Ability &a) {
-        std::vector<ObjectRef> out = a.targets;
-        if (out.empty() && !a.target.empty()) out.push_back(a.target);
-        return out;
+    auto put_targets_of = [&](const Ability &a) {
+        std::vector<ObjectRef> own = a.targets;
+        if (own.empty() && !a.target.empty()) own.push_back(a.target);
+        for (size_t i = 0; i < own.size(); i++) put_target(own[i], i < a.target_shares.size() ? a.target_shares[i] : 0);
     };
-    std::vector<ObjectRef> all = targets_of(ab);
-    for (const Ability *sub : ab.chained_subs())
-        for (const ObjectRef &t : targets_of(*sub)) all.push_back(t);
+    put_targets_of(ab);
+    for (const Ability *sub : ab.chained_subs()) put_targets_of(*sub);
     for (int idx : ab.charm_chosen)
         if (idx >= 0 && static_cast<size_t>(idx) < ab.charm_choices.size())
-            for (const ObjectRef &t : targets_of(ab.charm_choices[static_cast<size_t>(idx)])) all.push_back(t);
-    for (const ObjectRef &t : all) put_target(t);
+            put_targets_of(ab.charm_choices[static_cast<size_t>(idx)]);
 }
 
 static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stack) {

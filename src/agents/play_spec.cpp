@@ -132,7 +132,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "CHOOSE_COLOR",
         "KEEP_LEGEND",
         "ORDER_TRIGGERS", "CHOOSE_REPLACEMENT", "ATTACK_TARGET", "BLOCK_TARGET", "OPTIONAL_YESNO", "SYLVAN_CHOICE",
-        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD", "CONFIRM_MODES"};
+        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD", "CONFIRM_MODES", "DIVIDE_DAMAGE"};
     static const std::set<std::string> mana = {"MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C"};
     // tap:<card> also picks a source in the mana payment loop (--no-auto-mana), whose rows are
     // PAYING_COSTS.
@@ -145,6 +145,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"land", {"PLAY_LAND"}},
         {"activate", {"ACTIVATE_ABILITY"}},
         {"target", {"SELECT_TARGET"}},
+        {"divide", {"DIVIDE_DAMAGE"}},
         {"attack", {"SELECT_ATTACKER", "CONFIRM_ATTACKERS"}},
         {"block", {"SELECT_BLOCKER", "CONFIRM_BLOCKERS"}},
         {"mana", mana},

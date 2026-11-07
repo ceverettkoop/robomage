@@ -1,0 +1,42 @@
+{
+  "name": "cr115_6_fury_may_choose_no_target",
+  "why": "CR 115.6: any number includes zero: Fury's trigger goes on the stack with no target, deals nothing, and resolves.",
+  "hand_a": [
+    "Fury"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fury",
+    "A:target:Done"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Resolving ability \\(category: DealDamage"
+  ],
+  "expect_not": [
+    "Fury deals"
+  ]
+}
