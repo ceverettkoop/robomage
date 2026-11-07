@@ -1,0 +1,73 @@
+{
+  "name": "cr708_2_a_copy_of_a_cloak_has_its_ward",
+  "why": "CR 708.2, 701.58a, 707.2: the characteristics a rule lists for a face-down permanent are its copiable values, and ward {2} is one: Mockingbird as a copy of the cloak is a face-up nameless 2/2 Bird with flying and ward {2}, and B's Bolt at it triggers the ward. The copy can't be turned up.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Mockingbird",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:desc:as a copy",
+    "B:cast:Lightning Bolt",
+    "B:target:Bird@opp"
+  ],
+  "max_decisions": 20,
+  "expect_order": [
+    "Player A cloaks Grizzly Bears",
+    "Player B casts Lightning Bolt targeting Nameless creature",
+    "Ward \\{2\\}: Nameless creature's controller may pay"
+  ],
+  "expect_menu_not": [
+    "face up"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

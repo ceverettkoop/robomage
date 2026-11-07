@@ -70,6 +70,7 @@ static CardData card_of_token(const Token &tok) {
     cd.power = tok.power;
     cd.toughness = tok.toughness;
     cd.keywords = tok.keywords;
+    cd.ward_cost = tok.ward_cost;
     cd.abilities = tok.abilities;
     cd.static_abilities = tok.static_abilities;
     cd.replacement_effects = tok.replacement_effects;
@@ -136,6 +137,7 @@ Token copied_token(Entity original, const CopyOverlay &overlay) {
     tok.power = face.power;
     tok.toughness = face.toughness;
     tok.keywords = face.keywords;
+    tok.ward_cost = face.ward_cost;
     tok.abilities = face.abilities;
     tok.static_abilities = face.static_abilities;
     tok.replacement_effects = face.replacement_effects;

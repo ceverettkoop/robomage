@@ -1258,7 +1258,7 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // granted by a continuous effect (equipment/aura statics, Pump grants, keyword counters), not
 // just the printed ward. Two storage forms, kept distinct so they are not double-counted:
 //   - Printed ward: parse.cpp stores the cost in CardData::ward_cost and pushes the BARE
-//     string "Ward" onto CardData::keywords.
+//     string "Ward" onto CardData::keywords; a token copy has the same in Token::ward_cost.
 //   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" or
 //     "Ward:PayLife<N>" (with a colon and cost arg) onto the effective keyword list — never
 //     the bare "Ward".
@@ -1272,10 +1272,15 @@ static std::vector<CostParts> collect_ward_costs(Entity e) {
     std::vector<CostParts> wards;
     bool abilities_removed = global_coordinator.entity_has_component<Permanent>(e) &&
                              global_coordinator.GetComponent<Permanent>(e).abilities_removed;
-    // Printed ward.
-    if (!abilities_removed && global_coordinator.entity_has_component<CardData>(e)) {
-        const auto &cd = active_face(e, global_coordinator.GetComponent<CardData>(e));
-        if (unless_amount(cd.ward_cost) > 0) wards.push_back(cd.ward_cost);
+    // Printed ward, a token copy's as the card it copied has it.
+    if (!abilities_removed) {
+        if (global_coordinator.entity_has_component<CardData>(e)) {
+            const auto &cd = active_face(e, global_coordinator.GetComponent<CardData>(e));
+            if (unless_amount(cd.ward_cost) > 0) wards.push_back(cd.ward_cost);
+        } else if (global_coordinator.entity_has_component<Token>(e)) {
+            const CostParts &copied = global_coordinator.GetComponent<Token>(e).ward_cost;
+            if (unless_amount(copied) > 0) wards.push_back(copied);
+        }
     }
     // Granted ward(s) from the effective keyword list. Use the same effective-keyword view as
     // permanent_has_keyword: a creature's rebuilt Creature::keywords, else printed keywords.

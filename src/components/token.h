@@ -37,6 +37,7 @@ struct Token {
     // generated while the token is on the battlefield, like a card's. Empty for a scripted token.
     std::vector<Effect::Replacement> replacement_effects;
     std::vector<std::string> keywords; // informational; copied to Creature on creation
+    CostParts ward_cost;  // a copy's ward, as the card it copied has it (CardData::ward_cost)
     uint32_t power = 0;
     uint32_t toughness = 0;
     // Token colors from the token script's Colors: line (Forge). Empty = colorless (CR 105.2c)
