@@ -2212,6 +2212,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         }
     } else if (key == "TargetsWithSameController") {
         ability.targets_same_controller = value == "True";
+    } else if (key == "TargetsWithDefinedController") {
+        ability.targets_defined_controller = parse_object_spec(value);
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {
@@ -2957,6 +2959,18 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         if (key == "RepeatSubAbility") ability.repeat_sub_count++;
         return true;
     }
+    if ((key == "TrueSubAbility" || key == "FalseSubAbility") && ability.category == "Branch") {
+        auto it = svars.find(value);
+        if (it == svars.end()) {
+            parse_finding("svar_missing", value, key + "$ names no SVar");
+            return true;
+        }
+        (key == "TrueSubAbility" ? ability.branch_true : ability.branch_false) =
+            static_cast<int>(ability.subabilities.size());
+        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+        ability.repeat_sub_count++;
+        return true;
+    }
     if (key == "StaticEffect" && ability.category == "ChangeZoneAll") {
         read_static_effect(ability, value, svars);
         return true;
@@ -3153,6 +3167,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // resolution.
     if (ability.category == "ChooseNumber") resolve_svar_ref(ability.dynamic_amount_expr, svars);
     resolve_svar_ref(ability.repeat_check_svar, svars);
+    if (ability.category == "Branch") resolve_additive_svar(ability.repeat_check_svar, svars, ability.branch_terms);
     resolve_svar_ref(ability.unless_energy_expr, svars);
     if (auto *cp = std::get_if<CounterParams>(&ability.params)) resolve_svar_ref(cp->count_expr, svars);
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →

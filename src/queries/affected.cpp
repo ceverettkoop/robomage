@@ -54,6 +54,7 @@ static void players_opponent(const ResolveCtx &ctx, std::vector<Zone::Ownership>
 static void players_each(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_chain_target(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_targeted_controller(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
+static void players_parent_targeted_controller(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_triggered_activator(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_triggered_player(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
 static void players_triggered_card_owner(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out);
@@ -77,9 +78,12 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
-    // Filters' IsImprinted and a ManaReflected's Valid$ Defined.Imprinted read this set; no ability's
-    // Defined$ does.
-    {"Imprinted", ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted, nullptr, read_by_no_ability},
+    // Filters' IsImprinted and a ManaReflected's Valid$ Defined.Imprinted read this set, and a
+    // ChangeZone's Defined$ (Goblin Welder's return).
+    {"Imprinted", ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted, nullptr, read_by_change_zone},
+    // ParentTargetedController: a TargetsWithDefinedController$ name, read at the pick.
+    {"ParentTargetedController", ObjectSpec::PARENT_TARGETED_CONTROLLER, Refers::PLAYER, nullptr,
+     players_parent_targeted_controller},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) — the object that changed zones and fired
@@ -309,6 +313,11 @@ static void players_chain_target(const ResolveCtx &ctx, std::vector<Zone::Owners
 static void players_targeted_controller(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out) {
     if (ctx.ability && !ctx.ability->target.empty())
         out.push_back(last_known_controller(ctx.ability->target.lki_entity()));
+}
+
+static void players_parent_targeted_controller(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out) {
+    if (!ctx.ability) return;
+    if (Entity parent = ctx.ability->parent_target.get()) out.push_back(source_controller(parent));
 }
 
 static void players_triggered_activator(const ResolveCtx &ctx, std::vector<Zone::Ownership> &out) {

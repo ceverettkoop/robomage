@@ -1,0 +1,45 @@
+{
+  "name": "cr608_2b_goblin_welder_artifact_gone",
+  "why": "Goblin Welder: if both targets aren't still legal nothing happens. B sacrifices its Bauble in response: the first instruction does nothing and is remembered by nothing, the graveyard target is still legal so the ability resolves, and the Branch takes its false side: Mox Opal stays in the graveyard.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "graveyard_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder",
+    "B:activate:Mishra's Bauble",
+    "B:target:Player A"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Resolving ability \\(category: Branch\\)",
+    "Resolving ability \\(category: Cleanup"
+  ],
+  "expect_not": [
+    "Mox Opal enters",
+    "Mox Opal is moved",
+    "Resolving ability \\(category: SacrificeAll"
+  ]
+}

@@ -189,6 +189,9 @@ struct AbilityDef {
     // TargetsWithSameController$ True — every target has the same controller, a card's being its
     // owner (CR 108.4a): Unlicensed Hearse's "from a single graveyard".
     bool targets_same_controller = false;
+    // TargetsWithDefinedController$ — each target is controlled by the player this names (a card
+    // by its owner, CR 108.4a): Goblin Welder's "in that player's graveyard".
+    ObjectSpec targets_defined_controller;
     bool targets_in(Zone::ZoneValue zone) const { return (target_zones >> zone) & 1u; }
     void add_target_zone(Zone::ZoneValue zone) { target_zones |= 1u << zone; }
     // GainControl$ True — a ChangeZone that puts a card onto the battlefield does so under the
@@ -522,6 +525,11 @@ struct AbilityDef {
     // comparison it must pass for the process to go round again.
     std::string repeat_check_svar = "";
     std::string repeat_svar_compare = "";
+    // DB$ Branch: what is summed for its condition, compared by repeat_svar_compare, and where
+    // TrueSubAbility$ and FalseSubAbility$ sit in `subabilities`, counted in repeat_sub_count.
+    std::vector<std::string> branch_terms;
+    int branch_true = -1;
+    int branch_false = -1;
 
     // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
     // card of the current cur_game.resolution.memory.chosen_type owned by the controller. A "you may" choice
@@ -860,6 +868,10 @@ struct Ability {
     // The card a grant of another object's ability took it from (GainsAbilitiesOf$), whose script
     // the definition belongs to. Null for any other ability.
     ObjectRef granted_from;
+
+    // The target of the instruction this one follows, as this one's targets are announced: what
+    // TargetsWithDefinedController$ reads. Empty for a first instruction.
+    ObjectRef parent_target;
 
     // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
     // put on the stack (0 for an activation with no X); the resolution frame takes it as the

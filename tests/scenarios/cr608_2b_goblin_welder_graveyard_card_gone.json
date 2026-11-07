@@ -1,0 +1,46 @@
+{
+  "name": "cr608_2b_goblin_welder_graveyard_card_gone",
+  "why": "Goblin Welder: the artifact card exiled in response: the artifact stays, nothing is sacrificed. Unlicensed Hearse exiles the card.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder",
+    "Mishra's Bauble"
+  ],
+  "graveyard_a": [
+    "Mox Opal"
+  ],
+  "battlefield_b": [
+    "Unlicensed Hearse"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder",
+    "B:activate:Unlicensed Hearse",
+    "B:target:Mox Opal"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Mox Opal is moved to exile",
+    "Pump fizzles",
+    "Resolving ability \\(category: Branch\\)"
+  ],
+  "expect_not": [
+    "sacrifices Mishra's Bauble",
+    "Resolving ability \\(category: SacrificeAll"
+  ]
+}

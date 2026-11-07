@@ -40,6 +40,9 @@ static LegalAction confirm_modes_action(const Ability &modal, int chosen);
 // trigger's target can come from its event)?
 static bool targets_unchosen(const Ability &ab);
 
+// The target chosen last before chained instruction `subs[idx]` of `ab`.
+static ObjectRef target_before(const Ability &ab, const std::vector<Ability *> &subs, size_t idx);
+
 // The targets `ab` chose, in the order of its target_shares.
 static std::vector<ObjectRef> chosen_target_list(const Ability &ab);
 
@@ -145,6 +148,12 @@ static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker 
     rt.dividing = false;
     rt.pick_in_flight = false;
     return AnnounceStatus::DONE;
+}
+
+static ObjectRef target_before(const Ability &ab, const std::vector<Ability *> &subs, size_t idx) {
+    while (idx-- > 0)
+        if (!subs[idx]->target.empty()) return subs[idx]->target;
+    return ab.target;
 }
 
 static std::vector<ObjectRef> chosen_target_list(const Ability &ab) {
@@ -292,6 +301,7 @@ AnnounceStatus run_announce(Ability &ab, AnnounceRT &rt, TargetAsker &asker, std
                     sub.source = ab.source;
                     sub.controller = controller;
                     sub.targeted_player = ab.player_target_for_subs();
+                    sub.parent_target = target_before(ab, subs, rt.sub_idx);
                 }
                 AnnounceStatus st =
                     announce_targets(sub, rt, asker, orderer, controller, remove_unchoosable, target_gate);

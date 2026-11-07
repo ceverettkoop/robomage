@@ -4,3 +4,9 @@
 category:DIVIDE_DAMAGE
 row:divide_among_targets
 row:divide_one_target
+# Group rows: Unlicensed Hearse's one graveyard, Goblin Welder's pair, its Branch.
+row:target_gate:same_controller
+row:target_gate:defined_controller
+row:target_gate:leaves_a_target
+row:sharesControllerWith
+effect:Branch

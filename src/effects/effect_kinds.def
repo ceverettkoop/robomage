@@ -208,5 +208,8 @@ EFFECT_KIND(Shuffle, "Shuffle", shuffle)
 // "Repeat this process": resolve the RepeatSubAbility until its check fails.
 EFFECT_KIND(Repeat, "Repeat", repeat)
 
+// "If <condition>, this, else that": resolve TrueSubAbility$ or FalseSubAbility$ (Goblin Welder).
+EFFECT_KIND(Branch, "Branch", branch)
+
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

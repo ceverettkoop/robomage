@@ -1,0 +1,36 @@
+{
+  "name": "cr115_1_goblin_welder_swaps_an_artifact",
+  "why": "Goblin Welder: that player sacrifices the artifact and returns the artifact card. Mishra's Bauble goes to A's graveyard and Mox Opal comes back from it.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder",
+    "Mishra's Bauble"
+  ],
+  "graveyard_a": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "sacrifices Mishra's Bauble",
+    "Mox Opal is moved to the battlefield|Mox Opal enters the battlefield"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "cr115_1_goblin_welder_on_an_opponents_artifact",
+  "why": "Goblin Welder: \"a player\": both targets can be the opponent's. B sacrifices Mishra's Bauble, and Mox Opal returns under B's control.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "graveyard_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player B sacrifices Mishra's Bauble"
+  ],
+  "expect_menu": [
+    "Activate Goblin Welder"
+  ]
+}

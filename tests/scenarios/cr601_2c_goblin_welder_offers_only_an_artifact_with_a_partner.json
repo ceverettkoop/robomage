@@ -1,0 +1,41 @@
+{
+  "name": "cr601_2c_goblin_welder_offers_only_an_artifact_with_a_partner",
+  "why": "CR 601.2c: with a pair on B's side and A's Bauble alone, the first target can only be B's artifact: A's would leave the second target nothing, so only one row remains and the engine takes it.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder",
+    "Mishra's Bauble"
+  ],
+  "battlefield_b": [
+    "Mox Opal"
+  ],
+  "graveyard_b": [
+    "Lotus Petal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player B sacrifices Mox Opal"
+  ],
+  "expect_not": [
+    "Player A sacrifices"
+  ]
+}

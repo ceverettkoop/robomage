@@ -29,6 +29,7 @@ namespace effects {
 // What a Pump acts on: its chosen or inherited target, or the objects an untargeted Defined$ names
 // (Temur Sabertooth's Defined$ Self).
 static std::vector<Entity> pumped_objects(const Ability &ab);
+static bool in_pump_zone(Entity pumped, const PumpParams *pp);
 
 // Apply a single creature's "until end of turn" Pump: the +P/+T from `pump_att`/`pump_def`
 // and any granted keyword(s) in `pp->grant_keywords`. The bonus goes in the EOT bonus bucket
@@ -108,11 +109,6 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
 
 HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
-    // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
-    // subabilities do the work — don't re-pick a battlefield creature here.
-    if (ab.def->targets_in(Zone::GRAVEYARD)) return HandlerResult::DONE_RUN_SUBS;
-
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
@@ -155,6 +151,10 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 
     const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
     for (Entity pumped : pumped_objects(ab)) {
+        // Only what is in the Pump's zone is pumped. One used purely as a targeting vehicle for a
+        // graveyard card (Surgical Extraction's SP$ Pump | TgtZone$ Graveyard) leaves it alone, and
+        // the subabilities do the work; PumpZone$ names that zone (Goblin Welder).
+        if (!in_pump_zone(pumped, pp)) continue;
         // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
         // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
         // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
@@ -167,6 +167,11 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         apply_pump_to_creature(pumped, pump_att, pump_def, pp);
     }
     return HandlerResult::DONE_RUN_SUBS;
+}
+
+static bool in_pump_zone(Entity pumped, const PumpParams *pp) {
+    if (!global_coordinator.entity_has_component<Zone>(pumped)) return true;  // a player
+    return global_coordinator.GetComponent<Zone>(pumped).location == (pp ? pp->zone : Zone::BATTLEFIELD);
 }
 
 // See forward declaration at top of namespace.
@@ -207,6 +212,12 @@ bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value
         // Carpet of Flowers' player-targeted curse). It changes nothing about resolution —
         // the handler honors the pre-chosen target either way — so it is only recorded.
         if (value == "True") ab.is_curse = true;
+        return true;
+    }
+    if (key == "PumpZone") {
+        Zone::ZoneValue zone;
+        if (!Zone::from_script_name(value, zone)) return false;
+        effect_params<PumpParams>(ab).zone = zone;
         return true;
     }
     if (key == "NumAtt") {

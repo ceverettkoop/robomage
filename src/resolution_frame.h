@@ -210,6 +210,11 @@ struct RepeatLoopRt {
     int iteration = 0;
     int sub_idx = 0;
 };
+// DB$ Branch: the side its condition picked, read once.
+struct BranchRt {
+    bool init = false;
+    int side = -1;                // index into subabilities; -1: it names no such side
+};
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
     bool fire = false;            // reflexive effect fires (condition met, cost paid)
@@ -279,7 +284,7 @@ using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, Di
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZonePicksRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
-                                   ResolutionCastRt, RepeatLoopRt, CostRun>;
+                                   ResolutionCastRt, RepeatLoopRt, CostRun, BranchRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

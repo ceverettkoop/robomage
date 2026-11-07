@@ -1,0 +1,46 @@
+{
+  "name": "cr608_2b_goblin_welder_every_target_gone",
+  "why": "CR 608.2b: both targets gone in response: the ability doesn't resolve at all.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble",
+    "Unlicensed Hearse"
+  ],
+  "graveyard_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder",
+    "B:activate:Unlicensed Hearse",
+    "B:target:Mox Opal",
+    "B:activate:Mishra's Bauble",
+    "B:target:Player A"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Pump fizzles"
+  ],
+  "expect_not": [
+    "Resolving ability \\(category: Pump",
+    "Resolving ability \\(category: Branch"
+  ]
+}

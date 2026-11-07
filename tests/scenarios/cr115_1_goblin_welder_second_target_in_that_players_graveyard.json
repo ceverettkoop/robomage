@@ -1,0 +1,51 @@
+{
+  "name": "cr115_1_goblin_welder_second_target_in_that_players_graveyard",
+  "why": "TargetsWithDefinedController$ ParentTargetedController: with an artifact card in each graveyard, A's Bauble as the first target leaves only A's graveyard: B's Lotus Petal isn't offered.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder",
+    "Mishra's Bauble"
+  ],
+  "graveyard_a": [
+    "Mox Opal"
+  ],
+  "graveyard_b": [
+    "Lotus Petal"
+  ],
+  "battlefield_b": [
+    "Chromatic Star"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder",
+    "A:target:Mishra's Bauble"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Player A sacrifices Mishra's Bauble"
+  ],
+  "expect_count": {
+    "Choose target for Goblin Welder": 2
+  },
+  "expect_not": [
+    "Lotus Petal enters"
+  ],
+  "expect_menu_not": [
+    "^Lotus Petal"
+  ]
+}

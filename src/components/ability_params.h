@@ -28,6 +28,7 @@
 // alternatives. Only cleanly-exclusive groups become variant alternatives.
 
 struct PumpParams {
+    Zone::ZoneValue zone = Zone::BATTLEFIELD;  // PumpZone$ — where an object must be to be pumped
     int att = 0;  // NumAtt$ — power modifier (can be negative)
     int def = 0;  // NumDef$ — toughness modifier (can be negative)
     // NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid Eldrazi.YouCtrl):

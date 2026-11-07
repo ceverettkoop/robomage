@@ -678,8 +678,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // Defined$ Remembered — move the remembered card(s) directly. Ajani's exile-and-
     // return chain uses this: TrigExile remembers the exiled permanent, DBReturn brings
-    // that same card back to the battlefield (transformed) under its owner's control.
-    if (ab.def->defined.is_remembered()) {
+    // that same card back to the battlefield (transformed) under its owner's control. Defined$
+    // Imprinted moves the same way (Goblin Welder's return).
+    if (ab.def->defined.is_remembered() || ab.def->defined.is(ObjectSpec::IMPRINTED)) {
         // An Aura among the returned cards picks what it enchants as it enters (CR 303.4f). That
         // pick may suspend only when a declared Origin$ lets the resumed loop skip the cards it
         // already moved; otherwise it is asked inline.

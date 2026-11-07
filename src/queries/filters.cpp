@@ -212,6 +212,7 @@ static bool ev_controlled_or_owned_by_set(const CharView &v, const Qualifier &q,
 static bool ev_owned_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_lowest_cmc_of_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_shares_controller_with(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_own(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_token(const CharView &v, const Qualifier &q);
@@ -332,6 +333,10 @@ static const QualifierRow kQualifierRows[] = {
     // SharesColorWithOther Remembered: another object of the set has a color of this one (Grindstone's
     // milled pair; a colorless object has no color to share, CR 105.2c).
     set_row("SharesColorWithOther Remembered", ev_shares_color_with_other, ObjectSpec::REMEMBERED),
+    // sharesControllerWith <set>: an object of the set has this one's controller, a card's being its
+    // owner (CR 108.4a): Goblin Welder's "that player's graveyard", read as it resolves.
+    set_row("sharesControllerWith Imprinted", ev_shares_controller_with, ObjectSpec::IMPRINTED),
+    set_row("sharesControllerWith Remembered", ev_shares_controller_with, ObjectSpec::REMEMBERED),
     // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
     // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
     // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring
@@ -895,6 +900,14 @@ static bool ev_shares_color_with_other(const CharView &v, const Qualifier &q, co
         for (Colors color : effective_colors(other))
             if (v.colors.count(color)) return true;
     }
+    return false;
+}
+
+static bool ev_shares_controller_with(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
+    coverage_row("sharesControllerWith");
+    const Zone::Ownership mine = has_a_controller(v) ? v.controller : v.owner;
+    for (Entity other : resolve_filter_objects(q.set, set_context(ctx)))
+        if (source_controller(other) == mine) return true;
     return false;
 }
 

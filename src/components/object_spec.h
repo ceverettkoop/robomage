@@ -38,6 +38,7 @@ struct ObjectSpec {
         OPPONENT,                    // that controller's single opponent
         EACH_PLAYER,                 // both players, active player first
         TARGETED_CONTROLLER,         // the last-known controller of the chosen target
+        PARENT_TARGETED_CONTROLLER,  // the controller of the target before this one, as it is chosen
         TRIGGERED_ACTIVATOR,         // bound when it triggered
         TRIGGERED_PLAYER,            // bound when it triggered
         TRIGGERED_CARD_CONTROLLER,   // bound when it triggered
