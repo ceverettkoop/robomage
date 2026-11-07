@@ -33,24 +33,6 @@
       ],
       "size": "M"
      },
-     "Damage dealt by another object (DamageSource$)": {
-      "cards": [
-       "Hawkeye's Bow"
-      ],
-      "findings": [
-       "ability_param:DealDamage.DamageSource"
-      ],
-      "size": "S"
-     },
-     "Equipped creature filter (EquippedBy)": {
-      "cards": [
-       "Hawkeye's Bow"
-      ],
-      "findings": [
-       "filter:EquippedBy"
-      ],
-      "size": "S"
-     },
      "Face-down permanents (Morph, Cloak; CR 708)": {
       "cards": [
        "Aphetto Alchemist"
@@ -72,15 +54,6 @@
       ],
       "size": "M"
      },
-     "Taps trigger": {
-      "cards": [
-       "Hawkeye's Bow"
-      ],
-      "findings": [
-       "trigger_mode:Taps"
-      ],
-      "size": "S"
-     },
      "filter:sharesControllerWith Remembered": {
       "cards": [
        "Goblin Welder"
@@ -99,75 +72,65 @@
       "Branch effect (DB$ Branch)",
       "Goblin Welder swap",
       "filter:sharesControllerWith Remembered"
-     ],
-     "Hawkeye's Bow": [
-      "Damage dealt by another object (DamageSource$)",
-      "Equipped creature filter (EquippedBy)",
-      "Taps trigger"
      ]
     },
     "new_cards": [
      "Aphetto Alchemist",
-     "Goblin Welder",
-     "Hawkeye's Bow"
+     "Goblin Welder"
     ],
-    "size_points": 30
+    "size_points": 27
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 7 mechanic(s) (30 points)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "2 new card(s): 0 clean, 2 need 4 mechanic(s) (27 points)",
+   "time": "2026-11-06T23:26:09"
   },
   "diff": {
    "detail": {
     "distinct": 33,
-    "in_vocab": 30,
+    "in_vocab": 31,
     "no_script": [],
     "not_in_vocab": [
      "Aphetto Alchemist",
-     "Goblin Welder",
-     "Hawkeye's Bow"
+     "Goblin Welder"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "33 cards: 30 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "33 cards: 31 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-06T23:23:46"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Branch effect (DB$ Branch)",
-     "Damage dealt by another object (DamageSource$)",
-     "Equipped creature filter (EquippedBy)",
      "Face-down permanents (Morph, Cloak; CR 708)",
      "Goblin Welder swap",
-     "Taps trigger",
      "filter:sharesControllerWith Remembered"
     ]
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "pending",
-   "summary": "7 mechanic(s) to implement: Branch effect (DB$ Branch), Damage dealt by another object (DamageSource$), Equipped creature filter (EquippedBy), Face-down permanents (Morph, Cloak; CR 708), Goblin Welder swap, Taps trigger, filter:sharesControllerWith Remembered",
-   "time": "2026-11-06T19:54:17"
+   "summary": "4 mechanic(s) to implement: Branch effect (DB$ Branch), Face-down permanents (Morph, Cloak; CR 708), Goblin Welder swap, filter:sharesControllerWith Remembered",
+   "time": "2026-11-06T23:26:09"
   },
   "parse": {
    "detail": {
@@ -265,52 +228,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Hawkeye's Bow": {
-      "card": "Hawkeye's Bow",
-      "faces": [
-       "Hawkeye's Bow"
-      ],
-      "findings": [
-       {
-        "detail": "DealDamage DamageSource$ TriggeredCardLKICopy",
-        "kind": "ability_param",
-        "line": "T:Mode$ Taps | ValidCard$ Creature.EquippedBy | TriggerZones$ Battlefield | Execute$ TrigDamage | TriggerDescription$ Whenever equipped creature becomes tapped, it deals 1 damage to each opponent.",
-        "name": "DealDamage.DamageSource"
-       },
-       {
-        "detail": "no event binding: the trigger is dropped",
-        "kind": "trigger_mode",
-        "line": "T:Mode$ Taps | ValidCard$ Creature.EquippedBy | TriggerZones$ Battlefield | Execute$ TrigDamage | TriggerDescription$ Whenever equipped creature becomes tapped, it deals 1 damage to each opponent.",
-        "name": "Taps"
-       },
-       {
-        "detail": "ValidCard$ Creature.EquippedBy",
-        "kind": "filter",
-        "line": "T:Mode$ Taps | ValidCard$ Creature.EquippedBy | TriggerZones$ Battlefield | Execute$ TrigDamage | TriggerDescription$ Whenever equipped creature becomes tapped, it deals 1 damage to each opponent.",
-        "name": "EquippedBy"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/h/hawkeyes_bow.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (14 findings), 0 without a script",
-   "time": "2026-11-06T19:54:17"
+   "summary": "2 new card(s), 2 with findings (11 findings), 0 without a script",
+   "time": "2026-11-06T23:26:09"
   },
   "provision": {
    "detail": {
@@ -324,11 +255,11 @@
    "inputs": {
     "deck": "507cea13ba92bdd48cc30b44a858b1c45b428c58a562c2d1f5f32b939756baf9",
     "scripts": "f608f4fb79f00f8497b3acc5c93ddcbcb66f5d400799844d83bf102384cd7289",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:23:46"
   },
   "scrape": {
    "detail": {

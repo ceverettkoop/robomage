@@ -837,7 +837,7 @@ computes neither outside its legal-action enumeration.
 | `object_counter` (27) | `obj` | u32 | `handle` | a permanent's counters, or a card's off the battlefield (`Zone::counters`); also for a face-down object |
 | | `kind` | text | `text` | `P1P1`, `LOYALTY`, `TIME`, … |
 | | `count` | u16 | `count` | |
-| `object_ability` (28): a battlefield permanent's abilities as it has them now (`Permanent::abilities`: activated and mana abilities, keyword-derived triggers); printed abilities of other objects are in `CARDS` | `obj` | u32 | `handle` | |
+| `object_ability` (28): a battlefield permanent's abilities as it has them now (`Permanent::abilities`: activated and mana abilities, keyword-derived triggers), and a printed triggered ability limited each turn (`ActivationLimit$`) once it has triggered, with its count and `exhausted` at the limit; printed abilities of other objects are in `CARDS` | `obj` | u32 | `handle` | |
 | | ability | abref | | |
 | | `granted` | u8 | `bool` | not in its card's own list, or granted by a static |
 | | `activations_turn` | u8 | `count` | limit state |
@@ -846,7 +846,7 @@ computes neither outside its legal-action enumeration.
 | | `src_card` | u16 | `card` | none (no source recorded) |
 | | `layer` | u8 | `enum:layer` | CR 613 layer / sublayer |
 | | `duration` | u8 | `enum:duration` | |
-| `object_link` (30) | `obj`, `linked` | u32 | `handle` | linked exiled cards |
+| `object_link` (30) | `obj`, `linked` | u32 | `handle` | linked exiled cards, a card imprinted by exile among them (Chrome Mox) |
 | | `kind` | u8 | `enum:link_kind` | exiled with, returnable |
 | `combat` (31): one row per blocker of each attacker, attackers then blockers in handle order | `attacker` | u32 | `handle` | |
 | | `target_kind` | u8 | `enum:attack_target_kind` | player, planeswalker |

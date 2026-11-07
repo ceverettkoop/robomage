@@ -19,131 +19,74 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "Sand Scout": {
-      "cards": [
-       "Sand Scout"
-      ],
-      "findings": [
-       "svar_expr:PlayerCountOpponents$HighestValid",
-       "trigger_param:ActivationLimit"
-      ],
-      "size": "S"
-     }
-    },
-    "needs": {
-     "Sand Scout": [
-      "Sand Scout"
-     ]
-    },
-    "new_cards": [
-     "Sand Scout"
-    ],
-    "size_points": 1
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
-   "time": "2026-11-06T19:54:16"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-06T23:26:08"
   },
   "diff": {
    "detail": {
     "distinct": 31,
-    "in_vocab": 30,
+    "in_vocab": 31,
     "no_script": [],
-    "not_in_vocab": [
-     "Sand Scout"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "31 cards: 30 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T19:54:16"
+   "summary": "31 cards: 31 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-06T23:23:45"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Sand Scout"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: Sand Scout",
-   "time": "2026-11-06T19:54:16"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-06T23:26:08"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Sand Scout": {
-      "card": "Sand Scout",
-      "faces": [
-       "Sand Scout"
-      ],
-      "findings": [
-       {
-        "detail": "ChangesZoneAll ActivationLimit$ 1",
-        "kind": "trigger_param",
-        "line": "T:Mode$ ChangesZoneAll | ValidCards$ Land.YouOwn+!token | Origin$ Any | Destination$ Graveyard | TriggerZones$ Battlefield | ActivationLimit$ 1 | Execute$ TrigToken | TriggerDescription$ Whenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn.",
-        "name": "ActivationLimit"
-       },
-       {
-        "detail": "Y = PlayerCountOpponents$HighestValid Land.YouCtrl",
-        "kind": "svar_expr",
-        "line": "SVar:Y:PlayerCountOpponents$HighestValid Land.YouCtrl",
-        "name": "PlayerCountOpponents$HighestValid"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/sand_scout.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "rgw_1_1_sand_warrior"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-06T19:54:16"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-06T23:26:08"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "rgw_1_1_sand_warrior"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -151,11 +94,11 @@
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T19:54:16"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T23:23:45"
   },
   "scrape": {
    "detail": {

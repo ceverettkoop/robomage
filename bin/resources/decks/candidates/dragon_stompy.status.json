@@ -30,29 +30,6 @@
       ],
       "size": "M"
      },
-     "Chrome Mox imprint": {
-      "cards": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       "ability_param:Pump.ForgetImprinted",
-       "filter:Defined",
-       "filter:ExiledWithSourceLKI",
-       "filter:Imprinted",
-       "trigger_zone:ChangesZone:Exile"
-      ],
-      "size": "M"
-     },
-     "Damage dealt by another object (DamageSource$)": {
-      "cards": [
-       "Pyrogoyf"
-      ],
-      "findings": [
-       "ability_param:DealDamage.DamageSource",
-       "svar_expr:TriggeredCard$CardPower"
-      ],
-      "size": "S"
-     },
      "Divided damage (CR 601.2d)": {
       "cards": [
        "Fury",
@@ -72,30 +49,14 @@
        "static_form:Effect.Continuous"
       ],
       "size": "M"
-     },
-     "Self-or-other zone triggers (Pyrogoyf)": {
-      "cards": [
-       "Pyrogoyf"
-      ],
-      "findings": [
-       "trigger_form:ChangesZone.ValidCard"
-      ],
-      "size": "S"
      }
     },
     "needs": {
      "Broadside Bombardiers": [
       "Boast (CR 702.142)"
      ],
-     "Chrome Mox": [
-      "Chrome Mox imprint"
-     ],
      "Fury": [
       "Divided damage (CR 601.2d)"
-     ],
-     "Pyrogoyf": [
-      "Damage dealt by another object (DamageSource$)",
-      "Self-or-other zone triggers (Pyrogoyf)"
      ],
      "Shatterskull Smashing": [
       "Divided damage (CR 601.2d)"
@@ -106,36 +67,32 @@
     },
     "new_cards": [
      "Broadside Bombardiers",
-     "Chrome Mox",
      "Fury",
-     "Pyrogoyf",
      "Shatterskull Smashing",
      "Sundering Eruption"
     ],
-    "size_points": 14
+    "size_points": 9
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "6 new card(s): 0 clean, 6 need 6 mechanic(s) (14 points)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "4 new card(s): 0 clean, 4 need 3 mechanic(s) (9 points)",
+   "time": "2026-11-06T23:26:08"
   },
   "diff": {
    "detail": {
     "distinct": 22,
-    "in_vocab": 16,
+    "in_vocab": 18,
     "no_script": [],
     "not_in_vocab": [
      "Broadside Bombardiers",
-     "Chrome Mox",
      "Fury",
-     "Pyrogoyf",
      "Shatterskull Smashing",
      "Sundering Eruption"
     ]
@@ -143,34 +100,31 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "22 cards: 16 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "22 cards: 18 in vocab, 4 new (0 without a script)",
+   "time": "2026-11-06T23:23:45"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Boast (CR 702.142)",
-     "Chrome Mox imprint",
-     "Damage dealt by another object (DamageSource$)",
      "Divided damage (CR 601.2d)",
-     "Effect with a continuous static",
-     "Self-or-other zone triggers (Pyrogoyf)"
+     "Effect with a continuous static"
     ]
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "pending",
-   "summary": "6 mechanic(s) to implement: Boast (CR 702.142), Chrome Mox imprint, Damage dealt by another object (DamageSource$), Divided damage (CR 601.2d), Effect with a continuous static, Self-or-other zone triggers (Pyrogoyf)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "3 mechanic(s) to implement: Boast (CR 702.142), Divided damage (CR 601.2d), Effect with a continuous static",
+   "time": "2026-11-06T23:26:08"
   },
   "parse": {
    "detail": {
@@ -201,50 +155,6 @@
        -1
       ]
      },
-     "Chrome Mox": {
-      "card": "Chrome Mox",
-      "faces": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       {
-        "detail": "Pump ForgetImprinted$ TriggeredCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "Pump.ForgetImprinted"
-       },
-       {
-        "detail": "read as any zone",
-        "kind": "trigger_zone",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "ChangesZone:Exile"
-       },
-       {
-        "detail": "Valid$ Defined.Imprinted",
-        "kind": "filter",
-        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
-        "name": "Defined"
-       },
-       {
-        "detail": "Valid$ Defined.Imprinted",
-        "kind": "filter",
-        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
-        "name": "Imprinted"
-       },
-       {
-        "detail": "ValidCard$ Card.IsImprinted+ExiledWithSourceLKI",
-        "kind": "filter",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "ExiledWithSourceLKI"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/c/chrome_mox.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Fury": {
       "card": "Fury",
       "faces": [
@@ -260,38 +170,6 @@
       ],
       "layout": "normal",
       "script": "cardsfolder/f/fury.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Pyrogoyf": {
-      "card": "Pyrogoyf",
-      "faces": [
-       "Pyrogoyf"
-      ],
-      "findings": [
-       {
-        "detail": "DealDamage DamageSource$ TriggeredCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl | Origin$ Any | Destination$ Battlefield | Execute$ TrigDealDamage | TriggerZones$ Battlefield | TriggerDescription$ Whenever CARDNAME or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
-        "name": "DealDamage.DamageSource"
-       },
-       {
-        "detail": "ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl",
-        "kind": "trigger_form",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self,Creature.Lhurgoyf+YouCtrl | Origin$ Any | Destination$ Battlefield | Execute$ TrigDealDamage | TriggerZones$ Battlefield | TriggerDescription$ Whenever CARDNAME or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
-        "name": "ChangesZone.ValidCard"
-       },
-       {
-        "detail": "Z = TriggeredCard$CardPower",
-        "kind": "svar_expr",
-        "line": "SVar:Z:TriggeredCard$CardPower",
-        "name": "TriggeredCard$CardPower"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/p/pyrogoyf.txt",
       "tokens": [],
       "vocab": [
        -1
@@ -352,14 +230,14 @@
    },
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "6 new card(s), 6 with findings (14 findings), 0 without a script",
-   "time": "2026-11-06T19:54:17"
+   "summary": "4 new card(s), 4 with findings (6 findings), 0 without a script",
+   "time": "2026-11-06T23:26:08"
   },
   "provision": {
    "detail": {
@@ -373,11 +251,11 @@
    "inputs": {
     "deck": "994172cb3d9a191da829c32ad5a033d0c01c57d509262d8efec515a8391d11b6",
     "scripts": "3799dcc1790c4ba1162e10d662d4e328f42a921b4741e108e1e27300c37c5493",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:23:45"
   },
   "scrape": {
    "detail": {

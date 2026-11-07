@@ -9,6 +9,7 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | deck | MTGTop8 name | share % | section | cards | new cards | mechanics | size points | reached |
 |---|---|---|---|---|---|---|---|---|
 | bant_control | Bant Control | 2.0 | control | 29 | 0 | 0 | 0 | baseline |
+| boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 0 | 0 | 0 | implement |
 | cradle_control | Cradle Control | 1.0 | control | 34 | 0 | 0 | 0 | implement |
 | death_and_taxes | Death & Taxes | 3.0 | aggro | 31 | 0 | 0 | 0 | designate |
 | dimir_tempo | Dimir Tempo | 10.0 | aggro | 31 | 0 | 0 | 0 | implement |
@@ -16,21 +17,20 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | elves | Elves | 2.0 | combo | 32 | 0 | 0 | 0 | implement |
 | hogaak | Hogaak | 2.0 | combo | 28 | 0 | 0 | 0 | implement |
 | lands_top8 | Lands | 5.0 | control | 35 | 0 | 0 | 0 | designate |
+| maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | implement |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 1 | 1 | 1 | capability |
-| boros_aggro | Boros Aggro | 6.0 | aggro | 31 | 1 | 1 | 1 | capability |
-| maverick | Maverick | 1.0 | aggro | 38 | 1 | 1 | 1 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
 | doomsday | Doomsday | 4.0 | combo | 33 | 1 | 2 | 6 | capability |
 | cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 3 | 3 | 7 | capability |
-| storm | Storm | 3.0 | combo | 30 | 2 | 3 | 14 | capability |
-| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 6 | 6 | 14 | capability |
+| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 4 | 3 | 9 | capability |
+| storm | Storm | 3.0 | combo | 30 | 1 | 2 | 11 | capability |
 | mystic_forge | Mystic Forge | 2.0 | combo | 32 | 3 | 4 | 17 | capability |
-| stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 2 | 21 | capability |
-| welder_cam | Welder Cam | 2.0 | combo | 33 | 3 | 7 | 30 | capability |
+| stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 1 | 20 | capability |
+| welder_cam | Welder Cam | 2.0 | combo | 33 | 2 | 4 | 27 | capability |
 | painter | Painter | 1.0 | combo | 41 | 5 | 9 | 30 | capability |
 
 ## Mechanics ranked by the decks that need them
@@ -39,20 +39,13 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Damage dealt by another object (DamageSource$) | S | 2 | - | Hawkeye's Bow, Pyrogoyf | `ability_param:DealDamage.DamageSource`, `svar_expr:TriggeredCard$CardPower` | Pyrogoyf, Hawkeye's Bow |
-| Equipped creature filter (EquippedBy) | S | 2 | - | Cryptic Coat, Hawkeye's Bow | `filter:EquippedBy` | the creature this Equipment is attached to: Cryptic Coat's can't-be-blocked, Hawkeye's Bow's trigger |
 | Targets in several zones | S | 2 | artifacts_blue | Sink into Stupor | `ability_param:ChangeZone.TgtZone` | TgtZone$ Stack,Battlefield (Sink into Stupor) |
 | filter:sharesControllerWith Remembered | S | 2 | - | Goblin Welder | - |  |
 | Branch effect (DB$ Branch) | M | 2 | - | Goblin Welder | `ability_param:Branch.BranchConditionSVar`, `ability_param:Branch.BranchConditionSVarCompare`, `ability_param:Branch.FalseSubAbility`, `ability_param:Branch.TrueSubAbility`, `category:Branch` | a conditional sub-ability chain; Goblin Welder |
-| Chrome Mox imprint | M | 2 | - | Chrome Mox | `ability_param:Pump.ForgetImprinted`, `filter:Defined`, `filter:ExiledWithSourceLKI`, `filter:Imprinted`, `trigger_zone:ChangesZone:Exile` | imprint a card exiled with it and read its colours; a ChangesZone trigger with Origin$ Exile |
 | Divided damage (CR 601.2d) | M | 2 | - | Fury, Shatterskull Smashing | `ability_param:DealDamage.DividedAsYouChoose`, `svar_expr:Count$xPaid/Twice` | Fury, Shatterskull Smashing: divide damage among targets at cast |
 | Goblin Welder swap | M | 2 | - | Goblin Welder | `ability_param:Pump.ImprintCards`, `ability_param:Pump.PumpZone`, `ability_param:Pump.TargetsWithDefinedController`, `filter:sharesControllerWith Imprinted` | targets in a graveyard and on the battlefield with the same controller, swapped at resolution |
 | Start your engines! (speed) | M | 2 | artifacts_prison | Perilous Snare | `keyword:Start your engines`, `static_param:Condition` | a 2025 keyword: a player's speed, raised once a turn |
-| Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | - | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
-| Revolt trigger condition | S | 1 | maverick | Renegade Rallier | `trigger_param:Revolt` | Renegade Rallier |
-| Sand Scout | S | 1 | boros_aggro | Sand Scout | `svar_expr:PlayerCountOpponents$HighestValid`, `trigger_param:ActivationLimit` | compare land counts; once each turn |
-| Self-or-other zone triggers (Pyrogoyf) | S | 1 | - | Pyrogoyf | `trigger_form:ChangesZone.ValidCard` | a ValidCard$ list naming Self in one alternative is read as Self alone |
-| Taps trigger | S | 1 | - | Hawkeye's Bow | `trigger_mode:Taps` | Hawkeye's Bow: whenever equipped creature becomes tapped |
+| Face-down permanents (Morph, Cloak; CR 708) | XL | 2 | stoneblade | Aphetto Alchemist, Cryptic Coat | `ability_param:Cloak.Defined`, `ability_param:Cloak.RememberCloaked`, `category:Cloak`, `keyword:Morph` | hidden identity on the battlefield: engine, the state format's visibility and the knowledge sidecar |
 | Boast (CR 702.142) | M | 1 | - | Broadside Bombardiers | `ability_param:DealDamage.Boast`, `svar_expr:Sacrificed$CardManaCost/Plus.2` | Broadside Bombardiers: activate only if it attacked this turn, once |
 | Can't-block restrictions (CantBlockBy) | M | 1 | - | Untimely Malfunction | `keyword:HIDDEN CARDNAME can't block.` | Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack |
 | Change targets (CR 115.7) | M | 1 | - | Untimely Malfunction | `category:ChangeTargets` | Untimely Malfunction's redirect mode |
@@ -60,7 +53,7 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Defined$ names no reader acts on | M | 1 | - | Tezzeret, Cruel Captain | `ability_param:Animate.Defined`, `ability_param:PutCounter.Defined` | Player on Draw and Discard, ChosenCard, Enchanted off a ChangeZone, Player.IsRemembered, Targeted.<filter>: M2 parses these once |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
 | Effect with a continuous static | M | 1 | - | Sundering Eruption | `static_form:Effect.Continuous` | Sundering Eruption: an Effect's static beyond the forms grant_cast knows |
-| Emblem with a trigger (Tezzeret) | M | 1 | - | Tezzeret, Cruel Captain | `ability_param:Effect.Duration`, `trigger_form:Effect.Phase` | the floating-trigger scan watches attacks and combat damage, and floating triggers lapse at cleanup |
+| Emblem with a trigger (Tezzeret) | M | 1 | - | Tezzeret, Cruel Captain | `ability_param:Effect.Duration` | the floating-trigger scan watches attacks and combat damage, and floating triggers lapse at cleanup |
 | Empower | M | 1 | - | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Exhaust and Waterbend (Avatar) | M | 1 | - | Invasion Submersible | `ability_param:Animate.Exhaust`, `cost:Waterbend` | Invasion Submersible: once-only abilities, waterbend cost |
 | Gaea's Will | M | 1 | - | Gaea's Will | `replacement:Effect:Moved` | play from the graveyard this turn, cards exiled instead of going there |
@@ -75,35 +68,40 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | step | deck | new mechanics | their points | cumulative points | decks playable |
 |---|---|---|---|---|---|
 | 1 | bant_control | - | 0 | 0 | 1 |
-| 2 | cradle_control | - | 0 | 0 | 2 |
-| 3 | death_and_taxes | - | 0 | 0 | 3 |
-| 4 | dimir_tempo | - | 0 | 0 | 4 |
-| 5 | eldrazi_aggro | - | 0 | 0 | 5 |
-| 6 | elves | - | 0 | 0 | 6 |
-| 7 | hogaak | - | 0 | 0 | 7 |
-| 8 | lands_top8 | - | 0 | 0 | 8 |
-| 9 | reanimator_top8 | - | 0 | 0 | 9 |
-| 10 | show_and_tell | - | 0 | 0 | 10 |
-| 11 | ur_tempo | - | 0 | 0 | 11 |
-| 12 | uwx_control | - | 0 | 0 | 12 |
-| 13 | artifacts_blue | Targets in several zones | 1 | 1 | 13 |
-| 14 | boros_aggro | Sand Scout | 1 | 2 | 14 |
-| 15 | maverick | Revolt trigger condition | 1 | 3 | 15 |
-| 16 | artifacts_prison | Start your engines! (speed) | 3 | 6 | 16 |
-| 17 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher) | 6 | 12 | 17 |
-| 18 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 18 | 18 |
-| 19 | dragon_stompy | Boast (CR 702.142); Chrome Mox imprint; Damage dealt by another object (DamageSource$); Divided damage (CR 601.2d); Effect with a continuous static; Self-or-other zone triggers (Pyrogoyf) | 14 | 32 | 19 |
-| 20 | storm | Gaea's Will; Hogaak casting | 11 | 43 | 20 |
-| 21 | mystic_forge | Defined$ names no reader acts on; Emblem with a trigger (Tezzeret); Play from the top of the library (Mystic Forge) | 14 | 57 | 21 |
-| 22 | stoneblade | Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708) | 21 | 78 | 22 |
-| 23 | welder_cam | Branch effect (DB$ Branch); Goblin Welder swap; Taps trigger; filter:sharesControllerWith Remembered | 8 | 86 | 23 |
-| 24 | painter | Can't-block restrictions (CantBlockBy); Change targets (CR 115.7); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 20 | 106 | 24 |
+| 2 | boros_aggro | - | 0 | 0 | 2 |
+| 3 | cradle_control | - | 0 | 0 | 3 |
+| 4 | death_and_taxes | - | 0 | 0 | 4 |
+| 5 | dimir_tempo | - | 0 | 0 | 5 |
+| 6 | eldrazi_aggro | - | 0 | 0 | 6 |
+| 7 | elves | - | 0 | 0 | 7 |
+| 8 | hogaak | - | 0 | 0 | 8 |
+| 9 | lands_top8 | - | 0 | 0 | 9 |
+| 10 | maverick | - | 0 | 0 | 10 |
+| 11 | reanimator_top8 | - | 0 | 0 | 11 |
+| 12 | show_and_tell | - | 0 | 0 | 12 |
+| 13 | ur_tempo | - | 0 | 0 | 13 |
+| 14 | uwx_control | - | 0 | 0 | 14 |
+| 15 | artifacts_blue | Targets in several zones | 1 | 1 | 15 |
+| 16 | artifacts_prison | Start your engines! (speed) | 3 | 4 | 16 |
+| 17 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher) | 6 | 10 | 17 |
+| 18 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 16 | 18 |
+| 19 | dragon_stompy | Boast (CR 702.142); Divided damage (CR 601.2d); Effect with a continuous static | 9 | 25 | 19 |
+| 20 | storm | Gaea's Will; Hogaak casting | 11 | 36 | 20 |
+| 21 | mystic_forge | Defined$ names no reader acts on; Emblem with a trigger (Tezzeret); Play from the top of the library (Mystic Forge) | 14 | 50 | 21 |
+| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 70 | 22 |
+| 23 | welder_cam | Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered | 7 | 77 | 23 |
+| 24 | painter | Can't-block restrictions (CantBlockBy); Change targets (CR 115.7); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 20 | 97 | 24 |
 
 ## Per deck
 
 ### bant_control — Bant Control (2.0%, control)
 
 29 cards, 0 new; clean: -
+
+
+### boros_aggro — Boros Aggro (6.0%, aggro)
+
+31 cards, 0 new; clean: -
 
 
 ### cradle_control — Cradle Control (1.0%, control)
@@ -141,6 +139,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 35 cards, 0 new; clean: -
 
 
+### maverick — Maverick (1.0%, aggro)
+
+38 cards, 0 new; clean: -
+
+
 ### reanimator_top8 — Reanimator (3.0%, combo)
 
 28 cards, 0 new; clean: -
@@ -167,18 +170,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 - Sink into Stupor: Targets in several zones
 
-### boros_aggro — Boros Aggro (6.0%, aggro)
-
-31 cards, 1 new; clean: -
-
-- Sand Scout: Sand Scout
-
-### maverick — Maverick (1.0%, aggro)
-
-38 cards, 1 new; clean: -
-
-- Renegade Rallier: Revolt trigger condition
-
 ### artifacts_prison — Artifacts Prison (2.0%, control)
 
 30 cards, 1 new; clean: -
@@ -199,23 +190,20 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 - Invasion Submersible: Exhaust and Waterbend (Avatar)
 - Sink into Stupor: Targets in several zones
 
-### storm — Storm (3.0%, combo)
-
-30 cards, 2 new; clean: -
-
-- Chrome Mox: Chrome Mox imprint
-- Gaea's Will: Gaea's Will; Hogaak casting
-
 ### dragon_stompy — Dragon Stompy (1.0%, aggro)
 
-22 cards, 6 new; clean: -
+22 cards, 4 new; clean: -
 
 - Broadside Bombardiers: Boast (CR 702.142)
-- Chrome Mox: Chrome Mox imprint
 - Fury: Divided damage (CR 601.2d)
-- Pyrogoyf: Damage dealt by another object (DamageSource$); Self-or-other zone triggers (Pyrogoyf)
 - Shatterskull Smashing: Divided damage (CR 601.2d)
 - Sundering Eruption: Effect with a continuous static
+
+### storm — Storm (3.0%, combo)
+
+30 cards, 1 new; clean: -
+
+- Gaea's Will: Gaea's Will; Hogaak casting
 
 ### mystic_forge — Mystic Forge (2.0%, combo)
 
@@ -229,15 +217,14 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 38 cards, 1 new; clean: -
 
-- Cryptic Coat: Equipped creature filter (EquippedBy); Face-down permanents (Morph, Cloak; CR 708)
+- Cryptic Coat: Face-down permanents (Morph, Cloak; CR 708)
 
 ### welder_cam — Welder Cam (2.0%, combo)
 
-33 cards, 3 new; clean: -
+33 cards, 2 new; clean: -
 
 - Aphetto Alchemist: Face-down permanents (Morph, Cloak; CR 708)
 - Goblin Welder: Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered
-- Hawkeye's Bow: Damage dealt by another object (DamageSource$); Equipped creature filter (EquippedBy); Taps trigger
 
 ### painter — Painter (1.0%, combo)
 

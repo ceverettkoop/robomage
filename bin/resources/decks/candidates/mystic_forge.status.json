@@ -35,8 +35,7 @@
        "Tezzeret, Cruel Captain"
       ],
       "findings": [
-       "ability_param:Effect.Duration",
-       "trigger_form:Effect.Phase"
+       "ability_param:Effect.Duration"
       ],
       "size": "M"
      },
@@ -83,15 +82,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (17 points)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:26:09"
   },
   "diff": {
    "detail": {
@@ -107,11 +106,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "32 cards: 29 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:23:46"
   },
   "implement": {
    "detail": {
@@ -124,15 +123,15 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "pending",
    "summary": "4 mechanic(s) to implement: Defined$ names no reader acts on, Emblem with a trigger (Tezzeret), Play from the top of the library (Mystic Forge), Start your engines! (speed)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:26:09"
   },
   "parse": {
    "detail": {
@@ -226,12 +225,6 @@
         "name": "Animate.Defined"
        },
        {
-        "detail": "Mode$ Phase | Phase$ BeginCombat | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigPutCounter2 | TriggerDescription$ At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.",
-        "kind": "trigger_form",
-        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
-        "name": "Effect.Phase"
-       },
-       {
         "detail": "Effect Duration$ Permanent",
         "kind": "ability_param",
         "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
@@ -250,14 +243,14 @@
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (11 findings), 0 without a script",
-   "time": "2026-11-06T19:54:17"
+   "summary": "3 new card(s), 3 with findings (10 findings), 0 without a script",
+   "time": "2026-11-06T23:26:09"
   },
   "provision": {
    "detail": {
@@ -271,11 +264,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:23:46"
   },
   "scrape": {
    "detail": {

@@ -20,19 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Chrome Mox imprint": {
-      "cards": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       "ability_param:Pump.ForgetImprinted",
-       "filter:Defined",
-       "filter:ExiledWithSourceLKI",
-       "filter:Imprinted",
-       "trigger_zone:ChangesZone:Exile"
-      ],
-      "size": "M"
-     },
      "Gaea's Will": {
       "cards": [
        "Gaea's Will"
@@ -53,118 +40,68 @@
      }
     },
     "needs": {
-     "Chrome Mox": [
-      "Chrome Mox imprint"
-     ],
      "Gaea's Will": [
       "Gaea's Will",
       "Hogaak casting"
      ]
     },
     "new_cards": [
-     "Chrome Mox",
      "Gaea's Will"
     ],
-    "size_points": 14
+    "size_points": 11
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (14 points)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (11 points)",
+   "time": "2026-11-06T23:26:09"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 28,
+    "in_vocab": 29,
     "no_script": [],
     "not_in_vocab": [
-     "Chrome Mox",
      "Gaea's Will"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "30 cards: 28 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T19:54:17"
+   "summary": "30 cards: 29 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T23:23:46"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Chrome Mox imprint",
      "Gaea's Will",
      "Hogaak casting"
     ]
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Chrome Mox imprint, Gaea's Will, Hogaak casting",
-   "time": "2026-11-06T19:54:17"
+   "summary": "2 mechanic(s) to implement: Gaea's Will, Hogaak casting",
+   "time": "2026-11-06T23:26:09"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Chrome Mox": {
-      "card": "Chrome Mox",
-      "faces": [
-       "Chrome Mox"
-      ],
-      "findings": [
-       {
-        "detail": "Pump ForgetImprinted$ TriggeredCard",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "Pump.ForgetImprinted"
-       },
-       {
-        "detail": "read as any zone",
-        "kind": "trigger_zone",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "ChangesZone:Exile"
-       },
-       {
-        "detail": "Valid$ Defined.Imprinted",
-        "kind": "filter",
-        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
-        "name": "Defined"
-       },
-       {
-        "detail": "Valid$ Defined.Imprinted",
-        "kind": "filter",
-        "line": "A:AB$ ManaReflected | Cost$ T | Valid$ Defined.Imprinted | ColorOrType$ Color | ReflectProperty$ Is | SpellDescription$ Add one mana of any of the exiled card's colors.",
-        "name": "Imprinted"
-       },
-       {
-        "detail": "ValidCard$ Card.IsImprinted+ExiledWithSourceLKI",
-        "kind": "filter",
-        "line": "T:Mode$ ChangesZone | Origin$ Exile | Destination$ Any | Static$ True | ValidCard$ Card.IsImprinted+ExiledWithSourceLKI | Execute$ DBForget",
-        "name": "ExiledWithSourceLKI"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/c/chrome_mox.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Gaea's Will": {
       "card": "Gaea's Will",
       "faces": [
@@ -196,14 +133,14 @@
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
+    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
-   "time": "2026-11-06T19:54:17"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-06T23:26:09"
   },
   "provision": {
    "detail": {
@@ -217,11 +154,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
+    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T19:54:17"
+   "time": "2026-11-06T23:23:46"
   },
   "scrape": {
    "detail": {
