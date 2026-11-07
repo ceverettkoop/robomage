@@ -60,6 +60,10 @@ inline std::vector<Entity> battlefield_permanents(const EntitySet &entities, Zon
 // the entry paths set the state themselves. Defined in battlefield.cpp.
 bool tap_permanent(Entity e);
 
+// Undoes a tap made by a payment that was reversed (CR 733.1): the permanent never became tapped,
+// so the event its tap sent, still unread, goes too.
+void reverse_tap(Entity e);
+
 // True if the ability's source is still the object it was when the ability was created (CR
 // 400.7) and is a battlefield permanent (phased-in). Defined in battlefield.cpp.
 bool ability_source_on_battlefield(const Ability &ab);

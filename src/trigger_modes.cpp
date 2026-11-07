@@ -12,6 +12,7 @@
 #include "ecs/events.h"
 #include "mana_system.h"
 #include "parse.h"
+#include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/filters.h"
 #include "queries/players.h"
@@ -32,6 +33,7 @@ static void bind_land_played(const TriggerMode &mode, const TriggerLine &t, Abil
 static void bind_attacks(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_attackers_declared(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_taps_for_mana(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
+static void bind_taps(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_becomes_target(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_become_monstrous(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_always(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
@@ -41,6 +43,7 @@ static bool card_read_drawn(const std::string &value, bool floating);
 static bool card_read_attacks(const std::string &value, bool floating);
 static bool card_read_self(const std::string &value, bool floating);
 static bool card_read_creature(const std::string &value, bool floating);
+static bool card_read_whole(const std::string &value, bool floating);
 static bool source_read_self(const std::string &value);
 static bool source_read_your_creature(const std::string &value);
 static bool source_read_targeting(const std::string &value);
@@ -53,6 +56,7 @@ static bool match_land_played(const TriggerEvent &fired);
 static bool match_spell_cast(const TriggerEvent &fired);
 static bool match_drawn(const TriggerEvent &fired);
 static bool match_becomes_target(const TriggerEvent &fired);
+static bool match_taps(const TriggerEvent &fired);
 static bool match_attacks(const TriggerEvent &fired);
 static bool match_combat_damage(const TriggerEvent &fired);
 static void capture_spell_cast(Ability &ab, const Event &ev);
@@ -157,6 +161,14 @@ static void bind_taps_for_mana(const TriggerMode &mode, const TriggerLine &t, Ab
     ability.trigger_valid_player_is_controller = t.player_is_you;
     ability.trigger_taps_for_mana_static = t.is_static;
     ability.trigger_static_offstack = false;
+}
+
+static void bind_taps(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
+    // "Whenever equipped creature becomes tapped, ..." — Hawkeye's Bow (Mode$ Taps | ValidCard$
+    // Creature.EquippedBy). tap_permanent sends the event; ValidCard$ is matched whole against the
+    // tapped permanent.
+    ability.trigger_on = mode.event;
+    if (t.valid_card_self) ability.trigger_only_self = true;
 }
 
 static void bind_becomes_target(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
@@ -318,6 +330,9 @@ static bool card_read_self(const std::string &value, bool) {
 static bool card_read_creature(const std::string &value, bool) {
     return value == "Creature";
 }
+
+// Its matcher takes the filter whole.
+static bool card_read_whole(const std::string &, bool) { return true; }
 
 static bool source_read_self(const std::string &value) {
     return value == "Card.Self";
@@ -498,6 +513,18 @@ static bool match_becomes_target(const TriggerEvent &fired) {
     return true;
 }
 
+// BECAME_TAPPED: ValidCard$ on the permanent that was tapped, or as it last was if it has left (a
+// {T}, Sacrifice cost).
+static bool match_taps(const TriggerEvent &fired) {
+    if (fired.ab.trigger_valid_card.empty()) return true;
+    const Entity tapped = fired.ev.GetParam<Entity>(Params::ENTITY);
+    MatchCtx vctx;
+    vctx.controller = fired.controller;
+    vctx.source = fired.source;
+    if (is_battlefield_permanent(tapped)) return permanent_matches_filter(tapped, fired.ab.trigger_valid_card, vctx);
+    return zone_change_object_matches(tapped, Zone::BATTLEFIELD, Zone::GRAVEYARD, fired.ab.trigger_valid_card, vctx);
+}
+
 // CREATURE_ATTACKED: ValidCard$ Creature.OppCtrl (Tamiyo, Seasoned Scholar's +2), the attacker
 // controlled by an opponent of the trigger's controller.
 static bool match_attacks(const TriggerEvent &fired) {
@@ -567,6 +594,7 @@ static const TriggerMode kTriggerModes[] = {
         match_attacks, capture_attacks},
     {"AttackersDeclared", Events::ATTACKERS_DECLARED, bind_attackers_declared, "AttackingPlayer"},
     {"TapsForMana", Events::TAPPED_FOR_MANA, bind_taps_for_mana, "ValidCard Activator", card_read_creature},
+    {"Taps", Events::BECAME_TAPPED, bind_taps, "ValidCard", card_read_whole, nullptr, nullptr, match_taps},
     {"BecomesTarget", Events::BECAME_TARGET, bind_becomes_target, "ValidSource ValidTarget", nullptr,
         source_read_targeting, "Card.Self", match_becomes_target, capture_becomes_target, true},
     {"BecomeMonstrous", Events::BECAME_MONSTROUS, bind_become_monstrous, "ValidCard", card_read_self},

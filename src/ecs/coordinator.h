@@ -108,6 +108,10 @@ class Coordinator {
         void SendEvent(Event &event) { mEventManager->SendEvent(event); }
         void SendEvent(EventId eventId) { mEventManager->SendEvent(eventId); }
         std::vector<Event> drain_pending_events() { return mEventManager->drain_pending_events(); }
+        template <typename T>
+        void drop_last_pending_event(EventId id, ParamId param, const T &value) {
+            mEventManager->drop_last_pending(id, param, value);
+        }
 
         // Snapshot/restore the whole ECS as a unit (see snapshot.h). Member functions
         // because the four managers are private unique_ptrs; each delegates to the

@@ -809,7 +809,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 
     for (auto &[entity, was_tapped] : snap.tapped_state) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        global_coordinator.GetComponent<Permanent>(entity).is_tapped = was_tapped;
+        if (!was_tapped && global_coordinator.GetComponent<Permanent>(entity).is_tapped) reverse_tap(entity);
     }
     for (auto &[entity, exerter] : snap.exerted_state) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
