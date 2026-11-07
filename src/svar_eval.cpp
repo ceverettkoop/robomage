@@ -245,8 +245,9 @@ static constexpr SvarRow filter_row(const char *name, ReadFn read, ObjectsFn obj
     return {name, true, read, nullptr, nullptr, objects, nullptr, aggregate, true};
 }
 
-// Every Count$-family expression, in the order an expression is tried against them. The evaluator
-// and --parse-report read the same rows (svar_expr_recognized), so a new expression is one row here.
+// Every Count$-family expression, in the order an expression is tried against them. The evaluator,
+// --parse-report and the parser's amount SVars read the same rows (svar_expr_recognized), so a new
+// expression is one row here.
 static const SvarRow kSvarRows[] = {
     // Count$xPaid — the X paid for the X-cost spell or ability in flight or resolving (Green Sun's
     // Zenith: ChangeType$ Creature.Green+cmcLEX; Kozilek's Command's token count, scry count and

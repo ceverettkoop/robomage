@@ -47,7 +47,7 @@ int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity so
 int evaluate_svar(const std::string &expr, const ResolveCtx &ctx);
 
 // True when evaluate_svar has a reading for `expr` (it would not report it unrecognized), checked
-// without a game (--parse-report, parse_report.h).
+// without a game (--parse-report, parse_report.h; the parser keeping an amount SVar).
 bool svar_expr_recognized(const std::string &expr);
 
 // How a script spells each expression that names a filter over a set, up to the filter

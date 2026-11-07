@@ -410,7 +410,6 @@ static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string,
 static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
                                        const std::map<std::string, std::string>& svars);
 static std::string compare_of_svars(const std::string& sv, const std::map<std::string, std::string>& svars);
-static bool is_runtime_amount_expr(const std::string& sv);
 static size_t delirium_scale_pos(const std::string& sv);
 static void resolve_condition_svars(AbilityDef& ability,
                                     const std::map<std::string, std::string>& svars);
@@ -3255,7 +3254,8 @@ static void resolve_effect_static_svars(AbilityDef &ability, const std::string &
 // Resolves a non-numeric amount param (NumCards$, NumDmg$, LifeAmount$, ...) that named an SVar:
 // a direct dynamic expression is kept as is; otherwise the SVar body becomes the combat-damage
 // amount, a conditional amount (Flow State), a delirium scale (Unholy Heat), or a runtime
-// expression evaluated at activation/resolution.
+// expression the evaluator recognises (svar_expr_recognized), evaluated at activation/resolution;
+// any other body is an amount_expr finding.
 static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string, std::string> &svars,
                                 const std::string &card_name) {
     if (ability.amount_svar.empty() || take_direct_amount_expr(ability)) return;
@@ -3290,7 +3290,7 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         return;
     }
     const std::string expanded = expand_svar_head(sv, svars);
-    if (is_runtime_amount_expr(expanded)) {
+    if (svar_expr_recognized(expanded)) {
         ability.dynamic_amount_expr = expanded;
         return;
     }
@@ -3354,49 +3354,6 @@ static std::string compare_of_svars(const std::string &sv, const std::map<std::s
     if (tail.size() != 3 || svars.find(tail[1]) == svars.end() || svars.find(tail[2]) == svars.end()) return "";
     return head + svar_or_literal(svars, sv.substr(head.size(), space - head.size())) + ";" + tail[0] + ";" +
            svar_or_literal(svars, tail[1]) + ";" + svar_or_literal(svars, tail[2]);
-}
-
-// An amount SVar body that is a runtime expression, kept verbatim for evaluate_amount at
-// activation/resolution.
-static bool is_runtime_amount_expr(const std::string &sv) {
-    static const char *const kRuntimeMarkers[] = {
-        "Count$Valid", "Targeted$", "TargetedPlayer$", "TargetedController$", "Count$InYourLibrary", "Count$YourLifeTotal", "Count$Revolt",
-        // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling (Cabal Ritual: Amount$ X,
-        // X = Count$Threshold.5.3 → BBBBB if the caster has 7+ cards in their graveyard, else BBB).
-        "Count$Threshold",
-        // Count$UrzaLands.<hi>.<lo> — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): hi
-        // colorless mana if the controller controls a complete set of all three, else lo
-        // (mana-ability path via eval_mana_amount).
-        "Count$UrzaLands",
-        // Count$CardCounters.<TYPE> — counters on the source permanent (The One Ring:
-        // NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN), evaluated against the source.
-        "Count$CardCounters",
-        // Count$Converge (Prismatic Ending) — the distinct colors of mana spent to cast the spell,
-        // from current_converge(). Used as the cmcLEY exile threshold.
-        "Count$Converge",
-        // Count$ChosenNumber — the number a ChooseNumber of this resolution chose (Galvanic
-        // Discharge: NumDmg$ X).
-        "Count$ChosenNumber",
-        // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a RememberChanged$
-        // ChangeZoneAll) cards matching the filter (Canoptek Scarab Swarm: TokenAmount$ X, X =
-        // Remembered$Valid Land,Artifact). The RememberedLKI$ form reads the same remembered set,
-        // but populated from a RememberLKI$ ChangeZone last-known-info snapshot (Reanimate:
-        // LifeAmount$ X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
-        "Remembered$", "RememberedLKI$",
-        // Imprinted$Amount — how many cards the resolution imprinted (The Stone Brain: NumCards$ Z,
-        // the cards exiled from the hand).
-        "Imprinted$",
-        // TriggeredCard$CardPower — what the trigger's event happened to (Pyrogoyf: NumDmg$ Z).
-        "TriggeredCard$",
-        // Sacrificed$CardManaCost — what the ability's cost sacrificed (Broadside Bombardiers: NumDmg$ X).
-        "Sacrificed$",
-        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
-        // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
-        "xPaid",
-    };
-    for (const char *marker : kRuntimeMarkers)
-        if (sv.find(marker) != std::string::npos) return true;
-    return false;
 }
 
 // Resolves a ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
