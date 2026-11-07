@@ -902,6 +902,10 @@ struct Ability {
     // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
     DelayedTriggerLink delayed_link;
 
+    // A replacement effect's ReplaceWith$ body, run in place of the event (CR 614.6): no object is
+    // resolving, so the "Resolving ability" line is not written.
+    bool replacing_an_event = false;
+
     // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
     // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
     // GrantCast handler on the copy it puts on an EffectObject, with its vocab idx captured at

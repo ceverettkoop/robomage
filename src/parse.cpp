@@ -4383,6 +4383,7 @@ struct ReplacementLine {
     // retagging the R: line.
     bool replace_with_discard_else_grave = false;
     std::string discard_else_filter;
+    std::string replace_with_body;  // the ReplaceWith$ SVar's text
     bool replace_with_win = false;  // the ReplaceWith$ SVar is a DB$ WinsGame
     int draw_add = 0;               // the ReplaceWith$ SVar's DB$ Draw NumCards$ ReplaceCount$Number/Plus.K
     std::string draw_condition_count_expr;  // CheckSVar$ resolved to the SVar's Count$ body
@@ -4462,8 +4463,9 @@ static ReplacementLine read_replacement_line(const std::string &line,
     auto sv = svars.find(l.replace_with_svar);
     if (sv == svars.end()) return l;
     const std::string &body = sv->second;
+    l.replace_with_body = body;
     if (body.find("VOID") != std::string::npos) l.replace_with_void_counter = true;
-    if (body.find("WinsGame") != std::string::npos) l.replace_with_win = true;
+    if (body.rfind("DB$ WinsGame", 0) == 0) l.replace_with_win = true;
     if (body.find("DB$ ReplaceMana") != std::string::npos) {
         l.replace_with_produce_mana = true;
         size_t pp = 0; std::string k, v;
@@ -4611,8 +4613,8 @@ static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replace
 // Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in it, you
 // win the game instead." (CR 104.3a/121.4). A draw-event replacement whose ReplaceWith$ SVar is a
 // DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw (checked at the empty-draw
-// site in Orderer::perform_draw). We confirm the replacement's effect is a game win via the named
-// SVar body rather than retagging the R: line.
+// site in Orderer::perform_draw). The row stands for a win alone: any other body at that site is
+// a finding, not a body to run.
 static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r) {
     if (!l.replace_with_win) return false;
     r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
@@ -4693,28 +4695,31 @@ static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::R
     return true;
 }
 
-// Every replacement a script can express: an Event$, the host it is written on, and the reader that
-// says whether this line is that form and fills it in. A line yields each row it matches, in order.
+// Every replacement a script can express: an Event$, the host it is written on, the reader that
+// says whether this line is that form and fills it in, and whether it runs its ReplaceWith$ body
+// (parsed like any SVar, Effect::Replacement::replace_with) rather than reading it into fields. A
+// line yields each row it matches, in order.
 static const struct {
     const char *event;
     ReplacementHost host;
     bool (*read)(const ReplacementLine &, Effect::Replacement &);
+    bool runs_body;
 } kReplacementRows[] = {
-    {"Moved", ReplacementHost::CARD, row_enters_tapped},
-    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional},
-    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard},
-    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self},
-    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield},
-    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard},
-    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb},
-    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones},
-    {"Draw", ReplacementHost::CARD, row_draw_empty_win},
-    {"DrawCards", ReplacementHost::CARD, row_draw_add},
-    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype},
-    {"ProduceMana", ReplacementHost::CARD, row_produce_mana},
-    {"Untap", ReplacementHost::CARD, row_skip_untap_self},
-    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered},
-    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped, false},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional, false},
+    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard, false},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self, false},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield, false},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard, false},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb, false},
+    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones, false},
+    {"Draw", ReplacementHost::CARD, row_draw_empty_win, true},
+    {"DrawCards", ReplacementHost::CARD, row_draw_add, false},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype, false},
+    {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_self, false},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false},
+    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false},
 };
 
 // Appends what the replacement line yields on `host`, returning how many it did.
@@ -4726,6 +4731,8 @@ static size_t read_replacement_rows(const std::string &line, const std::map<std:
         if (row.host != host || l.event != row.event) continue;
         Effect::Replacement r;
         if (!row.read(l, r)) continue;
+        if (row.runs_body)
+            r.replace_with = intern_ability_def(parse_svar_ability(l.replace_with_body, AbilityDef::TRIGGERED, svars, ""));
         out.push_back(std::move(r));
         yielded++;
     }

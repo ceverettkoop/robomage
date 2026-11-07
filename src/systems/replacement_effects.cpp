@@ -29,6 +29,7 @@
 #include "../queries/types.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
+#include "../resolution.h"
 #include "../svar_eval.h"
 #include "state_manager.h"
 
@@ -767,6 +768,15 @@ int draw_count_bonus(Zone::Ownership player) {
             bonus += r.draw_add;
         });
     return bonus;
+}
+
+void run_replace_with(const Effect::Replacement &r, Entity source, Zone::Ownership controller,
+                      std::shared_ptr<Orderer> orderer) {
+    Ability body(r.replace_with);
+    body.source = ObjectRef::of(source);
+    body.controller = controller;
+    body.replacing_an_event = true;
+    resolve_ability(body, orderer);
 }
 
 size_t choose_one_prompt_count() { return g_choose_one_prompts; }

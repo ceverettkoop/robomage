@@ -405,8 +405,9 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
             report_targets(ab);
             apply_memory_ops(ab);
-            game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
-                     resolving_log_detail(ab, orderer).c_str());
+            if (!ab.replacing_an_event)
+                game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
+                         resolving_log_detail(ab, orderer).c_str());
             next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
         }  // end of the one-shot (non-resuming) section
 

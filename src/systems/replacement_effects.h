@@ -2,13 +2,17 @@
 #define REPLACEMENT_EFFECTS_H
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "../classes/action.h"
 #include "../classes/colors.h"
+#include "../components/effect.h"
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+
+class Orderer;
 
 // Replacement-effect dispatcher (MTG Comprehensive Rules 614 / 616).
 //
@@ -111,6 +115,11 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
 // extra plain draws after the base draw — those extra draws are part of the same replaced event
 // (614.5) and are NOT re-passed through this replacement.
 int draw_count_bonus(Zone::Ownership player);
+
+// Runs what `r`'s ReplaceWith$ names in place of the event (CR 614.6), as an ability of `source`
+// controlled by `controller`. Blocking: a body that asks a question has no way to park here.
+void run_replace_with(const Effect::Replacement &r, Entity source, Zone::Ownership controller,
+                      std::shared_ptr<Orderer> orderer);
 
 // Diagnostics: how many 616.1 choose-one-of-several-replacements prompts this
 // process has emitted. The choose_one prompt is the one remaining blocking
