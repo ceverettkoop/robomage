@@ -1,13 +1,26 @@
 #include "trigger_modes.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 
+#include "components/carddata.h"
+#include "components/player.h"
+#include "components/spell.h"
 #include "components/zone.h"
+#include "ecs/coordinator.h"
 #include "ecs/events.h"
+#include "mana_system.h"
 #include "parse.h"
+#include "queries/characteristics.h"
 #include "queries/filters.h"
+#include "queries/players.h"
+#include "queries/types.h"
 #include "str_util.h"
+#include "svar_eval.h"
+#include "systems/rules_modifying.h"
+
+extern Coordinator global_coordinator;
 
 static void bind_changes_zone(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
 static void bind_phase(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability);
@@ -32,6 +45,18 @@ static bool source_read_self(const std::string &value);
 static bool source_read_your_creature(const std::string &value);
 static bool source_read_targeting(const std::string &value);
 static bool filter_reads_only(const std::string &spec, const std::vector<std::string> &tokens);
+static bool op_holds(int value, const std::string &op, int bound);
+static bool zone_move_matches(
+    const TriggerEvent &fired, Entity moved, Zone::ZoneValue origin, Zone::ZoneValue destination);
+static bool match_changes_zone(const TriggerEvent &fired);
+static bool match_land_played(const TriggerEvent &fired);
+static bool match_spell_cast(const TriggerEvent &fired);
+static bool match_drawn(const TriggerEvent &fired);
+static bool match_becomes_target(const TriggerEvent &fired);
+static void capture_spell_cast(Ability &ab, const Event &ev);
+static void capture_combat_damage(Ability &ab, const Event &ev);
+static void capture_attacks(Ability &ab, const Event &ev);
+static void capture_becomes_target(Ability &ab, const Event &ev);
 
 static void bind_changes_zone(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
     // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied
@@ -167,8 +192,8 @@ static void bind_always(const TriggerMode &mode, const TriggerLine &t, AbilityDe
 // of Flowers' Phase$ Main1,Main2 — "each of your main phases").
 static void bind_phase(const TriggerMode &, const TriggerLine &t, AbilityDef &ability) {
     static const struct {
-        const char *phase;
-        EventId event;
+            const char *phase;
+            EventId event;
     } kPhaseEvents[] = {
         {"Upkeep", Events::UPKEEP_BEGAN},
         // Forge writes the end step as either "EndStep" or "End of Turn".
@@ -189,10 +214,11 @@ static void bind_phase(const TriggerMode &, const TriggerLine &t, AbilityDef &ab
     }
     for (const auto &pe : kPhaseEvents) {
         if (std::find(t.phases.begin(), t.phases.end(), pe.phase) == t.phases.end()) continue;
-        if (ability.trigger_on == 0) ability.trigger_on = pe.event;
+        if (ability.trigger_on == 0)
+            ability.trigger_on = pe.event;
         else if (ability.trigger_on != pe.event &&
-                 std::find(ability.trigger_on_extra.begin(), ability.trigger_on_extra.end(),
-                           pe.event) == ability.trigger_on_extra.end())
+                 std::find(ability.trigger_on_extra.begin(), ability.trigger_on_extra.end(), pe.event) ==
+                     ability.trigger_on_extra.end())
             ability.trigger_on_extra.push_back(pe.event);
         ability.trigger_valid_player_is_controller = t.player_is_you;
     }
@@ -269,7 +295,8 @@ static bool card_read_spell_cast(const std::string &value, bool) {
     if (filter_names_token(value, "nonCreature") &&
         (filter_names_token(value, "Colorless") || value.find("cmc") != std::string::npos))
         return false;
-    return filter_reads_only(value, {"Card", "Permanent", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
+    return filter_reads_only(
+        value, {"Card", "Permanent", "Colorless", "nonCreature", "Self", "YouCtrl", "cmc*", "kicked*"});
 }
 
 static bool card_read_drawn(const std::string &value, bool) {
@@ -280,13 +307,21 @@ static bool card_read_attacks(const std::string &value, bool floating) {
     return value == "Card.Self" || (floating && value == "Creature.OppCtrl");
 }
 
-static bool card_read_self(const std::string &value, bool) { return value == "Card.Self"; }
+static bool card_read_self(const std::string &value, bool) {
+    return value == "Card.Self";
+}
 
-static bool card_read_creature(const std::string &value, bool) { return value == "Creature"; }
+static bool card_read_creature(const std::string &value, bool) {
+    return value == "Creature";
+}
 
-static bool source_read_self(const std::string &value) { return value == "Card.Self"; }
+static bool source_read_self(const std::string &value) {
+    return value == "Card.Self";
+}
 
-static bool source_read_your_creature(const std::string &value) { return value == "Creature.YouCtrl"; }
+static bool source_read_your_creature(const std::string &value) {
+    return value == "Creature.YouCtrl";
+}
 
 static bool source_read_targeting(const std::string &value) {
     return filter_reads_only(value, {"Spell", "Card", "OppCtrl"});
@@ -309,24 +344,201 @@ static bool filter_reads_only(const std::string &spec, const std::vector<std::st
     return true;
 }
 
+// `value` against `bound` by a Forge comparator (EQ, NE, LE, GE, LT, GT); any other reads as EQ.
+static bool op_holds(int value, const std::string &op, int bound) {
+    return (op == "LE")   ? value <= bound
+           : (op == "GE") ? value >= bound
+           : (op == "LT") ? value < bound
+           : (op == "GT") ? value > bound
+           : (op == "NE") ? value != bound
+                          : value == bound;
+}
+
+// A zone-change trigger's filters against one move of object `moved` (0 = none named) from
+// `origin` to `destination`: its Origin$ / Destination$ zones and its ValidCard$, matched with
+// the source's controller as "you" (zone_change_object_matches: the object as it exists after the
+// move, or as it last existed on the battlefield for a departure — CR 603.6a / 603.10a).
+static bool zone_move_matches(
+    const TriggerEvent &fired, Entity moved, Zone::ZoneValue origin, Zone::ZoneValue destination) {
+    const AbilityDef &ab = fired.ab;
+    if (ab.trigger_zone_origin >= 0 && origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) return false;
+    if (ab.trigger_zone_destination >= 0 && destination != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination))
+        return false;
+    if (ab.trigger_valid_card.empty() || moved == 0) return true;
+    MatchCtx vctx;
+    vctx.controller = fired.controller;
+    vctx.source = fired.source;
+    return zone_change_object_matches(moved, origin, destination, ab.trigger_valid_card, vctx);
+}
+
+// CARD_CHANGED_ZONE: origin, destination and the ValidCard$ filter (Guide of Souls'
+// Creature.Other+YouCtrl, Kappa Cannoneer's Artifact.YouCtrl, landfall's Land.YouCtrl, Ajani's
+// Cat.Other+YouCtrl, Moonshadow's Permanent.YouOwn+!token, Murktide's Instant/Sorcery) on the moving
+// object — its live types (an animated land is a creature, a Clue token isn't, an
+// entering-transformed face is its back face) and its controller (a creature reanimated from an
+// opponent's graveyard is YouCtrl for the reanimator).
+static bool match_changes_zone(const TriggerEvent &fired) {
+    const Event &ev = fired.ev;
+    const Entity moved = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+    const Zone::ZoneValue destination = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+    // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
+    if (destination == Zone::BATTLEFIELD && rules_mod::etb_triggers_suppressed(moved)) return false;
+    return zone_move_matches(fired, moved, ev.GetParam<Zone::ZoneValue>(Params::ORIGIN), destination);
+}
+
+// LAND_PLAYED (City of Traitors' Land.Other+YouCtrl): the played land's move from the zone it was
+// played from onto the battlefield.
+static bool match_land_played(const TriggerEvent &fired) {
+    const Event &ev = fired.ev;
+    return zone_move_matches(
+        fired, ev.GetParam<Entity>(Params::ENTITY), ev.GetParam<Zone::ZoneValue>(Params::ORIGIN), Zone::BATTLEFIELD);
+}
+
+// SPELL_CAST: the gates on the spell cast and on how many have been cast.
+static bool match_spell_cast(const TriggerEvent &fired) {
+    const AbilityDef &ab = fired.ab;
+    const Event &ev = fired.ev;
+    const bool has_spell = ev.HasParam(Params::ENTITY);
+    const Entity spell = has_spell ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+    // ValidCard$ Card.nonCreature (The Fantasticar): the cast spell must NOT be a creature spell.
+    if (ab.trigger_valid_card_non_creature && has_spell && type_set_has(effective_types(spell), "Creature"))
+        return false;
+    // ValidCard$ Permanent, ValidSA$ Spell.ManaFromCard.StrictlySelf (The Myriad Pools): a permanent
+    // spell, cast with mana this source made.
+    if (has_spell) {
+        if (ab.trigger_valid_card_permanent && !is_permanent_type_line(effective_types(spell))) return false;
+        if (ab.trigger_mana_from_self &&
+            (!global_coordinator.entity_has_component<Spell>(spell) ||
+                mana_from(global_coordinator.GetComponent<Spell>(spell).chosen.mana_paid, fired.source) == 0))
+            return false;
+    }
+    // Colorless filter (Glaring Fleshraker): the cast spell must be colorless (CR 105.2c).
+    if (ab.trigger_valid_card_colorless && has_spell && !is_colorless(spell)) return false;
+    // Spell count filter (Cori-Steel Cutter)
+    if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
+        Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
+        if (!global_coordinator.entity_has_component<Player>(ev_player)) return false;
+        auto &pl = global_coordinator.GetComponent<Player>(ev_player);
+        // The Fantasticar counts only noncreature spells; Cori-Steel Cutter counts all.
+        size_t cast_count =
+            ab.trigger_spell_count_noncreature ? pl.noncreature_spells_cast_this_turn : pl.spells_cast_this_turn;
+        if (cast_count != ab.trigger_spell_count_eq) return false;
+    }
+    // Dynamic mana-value filter on the cast spell (Chalice of the Void: ValidCard$ Card.cmcEQY,
+    // Y = Count$CardCounters.CHARGE). Compare the cast spell's mana value to the count resolved
+    // against this source permanent.
+    if (!ab.trigger_cmc_expr.empty()) {
+        if (!has_spell || !global_coordinator.entity_has_component<CardData>(spell)) return false;
+        const int spell_mv = object_mana_value(spell, global_coordinator.GetComponent<CardData>(spell));
+        const int bound = evaluate_svar(ab.trigger_cmc_expr, fired.controller, fired.source);
+        if (!op_holds(spell_mv, ab.trigger_cmc_op, bound)) return false;
+    }
+    // ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent to cast that
+    // spell" = ManaSpent EQ0). Compare the cast spell's recorded ChosenCost::mana_spent (CR
+    // 106/601.2g) to the trigger's bound. The spell is still on the stack when SPELL_CAST fires, so
+    // its Spell component is present.
+    if (!ab.trigger_mana_spent_op.empty()) {
+        if (!has_spell || !global_coordinator.entity_has_component<Spell>(spell)) return false;
+        const int spent = global_coordinator.GetComponent<Spell>(spell).chosen.mana_spent();
+        if (!op_holds(spent, ab.trigger_mana_spent_op, ab.trigger_mana_spent_val)) return false;
+    }
+    return true;
+}
+
+// PLAYER_DREW_CARD (Orcish Bowmasters).
+static bool match_drawn(const TriggerEvent &fired) {
+    const AbilityDef &ab = fired.ab;
+    const Event &ev = fired.ev;
+    // ValidCard$ Card.OppOwn — the drawn card must be owned by an opponent of the source's
+    // controller (drawer != controller).
+    if (ab.trigger_valid_card_opp_own && ev.HasParam(Params::PLAYER) &&
+        ev.GetParam<Entity>(Params::PLAYER) == get_player_entity(fired.controller))
+        return false;
+    // FirstCardInDrawStep$ False — ignore the first card drawn in the drawer's draw step (the
+    // turn-based draw).
+    if (ab.trigger_exclude_first_draw_step && ev.HasParam(Params::FIRST_IN_STEP) &&
+        ev.GetParam<int>(Params::FIRST_IN_STEP) == 1)
+        return false;
+    // Number$ N (Tamiyo, Inquisitive Student: "your THIRD card in a turn") — fire only when this
+    // draw is the drawer's Nth this turn. AMOUNT is the per-draw running ordinal stamped on the
+    // event (1-based), so exactly the Nth draw fires.
+    if (ab.trigger_draw_number_eq > 0 &&
+        (!ev.HasParam(Params::AMOUNT) || ev.GetParam<uint32_t>(Params::AMOUNT) != ab.trigger_draw_number_eq))
+        return false;
+    return true;
+}
+
+// BECAME_TARGET (Reality Smasher): the trigger fires only for the permanent that became a target
+// and only when the targeting object is a spell controlled by an opponent (ValidSource$
+// Spell.OppCtrl).
+static bool match_becomes_target(const TriggerEvent &fired) {
+    const AbilityDef &ab = fired.ab;
+    const Event &ev = fired.ev;
+    // ValidTarget$ Card.Self: the permanent that became a target must be this one.
+    const Entity targeted = ev.HasParam(Params::TARGET) ? ev.GetParam<Entity>(Params::TARGET) : 0;
+    if (ab.trigger_only_self && targeted != fired.source) return false;
+    const Entity targeting = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+    // ValidSource$ Spell — the targeting object must be a spell on the stack.
+    if (ab.trigger_source_must_be_spell && !global_coordinator.entity_has_component<Spell>(targeting)) return false;
+    // ValidSource$ ...OppCtrl — controlled by an opponent of this source's controller.
+    if (ab.trigger_source_opp_ctrl && ev.HasParam(Params::PLAYER) &&
+        ev.GetParam<Entity>(Params::PLAYER) == get_player_entity(fired.controller))
+        return false;
+    return true;
+}
+
+static void capture_spell_cast(Ability &ab, const Event &ev) {
+    if (ev.HasParam(Params::ENTITY)) ab.cast_spell = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+}
+
+// For combat damage triggers, capture the damage amount.
+static void capture_combat_damage(Ability &ab, const Event &ev) {
+    if (ev.HasParam(Params::AMOUNT)) ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
+}
+
+// Defined$ TriggeredDefendingPlayer — bind the defending player of the attack (Goblin Guide's Dig
+// acts on the DEFENDER's library). CREATURE_ATTACKED carries PLAYER = the attacker's controller
+// (active player); in a two-player game the defender is that player's opponent. Bind it as the
+// ability's target (a player entity), which the Dig handler reads as the library owner.
+static void capture_attacks(Ability &ab, const Event &ev) {
+    if (!ab.def->defined.is(ObjectSpec::TRIGGERED_DEFENDING_PLAYER) || !ev.HasParam(Params::PLAYER)) return;
+    const Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
+    ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));
+}
+
+// Defined$ TriggeredSourceSA — the Counter effect acts on the spell that targeted this permanent.
+// Bind it as the ability's target from the event's ENTITY (the targeting object). UnlessPayer$
+// TriggeredSourceSAController binds the payer of the unless-cost to that spell's controller (the
+// opponent), captured from PLAYER.
+static void capture_becomes_target(Ability &ab, const Event &ev) {
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_SOURCE_SA) && ev.HasParam(Params::ENTITY))
+        ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+    if (ab.def->unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER))
+        ab.unless_payer = seat_of_player(ev.GetParam<Entity>(Params::PLAYER));
+}
 
 static const TriggerMode kTriggerModes[] = {
-    {"ChangesZone", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards", card_read_move},
-    {"ChangesZoneAll", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards", card_read_move},
+    {"ChangesZone", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards",
+        card_read_move, nullptr, nullptr, match_changes_zone},
+    {"ChangesZoneAll", Events::CARD_CHANGED_ZONE, bind_changes_zone, "Origin Destination ValidCard ValidCards",
+        card_read_move, nullptr, nullptr, match_changes_zone},
     {"Phase", 0, bind_phase, "Phase ValidPlayer"},
     {"SpellCast", Events::SPELL_CAST, bind_spell_cast, "ValidCard ValidActivatingPlayer ValidSA ActivatorThisTurnCast",
-     card_read_spell_cast},
+        card_read_spell_cast, nullptr, nullptr, match_spell_cast, capture_spell_cast},
     {"DamageDone", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_done, "ValidSource ValidTarget CombatDamage", nullptr,
-     source_read_self, "Player"},
+        source_read_self, "Player", nullptr, capture_combat_damage},
     {"DamageAll", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_all, "ValidSource ValidTarget CombatDamage", nullptr,
-     source_read_your_creature, "Player"},
-    {"Drawn", Events::PLAYER_DREW_CARD, bind_drawn, "ValidCard FirstCardInDrawStep Number", card_read_drawn},
-    {"LandPlayed", Events::LAND_PLAYED, bind_land_played, "ValidCard Origin", card_read_move},
-    {"Attacks", Events::CREATURE_ATTACKED, bind_attacks, "ValidCard Attacked", card_read_attacks},
+        source_read_your_creature, "Player", nullptr, capture_combat_damage},
+    {"Drawn", Events::PLAYER_DREW_CARD, bind_drawn, "ValidCard FirstCardInDrawStep Number", card_read_drawn, nullptr,
+        nullptr, match_drawn},
+    {"LandPlayed", Events::LAND_PLAYED, bind_land_played, "ValidCard Origin", card_read_move, nullptr, nullptr,
+        match_land_played},
+    {"Attacks", Events::CREATURE_ATTACKED, bind_attacks, "ValidCard Attacked", card_read_attacks, nullptr, nullptr,
+        nullptr, capture_attacks},
     {"AttackersDeclared", Events::ATTACKERS_DECLARED, bind_attackers_declared, "AttackingPlayer"},
     {"TapsForMana", Events::TAPPED_FOR_MANA, bind_taps_for_mana, "ValidCard Activator", card_read_creature},
     {"BecomesTarget", Events::BECAME_TARGET, bind_becomes_target, "ValidSource ValidTarget", nullptr,
-     source_read_targeting, "Card.Self"},
+        source_read_targeting, "Card.Self", match_becomes_target, capture_becomes_target, true},
     {"BecomeMonstrous", Events::BECAME_MONSTROUS, bind_become_monstrous, "ValidCard", card_read_self},
     {"Always", 0, bind_always, ""},
 };
@@ -335,6 +547,16 @@ const TriggerMode *trigger_mode_named(const std::string &name) {
     for (const TriggerMode &mode : kTriggerModes)
         if (name == mode.name) return &mode;
     return nullptr;
+}
+
+const TriggerMode *trigger_mode_on(EventId event) {
+    static const auto by_event = [] {
+        std::array<const TriggerMode *, 64> rows{};
+        for (const TriggerMode &mode : kTriggerModes)
+            if (mode.event != 0 && !rows[mode.event]) rows[mode.event] = &mode;
+        return rows;
+    }();
+    return event < by_event.size() ? by_event[event] : nullptr;
 }
 
 bool trigger_mode_reads_key(const TriggerMode &mode, const std::string &key) {

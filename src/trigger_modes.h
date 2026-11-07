@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "components/ability.h"
+#include "components/zone.h"
+#include "ecs/entity.h"
 #include "ecs/event.h"
 
 // A trigger line's params: what the parser read of a T: line (or an Effect's Triggers$ SVar) that
@@ -45,9 +47,17 @@ struct TriggerLine {
     std::string condition_compare;
 };
 
-// One row per trigger Mode$: a new mode is a row here. The binding the parser asks of it, and what
-// --parse-report calls read, come from the same row, so a mode can't be known to one and not the
-// other.
+// One event met by one triggered ability of `source`, controlled by `controller`.
+struct TriggerEvent {
+    const AbilityDef &ab;
+    Entity source;
+    Zone::Ownership controller;
+    const Event &ev;
+};
+
+// One row per trigger Mode$: a new mode is a row here. The binding the parser asks of it, what the
+// trigger scan matches, and what --parse-report calls read come from the same row, so a mode can't
+// be known to one and not the others.
 struct TriggerMode {
     const char *name;  // Mode$
     // The event it fires on. 0 when its binder chooses among several (Phase) or it has none
@@ -65,10 +75,21 @@ struct TriggerMode {
     // Does its reader honour ValidSource$ `value`, and the one ValidTarget$ it reads.
     bool (*source_read)(const std::string &value);
     const char *valid_target;
+    // Its filters on one event of its event type, past the gates every mode shares
+    // (match_event_triggers): false when the ability doesn't trigger. nullptr when it has none.
+    bool (*match)(const TriggerEvent &fired);
+    // What it takes from the event onto the triggered ability. nullptr when it takes nothing.
+    void (*capture)(Ability &ab, const Event &ev);
+    // The event's ENTITY and PLAYER are the targeting object and its controller, not the subject
+    // of the trigger, so the shared self and player gates don't read them.
+    bool names_target;
 };
 
 // The row of Mode$ `name`, or nullptr when no event binding exists for it.
 const TriggerMode *trigger_mode_named(const std::string &name);
+// The row reading `event`, for the trigger scan, or nullptr when no row does. Rows sharing an event
+// share what they read of it, and a trigger the engine builds has no Mode$, so it goes by the event.
+const TriggerMode *trigger_mode_on(EventId event);
 // Does `mode` act on the param `key`?
 bool trigger_mode_reads_key(const TriggerMode &mode, const std::string &key);
 
