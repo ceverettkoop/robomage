@@ -27,6 +27,7 @@
 #include "game_driver.h"
 #include "input_logger.h"
 #include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/costs.h"
@@ -398,22 +399,34 @@ bool ability_is_mana(const Ability &ab) {
     return ab.def->kind == EffectKind::AddMana || ab.def->kind == EffectKind::ManaReflected;
 }
 
+static bool reflects_mana(const Ability &ab) {
+    return !ab.def->reflected_mana_filter.empty() || !ab.def->reflected_mana_objects.is(ObjectSpec::DEFAULT);
+}
+
 // The producible color set of an AB$ ManaReflected ability (Mox Amber): the UNION of the
 // effective colors of every battlefield permanent (controlled by `player`) that matches the
 // ability's Valid$ filter (ReflectProperty$ Is — reflect the colors those permanents are).
 // Colorless contributes no color (CR 105.2c), so a colorless-only board yields an empty set
 // and the source produces nothing. Returned in WUBRG order for a stable choice menu.
-static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player, const EntitySet &entities) {
+static std::vector<Colors> reflected_color_set(Entity source, const Ability &ab, Zone::Ownership player,
+                                               const EntitySet &entities) {
     std::set<Colors> colors;
     MatchCtx ctx;
     ctx.controller = player;
+    // Valid$ Defined.Imprinted (Chrome Mox): the colors of the card exiled with it, in exile.
+    if (!ab.def->reflected_mana_objects.is(ObjectSpec::DEFAULT)) {
+        coverage_row("reflected_objects");
+        for (Entity e : resolve_filter_objects(ab.def->reflected_mana_objects, ResolveCtx::of_static(player, source)))
+            for (Colors c : effective_colors(e)) colors.insert(c);
+    }
     // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention).
     // permanent_matches_filter matches each alternative (legendary creature / legendary
     // planeswalker) independently, so the comma-OR is handled in one shared place.
-    for (auto entity : battlefield_permanents(entities, player)) {
-        if (!permanent_matches_filter(entity, ab.def->reflected_mana_filter, ctx)) continue;
-        for (Colors c : effective_colors(entity)) colors.insert(c);
-    }
+    if (!ab.def->reflected_mana_filter.empty())
+        for (auto entity : battlefield_permanents(entities, player)) {
+            if (!permanent_matches_filter(entity, ab.def->reflected_mana_filter, ctx)) continue;
+            for (Colors c : effective_colors(entity)) colors.insert(c);
+        }
     std::vector<Colors> ordered;
     for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
         if (colors.count(c)) ordered.push_back(c);
@@ -489,8 +502,8 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
 // produce nothing, so it is not offered as a usable mana source.
 static void push_mana_source(Entity source, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
                              std::vector<std::pair<Entity, Ability>> &sources) {
-    if (!ab.def->reflected_mana_filter.empty()) {
-        for (Colors choice_color : reflected_color_set(ab, player, entities)) {
+    if (reflects_mana(ab)) {
+        for (Colors choice_color : reflected_color_set(source, ab, player, entities)) {
             Ability choice_ab = ab;
             choice_ab.color = choice_color;
             sources.push_back({source, choice_ab});
@@ -570,8 +583,8 @@ ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities) 
             // A ManaReflected source whose color set is empty (Mox Amber with no legendary,
             // or only colorless ones) produces nothing, so note_color leaves it uncounted —
             // matching collect_available_mana_sources, which offers no action for it.
-            if (!ab.def->reflected_mana_filter.empty()) {
-                for (Colors c : reflected_color_set(ab, player, entities)) note_color(c);
+            if (reflects_mana(ab)) {
+                for (Colors c : reflected_color_set(entity, ab, player, entities)) note_color(c);
             } else if (!ab.def->mana_choices.empty()) {
                 for (Colors c : ab.def->mana_choices) note_color(c);
             } else {

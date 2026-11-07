@@ -1,0 +1,36 @@
+{
+  "name": "cr105_2c_chrome_mox_a_colorless_card_gives_no_color",
+  "why": "CR 105.2c, 106.5, Chrome Mox: \"one mana of any of the exiled card's colors\": a colorless card has none, so the Mox makes nothing, though the card is nonartifact and nonland.",
+  "hand_a": [
+    "Chrome Mox",
+    "Thought-Knot Seer",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chrome Mox",
+    "A:desc:Accept",
+    "A:desc:Thought-Knot Seer"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Thought-Knot Seer"
+  ],
+  "expect_menu_not": [
+    "Cast Lightning Bolt"
+  ]
+}

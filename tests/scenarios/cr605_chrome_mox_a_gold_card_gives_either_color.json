@@ -1,0 +1,39 @@
+{
+  "name": "cr605_chrome_mox_a_gold_card_gives_either_color",
+  "why": "CR 605, Chrome Mox: \"one mana of any of the exiled card's colors\": a blue-red card makes either, a row each when the mana is paid by hand.",
+  "hand_a": [
+    "Chrome Mox",
+    "Prismari Charm",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chrome Mox",
+    "A:desc:Accept",
+    "A:desc:Prismari Charm",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "max_decisions": 8,
+  "expect_menu": [
+    "Chrome Mox.*\\(U\\)",
+    "Chrome Mox.*\\(R\\)"
+  ]
+}

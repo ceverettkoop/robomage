@@ -97,6 +97,9 @@ struct AbilityDef {
     // permanent's effective_colors), then expanded into per-color choices like mana_choices.
     // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
     FilterSpec reflected_mana_filter;
+    // Valid$ Defined.<name> (Chrome Mox's Defined.Imprinted): the colors of those objects instead,
+    // wherever they are.
+    ObjectSpec reflected_mana_objects;
     ManaRestriction mana_restriction;                // RestrictValid$
     const ManaRider *mana_rider = nullptr;           // AddsNoCounter$; null: its mana carries none
 

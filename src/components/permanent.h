@@ -107,6 +107,9 @@ struct Permanent {
     Colors chosen_color = NO_COLOR;  // color chosen on ETB (Painter's Servant) — what AddColor$ ChosenColor adds
     std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,
                                          // linked "until it leaves" returns)
+    // What its abilities imprinted (Chrome Mox), kept past their resolution until a ForgetImprinted$ or
+    // ClearImprinted$ takes it out. A card moved away stays here, by its stale reference, until then.
+    std::vector<ObjectRef> imprinted;
 
     // DB$ Animate | Duration$ Permanent (CR 613, the "becomes ..." continuous effects a
     // resolved ability bakes onto a permanent for the rest of the game). Stored on the

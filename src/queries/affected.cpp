@@ -75,8 +75,9 @@ static const DefinedRow kDefinedRows[] = {
     // Forge's default: an ability that names nothing acts on its source.
     {nullptr, ObjectSpec::DEFAULT, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     {nullptr, ObjectSpec::UNREAD, Refers::OBJECT},
-    // A set only a filter's qualifiers read (IsImprinted).
-    {nullptr, ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted},
+    // Filters' IsImprinted and a ManaReflected's Valid$ Defined.Imprinted read this set; no ability's
+    // Defined$ does.
+    {"Imprinted", ObjectSpec::IMPRINTED, Refers::OBJECT, objects_imprinted, nullptr, read_by_no_ability},
 
     {"Self", ObjectSpec::SELF, Refers::OBJECT, objects_source, nullptr, nullptr, false, true},
     // TriggeredNewCard(LKICopy) — the object that changed zones and fired
@@ -217,8 +218,14 @@ static void objects_remembered(const ObjectSpec &, const ResolveCtx &, std::vect
     for (Entity e : live_entities(cur_game.resolution.memory.remembered)) out.push_back(e);
 }
 
-static void objects_imprinted(const ObjectSpec &, const ResolveCtx &, std::vector<Entity> &out) {
+// What the resolution imprinted, and what the source permanent holds imprinted: a card that has moved
+// stays there until it is forgotten, so a trigger on its move can still name it.
+static void objects_imprinted(const ObjectSpec &, const ResolveCtx &ctx, std::vector<Entity> &out) {
     for (Entity e : live_entities(cur_game.resolution.memory.imprinted)) out.push_back(e);
+    const Entity source = ctx.source.get();
+    if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return;
+    for (Entity e : lki_entities(global_coordinator.GetComponent<Permanent>(source).imprinted))
+        if (std::find(out.begin(), out.end(), e) == out.end()) out.push_back(e);
 }
 
 static void objects_chosen_cards(const ObjectSpec &, const ResolveCtx &, std::vector<Entity> &out) {

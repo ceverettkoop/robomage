@@ -8,6 +8,7 @@
 
 #include "card_db.h"
 #include "card_vocab.h"
+#include "queries/affected.h"
 #include "classes/deck.h"
 #include "components/carddata.h"
 #include "components/token.h"
@@ -274,6 +275,8 @@ static void check_filter(
     for (const std::string &alt : split(spec, ',', /*skip_empty=*/true)) {
         const std::string head = alt.substr(0, alt.find_first_of(".+"));
         if (head == "Player" || head == "Opponent" || head == "You" || head == "Any") continue;
+        // Defined.<name> names a set through the Defined$ table, not a filter.
+        if (head == "Defined" && !parse_object_spec(alt.substr(alt.find('.') + 1)).is(ObjectSpec::UNREAD)) continue;
         objects += (objects.empty() ? "" : ",") + alt;
     }
     if (objects.empty()) return;

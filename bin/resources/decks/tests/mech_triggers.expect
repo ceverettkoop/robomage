@@ -1,0 +1,13 @@
+# M9 (b1): a tap's event and the row that reads it (Hawkeye's Bow), and the creature as the source.
+trigger:Taps
+row:EquippedBy
+row:damage_source_triggered
+# Revolt$ on a trigger (Renegade Rallier).
+row:revolt
+# ActivationLimit$ and an opponent's count (Sand Scout).
+trigger:ChangesZoneAll
+row:trigger_turn_limit
+row:highest_valid
+# Imprint on the source, and its colors (Chrome Mox).
+row:imprint_on_source
+row:reflected_objects

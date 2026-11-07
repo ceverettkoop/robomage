@@ -5,6 +5,9 @@
 
 #include "classes/game.h"
 #include "components/ability.h"
+#include "components/permanent.h"
+#include "coverage.h"
+#include "ecs/coordinator.h"
 #include "queries/affected.h"
 
 extern Game cur_game;
@@ -66,6 +69,8 @@ static const MemoryRow kMemoryRows[] = {
         {MemorySlot::NAMED_CARD, MemoryAction::REPLACE, EffectObjects::CLEANED}},
     {"ForgetObjects", ParamForm::NAMES_OBJECTS, EffectKind::None,
         {MemorySlot::REMEMBERED, MemoryAction::FORGET, EffectObjects::FINISHED}},
+    {"ForgetImprinted", ParamForm::NAMES_OBJECTS, EffectKind::None,
+        {MemorySlot::IMPRINTED, MemoryAction::FORGET, EffectObjects::FINISHED}},
     {nullptr, ParamForm::NONE, EffectKind::Token,
         {MemorySlot::REMEMBERED, MemoryAction::REPLACE, EffectObjects::TOKENS}},
     {nullptr, ParamForm::NONE, EffectKind::Investigate,
@@ -83,10 +88,15 @@ static void add_memory_op(AbilityDef &def, const MemoryOp &op);
 static bool form_takes(ParamForm form, const std::string &value);
 // Does a row of `def` read any of `sources`?
 static bool reads_report(const AbilityDef &def, uint32_t sources);
+// The Permanent of `ab`'s source, while it is that object on the battlefield; else null. What it
+// imprints lasts on it past the resolution.
+static Permanent *imprinting_permanent(const Ability &ab);
 // Empties `slot`.
-static void clear_slot(MemorySlot slot);
+static void clear_slot(MemorySlot slot, const Ability &ab);
 // Adds `ref` to `slot`.
-static void add_to_slot(MemorySlot slot, const ObjectRef &ref);
+static void add_to_slot(MemorySlot slot, const ObjectRef &ref, const Ability &ab);
+// Takes `e` out of `slot`.
+static void forget_from_slot(MemorySlot slot, Entity e, const Ability &ab);
 
 static void add_memory_op(AbilityDef &def, const MemoryOp &op) {
     for (MemoryOp &held : def.memory_ops) {
@@ -117,13 +127,20 @@ static bool reads_report(const AbilityDef &def, uint32_t sources) {
     return false;
 }
 
-static void clear_slot(MemorySlot slot) {
+static Permanent *imprinting_permanent(const Ability &ab) {
+    const Entity source = ab.source.get();
+    if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return nullptr;
+    return &global_coordinator.GetComponent<Permanent>(source);
+}
+
+static void clear_slot(MemorySlot slot, const Ability &ab) {
     switch (slot) {
         case MemorySlot::REMEMBERED:
             cur_game.resolution.memory.remembered.clear();
             break;
         case MemorySlot::IMPRINTED:
             cur_game.resolution.memory.imprinted.clear();
+            if (Permanent *host = imprinting_permanent(ab)) host->imprinted.clear();
             break;
         case MemorySlot::CHOSEN_CARDS:
             cur_game.resolution.memory.chosen_cards.clear();
@@ -134,19 +151,39 @@ static void clear_slot(MemorySlot slot) {
     }
 }
 
-static void add_to_slot(MemorySlot slot, const ObjectRef &ref) {
+static void add_to_slot(MemorySlot slot, const ObjectRef &ref, const Ability &ab) {
     switch (slot) {
         case MemorySlot::REMEMBERED:
             cur_game.resolution.memory.remembered.push_back(ref);
             break;
         case MemorySlot::IMPRINTED:
             cur_game.resolution.memory.imprinted.push_back(ref);
+            if (Permanent *host = imprinting_permanent(ab)) {
+                host->imprinted.push_back(ref);
+                coverage_row("imprint_on_source");
+            }
             break;
         case MemorySlot::CHOSEN_CARDS:
             cur_game.resolution.memory.chosen_cards.insert(ref);
             break;
         case MemorySlot::NAMED_CARD:
             break;
+    }
+}
+
+static void forget_from_slot(MemorySlot slot, Entity e, const Ability &ab) {
+    if (slot == MemorySlot::REMEMBERED) {
+        forget_remembered(e);
+        return;
+    }
+    if (slot != MemorySlot::IMPRINTED) return;
+    const auto names_e = [e](const ObjectRef &ref) { return ref.lki_entity() == e; };
+    std::vector<ObjectRef> &held = cur_game.resolution.memory.imprinted;
+    held.erase(std::remove_if(held.begin(), held.end(), names_e), held.end());
+    if (Permanent *host = imprinting_permanent(ab)) {
+        host->imprinted.erase(std::remove_if(host->imprinted.begin(), host->imprinted.end(), names_e),
+                              host->imprinted.end());
+        coverage_row("forget_imprinted");
     }
 }
 
@@ -209,12 +246,12 @@ void apply_memory_ops(Ability &ab) {
     for (const MemoryOp &op : ab.def->memory_ops) {
         if (!(op.sources & ab.report.reported)) continue;
         if (op.action == MemoryAction::FORGET) {
-            for (Entity e : resolve_objects(op.objects, ResolveCtx::of(ab))) forget_remembered(e);
+            for (Entity e : resolve_objects(op.objects, ResolveCtx::of(ab))) forget_from_slot(op.slot, e, ab);
             continue;
         }
-        if (op.action == MemoryAction::REPLACE) clear_slot(op.slot);
+        if (op.action == MemoryAction::REPLACE) clear_slot(op.slot, ab);
         for (const ReportedObject &object : ab.report.objects)
-            if (object.sources & op.sources) add_to_slot(op.slot, object.ref);
+            if (object.sources & op.sources) add_to_slot(op.slot, object.ref, ab);
     }
     ab.report = EffectReport{};
 }

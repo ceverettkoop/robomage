@@ -194,7 +194,9 @@ static bool ev_fails_closed(const CharView &v, const Qualifier &q);
 static bool ev_named_card(const CharView &v, const Qualifier &q);
 static bool ev_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_self(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static const std::vector<ObjectRef> *cards_exiled_by(Entity source);
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_was_exiled_with_source(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -436,6 +438,9 @@ static const QualifierRow kQualifierRows[] = {
     elsewhere_row("YouDontCtrl"),
     // ExiledWithSource — a card the filter's source exiled and still tracks (Agatha's Soul Cauldron).
     relative_row("ExiledWithSource", ev_exiled_with_source),
+    // ExiledWithSourceLKI — the same of a card as it last was, one the move being matched just took
+    // out of exile (Chrome Mox's forget trigger).
+    relative_row("ExiledWithSourceLKI", ev_was_exiled_with_source),
     // TopGraveyardCreature — the creature card nearest the top of its owner's graveyard (Shallow
     // Grave; a card put there goes on top, CR 404.1).
     relative_row("TopGraveyardCreature", ev_top_graveyard_creature),
@@ -967,13 +972,27 @@ static bool ev_pt_literal(const CharView &v, const Qualifier &q) {
     return v.has_pt && compare_qualifier(view_pt(v, q), q, q.number);
 }
 
+// What `source` exiled; a source sacrificed to pay for its ability (Ghost Vacuum): what it had exiled
+// as it left. Null with neither.
+static const std::vector<ObjectRef> *cards_exiled_by(Entity source) {
+    if (global_coordinator.entity_has_component<Permanent>(source))
+        return &global_coordinator.GetComponent<Permanent>(source).exiled_with;
+    const LastKnownInfo *lki = departed_lki_for(source);
+    return lki ? &lki->exiled_with : nullptr;
+}
+
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
     if (v.entity == 0) return false;
-    if (global_coordinator.entity_has_component<Permanent>(ctx.source))
-        return refs_contain(global_coordinator.GetComponent<Permanent>(ctx.source).exiled_with, v.entity);
-    // A source sacrificed to pay for this ability (Ghost Vacuum): what it had exiled as it left.
-    const LastKnownInfo *lki = departed_lki_for(ctx.source);
-    return lki && refs_contain(lki->exiled_with, v.entity);
+    const std::vector<ObjectRef> *exiled = cards_exiled_by(ctx.source);
+    return exiled && refs_contain(*exiled, v.entity);
+}
+
+static bool ev_was_exiled_with_source(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
+    if (v.entity == 0) return false;
+    const std::vector<ObjectRef> *exiled = cards_exiled_by(ctx.source);
+    if (!exiled) return false;
+    const std::vector<Entity> ids = lki_entities(*exiled);
+    return std::find(ids.begin(), ids.end(), v.entity) != ids.end();
 }
 
 static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &, const MatchCtx &) {

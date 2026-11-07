@@ -9,6 +9,7 @@
 #include "../cli_output.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../queries/affected.h"
 #include "../svar_eval.h"
 
 extern Game cur_game;
@@ -100,7 +101,13 @@ bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &v
     // are validated and consumed here rather than warned as unrecognized.
     if (ab.category == "ManaReflected") {
         if (key == "Valid") {
-            ab.reflected_mana_filter = value;
+            static const std::string kDefined = "Defined.";
+            if (value.rfind(kDefined, 0) == 0) {
+                ab.reflected_mana_objects = parse_object_spec(value.substr(kDefined.size()));
+                if (ab.reflected_mana_objects.is(ObjectSpec::UNREAD)) return false;
+            } else {
+                ab.reflected_mana_filter = value;
+            }
             // ManaReflected adds exactly one mana of the chosen color ("Add one mana of any
             // color among …"); set the amount here so the off-stack mana add and its narrative
             // produce 1, not the default 0.
