@@ -82,7 +82,8 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
 // The kinds of object a definition's targeting admits, read from the definition alone through
 // is_legal_target's branches: stack objects when TargetType$ names them (a spell, an activated or
 // triggered ability), a card in a graveyard for a graveyard target (TgtZone$ Graveyard, a
-// graveyard-origin ChangeZone), else the players and permanents of ValidTgts$. A permanent
+// graveyard-origin ChangeZone), else the players and permanents of ValidTgts$ and, under TgtZone$
+// Stack, its inZoneStack alternatives' spells. A permanent
 // alternative is classed by its head: a permanent card type, or for a Permanent / Card head every
 // permanent type its non<Type> qualifiers leave; any other head (a subtype) is permanent_other.
 // "Any" is a creature, planeswalker, battle or player (CR 115.4). All false when the definition

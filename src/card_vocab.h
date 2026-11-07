@@ -389,6 +389,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Gaea's Will", 464},
     {"Broadside Bombardiers", 465},
     {"Invasion Submersible", 466},
+    {"Sink into Stupor", 467},
+    {"Soporific Springs", 468},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

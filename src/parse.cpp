@@ -2631,8 +2631,11 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
             if (value.find(name) != std::string::npos) return true;
         return category == "Effect" && (value == "Remembered" || value == "TriggeredCard");
     }
-    if (key == "TgtZone")
-        return value == "Graveyard" || value == "Battlefield" || (value == "Stack" && !ability.target_type.empty());
+    if (key == "TgtZone") {
+        for (const std::string &name : split(value, ','))
+            if (name != "Graveyard" && name != "Battlefield" && name != "Stack") return false;
+        return true;
+    }
     if (key == "ActivationZone") return ability.activation_zone != -1;
     if (key == "Activation") return activation_condition_known(value);
     if (key == "RestrictValid")

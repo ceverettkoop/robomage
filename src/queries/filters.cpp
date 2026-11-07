@@ -27,6 +27,7 @@
 #include "counters.h"
 #include "keywords.h"
 #include "lki.h"
+#include "players.h"
 #include "spells.h"
 #include "types.h"
 #include "zones.h"
@@ -47,6 +48,7 @@ struct CharView {
     int power = 0, toughness = 0;
     bool counted_pt = false;                 // read them through view_pt
     bool on_battlefield = false;
+    bool on_stack = false;                   // a spell: it has a controller too (CR 110.2)
     bool is_token = false;
     Zone::Ownership controller = Zone::UNKNOWN;
     Zone::Ownership owner = Zone::UNKNOWN;     // card's owner (YouOwn/OppOwn), from its Zone
@@ -201,6 +203,8 @@ static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &q, con
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_equipped_by(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+// A permanent or a spell; a card elsewhere has none (CR 108.4), and the Ctrl rows let it pass.
+static bool has_a_controller(const CharView &v);
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -855,12 +859,14 @@ static bool ev_equipped_by(const CharView &v, const Qualifier &, const MatchCtx 
     return lki && refs_contain(lki->attached, ctx.source);
 }
 
+static bool has_a_controller(const CharView &v) { return v.on_battlefield || v.on_stack; }
+
 static bool ev_you_ctrl(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
-    return !v.on_battlefield || v.controller == ctx.controller;
+    return !has_a_controller(v) || v.controller == ctx.controller;
 }
 
 static bool ev_opp_ctrl(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
-    return !v.on_battlefield || v.controller != ctx.controller;
+    return !has_a_controller(v) || v.controller != ctx.controller;
 }
 
 static bool ev_controlled_by_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx) {
@@ -1056,8 +1062,12 @@ static CharView card_identity_view(Entity e, const CardData &cd) {
     v.entity = e;
     v.cmc = object_mana_value(e, cd);
     v.has_x_cost = (e != 0 ? card_characteristics(e, cd) : cd).has_x_cost;
-    if (e != 0 && global_coordinator.entity_has_component<Zone>(e))
-        v.owner = global_coordinator.GetComponent<Zone>(e).owner;
+    if (e != 0 && global_coordinator.entity_has_component<Zone>(e)) {
+        const Zone &zone = global_coordinator.GetComponent<Zone>(e);
+        v.owner = zone.owner;
+        v.on_stack = zone.location == Zone::STACK;
+        if (v.on_stack) v.controller = source_controller(e);
+    }
     return v;
 }
 

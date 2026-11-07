@@ -1,0 +1,15 @@
+{
+  "name": "cr702_34a_sink_into_stupor_exiles_a_flashed_back_spell",
+  "why": "CR 702.34a: a spell cast with flashback is exiled instead of going anywhere else as it leaves the stack, so Sink into Stupor doesn't return it to a hand.",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "graveyard_a": ["Faithless Looting"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Sink into Stupor"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Faithless Looting", "B:cast:Sink into Stupor", "B:target:Faithless Looting"],
+  "max_decisions": 10,
+  "expect": ["Faithless Looting is moved to exile"],
+  "expect_not": ["Faithless Looting is moved to hand"]
+}

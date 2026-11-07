@@ -41,6 +41,9 @@ static bool player_has_protection_from_everything(Entity cand, Zone::Ownership c
 static Zone::Ownership ability_perspective_player(const Ability &ability);
 static bool targets_stack_objects(const AbilityDef &def);
 static bool targets_graveyard_card(const AbilityDef &def);
+static bool targets_spell_by_zone(const AbilityDef &def);
+static void add_stack_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                              Zone::Ownership priority_player, std::vector<Entity> &out);
 static bool alternative_negates_type(const std::string &alt, const std::string &type);
 static void add_permanent_alternative(const std::string &alt, TargetClasses &out);
 
@@ -163,6 +166,12 @@ static bool targets_graveyard_card(const AbilityDef &def) {
                                           !target_spec_names_players(def.valid_tgts));
 }
 
+// TgtZone$ names the stack with no TargetType$ (Sink into Stupor): ValidTgts$ itself says which
+// spells, written against the card on the stack.
+static bool targets_spell_by_zone(const AbilityDef &def) {
+    return def.targets_in(Zone::STACK) && def.target_type.empty();
+}
+
 // Whether one filter alternative carries a non<type> qualifier (Permanent.nonLand), in either of
 // the casings Forge scripts use (nonLand, nonland).
 static bool alternative_negates_type(const std::string &alt, const std::string &type) {
@@ -213,6 +222,10 @@ TargetClasses target_classes(const AbilityDef &def) {
     }
     for (const std::string &comma_alt : split(vt, ',', /*skip_empty=*/true))
         for (const std::string &alt : split(comma_alt, ';', /*skip_empty=*/true)) {
+            if (targets_spell_by_zone(def) && filter_names_token(alt, "inZoneStack")) {
+                out.spell = true;
+                continue;
+            }
             if (alt == "Any") out.creature = out.planeswalker = out.battle = true;
             if (target_alternative_names_player(alt))
                 out.player = true;
@@ -314,6 +327,11 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
         return card_matches_filter(cand, owner_relative_filter(spec), ctx);
     }
 
+    // A spell of a zone-named target (CR 115.2): an object elsewhere on the stack is no spell.
+    if (targets_spell_by_zone(*ab.def) && global_coordinator.entity_has_component<Zone>(cand) &&
+        global_coordinator.GetComponent<Zone>(cand).location == Zone::STACK)
+        return global_coordinator.entity_has_component<Spell>(cand) && card_matches_filter(cand, spec, ctx);
+
     // Player target
     if (global_coordinator.entity_has_component<Player>(cand))
         return player_matches_target_spec(vt, cand, caster);
@@ -408,15 +426,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     if (ability.def->target_type == "Spell" ||
         ability.def->target_type.find("Activated") != std::string::npos ||
         ability.def->target_type.find("Triggered") != std::string::npos) {
-        for (auto e : orderer->get_stack()) {
-            // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
-            // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
-            // target at resolution, or an activated ability being activated (CR 602.2a).
-            if (e == ability.source.get()) continue;
-            if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
-                continue;
-            if (is_legal_target(ability, e, priority_player)) valid_targets.push_back(e);
-        }
+        add_stack_targets(ability, orderer, priority_player, valid_targets);
         return valid_targets;
     }
 
@@ -458,7 +468,21 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
             if (is_legal_target(ability, entity, priority_player)) valid_targets.push_back(entity);
         }
     }
+    if (targets_spell_by_zone(*ability.def)) add_stack_targets(ability, orderer, priority_player, valid_targets);
     return valid_targets;
+}
+
+static void add_stack_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                              Zone::Ownership priority_player, std::vector<Entity> &out) {
+    for (auto e : orderer->get_stack()) {
+        // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
+        // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
+        // target at resolution, or an activated ability being activated (CR 602.2a).
+        if (e == ability.source.get()) continue;
+        if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
+            continue;
+        if (is_legal_target(ability, e, priority_player)) out.push_back(e);
+    }
 }
 
 // Perspective player for an ability's target search. Ownership-restricted targets

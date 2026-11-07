@@ -1,0 +1,15 @@
+{
+  "name": "cr115_2_sink_into_stupor_returns_a_spell_to_its_owners_hand",
+  "why": "CR 115.2, 701: Sink into Stupor's TgtZone$ Stack,Battlefield names a spell beside a permanent, and Origin$ Battlefield,Stack moves either. A's Lightning Bolt goes back to A's hand and deals nothing; its own permanent's row is there too.",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Grizzly Bears"],
+  "hand_b": ["Sink into Stupor"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B", "B:cast:Sink into Stupor", "B:target:Lightning Bolt"],
+  "max_decisions": 10,
+  "expect": ["Lightning Bolt is moved to hand"],
+  "expect_not": ["Lightning Bolt deals", "Resolving ability \\(category: DealDamage"],
+  "expect_menu": ["Grizzly Bears", "^Lightning Bolt"]
+}

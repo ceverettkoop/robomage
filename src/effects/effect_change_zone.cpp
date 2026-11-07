@@ -466,6 +466,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     continue;
                 }
                 landed = global_coordinator.GetComponent<Zone>(tgt).location;
+                if (landed != ab.def->destination)
+                    game_log("%s is moved to %s\n", tname.c_str(), destination_label(landed));
             } else {
                 // Targeted reanimation (Lorehold Charm: graveyard→battlefield). A permanent
                 // entering this way comes under the controller's control (CR 608.2; the spell's

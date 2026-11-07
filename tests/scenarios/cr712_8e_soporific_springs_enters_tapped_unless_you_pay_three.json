@@ -1,0 +1,11 @@
+{
+  "name": "cr712_8e_soporific_springs_enters_tapped_unless_you_pay_three",
+  "why": "CR 712.8e, 614.12: Sink into Stupor's back face plays as a land, and as it enters its controller may pay 3 life. Accepted, it enters untapped.",
+  "hand_a": ["Sink into Stupor"],
+  "library_a": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:play:Soporific Springs", "A:choice:Accept"],
+  "max_decisions": 5,
+  "expect": ["Player A pays 3 life"],
+  "expect_not": ["Soporific Springs enters tapped"]
+}
