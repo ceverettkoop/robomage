@@ -356,6 +356,7 @@ _MYCOSYNTH_LATTICE = "Mycosynth Lattice"
 # once the set is assembled. Planar Nexus is deliberately excluded — it only
 # ever makes a single mana of any type, so untapping it gains nothing.
 _CANDELABRA = "Candelabra of Tawnos"
+_APHETTO_ALCHEMIST = "Aphetto Alchemist"
 _MULTI_MANA_LANDS = frozenset({"Ancient Tomb", "Urza's Workshop"}) | _TRON_LAND_SET
 
 # Reanimator deck cards. Reanimate and Animate Dead are the "put a creature card
@@ -470,6 +471,13 @@ def _gy_has_any(v, cards: frozenset) -> bool:
     """True if EITHER graveyard holds a card in ``cards``. Both sides matter to the
     caller (Reanimate can take a creature from any graveyard)."""
     return not cards.isdisjoint(v.graveyard_cards)
+
+
+def _untap_worthy(v) -> set:
+    """Our tapped creatures Aphetto Alchemist's ability is worth activating on. Not an Alchemist:
+    one untaps itself, and two each other, for nothing and without end."""
+    return {p.card for p in v.my_perms
+            if p.tapped and p.creature and p.card is not None and p.card != _APHETTO_ALCHEMIST}
 
 
 def _tapped_multi_mana_lands(v) -> int:
@@ -1517,6 +1525,13 @@ def _greedy_action(v,
         if c == _CAT_CONF_ATK:
             return i
 
+    # 4a. Aphetto Alchemist untaps what is ours and worth it (see the activation rule).
+    if v.pending == _APHETTO_ALCHEMIST:
+        worthy = _untap_worthy(v)
+        for i, c in enumerate(cats):
+            if c == _CAT_TARGET and v.ctrl(i) == 1 and v.card(i) in worthy:
+                return i
+
     # 4. Select target — prefer non-self-controlled targets (ctrl 0 = an
     #    opponent's permanent/spell, -1 = a player target, also non-self).
     #    The C++ game sorts targets opponent-first so action 0 is usually correct,
@@ -1858,6 +1873,8 @@ def _greedy_action(v,
                               # fizzles when its graveyard target is already exiled)
                 if card == _CANDELABRA and _tapped_multi_mana_lands(v) == 0:
                     continue  # nothing worth untapping — don't tap Candelabra for X=0
+                if card == _APHETTO_ALCHEMIST and not _untap_worthy(v):
+                    continue  # likewise: it would only ever untap itself
                 if hold_activations and card in hold_activations:
                     continue  # caller-computed hold (e.g. Thespian's Stage with
                               # no Dark Depths to copy — see _heuristic_action)

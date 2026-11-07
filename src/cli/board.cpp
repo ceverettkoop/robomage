@@ -501,7 +501,8 @@ static std::string stack_item(const Frame &f, size_t row) {
     const uint64_t h = s.u(row, s.col("handle"));
     const std::optional<std::string> name = f.v.stack_card(row);
     const std::string kind = f.st.enum_name("stack_kind", s.u(row, s.col("kind")));
-    std::string line = name ? *name : std::string("ability");
+    // A spell with no card to show lies face down, and its ", face down" says so below.
+    std::string line = name ? *name : kind == "SPELL" ? std::string("spell") : std::string("ability");
     if (kind == "ACTIVATED")
         line += " (activated ability)";
     else if (kind == "TRIGGERED")
