@@ -138,7 +138,7 @@ child tables.
 | `header` | 1 | format version, schema hash, viewer, game number, decision number |
 | `turn` | 1 | turn, step, active player, priority holder, pass flags, extra turns queued, land drops remaining |
 | `pool_mana` | one per color, restriction and rider of a player's floating mana that has one | the part of the pool the `player` row's counts can't say; none for plain mana |
-| `player` | 2 | life, poison, energy, mana pool, designations (monarch, city's blessing), day/night, per-turn counters, hand count, library count, mulligans taken |
+| `player` | 2 | life, poison, energy, mana pool, designations (monarch, city's blessing, speed), day/night, per-turn counters, hand count, library count, mulligans taken |
 | `object` | one per identifiable object | handle, zone, owner and controller (each both as absolute seat and relative to the viewer: self/opponent), card id (or "face-down"), face/transformed state, tapped/sick/phased, damage, base and post-layer characteristics, attached-to, chosen name/colour/type, linked exiled cards |
 | `object_keyword`, `object_counter`, `object_ability`, `object_provenance` | children of `object` | every keyword with its parameters; counters by kind; abilities by reference (decision 2); which sources currently affect the object, what kind of effect, and when it expires (decision 1) |
 | `combat` | one per attacker/blocker pairing | attack target, blockers, damage-assignment order |
@@ -814,6 +814,8 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `mulligans`, `to_bottom` | u8 | `count` | London bottoming still owed |
 | | `passed` | u8 | `bool` | pass flag |
 | | `monarch`, `city_blessing` | u8 | `bool` | |
+| | `speed` | u8 | `count` | 1 + the player's speed (CR 702.179); 0 no speed, which is not speed 0 (CR 702.179a, c). A count for what `chosen_color` is one |
+| | `speed_triggered` | u8 | `bool` | the ability speed brings has triggered this turn (CR 702.179d: it triggers only once each turn) |
 | | `extra_turns` | u8 | `count` | queued |
 | | `lands_played`, `land_drops_left` | u8 | `count` | register 15 |
 | | `potential_w`, `potential_u`, `potential_b`, `potential_r`, `potential_g`, `potential_c`, `potential_total` | 7 × u8 | `count` | mana potential (register 15; `mana_potential`); total = untapped sources plus the floating pool |
@@ -855,6 +857,8 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `chosen_color` | u8 | `count` | the color chosen as it entered, 1 + its `color` enum value; 0 none. A count, not an enum, because a categorical column moves every object's tensors |
 | | `attacked` | u8 | `bool` | it was declared as an attacker this turn (CR 508.1k), not put onto the battlefield attacking (CR 508.4) |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
+
+The designation columns (`day_night`; `monarch` … `speed_triggered`; `chosen_name` … `attacked`) are one block per table, declared with the state they read in `src/state_format/designations.def`: a new one is a row there, at its block's end. A table's order in this appendix is not always the block's: the row order of that file is the columns'.
 
 A row's characteristic columns (`power` … `mana_value`) and its `object_subtype`, `object_keyword`,
 `object_ability`, `object_provenance` and `object_link` rows are filled only when the viewer can see
