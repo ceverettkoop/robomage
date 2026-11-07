@@ -480,15 +480,18 @@ struct Game {
             // alternative).
             AnnounceRT announce;
         };
-        // A special action paid for in mana (pending.query tag SPECIAL_ACTION): suspending a card
-        // (CR 702.62a) or bringing a companion to hand. Taken at priority and off the stack, so
-        // nothing has moved until its mana is paid. active == true from the action until the card
-        // moves or the payment fails.
+        // A special action paid for in mana (pending.query tag SPECIAL_ACTION): what it does once
+        // paid. Taken at priority and off the stack, so nothing has moved until its mana is paid.
+        // active == true from the action until the card moves or the payment fails.
+        enum class SpecialAction : uint8_t {
+            SUSPEND,    // CR 702.62a: exile the card with its time counters
+            COMPANION,  // CR 702.139a: bring the companion to hand
+        };
         struct PendingSpecialAction {
             bool active = false;
             Entity card = 0;
-            bool companion = false;  // otherwise it suspends the card
-            Zone::Ownership owner = Zone::UNKNOWN;
+            SpecialAction kind = SpecialAction::SUSPEND;
+            Zone::Ownership payer = Zone::UNKNOWN;  // who took it (CR 116.2)
             ManaValue cost;
             ManaPaymentSnapshot mana_snap;  // restored when the payment fails
             ManaPaymentRT mana;

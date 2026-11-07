@@ -153,7 +153,7 @@ static void count_cast_modes(const Game::PendingCast &pc, const CardData &front,
 static const char *grant_row(const CastGrant &grant);
 // Begin a special action paid for in mana, suspending a card or bringing a companion to hand, and
 // drive it: its payment, then the move, or on a failed payment nothing.
-static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
+static void begin_special_action(Game &game, Entity card, Game::SpecialAction kind, const ManaValue &cost,
                                  std::shared_ptr<Orderer> orderer);
 static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::shared_ptr<Orderer> orderer,
                                int resume_choice);
@@ -2522,17 +2522,17 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 }
 
 // See forward declaration at top of file.
-static void begin_special_action(Game &game, Entity card, bool companion, const ManaValue &cost,
+static void begin_special_action(Game &game, Entity card, Game::SpecialAction kind, const ManaValue &cost,
                                  std::shared_ptr<Orderer> orderer) {
     Game::PendingSpecialAction &sa = game.pending.special_action;
     if (sa.active) fatal_error("SPECIAL_ACTION with a special action already being paid for");
     sa = Game::PendingSpecialAction{};
     sa.active = true;
     sa.card = card;
-    sa.companion = companion;
-    sa.owner = global_coordinator.GetComponent<Zone>(card).owner;
+    sa.kind = kind;
+    sa.payer = priority_seat();
     sa.cost = cost;
-    sa.mana_snap = snapshot_mana_state(sa.owner, orderer);
+    sa.mana_snap = snapshot_mana_state(sa.payer, orderer);
     run_special_action(sa, game, orderer, -1);
 }
 
@@ -2540,31 +2540,31 @@ static void begin_special_action(Game &game, Entity card, bool companion, const 
 static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::shared_ptr<Orderer> orderer,
                                int resume_choice) {
     const Entity card = sa.card;
-    const Zone::Ownership owner = sa.owner;
+    const Zone::Ownership payer = sa.payer;
     FrameCtx ctx = FrameCtx::flow(PendingQuery::SPECIAL_ACTION, resume_choice);
-    const PayStatus paid = pay_mana_cost(sa.mana, owner, sa.cost, ManaPayee(card, ManaPurpose::OTHER), ctx, orderer);
+    const PayStatus paid = pay_mana_cost(sa.mana, payer, sa.cost, ManaPayee(card, ManaPurpose::OTHER), ctx, orderer);
     if (paid == PayStatus::SUSPENDED) return;
     if (paid == PayStatus::FAILED) {
-        restore_mana_state(owner, sa.mana_snap, orderer);
+        restore_mana_state(payer, sa.mana_snap, orderer);
         game_log("Payment cancelled.\n");
         cur_game.priority.payment_fail_counts[card]++;
         sa = Game::PendingSpecialAction{};
         return;
     }
-    if (sa.companion) {
+    if (sa.kind == Game::SpecialAction::COMPANION) {
         std::string cname = global_coordinator.GetComponent<CardData>(card).name;
         orderer->add_to_zone(false, card, Zone::HAND);
-        auto &player = global_coordinator.GetComponent<Player>(get_player_entity(owner));
+        auto &player = global_coordinator.GetComponent<Player>(get_player_entity(payer));
         player.companion_brought_to_hand = true;
         game_log("%s pays {3} and puts %s into their hand from outside the game\n",
-                 player_name(owner).c_str(), cname.c_str());
+                 player_name(payer).c_str(), cname.c_str());
         coverage_cast("companion");
     } else {
         auto &cd = global_coordinator.GetComponent<CardData>(card);
         orderer->add_to_zone(false, card, Zone::EXILE);
         global_coordinator.GetComponent<Zone>(card).counters["TIME"] = cd.suspend_count;
         game_log("%s suspends %s (exiled with %d time counter(s)).\n",
-                 player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
+                 player_name(payer).c_str(), cd.name.c_str(), cd.suspend_count);
         coverage_cast("suspend");
     }
     sa = Game::PendingSpecialAction{};
@@ -2585,7 +2585,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // permanent, so its counters can't live in Permanent::counters).
             if (action.suspend_action) {
                 Entity card = action.source_entity;
-                begin_special_action(game, card, /*companion=*/false,
+                begin_special_action(game, card, Game::SpecialAction::SUSPEND,
                                      global_coordinator.GetComponent<CardData>(card).suspend_cost.mana(), orderer);
                 break;
             }
@@ -2594,7 +2594,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // its owner's hand, once per game. The legal-action gate already verified the companion
             // is in the sideboard, unused this game, and that {3} is affordable.
             if (action.companion_to_hand) {
-                begin_special_action(game, action.source_entity, /*companion=*/true,
+                begin_special_action(game, action.source_entity, Game::SpecialAction::COMPANION,
                                      ManaValue{GENERIC, GENERIC, GENERIC}, orderer);
                 break;
             }
