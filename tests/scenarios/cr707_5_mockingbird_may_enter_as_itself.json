@@ -1,0 +1,46 @@
+{
+  "name": "cr707_5_mockingbird_may_enter_as_itself",
+  "why": "CR 707.5: 'you may': declined, it is a 1/1 Bird Bard flier and the original's enters trigger stays silent.",
+  "hand_a": [
+    "Mockingbird"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Elvish Visionary"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:desc:Enter as Mockingbird"
+  ],
+  "max_decisions": 7,
+  "expect_not": [
+    "enters as a copy",
+    "Player A draws Island"
+  ],
+  "expect": [
+    "Mockingbird enters the battlefield"
+  ]
+}

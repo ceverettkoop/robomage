@@ -1,0 +1,43 @@
+{
+  "name": "cr707_5_mockingbird_as_a_copy_has_the_enters_trigger",
+  "why": "CR 707.5: it enters as the copy, so the enters trigger of what it copied fires: Elvish Visionary's draw.",
+  "hand_a": [
+    "Mockingbird"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Elvish Visionary"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:choice:Elvish Visionary"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Mockingbird enters as a copy of Elvish Visionary",
+    "Player A draws Island"
+  ]
+}

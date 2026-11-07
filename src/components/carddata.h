@@ -135,6 +135,13 @@ struct CardData{
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
     bool has_etb_name_card = false;             // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
     bool has_etb_choose_color = false;          // K:ETBReplacement:Other:<SVar> naming a DB$ ChooseColor (Painter's Servant)
+    // K:ETBReplacement:Copy: the DB$ Clone it may enter as a copy through (CR 707.5, Mockingbird):
+    // Choices$ and the exceptions of its CopyOverlay. Null for a card with none.
+    const AbilityDef *enters_as_copy = nullptr;
+    bool enters_as_copy_optional = false;
+    // A card's values copied from a token's (queries/copies.h): the script of that token, its
+    // identity as `name` is a card's. Empty for any other card.
+    std::string token_script;
     int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     CostParts flashback_cost;            // what the cast path pays of the flashback cost: its mana, PayLife<N> and Sac<1/Type>
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)

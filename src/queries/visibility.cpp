@@ -10,6 +10,7 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/token.h"
 #include "../components/zone.h"
@@ -18,6 +19,7 @@
 #include "../state_format/events.h"
 #include "../state_format/handles.h"
 #include "characteristics.h"
+#include "entry.h"
 #include "lki.h"
 #include "players.h"
 #include "zones.h"
@@ -502,6 +504,9 @@ static int physical_card_id(Entity e) {
         if (perm.is_token) return token_card_id(e);
         if (perm.printed_card) return card_name_to_index(perm.printed_card->name);
     }
+    // A card that has chosen what it enters as, its Permanent still to be built, is its own card.
+    if (const EntryInfo *entry = find_entry_info(e))
+        if (entry->printed_card) return card_name_to_index(entry->printed_card->name);
     // A prepared copy has only its prepare spell's characteristics (CR 722.3c): the card it shows
     // is that face of the preparation card.
     if (global_coordinator.entity_has_component<CardData>(e))

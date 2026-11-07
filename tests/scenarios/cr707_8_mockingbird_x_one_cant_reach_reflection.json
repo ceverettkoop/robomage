@@ -1,0 +1,41 @@
+{
+  "name": "cr707_8_mockingbird_x_one_cant_reach_reflection",
+  "why": "CR 712.8e: the transformed Reflection's mana value is its front face's 3: two mana spent doesn't reach it.",
+  "hand_a": [
+    "Mockingbird"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Reflection of Kiki-Jiki"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1"
+  ],
+  "max_decisions": 7,
+  "expect_menu_not": [
+    "Enter as a copy of Reflection"
+  ]
+}

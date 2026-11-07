@@ -163,6 +163,7 @@ struct FaceAbilityDefs {
     std::vector<AbilityDef> abilities;
     std::vector<AbilityDef> gift_abilities;
     std::vector<AbilityDef> saga_chapters;
+    std::vector<AbilityDef> enters_as_copy;  // K:ETBReplacement:Copy's effect: none or one
     std::vector<AbilityDef> opening_hand_abilities;
 };
 // The facts a trigger line (a T: line or trigger SVar) states that decide which event its
@@ -1183,12 +1184,17 @@ static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
 // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute);
 // K:ETBReplacement:Other:<SVar> whose SVar is DB$ ChooseColor — choose a color on ETB (Painter's Servant);
 // K:ETBReplacement:Other:<SVar> whose SVar is DB$ AlterAttribute | Attributes$ Prepared — this
-// creature enters prepared (CR 722.3a). Any other ETBReplacement names an effect nothing reads, a
-// parse finding, and is kept as a plain keyword.
+// creature enters prepared (CR 722.3a);
+// K:ETBReplacement:Copy:<SVar>[:Optional] whose SVar is DB$ Clone — it enters as a copy (CR 707.5,
+// Mockingbird). Any other ETBReplacement names an effect nothing reads, a parse finding, and is
+// kept as a plain keyword.
 static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) {
     const std::vector<std::string> parts = split(kw_line, ':');
     const auto svar = ctx.svars.find(parts.size() > 2 ? parts[2] : "");
-    if (kw_line.find("ChooseCT") != std::string::npos)
+    if (parts.size() > 1 && parts[1] == "Copy" && svar != ctx.svars.end() && param_value(svar->second, "DB") == "Clone") {
+        ctx.face_defs.enters_as_copy.push_back(parse_svar_ability(svar->second, AbilityDef::SPELL, ctx.svars, ctx.card.name));
+        ctx.card.enters_as_copy_optional = parts.size() > 3 && parts[3] == "Optional";
+    } else if (kw_line.find("ChooseCT") != std::string::npos)
         ctx.card.has_etb_choose_creature_type = true;
     else if (kw_line.find("NameCard") != std::string::npos)
         ctx.card.has_etb_name_card = true;
@@ -1641,6 +1647,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.abilities = intern_ability_defs(std::move(face_defs.abilities));
     card.gift_abilities = intern_ability_defs(std::move(face_defs.gift_abilities));
     card.saga_chapters = intern_ability_defs(std::move(face_defs.saga_chapters));
+    if (!face_defs.enters_as_copy.empty()) card.enters_as_copy = intern_ability_def(std::move(face_defs.enters_as_copy.front()));
     card.opening_hand_abilities = intern_ability_defs(std::move(face_defs.opening_hand_abilities));
 }
 
@@ -2308,11 +2315,12 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
         // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
         ability.repeat_types_from = value;
-    } else if (key == "Choices" && ability.category == "ChooseCard") {
+    } else if (key == "Choices" && (ability.category == "ChooseCard" || ability.category == "Clone")) {
         // ChooseCard | Choices$ <filter>: the cards the choice is made from (Dauthi Voidwalker:
         // Card.OppOwn+counters_GE1_VOID). Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa)
         // chooses one imprinted card of the current cur_game.resolution.memory.chosen_type. (The Ajani -4
-        // umbrella Choices$ is superseded by its per-type ChooseEach$.)
+        // umbrella Choices$ is superseded by its per-type ChooseEach$.) A Clone's names what it may
+        // copy (Mockingbird's Creature.Other+cmcLEY).
         ability.choose_card_filter = value;
         ability.choose_imprinted = filter_names_token(value, "IsImprinted");
     } else if (key == "AtRandom" && ability.category == "ChooseCard") {
@@ -2740,6 +2748,16 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
     parse_finding("amount_svar", ability.amount_svar, ability.category + ": the amount names no SVar");
 }
 
+// Resolve a Clone's Choices$ mana-value bound (Mockingbird's cmcLEY, Y = Count$CastTotalManaSpent)
+// to its Count$ expression.
+static void resolve_clone_bound(AbilityDef &ability, const std::map<std::string, std::string> &svars) {
+    if (ability.category != "Clone") return;
+    std::string op, bound;
+    if (!find_cmc_bound(ability.choose_card_filter, nullptr, op, bound)) return;
+    const auto it = svars.find(bound);
+    if (it != svars.end()) ability.clone_cmc_expr = it->second;
+}
+
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
 // "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE; its first, for alternatives all naming
 // the one SVar: Powder Keg's "Artifact.cmcEQX,Creature.cmcEQX") and an energy UnlessCost SVar into
@@ -2849,7 +2867,7 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         if (key == "RepeatSubAbility") ability.repeat_sub_count++;
         return true;
     }
-    if (key == "Choices" && ability.category != "ChooseCard") {
+    if (key == "Choices" && ability.category != "ChooseCard" && ability.category != "Clone") {
         // Charm modal: resolve comma-separated SVar names into modes. Excludes ChooseCard, whose
         // Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+IsImprinted) consumed by
         // apply_param_to_ability, not a list of modal SVars.
@@ -3025,6 +3043,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // Skies, Blast Zone): resolve the "cmc<op><SVar>" threshold from the ValidCards$ filter and
     // the PayEnergy<SVar> amount into their runtime Count$ expressions.
     resolve_destroyall_svars(ability, svars);
+    resolve_clone_bound(ability, svars);
     resolve_condition_svars(ability, svars);
     // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (Toxic Deluge: -X/-X → Count$xPaid;
     // Eldrazi Linebreaker: +X, X = Count$Valid Eldrazi.YouCtrl) to its runtime Count$ expression,

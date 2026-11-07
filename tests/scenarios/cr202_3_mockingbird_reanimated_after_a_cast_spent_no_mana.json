@@ -1,0 +1,54 @@
+{
+  "name": "cr202_3_mockingbird_reanimated_after_a_cast_spent_no_mana",
+  "why": "CR 400.7, 601.2h: cast for X = 1, killed and reanimated: a new object, for which no mana was spent: the bound is 0, not what its earlier life spent, and nothing is asked.",
+  "hand_a": [
+    "Mockingbird",
+    "Reanimate"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:desc:Enter as Mockingbird",
+    "B:cast:Lightning Bolt",
+    "B:target:Mockingbird",
+    "A:cast:Reanimate",
+    "A:target:Mockingbird"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Mockingbird is moved to the battlefield"
+  ],
+  "expect_count": {
+    "Choose what Mockingbird enters as": 1
+  }
+}

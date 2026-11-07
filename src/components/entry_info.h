@@ -1,10 +1,12 @@
 #ifndef ENTRY_INFO_H
 #define ENTRY_INFO_H
 
+#include <memory>
 #include <vector>
 
 #include "../object_ref.h"
 #include "ability.h"
+#include "carddata.h"
 #include "chosen_cost.h"
 
 // How a card will enter the battlefield: what a cast or an effect records about the card's next
@@ -63,11 +65,16 @@ struct EntryInfo {
     // Permanent existed (Sneak Attack's haste for the creature it just put there): applied as the
     // Permanent is created (effects::animate_permanent).
     std::vector<Ability> animates;
+    // "As this enters" it was offered to enter as a copy (CR 707.5), so the entry doesn't ask again
+    // once it has the copied values, which may say the same.
+    bool copy_chosen = false;
+    // The card it was before it entered as a copy → Permanent::printed_card. Empty otherwise.
+    std::shared_ptr<const CardData> printed_card;
 
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp && overlay == SpellOverlay::NONE &&
-               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty();
+               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty() && !copy_chosen && !printed_card;
     }
 };
 

@@ -1,6 +1,7 @@
 #ifndef QUERIES_COPIES_H
 #define QUERIES_COPIES_H
 
+#include "../components/carddata.h"
 #include "../components/copy_overlay.h"
 #include "../components/token.h"
 #include "../ecs/entity.h"
@@ -15,6 +16,15 @@
 // Counters, pumps and type- or ability-changing effects are not copiable, so the live Permanent /
 // Creature state is not read. An empty name: `original` has no card or token to copy.
 Token copied_token(Entity original, const CopyOverlay &overlay);
+
+// The card values of a copy of `original`, card or token (CR 707.2, 707.9): the face it shows (CR
+// 707.8, a copy of a double-faced permanent has that face alone) and a token's values as a card.
+CardData copied_card(Entity original, const CopyOverlay &overlay);
+
+// CR 707.5: the card `entering`, on the battlefield with no Permanent yet, has `original`'s copiable
+// values as it enters, so its Permanent is built from them and every "as this enters" of theirs
+// applies. Its own card goes on the entry (EntryInfo::printed_card), for the Permanent.
+void enter_as_copy(Entity entering, Entity original, const CopyOverlay &overlay);
 
 // CR 707.2 / 707.9b in-place copy: `permanent` becomes a copy of `original` while staying the SAME
 // object, overwriting its copiable characteristics (name, types, abilities, keywords, static

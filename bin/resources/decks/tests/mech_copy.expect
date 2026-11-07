@@ -12,3 +12,6 @@ category:DISCARD
 row:copy_set_creature_types
 row:cmc_bound_x_target
 row:mana_sacrifice_at_priority
+# Entering as a copy (Mockingbird).
+row:enters_as_copy
+category:CHOOSE_CARD

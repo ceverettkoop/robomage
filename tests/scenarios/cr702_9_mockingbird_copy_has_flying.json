@@ -1,0 +1,51 @@
+{
+  "name": "cr702_9_mockingbird_copy_has_flying",
+  "why": "CR 707.9a, 702.9: 'except it has flying': the Bears copy flies past a ground blocker, which has no block to make; the copy deals 2.",
+  "hand_a": [
+    "Mockingbird"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:choice:Grizzly Bears",
+    "B:attack:done",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 60,
+  "expect": [
+    "Grizzly Bears deals 2 damage to Player B"
+  ],
+  "expect_menu_not": [
+    "Confirm blockers"
+  ]
+}

@@ -243,8 +243,8 @@ static void filter_findings(const std::string &script_text, std::vector<ParseFin
                     check_filter(value, key + "$", line, findings);
                     check_cmc_bounds(value, key, body, line, findings);
                 }
-            // A ChooseCard's Choices$ is a card filter (a Charm's names its modes' SVars).
-            if (key == "Choices" && body.find("$ ChooseCard") != std::string::npos)
+            // A ChooseCard's or a Clone's Choices$ is a card filter (a Charm's names its modes' SVars).
+            if (key == "Choices" && (body.find("$ ChooseCard") != std::string::npos || body.find("$ Clone") != std::string::npos))
                 check_filter(value, key + "$", line, findings);
             for (const std::string &prefix : kCountPrefixes) {
                 const size_t at = param.find(prefix);

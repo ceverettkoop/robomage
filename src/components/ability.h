@@ -522,6 +522,8 @@ struct AbilityDef {
     // (cur_game.resolution.memory.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
     // True means no "choose nothing" option. Unset zone = the battlefield.
     FilterSpec choose_card_filter;
+    // The expression of a Clone's Choices$ mana-value bound (Mockingbird's Count$CastTotalManaSpent).
+    std::string clone_cmc_expr;
     Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount

@@ -30,6 +30,7 @@
 #include "../game_driver.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/copies.h"
 #include "../queries/counters.h"
 #include "../queries/delayed_triggers.h"
 #include "../queries/entry.h"
@@ -72,6 +73,7 @@ static std::string strip_named_card_qualifier(const std::string &filter);
 static std::set<Colors> added_colors(const ActiveStatic &as);
 static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for);
 static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked);
+static void choose_copy_on_entry(Entity entity, const CardData &card, const EntitySet &entities, bool *parked);
 static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
@@ -861,6 +863,10 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
             if (!card_data.is_modal_dfc)
                 game_log("%s enters transformed.\n", perm.name.c_str());
         }
+        // It entered as a copy (CR 707.5).
+        perm.printed_card = entry->printed_card;
+        entry->printed_card.reset();
+        entry->copy_chosen = false;
         entry->cast = false;
         entry->x_paid = 0;
         entry->mana_paid.clear();
@@ -989,6 +995,51 @@ static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked) 
     game_log("%s chose color: %s\n", player_name(perm.controller).c_str(), kColors[static_cast<size_t>(choice)].name);
 }
 
+// "You may have this enter as a copy of ..." (CR 707.5, 614.12a), before its Permanent exists, so
+// the Permanent is built from what it copied: the latched-answer site of the tapped-unless-life
+// prompt, whose re-derivation contract it shares. Nothing is asked with nothing to copy.
+// `*parked`: the choice is parked and the pass returns.
+static void choose_copy_on_entry(Entity entity, const CardData &card, const EntitySet &entities, bool *parked) {
+    const AbilityDef &copy = *card.enters_as_copy;
+    const Zone::Ownership chooser = global_coordinator.GetComponent<Zone>(entity).controller;
+    MatchCtx ctx{chooser, entity};
+    if (!copy.clone_cmc_expr.empty()) ctx.cmc_bound = evaluate_svar(copy.clone_cmc_expr, chooser, entity);
+    std::vector<Entity> originals;
+    for (Entity e : entities)
+        if (is_battlefield_permanent(e) && permanent_matches_filter(e, copy.choose_card_filter, ctx)) originals.push_back(e);
+    entry_info(entity).copy_chosen = true;
+    if (originals.empty()) return;
+    std::vector<LegalAction> menu;
+    for (Entity e : originals) {
+        LegalAction la(PASS_PRIORITY, e, "Enter as a copy of " + entity_name(e));
+        la.category = ActionCategory::CHOOSE_CARD;
+        menu.push_back(la);
+    }
+    if (card.enters_as_copy_optional) {
+        LegalAction la(PASS_PRIORITY, entity, "Enter as " + card.name);
+        la.category = ActionCategory::CHOOSE_CARD;
+        menu.push_back(la);
+    }
+    const uint64_t key = pq_key(SbeSite::ETB_COPY, chooser == Zone::PLAYER_A, entity, menu.size());
+    int choice = -1;
+    if (!pq_take_latched(key, &choice)) {
+        game_log("Choose what %s enters as:\n", card.name.c_str());
+        if (in_main_loop()) {
+            entry_info(entity).copy_chosen = false;
+            pq_arm_sbe(key, std::move(menu), chooser, /*decision_source=*/entity);
+            *parked = true;
+            return;
+        }
+        // Blocking fallback for an SBE call outside the main loop (defensive, as at the other sites).
+        const bool prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
+        choice = InputLogger::instance().get_input(menu);
+        cur_game.priority.player_a_has_priority = prev_priority;
+    }
+    if (static_cast<size_t>(choice) < originals.size())
+        enter_as_copy(entity, originals[static_cast<size_t>(choice)], copy.copy_overlay);
+}
+
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
 void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1020,6 +1071,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+            // As a copy (CR 707.5): chosen before anything below reads what it enters as.
+            if (card_data.enters_as_copy && !global_coordinator.entity_has_component<Permanent>(entity)) {
+                const EntryInfo *chosen = find_entry_info(entity);
+                if (!chosen || !chosen->copy_chosen) {
+                    bool parked = false;
+                    choose_copy_on_entry(entity, card_data, mEntities, &parked);
+                    if (parked) return;
+                }
+            }
             // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
             // double-faced card, it enters transformed." Mark a daybound DFC entering while
             // it's night so it is built from its back (night) face below, through the same

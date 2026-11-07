@@ -11,6 +11,7 @@
 
 #include "classes/game.h"
 #include "components/carddata.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/types.h"
@@ -23,6 +24,7 @@
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/counters.h"
+#include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/lki.h"
 #include "queries/player_resources.h"
@@ -162,6 +164,7 @@ static int ev_literal(const SvarExpr &x, const SvarArgs &a);
 static int ev_aggregate(const SvarExpr &x, const SvarArgs &a);
 static int ev_high_low(const SvarExpr &x, const SvarArgs &a);
 static int ev_adamant(const SvarExpr &x, const SvarArgs &a);
+static int ev_cast_total_mana(const SvarExpr &x, const SvarArgs &a);
 static int ev_x_paid(const SvarExpr &x, const SvarArgs &a);
 static int ev_converge(const SvarExpr &x, const SvarArgs &a);
 static int ev_chosen_number(const SvarExpr &x, const SvarArgs &a);
@@ -242,6 +245,9 @@ static const SvarRow kSvarRows[] = {
     // Count$Adamant_<N>.<Color>.<high>.<low> — <high> if N or more mana of the color was spent to
     // cast the source, else <low> (Vibrance: "if {R}{R} was spent to cast it").
     read_row("Count$Adamant_", read_adamant, ev_adamant),
+    // Count$CastTotalManaSpent — the mana spent to cast the source, read as it enters or after
+    // (Mockingbird); 0 for an object that wasn't cast.
+    value_row("Count$CastTotalManaSpent", ev_cast_total_mana),
     // Count$ChosenNumber — the integer chosen by the DB$ ChooseNumber effect earlier in this
     // resolution (Wrath of the Skies: the amount of energy to pay), read by a chained sub-ability
     // (the DestroyAll's cmc bound Y and its PayEnergy<Y> unless-cost).
@@ -590,6 +596,18 @@ static int ev_adamant(const SvarExpr &x, const SvarArgs &a) {
     else if (const LastKnownInfo *lki = departed_lki_for(a.source))
         spent = &lki->cast_mana_paid;
     return spent && static_cast<int>(mana_of_color(*spent, x.color)) >= x.literal ? x.high : x.low;
+}
+
+static int ev_cast_total_mana(const SvarExpr &, const SvarArgs &a) {
+    if (const EntryInfo *entry = find_entry_info(a.source)) return static_cast<int>(entry->mana_paid.size());
+    if (is_battlefield_permanent(a.source))
+        return static_cast<int>(global_coordinator.GetComponent<Permanent>(a.source).cast_mana_paid.size());
+    // Entering uncast: what an earlier object made of this card spent is no concern of this one.
+    if (global_coordinator.entity_has_component<Zone>(a.source) &&
+        global_coordinator.GetComponent<Zone>(a.source).location == Zone::BATTLEFIELD)
+        return 0;
+    const LastKnownInfo *lki = departed_lki_for(a.source);
+    return lki ? static_cast<int>(lki->cast_mana_paid.size()) : 0;
 }
 
 static bool read_no_dollar(const std::string &rest, SvarExpr &x) {

@@ -770,8 +770,10 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
 
 // The card a copy effect made permanent `e` a copy of: -1 for no copy, or a copy of a scripted token.
 static int copied_card_id(Entity e, const Permanent &perm) {
-    if (perm.printed_card && global_coordinator.entity_has_component<CardData>(e))
-        return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+    if (perm.printed_card && global_coordinator.entity_has_component<CardData>(e)) {
+        const CardData &copied = global_coordinator.GetComponent<CardData>(e);
+        return copied.token_script.empty() ? card_name_to_index(copied.name) : token_script_to_index(copied.token_script);
+    }
     if (global_coordinator.entity_has_component<Token>(e)) {
         const std::string &copied = global_coordinator.GetComponent<Token>(e).copied_card;
         if (!copied.empty()) return card_name_to_index(copied);

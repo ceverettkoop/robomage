@@ -77,6 +77,7 @@ enum class SbeSite : uint32_t {
     ETB_NAME_CARD = 3,     // ETB name-a-card (context: the entering entity)
     ETB_TAPPED_LIFE = 4,   // "enters tapped unless you pay N life" y/n (context: the entering entity)
     ETB_CHOOSE_COLOR = 5,  // ETB choose-a-color (context: the entering entity)
+    ETB_COPY = 6,          // enter as a copy of what (context: the entering entity)
 };
 
 uint64_t pq_key(SbeSite site, bool chooser_is_a, uint64_t context, size_t menu_size);

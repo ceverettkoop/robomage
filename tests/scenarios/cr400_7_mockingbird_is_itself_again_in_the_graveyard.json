@@ -1,0 +1,50 @@
+{
+  "name": "cr400_7_mockingbird_is_itself_again_in_the_graveyard",
+  "why": "CR 400.7, 707.2: a copy effect ends as the permanent leaves: destroyed, it is a Mockingbird in the graveyard, which Reanimate then targets by that name.",
+  "hand_a": [
+    "Mockingbird",
+    "Reanimate"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:choice:Grizzly Bears",
+    "B:cast:Lightning Bolt",
+    "B:target:Grizzly Bears@opp",
+    "A:cast:Reanimate"
+  ],
+  "max_decisions": 12,
+  "expect_menu": [
+    "Mockingbird"
+  ]
+}
