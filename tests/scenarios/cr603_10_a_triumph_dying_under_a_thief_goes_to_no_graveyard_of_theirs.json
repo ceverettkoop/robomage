@@ -1,0 +1,46 @@
+{
+  "name": "cr603_10_a_triumph_dying_under_a_thief_goes_to_no_graveyard_of_theirs",
+  "why": "CR 603.10a, 404.1: Triumph of Saint Katherine's \"put into your graveyard\" is ValidCard$ Card.Self+YouOwn. The self look-back read only its zones, so a Triumph reanimated by the opponent triggered for them as it went to its owner's graveyard.",
+  "hand_a": [
+    "Reanimate",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Triumph of Saint Katherine"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Reanimate",
+    "A:target:Triumph of Saint Katherine",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Triumph of Saint Katherine",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Triumph of Saint Katherine",
+    "A:pass"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Triumph of Saint Katherine is destroyed"
+  ],
+  "expect_not": [
+    "Triumph of Saint Katherine triggered"
+  ]
+}

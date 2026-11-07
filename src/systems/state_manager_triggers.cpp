@@ -528,6 +528,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // from firing on a hand/library departure, while an Origin$ Any trigger (filter unset) fires
     // from any zone. CardData (and the card's persisted last controller / owner in its Zone)
     // survives the move, so the source is fully recoverable.
+    const TriggerMode *mode = trigger_mode_on(Events::CARD_CHANGED_ZONE);
     for (const auto &ev : events) {
         if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
         if (!ev.HasParam(Params::ENTITY)) continue;
@@ -563,9 +564,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         const LastKnownInfo *lki = (ev_origin == Zone::BATTLEFIELD || etb_lookback)
                                        ? departed_lki_for(entity)
                                        : lki_for(entity);
-        // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
-        // exactly as in the battlefield scan.
-        if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;
         const std::string ent_name =
             (lki && lki->copied_card) ? lki->copied_card->name : entity_name(entity);
         // A transformed DFC functions with its active (back) face's abilities (CR 712.4). A
@@ -589,10 +587,9 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             if (ab.ability_type != AbilityDef::TRIGGERED) continue;
             if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
             if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
-            if (ab.trigger_zone_origin >= 0 &&
-                ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
-            if (ab.trigger_zone_destination >= 0 &&
-                ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+            // Its row: the zones, the ValidCard$ and DisableTriggers (Doorkeeper Thrull), as in the
+            // battlefield scan.
+            if (!mode->match({ab, entity, ctrl, ev})) continue;
             // ETB gates mirrored from the battlefield scan, read from the LKI snapshot:
             // "if you cast it" (The One Ring), evoke self-sacrifice, offspring token copy.
             if (ab.trigger_requires_entered_by_cast && !(lki && lki->entered_by_cast)) continue;
