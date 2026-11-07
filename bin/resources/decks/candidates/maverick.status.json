@@ -20,25 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "A creature card in every other zone (Grist)": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "static_param:ExcludeZone"
-      ],
-      "size": "M"
-     },
-     "CantPreventDamage static": {
-      "cards": [
-       "Frenzied Baloth"
-      ],
-      "findings": [
-       "static_mode:CantPreventDamage",
-       "static_param:IsCombat"
-      ],
-      "size": "S"
-     },
      "Revolt trigger condition": {
       "cards": [
        "Renegade Rallier"
@@ -47,149 +28,69 @@
        "trigger_param:Revolt"
       ],
       "size": "S"
-     },
-     "UnlessCost on more effects": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "ability_param:ImmediateTrigger.UnlessCost"
-      ],
-      "size": "M"
      }
     },
     "needs": {
-     "Frenzied Baloth": [
-      "CantPreventDamage static"
-     ],
-     "Grist, the Hunger Tide": [
-      "A creature card in every other zone (Grist)",
-      "UnlessCost on more effects"
-     ],
      "Renegade Rallier": [
       "Revolt trigger condition"
      ]
     },
     "new_cards": [
-     "Frenzied Baloth",
-     "Grist, the Hunger Tide",
      "Renegade Rallier"
     ],
-    "size_points": 8
+    "size_points": 1
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (8 points)",
-   "time": "2026-11-06T16:30:07"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
+   "time": "2026-11-06T18:37:06"
   },
   "diff": {
    "detail": {
     "distinct": 38,
-    "in_vocab": 35,
+    "in_vocab": 37,
     "no_script": [],
     "not_in_vocab": [
-     "Frenzied Baloth",
-     "Grist, the Hunger Tide",
      "Renegade Rallier"
     ]
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "38 cards: 35 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T12:35:24"
+   "summary": "38 cards: 37 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T18:37:06"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "A creature card in every other zone (Grist)",
-     "CantPreventDamage static",
-     "Revolt trigger condition",
-     "UnlessCost on more effects"
+     "Revolt trigger condition"
     ]
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: A creature card in every other zone (Grist), CantPreventDamage static, Revolt trigger condition, UnlessCost on more effects",
-   "time": "2026-11-06T16:30:07"
+   "summary": "1 mechanic(s) to implement: Revolt trigger condition",
+   "time": "2026-11-06T18:37:06"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Frenzied Baloth": {
-      "card": "Frenzied Baloth",
-      "faces": [
-       "Frenzied Baloth"
-      ],
-      "findings": [
-       {
-        "detail": "CantPreventDamage IsCombat$ True",
-        "kind": "static_param",
-        "line": "S:Mode$ CantPreventDamage | IsCombat$ True | Description$ Combat damage can't be prevented.",
-        "name": "IsCombat"
-       },
-       {
-        "detail": "the engine applies no such static",
-        "kind": "static_mode",
-        "line": "S:Mode$ CantPreventDamage | IsCombat$ True | Description$ Combat damage can't be prevented.",
-        "name": "CantPreventDamage"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/f/frenzied_baloth.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
-     "Grist, the Hunger Tide": {
-      "card": "Grist, the Hunger Tide",
-      "faces": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       {
-        "detail": "UnlessCost$ Sac<1/Creature> is not offered",
-        "kind": "ability_param",
-        "line": "A:AB$ ImmediateTrigger | Cost$ SubCounter<2/LOYALTY> | Planeswalker$ True | Execute$ TrigDestroy | UnlessCost$ Sac<1/Creature> | UnlessPayer$ You | UnlessSwitched$ True | AILogic$ WeakerCreature | SpellDescription$ You may sacrifice a creature. When you do, destroy target creature or planeswalker.",
-        "name": "ImmediateTrigger.UnlessCost"
-       },
-       {
-        "detail": "Continuous ExcludeZone$ Battlefield",
-        "kind": "static_param",
-        "line": "S:Mode$ Continuous | Affected$ Card.Self | ExcludeZone$ Battlefield | SetPower$ 1 | SetToughness$ 1 | AddType$ Creature & Insect | CharacteristicDefining$ True | Description$ As long as CARDNAME isn't on the battlefield, it's a 1/1 Insect creature in addition to its other types.",
-        "name": "ExcludeZone"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/grist_the_hunger_tide.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "bg_1_1_insect"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     },
      "Renegade Rallier": {
       "card": "Renegade Rallier",
       "faces": [
@@ -215,22 +116,20 @@
    },
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T16:30:07"
+   "summary": "1 new card(s), 1 with findings (1 findings), 0 without a script",
+   "time": "2026-11-06T18:37:06"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "bg_1_1_insect"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -238,11 +137,11 @@
    "inputs": {
     "deck": "9112ca90ff4881dd3727efc6222ba67a75763c96b795af333b2da57c998f09ae",
     "scripts": "44be9b09329d5a950accf72f4e3f778e50fe2d2b699dc4022e6450c68dcae2bf",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T12:35:24"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T18:37:06"
   },
   "scrape": {
    "detail": {

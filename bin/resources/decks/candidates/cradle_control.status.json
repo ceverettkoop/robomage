@@ -20,15 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "A creature card in every other zone (Grist)": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "static_param:ExcludeZone"
-      ],
-      "size": "M"
-     },
      "AnimateAll power, toughness and types": {
       "cards": [
        "Allosaurus Shepherd"
@@ -39,82 +30,65 @@
        "ability_param:AnimateAll.Types"
       ],
       "size": "S"
-     },
-     "UnlessCost on more effects": {
-      "cards": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       "ability_param:ImmediateTrigger.UnlessCost"
-      ],
-      "size": "M"
      }
     },
     "needs": {
      "Allosaurus Shepherd": [
       "AnimateAll power, toughness and types"
-     ],
-     "Grist, the Hunger Tide": [
-      "A creature card in every other zone (Grist)",
-      "UnlessCost on more effects"
      ]
     },
     "new_cards": [
-     "Allosaurus Shepherd",
-     "Grist, the Hunger Tide"
+     "Allosaurus Shepherd"
     ],
-    "size_points": 7
+    "size_points": 1
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (7 points)",
-   "time": "2026-11-06T16:30:06"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
+   "time": "2026-11-06T18:37:05"
   },
   "diff": {
    "detail": {
     "distinct": 34,
-    "in_vocab": 32,
+    "in_vocab": 33,
     "no_script": [],
     "not_in_vocab": [
-     "Allosaurus Shepherd",
-     "Grist, the Hunger Tide"
+     "Allosaurus Shepherd"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "34 cards: 32 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T12:35:24"
+   "summary": "34 cards: 33 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T18:37:05"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "A creature card in every other zone (Grist)",
-     "AnimateAll power, toughness and types",
-     "UnlessCost on more effects"
+     "AnimateAll power, toughness and types"
     ]
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: A creature card in every other zone (Grist), AnimateAll power, toughness and types, UnlessCost on more effects",
-   "time": "2026-11-06T16:30:06"
+   "summary": "1 mechanic(s) to implement: AnimateAll power, toughness and types",
+   "time": "2026-11-06T18:37:05"
   },
   "parse": {
    "detail": {
@@ -150,59 +124,26 @@
       "vocab": [
        -1
       ]
-     },
-     "Grist, the Hunger Tide": {
-      "card": "Grist, the Hunger Tide",
-      "faces": [
-       "Grist, the Hunger Tide"
-      ],
-      "findings": [
-       {
-        "detail": "UnlessCost$ Sac<1/Creature> is not offered",
-        "kind": "ability_param",
-        "line": "A:AB$ ImmediateTrigger | Cost$ SubCounter<2/LOYALTY> | Planeswalker$ True | Execute$ TrigDestroy | UnlessCost$ Sac<1/Creature> | UnlessPayer$ You | UnlessSwitched$ True | AILogic$ WeakerCreature | SpellDescription$ You may sacrifice a creature. When you do, destroy target creature or planeswalker.",
-        "name": "ImmediateTrigger.UnlessCost"
-       },
-       {
-        "detail": "Continuous ExcludeZone$ Battlefield",
-        "kind": "static_param",
-        "line": "S:Mode$ Continuous | Affected$ Card.Self | ExcludeZone$ Battlefield | SetPower$ 1 | SetToughness$ 1 | AddType$ Creature & Insect | CharacteristicDefining$ True | Description$ As long as CARDNAME isn't on the battlefield, it's a 1/1 Insect creature in addition to its other types.",
-        "name": "ExcludeZone"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/grist_the_hunger_tide.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "bg_1_1_insect"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (5 findings), 0 without a script",
-   "time": "2026-11-06T16:30:06"
+   "summary": "1 new card(s), 1 with findings (3 findings), 0 without a script",
+   "time": "2026-11-06T18:37:05"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "bg_1_1_insect"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -210,11 +151,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T12:35:24"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T18:37:05"
   },
   "scrape": {
    "detail": {

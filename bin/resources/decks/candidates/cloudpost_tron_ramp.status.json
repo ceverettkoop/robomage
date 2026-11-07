@@ -69,15 +69,15 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 3 mechanic(s) (7 points)",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "diff": {
    "detail": {
@@ -93,11 +93,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "29 cards: 26 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T18:37:05"
   },
   "implement": {
    "detail": {
@@ -109,15 +109,15 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "pending",
    "summary": "3 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Targets in several zones",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "parse": {
    "detail": {
@@ -200,14 +200,14 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "3 new card(s), 3 with findings (4 findings), 0 without a script",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "provision": {
    "detail": {
@@ -223,11 +223,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T18:37:05"
   },
   "scrape": {
    "detail": {

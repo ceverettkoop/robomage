@@ -91,15 +91,15 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "3 new card(s): 0 clean, 3 need 5 mechanic(s) (7 points)",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "diff": {
    "detail": {
@@ -115,11 +115,11 @@
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "33 cards: 30 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T18:37:05"
   },
   "implement": {
    "detail": {
@@ -133,15 +133,15 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "pending",
    "summary": "5 mechanic(s) to implement: Cast with this mana (The Everflowing Well), Clone a target (CloneTarget), Ghost Vacuum return, Spell-cast filters, Targets in several zones",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "parse": {
    "detail": {
@@ -245,14 +245,14 @@
    },
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
-    "engine": "4d0548d992059d2e4cd13cf100131f66b827cafd526b11134cc90701c0b2f3f1",
+    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "3 new card(s), 3 with findings (8 findings), 0 without a script",
-   "time": "2026-11-06T16:30:06"
+   "time": "2026-11-06T18:37:05"
   },
   "provision": {
    "detail": {
@@ -266,11 +266,11 @@
    "inputs": {
     "deck": "11f951dd6c0b40bc99a5610b9d9d0da4bc24ffababe125efa683d48b5b24f1d7",
     "scripts": "ab2e99ab3e95ddf8cbbe1e385009f03fbf979294b46a88924aca1e7bae85b8a7",
-    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T12:35:24"
+   "time": "2026-11-06T18:37:05"
   },
   "scrape": {
    "detail": {
