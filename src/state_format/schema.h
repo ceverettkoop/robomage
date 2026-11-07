@@ -311,9 +311,10 @@ class FrameWriter {
                 Row &i64(int64_t v);
                 Row &f32(float v);
                 Row &text(const std::string &s);
+                // A cell of a column named by its storage: an integer's bits.
+                void put(Storage s, uint64_t bits);
 
             private:
-                void put(Storage s, uint64_t bits);
                 TableBuf *buf_;
                 const TableDef *def_;
                 size_t at_ = 0;  // the row's first byte in buf_->bytes (sized for the whole row)

@@ -181,11 +181,11 @@ struct Game {
             rng.seed = _seed;
             rng.engine = std::mt19937(rng.seed);
         };
-        // Day/Night designation the game itself can have (CR 731.1). Starts at "neither" and, once
-        // set, is always exactly one of day/night. Driven by the daybound/nightbound subsystem
-        // (src/day_night.*); read by day-/night-conditional effects. A fresh Game starts neither.
         enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
-        DayNight day_night = DN_NEITHER;
+        // The designations the game holds (designations.def).
+#define DESIGNATION_TURN(type, field, init, ...) type field = init;
+#define DESIGNATION_GAME_PLAYER(type, field, init, ...) type field = init;
+#include "../state_format/designations.def"
         size_t timestamp = 0;
         // The game's seeded random number generator (every shuffle and random choice).
         struct Rng {
@@ -271,9 +271,6 @@ struct Game {
         // Next DelayedTriggerLink::seq register_delayed_trigger hands out (monotonic per game,
         // starting at 1 so 0 stays "not a delayed trigger").
         uint32_t next_delayed_seq = 1;
-        // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
-        // the monarch).
-        Entity monarch_entity = MAX_ENTITIES;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play.

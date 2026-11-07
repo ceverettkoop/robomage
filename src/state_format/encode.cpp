@@ -702,7 +702,9 @@ static void write_turn(const Ctx &c) {
     put_seat(r, priority_seat(), c.self);
     r.u8(priority_window_open() ? 1 : 0).u8(static_cast<uint64_t>(cur_game.pending.choice));
     r.u8(cur_game.combat.attackers_declared ? 1 : 0).u8(cur_game.combat.blockers_declared ? 1 : 0);
-    r.u8(static_cast<uint64_t>(cur_game.day_night));
+#define DESIGNATION_TURN(type, field, init, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#include "designations.def"
     const std::vector<Zone::Ownership> &extra = cur_game.turn_state.extra_turns;
     put_seat(r, extra.empty() ? Zone::UNKNOWN : extra.back(), c.self);
 }
@@ -729,7 +731,11 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
                                   : 0;
         const bool passed = window && (is_a ? cur_game.priority.a_has_passed : cur_game.priority.b_has_passed);
         r.u8(u8_count(mulls)).u8(u8_count(to_bottom)).u8(passed ? 1 : 0);
-        r.u8(cur_game.monarch_entity == pe ? 1 : 0).u8(pl.has_city_blessing ? 1 : 0);
+#define DESIGNATION_GAME_PLAYER(type, field, init, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#define DESIGNATION_PLAYER(type, field, init, lasts, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#include "designations.def"
         const auto &extra = cur_game.turn_state.extra_turns;
         r.u8(u8_count(std::count(extra.begin(), extra.end(), p)));
         r.u8(u8_count(pl.lands_played_this_turn)).u8(u8_count(rules_mod::land_drops_remaining(p)));
@@ -771,6 +777,12 @@ static int copied_card_id(Entity e, const Permanent &perm) {
         if (!tok.copied_card.empty()) return card_name_to_index(tok.copied_card);
     }
     return -1;
+}
+
+// The chosen creature type's subtype index, none when none was chosen.
+static uint64_t chosen_type_cell(const Permanent &perm) {
+    const int index = perm.chosen_type.empty() ? -1 : subtype_index(perm.chosen_type);
+    return index < 0 ? NONE16 : static_cast<uint64_t>(index);
 }
 
 // One object row. The characteristic columns are filled only when the viewer can see them
@@ -855,22 +867,14 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u8(on_bf && is_waiting_delayed_trigger_subject(e) ? 1 : 0);
     r.u8(perm ? u8_count(permanent_activations_this_turn(*perm)) : 0)
         .u8(on_bf ? u8_count(ability_resolutions_this_turn(e)) : 0);
-    const bool named = visible && perm && !perm->chosen_name.empty();
-    r.u16(named ? card_or_none(card_name_to_index(perm->chosen_name)) : NONE16);
-    const int chosen_type = visible && perm && !perm->chosen_type.empty() ? subtype_index(perm->chosen_type) : -1;
-    r.u16(chosen_type < 0 ? NONE16 : static_cast<uint64_t>(chosen_type)).u16(perm ? u16_count(perm->entered_x) : 0);
-    r.u8(perm && perm->is_monstrous ? 1 : 0)
-        .u8(perm && perm->evoked ? 1 : 0)
-        .u8(perm && perm->cast_with_escape ? 1 : 0);
-    r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
-    // Kept only for a card that reads it, so that it is kept says which card.
-    for (Colors col : {WHITE, BLUE, BLACK, RED, GREEN})
-        r.u8(visible && perm ? u8_count(static_cast<int64_t>(mana_of_color(perm->cast_mana_paid, col))) : 0);
-    r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
-    r.u8(perm && perm->overlay == SpellOverlay::BESTOW ? 1 : 0);
-    r.u8(perm && perm->prepared ? 1 : 0);
-    r.u8(visible && perm && perm->chosen_color != NO_COLOR ? 1 + static_cast<uint64_t>(perm->chosen_color) : 0);
-    r.u8(perm && attacked_this_turn(*perm) ? 1 : 0);
+#define OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read) \
+    r.put(rmstate::Storage::storage, perm && (!(of_card) || visible) ? static_cast<uint64_t>(read) : (none));
+#define DESIGNATION_OBJECT(type, field, init, column, storage, tag, of_card, none, read) \
+    OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read)
+#define DESIGNATION_OBJECT_COLUMN(column, storage, tag, of_card, none, read) \
+    OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read)
+#include "designations.def"
+#undef OBJECT_DESIGNATION_CELL
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.

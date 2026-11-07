@@ -19,6 +19,7 @@ static void col_handle(TableDef &t, const std::string &name);
 static void col_card(TableDef &t, const std::string &name);
 static void col_count(TableDef &t, const std::string &name, Storage s);
 static void col_enum(TableDef &t, const std::string &name, Storage s, const std::string &enum_name);
+static void col_designation(TableDef &t, const std::string &name, Storage s, const std::string &tag);
 static void col_ability_params(TableDef &t);
 static std::vector<TableDef> build_table_defs();
 static void define_schema_tables(std::vector<TableDef> &out);
@@ -100,6 +101,14 @@ static void col_count(TableDef &t, const std::string &name, Storage s) {
 
 static void col_enum(TableDef &t, const std::string &name, Storage s, const std::string &enum_name) {
     col(t, name, s, "enum:" + enum_name);
+}
+
+// A designation's column (designations.def).
+static void col_designation(TableDef &t, const std::string &name, Storage s, const std::string &tag) {
+    if (tag == "bool")
+        col_bool(t, name);
+    else
+        col(t, name, s, tag);
 }
 
 // The effect parameters of one ability definition (Appendix A.4, register 41), shared by
@@ -247,7 +256,8 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_enum(t, "mandatory", Storage::U8, "mandatory_choice");
     col_bool(t, "attackers_declared");
     col_bool(t, "blockers_declared");
-    col_enum(t, "day_night", Storage::U8, "day_night");
+#define DESIGNATION_TURN(type, field, init, column, storage, tag, read) col_designation(t, #column, Storage::storage, tag);
+#include "designations.def"
     col_seat(t, "next_extra_turn");
 
     add_table(out, TableId::PLAYER, "player", FrameKind::STATE);
@@ -259,8 +269,11 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_count(p, "mulligans", Storage::U8);
     col_count(p, "to_bottom", Storage::U8);
     col_bool(p, "passed");
-    col_bool(p, "monarch");
-    col_bool(p, "city_blessing");
+#define DESIGNATION_GAME_PLAYER(type, field, init, column, storage, tag, read) \
+    col_designation(p, #column, Storage::storage, tag);
+#define DESIGNATION_PLAYER(type, field, init, lasts, column, storage, tag, read) \
+    col_designation(p, #column, Storage::storage, tag);
+#include "designations.def"
     col_count(p, "extra_turns", Storage::U8);
     col_count(p, "lands_played", Storage::U8);
     col_count(p, "land_drops_left", Storage::U8);
@@ -316,20 +329,11 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(o, "delayed_subject");
     col_count(o, "activations_turn", Storage::U8);
     col_count(o, "resolutions_turn", Storage::U8);
-    col_card(o, "chosen_name");
-    col_enum(o, "chosen_type", Storage::U16, "subtype");
-    col_count(o, "entered_x", Storage::U16);
-    col_bool(o, "monstrous");
-    col_bool(o, "evoked");
-    col_bool(o, "escaped");
-    col_bool(o, "unearthed");
-    col_bool(o, "cast_from_hand");
-    for (const char *c : {"spent_w", "spent_u", "spent_b", "spent_r", "spent_g"}) col_count(o, c, Storage::U8);
-    col_bool(o, "exerted");
-    col_bool(o, "bestowed");
-    col_bool(o, "prepared");
-    col_count(o, "chosen_color", Storage::U8);
-    col_bool(o, "attacked");
+#define DESIGNATION_OBJECT(type, field, init, column, storage, tag, of_card, none, read) \
+    col_designation(o, #column, Storage::storage, tag);
+#define DESIGNATION_OBJECT_COLUMN(column, storage, tag, of_card, none, read) \
+    col_designation(o, #column, Storage::storage, tag);
+#include "designations.def"
 
     add_table(out, TableId::OBJECT_SUBTYPE, "object_subtype", FrameKind::STATE);
     col_handle(out.back(), "obj");

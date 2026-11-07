@@ -648,8 +648,9 @@ static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
         "string", "string_view", "system_error", "tuple", "type_traits", "typeinfo", "unordered_map", "unordered_set",
         "utility", "variant", "vector"};
     static const std::set<std::string> allowed = {
-        "src/state_format/decode.h", "src/state_format/schema.h", "src/state_format/json.h"};
-    std::vector<std::string> files;
+        "src/state_format/decode.h", "src/state_format/schema.h", "src/state_format/json.h",
+        "src/state_format/designations.def"};
+    std::vector<std::string> files = {"src/state_format/designations.def"};
     for (const char *stem : {"decode", "schema", "json", "recode"})
         for (const char *ext : {".h", ".cpp"}) {
             const std::string rel = std::string("src/state_format/") + stem + ext;
