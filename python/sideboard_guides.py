@@ -4,7 +4,7 @@
 its machine-readable copy (``pycheck.py``'s ``guides`` part checks that the two agree):
 
 - ``draw_land``: per guided league deck (its stem under ``bin/resources/decks/league/``) the land
-  it cuts on the draw, null for a deck that cuts none. The guided decks are the nine league decks
+  it cuts on the draw, null for a deck that cuts none. The guided decks are the ten league decks
   the guides are written for; a deck onboarded into ``league/`` later (``docs/open_vocab_plan.md``
   S7) has no entry and no rows, so the tier keeps its maindeck and its opponents keep theirs
   against it;

@@ -4,6 +4,7 @@
     "burn": "Mountain",
     "death_and_taxes": "Plains",
     "lands_top8": null,
+    "maverick": null,
     "reanimator": "Swamp",
     "ur_tempo": "Thundering Falls",
     "uw_control": "Island",
@@ -15,9 +16,10 @@
     ["burn", "uw_control"],
     ["death_and_taxes", "lands_top8"],
     ["lands_top8", "wrb_energy"],
+    ["maverick", "ur_tempo"],
     ["reanimator", "wubg_doomsday"],
     ["ur_tempo", "bug"],
-    ["uw_control", "ur_tempo"],
+    ["uw_control", "maverick"],
     ["wrb_energy", "death_and_taxes"],
     ["wubg_doomsday", "burn"]
   ],
@@ -62,6 +64,17 @@
       "wrb_energy": {"in": {"Dismember": 2, "Drop of Honey": 1, "Endurance": 1, "Force of Vigor": 1}, "out": {"Soul-Guide Lantern": 1, "Skateboard": 1, "Expedition Map": 1, "Sphere of Resistance": 2}, "draw": null},
       "wubg_doomsday": {"in": {"Damping Sphere": 1, "Disruptor Flute": 1, "Force of Vigor": 1}, "out": {"Maze of Ith": 1, "Soul-Guide Lantern": 1, "Skateboard": 1}, "draw": null}
     },
+    "maverick": {
+      "bug": {"in": {"Choke": 2, "Erode": 2}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Sylvan Safekeeper": 1, "Icetill Explorer": 1}, "draw": null},
+      "burn": {"in": {"Erode": 2, "Outland Liberator": 1}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Sylvan Safekeeper": 1}, "draw": null},
+      "death_and_taxes": {"in": {"Force of Vigor": 2, "Erode": 2, "Outland Liberator": 1}, "out": {"Gaddock Teeg": 1, "Keen-Eyed Curator": 1, "Icetill Explorer": 1, "Sylvan Safekeeper": 1, "Frenzied Baloth": 1}, "draw": null},
+      "lands_top8": {"in": {"Force of Vigor": 2, "Disruptor Flute": 1, "Outland Liberator": 1}, "out": {"Orcish Bowmasters": 3, "Sylvan Safekeeper": 1}, "draw": null},
+      "reanimator": {"in": {"Thoughtseize": 4, "Doorkeeper Thrull": 2}, "out": {"Gaddock Teeg": 1, "Sylvan Safekeeper": 1, "Icetill Explorer": 1, "Renegade Rallier": 1, "Carnivorous Cultivator": 2}, "draw": null},
+      "ur_tempo": {"in": {"Choke": 2, "Erode": 2, "Force of Vigor": 1}, "out": {"Gaddock Teeg": 1, "Icetill Explorer": 1, "Sylvan Safekeeper": 1, "Keen-Eyed Curator": 1, "Renegade Rallier": 1}, "draw": null},
+      "uw_control": {"in": {"Choke": 2, "Thoughtseize": 3, "Force of Vigor": 1}, "out": {"Swords to Plowshares": 2, "Prismatic Ending": 1, "Icetill Explorer": 1, "Renegade Rallier": 1, "Carnivorous Cultivator": 1}, "draw": null},
+      "wrb_energy": {"in": {"Erode": 2, "Force of Vigor": 1}, "out": {"Collector Ouphe": 1, "Gaddock Teeg": 1, "Sylvan Safekeeper": 1}, "draw": null},
+      "wubg_doomsday": {"in": {"Thoughtseize": 4, "Doorkeeper Thrull": 3, "Choke": 2}, "out": {"Swords to Plowshares": 2, "Prismatic Ending": 1, "Keen-Eyed Curator": 1, "Endurance": 2, "Sylvan Safekeeper": 1, "Icetill Explorer": 1, "Renegade Rallier": 1}, "draw": null}
+    },
     "reanimator": {
       "bug": {"in": {"Force of Negation": 2, "Flusterstorm": 1, "The Creation of Avacyn": 2}, "out": {"Flow State": 3, "Careful Study": 2}, "draw": "Show and Tell"},
       "burn": {"in": {"Show and Tell": 4, "The Creation of Avacyn": 2, "Fatal Push": 2}, "out": {"Thoughtseize": 4, "Otherworldly Gaze": 3, "Flow State": 1}, "draw": "Echoing Truth"},
@@ -87,6 +100,7 @@
       "burn": {"in": {"Triumph of Saint Katherine": 2, "Prismatic Ending": 2, "Containment Priest": 2}, "out": {"Lorien Revealed": 2, "Tune the Narrative": 2, "Spell Snare": 1, "Geist of Saint Traft": 1}, "draw": "Consign to Memory"},
       "death_and_taxes": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2}, "out": {"Force of Negation": 2, "Spell Pierce": 1}, "draw": "Triumph of Saint Katherine"},
       "lands_top8": {"in": {"Prismatic Ending": 2, "Consign to Memory": 2, "Surgical Extraction": 1, "Lavinia, Azorius Renegade": 1}, "out": {"Wrath of the Skies": 2, "Spell Snare": 1, "Geist of Saint Traft": 1, "Tune the Narrative": 2}, "draw": "Consign to Memory"},
+      "maverick": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2}, "out": {"Force of Negation": 2, "Spell Pierce": 1}, "draw": "Containment Priest"},
       "reanimator": {"in": {"Containment Priest": 2, "Surgical Extraction": 1, "Consign to Memory": 2, "Flusterstorm": 2}, "out": {"Wrath of the Skies": 2, "Geist of Saint Traft": 1, "Tune the Narrative": 2, "Lorien Revealed": 1, "Murktide Regent": 1}, "draw": "Lavinia, Azorius Renegade"},
       "ur_tempo": {"in": {"Flusterstorm": 2, "Prismatic Ending": 2, "Lavinia, Azorius Renegade": 1}, "out": {"Tune the Narrative": 2, "Lorien Revealed": 2, "Teferi, Time Raveler": 1}, "draw": "Consign to Memory"},
       "wrb_energy": {"in": {"Wrath of the Skies": 1, "Prismatic Ending": 2, "Triumph of Saint Katherine": 1}, "out": {"Force of Negation": 2, "Spell Pierce": 1, "Lorien Revealed": 1}, "draw": "Triumph of Saint Katherine"},

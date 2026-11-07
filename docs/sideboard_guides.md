@@ -7,6 +7,7 @@ meant to learn sideboarding that carries beyond this table.
 
 **Status:** reviewed 2026-10-21; for training. The death_and_taxes, lands_top8 and ur_tempo sections
 are rewritten for those lists (2026-11-06, replacing bw_dnt, lands and ur_delver) and not yet
+reviewed; the maverick section and uw_control's row against it (2026-11-07) are new and not yet
 reviewed. The machine-readable copy the tier reads is
 `python/sideboard_guides.json` (draw lands, every table row and the held-out matchups, card names
 as the league deck files spell them); `python/pycheck.py` (the gate's `smoke` tier) checks that it
@@ -21,12 +22,12 @@ agrees with the tables here and with the deck files.
 - The opponent's deck is known from its registered list (open decklists). An opponent list that is
   not a league deck, a matchup a guide leaves out, or a held-out matchup (below) gets Done (no
   swaps).
-- **The guided decks** are the nine below. A deck onboarded into `decks/league/` later
-  (`docs/open_vocab_plan.md` S7, first eldrazi_aggro) has no guide: it keeps its maindeck, and its
+- **The guided decks** are the ten below. A deck onboarded into `decks/league/` with no guide
+  (`docs/open_vocab_plan.md` S7, eldrazi_aggro) keeps its maindeck, and its
   opponents keep theirs against it. New decks are learned through self-play, with no teacher (S8).
 - **On the play:** the matchup's *In* and *Out*.
 - **On the draw:** the same, plus one more swap: the deck's draw land out and the matchup's *Draw +1*
-  card in. lands_top8 and wubg_doomsday cut no land on the draw: their guides are the same on the
+  card in. lands_top8, maverick and wubg_doomsday cut no land on the draw: their guides are the same on the
   play and on the draw.
 - Every swap is one card in and one out (the engine's balance rule), so *In* and *Out* have equal
   counts. All of a deck's phases stay under the engine's 15-swap cap.
@@ -39,6 +40,7 @@ agrees with the tables here and with the deck files.
 | burn | 1 Mountain |
 | death_and_taxes | 1 Plains |
 | lands_top8 | none |
+| maverick | none |
 | reanimator | 1 Swamp |
 | ur_tempo | 1 Thundering Falls |
 | uw_control | 1 Island |
@@ -132,6 +134,30 @@ besides, Lightning Bolt (burn) or Reanimate (reanimator). Dismember and Drop of 
 creature answers, Drop of Honey also a lone reanimated creature. Soul-Guide Lantern stays against
 bug (Uro's escape), burn and reanimator.
 
+## maverick
+
+Sideboard: 2 Choke, 1 Disruptor Flute, 3 Doorkeeper Thrull, 2 Erode, 2 Force of Vigor, 1 Outland
+Liberator, 4 Thoughtseize.
+
+| vs | In | Out | Draw +1 |
+|---|---|---|---|
+| bug | 2 Choke, 2 Erode | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Sylvan Safekeeper, 1 Icetill Explorer | - |
+| burn | 2 Erode, 1 Outland Liberator | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Sylvan Safekeeper | - |
+| death_and_taxes | 2 Force of Vigor, 2 Erode, 1 Outland Liberator | 1 Gaddock Teeg, 1 Keen-Eyed Curator, 1 Icetill Explorer, 1 Sylvan Safekeeper, 1 Frenzied Baloth | - |
+| lands_top8 | 2 Force of Vigor, 1 Disruptor Flute, 1 Outland Liberator | 3 Orcish Bowmasters, 1 Sylvan Safekeeper | - |
+| reanimator | 4 Thoughtseize, 2 Doorkeeper Thrull | 1 Gaddock Teeg, 1 Sylvan Safekeeper, 1 Icetill Explorer, 1 Renegade Rallier, 2 Carnivorous Cultivator | - |
+| ur_tempo | 2 Choke, 2 Erode, 1 Force of Vigor | 1 Gaddock Teeg, 1 Icetill Explorer, 1 Sylvan Safekeeper, 1 Keen-Eyed Curator, 1 Renegade Rallier | - |
+| uw_control | 2 Choke, 3 Thoughtseize, 1 Force of Vigor | 2 Swords to Plowshares, 1 Prismatic Ending, 1 Icetill Explorer, 1 Renegade Rallier, 1 Carnivorous Cultivator | - |
+| wrb_energy | 2 Erode, 1 Force of Vigor | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Sylvan Safekeeper | - |
+| wubg_doomsday | 4 Thoughtseize, 3 Doorkeeper Thrull, 2 Choke | 2 Swords to Plowshares, 1 Prismatic Ending, 1 Keen-Eyed Curator, 2 Endurance, 1 Sylvan Safekeeper, 1 Icetill Explorer, 1 Renegade Rallier | - |
+
+Notes: not yet reviewed. Collector Ouphe stays against lands_top8, reanimator, doomsday, DnT, ur_tempo
+and uw_control (Mox Diamond, Lotus Petal, Lion's Eye Diamond, Aether Vial, Cori-Steel Cutter's equip,
+The One Ring). Doorkeeper Thrull answers Thassa's Oracle and Archon of Cruelty's and Atraxa's enter
+triggers, at the price of the deck's own Bowmasters and Badgermole Cub. Keen-Eyed Curator stays against
+reanimator and lands_top8. Thalia stays everywhere. Eight of the guided decks have no row against
+maverick yet and keep their maindecks against it; uw_control's is the held-out one.
+
 ## reanimator
 
 Sideboard: 2 Consign to Memory, 2 Echoing Truth, 2 Fatal Push, 1 Flusterstorm, 2 Force of Negation,
@@ -188,6 +214,7 @@ Sideboard: 4 Consign to Memory, 2 Containment Priest, 2 Flusterstorm, 1 Lavinia,
 | burn | 2 Triumph of Saint Katherine, 2 Prismatic Ending, 2 Containment Priest | 2 Lorien Revealed, 2 Tune the Narrative, 1 Spell Snare, 1 Geist of Saint Traft | Consign to Memory |
 | death_and_taxes | 1 Wrath of the Skies, 2 Prismatic Ending | 2 Force of Negation, 1 Spell Pierce | Triumph of Saint Katherine |
 | lands_top8 | 2 Prismatic Ending, 2 Consign to Memory, 1 Surgical Extraction, 1 Lavinia, Azorius Renegade | 2 Wrath of the Skies, 1 Spell Snare, 1 Geist of Saint Traft, 2 Tune the Narrative | Consign to Memory |
+| maverick | 1 Wrath of the Skies, 2 Prismatic Ending | 2 Force of Negation, 1 Spell Pierce | Containment Priest |
 | reanimator | 2 Containment Priest, 1 Surgical Extraction, 2 Consign to Memory, 2 Flusterstorm | 2 Wrath of the Skies, 1 Geist of Saint Traft, 2 Tune the Narrative, 1 Lorien Revealed, 1 Murktide Regent | Lavinia, Azorius Renegade |
 | ur_tempo | 2 Flusterstorm, 2 Prismatic Ending, 1 Lavinia, Azorius Renegade | 2 Tune the Narrative, 2 Lorien Revealed, 1 Teferi, Time Raveler | Consign to Memory |
 | wrb_energy | 1 Wrath of the Skies, 2 Prismatic Ending, 1 Triumph of Saint Katherine | 2 Force of Negation, 1 Spell Pierce, 1 Lorien Revealed | Triumph of Saint Katherine |
@@ -242,7 +269,7 @@ out against decks with neither blue nor black (burn, DnT, lands).
 ## Held-out matchups
 
 For the generalisation test (`docs/rnad_training_plan.md` §6.2) the teacher answers Done in these
-nine matchups (deck vs opponent), though their rows stay in the tables above:
+ten matchups (deck vs opponent), though their rows stay in the tables above:
 
 | Deck | vs |
 |---|---|
@@ -250,9 +277,10 @@ nine matchups (deck vs opponent), though their rows stay in the tables above:
 | burn | uw_control |
 | death_and_taxes | lands_top8 |
 | lands_top8 | wrb_energy |
+| maverick | ur_tempo |
 | reanimator | wubg_doomsday |
 | ur_tempo | bug |
-| uw_control | ur_tempo |
+| uw_control | maverick |
 | wrb_energy | death_and_taxes |
 | wubg_doomsday | burn |
 
