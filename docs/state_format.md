@@ -838,7 +838,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `attacking`, `blocking`, `blocked` | u8 | `bool` | details in `combat` |
 | | `damage` | u16 | `count` | |
 | | `deathtouch_damage` | u8 | `bool` | |
-| | `power`, `toughness` | i16 | `signed` | post-layer for a battlefield creature (a phased-out one's too); printed (active face) elsewhere |
+| | `power`, `toughness` | i16 | `signed` | post-layer for a battlefield creature (a phased-out one's too); elsewhere printed (active face), or what a characteristic-defining ability counts there (CR 604.3: Nethergoyf in a graveyard) |
 | | `types` | u32 | `mask:card_type` | post-layer on the battlefield, where Creature is set exactly while the permanent is a creature (an impending permanent with time counters and an attached reconfigure permanent keep the type in their type set but are not, CR 702.175d, 702.151b) |
 | | `supertypes` | u8 | `mask:supertype` | |
 | | `colors` | u8 | `mask:color` | `effective_colors` |

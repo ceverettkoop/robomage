@@ -178,8 +178,9 @@ static size_t rows_of_object(const Rows &table, uint64_t handle) {
     return count;
 }
 
-// Each object's zone, owner and colors as this frame shows them, that it attacked this turn, and a
-// face-down object's card and characteristics as this frame shows them.
+// Each object's zone, owner and colors as this frame shows them, that it attacked this turn, the P/T
+// a card off the battlefield shows (none at 0/0), and a face-down object's card and characteristics
+// as this frame shows them.
 static void object_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
     const Rows objects(f, s, "object"), subtypes(f, s, "object_subtype"), keywords(f, s, "object_keyword");
@@ -189,6 +190,11 @@ static void object_facts(
         out->push_back("object " + owner + " " + objects.name(r, objects.col("zone")) +
                        " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
         if (objects.u(r, objects.col("attacked")) != 0) out->push_back("attacked " + owner);
+        const std::string zone = objects.name(r, objects.col("zone"));
+        const int64_t power = objects.i(r, objects.col("power")), toughness = objects.i(r, objects.col("toughness"));
+        if (zone != "BATTLEFIELD" && !objects.null(r, objects.col("card")) && (power != 0 || toughness != 0))
+            out->push_back("pt " + owner + " " + zone + " " + card_name(n, objects, r, objects.col("card")) + " " +
+                           std::to_string(power) + "/" + std::to_string(toughness));
         if (objects.u(r, objects.col("face_down")) == 0) continue;
         const uint64_t handle = objects.u(r, objects.col("handle"));
         out->push_back("face_down " + owner + " " + objects.name(r, objects.col("zone")) + " card=" +

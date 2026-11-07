@@ -1,0 +1,63 @@
+{
+  "name": "cr604_3_barrowgoyf_frame_shows_its_count_off_the_battlefield",
+  "why": "CR 604.3: Barrowgoyf's characteristic-defining ability counts the card types among cards in all graveyards wherever it is, so a frame shows its count in a hand, a graveyard and on the stack: Land (A's), Sorcery and Creature (B's): 3/4; Lightning Bolt's Instant added: 4/5, 0/1 only while the graveyards are empty, at the mulligan. Player A's frame shows Player B's graveyard Barrowgoyf too, and Player B's frame nothing of A's hand - M13 (a)",
+  "hand_a": [
+    "Barrowgoyf",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_b": [
+    "Ponder",
+    "Barrowgoyf"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Mountain",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Barrowgoyf"
+  ],
+  "max_decisions": 9,
+  "expect_dump": [
+    "^A d=1 \\S+ \\S+ pt self HAND Barrowgoyf 0/1$",
+    "^A d=\\d+ \\S+ \\S+ pt self HAND Barrowgoyf 3/4$",
+    "^A d=\\d+ \\S+ \\S+ pt opp GRAVEYARD Barrowgoyf 3/4$",
+    "^B d=\\d+ \\S+ \\S+ pt self GRAVEYARD Barrowgoyf 3/4$",
+    "^A d=\\d+ \\S+ \\S+ pt self HAND Barrowgoyf 4/5$",
+    "^B d=\\d+ \\S+ \\S+ pt self GRAVEYARD Barrowgoyf 4/5$",
+    "^A d=\\d+ \\S+ \\S+ pt self STACK Barrowgoyf 4/5$",
+    "^B d=\\d+ \\S+ \\S+ pt opp STACK Barrowgoyf 4/5$"
+  ],
+  "expect_dump_not": [
+    "^\\S d=([3-9]|\\d\\d) .*Barrowgoyf 0/1",
+    "Barrowgoyf 5/6",
+    "^B .*pt opp HAND"
+  ]
+}

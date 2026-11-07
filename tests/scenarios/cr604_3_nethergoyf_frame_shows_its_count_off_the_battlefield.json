@@ -1,0 +1,61 @@
+{
+  "name": "cr604_3_nethergoyf_frame_shows_its_count_off_the_battlefield",
+  "why": "CR 604.3: a characteristic-defining ability functions in every zone, so a frame shows Nethergoyf's counted P/T in a hand, a graveyard and on the stack: the card types in its owner's graveyard (Land, Creature: 2/3; Lightning Bolt's Instant added: 3/4), not Player B's Sorcery, 0/1 only while the graveyards are empty, at the mulligan. Player B's frame shows the graveyard's and the stack's, and nothing of A's hand - M13 (a)",
+  "hand_a": [
+    "Nethergoyf",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Forest",
+    "Nethergoyf"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_b": [
+    "Ponder"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Mountain",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Nethergoyf"
+  ],
+  "max_decisions": 9,
+  "expect_dump": [
+    "^A d=1 \\S+ \\S+ pt self HAND Nethergoyf 0/1$",
+    "^A d=\\d+ \\S+ \\S+ pt self HAND Nethergoyf 2/3$",
+    "^A d=\\d+ \\S+ \\S+ pt self GRAVEYARD Nethergoyf 2/3$",
+    "^B d=\\d+ \\S+ \\S+ pt opp GRAVEYARD Nethergoyf 2/3$",
+    "^A d=\\d+ \\S+ \\S+ pt self HAND Nethergoyf 3/4$",
+    "^A d=\\d+ \\S+ \\S+ pt self GRAVEYARD Nethergoyf 3/4$",
+    "^A d=\\d+ \\S+ \\S+ pt self STACK Nethergoyf 3/4$",
+    "^B d=\\d+ \\S+ \\S+ pt opp STACK Nethergoyf 3/4$"
+  ],
+  "expect_dump_not": [
+    "^\\S d=([3-9]|\\d\\d) .*Nethergoyf 0/1",
+    "Nethergoyf 4/5",
+    "^B .*pt opp HAND"
+  ]
+}

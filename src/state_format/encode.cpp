@@ -838,10 +838,15 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
         int power = face ? static_cast<int>(face->power) : tok ? static_cast<int>(tok->power) : 0;
         int toughness = face ? static_cast<int>(face->toughness) : tok ? static_cast<int>(tok->toughness) : 0;
         // A battlefield creature's post-layer P/T (a phased-out one's too: effective_power treats
-        // it as gone, CR 702.26b, but it is included and flagged).
+        // it as gone, CR 702.26b, but it is included and flagged). A card elsewhere has what its
+        // characteristic-defining ability counts there (CR 604.3: Nethergoyf in a graveyard).
         if (cr) {
             power = static_cast<int>(cr->power);
             toughness = static_cast<int>(cr->toughness);
+        } else if (!perm && face && face->has_counted_pt) {
+            const PowerToughness pt = card_power_toughness(e, *cd);
+            power = pt.power;
+            toughness = pt.toughness;
         }
         const std::set<Type> empty_types;
         const std::set<Type> &types = perm ? perm->types : face ? face->types : tok ? tok->types : empty_types;
