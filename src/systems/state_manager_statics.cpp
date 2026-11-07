@@ -62,8 +62,13 @@ static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership control
 static bool affected_is_general_filter(const std::string &aff);
 static bool static_is_general(const StaticAbility &sa);
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
-static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const FilterSpec &aff, const EntitySet &entities);
+static std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
+static bool static_defined_covers(const ActiveStatic &as, Entity e);
+static bool object_in_affected_zone(const StaticAbility &sa, Entity e);
+static MatchCtx static_match_ctx(const ActiveStatic &as);
+static bool printed_object_matches(const ActiveStatic &as, Entity e);
+static std::string strip_named_card_qualifier(const std::string &filter);
+static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void keep_spell_keywords(Creature &creature, const std::vector<std::string> &keywords);
@@ -394,37 +399,6 @@ StaticAbility *ActiveStatic::sa() const {
     return &inert;
 }
 
-// Resolve the battlefield permanents a continuous static's Affected$ filter designates
-// (declared in state_manager.h). A static naming an AffectedDefined$ object, and the Self form,
-// target a single creature that the layer appliers resolve directly, so this returns empty for
-// them and for an empty filter; every other Affected$ value (e.g. "Creature.Colorless+
-// Other+YouCtrl") is a permanent filter matched through permanent_matches_filter with the
-// static's controller as the YouCtrl reference and the source permanent as the .Other
-// self-exclusion seam. A static numeric mana-value qualifier (cmcGE7) in the filter is seeded
-// into the MatchCtx so the comparator is honoured rather than silently passing.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities) {
-    return permanents_matching_static_filter(as, as.sa()->affected, entities);
-}
-
-// The battlefield permanents a general Affected$-style `aff` filter of static `as` designates,
-// evaluated with the static's controller and source (the shared body of
-// affected_permanents_for_static, also used with a qualifier-stripped filter by
-// ability_grant_targets).
-static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const FilterSpec &aff, const EntitySet &entities) {
-    std::vector<Entity> out;
-    // AffectedDefined$ / Self / no-filter forms are single-target (the layer appliers resolve
-    // them directly); only a general permanent filter fans out here. Shared predicate so this and
-    // the layer-6/7 appliers agree on which statics are general.
-    if (!as.sa()->affected_defined.is(ObjectSpec::DEFAULT) || !affected_is_general_filter(aff)) return out;
-    MatchCtx ctx;
-    ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
-    ctx.source = as.entity;           // .Other self-exclusion
-    for (auto e : entities)
-        if (permanent_matches_filter(e, aff, ctx)) out.push_back(e);
-    return out;
-}
-
 // Parse a SetColor$ spec into a color set (CR 105.2/202.2). "Colorless" — or an empty/unrecognized
 // token — contributes no color (CR 105.2c → empty set). Color words are space- or comma-delimited
 // so an explicit multi-color set (e.g. "White Blue") is handled the same way.
@@ -446,8 +420,10 @@ static std::set<Colors> parse_setcolor_spec(const std::string &spec) {
     return out;
 }
 
-// See declaration in state_manager.h.
-bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
+// Does a continuous static's AffectedZone$ `az` reach a card currently in `zone`? "All" = every
+// zone; empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone
+// list. `has_zone` false (an object with no Zone) matches "All" only.
+static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
     if (az == "All") return true;
     if (az.empty()) return has_zone && zone == Zone::BATTLEFIELD;  // Forge default for a continuous static
     if (!has_zone) return false;
@@ -530,29 +506,13 @@ static bool setcolor_filter_matches_token(const std::string &aff, const Permanen
 // recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
 bool setcolor_override_for(Entity e, std::set<Colors> &out) {
     if (g_active_statics.empty()) return false;
-    bool has_card = global_coordinator.entity_has_component<CardData>(e);
-    bool is_token_perm = !has_card &&
-                         global_coordinator.entity_has_component<Token>(e) &&
-                         is_battlefield_permanent(e);
-    if (!has_card && !is_token_perm) return false;
-    Zone::ZoneValue zone = Zone::LIBRARY;
-    bool has_zone = global_coordinator.entity_has_component<Zone>(e);
-    if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
+    if (!global_coordinator.entity_has_component<CardData>(e) &&
+        !(global_coordinator.entity_has_component<Token>(e) && is_battlefield_permanent(e)))
+        return false;
     for (const auto &as : g_active_statics) {
         if (as.sa()->set_color.empty() || as.suppressed || !as.condition_met) continue;
         if (as.sa()->category != "Continuous") continue;
-        if (!affected_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
-        if (!static_defined_covers(as, e)) continue;
-        if (has_card) {
-            MatchCtx ctx;
-            ctx.controller = as.controller;
-            ctx.source = as.entity;
-            if (!card_matches_printed(e, as.sa()->affected, ctx)) continue;
-        } else {
-            // Battlefield token permanent: recursion-safe type/controller filter match.
-            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (!setcolor_filter_matches_token(as.sa()->affected, perm, as.controller)) continue;
-        }
+        if (!static_reaches(as, e, StaticRead::PRINTED)) continue;
         out = parse_setcolor_spec(as.sa()->set_color);
         return true;
     }
@@ -658,12 +618,105 @@ static bool affected_is_attached_target(const StaticAbility &sa) {
     return sa.affected_defined.is(ObjectSpec::EQUIPPED) || sa.affected_defined.is(ObjectSpec::ENCHANTED);
 }
 
-// See declaration in state_manager.h.
-bool static_defined_covers(const ActiveStatic &as, Entity e) {
+// Strip the ".NamedCard" qualifier from an Affected$ filter, returning the remaining filter
+// (e.g. "Land.NamedCard" -> "Land", "Land.NamedCard+YouCtrl" -> "Land.YouCtrl"). The NamedCard
+// match is handled out-of-band against the source permanent's chosen_name (mirroring
+// active_raise_cost_for), because the shared qualifier evaluator has no NamedCard token.
+static std::string strip_named_card_qualifier(const std::string &filter) {
+    // The head (before the first '.'/'+') is always kept; each subsequent '.'/'+' token is
+    // kept with its preceding separator unless it is the NamedCard qualifier being dropped.
+    size_t head_end = filter.find_first_of(".+");
+    std::string out = filter.substr(0, head_end);
+    size_t p = head_end;
+    while (p != std::string::npos && p < filter.size()) {
+        char sep = filter[p];                       // the '.' or '+' separator
+        size_t nx = filter.find_first_of(".+", p + 1);
+        size_t tok_end = (nx == std::string::npos) ? filter.size() : nx;
+        std::string tok = filter.substr(p + 1, tok_end - (p + 1));
+        if (tok != "NamedCard") out += sep + tok;
+        p = nx;
+    }
+    return out;
+}
+
+// Does static `as` reach `e` by its AffectedDefined$? True for a static naming none, whose
+// Affected$ alone decides; else only for the one object it names (Affected$ may restrict it
+// further).
+static bool static_defined_covers(const ActiveStatic &as, Entity e) {
     const ObjectSpec &spec = as.sa()->affected_defined;
     if (spec.is(ObjectSpec::DEFAULT)) return true;
     const std::vector<Entity> objects = resolve_objects(spec, ResolveCtx::of_static(as.controller, as.entity));
     return std::find(objects.begin(), objects.end(), e) != objects.end();
+}
+
+// Is `e` in a zone static `sa`'s AffectedZone$ names? An object with no Zone is in none.
+static bool object_in_affected_zone(const StaticAbility &sa, Entity e) {
+    const bool has_zone = global_coordinator.entity_has_component<Zone>(e);
+    return affected_zone_matches(sa.affected_zone,
+                                 has_zone ? global_coordinator.GetComponent<Zone>(e).location : Zone::LIBRARY, has_zone);
+}
+
+// The filter context of static `as`: its controller the YouCtrl/OppCtrl reference (CR 109.5), its
+// source the .Other self-exclusion.
+static MatchCtx static_match_ctx(const ActiveStatic &as) {
+    MatchCtx ctx;
+    ctx.controller = as.controller;
+    ctx.source = as.entity;
+    return ctx;
+}
+
+// `e` against `as`'s Affected$ by printed characteristics: a card through card_matches_printed, so
+// the read never recurses into effective_colors, a battlefield token through the color-free test.
+static bool printed_object_matches(const ActiveStatic &as, Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_matches_printed(e, as.sa()->affected, static_match_ctx(as));
+    return setcolor_filter_matches_token(as.sa()->affected, global_coordinator.GetComponent<Permanent>(e),
+                                         as.controller);
+}
+
+// See declaration in state_manager.h.
+bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read) {
+    const StaticAbility &sa = *as.sa();
+    if (read != StaticRead::LIVE && !object_in_affected_zone(sa, e)) return false;
+    if (!static_defined_covers(as, e)) return false;
+    if (sa.affected.empty()) return true;
+    switch (read) {
+        case StaticRead::LIVE: return permanent_matches_filter(e, sa.affected, static_match_ctx(as));
+        case StaticRead::CARD: return card_matches_filter(e, sa.affected, static_match_ctx(as));
+        case StaticRead::PRINTED: return printed_object_matches(as, e);
+    }
+    return false;
+}
+
+// See declaration in state_manager.h.
+bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face, Zone::ZoneValue zone) {
+    const StaticAbility &sa = *as.sa();
+    if (!affected_zone_matches(sa.affected_zone, zone, /*has_zone=*/true)) return false;
+    if (!static_defined_covers(as, e)) return false;
+    return sa.affected.empty() || card_matches_filter(face, sa.affected, static_match_ctx(as));
+}
+
+// The battlefield permanents a general Affected$ filter designates: read live, with the static's
+// controller and source, so the whole filter grammar applies. A NamedCard qualifier is read beside
+// the filter, against the source permanent's chosen_name (mirroring active_raise_cost_for), because
+// the shared qualifier evaluator has no NamedCard token; a source with no chosen name yet (ETB name
+// choice not made) designates nothing.
+static std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities) {
+    std::vector<Entity> out;
+    if (as.sa()->affected.text().find("NamedCard") == std::string::npos) {
+        for (auto e : entities)
+            if (is_battlefield_permanent(e) && static_reaches(as, e, StaticRead::LIVE)) out.push_back(e);
+        return out;
+    }
+    if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return out;
+    const std::string &chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_name;
+    if (chosen.empty()) return out;
+    const FilterSpec base_filter(strip_named_card_qualifier(as.sa()->affected));
+    const MatchCtx ctx = static_match_ctx(as);
+    for (auto e : entities)
+        if (permanent_matches_filter(e, base_filter, ctx) && global_coordinator.GetComponent<Permanent>(e).name == chosen)
+            out.push_back(e);
+    return out;
 }
 
 // The objects a continuous static affects (CR 613.1 / 611.3a), for every layer that applies it:
@@ -1477,11 +1530,7 @@ static bool land_type_setter_affects(const ActiveStatic &a, Entity e) {
     if (!is_battlefield_permanent(e)) return false;
     const auto &perm = global_coordinator.GetComponent<Permanent>(e);
     if (!permanent_has_type(perm, "Land") || has_basic_supertype(perm.types)) return false;
-    if (!static_defined_covers(a, e)) return false;
-    MatchCtx ctx;
-    ctx.controller = a.controller;
-    ctx.source = a.entity;
-    return permanent_matches_filter(e, a.sa()->affected, ctx);
+    return static_reaches(a, e, StaticRead::LIVE);
 }
 
 // CR 305.7: setting a land's subtype replaces all its land types (and only those — card types
@@ -1928,54 +1977,6 @@ void StateManager::apply_layer6_ability_effects() {
     }
 }
 
-// Strip the ".NamedCard" qualifier from an Affected$ filter, returning the remaining filter
-// (e.g. "Land.NamedCard" -> "Land", "Land.NamedCard+YouCtrl" -> "Land.YouCtrl"). The NamedCard
-// match is handled out-of-band against the source permanent's chosen_name (mirroring
-// active_raise_cost_for), because the shared qualifier evaluator has no NamedCard token.
-static std::string strip_named_card_qualifier(const std::string &filter) {
-    // The head (before the first '.'/'+') is always kept; each subsequent '.'/'+' token is
-    // kept with its preceding separator unless it is the NamedCard qualifier being dropped.
-    size_t head_end = filter.find_first_of(".+");
-    std::string out = filter.substr(0, head_end);
-    size_t p = head_end;
-    while (p != std::string::npos && p < filter.size()) {
-        char sep = filter[p];                       // the '.' or '+' separator
-        size_t nx = filter.find_first_of(".+", p + 1);
-        size_t tok_end = (nx == std::string::npos) ? filter.size() : nx;
-        std::string tok = filter.substr(p + 1, tok_end - (p + 1));
-        if (tok != "NamedCard") out += sep + tok;
-        p = nx;
-    }
-    return out;
-}
-
-// Resolve the permanents an AddAbility$ static affects. Reuses affected_permanents_for_static
-// for the general Affected$ filter grammar, then — if the filter carried a NamedCard qualifier
-// — keeps only permanents whose name equals the source permanent's chosen_name (the same
-// per-source named-card state that match_named_card statics read). A source with no chosen
-// name yet (ETB name choice not made) grants nothing.
-static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const EntitySet &entities) {
-    bool named = as.sa()->affected.text().find("NamedCard") != std::string::npos;
-    const FilterSpec base_filter =
-        named ? FilterSpec(strip_named_card_qualifier(as.sa()->affected)) : as.sa()->affected;
-    std::string chosen;
-    if (named) {
-        if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
-        chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_name;
-        if (chosen.empty()) return {};
-    }
-    // Evaluate the NamedCard-stripped filter through the shared resolver so the rest of the
-    // grammar (subtypes, YouCtrl, …) is matched normally.
-    std::vector<Entity> candidates = permanents_matching_static_filter(as, base_filter, entities);
-    if (!named) return candidates;
-    std::vector<Entity> out;
-    for (Entity e : candidates) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (global_coordinator.GetComponent<Permanent>(e).name == chosen) out.push_back(e);
-    }
-    return out;
-}
-
 // Layer 6 (rule 613.1f): AddAbility$ continuous ability grants. A "Continuous" static with a
 // non-empty add_ability body (Petrified Hamlet's "Lands with the chosen name have '{T}: Add
 // {C}.'") attaches that activated ability to every permanent its Affected$ filter designates,
@@ -2024,7 +2025,7 @@ void StateManager::apply_layer6_ability_grants() {
         if (a.sa()->add_ability.empty()) continue;
         if (!a.condition_met) continue;
 
-        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        std::vector<Entity> targets = static_targets(a, mEntities);
         if (targets.empty()) continue;
 
         // Materialize the granted ability once from the stored body (full Forge ability
@@ -2072,7 +2073,7 @@ void StateManager::apply_layer6_ability_grants() {
         if (a.sa()->add_trigger.empty()) continue;
         if (!a.condition_met) continue;
 
-        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        std::vector<Entity> targets = static_targets(a, mEntities);
         if (targets.empty()) continue;
 
         // Materialize the granted trigger once (full trigger grammar + its Execute$ SVar), then
@@ -2130,13 +2131,7 @@ void StateManager::apply_layer6_ability_grants() {
 // shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
 // grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
-    if (!static_defined_covers(r, entity)) return false;
-    const FilterSpec &aff = r.sa()->affected;
-    if (aff.empty()) return true;
-    MatchCtx ctx;
-    ctx.controller = r.controller;
-    ctx.source = r.entity;
-    return permanent_matches_filter(entity, aff, ctx);
+    return static_reaches(r, entity, StaticRead::LIVE);
 }
 
 // CR 614.12: judged on the characteristics a card entering the battlefield would have there,
@@ -2157,12 +2152,7 @@ bool entering_object_loses_abilities(Entity entity) {
         const StaticAbility &sa = *a.sa();
         if (sa.category != "Continuous") continue;
         if (!sa.remove_all_abilities && !(sa.remove_land_types && nonbasic_land)) continue;
-        if (!static_defined_covers(a, entity)) continue;
-        if (sa.affected.empty()) return true;
-        MatchCtx ctx;
-        ctx.controller = a.controller;
-        ctx.source = a.entity;
-        if (card_matches_filter(face, sa.affected, ctx)) return true;
+        if (static_reaches_face(a, entity, face, Zone::BATTLEFIELD)) return true;
     }
     return false;
 }

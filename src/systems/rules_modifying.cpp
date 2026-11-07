@@ -245,12 +245,7 @@ FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership
         const StaticAbility &sa = *as.sa();
         if (sa.category != "Continuous" || !sa.may_play_without_mana_cost) continue;
         if (!may_play_player_covers(sa.may_play_player, as.controller, caster)) continue;
-        if (!affected_zone_matches(sa.affected_zone, zone, /*has_zone=*/true)) continue;
-        if (!static_defined_covers(as, card)) continue;
-        MatchCtx ctx;
-        ctx.controller = as.controller;  // "you" of YouOwn: the static's controller
-        ctx.source = as.entity;
-        if (!(own_face ? card_matches_filter(card, sa.affected, ctx) : card_matches_filter(face, sa.affected, ctx)))
+        if (!(own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_face(as, card, face, zone)))
             continue;
         grant.granted = true;
         grant.with_flash = grant.with_flash || sa.may_play_with_flash;

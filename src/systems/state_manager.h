@@ -49,21 +49,27 @@ struct ActiveStatic {
 // Rebuilt every SBE pass. Consumers read this instead of scanning all permanents.
 extern std::vector<ActiveStatic> g_active_statics;
 
-// Resolve the set of battlefield permanents a continuous static's Affected$ filter
-// designates (CR 611/613 — the objects a continuous effect applies to). The filter is
-// evaluated through the shared permanent_matches_filter so the full qualifier grammar
-// (colors, Colorless, subtypes, P/T, …) is honoured; YouCtrl/OppCtrl are controller-scoped
-// to the static's controller and `+Other` excludes the source permanent itself. Returns an
-// empty list for a static naming an AffectedDefined$ object or Self (those resolve to a single
-// creature in the applier) or for an empty filter. This is the single, reusable "which permanents does this
-// static affect" step — the additive-P/T anthem path (It That Heralds the End) uses it, and
-// future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
+// ── A static's scope (CR 611.3, 613.1) ─────────────────────────────────────────
+// What a static reaches is answered in one place. static_targets (state_manager_statics.cpp)
+// enumerates the objects a layer applies it to; static_reaches and static_reaches_face ask about
+// one object. No other reader looks at Affected$, AffectedDefined$ or AffectedZone$.
 
-// Does static `as` reach `e` by its AffectedDefined$? True for a static naming none, whose
-// Affected$ alone decides; else only for the one object it names (Affected$ may restrict it
-// further). The readers that test one object against Affected$ ask this first.
-bool static_defined_covers(const ActiveStatic &as, Entity e);
+// How a scope question reads the object it asks about.
+enum class StaticRead {
+    LIVE,     // a battlefield permanent, by its live characteristics
+    CARD,     // a card where it is, as a filter reads it there; AffectedZone$ applies
+    PRINTED,  // a card as printed, a token by a color-free test; AffectedZone$ applies. For a
+              // color-setting static, whose own filter can't read the colors it decides
+};
+
+// Does static `as` reach `e`, read as `read`? AffectedDefined$ decides first, naming the one object
+// it covers, then Affected$ restricts that further; a static with no Affected$ reaches all it
+// covers. The filter's "you" is the static's controller, and its "this" the static's source.
+bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read);
+
+// The same for `e` read as the characteristics `face`, in `zone`: a card about to enter (CR 614.12),
+// or a back face or second half being cast from where the card is.
+bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face, Zone::ZoneValue zone);
 
 // CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
 // effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?
@@ -118,11 +124,6 @@ void reduce_generic_cost(ManaValue &cost, int amount, const CardData &card_data)
 // raises a sub-floor total up to this value by adding generic pips, AFTER every other cost
 // increase/reduction (CR 601.2f — Trinisphere checks the spell's already-adjusted cost).
 int active_cost_floor_for(const CardData &card_data);
-
-// Does a continuous static's AffectedZone$ `az` reach a card currently in `zone`? "All" = every
-// zone; empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone
-// list. `has_zone` false (an object with no Zone) matches "All" only.
-bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 
 // The mana portion of an alternative casting cost (alt cost / flashback / escape) with the
 // active cost-increase surcharge (Thalia), cost reductions (Bilbo; `from` is the zone the spell is
