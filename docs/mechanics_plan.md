@@ -1587,6 +1587,8 @@ Evidence. 37 scenarios, `tests/scenarios/cr*proxy*`, `*jace_token*`, `*empower*`
 
 Unproved. Release `bench` wasn't compared; the `actor` tier's torch part was skipped. `empower_choice` is in no fixture: it takes four named cards to reach, so its one scenario is all that plays it, and no `.expect` key holds it. `kEmpowerTokens` has one row, so a second subtype is untested. A hand discarded for the cost goes in hand order, as LED's does: the owner should order them (CR 404.3). `MeldPair` and CR 712.4c: no vocab effect tries to transform the Engine. A created token's event reads "from hand" on the CLI, for every token, as it did.
 
+**Stage gate (2026-11-07), at `6b03eee3`.** `make check` 0 errors, 0 warnings. Release `bench`, seven alternating rounds against M11's `711388aa`, medians: the actor loop 2,553 to 2,571 decisions/s (+0.7%), engine alone 128.8 to 128.4 us per decision, + knowledge 366.7 to 366.1. Acceptance `gate`: 4 networks, 614 decisions. `full`: 35 networks, 8,675 decisions, 18 cut-over files equal, worst |Δ value| 1.2e-5, |Δ logit| 3.1e-5 against a tolerance of 1e-4. This answers (b2)'s unproved release bench. A hand put into a graveyard at once in hand order (CR 404.3) is engine-wide, not the Engine's: M13's `docs/rules_deviations.md` pass checks it is listed.
+
 ### M13. The sweep (L)
 
 - Verify any candidate card that reports clean and is still outside the vocab, as scenarios, including the ones
