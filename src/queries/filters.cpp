@@ -1188,6 +1188,13 @@ bool card_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx) 
     return matches_view(card_view(e, global_coordinator.GetComponent<CardData>(e)), spec.compiled(), ctx);
 }
 
+bool card_as_face_matches_filter(Entity e, const CardData &face, const FilterSpec &spec, const MatchCtx &ctx) {
+    CharView v = card_view(0, face);
+    v.entity = e;
+    v.owner = global_coordinator.GetComponent<Zone>(e).owner;
+    return matches_view(v, spec.compiled(), ctx);
+}
+
 bool card_matches_printed(Entity e, const FilterSpec &spec, const MatchCtx &ctx) {
     if (!global_coordinator.entity_has_component<CardData>(e)) return false;
     return matches_view(printed_view(e, global_coordinator.GetComponent<CardData>(e)), spec.compiled(), ctx);

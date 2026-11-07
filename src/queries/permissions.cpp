@@ -6,6 +6,7 @@
 #include "../ecs/coordinator.h"
 #include "../systems/rules_modifying.h"
 #include "battlefield.h"
+#include "characteristics.h"
 #include "prepared.h"
 #include "types.h"
 
@@ -112,7 +113,9 @@ static bool prepared_copy_covers(const PermissionQuery &q) {
 static bool graveyard_self_static(const PermissionQuery &q) { return q.cd.may_cast_from_graveyard; }
 
 static bool library_static(const PermissionQuery &q) {
-    return rules_mod::may_cast_from_library(q.player, q.card, q.cd);
+    if (rules_mod::may_cast_from_library(q.player, q.card, q.cd)) return true;
+    const CardData *face_down = overlay_face(q.cd, SpellOverlay::FACE_DOWN);
+    return face_down && rules_mod::may_cast_from_library(q.player, q.card, *face_down);
 }
 
 PlayPermissions play_permissions(Entity card, Zone::Ownership player) {

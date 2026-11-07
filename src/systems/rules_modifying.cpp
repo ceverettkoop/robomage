@@ -422,8 +422,7 @@ bool may_cast_from_library(Zone::Ownership player, Entity card, const CardData &
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met || as.controller != player) continue;
         if (!as.sa()->may_play_from_library) continue;
-        if (own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_face(as, card, face, Zone::LIBRARY))
-            return true;
+        if (own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_as(as, card, face)) return true;
     }
     return false;
 }

@@ -73,6 +73,10 @@ bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read);
 // or a back face or second half being cast from where the card is.
 bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face, Zone::ZoneValue zone);
 
+// The same for `e` where it is, read as the spell `face` it would be: its place in its zone and its
+// owner are the card's, its characteristics the face's (CR 601.3e).
+bool static_reaches_as(const ActiveStatic &as, Entity e, const CardData &face);
+
 // CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
 // effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?
 // Gates the entering card's own "as it enters" replacement effects (enters tapped / with

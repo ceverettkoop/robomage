@@ -111,6 +111,7 @@ static bool exile_no_cost_offered(CastOffer &offer);
 static bool exile_free_offered(CastOffer &offer);
 static bool exile_free_offspring_offered(CastOffer &offer);
 static bool exile_adventure_offered(CastOffer &offer);
+static bool library_allows(const CastOffer &offer);
 static bool cast_from_exile(const CardData &card);
 static void offer_exile_land(CastOffer &offer, std::vector<LegalAction> &actions);
 static bool cast_from_front(const CardData &card);
@@ -217,9 +218,12 @@ static const CastSection kCastSections[] = {
         {"exile_adventure", CastCost::MANA_COST,    false, 7, " (from exile)",         Zone::GRAVEYARD, exile_adventure_offered, SpellOverlay::ADVENTURE},
     }},
     // The top card of a library a static lets its owner cast (Mystic Forge), for its own costs at the
-    // timing its type allows. A land is not cast (CR 601.1), and no static plays one from there.
+    // timing its type allows. The static reads the spell each row would make (CR 601.3e): a morph
+    // card is cast face down as a colorless spell whatever it is. A land is not cast (CR 601.1), and
+    // no static plays one from there.
     {Zone::LIBRARY, Permission::LIBRARY, CastFace::FRONT, cast_from_front, nullptr, {
         {"library",         CastCost::MANA_COST,    false, 10, " (from library)",      Zone::GRAVEYARD, mana_cost_offered},
+        {"library_morph",   CastCost::MORPH,        false, 10, " face down (morph, from library)", Zone::GRAVEYARD, morph_offered, SpellOverlay::FACE_DOWN},
         {"library_free",    CastCost::NO_MANA_COST, false, 8, " (from library) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
     }},
 };
@@ -680,6 +684,12 @@ static bool exile_adventure_offered(CastOffer &offer) {
     return !offer_grant(offer).on_an_adventure && exile_mana_cost_offered(offer);
 }
 
+// From a library, is the spell this row would make one a static lets its caster cast? Any spell
+// from anywhere else.
+static bool library_allows(const CastOffer &offer) {
+    return offer.zone != Zone::LIBRARY || rules_mod::may_cast_from_library(offer.window.caster, offer.card, offer.face);
+}
+
 // A land among the exiled cards is played, not cast (offer_exile_land).
 static bool cast_from_exile(const CardData &card) { return !is_land_card(card); }
 
@@ -765,7 +775,7 @@ static void enumerate_cast_options(Entity card, const CastSection &section, cons
             how.overlay = row.overlay;
             CastOffer overlaid{card, cast_face(printed, how), section.zone, window};
             CastOffer &asked = row.overlay == SpellOverlay::NONE ? offer : overlaid;
-            if (resolution_allows(asked) && row.offered(asked)) {
+            if (resolution_allows(asked) && library_allows(asked) && row.offered(asked)) {
                 // A row that casts it face down still says which card, to the player it offers it to.
                 const std::string &name = asked.face.name.empty() ? printed.name : asked.face.name;
                 actions.push_back(row_action(row, section, card, "Cast " + name + row.label));

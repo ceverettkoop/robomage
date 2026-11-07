@@ -736,6 +736,13 @@ bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face,
     return sa.affected.empty() || card_matches_filter(face, sa.affected, static_match_ctx(as));
 }
 
+// See declaration in state_manager.h.
+bool static_reaches_as(const ActiveStatic &as, Entity e, const CardData &face) {
+    const StaticAbility &sa = *as.sa();
+    if (!object_in_affected_zone(sa, e) || !static_defined_covers(as, e)) return false;
+    return sa.affected.empty() || card_as_face_matches_filter(e, face, sa.affected, static_match_ctx(as));
+}
+
 // The battlefield permanents a general Affected$ filter designates: read live, with the static's
 // controller and source, so the whole filter grammar applies. A NamedCard qualifier is read beside
 // the filter, against the source permanent's chosen_name (mirroring active_raise_cost_for), because

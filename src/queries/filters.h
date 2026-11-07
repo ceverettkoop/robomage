@@ -63,6 +63,8 @@ struct MatchCtx {
 
 bool card_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
+// `e` where it is, with `face`'s characteristics: the spell a card would be as it is cast (CR 601.3e).
+bool card_as_face_matches_filter(Entity e, const CardData &face, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_printed(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const FilterSpec &spec, const MatchCtx &ctx = MatchCtx{});
 // `e` in whatever zone it is in: a battlefield permanent by its live characteristics
