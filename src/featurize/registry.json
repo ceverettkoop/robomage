@@ -299,7 +299,8 @@
 {"type":"object","name":"exerted","kind":"scalar","at":86},
 {"type":"object","name":"bestowed","kind":"scalar","at":87},
 {"type":"object","name":"prepared","kind":"scalar","at":88},
-{"type":"object","name":"chosen_color","kind":"scalar","at":89}
+{"type":"object","name":"chosen_color","kind":"scalar","at":89},
+{"type":"object","name":"attacked","kind":"scalar","at":90}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},

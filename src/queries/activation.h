@@ -72,6 +72,9 @@ const ActivationCondition *activation_condition_named(const std::string &name);
 // Is `name` a row of the table, not the row that never holds?
 bool activation_condition_known(const std::string &name);
 
+// Does an ability `perm` has now ask whether it attacked this turn (boast, CR 702.142a)?
+bool reads_attacked_this_turn(const Permanent &perm);
+
 // Is `def` activated only as a sorcery (CR 602.5d)?
 bool activates_as_sorcery(const AbilityDef &def);
 

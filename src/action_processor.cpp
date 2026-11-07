@@ -750,6 +750,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (!cr.is_attacking) continue;
         attacker_count++;
         sole_attacker = entity;
+        global_coordinator.GetComponent<Permanent>(entity).attacked_on_turn = static_cast<long>(game.turn_state.turn);
         game_log("  %s -> %s\n", entity_name(entity).c_str(),
                  target_display_name(game, cr.attack_target.lki_entity()).c_str());
 

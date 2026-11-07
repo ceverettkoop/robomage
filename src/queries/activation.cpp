@@ -28,6 +28,7 @@ static bool condition_metalcraft(const ActivationAttempt &attempt);
 static bool condition_not_monstrous(const ActivationAttempt &attempt);
 static bool condition_can_equip(const ActivationAttempt &attempt);
 static bool condition_attached(const ActivationAttempt &attempt);
+static bool condition_attacked_this_turn(const ActivationAttempt &attempt);
 static bool condition_never(const ActivationAttempt &attempt);
 static bool activation_rule_allows(const ActivationRule &rule, const ActivationAttempt &attempt);
 static const ActivationCount *find_count(const Permanent &perm, const AbilityDef *def, Entity granted_by_static);
@@ -39,6 +40,7 @@ static const ActivationCondition kActivationConditions[] = {
     {"NotMonstrous", condition_not_monstrous},
     {"CanEquip", condition_can_equip},
     {"Attached", condition_attached},
+    {"AttackedThisTurn", condition_attacked_this_turn},
 };
 static const ActivationCondition kNoSuchCondition = {"", condition_never};
 
@@ -61,6 +63,12 @@ static bool condition_can_equip(const ActivationAttempt &attempt) {
 static bool condition_attached(const ActivationAttempt &attempt) {
     return attempt.source != 0 && global_coordinator.entity_has_component<Permanent>(attempt.source) &&
            global_coordinator.GetComponent<Permanent>(attempt.source).equipped_to.get() != 0;
+}
+
+// AttackedThisTurn (CR 702.142a): boast's "only if this creature attacked this turn".
+static bool condition_attacked_this_turn(const ActivationAttempt &attempt) {
+    return attempt.source != 0 && global_coordinator.entity_has_component<Permanent>(attempt.source) &&
+           attacked_this_turn(global_coordinator.GetComponent<Permanent>(attempt.source));
 }
 
 static bool condition_metalcraft(const ActivationAttempt &attempt) {
@@ -131,6 +139,14 @@ const ActivationCondition *activation_condition_named(const std::string &name) {
 
 bool activation_condition_known(const std::string &name) {
     return activation_condition_named(name) != &kNoSuchCondition;
+}
+
+bool reads_attacked_this_turn(const Permanent &perm) {
+    const ActivationCondition *attacked = activation_condition_named("AttackedThisTurn");
+    for (const Ability &ab : perm.abilities)
+        for (const ActivationRule &rule : ab.def->activation_rules)
+            if (rule.kind == ActivationRule::CONDITION && rule.condition == attacked) return true;
+    return false;
 }
 
 bool activates_as_sorcery(const AbilityDef &def) {

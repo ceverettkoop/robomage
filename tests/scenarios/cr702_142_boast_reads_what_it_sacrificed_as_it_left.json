@@ -1,0 +1,60 @@
+{
+  "name": "cr702_142_boast_reads_what_it_sacrificed_as_it_left",
+  "why": "CR 608.2h, 707.2: Broadside Bombardiers reads the sacrificed permanent's mana value as it last existed: a Mockingbird that is a copy of Grizzly Bears has mana value 2 on the battlefield, 1 in the graveyard",
+  "hand_a": [
+    "Mockingbird",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:1",
+    "A:desc:Enter as a copy",
+    "A:attack:Broadside",
+    "A:attack:done",
+    "A:activate:Broadside",
+    "A:target:Player B"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Broadside Bombardiers deals 4 damage"
+  ]
+}

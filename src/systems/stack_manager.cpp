@@ -80,6 +80,7 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab) {
         fr.converge = static_cast<int>(spell.chosen.colors_spent().size());
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
+        fr.sacrificed_mana_value = ab.sacrificed_mana_value;
     }
     FrameLevel root;
     root.kind = FrameLevel::ROOT;

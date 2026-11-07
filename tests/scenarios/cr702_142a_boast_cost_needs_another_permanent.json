@@ -1,0 +1,47 @@
+{
+  "name": "cr702_142a_boast_cost_needs_another_permanent",
+  "why": "CR 702.142a, 118.3: Broadside Bombardiers attacked but sacrifices another creature or artifact: with only itself, a land and a noncreature enchantment there is nothing to pay with, so no boast is offered",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Humility",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Broadside"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Broadside Bombardiers -> Player B"
+  ],
+  "expect_menu_not": [
+    "Activate Broadside"
+  ]
+}

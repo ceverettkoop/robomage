@@ -402,6 +402,7 @@ struct ResolutionFrame {
     // Count$Converge through current_x_paid() / current_converge().
     int x_paid = 0;
     int converge = 0;
+    int sacrificed_mana_value = 0;  // Ability::sacrificed_mana_value
     // CR 608.2b: every target of the stack object was illegal, so it didn't resolve.
     bool fizzled = false;
     ResolutionMemory memory;

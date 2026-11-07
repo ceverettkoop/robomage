@@ -890,6 +890,8 @@ static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &ord
     for (const CostItem &item : run.items) {
         coverage_cost(item.kind, item.delve ? "delve" : path_form(who.path));
         if (who.path == CostPath::CAST) game_log("%s\n", item.log.c_str());
+        if (who.announced && item.kind == CostPart::SACRIFICE)
+            who.announced->sacrificed_mana_value += permanent_mana_value(item.entity);
         orderer->add_to_zone(false, item.entity, item.dest);
         if (who.path != CostPath::CAST) game_log("%s\n", item.log.c_str());
         if (who.chosen) who.chosen->moved.push_back({item.kind, ObjectRef::of(item.entity)});

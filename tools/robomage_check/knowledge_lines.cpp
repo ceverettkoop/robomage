@@ -121,12 +121,15 @@ static void facts(
     mana_facts(f, s, out);
 }
 
-// Each object's zone, owner and colors as this frame shows them.
+// Each object's zone, owner and colors as this frame shows them, and that it attacked this turn.
 static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
     const Rows objects(f, s, "object");
-    for (size_t r = 0; r < objects.size(); ++r)
-        out->push_back("object " + rel_text(objects.u(r, objects.col("owner_rel"))) + " " +
-                       objects.name(r, objects.col("zone")) + " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
+    for (size_t r = 0; r < objects.size(); ++r) {
+        const std::string owner = rel_text(objects.u(r, objects.col("owner_rel")));
+        out->push_back("object " + owner + " " + objects.name(r, objects.col("zone")) +
+                       " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
+        if (objects.u(r, objects.col("attacked")) != 0) out->push_back("attacked " + owner);
+    }
 }
 
 // A nonempty pool as the player row counts it, and each pool_mana row.

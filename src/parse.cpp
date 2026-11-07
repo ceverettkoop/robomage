@@ -2198,6 +2198,13 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named(value)));
     } else if (key == "ActivationLimit") {
         ability.activation_rules.push_back(ActivationRule::per_turn(std::stoi(value)));
+    } else if (key == "Boast") {
+        // Boast$ True (CR 702.142a): "Activate only if this creature attacked this turn and only
+        // once each turn."
+        if (value == "True") {
+            ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named("AttackedThisTurn")));
+            ability.activation_rules.push_back(ActivationRule::per_turn(1));
+        }
     } else if (key == "ReduceCost") {
         // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
         // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
@@ -3264,6 +3271,8 @@ static bool is_runtime_amount_expr(const std::string &sv) {
         "Imprinted$",
         // TriggeredCard$CardPower — what the trigger's event happened to (Pyrogoyf: NumDmg$ Z).
         "TriggeredCard$",
+        // Sacrificed$CardManaCost — what the ability's cost sacrificed (Broadside Bombardiers: NumDmg$ X).
+        "Sacrificed$",
         // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
         // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
         "xPaid",

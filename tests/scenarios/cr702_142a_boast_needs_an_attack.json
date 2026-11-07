@@ -1,0 +1,50 @@
+{
+  "name": "cr702_142a_boast_needs_an_attack",
+  "why": "CR 702.142a: a boast ability is activated only if its creature attacked this turn, so Broadside Bombardiers staying home offers none; the column reads 0",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Thought Monitor",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:done"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^-------- TURN 2"
+  ],
+  "expect_menu_not": [
+    "Activate Broadside"
+  ],
+  "expect_dump_not": [
+    "attacked"
+  ]
+}

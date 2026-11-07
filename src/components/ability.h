@@ -859,6 +859,11 @@ struct Ability {
     // with this stack object: it resolves with X = 0.
     int x_paid = -1;
 
+    // The mana value the permanent sacrificed as this ability's cost had as it left (CR 608.2h),
+    // taken as the cost is paid, since nothing of it may be left to read at resolution (a token,
+    // CR 111.7); the resolution frame takes it, Sacrificed$CardManaCost reads it.
+    int sacrificed_mana_value = 0;
+
     // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
     // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
     ObjectRef ninjutsu_attack_target;

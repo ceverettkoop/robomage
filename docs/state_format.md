@@ -822,6 +822,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `bestowed` | u8 | `bool` | a bestowed Aura: it goes on as a creature if it falls off (CR 702.103f) |
 | | `prepared` | u8 | `bool` | it has the prepared designation, a copy of its prepare spell in exile (CR 722.3) |
 | | `chosen_color` | u8 | `count` | the color chosen as it entered, 1 + its `color` enum value; 0 none. A count, not an enum, because a categorical column moves every object's tensors |
+| | `attacked` | u8 | `bool` | it was declared as an attacker this turn (CR 508.1k), not put onto the battlefield attacking (CR 508.4), and has an ability that reads that (boast); 0 for any other attacker, so the frozen fixture decisions' inputs stay as recorded |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
 
 A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,

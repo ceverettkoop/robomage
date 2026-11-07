@@ -27,6 +27,11 @@ struct Permanent {
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
     size_t entered_on_turn = 0;  // cur_game.turn_state.turn when this entered the battlefield (Ocelot Pride "entered this turn")
+    // The turn it was last declared as an attacker (CR 508.1k), -1 before any: read through
+    // attacked_this_turn (queries/combat.h). A stamp, so a new turn needs no walk to clear it and a
+    // permanent phased out at that walk can't keep it. On the Permanent, not the Creature: a
+    // permanent that attacked and stopped being a creature still attacked.
+    long attacked_on_turn = -1;
     bool transformed = false;  // true when DFC is showing its back face
     SpellOverlay overlay = SpellOverlay::NONE;  // what it keeps of its spell (bestowed, CR 702.103b), read through active_face
     bool prepared = false;       // the prepared designation (CR 722.3a)

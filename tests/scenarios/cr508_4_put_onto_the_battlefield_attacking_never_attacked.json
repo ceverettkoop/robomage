@@ -1,0 +1,55 @@
+{
+  "name": "cr508_4_put_onto_the_battlefield_attacking_never_attacked",
+  "why": "CR 508.4: a creature put onto the battlefield attacking is attacking but never attacked, so Broadside Bombardiers, revealed by Raph & Mikey, offers no boast; the attacked column stays 0",
+  "hand_a": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Broadside Bombardiers",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Raph & Mikey Troublemakers",
+    "Thought Monitor",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Raph",
+    "A:attack:done"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Broadside Bombardiers is attacking"
+  ],
+  "expect_menu_not": [
+    "Activate Broadside"
+  ]
+}

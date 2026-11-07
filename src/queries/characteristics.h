@@ -174,6 +174,10 @@ inline const CardData &mana_value_face(const CardData &cd, bool transformed) {
     return (cd.is_modal_dfc && transformed && cd.backside) ? *cd.backside : cd;
 }
 
+// Mana value of permanent `e` now, from the face mana_value_face picks. A token (no card) has the
+// mana value it copied (Token::mana_value, CR 707.2), 0 for a scripted token.
+int permanent_mana_value(Entity e);
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T

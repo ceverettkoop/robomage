@@ -1,0 +1,51 @@
+{
+  "name": "cr702_142a_boast_attacked_ends_with_the_turn",
+  "why": "CR 702.142a: attacked this turn: Broadside Bombardiers attacked on A's turn and boasts on nothing during B's, so A's windows there go unasked and turn 3 comes inside the cap",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Thought Monitor",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Broadside",
+    "A:attack:done"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "^-------- TURN 3"
+  ],
+  "expect_dump": [
+    "^A .*attacked self"
+  ],
+  "expect_dump_final_not": [
+    "attacked"
+  ]
+}

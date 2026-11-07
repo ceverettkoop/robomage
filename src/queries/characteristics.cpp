@@ -149,6 +149,14 @@ int object_mana_value(Entity e, const CardData &cd) {
     return card_mana_value(cd);
 }
 
+int permanent_mana_value(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        const bool transformed = global_coordinator.GetComponent<Permanent>(e).transformed;
+        return card_mana_value(mana_value_face(global_coordinator.GetComponent<CardData>(e), transformed));
+    }
+    return global_coordinator.entity_has_component<Token>(e) ? global_coordinator.GetComponent<Token>(e).mana_value : 0;
+}
+
 int effective_power(Entity e) {
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e))
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).power);

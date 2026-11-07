@@ -170,6 +170,7 @@ static int ev_cast_total_mana(const SvarExpr &x, const SvarArgs &a);
 static int ev_x_paid(const SvarExpr &x, const SvarArgs &a);
 static int ev_converge(const SvarExpr &x, const SvarArgs &a);
 static int ev_chosen_number(const SvarExpr &x, const SvarArgs &a);
+static int ev_sacrificed_mana_value(const SvarExpr &x, const SvarArgs &a);
 static int ev_resolved_this_turn(const SvarExpr &x, const SvarArgs &a);
 static int ev_triggered_card_power(const SvarExpr &x, const SvarArgs &a);
 static int ev_card_counters(const SvarExpr &x, const SvarArgs &a);
@@ -255,6 +256,9 @@ static const SvarRow kSvarRows[] = {
     // resolution (Wrath of the Skies: the amount of energy to pay), read by a chained sub-ability
     // (the DestroyAll's cmc bound Y and its PayEnergy<Y> unless-cost).
     value_row("Count$ChosenNumber", ev_chosen_number),
+    // Sacrificed$CardManaCost — the mana value of what the resolving ability's cost sacrificed, as
+    // it last existed (Broadside Bombardiers).
+    value_row("Sacrificed$CardManaCost", ev_sacrificed_mana_value),
     // Count$ResolvedThisTurn — the number of times the source's triggered abilities resolved this
     // turn (Scythecat Cub).
     value_row("Count$ResolvedThisTurn", ev_resolved_this_turn),
@@ -813,6 +817,10 @@ static int ev_high_low(const SvarExpr &x, const SvarArgs &a) { return x.row->con
 static int ev_x_paid(const SvarExpr &, const SvarArgs &) { return current_x_paid(); }
 static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_converge(); }
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
+
+static int ev_sacrificed_mana_value(const SvarExpr &, const SvarArgs &) {
+    return cur_game.resolution.sacrificed_mana_value;
+}
 static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }
 static int ev_triggered_card_power(const SvarExpr &, const SvarArgs &a) {
     return std::max(0, object_power(a.triggered_card));
