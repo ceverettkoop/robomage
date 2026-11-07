@@ -158,6 +158,13 @@ int effective_power(Entity e) {
     return 0;
 }
 
+int object_power(const ObjectRef &ref) {
+    const Entity live = ref.get();
+    if (live != 0 && is_battlefield_permanent(live)) return effective_power(live);
+    const LastKnownInfo *lki = departed_lki_for(ref.lki_entity());
+    return lki ? lki->power : 0;
+}
+
 int effective_toughness(Entity e) {
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e))
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).toughness);

@@ -3255,6 +3255,8 @@ static bool is_runtime_amount_expr(const std::string &sv) {
         // Imprinted$Amount — how many cards the resolution imprinted (The Stone Brain: NumCards$ Z,
         // the cards exiled from the hand).
         "Imprinted$",
+        // TriggeredCard$CardPower — what the trigger's event happened to (Pyrogoyf: NumDmg$ Z).
+        "TriggeredCard$",
         // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
         // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
         "xPaid",

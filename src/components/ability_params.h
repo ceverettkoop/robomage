@@ -59,6 +59,7 @@ struct DamageParams {
     size_t delirium_amount = 0;      // damage dealt when the caster has delirium
     std::string valid_players = "";  // DamageAll's ValidPlayers$: the players also dealt the
                                      // damage (player_matches_target_spec form; empty = none)
+    ObjectSpec source;               // DamageSource$: what deals it; DEFAULT = the ability's source
 };
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".

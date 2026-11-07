@@ -10,6 +10,7 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../mana_system.h"
@@ -24,6 +25,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
+static Entity damage_source_of(const Ability &ab);
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
 
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -59,7 +61,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // unset target and trip the "should have fizzled" guard.
     if (names_defined_player(ab)) {
         for (Zone::Ownership who : resolve_players(ab.def->defined, ResolveCtx::of(ab)))
-            ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
+            ::deal_damage(damage_source_of(ab), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;
     }
     // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
@@ -76,6 +78,18 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     return HandlerResult::DONE_RUN_SUBS;
 }
 
+// What deals the damage: the ability's source, or DamageSource$ TriggeredCard(LKICopy)'s object, as it
+// last existed if it has left (CR 608.2h).
+static Entity damage_source_of(const Ability &ab) {
+    const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
+    if (dp && dp->source.is(ObjectSpec::TRIGGERED_CARD))
+        if (Entity e = ab.triggered_card.lki_entity()) {
+            coverage_row("damage_source_triggered");
+            return e;
+        }
+    return ab.source.lki_entity();
+}
+
 // Deal `dmg` to a single already-chosen target — a player, a planeswalker, or a creature — the
 // shared per-target dispatch used by both the single- and multi-target DealDamage paths. The
 // target was re-checked at resolution (CR 608.2b), so one that can't be dealt damage should have
@@ -83,7 +97,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg) {
     if (tgt == 0) return;  // the object is gone (CR 400.7): nothing is dealt damage
     if (can_be_dealt_damage(tgt)) {
-        ::deal_damage(ab.source.lki_entity(), tgt, dmg, false);
+        ::deal_damage(damage_source_of(ab), tgt, dmg, false);
         return;
     }
 #ifndef NDEBUG
@@ -99,6 +113,12 @@ bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string
     if (key == "ValidPlayers" && ab.category == "DamageAll") {
         // DamageAll's players (Pyroclasm-style "each creature and each player").
         effect_params<DamageParams>(ab).valid_players = value;
+        return true;
+    }
+    if (key == "DamageSource") {
+        const ObjectSpec source = parse_object_spec(value);
+        if (!source.is(ObjectSpec::TRIGGERED_CARD)) return false;
+        effect_params<DamageParams>(ab).source = source;
         return true;
     }
     if (key != "NumDmg") return false;

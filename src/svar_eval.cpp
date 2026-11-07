@@ -45,6 +45,7 @@ struct SvarArgs {
     Zone::Ownership controller;
     Entity source;
     Entity target;
+    ObjectRef triggered_card = {};  // what the ability's row captured
 };
 
 struct SvarExpr;
@@ -170,6 +171,7 @@ static int ev_x_paid(const SvarExpr &x, const SvarArgs &a);
 static int ev_converge(const SvarExpr &x, const SvarArgs &a);
 static int ev_chosen_number(const SvarExpr &x, const SvarArgs &a);
 static int ev_resolved_this_turn(const SvarExpr &x, const SvarArgs &a);
+static int ev_triggered_card_power(const SvarExpr &x, const SvarArgs &a);
 static int ev_card_counters(const SvarExpr &x, const SvarArgs &a);
 static int ev_devotion(const SvarExpr &x, const SvarArgs &a);
 static int ev_spells_cast_this_turn(const SvarExpr &x, const SvarArgs &a);
@@ -256,6 +258,9 @@ static const SvarRow kSvarRows[] = {
     // Count$ResolvedThisTurn — the number of times the source's triggered abilities resolved this
     // turn (Scythecat Cub).
     value_row("Count$ResolvedThisTurn", ev_resolved_this_turn),
+    // TriggeredCard$CardPower — the power of the object whose event fired the ability, as it last
+    // existed if it has left (Pyrogoyf, CR 608.2h).
+    value_row("TriggeredCard$CardPower", ev_triggered_card_power),
     // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects,
     // regardless of type. Triumph of Saint Katherine's recursion gates its shuffle-back on
     // "RememberedSize GE7" — the self-exiled card plus the six milled cards.
@@ -436,7 +441,9 @@ bool stored_svar_gate_passes(Entity source, const std::string &name, const std::
 }
 
 int evaluate_svar(const std::string &expr, const ResolveCtx &ctx) {
-    return evaluate_svar(expr, ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0);
+    SvarArgs args{ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0};
+    if (ctx.ability) args.triggered_card = ctx.ability->triggered_card;
+    return evaluate(compiled_svar(expr), args);
 }
 
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source, Entity target) {
@@ -457,7 +464,8 @@ std::vector<std::string> svar_filter_spellings() {
 }
 
 size_t evaluate_amount(const std::string &expr, const ResolveCtx &ctx) {
-    return evaluate_amount(expr, ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0);
+    const int value = evaluate_svar(expr, ctx);
+    return value > 0 ? static_cast<size_t>(value) : 0;
 }
 
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source,
@@ -806,6 +814,7 @@ static int ev_x_paid(const SvarExpr &, const SvarArgs &) { return current_x_paid
 static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_converge(); }
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
 static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }
+static int ev_triggered_card_power(const SvarExpr &, const SvarArgs &a) { return std::max(0, object_power(a.triggered_card)); }
 
 static bool cond_revolt(const SvarArgs &a) {
     coverage_row("revolt");

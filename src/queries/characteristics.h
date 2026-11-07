@@ -183,6 +183,9 @@ inline const CardData &mana_value_face(const CardData &cd, bool transformed) {
 // (e.g. a spell on the stack). Defined in characteristics.cpp (needs cur_game). All
 // "read a target's power/toughness/color at resolution" sites route through these.
 int effective_power(Entity e);
+// The power of the object `ref` names: as it is while it is on the battlefield as that object, else
+// as it last existed there (CR 608.2h), however long ago it left.
+int object_power(const ObjectRef &ref);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
