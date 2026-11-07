@@ -1356,6 +1356,8 @@ Evidence. `make check` before each commit; the tree of the Malfunction commit wa
 
 Unproved. The `actor` tier's torch part was skipped and release `bench` not run. Scripted play of a division is checked only by finishing games. `cr115_1b`'s Aura change is the one path through `SingleTarget::entry`, and no target changed by a copy or a mode's sub-ability is tested. A share's frame column is seen on the board by hand; no scenario asserts it. `add_stack_targets` was extracted in Sink's commit, not one of its own.
 
+**Stage gate (2026-11-07), at `d8ee61b6`.** `make check` 0 errors, 0 warnings. Release `bench`, seven alternating rounds against `49f16531` (M9 with `maverick`, the same decks), medians: the actor loop 2,640 to 2,568 decisions/s (-2.7%), engine alone 130.4 to 128.5 us per decision (-1.5%), + frames 245.5 to 249.4, + knowledge 356.1 to 364.5, + featurizer 378.8 to 389.4, over the same 965 decisions. The largest drop of any stage, so both binaries were profiled over 120 explore games: no function stands out, the top movers being LTO's inlining (`sync_subtype_mana_abilities` folded into `apply_continuous_effects`, `entity_has_component<Zone>` no longer inlined), and `object` is a column wider. Acceptance `gate`: 4 networks, 614 decisions. `full`: 35 networks, 8,675 decisions, 18 cut-over files equal, worst |Δ value| 1.2e-5, |Δ logit| 3.1e-5 against a tolerance of 1e-4, which proves `a8753b7c`'s 669 digests refreshed by `--keep-decisions`. `add_stack_targets`' extraction stays in Sink into Stupor's commit: the tree was gated, and splitting it means rewriting twelve commits after it.
+
 ### M11. Face-down objects and standing looks (XL)
 
 **Today.** `Zone::is_face_down` exists for exile, and visibility, the state format's FACE_DOWN pool and
