@@ -65,6 +65,9 @@ struct EntryInfo {
     // Permanent existed (Sneak Attack's haste for the creature it just put there): applied as the
     // Permanent is created (effects::animate_permanent).
     std::vector<Ability> animates;
+    // Enters with one counter of this type, put there by the effect that moves it (CR 122.6, Ghost
+    // Vacuum's flying counter). Empty = none.
+    std::string enters_with_counter;
     // "As this enters" it was offered to enter as a copy (CR 707.5), so the entry doesn't ask again
     // once it has the copied values, which may say the same.
     bool copy_chosen = false;
@@ -74,7 +77,7 @@ struct EntryInfo {
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
                !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp && overlay == SpellOverlay::NONE &&
-               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty() && !copy_chosen && !printed_card;
+               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty() && !copy_chosen && !printed_card && enters_with_counter.empty();
     }
 };
 

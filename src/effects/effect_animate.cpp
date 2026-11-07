@@ -154,12 +154,12 @@ static bool changes_keywords_alone(const AbilityDef &def) {
 }
 
 // See declaration in effects.h.
-void set_pt_from_eot_animate(const Permanent &perm, Creature &cr) {
-    if (!perm.animate_set_pt_eot) return;
-    if (perm.animate_set_pt && perm.animate_timestamp > perm.animate_timestamp_eot) return;
+void set_pt_from_animate(const Permanent &perm, Creature &cr) {
+    if (!perm.animate_set_pt && !perm.animate_set_pt_eot) return;
+    const bool eot = perm.animate_set_pt_eot && (!perm.animate_set_pt || perm.animate_timestamp_eot > perm.animate_timestamp);
     cr.has_set_pt = true;
-    cr.set_power = perm.animate_power_eot;
-    cr.set_toughness = perm.animate_toughness_eot;
+    cr.set_power = eot ? perm.animate_power_eot : perm.animate_power;
+    cr.set_toughness = eot ? perm.animate_toughness_eot : perm.animate_toughness;
 }
 
 // See declaration in effects.h.
@@ -225,16 +225,16 @@ void animate_permanent(const Ability &ab, Entity tgt) {
             perm.animate_power_eot = base_p;
             perm.animate_toughness_eot = base_t;
             coverage_row("animate_eot_base_pt");
-            if (global_coordinator.entity_has_component<Creature>(tgt)) {
-                auto &cr = global_coordinator.GetComponent<Creature>(tgt);
-                set_pt_from_eot_animate(perm, cr);
-                recompute_pt(cr);
-            }
             game_log("%s has base power and toughness %d/%d until end of turn.\n", perm.name.c_str(), base_p, base_t);
         } else {
             perm.animate_set_pt = true;
             perm.animate_power = base_p;
             perm.animate_toughness = base_t;
+        }
+        if (global_coordinator.entity_has_component<Creature>(tgt)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+            set_pt_from_animate(perm, cr);
+            recompute_pt(cr);
         }
     }
 

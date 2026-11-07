@@ -300,6 +300,13 @@ struct AbilityDef {
     // them onto the permanent's activated-ability list for a Duration$ Permanent grant. Empty when
     // the Animate grants no abilities (Guide of Souls' type-only animate).
     std::vector<AbilityDef> animate_granted_abilities;
+    // ChangeZoneAll | StaticEffect$ <SVar> (Ghost Vacuum): a continuous effect on the cards the move
+    // puts onto the battlefield, lasting as long as they stay there and tied to no source (CR 611.2c):
+    // the Duration$ Permanent Animate its Mode$ Continuous body amounts to. None or one.
+    std::vector<AbilityDef> static_effect;
+    // ChangeZoneAll | WithCountersType$ (Ghost Vacuum's flying counter): each card put onto the
+    // battlefield enters with one.
+    std::string with_counter_type;
     bool animate_duration_permanent = false;
     // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
     // of the animating player's NEXT turn — longer than the Forge default (until end of turn)

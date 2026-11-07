@@ -120,9 +120,10 @@ void apply_animate_creature_bootstrap(Entity e);
 // permanent `e`: DB$ Animate's per-object step, also run for an Animate recorded on a card's
 // entry once its Permanent exists (EntryInfo::animates). Defined in effect_animate.cpp.
 void animate_permanent(const Ability &ab, Entity e);
-// The base P/T an until-end-of-turn Animate gave `perm` (layer 7b), into `cr`'s set slot, unless a
-// lasting Animate's later timestamp overrides it (CR 613.7b). Defined in effect_animate.cpp.
-void set_pt_from_eot_animate(const Permanent &perm, Creature &cr);
+// The base P/T an Animate gave `perm` (layer 7b, after a characteristic-defining ability's in 7a),
+// into `cr`'s set slot: the latest of a lasting one and an until-end-of-turn one (CR 613.7b).
+// Defined in effect_animate.cpp.
+void set_pt_from_animate(const Permanent &perm, Creature &cr);
 // AtEOT$ (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever is active
 // (CR 603.7), that moves exactly `objects` still on the battlefield as the objects they were (CR
 // 400.7: one that left and returned is a new object and stays), as `ab`'s definition says. Nothing

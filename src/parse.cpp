@@ -114,6 +114,7 @@ static const std::string *type_line_subtype(const std::vector<std::string> &toke
 static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value);
+static void read_static_effect(AbilityDef &ability, const std::string &svar, const std::map<std::string, std::string> &svars);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
 // qualifier.
 static const struct {
@@ -2598,7 +2599,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "Produced")
         return value == "Any" || value.rfind("Combo", 0) == 0 || effects::produced_pips(value) > 0;
     if (key == "AtEOT") return category == "Animate" || category == "CopyPermanent" || (category == "Token" && value == "ExileCombat");
-    if (key == "GainControl") return category == "ChangeZone";
+    if (key == "GainControl") return category == "ChangeZone" || category == "ChangeZoneAll";
     if (key == "CloneTarget") return value == "Targeted";
     return true;
 }
@@ -2754,6 +2755,36 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
     parse_finding("amount_svar", ability.amount_svar, ability.category + ": the amount names no SVar");
 }
 
+// StaticEffect$ <svar>: the Mode$ Continuous body as the Animate it amounts to, on the moved cards
+// (Affected$ Card.IsRemembered names them). Any other form is a finding.
+static void read_static_effect(AbilityDef &ability, const std::string &svar, const std::map<std::string, std::string> &svars) {
+    const auto it = svars.find(svar);
+    AbilityDef effect;
+    effect.category = "Animate";
+    effect.animate_duration_permanent = true;
+    bool read = it != svars.end() && param_value(it->second, "Mode") == "Continuous" &&
+                param_value(it->second, "Affected") == "Card.IsRemembered";
+    if (it != svars.end()) {
+        size_t pos = 0;
+        std::string key, value;
+        while (next_param(it->second, pos, key, value)) {
+            if (key == "AddType") {
+                effect.animate_types = parse_added_types(value);
+            } else if ((key == "SetPower" || key == "SetToughness") && !value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+                effect.animate_has_pt = true;
+                (key == "SetPower" ? effect.animate_base_power : effect.animate_base_toughness) = std::stoi(value);
+            } else if (key != "Mode" && key != "Affected") {
+                read = false;
+            }
+        }
+    }
+    if (!read) {
+        parse_finding("ability_param", "ChangeZoneAll.StaticEffect", "ChangeZoneAll StaticEffect$ " + svar);
+        return;
+    }
+    ability.static_effect.push_back(effect);
+}
+
 // Resolve a Clone's Choices$ mana-value bound (Mockingbird's cmcLEY, Y = Count$CastTotalManaSpent)
 // to its Count$ expression.
 static void resolve_clone_bound(AbilityDef &ability, const std::map<std::string, std::string> &svars) {
@@ -2871,6 +2902,10 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         }
         ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
         if (key == "RepeatSubAbility") ability.repeat_sub_count++;
+        return true;
+    }
+    if (key == "StaticEffect" && ability.category == "ChangeZoneAll") {
+        read_static_effect(ability, value, svars);
         return true;
     }
     if (key == "Choices" && ability.category != "ChooseCard" && ability.category != "Clone") {

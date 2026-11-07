@@ -1,0 +1,53 @@
+{
+  "name": "cr307_5_ghost_vacuum_returns_only_at_sorcery_timing",
+  "why": "CR 307.5: SorcerySpeed$: the return isn't offered in the upkeep.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Ghost Vacuum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu": [
+    "\\(ChangeZone\\)"
+  ],
+  "expect_menu_not": [
+    "\\(ChangeZoneAll\\)"
+  ]
+}

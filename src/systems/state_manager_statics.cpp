@@ -863,6 +863,11 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
             if (!card_data.is_modal_dfc)
                 game_log("%s enters transformed.\n", perm.name.c_str());
         }
+        if (!entry->enters_with_counter.empty()) {
+            perm.counters[entry->enters_with_counter]++;
+            game_log("%s enters with a %s counter.\n", perm.name.c_str(), entry->enters_with_counter.c_str());
+            entry->enters_with_counter.clear();
+        }
         // It entered as a copy (CR 707.5).
         perm.printed_card = entry->printed_card;
         entry->printed_card.reset();
@@ -1894,7 +1899,7 @@ void StateManager::gather_active_statics(Game &game) {
             cr.has_set_pt = false;
             cr.set_power = 0;
             cr.set_toughness = 0;
-            effects::set_pt_from_eot_animate(perm, cr);
+            effects::set_pt_from_animate(perm, cr);
             // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
             // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
             // Humility) are not sticky — mirrors the static_*_bonus rebuild above. The base

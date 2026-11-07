@@ -8,14 +8,17 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/token.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/entry.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../resolution_memory.h"
@@ -31,6 +34,7 @@ namespace effects {
 static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Orderer> orderer);
 static size_t move_all_cards(Ability &ab, std::shared_ptr<Orderer> orderer, const std::vector<Entity> &cards,
                              Zone::Ownership owner);
+static void record_battlefield_entry(const Ability &ab, Entity entity);
 
 // Echoing Truth family: return the chosen TARGET nonland permanent AND every OTHER battlefield
 // permanent sharing its name to their owners' hands (ChangeType$ TargetedCard.Self,Permanent...
@@ -199,6 +203,21 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     return HandlerResult::DONE_RUN_SUBS;
 }
 
+// How `ab` says `entity`, now on the battlefield with no Permanent yet, enters: GainControl$ under
+// its controller's control (CR 110.2a), WithCountersType$, StaticEffect$ (applied as its Permanent
+// is built, as Animate's on an entering card is).
+static void record_battlefield_entry(const Ability &ab, Entity entity) {
+    if (ab.def->gain_control) global_coordinator.GetComponent<Zone>(entity).controller = ab.controller;
+    if (!ab.def->with_counter_type.empty()) entry_info(entity).enters_with_counter = ab.def->with_counter_type;
+    for (const AbilityDef &effect : ab.def->static_effect) {
+        coverage_row("static_effect");
+        Ability animate(&effect);
+        animate.controller = ab.controller;
+        animate.source = ab.source;
+        entry_info(entity).animates.push_back(animate);
+    }
+}
+
 // Moves `cards` (owned by `owner`) to the ability's destination, logging each and the count:
 // cards put into `owner`'s library land as one batch whose order only `owner` chose (or, in a
 // random order, nobody saw). Returns the number moved.
@@ -234,6 +253,7 @@ static size_t move_all_cards(Ability &ab, std::shared_ptr<Orderer> orderer, cons
         if (ab.def->destination == Zone::BATTLEFIELD &&
             put_onto_battlefield(orderer, FrameCtx::blocking(), entity) != Zone::BATTLEFIELD)
             continue;
+        if (ab.def->destination == Zone::BATTLEFIELD) record_battlefield_entry(ab, entity);
         if (from_battlefield) {
             // A permanent (a token too) by its name on the battlefield.
             game_log("%s moves %s to %s\n", player_name(owner).c_str(), entity_name(entity).c_str(), dest_str);

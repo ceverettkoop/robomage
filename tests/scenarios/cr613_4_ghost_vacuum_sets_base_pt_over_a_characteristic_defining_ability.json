@@ -1,0 +1,62 @@
+{
+  "name": "cr613_4_ghost_vacuum_sets_base_pt_over_a_characteristic_defining_ability",
+  "why": "CR 613.4a-b, 604.3: Nethergoyf's characteristic-defining P/T applies in 7a, Ghost Vacuum's 1/1 in 7b: it is a 1/1 whatever the graveyards hold.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Ghost Vacuum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Nethergoyf",
+    "Grizzly Bears",
+    "Mountain",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Ghost Vacuum",
+    "A:target:Nethergoyf",
+    "A:pass",
+    "B:play:Island",
+    "A:desc:(ChangeZoneAll)",
+    "A:pass",
+    "A:discard:Forest",
+    "A:attack:Nethergoyf",
+    "A:attack:done"
+  ],
+  "max_decisions": 60,
+  "expect": [
+    "Nethergoyf deals 1 damage to Player B"
+  ]
+}

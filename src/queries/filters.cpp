@@ -955,8 +955,12 @@ static bool ev_pt_literal(const CharView &v, const Qualifier &q) {
 }
 
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
-    if (v.entity == 0 || !global_coordinator.entity_has_component<Permanent>(ctx.source)) return false;
-    return refs_contain(global_coordinator.GetComponent<Permanent>(ctx.source).exiled_with, v.entity);
+    if (v.entity == 0) return false;
+    if (global_coordinator.entity_has_component<Permanent>(ctx.source))
+        return refs_contain(global_coordinator.GetComponent<Permanent>(ctx.source).exiled_with, v.entity);
+    // A source sacrificed to pay for this ability (Ghost Vacuum): what it had exiled as it left.
+    const LastKnownInfo *lki = departed_lki_for(ctx.source);
+    return lki && refs_contain(lki->exiled_with, v.entity);
 }
 
 static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &, const MatchCtx &) {

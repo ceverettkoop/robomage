@@ -979,6 +979,9 @@ bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string
     } else if (key == "Tapped") {
         ab.enters_tapped = (value == "True");
         return true;
+    } else if (key == "WithCountersType" && ab.category == "ChangeZoneAll") {
+        ab.with_counter_type = value;
+        return true;
     } else if (key == "Transformed") {
         ab.enters_transformed = (value == "True");
         return true;
