@@ -77,6 +77,9 @@ struct CardData{
     std::set<Type> types;
     std::string types_text;  // the Types: line as the script writes it (the printed order of `types`)
     std::multiset<Colors> mana_cost;
+    // ManaCost:no cost: an unpayable cost, not a cost of zero (CR 118.6): the card can be cast only
+    // without paying its mana cost, or for an alternative cost.
+    bool no_mana_cost = false;
     std::vector<Colors> phyrexian_mana;  // Phyrexian mana symbols: each can be paid with color OR 2 life
     std::vector<HybridPip> hybrid_mana;  // hybrid pips ({W/U}, {2/W}); kept out of mana_cost like phyrexian
     uint32_t power = 0;

@@ -860,6 +860,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
+    card.no_mana_cost = mana_cost_str == "no cost";
     card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana, &card.hybrid_mana);
     card.x_pip_count = static_cast<int>(std::count(mana_cost_str.begin(), mana_cost_str.end(), 'X'));
     card.has_x_cost = (card.x_pip_count > 0);

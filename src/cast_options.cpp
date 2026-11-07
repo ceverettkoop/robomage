@@ -486,7 +486,7 @@ static bool offer_castable(CastOffer &offer) { return offer_timing_ok(offer) && 
 // carries a Sac<...> token, matched (incl. color qualifier) like an activation cost.
 static bool mana_cost_offered(CastOffer &offer) {
     const CastWindow &w = offer.window;
-    return offer_castable(offer) &&
+    return !offer.face.no_mana_cost && offer_castable(offer) &&
            regular_cast_payable(offer.face, offer.card, w.caster,
                                 regular_cast_cost(offer.face, offer.card, w.caster, offer.zone, w.orderer), w.orderer);
 }
