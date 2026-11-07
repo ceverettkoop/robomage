@@ -1,0 +1,14 @@
+# M9 (b2): an "until" exile's return, with nothing on the stack (Portable Hole).
+row:until_return
+# A Draw replacement beside dredge, Moved on an effect object (Hullbreacher, Gaea's Will).
+replacement:DRAW_REPLACED
+replacement:EXILE_INSTEAD
+# Spells and lands from the graveyard under an Effect's static (Gaea's Will).
+cast_row:graveyard_cast
+# A turn-long static on an effect object (Sundering Eruption).
+row:effect_static
+# An emblem with a trigger, and what it fires (Tezzeret, Cruel Captain).
+row:emblem_trigger
+trigger:Phase
+# Dredge beside the replacements of a draw.
+replacement:DREDGE

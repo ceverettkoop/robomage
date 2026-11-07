@@ -9,6 +9,7 @@
 #include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../queries/affected.h"
 #include "../queries/battlefield.h"
@@ -214,6 +215,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     const bool shield = ab.def->has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
     const bool holds_abilities = !object.statics.empty() || !object.triggers.empty() || !object.replacements.empty();
     if (holds_abilities && (!shield || remembered_shield_object(object))) {
+        if (!object.statics.empty() && !object.is_emblem()) coverage_row("effect_static");
+        if (!object.triggers.empty() && object.is_emblem()) coverage_row("emblem_trigger");
         log_effect_object(ab, object);
         cur_game.resolved_effects.add(std::move(object));
     }

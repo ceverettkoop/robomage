@@ -380,8 +380,9 @@ void Orderer::end_until_exiles(const ObjectRef &host) {
     }
     for (const DelayedTrigger &wait : ended) {
         const Entity card = wait.ability.restore_remembered_exiled_with.front().get();
-        if (card != 0 && global_coordinator.GetComponent<Zone>(card).location == Zone::EXILE)
-            effects::return_until_exiled(shared_from_this(), card, wait.ability.def->destination);
+        if (card == 0 || global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
+        coverage_row("until_return");
+        effects::return_until_exiled(shared_from_this(), card, wait.ability.def->destination);
     }
 }
 
