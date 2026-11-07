@@ -999,10 +999,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // spell must NOT be a creature spell.
             if (ab.trigger_valid_card_non_creature && ev.GetType() == Events::SPELL_CAST &&
                 ev.HasParam(Params::ENTITY)) {
-                Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
-                if (global_coordinator.entity_has_component<CardData>(spell_e) &&
-                    is_creature_card(global_coordinator.GetComponent<CardData>(spell_e)))
-                    continue;
+                if (type_set_has(effective_types(ev.GetParam<Entity>(Params::ENTITY)), "Creature")) continue;
             }
             // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
             if (ev.GetType() == Events::PLAYER_DREW_CARD) {

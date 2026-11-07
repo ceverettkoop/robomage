@@ -44,6 +44,9 @@ struct ManaPayee {
     // payment in flight has chosen to move, and how many more the cost being offered will take.
     const std::vector<CostItem> *chosen = nullptr;
     int hand_reserved = 0;
+    // The face a cast being offered would have on the stack, which `entity`, still a card where it
+    // is, can't say yet. Null once the spell is on the stack, and for anything but a cast.
+    const CardData *face = nullptr;
     ManaPayee(Entity paid_for = 0, ManaPurpose why = ManaPurpose::CAST) : entity(paid_for), purpose(why) {}
 };
 

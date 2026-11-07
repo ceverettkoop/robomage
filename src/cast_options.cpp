@@ -301,6 +301,7 @@ static ManaValue regular_cast_cost(const CardData &face, Entity card_entity, Zon
 static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                   const std::shared_ptr<Orderer> &orderer) {
     CostCheck check(caster, card_entity, orderer);
+    check.payee.face = &face;
     check.delve = face.has_delve;
     check.tap_to_pay = face.tap_to_pay;
     return check;
@@ -311,6 +312,7 @@ static CostCheck total_cost_check(const CardData &face, Entity card_entity, Zone
 static bool regular_cast_payable(const CardData &face, Entity card_entity, Zone::Ownership caster,
                                  const ManaValue &mana, std::shared_ptr<Orderer> orderer) {
     CostCheck check(caster, card_entity, orderer);
+    check.payee.face = &face;
     check.mana = &mana;
     check.spell = &face;
     check.hand_reserved = fewest_hand_cards(face.additional_choices, check);

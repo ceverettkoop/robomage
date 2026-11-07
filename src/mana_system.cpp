@@ -62,10 +62,11 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
                                   ManaPayee paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, TapToPay tap,
                                   Entity exclude_entity, bool max_yield_only, int life_reserve, ManaPaid *spent);
-static bool restricted_mana_matches(const std::string &chosen_type, Entity paid_for);
-static bool creature_restricted_mana_matches(Entity paid_for);
-static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
-static bool casting_nonartifact_spell(Entity paid_for);
+static const std::set<Type> &payee_types(ManaPayee paid_for);
+static bool restricted_mana_matches(const std::string &chosen_type, ManaPayee paid_for);
+static bool creature_restricted_mana_matches(ManaPayee paid_for);
+static bool colorless_eldrazi_restricted_mana_matches(ManaPayee paid_for);
+static bool casting_nonartifact_spell(ManaPayee paid_for);
 static bool restriction_covers_activation(const ManaRestriction &restriction, Entity paid_for);
 static bool restriction_allows(const ManaRestriction &restriction, const std::string &chosen_type, ManaPayee paid_for);
 static const std::string &source_chosen_type(Entity source);
@@ -280,15 +281,19 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller) {
     return ab.def->amount;
 }
 
+// The type line of what `paid_for` pays for: the face offered for a cast still to be announced, else
+// the spell or the object as it is now (CR 709.3, 712.8f, 715.3b).
+static const std::set<Type> &payee_types(ManaPayee paid_for) {
+    return paid_for.face ? paid_for.face->types : effective_types(paid_for.entity);
+}
+
 // Check if restricted mana (Cavern of Souls) can be used to pay for a spell.
 // Returns true if the spell is a creature with the chosen subtype.
-static bool restricted_mana_matches(const std::string &chosen_type, Entity paid_for) {
-    if (paid_for == 0) return false;
+static bool restricted_mana_matches(const std::string &chosen_type, ManaPayee paid_for) {
+    if (paid_for.entity == 0) return false;
     if (chosen_type.empty()) return false;
-    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
-    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
     bool is_creature = false, has_chosen_subtype = false;
-    for (auto &t : paid_cd.types) {
+    for (auto &t : payee_types(paid_for)) {
         if (t.kind == TYPE && t.name == "Creature") is_creature = true;
         if (t.kind == SUBTYPE && t.name == chosen_type) has_chosen_subtype = true;
     }
@@ -297,10 +302,8 @@ static bool restricted_mana_matches(const std::string &chosen_type, Entity paid_
 
 // Check whether a "spend only to cast a creature spell" mana source (Abundant
 // Countryside) can pay for the given spell: true iff the spell is a creature.
-static bool creature_restricted_mana_matches(Entity paid_for) {
-    if (paid_for == 0) return false;
-    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
-    return is_creature_card(global_coordinator.GetComponent<CardData>(paid_for));
+static bool creature_restricted_mana_matches(ManaPayee paid_for) {
+    return paid_for.entity != 0 && type_set_has(payee_types(paid_for), "Creature");
 }
 
 // Check whether a "spend only to cast colorless Eldrazi spells" mana source (Eldrazi
@@ -308,26 +311,22 @@ static bool creature_restricted_mana_matches(Entity paid_for) {
 // (subtype) and colorless. A card is colorless when it has no colored mana symbols and no
 // explicit color override other than COLORLESS (Devoid sets explicit_colors = {COLORLESS}).
 // CR 106.7 mana spending restrictions.
-static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
-    if (paid_for == 0) return false;
-    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
-    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+static bool colorless_eldrazi_restricted_mana_matches(ManaPayee paid_for) {
+    if (paid_for.entity == 0) return false;
     bool is_eldrazi = false;
-    for (auto &t : paid_cd.types)
+    for (auto &t : payee_types(paid_for))
         if (t.kind == SUBTYPE && t.name == "Eldrazi") { is_eldrazi = true; break; }
     if (!is_eldrazi) return false;
     // Colorless test (CR 105.2c) shared with the rest of the engine via queries/characteristics.h, so an
     // Eldrazi Temple mana restriction and a color-targeting check can never disagree on whether
     // the same spell is colorless.
-    return is_colorless(paid_for);
+    return is_colorless(paid_for.entity);
 }
 
 // Is the spell being cast, `paid_for`, a nonartifact spell, which a Powerstone's mana can't be
 // spent to cast (CR 106.6)?
-static bool casting_nonartifact_spell(Entity paid_for) {
-    if (paid_for == 0) return false;
-    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
-    return !type_set_has(global_coordinator.GetComponent<CardData>(paid_for).types, "Artifact");
+static bool casting_nonartifact_spell(ManaPayee paid_for) {
+    return paid_for.entity != 0 && !type_set_has(payee_types(paid_for), "Artifact");
 }
 
 // Does a RestrictValid$ extend its spending restriction to an ability of `paid_for`? Its Activated.
@@ -346,17 +345,17 @@ static bool restriction_allows(const ManaRestriction &restriction, const std::st
     const Entity subject = paid_for.entity;
     if (restriction.kind == ManaRestriction::NONE) return true;
     if (restriction.kind == ManaRestriction::NO_NONARTIFACT_SPELLS)
-        return paid_for.purpose != ManaPurpose::CAST || !casting_nonartifact_spell(subject);
+        return paid_for.purpose != ManaPurpose::CAST || !casting_nonartifact_spell(paid_for);
     if (paid_for.purpose == ManaPurpose::OTHER) return false;
     if (paid_for.purpose == ManaPurpose::ACTIVATE && !restriction_covers_activation(restriction, subject))
         return false;
     switch (restriction.kind) {
         case ManaRestriction::CHOSEN_TYPE_CREATURE:
-            return restricted_mana_matches(chosen_type, subject);
+            return restricted_mana_matches(chosen_type, paid_for);
         case ManaRestriction::CREATURE:
-            return creature_restricted_mana_matches(subject);
+            return creature_restricted_mana_matches(paid_for);
         default:
-            return colorless_eldrazi_restricted_mana_matches(subject);
+            return colorless_eldrazi_restricted_mana_matches(paid_for);
     }
 }
 
