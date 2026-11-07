@@ -57,8 +57,7 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **Engine:** a few prompts inside resolution or a zone move still read input inline and can't suspend:
   - choosing among two or more applicable replacement effects (CR 616.1);
   - the Mox Diamond discard;
-  - an Aura's enchant pick when the Aura is put onto the battlefield by a library search, a same-name move, a Remembered/ExiledWith return, Dig, DigUntil or ChangeZoneAll;
-  - dredge offered on a mulligan redraw (unreachable).
+  - an Aura's enchant pick when the Aura is put onto the battlefield by a library search, a same-name move, a Remembered/ExiledWith return, the return of an "until" exile (it happens within a zone move, CR 610.3), Dig, DigUntil or ChangeZoneAll.
 
   They are not loop-safe (`snapshot_loop_safe()` is false there), so no snapshot is saved or restored at them: the `--selfcheck-state` snapshot check skips them, and a search agent could not root a search there. The user accepted this as long as search doesn't break.
 - **Code:** `src/systems/replacement_effects.cpp`: `choose_one`, the MOVE_TO_ZONE discard in `apply_one`; `src/effects/effect_change_zone.cpp` and `effect_dig*.cpp`, `effect_change_zone_all.cpp` (`FrameCtx::blocking()` call sites); `src/snapshot.h`: `snapshot_set_loop_safe`.

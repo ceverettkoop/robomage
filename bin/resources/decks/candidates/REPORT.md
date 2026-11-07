@@ -20,15 +20,15 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | maverick | Maverick | 1.0 | aggro | 38 | 0 | 0 | 0 | implement |
 | reanimator_top8 | Reanimator | 3.0 | combo | 28 | 0 | 0 | 0 | implement |
 | show_and_tell | Show and Tell | 5.0 | combo | 33 | 0 | 0 | 0 | baseline |
+| storm | Storm | 3.0 | combo | 30 | 0 | 0 | 0 | implement |
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | artifacts_blue | Artifacts Blue | 2.0 | aggro | 33 | 1 | 1 | 1 | capability |
 | artifacts_prison | Artifacts Prison | 2.0 | control | 30 | 1 | 1 | 3 | capability |
-| doomsday | Doomsday | 4.0 | combo | 33 | 1 | 2 | 6 | capability |
-| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 3 | 3 | 7 | capability |
-| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 4 | 3 | 9 | capability |
-| storm | Storm | 3.0 | combo | 30 | 1 | 2 | 11 | capability |
-| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 3 | 4 | 17 | capability |
+| doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
+| cloudpost_tron_ramp | Cloudpost / Tron Ramp | 5.0 | control | 29 | 2 | 2 | 4 | capability |
+| dragon_stompy | Dragon Stompy | 1.0 | aggro | 22 | 3 | 2 | 6 | capability |
+| mystic_forge | Mystic Forge | 2.0 | combo | 32 | 2 | 2 | 11 | capability |
 | stoneblade | Stoneblade | 1.0 | control | 38 | 1 | 1 | 20 | capability |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 2 | 4 | 27 | capability |
 | painter | Painter | 1.0 | combo | 41 | 5 | 9 | 30 | capability |
@@ -50,16 +50,9 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | Can't-block restrictions (CantBlockBy) | M | 1 | - | Untimely Malfunction | `keyword:HIDDEN CARDNAME can't block.` | Brazen Borrower (can block only fliers), Cryptic Coat (equipped creature can't be blocked); a blocking legality hook beside CantAttack |
 | Change targets (CR 115.7) | M | 1 | - | Untimely Malfunction | `category:ChangeTargets` | Untimely Malfunction's redirect mode |
 | Crew and vehicles (CR 702.122) | M | 1 | - | Unlicensed Hearse | `ability_param:ChangeZone.TargetsWithSameController`, `keyword:Crew`, `svar_expr:Count$ValidExile` | Unlicensed Hearse: a vehicle whose P/T counts cards exiled with it |
-| Defined$ names no reader acts on | M | 1 | - | Tezzeret, Cruel Captain | `ability_param:Animate.Defined`, `ability_param:PutCounter.Defined` | Player on Draw and Discard, ChosenCard, Enchanted off a ChangeZone, Player.IsRemembered, Targeted.<filter>: M2 parses these once |
 | Discard-a-card activation cost | M | 1 | - | Phyrexian Dragon Engine | `cost:Discard` | Discard<1/Card> as an activation cost needs a suspendable choice during cost payment (only whole hand / the card itself today; a spell's escalate discard is picked in the cast flow, ESCALATE_DISCARD) |
-| Effect with a continuous static | M | 1 | - | Sundering Eruption | `static_form:Effect.Continuous` | Sundering Eruption: an Effect's static beyond the forms grant_cast knows |
-| Emblem with a trigger (Tezzeret) | M | 1 | - | Tezzeret, Cruel Captain | `ability_param:Effect.Duration` | the floating-trigger scan watches attacks and combat damage, and floating triggers lapse at cleanup |
-| Empower | M | 1 | - | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
+| Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 | Exhaust and Waterbend (Avatar) | M | 1 | - | Invasion Submersible | `ability_param:Animate.Exhaust`, `cost:Waterbend` | Invasion Submersible: once-only abilities, waterbend cost |
-| Gaea's Will | M | 1 | - | Gaea's Will | `replacement:Effect:Moved` | play from the graveyard this turn, cards exiled instead of going there |
-| Next-spell effect (Theorist's Proxy) | M | 1 | - | Theorist's Proxy | `ability_param:DelayedTrigger.Static`, `ability_param:DelayedTrigger.ValidActivatingPlayer`, `ability_param:Effect.ForgetOnMoved`, `ability_param:Effect.RememberObjects`, `replacement:Effect:Counter` | a delayed SpellCast trigger creating an Effect with an Event$ Counter replacement |
-| Opponent's-draw replacement (Hullbreacher) | M | 1 | - | Hullbreacher | `replacement:Draw` | an opponent's draws beyond the first become Treasures for you |
-| Hogaak casting | L | 1 | - | Gaea's Will | `static_form:MayPlay.Graveyard` | cast from the graveyard (EffectZone$ Graveyard MayPlay); S:Mode$ ManaRestriction: only convoke / delve can pay |
 | Meld (CR 712) | L | 1 | - | Phyrexian Dragon Engine | `layout:Meld` | Phyrexian Dragon Engine |
 | Play from the top of the library (Mystic Forge) | L | 1 | - | Mystic Forge | `filter:TopLibrary`, `static_form:MayPlay.Library`, `static_param:MayLookAt` | look at and cast the top card: a new public-to-one-seat zone view for the state format |
 
@@ -79,18 +72,18 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 10 | maverick | - | 0 | 0 | 10 |
 | 11 | reanimator_top8 | - | 0 | 0 | 11 |
 | 12 | show_and_tell | - | 0 | 0 | 12 |
-| 13 | ur_tempo | - | 0 | 0 | 13 |
-| 14 | uwx_control | - | 0 | 0 | 14 |
-| 15 | artifacts_blue | Targets in several zones | 1 | 1 | 15 |
-| 16 | artifacts_prison | Start your engines! (speed) | 3 | 4 | 16 |
-| 17 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar); Opponent's-draw replacement (Hullbreacher) | 6 | 10 | 17 |
-| 18 | doomsday | Empower; Next-spell effect (Theorist's Proxy) | 6 | 16 | 18 |
-| 19 | dragon_stompy | Boast (CR 702.142); Divided damage (CR 601.2d); Effect with a continuous static | 9 | 25 | 19 |
-| 20 | storm | Gaea's Will; Hogaak casting | 11 | 36 | 20 |
-| 21 | mystic_forge | Defined$ names no reader acts on; Emblem with a trigger (Tezzeret); Play from the top of the library (Mystic Forge) | 14 | 50 | 21 |
-| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 70 | 22 |
-| 23 | welder_cam | Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered | 7 | 77 | 23 |
-| 24 | painter | Can't-block restrictions (CantBlockBy); Change targets (CR 115.7); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 20 | 97 | 24 |
+| 13 | storm | - | 0 | 0 | 13 |
+| 14 | ur_tempo | - | 0 | 0 | 14 |
+| 15 | uwx_control | - | 0 | 0 | 15 |
+| 16 | artifacts_blue | Targets in several zones | 1 | 1 | 16 |
+| 17 | artifacts_prison | Start your engines! (speed) | 3 | 4 | 17 |
+| 18 | cloudpost_tron_ramp | Exhaust and Waterbend (Avatar) | 3 | 7 | 18 |
+| 19 | doomsday | Empower | 3 | 10 | 19 |
+| 20 | dragon_stompy | Boast (CR 702.142); Divided damage (CR 601.2d) | 6 | 16 | 20 |
+| 21 | mystic_forge | Play from the top of the library (Mystic Forge) | 8 | 24 | 21 |
+| 22 | stoneblade | Face-down permanents (Morph, Cloak; CR 708) | 20 | 44 | 22 |
+| 23 | welder_cam | Branch effect (DB$ Branch); Goblin Welder swap; filter:sharesControllerWith Remembered | 7 | 51 | 23 |
+| 24 | painter | Can't-block restrictions (CantBlockBy); Change targets (CR 115.7); Crew and vehicles (CR 702.122); Discard-a-card activation cost; Meld (CR 712) | 20 | 71 | 24 |
 
 ## Per deck
 
@@ -154,6 +147,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 0 new; clean: -
 
 
+### storm — Storm (3.0%, combo)
+
+30 cards, 0 new; clean: -
+
+
 ### ur_tempo — UR Tempo (4.0%, aggro)
 
 32 cards, 0 new; clean: -
@@ -180,38 +178,29 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 33 cards, 1 new; clean: -
 
-- Theorist's Proxy: Empower; Next-spell effect (Theorist's Proxy)
+- Theorist's Proxy: Empower
 
 ### cloudpost_tron_ramp — Cloudpost / Tron Ramp (5.0%, control)
 
-29 cards, 3 new; clean: -
+29 cards, 2 new; clean: -
 
-- Hullbreacher: Opponent's-draw replacement (Hullbreacher)
 - Invasion Submersible: Exhaust and Waterbend (Avatar)
 - Sink into Stupor: Targets in several zones
 
 ### dragon_stompy — Dragon Stompy (1.0%, aggro)
 
-22 cards, 4 new; clean: -
+22 cards, 3 new; clean: -
 
 - Broadside Bombardiers: Boast (CR 702.142)
 - Fury: Divided damage (CR 601.2d)
 - Shatterskull Smashing: Divided damage (CR 601.2d)
-- Sundering Eruption: Effect with a continuous static
-
-### storm — Storm (3.0%, combo)
-
-30 cards, 1 new; clean: -
-
-- Gaea's Will: Gaea's Will; Hogaak casting
 
 ### mystic_forge — Mystic Forge (2.0%, combo)
 
-32 cards, 3 new; clean: -
+32 cards, 2 new; clean: -
 
 - Mystic Forge: Play from the top of the library (Mystic Forge)
 - Perilous Snare: Start your engines! (speed)
-- Tezzeret, Cruel Captain: Defined$ names no reader acts on; Emblem with a trigger (Tezzeret)
 
 ### stoneblade — Stoneblade (1.0%, control)
 

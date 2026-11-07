@@ -30,15 +30,6 @@
       ],
       "size": "M"
      },
-     "Opponent's-draw replacement (Hullbreacher)": {
-      "cards": [
-       "Hullbreacher"
-      ],
-      "findings": [
-       "replacement:Draw"
-      ],
-      "size": "M"
-     },
      "Targets in several zones": {
       "cards": [
        "Sink into Stupor"
@@ -50,9 +41,6 @@
      }
     },
     "needs": {
-     "Hullbreacher": [
-      "Opponent's-draw replacement (Hullbreacher)"
-     ],
      "Invasion Submersible": [
       "Exhaust and Waterbend (Avatar)"
      ],
@@ -61,31 +49,29 @@
      ]
     },
     "new_cards": [
-     "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
     ],
-    "size_points": 7
+    "size_points": 4
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 3 mechanic(s) (7 points)",
-   "time": "2026-11-06T23:26:08"
+   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (4 points)",
+   "time": "2026-11-07T01:16:59"
   },
   "diff": {
    "detail": {
     "distinct": 29,
-    "in_vocab": 26,
+    "in_vocab": 27,
     "no_script": [],
     "not_in_vocab": [
-     "Hullbreacher",
      "Invasion Submersible",
      "Sink into Stupor"
     ]
@@ -93,60 +79,34 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "29 cards: 26 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T23:23:45"
+   "summary": "29 cards: 27 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-07T01:16:59"
   },
   "implement": {
    "detail": {
     "mechanics": [
      "Exhaust and Waterbend (Avatar)",
-     "Opponent's-draw replacement (Hullbreacher)",
      "Targets in several zones"
     ]
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Opponent's-draw replacement (Hullbreacher), Targets in several zones",
-   "time": "2026-11-06T23:26:08"
+   "summary": "2 mechanic(s) to implement: Exhaust and Waterbend (Avatar), Targets in several zones",
+   "time": "2026-11-07T01:16:59"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Hullbreacher": {
-      "card": "Hullbreacher",
-      "faces": [
-       "Hullbreacher"
-      ],
-      "findings": [
-       {
-        "detail": "yields no replacement",
-        "kind": "replacement",
-        "line": "R:Event$ Draw | ActiveZones$ Battlefield | ValidPlayer$ Opponent | ReplaceWith$ RepTreasure | NotFirstCardInDrawStep$ True | Description$ If an opponent would draw a card except the first one they draw in each of their draw steps, instead you create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-        "name": "Draw"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/h/hullbreacher.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "c_a_treasure_sac"
-       }
-      ],
-      "vocab": [
-       -1
-      ]
-     },
      "Invasion Submersible": {
       "card": "Invasion Submersible",
       "faces": [
@@ -200,22 +160,20 @@
    },
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (4 findings), 0 without a script",
-   "time": "2026-11-06T23:26:08"
+   "summary": "2 new card(s), 2 with findings (3 findings), 0 without a script",
+   "time": "2026-11-07T01:16:59"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "c_a_treasure_sac"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -223,11 +181,11 @@
    "inputs": {
     "deck": "c527f051c40087a7fa1babe4838e22f7b744c15226e07c8820a30c52971af215",
     "scripts": "aaf98ee450c392995a3fd3cfecf7aa652c4a0f9047aebc48cc3d6337e32a6d1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T23:23:45"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T01:16:59"
   },
   "scrape": {
    "detail": {

@@ -143,15 +143,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (30 points)",
-   "time": "2026-11-06T23:26:09"
+   "time": "2026-11-07T01:17:00"
   },
   "diff": {
    "detail": {
@@ -169,11 +169,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "41 cards: 36 in vocab, 5 new (0 without a script)",
-   "time": "2026-11-06T23:23:46"
+   "time": "2026-11-07T01:17:00"
   },
   "implement": {
    "detail": {
@@ -191,15 +191,15 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "pending",
    "summary": "9 mechanic(s) to implement: Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Goblin Welder swap, Meld (CR 712), filter:sharesControllerWith Remembered",
-   "time": "2026-11-06T23:26:09"
+   "time": "2026-11-07T01:17:00"
   },
   "parse": {
    "detail": {
@@ -387,14 +387,14 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "5 new card(s), 5 with findings (18 findings), 0 without a script",
-   "time": "2026-11-06T23:26:09"
+   "time": "2026-11-07T01:17:00"
   },
   "provision": {
    "detail": {
@@ -408,11 +408,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T23:23:46"
+   "time": "2026-11-07T01:17:00"
   },
   "scrape": {
    "detail": {

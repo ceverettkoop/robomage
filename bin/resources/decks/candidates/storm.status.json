@@ -19,128 +19,68 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "Gaea's Will": {
-      "cards": [
-       "Gaea's Will"
-      ],
-      "findings": [
-       "replacement:Effect:Moved"
-      ],
-      "size": "M"
-     },
-     "Hogaak casting": {
-      "cards": [
-       "Gaea's Will"
-      ],
-      "findings": [
-       "static_form:MayPlay.Graveyard"
-      ],
-      "size": "L"
-     }
-    },
-    "needs": {
-     "Gaea's Will": [
-      "Gaea's Will",
-      "Hogaak casting"
-     ]
-    },
-    "new_cards": [
-     "Gaea's Will"
-    ],
-    "size_points": 11
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (11 points)",
-   "time": "2026-11-06T23:26:09"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T01:17:00"
   },
   "diff": {
    "detail": {
     "distinct": 30,
-    "in_vocab": 29,
+    "in_vocab": 30,
     "no_script": [],
-    "not_in_vocab": [
-     "Gaea's Will"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "30 cards: 29 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T23:23:46"
+   "summary": "30 cards: 30 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T01:17:00"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Gaea's Will",
-     "Hogaak casting"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
-   "result": "pending",
-   "summary": "2 mechanic(s) to implement: Gaea's Will, Hogaak casting",
-   "time": "2026-11-06T23:26:09"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T01:17:00"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Gaea's Will": {
-      "card": "Gaea's Will",
-      "faces": [
-       "Gaea's Will"
-      ],
-      "findings": [
-       {
-        "detail": "Event$ Moved | ActiveZones$ Command | Destination$ Graveyard | ValidCard$ Card.!token+YouOwn | ReplaceWith$ Exile | Description$ If a card would be put into your graveyard from anywhere this turn, exile it instead.",
-        "kind": "replacement",
-        "line": "A:SP$ Effect | ReplacementEffects$ GraveToExile | StaticAbilities$ STPlay | AILogic$ YawgmothsWill | AINoRecursiveCheck$ True | SpellDescription$ Until end of turn, you may play lands and cast spells from your graveyard. If a card would be put into your graveyard from anywhere this turn, exile that card instead.",
-        "name": "Effect:Moved"
-       },
-       {
-        "detail": "an Effect's permission to play from Graveyard",
-        "kind": "static_form",
-        "line": "A:SP$ Effect | ReplacementEffects$ GraveToExile | StaticAbilities$ STPlay | AILogic$ YawgmothsWill | AINoRecursiveCheck$ True | SpellDescription$ Until end of turn, you may play lands and cast spells from your graveyard. If a card would be put into your graveyard from anywhere this turn, exile that card instead.",
-        "name": "MayPlay.Graveyard"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/g/gaeas_will.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-06T23:26:09"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T01:17:00"
   },
   "provision": {
    "detail": {
@@ -154,11 +94,11 @@
    "inputs": {
     "deck": "d5d0bb618490716fcf2447530bf967594128639315c9c63f15eb1c59b9c3b371",
     "scripts": "5c3d02d95df693594e4517c17aad2618f9d0190c961766d9c83be40148fb2a7c",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T23:23:46"
+   "time": "2026-11-07T01:17:00"
   },
   "scrape": {
    "detail": {

@@ -29,43 +29,29 @@
        "category:Empower"
       ],
       "size": "M"
-     },
-     "Next-spell effect (Theorist's Proxy)": {
-      "cards": [
-       "Theorist's Proxy"
-      ],
-      "findings": [
-       "ability_param:DelayedTrigger.Static",
-       "ability_param:DelayedTrigger.ValidActivatingPlayer",
-       "ability_param:Effect.ForgetOnMoved",
-       "ability_param:Effect.RememberObjects",
-       "replacement:Effect:Counter"
-      ],
-      "size": "M"
      }
     },
     "needs": {
      "Theorist's Proxy": [
-      "Empower",
-      "Next-spell effect (Theorist's Proxy)"
+      "Empower"
      ]
     },
     "new_cards": [
      "Theorist's Proxy"
     ],
-    "size_points": 6
+    "size_points": 3
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 2 mechanic(s) (6 points)",
-   "time": "2026-11-06T23:26:08"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
+   "time": "2026-11-07T01:16:59"
   },
   "diff": {
    "detail": {
@@ -79,30 +65,29 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T23:23:45"
+   "time": "2026-11-07T01:16:59"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Empower",
-     "Next-spell effect (Theorist's Proxy)"
+     "Empower"
     ]
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "pending",
-   "summary": "2 mechanic(s) to implement: Empower, Next-spell effect (Theorist's Proxy)",
-   "time": "2026-11-06T23:26:08"
+   "summary": "1 mechanic(s) to implement: Empower",
+   "time": "2026-11-07T01:16:59"
   },
   "parse": {
    "detail": {
@@ -113,36 +98,6 @@
        "Theorist's Proxy"
       ],
       "findings": [
-       {
-        "detail": "DelayedTrigger ValidActivatingPlayer$ You",
-        "kind": "ability_param",
-        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
-        "name": "DelayedTrigger.ValidActivatingPlayer"
-       },
-       {
-        "detail": "Event$ Counter | ValidCard$ Card.IsRemembered | ValidSA$ Spell | Layer$ CantHappen | Description$ This spell can't be countered.",
-        "kind": "replacement",
-        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
-        "name": "Effect:Counter"
-       },
-       {
-        "detail": "Effect RememberObjects$ TriggeredCard",
-        "kind": "ability_param",
-        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
-        "name": "Effect.RememberObjects"
-       },
-       {
-        "detail": "Effect ForgetOnMoved$ Stack",
-        "kind": "ability_param",
-        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
-        "name": "Effect.ForgetOnMoved"
-       },
-       {
-        "detail": "DelayedTrigger Static$ True",
-        "kind": "ability_param",
-        "line": "A:AB$ DelayedTrigger | Cost$ U Sac<1/CARDNAME/this creature> | Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You | Execute$ DBEffect | ThisTurn$ True | Static$ True | SpellDescription$ The next spell you cast this turn can't be countered.",
-        "name": "DelayedTrigger.Static"
-       },
        {
         "detail": "resolves as a no-op",
         "kind": "category",
@@ -168,14 +123,14 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (7 findings), 0 without a script",
-   "time": "2026-11-06T23:26:08"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-07T01:16:59"
   },
   "provision": {
    "detail": {
@@ -189,11 +144,11 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T23:23:45"
+   "time": "2026-11-07T01:16:59"
   },
   "scrape": {
    "detail": {

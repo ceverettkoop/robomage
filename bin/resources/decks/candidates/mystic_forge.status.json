@@ -20,25 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Defined$ names no reader acts on": {
-      "cards": [
-       "Tezzeret, Cruel Captain"
-      ],
-      "findings": [
-       "ability_param:Animate.Defined",
-       "ability_param:PutCounter.Defined"
-      ],
-      "size": "M"
-     },
-     "Emblem with a trigger (Tezzeret)": {
-      "cards": [
-       "Tezzeret, Cruel Captain"
-      ],
-      "findings": [
-       "ability_param:Effect.Duration"
-      ],
-      "size": "M"
-     },
      "Play from the top of the library (Mystic Forge)": {
       "cards": [
        "Mystic Forge"
@@ -67,71 +48,63 @@
      ],
      "Perilous Snare": [
       "Start your engines! (speed)"
-     ],
-     "Tezzeret, Cruel Captain": [
-      "Defined$ names no reader acts on",
-      "Emblem with a trigger (Tezzeret)"
      ]
     },
     "new_cards": [
      "Mystic Forge",
-     "Perilous Snare",
-     "Tezzeret, Cruel Captain"
+     "Perilous Snare"
     ],
-    "size_points": 17
+    "size_points": 11
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "3 new card(s): 0 clean, 3 need 4 mechanic(s) (17 points)",
-   "time": "2026-11-06T23:26:09"
+   "summary": "2 new card(s): 0 clean, 2 need 2 mechanic(s) (11 points)",
+   "time": "2026-11-07T01:17:00"
   },
   "diff": {
    "detail": {
     "distinct": 32,
-    "in_vocab": 29,
+    "in_vocab": 30,
     "no_script": [],
     "not_in_vocab": [
      "Mystic Forge",
-     "Perilous Snare",
-     "Tezzeret, Cruel Captain"
+     "Perilous Snare"
     ]
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "32 cards: 29 in vocab, 3 new (0 without a script)",
-   "time": "2026-11-06T23:23:46"
+   "summary": "32 cards: 30 in vocab, 2 new (0 without a script)",
+   "time": "2026-11-07T01:17:00"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Defined$ names no reader acts on",
-     "Emblem with a trigger (Tezzeret)",
      "Play from the top of the library (Mystic Forge)",
      "Start your engines! (speed)"
     ]
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "pending",
-   "summary": "4 mechanic(s) to implement: Defined$ names no reader acts on, Emblem with a trigger (Tezzeret), Play from the top of the library (Mystic Forge), Start your engines! (speed)",
-   "time": "2026-11-06T23:26:09"
+   "summary": "2 mechanic(s) to implement: Play from the top of the library (Mystic Forge), Start your engines! (speed)",
+   "time": "2026-11-07T01:17:00"
   },
   "parse": {
    "detail": {
@@ -205,52 +178,20 @@
       "vocab": [
        -1
       ]
-     },
-     "Tezzeret, Cruel Captain": {
-      "card": "Tezzeret, Cruel Captain",
-      "faces": [
-       "Tezzeret, Cruel Captain"
-      ],
-      "findings": [
-       {
-        "detail": "PutCounter Defined$ Targeted.Artifact+Creature",
-        "kind": "ability_param",
-        "line": "A:AB$ Untap | Cost$ AddCounter<0/LOYALTY> | Planeswalker$ True | ValidTgts$ Artifact,Creature | TgtPrompt$ Select target artifact or creature | SubAbility$ DBPutCounter | SpellDescription$ Untap target artifact or creature. If it's an artifact creature, put a +1/+1 counter on it.",
-        "name": "PutCounter.Defined"
-       },
-       {
-        "detail": "Animate Defined$ Targeted.!Creature",
-        "kind": "ability_param",
-        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
-        "name": "Animate.Defined"
-       },
-       {
-        "detail": "Effect Duration$ Permanent",
-        "kind": "ability_param",
-        "line": "A:AB$ Effect | Cost$ SubCounter<7/LOYALTY> | Planeswalker$ True | Ultimate$ True | Name$ Emblem — Tezzeret, Cruel Captain | Image$ emblem_tezzeret_cruel_captain | Duration$ Permanent | AILogic$ Always | Triggers$ EffPhase | SpellDescription$ You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
-        "name": "Effect.Duration"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/t/tezzeret_cruel_captain.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
      }
     },
     "no_script": []
    },
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
-    "engine": "9c03f3c43211305ea0ad2425864f9d4c9a79ce1ea334512bfbbb14f20e067a5e",
+    "engine": "be13c2e529de008cb831011633bb667049c1d76282d762cb5cb4fc9e04675966",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
-   "summary": "3 new card(s), 3 with findings (10 findings), 0 without a script",
-   "time": "2026-11-06T23:26:09"
+   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
+   "time": "2026-11-07T01:17:00"
   },
   "provision": {
    "detail": {
@@ -264,11 +205,11 @@
    "inputs": {
     "deck": "089c353e56f4b516abff90cab35686ef8f85193d4ffcfcf5e4cb18bdbcba7be2",
     "scripts": "80ea89cba9bd591d466ca47b63e400a2e5f13d08ceb69a313486b27896ae9922",
-    "vocab": "ef6685f456c19d1b6dbbb31810dc98091cb411c30e166d66ac7881368380a5a7"
+    "vocab": "1158418618fbec63380876f4cf20646b4612a36715f8206319113cea7aaf2215"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T23:23:46"
+   "time": "2026-11-07T01:17:00"
   },
   "scrape": {
    "detail": {
