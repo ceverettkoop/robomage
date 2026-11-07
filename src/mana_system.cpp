@@ -89,6 +89,8 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 // Sac<1/Type>, Return or energy in a mana ability's cost is offered whether or not it can be paid.
 static bool mana_source_affordable(Zone::Ownership player, Entity source, const Ability &ab,
                                    std::shared_ptr<Orderer> orderer);
+// Is `ab` an AB$ ManaReflected, its colors read from a filter or a Defined$ set?
+static bool reflects_mana(const Ability &ab);
 static void push_mana_source(Entity source, const Ability &ab, Zone::Ownership player, const EntitySet &entities,
                              std::vector<std::pair<Entity, Ability>> &sources);
 static bool chosen_to_pay(Entity card, ManaPayee paid_for);

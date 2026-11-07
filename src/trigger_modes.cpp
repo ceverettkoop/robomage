@@ -246,7 +246,8 @@ static void bind_phase(const TriggerMode &, const TriggerLine &t, AbilityDef &ab
 static void bind_spell_cast(const TriggerMode &mode, const TriggerLine &t, AbilityDef &ability) {
     // SPELL_CAST is fired AFTER the per-cast spell counters bump, unlike NONCREATURE_SPELL_CAST, so
     // a count gate sees the current cast.
-    ability.trigger_on = t.valid_card_non_creature && t.cast_count_eq == 0 ? Events::NONCREATURE_SPELL_CAST : mode.event;
+    const bool noncreature_event = t.valid_card_non_creature && t.cast_count_eq == 0;
+    ability.trigger_on = noncreature_event ? Events::NONCREATURE_SPELL_CAST : mode.event;
     ability.trigger_valid_player_is_controller = t.player_is_you;
     // A spell's controller is its caster, which YouCtrl and OppCtrl on a card off the battlefield don't
     // read.

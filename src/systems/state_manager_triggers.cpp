@@ -627,8 +627,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                     continue;
             }
 
-            fire_trigger(trigger_ab, ctrl, entity, trigger_label(ent_name, trigger_ab), ent_name + " triggered", orderer,
-                         pending);
+            fire_trigger(trigger_ab, ctrl, entity, trigger_label(ent_name, trigger_ab), ent_name + " triggered",
+                         orderer, pending);
         }
     }
 
@@ -672,8 +672,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                                                      });
             }
 
-            fire_trigger(trigger_ab, ctrl, spell_e, trigger_label(ent_name, trigger_ab), ent_name + " triggered", orderer,
-                         pending);
+            fire_trigger(trigger_ab, ctrl, spell_e, trigger_label(ent_name, trigger_ab), ent_name + " triggered",
+                         orderer, pending);
         }
     }
 
@@ -691,7 +691,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         host.entity = entity;
         host.controller = z.owner;
         host.name = entity_name(entity);
-        match_event_triggers(host, global_coordinator.GetComponent<CardData>(entity).abilities, events, orderer, pending);
+        match_event_triggers(host, global_coordinator.GetComponent<CardData>(entity).abilities, events, orderer,
+                             pending);
     }
     }
 

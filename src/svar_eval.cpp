@@ -814,7 +814,9 @@ static int ev_x_paid(const SvarExpr &, const SvarArgs &) { return current_x_paid
 static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_converge(); }
 static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
 static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }
-static int ev_triggered_card_power(const SvarExpr &, const SvarArgs &a) { return std::max(0, object_power(a.triggered_card)); }
+static int ev_triggered_card_power(const SvarExpr &, const SvarArgs &a) {
+    return std::max(0, object_power(a.triggered_card));
+}
 
 static bool cond_revolt(const SvarArgs &a) {
     coverage_row("revolt");
