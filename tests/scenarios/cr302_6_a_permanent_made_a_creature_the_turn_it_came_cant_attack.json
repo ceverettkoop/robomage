@@ -1,0 +1,54 @@
+{
+  "name": "cr302_6_a_permanent_made_a_creature_the_turn_it_came_cant_attack",
+  "why": "CR 302.6: a permanent that becomes a creature the turn it came can't attack: The Fantasticar entered as a noncreature with no summoning sickness to keep",
+  "hand_a": [
+    "The Fantasticar",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:The Fantasticar",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "The Fantasticar becomes a Creature"
+  ],
+  "expect_not": [
+    "The Fantasticar attacking"
+  ]
+}

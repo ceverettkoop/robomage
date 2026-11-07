@@ -1104,7 +1104,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm.name = face->name;
                 perm.types = face->types;
                 perm.controller = zone.controller;
-                perm.has_summoning_sickness = is_creature;
+                perm.has_summoning_sickness = true;
                 perm.is_tapped = false;
                 // Replacement effects at the point the permanent enters (rule 614): "enters
                 // tapped" (a self-replacement, or a fetch's "onto the battlefield tapped") and
