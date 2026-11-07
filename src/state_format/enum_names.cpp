@@ -120,6 +120,7 @@ static const char *action_category_name(ActionCategory v) {
         C(CONFIRM_MODES)
         C(CHOOSE_COLOR)
         C(DIVIDE_DAMAGE)
+        C(TURN_FACE_UP)
     }
 #undef C
     return nullptr;

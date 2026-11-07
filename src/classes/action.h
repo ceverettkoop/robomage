@@ -77,9 +77,10 @@ enum class ActionCategory {
     CHOOSE_COLOR = 49,         // choose a color as a permanent enters (Painter's Servant)
     DIVIDE_DAMAGE = 50,        // give one more point of divided damage to this target (CR 601.2d);
                                // option_ordinal: what it holds so far
+    TURN_FACE_UP = 51,         // turn a face-down permanent face up for its morph cost (CR 702.37e)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 50;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 51;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;
@@ -99,6 +100,9 @@ struct LegalAction {
         // action from the play-land / companion special actions; the processor pays the cost, moves
         // the source entity Hand -> Exile, and records the time counters.
         bool suspend_action = false;
+        // SPECIAL_ACTION that turns the face-down permanent `source_entity` face up (CR 702.37e,
+        // 116.2b): the processor pays the morph cost of the card under it, and it is the same object.
+        bool turn_face_up = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

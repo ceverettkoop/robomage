@@ -817,6 +817,7 @@ static std::string category_task(const std::string &category) {
         {"CHOOSE_CARD", "choose a card"},
         {"ASSIGN_DAMAGE", "assign combat damage"},
         {"COMPANION", "put your companion into your hand, or not"},
+        {"TURN_FACE_UP", "act or pass priority"},
         {"EXILE_FROM_YARD", "choose a card to exile from your graveyard"},
     };
     auto it = tasks.find(category);
@@ -851,7 +852,7 @@ std::vector<std::string> pending_lines(const agents::DecisionView &v) {
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
         if (c == "PASS_PRIORITY" || c == "CAST_SPELL" || c == "PLAY_LAND" || c == "ACTIVATE_ABILITY" ||
-            c.rfind("MANA_", 0) == 0)
+            c == "TURN_FACE_UP" || c.rfind("MANA_", 0) == 0)
             priority = priority || c == "PASS_PRIORITY";
         else if (task.empty())
             task = category_task(c);

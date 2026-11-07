@@ -1,0 +1,49 @@
+{
+  "name": "cr708_10_a_copy_of_a_morph_card_turns_up_as_that_copy",
+  "why": "CR 708.10, 702.37e: a face-down Grizzly Bears that became a copy of an Aphetto Alchemist spell has that morph cost under it: {U} turns it up as a copy of the Alchemist, an object whose own card shows, and at cleanup it is the Bears.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "face_down_a": [
+    "Grizzly Bears"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Aphetto",
+    "A:target:Grizzly",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "becomes a copy of Aphetto Alchemist, face down",
+    "turns Aphetto Alchemist face up",
+    "is no longer a copy"
+  ],
+  "expect_dump": [
+    "^B .*event FACE_UP .*card=Grizzly Bears"
+  ]
+}

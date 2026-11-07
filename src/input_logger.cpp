@@ -367,7 +367,8 @@ static bool interchangeable_choices(const LegalAction &a, const LegalAction &b) 
     return a.type == b.type && a.category == b.category && a.description == b.description &&
            a.option_ordinal == b.option_ordinal && a.target_entity == b.target_entity &&
            a.option == b.option && a.companion_to_hand == b.companion_to_hand &&
-           a.suspend_action == b.suspend_action && a.card_is_public == b.card_is_public &&
+           a.suspend_action == b.suspend_action && a.turn_face_up == b.turn_face_up &&
+           a.card_is_public == b.card_is_public &&
            a.source_entity != b.source_entity && interchangeable_cards(a.source_entity, b.source_entity);
 }
 

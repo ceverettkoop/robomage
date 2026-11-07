@@ -1,0 +1,43 @@
+{
+  "name": "cr116_2b_no_priority_no_turn_up",
+  "why": "CR 116.2b, 702.37e: only with priority: the row is in the priority menu and not in a declaration, where {U} could pay and a creature is there to turn up.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass"
+  ],
+  "max_decisions": 6,
+  "expect_dump": [
+    "^A d=[0-9]+ .*menu TURN_FACE_UP card=Aphetto Alchemist text=Turn Aphetto Alchemist face up \\(\\{U\\}\\)",
+    "^A d=[0-9]+ .*menu SELECT_ATTACKER"
+  ],
+  "expect_dump_not": [
+    "^A d=(1|2) .*menu TURN_FACE_UP"
+  ]
+}

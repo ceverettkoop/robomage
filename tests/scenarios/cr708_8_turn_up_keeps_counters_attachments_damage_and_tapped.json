@@ -1,0 +1,55 @@
+{
+  "name": "cr708_8_turn_up_keeps_counters_attachments_damage_and_tapped",
+  "why": "CR 708.8: what was applied to the face-down permanent still applies: Shadowspear stays on it (+1/+1), the damage it was dealt stays, it stays tapped and attacking, and its handle doesn't change.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Shadowspear",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--trace-handles"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Equip",
+    "A:attack:Aphetto",
+    "A:attack:done",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "turns Aphetto Alchemist face up",
+    "Aphetto Alchemist deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "HANDLE: (retire|link) .*(Aphetto|face down)"
+  ],
+  "expect_dump": [
+    "^B .*event FACE_UP .*card=Aphetto Alchemist"
+  ]
+}

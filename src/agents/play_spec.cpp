@@ -168,6 +168,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"sb-out", {"SIDEBOARD_OUT"}},
         {"sb-done", {"SIDEBOARD_DONE"}},
         {"companion", {"COMPANION"}},
+        {"turn-up", {"TURN_FACE_UP"}},
         {"sacrifice", {"SACRIFICE_PERMANENT"}},
         {"return", {"RETURN_PERMANENT"}},
         {"x", {"CHOOSE_X"}},

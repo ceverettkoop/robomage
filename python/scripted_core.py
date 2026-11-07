@@ -142,6 +142,7 @@ _CAT_YESNO = "OPTIONAL_YESNO"
 _CAT_SYLVAN = "SYLVAN_CHOICE"
 _CAT_CHOOSE_CARD = "CHOOSE_CARD"
 _CAT_COMPANION = "COMPANION"
+_CAT_TURN_UP = "TURN_FACE_UP"
 _CAT_SHUFFLE_NO = "DONT_SHUFFLE"
 _CAT_KEEP_HAND = "KEEP_HAND"
 _CAT_DIVIDE = "DIVIDE_DAMAGE"
@@ -3345,11 +3346,12 @@ class ScriptedCore:
                                 hold_idxs=hold_idxs,
                                 doomsday=dd)
         # With nothing better to do in our own main phase, put the companion
-        # into hand (it is cast like any other card afterwards).
+        # into hand (it is cast like any other card afterwards), and turn up what
+        # the mana left over can pay for, its abilities being of use from now on.
         if (cats[choice] == _CAT_PASS and v.stack_empty
                 and v.is_active and v.in_main):
             for i, c in enumerate(cats):
-                if c == _CAT_COMPANION:
+                if c == _CAT_COMPANION or c == _CAT_TURN_UP:
                     return i
         return choice
 

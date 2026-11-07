@@ -1,0 +1,43 @@
+{
+  "name": "cr702_37e_no_mana_no_turn_up",
+  "why": "CR 702.37e: the cost must be paid: {U} from Mountains can't be, so no row is offered.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 8,
+  "expect_menu_not": [
+    "Turn Aphetto Alchemist"
+  ],
+  "expect_dump_not": [
+    "menu TURN_FACE_UP"
+  ]
+}

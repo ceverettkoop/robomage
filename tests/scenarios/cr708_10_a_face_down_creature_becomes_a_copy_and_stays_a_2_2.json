@@ -1,0 +1,50 @@
+{
+  "name": "cr708_10_a_face_down_creature_becomes_a_copy_and_stays_a_2_2",
+  "why": "CR 708.10: a face-down permanent that becomes a copy keeps its face-down characteristics; here it is under a Chromatic Star, which has no morph cost, so it can't be turned up until the copy ends.",
+  "hand_a": [
+    "Chromatic Star"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chromatic Star",
+    "A:target:Aphetto"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "becomes a copy of Chromatic Star, face down"
+  ],
+  "expect_dump": [
+    "^A d=5 .*menu TURN_FACE_UP",
+    "^A .*face_down self BATTLEFIELD card=Aphetto Alchemist pt=2/2",
+    "^B .*face_down opp BATTLEFIELD card=none pt=2/2"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen .*|known_hand )Aphetto",
+    "^A d=8 .*menu TURN_FACE_UP"
+  ]
+}

@@ -30,6 +30,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/costs.h"
+#include "../queries/face_down.h"
 #include "../queries/counters.h"
 #include "../queries/filters.h"
 #include "../queries/lki.h"
@@ -60,6 +61,10 @@ static void offer_zone_activations(std::vector<LegalAction> &actions, const std:
                                    Zone::ZoneValue zone, Zone::Ownership player, bool sorcery_window,
                                    std::shared_ptr<Orderer> orderer);
 static std::string zone_activation_label(const AbilityDef &def, const std::string &name, Zone::ZoneValue zone);
+// CR 702.37e: the row that turns the permanent `entity` face up, if it is face down, the card under
+// it has a morph cost and `player`, who controls it and has priority, can pay that.
+static void offer_turn_face_up(std::vector<LegalAction> &actions, Entity entity, Zone::Ownership player,
+                               std::shared_ptr<Orderer> orderer);
 
 // The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
 // stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
@@ -131,6 +136,18 @@ static std::string zone_activation_label(const AbilityDef &def, const std::strin
     if (def.is_ninjutsu) return "Ninjutsu " + name;
     if (def.is_unearth) return "Unearth " + name;
     return "Activate " + name + " from " + (zone == Zone::GRAVEYARD ? "graveyard" : "hand") + " (" + def.category + ")";
+}
+
+static void offer_turn_face_up(std::vector<LegalAction> &actions, Entity entity, Zone::Ownership player,
+                               std::shared_ptr<Orderer> orderer) {
+    const CardData *under = face_down_card(entity);
+    if (!under || !under->has_morph || payment_blocked(entity)) return;
+    const ManaValue &cost = under->morph_cost.mana();
+    if (!can_pay_mana(player, cost, ManaPayee(entity, ManaPurpose::OTHER), orderer)) return;
+    LegalAction la(SPECIAL_ACTION, entity, "Turn " + under->name + " face up (" + mana_value_text(cost) + ")");
+    la.category = ActionCategory::TURN_FACE_UP;
+    la.turn_face_up = true;
+    actions.push_back(la);
 }
 
 // Chosen targets of every stack object that would destroy or exile a battlefield
@@ -452,6 +469,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (auto entity : orderer->mEntities) {
         if (!is_battlefield_permanent(entity, priority_player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
+        offer_turn_face_up(actions, entity, priority_player, orderer);
 
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this

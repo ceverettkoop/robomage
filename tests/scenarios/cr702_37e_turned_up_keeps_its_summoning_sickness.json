@@ -1,0 +1,44 @@
+{
+  "name": "cr702_37e_turned_up_keeps_its_summoning_sickness",
+  "why": "CR 708.8, 302.6: turning it up doesn't make it a new object: cast face down and turned up this turn, Aphetto Alchemist is still summoning sick and offers no {T} ability; next turn it does.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "turns Aphetto Alchemist face up"
+  ],
+  "expect_menu_not": [
+    "Activate Aphetto Alchemist"
+  ]
+}

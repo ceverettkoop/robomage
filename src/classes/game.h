@@ -486,6 +486,7 @@ struct Game {
         enum class SpecialAction : uint8_t {
             SUSPEND,    // CR 702.62a: exile the card with its time counters
             COMPANION,  // CR 702.139a: bring the companion to hand
+            TURN_FACE_UP,  // CR 702.37e: turn the face-down permanent face up
         };
         struct PendingSpecialAction {
             bool active = false;

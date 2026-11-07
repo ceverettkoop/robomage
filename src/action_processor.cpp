@@ -32,6 +32,7 @@
 #include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/keywords.h"
+#include "queries/face_down.h"
 #include "queries/overlays.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
@@ -2559,7 +2560,18 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
         sa = Game::PendingSpecialAction{};
         return;
     }
-    if (sa.kind == Game::SpecialAction::COMPANION) {
+    if (sa.kind == Game::SpecialAction::TURN_FACE_UP) {
+        // Mana abilities could have taken it away while its cost was paid.
+        if (face_down_card(card)) {
+            const CardData &under = *face_down_card(card);
+            game_log("%s pays %s and turns %s face up.\n", player_name(payer).c_str(),
+                     mana_value_text(under.morph_cost.mana()).c_str(), under.name.c_str());
+            turn_face_up(card);
+            close_windows_on_face_up(card);
+            obs_face_turned(card, true);
+            coverage_cast("turn_face_up");
+        }
+    } else if (sa.kind == Game::SpecialAction::COMPANION) {
         std::string cname = global_coordinator.GetComponent<CardData>(card).name;
         orderer->add_to_zone(false, card, Zone::HAND);
         auto &player = global_coordinator.GetComponent<Player>(get_player_entity(payer));
@@ -2595,6 +2607,14 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 Entity card = action.source_entity;
                 begin_special_action(game, card, Game::SpecialAction::SUSPEND,
                                      global_coordinator.GetComponent<CardData>(card).suspend_cost.mana(), orderer);
+                break;
+            }
+
+            // TURN FACE UP (CR 702.37e, 116.2b): no stack, so nothing can respond to it, and the
+            // cost is the card's under it, shown as it is paid. The gate verified it can be paid.
+            if (action.turn_face_up) {
+                begin_special_action(game, action.source_entity, Game::SpecialAction::TURN_FACE_UP,
+                                     face_down_card(action.source_entity)->morph_cost.mana(), orderer);
                 break;
             }
 
