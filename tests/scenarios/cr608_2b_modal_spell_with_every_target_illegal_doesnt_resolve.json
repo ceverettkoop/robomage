@@ -1,0 +1,13 @@
+{
+  "name": "cr608_2b_modal_spell_with_every_target_illegal_doesnt_resolve",
+  "why": "CR 608.2b: with its one target illegal Fiery Confluence doesn't resolve, whatever its other modes. Mishra's Bauble sacrificed in response: none of the damage is dealt.",
+  "hand_a": ["Fiery Confluence"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "A:cast:Fiery Confluence", "A:mode:Destroy", "A:mode:deals 2 damage", "A:mode:deals 2 damage", "B:activate:Mishra's Bauble", "B:target:Player A"],
+  "max_decisions": 14,
+  "expect": ["Charm fizzles"],
+  "expect_not": ["Resolving ability \\(category: Charm", "Resolving ability \\(category: DealDamage"]
+}

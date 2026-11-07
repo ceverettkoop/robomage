@@ -375,13 +375,26 @@ bool targets_still_legal(const Ability &ab) {
     return is_legal_target(ab, ab.target.get(), ab.controller);
 }
 
+std::vector<const Ability *> announced_instructions(const Ability &ab) {
+    std::vector<const Ability *> out{&ab};
+    for (const Ability *sub : ab.chained_subs()) out.push_back(sub);
+    for (int idx : ab.charm_chosen) {
+        if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
+        const Ability &mode = ab.charm_choices[static_cast<size_t>(idx)];
+        out.push_back(&mode);
+        for (const Ability *sub : mode.chained_subs()) out.push_back(sub);
+    }
+    return out;
+}
+
 bool every_target_illegal(const Ability &ab) {
     const bool own = ab.def->valid_tgts != "N_A";
     if (own && targets_still_legal(ab)) return false;
     bool chosen = own;
-    for (const Ability *sub : ab.chained_subs()) {
-        if (sub->def->valid_tgts == "N_A" || (sub->target.empty() && sub->targets.empty())) continue;
-        if (targets_still_legal(*sub)) return false;
+    for (const Ability *part : announced_instructions(ab)) {
+        if (part == &ab) continue;
+        if (part->def->valid_tgts == "N_A" || (part->target.empty() && part->targets.empty())) continue;
+        if (targets_still_legal(*part)) return false;
         chosen = true;
     }
     return chosen;
