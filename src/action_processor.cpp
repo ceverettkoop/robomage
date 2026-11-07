@@ -1010,8 +1010,7 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
     gift_promised = promised;
     bool ok = true;
     for (const Ability *ab : targeting) {
-        if (effective_target_min(*ab, caster, orderer, false) > 0 &&
-            build_valid_targets(*ab, orderer, caster).empty()) {
+        if (effective_target_min(*ab, caster, orderer, false) > 0 && target_candidates(*ab, orderer, caster).empty()) {
             ok = false;
             break;
         }
@@ -1205,7 +1204,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
 
     if (rt.effective_max <= 1) {
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-        apply_target_gate(valid_targets, TargetPick{ability, 0, gate});
+        apply_target_gate(valid_targets, TargetPick{ability, 0, gate, orderer, priority_player});
         if (select_single_target(ability, valid_targets, false, asker) < 0)
             return TargetStatus::SUSPENDED;
         rt = TargetSelectRT{};
@@ -1222,7 +1221,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     // re-derivable on a resume for free.
     for (int i = rt.picked; i < rt.effective_max; i++) {
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-        apply_target_gate(valid_targets, TargetPick{ability, rt.picked, gate});
+        apply_target_gate(valid_targets, TargetPick{ability, rt.picked, gate, orderer, priority_player});
         if (valid_targets.empty()) break;
         bool can_stop = (i >= rt.effective_min);
         if (select_single_target(ability, valid_targets, can_stop, asker) < 0)

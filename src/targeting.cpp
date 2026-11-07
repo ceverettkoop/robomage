@@ -23,6 +23,7 @@
 #include "str_util.h"
 #include "svar_eval.h"
 #include "systems/orderer.h"
+#include "target_gate.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -511,7 +512,14 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
     Zone::Ownership perspective = ability_perspective_player(ability);
     // optional targeting always has "legal targets"
     if (effective_target_min(ability, perspective, orderer, /*x_announced=*/false) <= 0) return true;
-    return !build_valid_targets(ability, orderer, perspective).empty();
+    return !target_candidates(ability, orderer, perspective).empty();
+}
+
+std::vector<Entity> target_candidates(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                      Zone::Ownership chooser) {
+    std::vector<Entity> pool = build_valid_targets(ability, orderer, chooser);
+    apply_target_gate(pool, TargetPick{ability, 0, nullptr, orderer, chooser});
+    return pool;
 }
 
 int effective_target_min(const Ability &ab, Zone::Ownership perspective,
@@ -545,7 +553,7 @@ bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> o
     probe.source = modal.source;
     probe.controller = chooser;
     if (effective_target_min(probe, chooser, orderer, x_announced) <= 0) return true;
-    return !build_valid_targets(probe, orderer, chooser).empty();
+    return !target_candidates(probe, orderer, chooser).empty();
 }
 
 int charm_max_picks(const AbilityDef &def) {

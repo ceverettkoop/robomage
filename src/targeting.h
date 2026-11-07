@@ -39,6 +39,11 @@ bool every_target_illegal(const Ability &ab);
 std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
                                         Zone::Ownership priority_player);
 
+// What a first pick of `ability`'s targets may choose now: its legal targets, through the rows of
+// target_gate.cpp. What every check that a target can be chosen reads.
+std::vector<Entity> target_candidates(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                      Zone::Ownership chooser);
+
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 // "Requirement" is the ability's minimum target count (CR 601.2c) as effective_target_min reads it
 // before X is announced: an X-driven minimum counts as 0, since X may legally be 0. A modal
