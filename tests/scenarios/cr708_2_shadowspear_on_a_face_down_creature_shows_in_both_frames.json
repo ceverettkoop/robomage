@@ -1,0 +1,42 @@
+{
+  "name": "cr708_2_shadowspear_on_a_face_down_creature_shows_in_both_frames",
+  "why": "CR 708.2, 708.6: what an effect gives a face-down creature is public: Shadowspear's +1/+1, trample and lifelink show in the other player's frame, the card under it doesn't.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "face_down_a": [
+    "Baleful Strix"
+  ],
+  "battlefield_a": [
+    "Shadowspear",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Equip"
+  ],
+  "max_decisions": 8,
+  "expect_dump": [
+    "^B .*face_down opp BATTLEFIELD card=none pt=3/3 types=[0-9]+ mv=0 subtypes=0 keywords=2 abilities=[0-9]+$"
+  ],
+  "expect_dump_not": [
+    "^B .*face_down .*card=[^n]"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "cr708_3_a_face_down_supplier_mills_nothing_entering_or_dying",
+  "why": "CR 708.2, 708.3, 708.9: Stitcher's Supplier's enters and dies trigger is no ability of the face-down object: it enters and dies face down and nobody mills. As it leaves its owner reveals it, so the other player's frames name it from then on, and not before.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Stitcher's Supplier"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Mountain",
+    "B:cast:Lightning Bolt",
+    "B:desc:hidden"
+  ],
+  "max_decisions": 10,
+  "engine_flags": [
+    "--selfcheck-knowledge"
+  ],
+  "expect": [
+    "Stitcher's Supplier"
+  ],
+  "expect_not": [
+    "[Mm]ills?\\b"
+  ],
+  "expect_order": [
+    "Lightning Bolt",
+    "is revealed as Stitcher's Supplier"
+  ],
+  "expect_dump": [
+    "^B .*object opp GRAVEYARD",
+    "^B .*seen opp Stitcher's Supplier game=1"
+  ],
+  "expect_dump_not": [
+    "^B .*face_down .*card=[^n]"
+  ]
+}

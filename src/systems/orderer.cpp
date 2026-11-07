@@ -826,7 +826,7 @@ std::vector<Entity> Orderer::get_stack() {
 
 
 std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string> &card_names,
-                                                   Zone::Ownership owner) {
+                                                   Zone::Ownership owner, SpellOverlay how) {
     Coordinator &coordinator = Coordinator::global();
     std::vector<Entity> placed;
 
@@ -841,6 +841,7 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         // from it when its Permanent is created, like any entry transformed).
         if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
             entry_info(card_id).enters_transformed = true;
+        if (how != SpellOverlay::NONE) enter_face_down(card_id, how);
         obs_object_created(card_id);
 
         placed.push_back(card_id);

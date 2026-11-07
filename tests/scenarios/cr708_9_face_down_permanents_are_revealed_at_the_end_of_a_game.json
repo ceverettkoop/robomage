@@ -1,0 +1,44 @@
+{
+  "name": "cr708_9_face_down_permanents_are_revealed_at_the_end_of_a_game",
+  "why": "CR 708.9: at the end of each game all face-down permanents are revealed: the other player's last frame has seen the card that stayed face down.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "life_b": 2,
+  "face_down_a": [
+    "Baleful Strix",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "engine_flags": [
+    "--selfcheck-knowledge"
+  ],
+  "expect_result": "A",
+  "expect_dump_final": [
+    "^B .*seen opp Baleful Strix game=1",
+    "^B .*seen opp Grizzly Bears game=1"
+  ],
+  "expect_dump": [
+    "^B .*face_down opp BATTLEFIELD card=none"
+  ]
+}

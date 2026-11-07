@@ -312,6 +312,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      The stacked deck's library after the hand (needs --hand-a/-b)\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");
     printf("                      Start with these permanents on the battlefield\n");
+    printf("  --face-down-a <cards>    --face-down-b <cards>\n");
+    printf("                      Start with these cards on the battlefield face down (CR 708.2a:\n");
+    printf("                      2/2 creatures with no text), as --battlefield-a/-b does\n");
     printf("  --graveyard-a <cards>    --graveyard-b <cards>\n");
     printf("                      Start with these cards in the graveyard, from the top down\n");
     printf("  --exile-a <cards>        --exile-b <cards>\n");

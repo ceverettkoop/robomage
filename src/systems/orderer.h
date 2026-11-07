@@ -3,6 +3,7 @@
 
 #include "../ecs/system.h"
 #include "../ecs/entity.h"
+#include "../components/cast_option.h"
 #include "../components/zone.h"
 #include "../object_ref.h"
 #include <vector>
@@ -100,8 +101,9 @@ public:
     // game_driver.cpp's pregame gate (run_pregame_step) — loop-top, snapshot-safe
     // decisions driven by PregameState. Only the zone operations they use
     // (get_hand / add_to_zone / shuffle_library / draw) belong to the Orderer.
+    // `how` is a face-down row of kSpellOverlayRows for cards that start face down (CR 708.3).
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
-                                             Zone::Ownership owner);
+                                             Zone::Ownership owner, SpellOverlay how = SpellOverlay::NONE);
     // Test-harness helper: start cards already in a player's graveyard (mirrors
     // place_on_battlefield) so graveyard-functioning cards can be exercised in isolation.
     std::vector<Entity> place_in_graveyard(const std::vector<std::string> &card_names,

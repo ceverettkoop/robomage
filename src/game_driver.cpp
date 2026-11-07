@@ -168,6 +168,8 @@ int selfcheck_state_sample = 8;
 bool selfcheck_knowledge = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
+std::vector<std::string> face_down_a_cards;
+std::vector<std::string> face_down_b_cards;
 std::vector<std::string> graveyard_a_cards;
 std::vector<std::string> graveyard_b_cards;
 std::vector<std::string> exile_a_cards;
@@ -1039,6 +1041,7 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
     bool a = owner == Zone::PLAYER_A;
     Deck out = deck;
     for (const auto *zone : {a ? &battlefield_a_cards : &battlefield_b_cards,
+                             a ? &face_down_a_cards : &face_down_b_cards,
                              a ? &graveyard_a_cards : &graveyard_b_cards,
                              a ? &exile_a_cards : &exile_b_cards})
         for (const auto &name : *zone) out.main_deck.push_back({1, name});
@@ -1057,6 +1060,11 @@ static void place_zone_presets(EcsSystems &sys, Game::PregameState &pg) {
     }
     if (!battlefield_b_cards.empty()) {
         auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        const auto &cards = seat == Zone::PLAYER_A ? face_down_a_cards : face_down_b_cards;
+        auto placed = sys.orderer->place_on_battlefield(cards, seat, SpellOverlay::FACE_DOWN);
         pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
     }
     // pre-set graveyard cards (test harness): no Permanent/Creature components are

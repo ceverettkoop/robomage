@@ -24,7 +24,9 @@ static void facts(
 static void stack_target_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
-static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
+static void object_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
+static size_t rows_of_object(const Rows &table, uint64_t handle);
 
 static std::string card_of(const SeatNames &n, int64_t cid) {
     auto it = n.cards.find(cid);
@@ -55,7 +57,7 @@ static std::string libpos(const Rows &t, size_t r, int c_anchor, int c_pos, int 
 
 static void facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
-    object_facts(f, s, out);
+    object_facts(f, s, n, out);
     const Rows meta(f, s, "k_meta");
     for (size_t r = 0; r < meta.size(); ++r)
         out->push_back("meta level=" + meta.name(r, meta.col("level")) +
@@ -121,16 +123,38 @@ static void facts(
     mana_facts(f, s, out);
 }
 
-// Each object's zone, owner and colors as this frame shows them, and that it attacked this turn.
-static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
-    const Rows objects(f, s, "object");
+// How many rows of the child table `table` are the object `handle`'s.
+static size_t rows_of_object(const Rows &table, uint64_t handle) {
+    size_t count = 0;
+    for (size_t r = 0; r < table.size(); ++r)
+        if (table.u(r, table.col("obj")) == handle) ++count;
+    return count;
+}
+
+// Each object's zone, owner and colors as this frame shows them, that it attacked this turn, and a
+// face-down object's card and characteristics as this frame shows them.
+static void object_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    const Rows objects(f, s, "object"), subtypes(f, s, "object_subtype"), keywords(f, s, "object_keyword");
+    const Rows granted(f, s, "object_ability");
     for (size_t r = 0; r < objects.size(); ++r) {
         const std::string owner = rel_text(objects.u(r, objects.col("owner_rel")));
         out->push_back("object " + owner + " " + objects.name(r, objects.col("zone")) +
                        " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
         if (objects.u(r, objects.col("attacked")) != 0) out->push_back("attacked " + owner);
+        if (objects.u(r, objects.col("face_down")) == 0) continue;
+        const uint64_t handle = objects.u(r, objects.col("handle"));
+        out->push_back("face_down " + owner + " " + objects.name(r, objects.col("zone")) + " card=" +
+                       (objects.null(r, objects.col("card")) ? "none" : card_name(n, objects, r, objects.col("card"))) +
+                       " pt=" + std::to_string(objects.i(r, objects.col("power"))) + "/" +
+                       std::to_string(objects.i(r, objects.col("toughness"))) +
+                       " types=" + std::to_string(objects.u(r, objects.col("types"))) +
+                       " mv=" + std::to_string(objects.u(r, objects.col("mana_value"))) +
+                       " subtypes=" + std::to_string(rows_of_object(subtypes, handle)) +
+                       " keywords=" + std::to_string(rows_of_object(keywords, handle)) +
+                       " abilities=" + std::to_string(rows_of_object(granted, handle)));
     }
-    const Rows abilities(f, s, "object_ability");
+    const Rows &abilities = granted;
     for (size_t r = 0; r < abilities.size(); ++r) {
         if (abilities.u(r, abilities.col("exhausted")) == 0) continue;
         for (size_t o = 0; o < objects.size(); ++o)

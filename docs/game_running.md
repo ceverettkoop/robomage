@@ -134,7 +134,7 @@ be replayed as `--actions` with the same seed) and, when some specs were never a
 
 Scripts combine with the test-setup presets for sculpted positions: `--hand-a/-b` +
 `--library-a/-b` (a stacked deck, hand first; implies `--no-shuffle`), `--battlefield-a/-b`,
-`--graveyard-a/-b`, `--exile-a/-b`, `--sideboard-a/-b`, `--life-a/-b`; `--offer-cancel` adds a
+`--face-down-a/-b` (on the battlefield face down: 2/2s with no text, CR 708.2a), `--graveyard-a/-b`, `--exile-a/-b`, `--sideboard-a/-b`, `--life-a/-b`; `--offer-cancel` adds a
 "Cancel" row to every cast and activation prompt (CR 733.1).
 
 ```bash
