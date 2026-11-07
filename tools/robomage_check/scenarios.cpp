@@ -523,6 +523,10 @@ bool load_scenario(const std::string &path, Scenario *out, std::string *err) {
         *err = "format must be bo1 or bo3, got " + quoted(format);
         return false;
     }
+    if (scn.has("expect_count") && !scn.get("expect_count")->is_object()) {
+        *err = "expect_count must be {regex: n}";
+        return false;
+    }
     auto bad = bad_regex.find(path);
     if (bad != bad_regex.end()) {
         *err = "invalid regex /" + bad->second + "/";

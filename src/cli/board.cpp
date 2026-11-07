@@ -433,7 +433,8 @@ static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) 
         if (p.u(r, p.col("monarch"))) extra.push_back("monarch");
         if (p.u(r, p.col("city_blessing"))) extra.push_back("city's blessing");
         if (const uint64_t speed = p.u(r, p.col("speed")))
-            extra.push_back("speed " + std::to_string(speed - 1) + (p.u(r, p.col("speed_triggered")) ? " (triggered this turn)" : ""));
+            extra.push_back("speed " + std::to_string(speed - 1) +
+                            (p.u(r, p.col("speed_triggered")) ? " (triggered this turn)" : ""));
         if (const uint64_t n = p.u(r, p.col("to_bottom"))) extra.push_back(std::to_string(n) + " to bottom");
         if (const uint64_t n = p.u(r, p.col("extra_turns"))) extra.push_back(plural(n, "extra turn", "extra turns"));
         if (show_wins) extra.push_back("wins " + std::to_string(p.u(r, p.col("match_wins"))));
