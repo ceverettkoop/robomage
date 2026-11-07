@@ -196,7 +196,7 @@ static bool hidden_from(Entity e, Zone::Ownership viewer) {
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     bool seen = false;
     if (is_face_down(e)) {
-        seen = (z.location == Zone::BATTLEFIELD || z.location == Zone::STACK) && z.controller == viewer;
+        seen = (z.location == Zone::BATTLEFIELD || z.location == Zone::STACK) && source_controller(e) == viewer;
     } else {
         switch (z.location) {
             case Zone::BATTLEFIELD:
@@ -243,6 +243,27 @@ static int scramble_card_id(Entity e, int id) {
     return other_card_id(id);
 }
 
+// A face-down permanent or spell's identity is the card under it (FaceDownCard), so each of
+// `holders` that is one changes places with that card: once to put it where identities are moved,
+// once more to lie on its face again.
+static void turn_over_face_down(const std::vector<Entity> &holders) {
+    for (Entity e : holders) {
+        if (!face_down_card(e)) continue;
+        CardData &on_top = global_coordinator.GetComponent<CardData>(e);
+        FaceDownCard &under = global_coordinator.GetComponent<FaceDownCard>(e);
+        const std::shared_ptr<const CardData> card = under.card;
+        under.card = std::make_shared<const CardData>(std::move(on_top));
+        on_top = *card;
+    }
+}
+
+// Moves the identities of `holders`: each takes that of holders[from[i]].
+static void permute_identities(const std::vector<Entity> &holders, const std::vector<size_t> &from) {
+    turn_over_face_down(holders);
+    global_coordinator.PermuteComponents<CardData>(holders, from);
+    turn_over_face_down(holders);
+}
+
 // The hidden cards, sorted by name, each take the identity of the card `shift` places on, where
 // `shift` is the largest number of copies of one name among them: so every card gets another name
 // whenever no name has more than half the copies.
@@ -254,7 +275,8 @@ ScrambledIdentities::ScrambledIdentities(Zone::Ownership viewer, const std::vect
     for (Entity e : zoned_entities()) {
         if (!global_coordinator.entity_has_component<CardData>(e) || !hidden_from(e, viewer)) continue;
         if (std::find(keep.begin(), keep.end(), e) != keep.end()) continue;
-        hidden.push_back({global_coordinator.GetComponent<CardData>(e).name, e});
+        const CardData *under = face_down_card(e);
+        hidden.push_back({(under ? *under : global_coordinator.GetComponent<CardData>(e)).name, e});
     }
     std::sort(hidden.begin(), hidden.end());
     size_t shift = 0;
@@ -266,13 +288,13 @@ ScrambledIdentities::ScrambledIdentities(Zone::Ownership viewer, const std::vect
         holders_.push_back(hidden[i].second);
         from_.push_back((i + shift) % hidden.size());
     }
-    global_coordinator.PermuteComponents<CardData>(holders_, from_);
+    permute_identities(holders_, from_);
     set_card_identity_scrambler(scramble_card_id);
 }
 
 ScrambledIdentities::~ScrambledIdentities() {
     if (!active_) return;
-    global_coordinator.PermuteComponents<CardData>(holders_, inverse(from_));
+    permute_identities(holders_, inverse(from_));
     set_card_identity_scrambler(nullptr);
     scramble_viewer = Zone::UNKNOWN;
 }
@@ -710,7 +732,7 @@ void selfcheck_state_event(Zone::Ownership viewer, const ObsEvent &built, const 
 // places (zone and library position), the viewer's own hidden library cards among their
 // positions, and then the identities (CardData) of every card hidden from the viewer, per owner,
 // are shuffled among them (a card in a window shown only to the other player keeps its place
-// but not its identity; a face-down exiled card stays where it is, as the objects that refer to it
+// but not its identity; a face-down object stays where it is, as the objects that refer to it
 // expect, with another identity). Owners, zone sizes, identity stamps and handles stay as they
 // were. `keep` cards are left alone.
 static void permute_hidden(Zone::Ownership viewer, const std::vector<Entity> &keep, std::mt19937 &gen, Permutation &p) {
@@ -724,7 +746,7 @@ static void permute_hidden(Zone::Ownership viewer, const std::vector<Entity> &ke
         if (!is_seat(z.owner)) continue;
         const bool hidden_zone =
             z.location == Zone::HAND || z.location == Zone::LIBRARY || z.location == Zone::SIDEBOARD;
-        if (hidden_zone || (z.location == Zone::EXILE && is_face_down(e))) identities[z.owner].push_back(e);
+        if (hidden_zone || is_face_down(e)) identities[z.owner].push_back(e);
         if (!hidden_zone || is_face_down(e) || in_window(e, z, viewer, true)) continue;
         if (z.owner == opp)
             dealt.push_back(e);
@@ -760,11 +782,11 @@ static void permute_hidden(Zone::Ownership viewer, const std::vector<Entity> &ke
             p.from.push_back(base + order[i]);
         }
     }
-    global_coordinator.PermuteComponents<CardData>(p.holders, p.from);
+    permute_identities(p.holders, p.from);
 }
 
 static void undo_permutation(Permutation &p) {
-    global_coordinator.PermuteComponents<CardData>(p.holders, inverse(p.from));
+    permute_identities(p.holders, inverse(p.from));
     for (const auto &kv : p.zones) global_coordinator.GetComponent<Zone>(kv.first) = kv.second;
     p = Permutation{};
 }

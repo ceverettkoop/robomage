@@ -31,7 +31,7 @@
 //   permutation  for each seat, everything hidden from it is physically permuted (the
 //                opponent's hand, library and sideboard cards dealt among those zones' slots;
 //                the seat's own library reordered; the identities of all cards hidden from the
-//                seat, face-down exiled cards included, swapped among cards of the same owner),
+//                seat, face-down objects included, swapped among cards of the same owner),
 //                keeping every live reveal window fixed; the seat's frame is encoded in that
 //                world and must be the same bytes. Then everything is put back exactly;
 //   snapshot     the game is saved (snapshot.h) at a loop-safe decision, play goes on for at
