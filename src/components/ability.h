@@ -6,6 +6,7 @@
 #include "../effects/effect_kind.h"
 #include "../object_ref.h"
 #include "ability_params.h"
+#include "activation_rule.h"
 #include "copy_overlay.h"
 #include "cost_part.h"
 #include "effect.h"
@@ -131,13 +132,11 @@ struct AbilityDef {
     FilterSpec sac_valid;         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
-    bool sorcery_speed_only = false;    // SorcerySpeed$ True — activated only as a sorcery (CR 605.x / earthbend); gated in the legal-action enumeration
-    // Activation$ <condition> — a named "activate only if <condition>" gate (CR 602.5). The
-    // ability is an illegal (not-offered, not-payable) activation unless the named condition
-    // holds for its controller at activation time. "Metalcraft" = you control 3+ artifacts
-    // (CR 702.46). General: future gated activations (Threshold, Delirium, …) add their name
-    // here and a case in activation_condition_met(). Empty = no activation gate.
-    std::string activation_condition = "";
+    // What restricts activating it (CR 602.5): SorcerySpeed$ True, Activation$ <condition>, a
+    // loyalty ability's timing, a keyword's. Every rule must allow an activation, read at
+    // activation-legality time (activation_source_ready). General: a future gated activation
+    // (Threshold, Delirium, …) adds a row to queries/activation.cpp's table of conditions.
+    std::vector<ActivationRule> activation_rules;
     // Monstrosity$ N on an AB$/DB$ PutCounter (CR 701.37): "Monstrosity N" = if this permanent
     // isn't monstrous, put N +1/+1 counters on it and it becomes monstrous. Parsed by
     // parse_put_counter into CounterParams (P1P1 / count N) plus this flag; the flag also installs

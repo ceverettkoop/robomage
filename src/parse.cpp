@@ -23,6 +23,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "queries/activation.h"
 #include "queries/affected.h"
 #include "queries/filters.h"
 #include "queries/overlays.h"
@@ -771,14 +772,11 @@ static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::s
     AbilityDef ab;
     ab.ability_type = AbilityDef::ACTIVATED;
     ab.category = category;
-    ab.sorcery_speed_only = true;
+    ab.activation_rules.push_back(ActivationRule::as_sorcery());
     ab.keyword_label = label;
-    if (category == "Attach") {
-        ab.valid_tgts = "Creature.Other+YouCtrl";
-        ab.activation_condition = "CanEquip";
-    } else {
-        ab.activation_condition = "Attached";
-    }
+    if (category == "Attach") ab.valid_tgts = "Creature.Other+YouCtrl";
+    ab.activation_rules.push_back(
+        ActivationRule::only_if(activation_condition_named(category == "Attach" ? "CanEquip" : "Attached")));
     size_t colon = kw_line.find(':');
     if (colon != std::string::npos) read_ability_cost(kw_line.substr(colon + 1), ab);
     return ab;
@@ -1448,7 +1446,7 @@ static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
     ab.origin = Zone::GRAVEYARD;
     ab.destination = Zone::BATTLEFIELD;
     ab.defined = ObjectSpec(ObjectSpec::SELF);  // returns its own source from the graveyard
-    ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
+    ab.activation_rules.push_back(ActivationRule::as_sorcery());  // "Unearth only as a sorcery." (CR 702.84a)
     ab.is_unearth = true;
     ctx.face_defs.abilities.push_back(ab);
     ctx.card.keywords.push_back("Unearth");
@@ -2195,9 +2193,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Activation") {
         // Activation$ <condition> — "activate only if <condition>" gate (CR 602.5). The
         // named condition (e.g. "Metalcraft") is evaluated against the activator at
-        // activation-legality time by activation_condition_met(); kept general so other
+        // activation-legality time through the rule list; kept general so other
         // gated activations name their condition here without retagging.
-        ability.activation_condition = value;
+        ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named(value)));
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
     } else if (key == "ReduceCost") {
@@ -2239,13 +2237,15 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // SorcerySpeed$ True — this activated ability can be activated only any time its
         // controller could cast a sorcery (main phase, their turn, empty stack). Used by the
         // activated form of Earthbend (Ba Sing Se). Gated in the legal-action enumeration.
-        ability.sorcery_speed_only = (value == "True");
+        if (value == "True") ability.activation_rules.push_back(ActivationRule::as_sorcery());
     } else if (key == "ETB") {
         // ETB$ True on a DB$ Tap (Ba Sing Se's LandTapped replacement SVar): the tap happens as
         // the permanent enters the battlefield. The conditional "enters tapped" is realized via
         // the ENTERS_TAPPED replacement, so the flag needs no field.
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
+        // CR 606.3: a loyalty ability is activated only as a sorcery could be cast.
+        if (ability.is_loyalty_ability) ability.activation_rules.push_back(ActivationRule::as_sorcery());
     } else if (key == "Cost") {
         read_ability_cost(value, ability);
     } else if (key == "ConditionCheckSVar") {
@@ -2577,7 +2577,7 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "TgtZone")
         return value == "Graveyard" || value == "Battlefield" || (value == "Stack" && !ability.target_type.empty());
     if (key == "ActivationZone") return ability.activation_zone != -1;
-    if (key == "Activation") return value == "Metalcraft";
+    if (key == "Activation") return activation_condition_known(value);
     if (key == "RestrictValid")
         return ability.mana_restriction.kind != ManaRestriction::NONE;
     if (key == "ConditionDefined") {

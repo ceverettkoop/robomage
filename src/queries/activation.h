@@ -2,6 +2,7 @@
 #define QUERIES_ACTIVATION_H
 
 #include <set>
+#include <string>
 
 #include "../components/ability.h"
 #include "../components/permanent.h"
@@ -51,30 +52,32 @@ int triggers_this_turn(const AbilityDef *def, Entity source);
 // Records that `def` of `source` triggered: one toward its ActivationLimit$.
 void count_limited_trigger(const AbilityDef *def, Entity source);
 
-// ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
-// Named gates that make an activated ability illegal to activate unless the named
-// condition holds for its controller. Parsed from Activation$ <name>; evaluated at
-// activation-legality time (mana-source enumeration, non-mana activated enumeration,
-// and the action processor guard). Keep general: add a named condition + a case in
-// activation_condition_met() rather than special-casing one card.
+// ── Activation rules (CR 602.5) ──────────────────────────────────────────────
+// What restricts activating an ability is the list on its definition (ActivationRule), evaluated
+// at activation-legality time (mana-source enumeration, non-mana activated enumeration, and the
+// action processor guard). Keep general: add a row to the table of named conditions rather than
+// special-casing one card.
 
 // Metalcraft (CR 702.46): the player controls three or more artifacts. The activating
 // permanent (e.g. Mox Opal itself, an artifact) is counted. Reusable by any Metalcraft card.
 bool controller_has_metalcraft(Zone::Ownership controller, const EntitySet &entities);
 
-// True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
-// no activation_condition is always allowed (returns true). `source` is the gated ability's
-// source permanent (needed by per-permanent gates like NotMonstrous; pass 0 if unknown).
-// Unknown condition names fail closed (return false) so a misparsed gate never silently
-// permits activation.
-bool activation_condition_met(
-    const Ability &ab, Zone::Ownership controller, const EntitySet &entities, Entity source = 0);
+// The row of a named condition (Activation$ <name>). An unknown name gets a row that never holds,
+// so a misparsed gate never silently permits activation.
+const ActivationCondition *activation_condition_named(const std::string &name);
+// Is `name` a row of the table, not the row that never holds?
+bool activation_condition_known(const std::string &name);
 
-// The state `source` must be in for `controller` to activate its ability `ab` (CR 602.5): the
-// Activation$ condition holds and the per-turn activation limit isn't reached. Shared by the
-// mana-source enumeration and the non-mana activated-ability offers, whichever zone the source is
-// in; a {T} in the cost is source_can_tap's.
-bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities);
+// Is `def` activated only as a sorcery (CR 602.5d)?
+bool activates_as_sorcery(const AbilityDef &def);
+
+// Do `ab`'s rules let `controller` activate it from `source` now (CR 602.5), and isn't the
+// per-turn activation limit reached? `sorcery_window` is whether a sorcery could be cast: the
+// mana-source enumeration leaves it set, no mana ability having a timing rule. Shared by that
+// enumeration and the non-mana activated-ability offers, whichever zone the source is in; a {T}
+// in the cost is source_can_tap's.
+bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller, const EntitySet &entities,
+    bool sorcery_window = true);
 
 // Can a {T} in a cost be paid by `source`: an untapped permanent free of summoning sickness
 // (CR 302.6)?

@@ -286,10 +286,7 @@ static rmstate::Timing ability_timing(const AbilityDef &def, const CardData *cd)
         return rmstate::Timing::SORCERY;
     }
     if (def.ability_type == AbilityDef::ACTIVATED) {
-        if (def.sorcery_speed_only || def.is_loyalty_ability || def.keyword_label == "Equip" ||
-            def.keyword_label == "Reconfigure" || def.keyword_label == "Unattach")
-            return rmstate::Timing::SORCERY;
-        return rmstate::Timing::INSTANT;
+        return activates_as_sorcery(def) ? rmstate::Timing::SORCERY : rmstate::Timing::INSTANT;
     }
     return rmstate::Timing::ANY;
 }

@@ -19,6 +19,14 @@ static std::deque<AbilityDef> &ability_def_store();
 // Bind `d`'s EffectKind from its category, with the memory rows that kind makes, and those of the
 // definitions nested in it.
 static void bind_effect_kinds(AbilityDef &d);
+// The named state `def` needs to be activated; null when it needs none.
+static const ActivationCondition *activation_condition_of(const AbilityDef &def);
+
+static const ActivationCondition *activation_condition_of(const AbilityDef &def) {
+    for (const ActivationRule &rule : def.activation_rules)
+        if (rule.kind == ActivationRule::CONDITION) return rule.condition;
+    return nullptr;
+}
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const AbilityDef *other) const {
@@ -30,7 +38,7 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     // distinct abilities (Urza's Workshop: plain "{T}: Add {C}" vs the Metalcraft
     // "{T}: Add {C} for each Urza's land"). Likewise two mana abilities that produce
     // different dynamic amounts are distinct. Without these the second is wrongly deduped.
-    if (other->activation_condition != def->activation_condition) return false;
+    if (activation_condition_of(*other) != activation_condition_of(*def)) return false;
     if (other->dynamic_amount_expr != def->dynamic_amount_expr) return false;
     if (other->trigger_mode != def->trigger_mode) return false;
     if (other->cost.taps() != def->cost.taps()) return false;

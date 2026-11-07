@@ -10,6 +10,7 @@
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../queries/activation.h"
 #include "../queries/counters.h"
 #include "../queries/players.h"
 #include "../svar_eval.h"
@@ -143,7 +144,7 @@ bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string
         cp.type = "P1P1";
         cp.count = std::stoi(value);
         ab.is_monstrosity = true;
-        ab.activation_condition = "NotMonstrous";
+        ab.activation_rules.push_back(ActivationRule::only_if(activation_condition_named("NotMonstrous")));
         return true;
     }
     return false;

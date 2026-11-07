@@ -71,18 +71,15 @@ static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack
 }
 
 // The activation-legality gates every non-mana activated-ability offer shares (CR 602.2, 602.5):
-// no CantBeActivated prohibition on the source, "activate only as a sorcery" timing, the source's
-// state (Activation$ condition, activation limit), the cost with its mana after ReduceCost$ (can_pay),
+// no CantBeActivated prohibition on the source, its rules ("activate only as a sorcery" timing,
+// Activation$ condition, activation limit), the cost with its mana after ReduceCost$ (can_pay),
 // a legal target for every required target, and the payment-failure guard. `source` is the object the ability is activated
 // from: a battlefield permanent, or a card in hand (channel, ninjutsu) or graveyard (unearth).
-// Loyalty and ninjutsu windows stay with their callers.
+// The ninjutsu window stays with its caller.
 static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
                              bool sorcery_window, std::shared_ptr<Orderer> orderer) {
     if (rules_mod::activation_prohibited(source)) return false;
-    // SorcerySpeed$ True (Ba Sing Se's earthbend, unearth): activatable only any time its
-    // controller could cast a sorcery (CR 602.5d).
-    if (ab.def->sorcery_speed_only && !sorcery_window) return false;
-    if (!activation_source_ready(ab, source, activator, orderer->mEntities)) return false;
+    if (!activation_source_ready(ab, source, activator, orderer->mEntities, sorcery_window)) return false;
     // Gate on the post-ReduceCost$ cost (Eiganjo's Channel is cheaper per legendary creature you
     // control) so legality matches what payment will charge.
     const ManaValue mana = effective_activation_mana_cost(ab, activator, orderer);
@@ -472,12 +469,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ++ability_index;
             if (ab.def->ability_type != AbilityDef::ACTIVATED) continue;
             if (ab.def->activation_zone != -1) continue;  // functions from another zone (CR 113.6b): hand, graveyard
-            // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
-            // all its loyalty abilities.
-            if (ab.def->is_loyalty_ability) {
-                if (!sorcery_window) continue;
-                if (permanent.loyalty_ability_activated_this_turn) continue;
-            }
+            // Loyalty abilities (606.3): once per turn per permanent across all its loyalty
+            // abilities.
+            if (ab.def->is_loyalty_ability && permanent.loyalty_ability_activated_this_turn) continue;
             // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
             // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve
             // off-stack. None go on the stack.
