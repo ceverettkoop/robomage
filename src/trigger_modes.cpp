@@ -53,6 +53,8 @@ static bool match_land_played(const TriggerEvent &fired);
 static bool match_spell_cast(const TriggerEvent &fired);
 static bool match_drawn(const TriggerEvent &fired);
 static bool match_becomes_target(const TriggerEvent &fired);
+static bool match_attacks(const TriggerEvent &fired);
+static bool match_combat_damage(const TriggerEvent &fired);
 static void capture_spell_cast(Ability &ab, const Event &ev);
 static void capture_combat_damage(Ability &ab, const Event &ev);
 static void capture_attacks(Ability &ab, const Event &ev);
@@ -98,6 +100,7 @@ static void bind_damage_all(const TriggerMode &mode, const TriggerLine &t, Abili
     if (t.combat_damage_only) {
         ability.trigger_on = mode.event;
         ability.trigger_damage_source_youctrl = t.source_creature_youctrl;
+        ability.trigger_batch_zone_all = true;
     }
 }
 
@@ -487,6 +490,21 @@ static bool match_becomes_target(const TriggerEvent &fired) {
     return true;
 }
 
+// CREATURE_ATTACKED: ValidCard$ Creature.OppCtrl (Tamiyo, Seasoned Scholar's +2), the attacker
+// controlled by an opponent of the trigger's controller.
+static bool match_attacks(const TriggerEvent &fired) {
+    return !fired.ab.trigger_attacker_opp_ctrl || !fired.ev.HasParam(Params::ENTITY) ||
+           source_controller(fired.ev.GetParam<Entity>(Params::ENTITY)) != fired.controller;
+}
+
+// COMBAT_DAMAGE_TO_PLAYER: ValidSource$ Creature.YouCtrl (Forth Eorlingas!), the damaging creature
+// controlled by the trigger's controller.
+static bool match_combat_damage(const TriggerEvent &fired) {
+    if (!fired.ab.trigger_damage_source_youctrl) return true;
+    return fired.ev.HasParam(Params::ENTITY) &&
+           source_controller(fired.ev.GetParam<Entity>(Params::ENTITY)) == fired.controller;
+}
+
 static void capture_spell_cast(Ability &ab, const Event &ev) {
     if (ev.HasParam(Params::ENTITY)) ab.cast_spell = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
 }
@@ -500,7 +518,11 @@ static void capture_combat_damage(Ability &ab, const Event &ev) {
 // acts on the DEFENDER's library). CREATURE_ATTACKED carries PLAYER = the attacker's controller
 // (active player); in a two-player game the defender is that player's opponent. Bind it as the
 // ability's target (a player entity), which the Dig handler reads as the library owner.
+// Defined$ TriggeredAttacker(LKICopy) binds the attacker the same way, for the effect's target
+// (Tamiyo, Seasoned Scholar's +2).
 static void capture_attacks(Ability &ab, const Event &ev) {
+    if (ab.def->defined.is(ObjectSpec::TRIGGERED_ATTACKER) && ev.HasParam(Params::ENTITY))
+        ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
     if (!ab.def->defined.is(ObjectSpec::TRIGGERED_DEFENDING_PLAYER) || !ev.HasParam(Params::PLAYER)) return;
     const Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
     ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));
@@ -526,15 +548,15 @@ static const TriggerMode kTriggerModes[] = {
     {"SpellCast", Events::SPELL_CAST, bind_spell_cast, "ValidCard ValidActivatingPlayer ValidSA ActivatorThisTurnCast",
         card_read_spell_cast, nullptr, nullptr, match_spell_cast, capture_spell_cast},
     {"DamageDone", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_done, "ValidSource ValidTarget CombatDamage", nullptr,
-        source_read_self, "Player", nullptr, capture_combat_damage},
+        source_read_self, "Player", match_combat_damage, capture_combat_damage},
     {"DamageAll", Events::COMBAT_DAMAGE_TO_PLAYER, bind_damage_all, "ValidSource ValidTarget CombatDamage", nullptr,
-        source_read_your_creature, "Player", nullptr, capture_combat_damage},
+        source_read_your_creature, "Player", match_combat_damage, capture_combat_damage},
     {"Drawn", Events::PLAYER_DREW_CARD, bind_drawn, "ValidCard FirstCardInDrawStep Number", card_read_drawn, nullptr,
         nullptr, match_drawn},
     {"LandPlayed", Events::LAND_PLAYED, bind_land_played, "ValidCard Origin", card_read_move, nullptr, nullptr,
         match_land_played},
     {"Attacks", Events::CREATURE_ATTACKED, bind_attacks, "ValidCard Attacked", card_read_attacks, nullptr, nullptr,
-        nullptr, capture_attacks},
+        match_attacks, capture_attacks},
     {"AttackersDeclared", Events::ATTACKERS_DECLARED, bind_attackers_declared, "AttackingPlayer"},
     {"TapsForMana", Events::TAPPED_FOR_MANA, bind_taps_for_mana, "ValidCard Activator", card_read_creature},
     {"BecomesTarget", Events::BECAME_TARGET, bind_becomes_target, "ValidSource ValidTarget", nullptr,
