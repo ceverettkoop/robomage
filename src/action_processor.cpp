@@ -2578,6 +2578,7 @@ static void run_special_action(Game::PendingSpecialAction &sa, Game &game, std::
             const CardData &under = *face_down_card(card);
             game_log("%s pays %s and turns %s face up.\n", player_name(payer).c_str(),
                      mana_value_text(sa.cost).c_str(), under.name.c_str());
+            coverage_row(("turn_up_" + std::string(spell_overlay(global_coordinator.GetComponent<Permanent>(card).overlay).name)).c_str());
             turn_face_up(card);
             close_windows_on_face_up(card);
             obs_face_turned(card, true);

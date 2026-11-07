@@ -1437,7 +1437,9 @@ static EventLine event_line(
     }
     // ZONE_MOVE, PLAY_FROM_HIDDEN, DRAW (handled by the caller) and anything new: a move.
     const uint64_t subject = zone >= 0 ? owner : to_owner;
-    const std::string what = possessive(f, subject) + " " + items_text(names, hidden, false);
+    std::string what = possessive(f, subject) + " " + items_text(names, hidden, false);
+    // Nothing else tells a viewer who can't see it that a card from a hidden zone came face down.
+    if (kind == "PLAY_FROM_HIDDEN" && hidden > 0 && zone != f.z_stack) what += ", face down";
     if (zone < 0) return {what + ": created on " + zone_of(f, to_zone, to_owner), false};
     if (to_zone < 0) return {what + ": ceases to exist", false};
     std::string from = zone_word(f, zone);

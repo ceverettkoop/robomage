@@ -8,3 +8,9 @@ cast_row:exile_morph
 # The turn up, a special action with a category of its own.
 cast:turn_face_up
 category:TURN_FACE_UP
+# M11 (b2): Cloak (Cryptic Coat), and the Coat on what it cloaked.
+effect:Cloak
+effect:Attach
+row:EquippedBy
+# A cloak turned face up.
+row:turn_up_cloaked

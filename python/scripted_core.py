@@ -357,6 +357,10 @@ _MYCOSYNTH_LATTICE = "Mycosynth Lattice"
 # ever makes a single mana of any type, so untapping it gains nothing.
 _CANDELABRA = "Candelabra of Tawnos"
 _APHETTO_ALCHEMIST = "Aphetto Alchemist"
+_CRYPTIC_COAT = "Cryptic Coat"
+_COAT_RETURN_AND_RECAST_MANA = 5   # {1}{U} to return it, {2}{U} to cast it again
+_COAT_MIN_LIBRARY = 10             # each cast takes a card off the library for good
+_CLOAK_POWER = 2                   # what a cloak is already, with ward {2} besides
 _MULTI_MANA_LANDS = frozenset({"Ancient Tomb", "Urza's Workshop"}) | _TRON_LAND_SET
 
 # Reanimator deck cards. Reanimate and Animate Dead are the "put a creature card
@@ -478,6 +482,22 @@ def _untap_worthy(v) -> set:
     one untaps itself, and two each other, for nothing and without end."""
     return {p.card for p in v.my_perms
             if p.tapped and p.creature and p.card is not None and p.card != _APHETTO_ALCHEMIST}
+
+
+def _worth_turning_up(v, i) -> bool:
+    """Whether the turn-up row `i` is worth taking with spare mana. A morph only gains by it. A
+    cloak gives up its ward {2}, so only for more power than the 2 it has."""
+    card = v.card(i)
+    cloaked = any(p.card == card and "Ward" in p.keywords for p in v.my_perms)
+    return not cloaked or v.cards.power(card) > _CLOAK_POWER
+
+
+def _coat_return_worthwhile(v) -> bool:
+    """Cryptic Coat's {1}{U}: returning it is another 2/2 for the {2}{U} of casting it again, so
+    only in our own main phase with the mana for both, and a library that can spare the card."""
+    return (v.is_active and v.in_main and v.stack_empty
+            and _count_untapped_mana_sources(v) >= _COAT_RETURN_AND_RECAST_MANA
+            and v.library >= _COAT_MIN_LIBRARY)
 
 
 def _tapped_multi_mana_lands(v) -> int:
@@ -2507,6 +2527,9 @@ def _activation_holds(v) -> set[int]:
         elif card == _GOBLIN_BOMBARDMENT:
             if v.opp_life > len(_creatures(v.my_perms)):
                 holds.add(i)
+        elif card == _CRYPTIC_COAT:
+            if not _coat_return_worthwhile(v):
+                holds.add(i)
         elif card == _BLAST_ZONE:
             plan = plan or _blast_zone_plan(v) or (0, -1)
             counters, target = plan
@@ -3368,7 +3391,7 @@ class ScriptedCore:
         if (cats[choice] == _CAT_PASS and v.stack_empty
                 and v.is_active and v.in_main):
             for i, c in enumerate(cats):
-                if c == _CAT_COMPANION or c == _CAT_TURN_UP:
+                if c == _CAT_COMPANION or (c == _CAT_TURN_UP and _worth_turning_up(v, i)):
                     return i
         return choice
 
