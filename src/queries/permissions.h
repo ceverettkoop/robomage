@@ -25,10 +25,11 @@ enum class Permission : uint8_t {
     FLASHBACK,       // a graveyard card its owner may cast with flashback (CR 702.34)
     ESCAPE,          // a graveyard card its owner may cast with escape (CR 702.139)
     // a nonland graveyard card in Game::resolved_effects.may_cast_this_turn (Emry's grant; the
-    // owner, this turn)
+    // owner, this turn), or while an Effect's static lets the owner cast spells from their
+    // graveyard (Gaea's Will)
     GRAVEYARD_CAST,
     // a land card in its owner's graveyard while a static lets the owner play lands from the
-    // graveyard (Icetill Explorer, Mole Man)
+    // graveyard (Icetill Explorer, Mole Man, Gaea's Will)
     GRAVEYARD_LAND,
     // an exiled card with a Game::resolved_effects.impulse_cast_permission whose caster is
     // `player` (Light Up the Stage, Ugin's -11, Dauthi Voidwalker, warp); a land only under a

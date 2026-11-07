@@ -166,6 +166,14 @@ static const CastSection kCastSections[] = {
         {"graveyard_free",  CastCost::NO_MANA_COST, false, 8, " (from graveyard) without paying its mana cost", Zone::GRAVEYARD, free_cast_offered},
         {"graveyard_free_offspring", CastCost::NO_MANA_COST, true, 8, " (from graveyard) without paying its mana cost (offspring)", Zone::GRAVEYARD, free_offspring_offered},
     }},
+    // The permission covers the card, so either half of a split card and the other face of a modal
+    // one may be cast under it (CR 709.3, 712.8f), or an adventurer as an Adventure (CR 715.3).
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::BACK, cast_from_back, nullptr, {
+        {"graveyard_back",  CastCost::MANA_COST,    false, 6, " (from graveyard)",     Zone::GRAVEYARD, mana_cost_offered},
+    }},
+    {Zone::GRAVEYARD, Permission::GRAVEYARD_CAST, CastFace::BACK, cast_as_adventure, nullptr, {
+        {"graveyard_adventure", CastCost::MANA_COST, false, 6, " (from graveyard)",    Zone::GRAVEYARD, mana_cost_offered, SpellOverlay::ADVENTURE},
+    }},
     // A card whose own static lets it be cast from its owner's graveyard (Hogaak).
     {Zone::GRAVEYARD, Permission::GRAVEYARD_SELF, CastFace::FRONT, nullptr, nullptr, {
         {"graveyard_self",  CastCost::MANA_COST,    false, 6, " (from graveyard)",     Zone::GRAVEYARD, mana_cost_offered},

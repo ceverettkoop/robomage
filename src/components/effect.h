@@ -32,7 +32,7 @@ struct Effect {
         Kind kind = ENTERS_TAPPED;
         uint32_t script_line = 0;  // its R: line in the script-line store (script_line_text); 0 = none
         // What ReplaceWith$ names, parsed as any SVar body, for a row that runs it in place of the
-        // event (replacement::run_replace_with); nullptr for a kind read into the fields below.
+        // event (the draw loops: replacement::draw_body); nullptr for a kind read into the fields below.
         const AbilityDef *replace_with = nullptr;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
         // CANT_BE_COUNTERED battlefield form (Hexing Squelcher: "Spells you control can't be

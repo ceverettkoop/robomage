@@ -1,0 +1,88 @@
+{
+  "name": "cr614_1a_gaeas_will_exiles_your_cards_alone_from_anywhere",
+  "why": "CR 614.1a: \"if a card would be put into your graveyard from anywhere this turn, exile that card instead\": a creature dying, a discard at cleanup; a card of the opponent's goes to its graveyard",
+  "hand_a": [
+    "Gaea's Will",
+    "Lightning Strike"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:play:Forest",
+    "A:attack:done",
+    "B:discard:Mountain",
+    "A:play:Forest",
+    "A:attack:done",
+    "B:discard:Mountain",
+    "A:play:Forest",
+    "A:attack:done",
+    "B:discard:Mountain",
+    "A:play:Forest",
+    "A:attack:done",
+    "B:discard:Mountain",
+    "A:desc:Cast Gaea's Will without",
+    "pass",
+    "pass",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A",
+    "pass",
+    "pass",
+    "A:cast:Lightning Strike",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 170,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect": [
+    "Grizzly Bears is exiled instead",
+    "Lightning Strike is exiled instead"
+  ],
+  "expect_not": [
+    "Lightning Bolt is exiled instead"
+  ]
+}

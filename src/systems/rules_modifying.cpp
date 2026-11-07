@@ -396,6 +396,18 @@ bool may_play_lands_from_graveyard(Zone::Ownership player) {
     return false;
 }
 
+bool may_cast_spells_from_graveyard(Zone::Ownership player) {
+    for (const auto &as : g_active_statics)
+        if (!as.suppressed && as.controller == player && as.sa()->may_cast_from_graveyard) return true;
+    return false;
+}
+
+bool graveyard_land_permission_outlasts_turn(Zone::Ownership player) {
+    for (const auto &as : g_active_statics)
+        if (!as.suppressed && as.controller == player && as.entity != 0 && as.sa()->may_play_from_graveyard) return true;
+    return false;
+}
+
 bool etb_triggers_suppressed(Entity entering) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)

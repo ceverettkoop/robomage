@@ -166,6 +166,7 @@ static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement
 static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r);
 static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r);
 static bool take_direct_amount_expr(AbilityDef& ability);
 static void warn_unresolved_amount_svar(const AbilityDef& ability, const std::string& card_name);
@@ -4098,6 +4099,13 @@ static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permiss
         sa.may_cast_self_from_graveyard = true;
         return;
     }
+    // "You may play lands and cast spells from your graveyard" (Gaea's Will): a card in a graveyard
+    // has no controller, so "you control" is its owner there.
+    if (sa.affected == "Card.YouCtrl" && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
+        sa.may_play_from_graveyard = true;
+        sa.may_cast_from_graveyard = true;
+        return;
+    }
     const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.text().find(',') == std::string::npos;
     if (lands && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
         sa.may_play_from_graveyard = true;
@@ -4144,6 +4152,7 @@ struct ReplacementLine {
     bool layer_cant_happen = false;
     bool untap_step_of_another = false;       // ValidStepTurnToController$ other than You
     bool active_zones_battlefield = false;
+    bool active_zones_command = false;        // ActiveZones$ Command: an Effect's own
     std::string valid_card_filter;            // ValidCard$ of a card a Moved replacement watches
     bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
     bool prevent_true = false;                // Prevent$ True: the event simply doesn't happen
@@ -4225,6 +4234,7 @@ static ReplacementLine read_replacement_line(const std::string &line,
         else if (key == "Layer"       && value == "CantHappen") l.layer_cant_happen        = true;
         else if (key == "ValidStepTurnToController") l.untap_step_of_another = value != "You";
         else if (key == "ActiveZones" && value == "Battlefield") l.active_zones_battlefield = true;
+        else if (key == "ActiveZones" && value == "Command")     l.active_zones_command     = true;
         else if (key == "Prevent"     && value == "True")        l.prevent_true             = true;
         // Creature.Other: the moving card is no source of this line, which is on the battlefield.
         else if (key == "ValidLKI"    && (value == "Creature" || value == "Creature.Other"))
@@ -4386,6 +4396,17 @@ static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Rep
     return true;
 }
 
+// Gaea's Will's GraveToExile: an Effect's own exile-instead, the cards it watches read for its
+// controller.
+static bool row_effect_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_graveyard || !l.replace_with_exile || l.valid_card_filter.empty() || !l.active_zones_command)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
+    r.valid_card = l.valid_card_filter;
+    r.with_void_counter = l.replace_with_void_counter;
+    return true;
+}
+
 // Containment Priest: a non-token creature that wasn't cast is exiled instead of entering the
 // battlefield (614.1a). The replacement applies to any such creature entering the battlefield
 // while this permanent is on the battlefield.
@@ -4542,6 +4563,8 @@ static const struct {
     {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false, "ValidCard ManaAmount ReplaceWith ActiveZones"},
     {"Untap", ReplacementHost::CARD, row_skip_untap_self, false, "ValidCard ValidStepTurnToController Layer"},
     {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false, "ValidSA Layer"},
+    {"Moved", ReplacementHost::EFFECT, row_effect_exile_instead_of_graveyard, false,
+     "ValidCard Destination ReplaceWith ActiveZones"},
     {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false, "Prevent IsCombat ValidSource ValidTarget"},
 };
 

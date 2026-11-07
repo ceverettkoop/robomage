@@ -1,0 +1,61 @@
+{
+  "name": "cr616_1_gaeas_will_or_leyline_the_owner_chooses",
+  "why": "CR 616.1: Gaea's Will and an opponent's Leyline of the Void both replace a card going to your graveyard: its owner chooses which applies, the row naming the card an effect object came from",
+  "hand_a": [
+    "Gaea's Will"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Leyline of the Void"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:discard:Forest",
+    "A:discard:Forest",
+    "A:desc:Cast Gaea's Will without",
+    "A:desc:Gaea's Will: exile instead"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "Gaea's Will is exiled instead"
+  ],
+  "expect_menu": [
+    "^Gaea's Will: exile instead of graveyard$",
+    "^Leyline of the Void: exile instead of graveyard$"
+  ]
+}

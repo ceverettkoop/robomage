@@ -138,6 +138,8 @@ struct StaticAbility {
     // MayPlay$ True over Land cards with AffectedZone$ Graveyard ("you may play lands from your
     // graveyard": Icetill Explorer, Mole Man, Crucible of Worlds).
     bool may_play_from_graveyard = false;
+    // MayPlay$ True over every card of yours with AffectedZone$ Graveyard (Gaea's Will): spells too.
+    bool may_cast_from_graveyard = false;
     // MayPlay$ True over Card.Self with AffectedZone$ and EffectZone$ Graveyard (Hogaak: "You may cast
     // CARDNAME from your graveyard"): read off the card itself as a Permission.
     bool may_cast_self_from_graveyard = false;

@@ -104,6 +104,10 @@ size_t minimum_blockers(Entity attacker);
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);
 bool may_play_lands_from_graveyard(Zone::Ownership player);
+// Does a static let `player` cast spells from their graveyard (Gaea's Will)?
+bool may_cast_spells_from_graveyard(Zone::Ownership player);
+// Does a permanent's static say so for lands, which lasts past this turn, and not an Effect's alone?
+bool graveyard_land_permission_outlasts_turn(Zone::Ownership player);
 
 // How many lands `player` may still play this turn (CR 305.2 plus AdjustLandPlays
 // statics), clamped at 0 — `land_play_limit` is the per-turn allowance (1 + bonus),

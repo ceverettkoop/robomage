@@ -33,6 +33,7 @@ static bool has_flashback(const PermissionQuery &q);
 static bool has_escape(const PermissionQuery &q);
 static bool granted_graveyard_cast(const PermissionQuery &q);
 static bool graveyard_land_static(const PermissionQuery &q);
+static bool graveyard_land_expires(const PermissionQuery &q);
 static bool exile_grant_covers(const PermissionQuery &q);
 static bool exile_grant_expires(const PermissionQuery &q);
 static void exile_grant_spent(Entity card);
@@ -45,7 +46,7 @@ static const PermissionRow kPermissionRows[] = {
     {Permission::FLASHBACK,      Zone::GRAVEYARD, true,       has_flashback,          never_expires,       nullptr},
     {Permission::ESCAPE,         Zone::GRAVEYARD, true,       has_escape,             never_expires,       nullptr},
     {Permission::GRAVEYARD_CAST, Zone::GRAVEYARD, true,       granted_graveyard_cast, expires_at_cleanup,  nullptr},
-    {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  never_expires,       nullptr},
+    {Permission::GRAVEYARD_LAND, Zone::GRAVEYARD, true,       graveyard_land_static,  graveyard_land_expires, nullptr},
     {Permission::EXILE_GRANT,    Zone::EXILE,     false,      exile_grant_covers,     exile_grant_expires, exile_grant_spent},
     {Permission::PREPARED,       Zone::EXILE,     false,      prepared_copy_covers,   never_expires,       prepared_copy_cast},
     {Permission::GRAVEYARD_SELF, Zone::GRAVEYARD, true,       graveyard_self_static,  never_expires,       nullptr},
@@ -68,11 +69,16 @@ static bool has_flashback(const PermissionQuery &q) { return q.cd.has_flashback;
 static bool has_escape(const PermissionQuery &q) { return q.cd.has_escape; }
 
 static bool granted_graveyard_cast(const PermissionQuery &q) {
-    return !is_land_card(q.cd) && cur_game.resolved_effects.may_cast_this_turn.count(q.card);
+    return !is_land_card(q.cd) &&
+           (cur_game.resolved_effects.may_cast_this_turn.count(q.card) || rules_mod::may_cast_spells_from_graveyard(q.player));
 }
 
 static bool graveyard_land_static(const PermissionQuery &q) {
     return is_land_card(q.cd) && rules_mod::may_play_lands_from_graveyard(q.player);
+}
+
+static bool graveyard_land_expires(const PermissionQuery &q) {
+    return !rules_mod::graveyard_land_permission_outlasts_turn(q.player);
 }
 
 static bool exile_grant_covers(const PermissionQuery &q) {

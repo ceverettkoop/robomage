@@ -55,7 +55,8 @@ enum CandidateKind {
 };
 
 struct Candidate {
-    Entity source = 0;            // object generating the replacement effect
+    Entity source = 0;            // object generating the replacement effect (0: an effect object)
+    Entity menu_entity = 0;       // what its row names: the source, or the card an effect object came from
     int kind = SELF_TAPPED;
     int index = 0;                // disambiguator within `source` (for the once-per-event applied set)
     bool self_replacement = false; // 614.15 — gates choice order under 616.1a
@@ -340,6 +341,7 @@ void collect_move(const ReplacementEvent &ev, const AppliedSet &applied, std::ve
             if (!card_matches_filter(ev.entity, r.valid_card, MatchCtx{src.controller, src.entity})) return;
             Candidate c;
             c.source = src.entity;
+            c.menu_entity = src.menu_entity();
             c.kind = EXILE_INSTEAD;
             c.index = src.index(i);
             c.self_replacement = false;
@@ -670,7 +672,7 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
 
     std::vector<LegalAction> choices;
     for (size_t i : eligible) {
-        LegalAction la(PASS_PRIORITY, cands[i].source, cands[i].label);
+        LegalAction la(PASS_PRIORITY, cands[i].menu_entity ? cands[i].menu_entity : cands[i].source, cands[i].label);
         la.category = ActionCategory::CHOOSE_REPLACEMENT;
         choices.push_back(la);
     }
