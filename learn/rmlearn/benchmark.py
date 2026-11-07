@@ -21,10 +21,10 @@ the policies'. ``--wait`` waits for the run to stop first (its shutdown finishes
 
 **Decks** (``--decks``, ``matches.resolve_decks``): the schedule is every pair of the listed decks —
 ``league`` (every deck of ``decks/league/``), ``heldout`` (``decks/heldout/``) or single decks, comma
-separated — and ``--focus`` keeps the pairs holding one of its decks. The default is the ten league decks
+separated — and ``--focus`` keeps the pairs holding one of its decks. The default is the eleven league decks
 (``LEAGUE``), as before. Per deck the summary has the policy **playing** it and **facing** it, each
 policy's paired difference from the baseline for both, and the deck **groups** (``deck_groups``:
-the training decks, ``LEAGUE``'s ten when the training directory holds more, the held-out decks)
+the training decks, ``LEAGUE``'s eleven when the training directory holds more, the held-out decks)
 played, faced and played among themselves. A report played over other pairs is not reused.
 
 Writes ``<run>/bench/<label>/`` (``<label>-vs-<opponent>`` for an opponent other than scripted:hard,
@@ -292,7 +292,7 @@ def _delta(d):
 
 def deck_groups(decks):
     """{group: [decks]} of a benchmark's decks when they fall into more than one: ``league`` (the
-    training directory's decks), ``league:original`` (the ten of ``LEAGUE``, when
+    training directory's decks), ``league:original`` (the eleven of ``LEAGUE``, when
     ``league`` holds others too), ``heldout`` (``decks/heldout/``); {} otherwise."""
     league = [d for d in decks if not d.startswith("heldout/")]
     held = [d for d in decks if d.startswith("heldout/")]
@@ -554,7 +554,7 @@ def add_args(ap):
                                                          "path (a fixed policy at argmax)")
     ap.add_argument("--decks", help="the decks whose every pair is played: comma-separated league (every deck of "
                                     "decks/league/), heldout (decks/heldout/) or deck stems (x = league/x, heldout/x); "
-                                    "default: the ten league decks")
+                                    "default: the eleven league decks")
     ap.add_argument("--focus", help="comma-separated decks of --decks: only the pairs holding one of them")
     ap.add_argument("--matches", type=int, default=DEFAULT_MATCHES, help="matches per policy")
     ap.add_argument("--actors", type=int, default=DEFAULT_ACTORS)

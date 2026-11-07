@@ -1863,7 +1863,7 @@ def check_benchmark(tmp):
           "summarize paired: %s" % json.dumps(sp["policies"]["final"].get("delta_all")))
     md = BM.format_summary(s, "t")
     check("| final | 4 | 0.750 |" in md and "+0.500 ±" in md and "## Matchups: final" in md
-          and "| burn | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
+          and "| burn | - | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
     # run_benchmark: each policy played with the match count asked for, the summary paired by match.
     calls = []
 
@@ -1906,30 +1906,30 @@ def _fake_decks(root, league=(), heldout=()):
 
 
 def check_benchmark_decks(tmp):
-    """``rmtrain bench --decks`` (open_vocab_plan S8): the deck sets (league/ with the ten first, heldout/,
+    """``rmtrain bench --decks`` (open_vocab_plan S8): the deck sets (league/ with the eleven first, heldout/,
     single stems), --focus, the default unchanged, a report over other pairs not reused, the summary's
     per-deck facing deltas and deck groups (paired), the tables."""
     from rmlearn import benchmark as BM
     from rmlearn import matches as MT
     from rmlearn.corpus import LEAGUE
-    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["maverick"],
+    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["boros_aggro"],
                           heldout=["bant_control", "show_and_tell"])
     check(MT.resolve_decks(None, bin_dir) == list(LEAGUE) and MT.resolve_decks("", bin_dir) == list(LEAGUE),
-          "--decks: the default is the ten league decks")
+          "--decks: the default is the eleven league decks")
     ld = MT.resolve_decks("league,heldout", bin_dir)
-    check(ld == list(LEAGUE) + ["maverick", "heldout/bant_control", "heldout/show_and_tell"],
+    check(ld == list(LEAGUE) + ["boros_aggro", "heldout/bant_control", "heldout/show_and_tell"],
           "--decks league,heldout: %s" % ld)
-    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,maverick", bin_dir)
-          == ["heldout/bant_control", "burn", "maverick"], "--decks: single stems, each once")
+    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,boros_aggro", bin_dir)
+          == ["heldout/bant_control", "burn", "boros_aggro"], "--decks: single stems, each once")
     check(raises(lambda: MT.resolve_decks("heldout/nope,burn", bin_dir), "no deck heldout/nope")
           and raises(lambda: MT.resolve_decks("burn", bin_dir), "two decks"), "--decks: refusals")
-    check(len(MT.deck_pairs(ld)) == 78 and MT.deck_pairs(MT.resolve_decks(None, bin_dir)) == MT.league_pairs(),
-          "--decks: every pair of the listed decks (78 for 13), the league's 45 by default")
+    check(len(MT.deck_pairs(ld)) == 91 and MT.deck_pairs(MT.resolve_decks(None, bin_dir)) == MT.league_pairs(),
+          "--decks: every pair of the listed decks (91 for 14), the league's 55 by default")
     fp = MT.deck_pairs(ld, ["heldout/bant_control"])
-    check(len(fp) == 12 and all("heldout/bant_control" in p for p in fp)
+    check(len(fp) == 13 and all("heldout/bant_control" in p for p in fp)
           and raises(lambda: MT.deck_pairs(ld, ["heldout/x"]), "--focus"), "--focus: the pairs holding the deck")
     sched = MT.eval_schedule("/x/p.ts.pt", "scripted", tmp, pairs=fp)
-    check(len(sched["entries"]) == 24 and {e["deck_a"] for e in sched["entries"]} >= {"heldout/bant_control", "league/burn"},
+    check(len(sched["entries"]) == 26 and {e["deck_a"] for e in sched["entries"]} >= {"heldout/bant_control", "league/burn"},
           "--focus: both orders, the held-out deck by its directory")
     # A report played over other pairs is not reused.
     out = os.path.join(tmp, "bench-decks-run", "p")
@@ -1950,8 +1950,8 @@ def check_benchmark_decks(tmp):
                 "deck_b": MT.deck_stem(opp), "result_a": res, "result_b": -res, "end_reason": "win", "first": "A",
                 "decisions": 10}
     games = [("heldout/bant_control", "burn"), ("heldout/bant_control", "burn"), ("burn", "heldout/bant_control"),
-             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("maverick", "bug"),
-             ("bug", "maverick")]
+             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("boros_aggro", "bug"),
+             ("bug", "boros_aggro")]
     rb = [line(k, d, o, -1 if k % 2 else 1) for k, (d, o) in enumerate(games)]
     ro = [line(k, d, o, (1 if k in (1, 3) else -1 if k % 2 else 1)) for k, (d, o) in enumerate(games)]
     for x in ro:
@@ -1965,7 +1965,7 @@ def check_benchmark_decks(tmp):
             r = MT.game_record(x)
             recs[lab][r["key"]] = {"wins": int(r["result"] > 0), "decisive": 1, "deck": r["deck"], "opp_deck": r["opp_deck"],
                                    "decisions": [x["decisions"]]}
-    decks = ["bug", "burn", "maverick", "heldout/bant_control"]
+    decks = ["bug", "burn", "boros_aggro", "heldout/bant_control"]
     sm = BM.summarize(reps, matches=recs, decks=decks)
     n = sm["policies"]["new"]
     check(sm["decks"] == decks and set(sm["groups"]) == {"league", "league:original", "heldout"}
@@ -1982,10 +1982,10 @@ def check_benchmark_decks(tmp):
           "group deltas: %s" % json.dumps(g)[:600])
     md = BM.format_summary(sm, "t")
     check("## Deck groups" in md and "| plays:heldout |" in md and "## Difference from base, facing each deck" in md
-          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | maveri | bant_c |" in md,
+          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | boros_ | bant_c |" in md,
           "the --decks tables:\n" + md)
     one = BM.summarize(reps, matches=recs)
-    check(one["decks"][:10] == list(LEAGUE) and one["decks"][10:] == ["maverick", "heldout/bant_control"]
+    check(one["decks"][:11] == list(LEAGUE) and one["decks"][11:] == ["boros_aggro", "heldout/bant_control"]
           and set(one["groups"]) == {"league", "league:original", "heldout"}, "the default decks: the league and any played")
     check(BM.deck_groups(list(LEAGUE)) == {}, "no groups over the league decks alone")
 

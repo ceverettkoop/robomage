@@ -55,7 +55,7 @@ SELECTION_NOTE = ("games 2-3 are post-board; game 3 is played only at 1-1, so th
 # ── agents and schedules ─────────────────────────────────────────────────────────────────────
 
 def league_pairs(decks=LEAGUE):
-    """Every unordered pair of league decks (45 for the 10 league decks)."""
+    """Every unordered pair of league decks (55 for the 11 league decks)."""
     return [tuple(p) for p in itertools.combinations(decks, 2)]
 
 
@@ -69,7 +69,7 @@ def deck_name(stem):
 
 
 def directory_decks(sub, bin_dir=BIN_DIR):
-    """The decks of ``bin/resources/decks/<sub>/`` (``deck_name``s): ``league/`` the ten decks of
+    """The decks of ``bin/resources/decks/<sub>/`` (``deck_name``s): ``league/`` the eleven decks of
     ``LEAGUE`` first, in their order, then the others sorted."""
     root = os.path.join(bin_dir, "resources", "decks", sub)
     stems = sorted(fn[:-3] for fn in os.listdir(root) if fn.endswith(".dk")) if os.path.isdir(root) else []
@@ -80,7 +80,7 @@ def directory_decks(sub, bin_dir=BIN_DIR):
 def resolve_decks(spec, bin_dir=BIN_DIR):
     """The deck list of a ``--decks`` spec: comma-separated items, each ``league`` / ``heldout`` (every
     deck of that directory, ``directory_decks``) or one deck (``x`` = ``league/x``, ``heldout/x``), in
-    order, each deck once. Empty or None: the ten league decks (``LEAGUE``). A named deck must exist."""
+    order, each deck once. Empty or None: the eleven league decks (``LEAGUE``). A named deck must exist."""
     if not spec:
         return list(LEAGUE)
     out = []

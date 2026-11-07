@@ -603,8 +603,8 @@ def check_guides():
 # The sideboard part's bo3 matches, scripted:hard+sb on both seats: (deck_a, deck_b, seed). Burn has
 # a draw land, lands_top8 none; bug vs reanimator is held out for bug (not for reanimator); ur_tempo
 # boards in a split card and an Adventure card against death_and_taxes; maverick moves nine cards
-# against wubg_doomsday. The seeds are matches that go to three games (each seat's play/draw flips between games 2 and 3); the part fails when none of
-# them does any more (repin the seeds).
+# against wubg_doomsday. The seeds are matches that go to three games (each seat's play/draw flips
+# between games 2 and 3); the part fails when none of them does any more (repin the seeds).
 SIDEBOARD_MATCHES = (("league/burn", "league/lands_top8", 4),
                      ("league/bug", "league/reanimator", 3),
                      ("league/uw_control", "league/wubg_doomsday", 9),

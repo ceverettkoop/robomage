@@ -20,10 +20,10 @@ import os
 import re
 import tomllib
 
-# The default league.decks: the ten league decks, named, not read from decks/league/, so a deck
+# The default league.decks: the eleven league decks, named, not read from decks/league/, so a deck
 # onboarded there later (docs/open_vocab_plan.md S7) joins a run only through its league.decks (S8).
-LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "reanimator", "ur_tempo", "uw_control",
-          "wrb_energy", "wubg_doomsday"]
+LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "maverick", "reanimator", "ur_tempo",
+          "uw_control", "wrb_energy", "wubg_doomsday"]
 EVAL_PAIRS = [["ur_tempo", "burn"], ["bug", "death_and_taxes"], ["uw_control", "wrb_energy"],
               ["eldrazi_aggro", "lands_top8"]]
 

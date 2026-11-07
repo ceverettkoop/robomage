@@ -19,8 +19,8 @@ Two routes, both writing ``<out>/episodes/*.rmtraj`` and keeping every decision 
   matchup (bo3), then ``robomage --replay LOG --trajectory-out`` per log; μ and the teacher label
   are absent and the label is the reply (``LabelConfig.chosen_without_mu``).
 
-The league is the ten ``league/`` decks of ``LEAGUE`` (named: a deck onboarded into ``league/``
-later is not in it): every pair (45) with the decks' seats drawn per match
+The league is the eleven ``league/`` decks of ``LEAGUE`` (named: a deck onboarded into ``league/``
+later is not in it): every pair (55) with the decks' seats drawn per match
 (``swap: decks``); the explore entries every ordered pair. ``make_schedule`` is the schedule the
 actor route writes, for the orchestrator to reuse. ``run_actor_corpus`` / ``run_driver_corpus``
 return a summary dict (games, decisions, seconds, decisions/s, bytes per decision).
@@ -38,8 +38,8 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
 BIN_DIR = os.path.join(REPO_ROOT, "bin")
-LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "reanimator", "ur_tempo", "uw_control",
-          "wrb_energy", "wubg_doomsday"]
+LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "maverick", "reanimator", "ur_tempo",
+          "uw_control", "wrb_energy", "wubg_doomsday"]
 CPU_ENV = dict(os.environ, HIP_VISIBLE_DEVICES="", CUDA_VISIBLE_DEVICES="")
 
 

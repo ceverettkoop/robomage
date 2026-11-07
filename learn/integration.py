@@ -519,7 +519,7 @@ def e2e(args, tables, model, eng, n_actors):
                              precision=args.precision)
     decks = ["league/bug", "league/burn", "league/ur_tempo", "league/uw_control", "league/reanimator",
              "league/death_and_taxes", "league/eldrazi_aggro", "league/wrb_energy", "league/lands_top8",
-             "league/wubg_doomsday"]
+             "league/wubg_doomsday", "league/maverick"]
     spec = remote_spec(sock, temp=1, timeout=300)
     procs = {}
     games = [0]

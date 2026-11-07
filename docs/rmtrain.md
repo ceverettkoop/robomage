@@ -15,7 +15,7 @@ learn/rmtrain set r1 rnad.eta 0.15                       # a live parameter
 learn/rmtrain stop r1                                    # checkpoint, stop; `start r1` resumes
 learn/rmtrain bench r1 --wait                            # after the run: its policies vs scripted:hard (§7.1)
 learn/rmtrain retable r1                                 # a stopped run onto the engine's tables (§1.1)
-learn/rmtrain add-decks r1 maverick                      # a deck into the run's league, live or stopped (§1.1)
+learn/rmtrain add-decks r1 boros_aggro                   # a deck into the run's league, live or stopped (§1.1)
 learn/rmtrain bench r1 --decks league,heldout --label heldout   # the benchmark over held-out decks too (§7.1)
 ```
 
@@ -70,7 +70,7 @@ from the unknown-card vector, so the policy plays on from where it played unseen
 learn/rmtrain stop r1                                    # the vocab is compiled into the engine
 make BUILD=RELEASE && make BUILD=RELEASE actor PYTHON=learn/.venv/bin/python
 learn/rmtrain retable r1                                 # the new cards' tables, every export rebuilt
-learn/rmtrain add-decks r1 maverick                      # league.decks (and league.pairs) in config.json
+learn/rmtrain add-decks r1 boros_aggro                   # league.decks (and league.pairs) in config.json
 learn/rmtrain start r1                                   # resumes: the learner, its window, the actors
 ```
 
@@ -87,7 +87,7 @@ progress finishes on the old one). `rmtrain add-decks <run> STEM … [--weight W
   them — append them, rebuild, retable first); on a running run, an engine whose cards frame is no
   longer the run's (rebuilt since the run started);
 - **the new pairs' weight**: with `league.pairs` empty every pair of `league.decks` weighs 1, so the
-  new deck plays as often as any other (with 11 decks each is in 10 of the 55 pairs, ~18% of the
+  new deck plays as often as any other (with 12 decks each is in 11 of the 66 pairs, ~17% of the
   matches' seats); with explicit pairs the new deck's pairs (against every league deck, and the new
   decks among themselves) get the **mean weight of the run's pairs**, so it plays as often as an
   average deck. `--weight W` overrides (on a league without explicit pairs it writes them out, every
@@ -214,7 +214,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
 | `run.crash_loop_fatals` | 3 | fatal stops in a row without progress after which the daemon exits with status 4, which systemd does not restart (0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
-| `league.decks` / `league.pairs` | the ten league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later, maverick next, joins a run only by being added here, `rmtrain add-decks`, §1.1) / every pair | matchups and weights (`[[a, b, w], …]`, naming exactly `league.decks`); never a `heldout/` deck; live |
+| `league.decks` / `league.pairs` | the eleven league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later joins a run only by being added here, `rmtrain add-decks`, §1.1) / every pair | matchups and weights (`[[a, b, w], …]`, naming exactly `league.decks`); never a `heldout/` deck; live |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
 | `actors.count` | 26 | training actors |
@@ -610,14 +610,14 @@ learn/rmtrain bench r1 --opponent scripted:hard+sb       # the same against the 
   matches each deck is the policy's in ~48 matches (~110 games) and the opponent's in as many:
   about ±0.09 (two match-clustered SEs) per deck, ±0.03 overall.
 - **Decks** (`--decks`, `--focus`; `docs/open_vocab_plan.md` S8). The schedule is every pair of the
-  listed decks: comma-separated `league` (every deck of `decks/league/`, the ten of `LEAGUE` first,
+  listed decks: comma-separated `league` (every deck of `decks/league/`, the eleven of `LEAGUE` first,
   then any onboarded later), `heldout` (every deck of `decks/heldout/`, never trained
   on) or single decks (`x` = `league/x`, `heldout/x`); `--focus D[,…]` keeps only the pairs holding one
   of them (`tools/onboard/onboard.py baseline`: the new deck against every league deck). Without
-  `--decks` it is the ten league decks' 45 pairs, as always. A `report.json` records its pairs and one
+  `--decks` it is the eleven league decks' 55 pairs, as always. A `report.json` records its pairs and one
   played over other pairs is refused rather than reused (give such a benchmark its own `--label`). The
   summary then also has, per deck, the policy **facing** it with each policy's paired difference from
-  the baseline (beside playing it), and the **deck groups** — `league`, `league:original` (the ten,
+  the baseline (beside playing it), and the **deck groups** — `league`, `league:original` (the eleven,
   when `league/` holds more) and `heldout` — each `plays:G` (the policy plays a deck of G), `faces:G`
   (the opponent does) and `within:G` (both), as win rates and paired differences. `scripted:hard`
   pilots an unseen deck with generic heuristics only, so its rates playing or facing a new deck are

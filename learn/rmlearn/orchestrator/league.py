@@ -7,7 +7,7 @@ the engine rebuilt and the run retabled first (stop, ``make BUILD=RELEASE``, ``r
 ``check_deck`` refuses it until then.
 
 **The new pairs' weight.** With ``league.pairs`` empty every pair of ``league.decks`` has weight 1, so
-a deck added there plays as often as any other (11 decks: each in 10 of the 55 pairs). With explicit
+a deck added there plays as often as any other (12 decks: each in 11 of the 66 pairs). With explicit
 pairs, each new pair (the new deck against every deck of the league, and the new decks among
 themselves) gets `weight`, by default the **mean weight of the run's pairs** (``default_weight``):
 the new deck plays as often as an average deck. A larger weight front-loads it (more of its games
