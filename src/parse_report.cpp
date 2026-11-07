@@ -337,10 +337,9 @@ static void svar_expr_findings(const std::string &script_text, std::vector<Parse
 // The SVar forms the parser resolves into its own fields rather than handing to evaluate_svar:
 // SVar$<name> references and their sums (resolve_additive_svar), Count$Compare and Count$Delirium
 // (resolve_conditional_amount / delirium_scale_pos), the combat-damage amount
-// (TriggerCount$DamageAmount), Surgical Extraction's TargetedController$CardsIn<zone> and Green
-// Sun's Zenith's $GreatestCardManaCost search bound.
+// (TriggerCount$DamageAmount) and Green Sun's Zenith's $GreatestCardManaCost search bound.
 static bool svar_expr_read_at_parse(const std::string &expr) {
-    for (const char *p : {"SVar$", "Count$Compare ", "Count$Delirium.", "TargetedController$CardsIn"})
+    for (const char *p : {"SVar$", "Count$Compare ", "Count$Delirium."})
         if (expr.rfind(p, 0) == 0) return true;
     if (expr == "TriggerCount$DamageAmount") return true;
     const std::string greatest = "$GreatestCardManaCost";

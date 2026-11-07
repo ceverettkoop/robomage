@@ -1,0 +1,18 @@
+{
+  "name": "cr701_23_surgical_extraction_counts_the_owners_zones",
+  "why": "CR 701.23 / 608.2c: Surgical Extraction's three ChangeZone links cap each move at ChangeNum$, the cards in that zone of the target's owner (TargetedController$CardsInGraveyard / CardsInHand / CardsInLibrary). The parser dropped the amounts (an amount_expr finding); now kept and counted, every Lightning Bolt of Player B's graveyard, hand and library is exiled. Player A's own graveyard is empty, so counting the caster's moves nothing - M13 (a)",
+  "hand_a": ["Surgical Extraction"],
+  "library_a": ["Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Lightning Bolt", "Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Lightning Bolt", "Mountain"],
+  "graveyard_b": ["Lightning Bolt", "Lightning Bolt", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Surgical Extraction", "A:desc:Pay 2 life", "A:target:Lightning Bolt@opp"],
+  "max_decisions": 8,
+  "expect_order": ["Player A casts Surgical Extraction targeting Lightning Bolt",
+                   "Player A moves 2 card\\(s\\) named Lightning Bolt from Player B's zone to exile",
+                   "Player A moves 1 card\\(s\\) named Lightning Bolt from Player B's zone to exile",
+                   "Player A moves 1 card\\(s\\) named Lightning Bolt from Player B's zone to exile",
+                   "Player B shuffles their library"],
+  "expect_not": ["moves 0 card", "Grizzly Bears is (moved|exiled)"]
+}

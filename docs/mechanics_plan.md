@@ -1610,6 +1610,7 @@ Unproved. Release `bench` wasn't compared; the `actor` tier's torch part was ski
 **Progress (2026-11-07).** Unit (a), the amount SVars and the Goyfs.
 
 - **`amount_expr`.** An amount SVar body that `resolve_amount_svar` neither resolves (combat damage, a conditional or delirium amount, a compare of SVars) nor keeps for runtime is a parse finding now, `amount_expr:<head>`. Over the vocab, which holds every candidate deck's cards, it names one card: Surgical Extraction, its three `TargetedController$CardsIn<zone>` amounts. M4's others (Galvanic Discharge, Broadside Bombardiers, Pyrogoyf, Shatterskull Smashing, The Stone Brain) were fixed in their units. Surgical Extraction played right regardless: the same-name mover moves every match when it has no number.
+- **Surgical Extraction.** The evaluator gained the set `TargetedController$` (the target's last-known controller, a card's owner off the battlefield) and the properties `CardsInHand` and `CardsInGraveyard`, so the three amounts are kept, and the same-name mover caps at what it evaluates. The parse report's claim that the parser reads `TargetedController$CardsIn<zone>` itself is gone: it never did. Play is unchanged, the count being at least every match; "any number" moving every one is CR 701.23b's deviation, now listed (`docs/rules_deviations.md` §2.6). Its card digest moved (`id` 92): the three abilities' `amount` is variable now, not a fixed 0.
 
 ## 6. Risks
 

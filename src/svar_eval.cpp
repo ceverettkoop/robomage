@@ -194,6 +194,7 @@ static void set_remembered(const SvarExpr &x, const SvarArgs &a, std::vector<Ent
 static void set_imprinted(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_target(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_targeted_player(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_targeted_controller(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_exiled_with_card(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_cards_exiled_with(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
 static void set_battlefield(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
@@ -203,7 +204,10 @@ static void set_graveyard_cards(const SvarExpr &x, const SvarArgs &a, std::vecto
 
 static int prop_energy(Entity player);
 static int prop_life_total(Entity player);
+static int cards_in_zone(Entity player, Zone::ZoneValue zone);
 static int prop_cards_in_library(Entity player);
+static int prop_cards_in_hand(Entity player);
+static int prop_cards_in_graveyard(Entity player);
 static int prop_life_gained(Entity player);
 static int prop_spells_cast_this_game(Entity player);
 static int prop_power(Entity e);
@@ -344,6 +348,9 @@ static const NamedSet kNamedSets[] = {
     // TargetedPlayer$ — the player the ability targets, no one if its target is an object (Peer into
     // the Abyss: half the cards in that player's library, half their life).
     {"TargetedPlayer", set_targeted_player},
+    // TargetedController$ — the last-known controller of the ability's target object, a card's owner
+    // off the battlefield (Surgical Extraction: the cards in the zones of the target's owner).
+    {"TargetedController", set_targeted_controller},
     // ExiledWith$ — the card the source Saga exiled face down (The Creation of Avacyn chapter II:
     // "you lose life equal to its mana value"). Resolved from the source's Permanent::exiled_with;
     // an absent/gone card contributes 0.
@@ -371,6 +378,8 @@ static const NamedProperty kNamedProperties[] = {
     // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
     {"CardManaCost", prop_mana_value},
     {"CardsInLibrary", prop_cards_in_library},
+    {"CardsInHand", prop_cards_in_hand},
+    {"CardsInGraveyard", prop_cards_in_graveyard},
     {"LifeTotal", prop_life_total},
 };
 
@@ -1003,6 +1012,12 @@ static void set_targeted_player(const SvarExpr &, const SvarArgs &a, std::vector
     if (seat_of_player(a.target) != Zone::UNKNOWN) out.push_back(a.target);
 }
 
+static void set_targeted_controller(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (a.target == 0 || seat_of_player(a.target) != Zone::UNKNOWN) return;
+    const Zone::Ownership seat = last_known_controller(a.target);
+    if (seat != Zone::UNKNOWN) out.push_back(get_player_entity(seat));
+}
+
 static void set_exiled_with_card(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
     if (Entity e = exiled_with_card(a.source)) out.push_back(e);
 }
@@ -1078,11 +1093,18 @@ static int prop_life_total(Entity player) {
     return std::max(0, static_cast<int>(global_coordinator.GetComponent<Player>(player).life_total));
 }
 
-static int prop_cards_in_library(Entity player) {
+// How many cards are in `zone` of the player `player`; an object has none.
+static int cards_in_zone(Entity player, Zone::ZoneValue zone) {
     const Zone::Ownership seat = seat_of_player(player);
     if (seat == Zone::UNKNOWN) return 0;
-    return static_cast<int>(zone_objects(zoned_entities(), Zone::LIBRARY, seat).size());
+    return static_cast<int>(zone_objects(zoned_entities(), zone, seat).size());
 }
+
+static int prop_cards_in_library(Entity player) { return cards_in_zone(player, Zone::LIBRARY); }
+
+static int prop_cards_in_hand(Entity player) { return cards_in_zone(player, Zone::HAND); }
+
+static int prop_cards_in_graveyard(Entity player) { return cards_in_zone(player, Zone::GRAVEYARD); }
 
 static int prop_life_gained(Entity player) { return global_coordinator.GetComponent<Player>(player).life_gained_this_turn; }
 

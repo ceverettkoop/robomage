@@ -1021,9 +1021,9 @@ bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string
 // Defined$ TargetedController), and moves up to the allowed number to the Destination.
 //
 // Quantity follows the agreed simplification: an "up to N" / count-SVar / ChangeZoneAll
-// quantity moves the maximum available (force_all, an empty amount_svar with a numeric
-// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones to the
-// searcher (CR 701.23a).
+// quantity moves the maximum available (force_all; a numeric cap or a counted one, Surgical
+// Extraction's cards in that zone, moves min(cap, found)). Searching an opponent's hand/library
+// reveals those zones to the searcher (CR 701.23a).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all) {
     // The reference card whose name we match: the target (Targeted.sameName) or the
     // remembered object (Remembered.sameName, set by RememberTargets/RememberObjects).
@@ -1066,9 +1066,11 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
         else if (z == Zone::GRAVEYARD) collect(orderer->get_graveyard(searched));
     }
 
-    // Cap: ChangeZoneAll / count-SVar / unset → all matches; numeric ChangeNum → min(N, found).
+    // Cap: ChangeZoneAll / unset → all matches; a numeric or counted ChangeNum → min(N, found).
     size_t cap = matches.size();
-    if (!force_all && ab.def->amount_svar.empty() && ab.def->amount > 0)
+    if (!force_all && !ab.def->dynamic_amount_expr.empty())
+        cap = std::min(evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab)), matches.size());
+    else if (!force_all && ab.def->amount_svar.empty() && ab.def->amount > 0)
         cap = std::min(static_cast<size_t>(ab.def->amount), matches.size());
     for (auto z : zones) {
         if (z != Zone::LIBRARY && z != Zone::HAND) continue;
