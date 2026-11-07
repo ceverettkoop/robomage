@@ -1,0 +1,39 @@
+{
+  "name": "cr400_2_a_color_added_in_a_hidden_zone_stays_hidden",
+  "why": "CR 400.2, 613.1e: Painter's Servant colors every card in a hand and a library, and the owner's frame shows that color on the cards in their hand. The opponent's frame shows no color on a hidden card: it would be a fact about a card that frame can't see, and the printed colors under it would be too.",
+  "hand_a": [
+    "Forest",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Painter's Servant"
+  ],
+  "hand_b": [
+    "Forest",
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Red"
+  ],
+  "max_decisions": 4,
+  "expect_dump": [
+    "^A .*object self HAND colors=8$",
+    "^B .*object self HAND colors=8$"
+  ],
+  "expect_dump_not": [
+    "^A .*object opp HAND colors=[1-9]",
+    "^B .*object opp HAND colors=[1-9]",
+    "^A .*object [a-z]+ LIBRARY colors=[1-9]",
+    "^B .*object [a-z]+ LIBRARY colors=[1-9]"
+  ]
+}

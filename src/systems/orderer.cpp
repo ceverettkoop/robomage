@@ -249,12 +249,10 @@ void Orderer::move_object(
             lki.power = static_cast<int>(cr.power);
             lki.toughness = static_cast<int>(cr.toughness);
         }
-        // Colors of the ACTIVE face (CR 712.8e): a transformed permanent's last-known colors
-        // are its back face's (Ajani, Nacatl Avenger died red-white, not mono-white).
-        // Captured here while the Permanent component is still intact, like everything above.
-        if (global_coordinator.entity_has_component<CardData>(target))
-            lki.colors = card_colors(
-                active_face(target, global_coordinator.GetComponent<CardData>(target)));
+        // Its colors as it last existed (CR 608.2h), layer 5 included: those of the ACTIVE face
+        // (CR 712.8e: Ajani, Nacatl Avenger died red-white, not mono-white). Captured here while the
+        // Permanent component is still intact, like everything above.
+        if (global_coordinator.entity_has_component<CardData>(target)) lki.colors = effective_colors(target);
 
         // CR 400.7: a copy effect (Thespian's Stage's in-place Clone) ends as the permanent
         // leaves the battlefield — the card arrives in its new zone as its printed self. Done

@@ -365,6 +365,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Beseech the Mirror", 440},
     {"Hogaak, Arisen Necropolis", 441},
     {"Frenzied Baloth", 442},
+    {"Painter's Servant", 443},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

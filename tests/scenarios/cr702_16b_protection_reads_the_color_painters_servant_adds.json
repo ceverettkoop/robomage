@@ -1,0 +1,36 @@
+{
+  "name": "cr702_16b_protection_reads_the_color_painters_servant_adds",
+  "why": "CR 702.16b, 613.1e: under Painter's Servant set to blue Lightning Bolt is a blue spell, so Scryb Ranger's protection from blue makes it an illegal target.",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Painter's Servant"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Scryb Ranger",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Blue",
+    "A:cast:Lightning Bolt"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "Scryb Ranger"
+  ]
+}

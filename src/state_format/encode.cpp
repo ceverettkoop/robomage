@@ -860,6 +860,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u8(perm && perm->exerted_by != Zone::UNKNOWN ? 1 : 0);
     r.u8(perm && perm->overlay == SpellOverlay::BESTOW ? 1 : 0);
     r.u8(perm && perm->prepared ? 1 : 0);
+    r.u8(visible && perm && perm->chosen_color != NO_COLOR ? 1 + static_cast<uint64_t>(perm->chosen_color) : 0);
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.

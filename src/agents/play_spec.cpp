@@ -129,7 +129,8 @@ static bool parse_literal(const std::string &raw, int *out) {
 // Verb -> the action categories it may resolve to (action_spec._VERB_CATS).
 static const std::map<std::string, std::set<std::string>> &verb_cats() {
     static const std::set<std::string> other = {"OTHER_CHOICE", "SACRIFICE_PERMANENT", "RETURN_PERMANENT", "CHOOSE_X",
-        "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "KEEP_LEGEND",
+        "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "CHOOSE_COLOR",
+        "KEEP_LEGEND",
         "ORDER_TRIGGERS", "CHOOSE_REPLACEMENT", "ATTACK_TARGET", "BLOCK_TARGET", "OPTIONAL_YESNO", "SYLVAN_CHOICE",
         "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD", "CONFIRM_MODES"};
     static const std::set<std::string> mana = {"MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C"};
@@ -168,7 +169,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"x", {"CHOOSE_X"}},
         {"discard", {"DISCARD"}},
         {"mode", {"CHOOSE_MODE", "CONFIRM_MODES"}},
-        {"color", {"CHOOSE_MANA_COLOR"}},
+        {"color", {"CHOOSE_MANA_COLOR", "CHOOSE_COLOR"}},
         {"name", {"NAME_CARD"}},
         {"exile", {"EXILE_FROM_YARD"}},
         {"desc", {}},

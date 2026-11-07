@@ -129,6 +129,7 @@ struct CardData{
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
     bool has_etb_name_card = false;             // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
+    bool has_etb_choose_color = false;          // K:ETBReplacement:Other:<SVar> naming a DB$ ChooseColor (Painter's Servant)
     int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     CostParts flashback_cost;            // what the cast path pays of the flashback cost: its mana, PayLife<N> and Sac<1/Type>
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)

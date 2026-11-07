@@ -356,6 +356,7 @@ static std::vector<std::string> object_status(const Frame &f, size_t row) {
     if (named >= 0) out.push_back("named " + card_name(f, named));
     if (!o.none(row, o.col("chosen_type")))
         out.push_back("chose " + f.st.enum_name("subtype", o.u(row, o.col("chosen_type"))));
+    if (const uint64_t color = o.u(row, o.col("chosen_color"))) out.push_back("chose " + f.st.enum_name("color", color - 1));
     return out;
 }
 
@@ -803,6 +804,7 @@ static std::string category_task(const std::string &category) {
         {"PAY_UNLESS", "pay or decline"},
         {"NAME_CARD", "name a card"},
         {"CHOOSE_TYPE", "choose a creature type"},
+        {"CHOOSE_COLOR", "choose a color"},
         {"KEEP_LEGEND", "choose which legendary permanent to keep"},
         {"ORDER_TRIGGERS", "choose the trigger to put on the stack next"},
         {"CHOOSE_REPLACEMENT", "choose a replacement effect"},

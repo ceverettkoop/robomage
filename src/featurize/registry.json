@@ -37,7 +37,7 @@
 {"name":"window_end","capacity":8,"values":["RESOLUTION","STACK_OBJECT","LEAVES_ZONE"]},
 {"name":"pending_tag","capacity":32,"values":["NONE","RESOLUTION","SBE_LATCHED","TURN_DRAW","CAST","ACTIVATION","ATTACK_TARGET","BLOCK_TARGET","DAMAGE_ASSIGN","TRIGGER_PLACE"]},
 {"name":"cost_part","capacity":16,"values":["MANA","ALTERNATIVE","ADDITIONAL","UNLESS","X","ACTIVATION","TRIGGER"]},
-{"name":"action_category","capacity":128,"values":["PASS_PRIORITY","SELECT_ATTACKER","CONFIRM_ATTACKERS","SELECT_BLOCKER","CONFIRM_BLOCKERS","ACTIVATE_ABILITY","CAST_SPELL","SELECT_TARGET","PLAY_LAND","OTHER_CHOICE","MULLIGAN","BOTTOM_DECK_CARD","MANA_W","MANA_U","MANA_B","MANA_R","MANA_G","MANA_C","SEARCH_LIBRARY","TOP_LIBRARY","SHUFFLE","PAYING_COSTS","DIG_CHOICE","SIDEBOARD_IN","SIDEBOARD_OUT","SIDEBOARD_DONE","SACRIFICE_PERMANENT","RETURN_PERMANENT","CHOOSE_X","DISCARD","CHOOSE_MODE","CHOOSE_MANA_COLOR","PAY_UNLESS","NAME_CARD","CHOOSE_TYPE","KEEP_LEGEND","ORDER_TRIGGERS","CHOOSE_REPLACEMENT","ATTACK_TARGET","BLOCK_TARGET","OPTIONAL_YESNO","SYLVAN_CHOICE","CHOOSE_CARD","ASSIGN_DAMAGE","COMPANION","DONT_SHUFFLE","KEEP_HAND","EXILE_FROM_YARD","CONFIRM_MODES"]},
+{"name":"action_category","capacity":128,"values":["PASS_PRIORITY","SELECT_ATTACKER","CONFIRM_ATTACKERS","SELECT_BLOCKER","CONFIRM_BLOCKERS","ACTIVATE_ABILITY","CAST_SPELL","SELECT_TARGET","PLAY_LAND","OTHER_CHOICE","MULLIGAN","BOTTOM_DECK_CARD","MANA_W","MANA_U","MANA_B","MANA_R","MANA_G","MANA_C","SEARCH_LIBRARY","TOP_LIBRARY","SHUFFLE","PAYING_COSTS","DIG_CHOICE","SIDEBOARD_IN","SIDEBOARD_OUT","SIDEBOARD_DONE","SACRIFICE_PERMANENT","RETURN_PERMANENT","CHOOSE_X","DISCARD","CHOOSE_MODE","CHOOSE_MANA_COLOR","PAY_UNLESS","NAME_CARD","CHOOSE_TYPE","KEEP_LEGEND","ORDER_TRIGGERS","CHOOSE_REPLACEMENT","ATTACK_TARGET","BLOCK_TARGET","OPTIONAL_YESNO","SYLVAN_CHOICE","CHOOSE_CARD","ASSIGN_DAMAGE","COMPANION","DONT_SHUFFLE","KEEP_HAND","EXILE_FROM_YARD","CONFIRM_MODES","CHOOSE_COLOR"]},
 {"name":"action_type","capacity":8,"values":["PASS_PRIORITY","CAST_SPELL","ACTIVATE_ABILITY","SPECIAL_ACTION"]},
 {"name":"pool_kind","capacity":16,"values":["HAND","LIBRARY_RANGE","SIDEBOARD","FACE_DOWN","SET_ASIDE"]},
 {"name":"lib_anchor","capacity":2,"closed":true,"values":["TOP","BOTTOM"]},
@@ -298,7 +298,8 @@
 {"type":"pool_mana","name":"cant_be_countered","kind":"scalar","at":3},
 {"type":"object","name":"exerted","kind":"scalar","at":86},
 {"type":"object","name":"bestowed","kind":"scalar","at":87},
-{"type":"object","name":"prepared","kind":"scalar","at":88}
+{"type":"object","name":"prepared","kind":"scalar","at":88},
+{"type":"object","name":"chosen_color","kind":"scalar","at":89}
 ],
 "categorical":[
 {"type":"header","name":"knowledge","source":"enum:knowledge_level","col":0,"offset":1,"size":9},

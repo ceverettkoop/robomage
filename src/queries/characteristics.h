@@ -78,7 +78,7 @@ struct ObjectCharacteristics {
 ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd);
 
 // The card `e` (`cd` its CardData) as a card, wherever it is: printed, but for the color a layer-5
-// static sets in any zone (setcolor_override_for).
+// static sets or adds in any zone (apply_color_statics).
 ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd);
 
 // The battlefield permanent `e`, as the layers left it.
@@ -158,21 +158,20 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
-// Layer-5 (CR 613.1e / 612) global color-changing override. If an active SetColor$ continuous
-// static (Mycosynth Lattice) designates `e` — via its Affected$ filter and AffectedZone$ — write
-// the override color set into `out` and return true; otherwise return false (no override).
-// "Colorless" yields an empty set (CR 105.2c); an explicit color list yields those colors.
-// Defined in state_manager_statics.cpp (where g_active_statics lives). Consulted by
-// effective_colors, the colorless queries and the filter matcher's card view so every
-// color-dependent check (protection-from-color targeting, is_colorless, a color qualifier on a
-// card in any zone) sees the affected object's effective color. Matches against the object's
-// PRINTED characteristics (card_matches_printed) to avoid recursing back into effective_colors;
-// tokens (no CardData) are not matched here.
-bool setcolor_override_for(Entity e, std::set<Colors> &out);
+// Layer 5 (CR 613.1e / 612): apply to `colors` every active color static that reaches `e`, by its
+// Affected$ filter and AffectedZone$, a SetColor$ (Mycosynth Lattice) replacing them and an AddColor$
+// (Painter's Servant) adding to them, in timestamp order. False if none reaches it. "Colorless" sets
+// an empty set (CR 105.2c). Defined in state_manager_statics.cpp (where g_active_statics lives).
+// Consulted by effective_colors, the colorless queries and the filter matcher's card view so every
+// color-dependent check (protection-from-color targeting, is_colorless, a color qualifier on a card
+// in any zone) sees the affected object's effective color. Matches against the object's PRINTED
+// characteristics (card_matches_printed) to avoid recursing back into effective_colors; tokens (no
+// CardData) are not matched here.
+bool apply_color_statics(Entity e, std::set<Colors> &colors);
 
 // True if the object is colorless (CR 105.2c): it has none of the five colors, read from its
 // effective colors (so a Devoid card, a colorless token, or anything under a Mycosynth Lattice
-// SetColor override is colorless, and a transformed face reads its own colors).
+// SetColor$ is colorless, and a transformed face reads its own colors).
 inline bool is_colorless(Entity e) { return effective_colors(e).empty(); }
 
 // True if `e` is a planeswalker permanent on the battlefield (the form damage/combat care about).

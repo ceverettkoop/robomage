@@ -821,10 +821,11 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `exerted` | u8 | `bool` | it won't untap in the next untap step of the player who exerted it (CR 701.43) |
 | | `bestowed` | u8 | `bool` | a bestowed Aura: it goes on as a creature if it falls off (CR 702.103f) |
 | | `prepared` | u8 | `bool` | it has the prepared designation, a copy of its prepare spell in exile (CR 722.3) |
+| | `chosen_color` | u8 | `count` | the color chosen as it entered, 1 + its `color` enum value; 0 none. A count, not an enum, because a categorical column moves every object's tensors |
 | | `spent_w`, `spent_u`, `spent_b`, `spent_r`, `spent_g` | 5 × u8 | `count` | mana of each color spent to cast the spell that became it; 0 for a permanent not cast |
 
 A row's characteristic columns (`transformed`, `copy_of`, `power` … `mana_value`, `chosen_name`,
-`chosen_type`) and its `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`
+`chosen_type`, `chosen_color`) and its `object_subtype`, `object_keyword`, `object_ability`, `object_provenance`
 and `object_link` rows are filled only when the viewer can see the object's identity; a
 face-down object shows its zone, seats, position, public status and counters. Phased-out
 permanents are included and flagged (the encoder reads `Permanent::is_phased_out` directly). No `can_attack` or `chosen_color` column: the engine

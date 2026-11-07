@@ -1,0 +1,50 @@
+{
+  "name": "cr613_7_mycosynth_lattice_after_painters_servant_wins",
+  "why": "CR 613.7, 613.1e: the same two effects the other way round: a later Mycosynth Lattice overwrites the color an earlier Painter's Servant adds, and nothing is red. (The Lattice itself is still red on the stack, so Blue Elemental Blast could answer it: the assertion is the cards' colors once it resolves.)",
+  "hand_a": [
+    "Mycosynth Lattice",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Painter's Servant"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Red",
+    "A:cast:Mycosynth Lattice",
+    "B:pass"
+  ],
+  "max_decisions": 8,
+  "expect_dump_final": [
+    "^A .*object self HAND colors=0$"
+  ],
+  "expect_dump": [
+    "^A .*object self HAND colors=8$"
+  ],
+  "expect_dump_final_not": [
+    "^A .*object self HAND colors=8$"
+  ]
+}

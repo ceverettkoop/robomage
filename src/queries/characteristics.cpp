@@ -13,6 +13,7 @@ static int last_known_vocab_idx(Entity e);
 static bool named_vocab_idx(Entity e, int *idx);
 static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs);
 static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities);
+static std::set<Colors> colors_before_layer5(Entity e);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -33,7 +34,7 @@ ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd) {
 
 ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd) {
     ObjectCharacteristics c = printed_characteristics(e, cd);
-    if (e != 0) setcolor_override_for(e, c.colors);
+    if (e != 0) apply_color_statics(e, c.colors);
     return c;
 }
 
@@ -153,26 +154,25 @@ int effective_toughness(Entity e) {
 }
 
 std::set<Colors> effective_colors(Entity e) {
-    // Layer-5 (613.1e) global color-changing override (Mycosynth Lattice: every card colorless).
-    // Checked first so it wins over the printed/last-known color in every zone the static reaches.
-    std::set<Colors> override_colors;
-    if (setcolor_override_for(e, override_colors)) return override_colors;
-    // On the battlefield, effective color is the layer-5 (613.1e) result. With no active color-
-    // changing static this reads the printed colors of the ACTIVE face — a transformed permanent
-    // has its back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color
-    // indicator, not its mono-white front; a face-up MDFC land back is colorless, not the front
-    // spell's color). The override above is the single seam a color-changing static plugs into
-    // without touching any consumer.
+    // Layer 5 (613.1e) goes on top of what the object has before it, in every zone a static reaches.
+    std::set<Colors> colors = colors_before_layer5(e);
+    apply_color_statics(e, colors);
+    return colors;
+}
+
+static std::set<Colors> colors_before_layer5(Entity e) {
+    // On the battlefield, the printed colors of the ACTIVE face — a transformed permanent has its
+    // back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color indicator, not
+    // its mono-white front; a face-up MDFC land back is colorless, not the front spell's color).
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<CardData>(e))
         return card_colors(active_face(e, global_coordinator.GetComponent<CardData>(e)));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_colors(card_characteristics(e, global_coordinator.GetComponent<CardData>(e)));
     // A token (no CardData) is colored by its color indicator (Token::explicit_colors, CR 111.4),
-    // not a mana cost. With no active SetColor override (checked first, above) this is its
-    // effective color — so a colored token reads correctly to the .Red/.Blue filter qualifiers
-    // (e.g. Blue Elemental Blast's "target red permanent" can see a red Warrior token). Filtered
-    // to the five real colors so a stray COLORLESS/GENERIC sentinel never leaks in.
+    // not a mana cost, so a colored token reads correctly to the .Red/.Blue filter qualifiers (e.g.
+    // Blue Elemental Blast's "target red permanent" can see a red Warrior token). Filtered to the
+    // five real colors so a stray COLORLESS/GENERIC sentinel never leaks in.
     if (global_coordinator.entity_has_component<Token>(e)) {
         std::set<Colors> cols;
         const auto &tk = global_coordinator.GetComponent<Token>(e).explicit_colors;

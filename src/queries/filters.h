@@ -34,7 +34,7 @@ struct ResolveCtx;
 //
 // `card_matches_filter` reads PRINTED characteristics (a card in hand/library/graveyard
 // or a spell on the stack), but for the color a layer-5 static sets in any zone (Mycosynth
-// Lattice: setcolor_override_for). `card_matches_printed` reads them with no such exception, for
+// Lattice: apply_color_statics). `card_matches_printed` reads them with no such exception, for
 // that static's own Affected$ filter. `permanent_matches_filter` reads a battlefield permanent's
 // LIVE characteristics — types and P/T from its components, but color and mana value from
 // the card (CR 105/112.7: the engine has no live color/MV layer; effective_colors is the

@@ -24,6 +24,7 @@ static void facts(
 static void stack_target_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
+static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
 
 static std::string card_of(const SeatNames &n, int64_t cid) {
     auto it = n.cards.find(cid);
@@ -54,6 +55,7 @@ static std::string libpos(const Rows &t, size_t r, int c_anchor, int c_pos, int 
 
 static void facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    object_facts(f, s, out);
     const Rows meta(f, s, "k_meta");
     for (size_t r = 0; r < meta.size(); ++r)
         out->push_back("meta level=" + meta.name(r, meta.col("level")) +
@@ -117,6 +119,14 @@ static void facts(
             "known_hand " + card_name(n, kh, r, kh.col("card")) + " x" + std::to_string(kh.u(r, kh.col("copies"))));
     stack_target_facts(f, s, n, out);
     mana_facts(f, s, out);
+}
+
+// Each object's zone, owner and colors as this frame shows them.
+static void object_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
+    const Rows objects(f, s, "object");
+    for (size_t r = 0; r < objects.size(); ++r)
+        out->push_back("object " + rel_text(objects.u(r, objects.col("owner_rel"))) + " " +
+                       objects.name(r, objects.col("zone")) + " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
 }
 
 // A nonempty pool as the player row counts it, and each pool_mana row.

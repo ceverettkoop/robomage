@@ -204,8 +204,11 @@ struct StaticAbility {
     // Red/Green list. affected_zone is AffectedZone$ ("All" = every zone; otherwise a specific
     // zone). General: Mycosynth Lattice ("All cards ... are colorless", Affected$ Card |
     // SetColor$ Colorless | AffectedZone$ All) is the global-colorless case; an explicit color
-    // list reuses the same field. Consumed by setcolor_override_for (state_manager_statics.cpp).
+    // list reuses the same field. AddColor$ adds to what the object has instead: a color list, or
+    // ChosenColor, the color the source chose (Painter's Servant). Consumed by apply_color_statics
+    // (state_manager_statics.cpp).
     std::string set_color = "";             // SetColor$ Colorless | White | "White Blue" | ...
+    std::string add_color = "";             // AddColor$ ChosenColor | White | ...
     std::string affected_zone = "";         // AffectedZone$ All | Battlefield | Graveyard | ...
     std::string exclude_zone = "";          // ExcludeZone$: zones taken out of what the static reaches
 

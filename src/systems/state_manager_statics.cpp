@@ -68,6 +68,8 @@ static bool object_in_affected_zone(const StaticAbility &sa, Entity e);
 static MatchCtx static_match_ctx(const ActiveStatic &as);
 static bool printed_object_matches(const ActiveStatic &as, Entity e);
 static std::string strip_named_card_qualifier(const std::string &filter);
+static std::set<Colors> added_colors(const ActiveStatic &as);
+static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked);
 static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
@@ -447,8 +449,8 @@ static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, b
 // Non-recursive test of a SetColor$ static's Affected$ filter against a battlefield TOKEN
 // permanent (CR 111.1: a token is not a card, so it has no CardData and the card_matches_filter
 // path can't read it). permanent_matches_filter WOULD read it, but it reads effective_colors,
-// which is exactly the caller of setcolor_override_for — so using it here would recurse
-// (effective_colors → setcolor_override_for → permanent_matches_filter → effective_colors). So a
+// which is exactly the caller of apply_color_statics — so using it here would recurse
+// (effective_colors → apply_color_statics → permanent_matches_filter → effective_colors). So a
 // token is matched WITHOUT consulting its color:
 //   • head "Card" / "Permanent" matches any battlefield permanent; a type name matches if the
 //     token carries that type/subtype (Permanent::types).
@@ -497,26 +499,44 @@ static bool setcolor_filter_matches_token(const std::string &aff, const Permanen
     return true;
 }
 
-// Layer-5 (CR 613.1e / 612) global color-changing override — see queries/characteristics.h. Scans the active-
-// statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
-// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
-// the match is done against the card's PRINTED characteristics (card_matches_printed) so this never
-// recurses back into effective_colors or the filter's card view; a battlefield TOKEN permanent (no CardData) is matched by
-// setcolor_filter_matches_token, a deliberately color-free type/controller test, for the same
-// recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
-bool setcolor_override_for(Entity e, std::set<Colors> &out) {
+// The colors static `sa` of `as` adds: its AddColor$ list, or the color its source chose (none until
+// it has chosen).
+static std::set<Colors> added_colors(const ActiveStatic &as) {
+    const StaticAbility &sa = *as.sa();
+    if (sa.add_color != "ChosenColor") return parse_setcolor_spec(sa.add_color);
+    if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
+    const Colors chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_color;
+    return chosen == NO_COLOR ? std::set<Colors>{} : std::set<Colors>{chosen};
+}
+
+// Layer 5 (CR 613.1e) — see queries/characteristics.h. A static reaches `e` through its AffectedZone$
+// and Affected$; for a real card the match is against its PRINTED characteristics
+// (card_matches_printed) so this never recurses back into effective_colors or the filter's card view,
+// and a battlefield TOKEN permanent (no CardData) is matched by setcolor_filter_matches_token, a
+// deliberately color-free type/controller test, for the same recursion-safety reason. The effects
+// apply in timestamp order (CR 613.7), so a color added after a set stays and one added before is
+// overwritten.
+bool apply_color_statics(Entity e, std::set<Colors> &colors) {
     if (g_active_statics.empty()) return false;
     if (!global_coordinator.entity_has_component<CardData>(e) &&
         !(global_coordinator.entity_has_component<Token>(e) && is_battlefield_permanent(e)))
         return false;
+    std::vector<const ActiveStatic *> effects;
     for (const auto &as : g_active_statics) {
-        if (as.sa()->set_color.empty() || as.suppressed || !as.condition_met) continue;
-        if (as.sa()->category != "Continuous") continue;
-        if (!static_reaches(as, e, StaticRead::PRINTED)) continue;
-        out = parse_setcolor_spec(as.sa()->set_color);
-        return true;
+        const StaticAbility &sa = *as.sa();
+        if ((sa.set_color.empty() && sa.add_color.empty()) || as.suppressed || !as.condition_met) continue;
+        if (sa.category != "Continuous") continue;
+        if (static_reaches(as, e, StaticRead::PRINTED)) effects.push_back(&as);
     }
-    return false;
+    std::stable_sort(effects.begin(), effects.end(), [](const ActiveStatic *x, const ActiveStatic *y) {
+        return static_timestamp(*x) < static_timestamp(*y);
+    });
+    for (const ActiveStatic *as : effects) {
+        if (!as->sa()->set_color.empty()) colors = parse_setcolor_spec(as->sa()->set_color);
+        const std::set<Colors> added = added_colors(*as);
+        colors.insert(added.begin(), added.end());
+    }
+    return !effects.empty();
 }
 
 bool any_mana_as_any_color_active() {
@@ -904,6 +924,41 @@ static void enter_attacking_if_recorded(Entity entity) {
     drop_entry_info_if_consumed(entity);
 }
 
+// "As this permanent enters, choose a color" (CR 614.12a), once: the latched-answer site (tag
+// SBE_LATCHED) of the choose-type site in apply_permanent_components, whose re-derivation contract it
+// shares. `*parked`: the choice is parked and the pass returns.
+static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked) {
+    if (perm.chosen_color != NO_COLOR) return;
+    static const struct {
+        Colors color;
+        const char *name;
+    } kColors[] = {{WHITE, "White"}, {BLUE, "Blue"}, {BLACK, "Black"}, {RED, "Red"}, {GREEN, "Green"}};
+    std::vector<LegalAction> menu;
+    for (const auto &c : kColors) {
+        LegalAction la(PASS_PRIORITY, std::string("Choose color: ") + c.name);
+        la.category = ActionCategory::CHOOSE_COLOR;
+        la.option_ordinal = static_cast<int>(menu.size());
+        menu.push_back(la);
+    }
+    const uint64_t key = pq_key(SbeSite::ETB_CHOOSE_COLOR, perm.controller == Zone::PLAYER_A, entity, menu.size());
+    int choice = -1;
+    if (!pq_take_latched(key, &choice)) {
+        game_log("Choose a color for %s:\n", perm.name.c_str());
+        if (in_main_loop()) {
+            pq_arm_sbe(key, std::move(menu), perm.controller, /*decision_source=*/entity);
+            *parked = true;
+            return;
+        }
+        // Blocking fallback for an SBE call outside the main loop (defensive, as at the other sites).
+        const bool prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = (perm.controller == Zone::PLAYER_A);
+        choice = InputLogger::instance().get_input(menu);
+        cur_game.priority.player_a_has_priority = prev_priority;
+    }
+    perm.chosen_color = kColors[static_cast<size_t>(choice)].color;
+    game_log("%s chose color: %s\n", player_name(perm.controller).c_str(), kColors[static_cast<size_t>(choice)].name);
+}
+
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
 void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1239,6 +1294,13 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                              player_name(perm_ref.controller).c_str(), perm_ref.chosen_type.c_str());
                 }
                 }
+            }
+
+            // ETBReplacement: choose a color (Painter's Servant).
+            if (card_data.has_etb_choose_color) {
+                bool parked = false;
+                choose_color_on_entry(entity, global_coordinator.GetComponent<Permanent>(entity), &parked);
+                if (parked) return;
             }
 
             // ETBReplacement: choose a card name (Disruptor Flute). Candidates are the

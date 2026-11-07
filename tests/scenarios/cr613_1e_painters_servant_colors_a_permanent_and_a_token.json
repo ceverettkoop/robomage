@@ -1,0 +1,34 @@
+{
+  "name": "cr613_1e_painters_servant_colors_a_permanent_and_a_token",
+  "why": "CR 613.1e, 111.1: 'permanents' takes in a token, which is no card: under Painter's Servant set to red Blue Elemental Blast can destroy green Grizzly Bears.",
+  "hand_a": [
+    "Blue Elemental Blast"
+  ],
+  "library_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Painter's Servant"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Red",
+    "A:cast:Blue Elemental Blast",
+    "A:mode:Destroy target red permanent",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Grizzly Bears is destroyed"
+  ]
+}

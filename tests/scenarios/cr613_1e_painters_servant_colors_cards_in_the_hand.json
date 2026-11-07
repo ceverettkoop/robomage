@@ -1,0 +1,40 @@
+{
+  "name": "cr613_1e_painters_servant_colors_cards_in_the_hand",
+  "why": "CR 613.1e: every card that isn't on the battlefield is the chosen color: under Painter's Servant set to blue a Forest in the hand is a blue card, so Force of Will can pitch it.",
+  "hand_a": [
+    "Force of Will",
+    "Forest"
+  ],
+  "library_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Painter's Servant"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Blue",
+    "A:pass",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A"
+  ],
+  "max_decisions": 9,
+  "expect_menu": [
+    "Force of Will"
+  ],
+  "expect_menu_not": [
+    "Blue Elemental"
+  ]
+}

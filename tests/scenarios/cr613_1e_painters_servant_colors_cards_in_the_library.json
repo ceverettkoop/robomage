@@ -1,0 +1,39 @@
+{
+  "name": "cr613_1e_painters_servant_colors_cards_in_the_library",
+  "why": "CR 613.1e: a card in the library is the chosen color too: under Painter's Servant set to green, Green Sun's Zenith finds Delver of Secrets, a blue creature card.",
+  "hand_a": [
+    "Green Sun's Zenith",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Delver of Secrets",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Painter's Servant"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Green",
+    "A:cast:Green Sun's Zenith",
+    "A:x:1",
+    "A:search:Delver of Secrets"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A puts Delver of Secrets to the battlefield"
+  ]
+}

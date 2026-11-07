@@ -1178,6 +1178,7 @@ static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
 
 // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls);
 // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute);
+// K:ETBReplacement:Other:<SVar> whose SVar is DB$ ChooseColor — choose a color on ETB (Painter's Servant);
 // K:ETBReplacement:Other:<SVar> whose SVar is DB$ AlterAttribute | Attributes$ Prepared — this
 // creature enters prepared (CR 722.3a). Any other ETBReplacement names an effect nothing reads, a
 // parse finding, and is kept as a plain keyword.
@@ -1188,6 +1189,8 @@ static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) 
         ctx.card.has_etb_choose_creature_type = true;
     else if (kw_line.find("NameCard") != std::string::npos)
         ctx.card.has_etb_name_card = true;
+    else if (svar != ctx.svars.end() && param_value(svar->second, "DB") == "ChooseColor")
+        ctx.card.has_etb_choose_color = true;
     else if (svar != ctx.svars.end() && param_value(svar->second, "DB") == "AlterAttribute" &&
              param_value(svar->second, "Attributes") == "Prepared")
         ctx.card.enters_prepared = true;
@@ -4059,8 +4062,10 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.add_type = value;
             } else if (key == "SetColor") {
                 // Layer-5 color-changing static (Mycosynth Lattice). The colorset spec ("Colorless"
-                // or a White/Blue/... list) is resolved in setcolor_override_for.
+                // or a White/Blue/... list) is resolved in apply_color_statics.
                 sa.set_color = value;
+            } else if (key == "AddColor") {
+                sa.add_color = value;
             } else if (key == "AffectedZone") {
                 sa.affected_zone = value;
             } else if (key == "ExcludeZone") {
@@ -4707,7 +4712,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         {"Continuous", true,
          "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar "
          "AddType "
-         "SetPower SetToughness SetColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
+         "SetPower SetToughness SetColor AddColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
          "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
          "CharacteristicDefining"},
         {"RaiseCost", false, "Amount Type Relative Activator ValidCard"},

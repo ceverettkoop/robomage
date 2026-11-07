@@ -328,6 +328,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(o, "exerted");
     col_bool(o, "bestowed");
     col_bool(o, "prepared");
+    col_count(o, "chosen_color", Storage::U8);
 
     add_table(out, TableId::OBJECT_SUBTYPE, "object_subtype", FrameKind::STATE);
     col_handle(out.back(), "obj");

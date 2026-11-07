@@ -74,9 +74,10 @@ enum class ActionCategory {
                                // SACRIFICE_PERMANENT (a permanent leaving the battlefield)
     CONFIRM_MODES = 48,        // choose no further mode: "choose one or more" once the fewest modes
                                // are chosen (MinCharmNum$, CR 700.2); paired with CHOOSE_MODE
+    CHOOSE_COLOR = 49,         // choose a color as a permanent enters (Painter's Servant)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 48;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 49;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

@@ -102,6 +102,7 @@ struct Permanent {
     Zone::Ownership exerted_by = Zone::UNKNOWN;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
+    Colors chosen_color = NO_COLOR;  // color chosen on ETB (Painter's Servant) — what AddColor$ ChosenColor adds
     std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,
                                          // linked "until it leaves" returns)
 

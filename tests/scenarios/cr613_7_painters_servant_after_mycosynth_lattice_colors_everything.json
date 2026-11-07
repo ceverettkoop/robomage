@@ -1,0 +1,43 @@
+{
+  "name": "cr613_7_painters_servant_after_mycosynth_lattice_colors_everything",
+  "why": "CR 613.7, 613.1e: effects in a layer apply in timestamp order. Mycosynth Lattice sets every card colorless, and a later Painter's Servant adds red on top: the Bears are a red spell.",
+  "hand_a": [
+    "Grizzly Bears",
+    "Painter's Servant"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Mycosynth Lattice"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Painter's Servant",
+    "A:color:Red",
+    "A:cast:Grizzly Bears",
+    "B:cast:Blue Elemental Blast",
+    "B:mode:Counter target red spell",
+    "B:target:Grizzly Bears"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Grizzly Bears is countered"
+  ]
+}
