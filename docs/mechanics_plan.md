@@ -1519,6 +1519,8 @@ Evidence. `make check` before each commit. 27 scenarios, all at `--selfcheck-sta
 
 Unproved. A look at another player's library: `MayLookAt$` reads You only, and no script has another. A Forge changing controller has no scenario. A look lags inside a resolution, by design, so a card on top for no decision is not seen. Face-down exile of a looked-at top card (`Triumph`'s) runs through `hidden_identity_viewers` as a look did and has no scenario. The `actor` tier's torch part was skipped.
 
+**Stage gate (2026-11-07), at `b9cce7d5`.** `make check` 0 errors, 0 warnings. Release `bench`, seven alternating rounds against M10's `d8ee61b6`, medians: the actor loop 2,581 to 2,564 decisions/s (-0.7%), engine alone 128.4 to 127.6 us per decision. Acceptance `gate`: 4 networks, 614 decisions. `full`: 35 networks, 8,675 decisions, 18 cut-over files equal, worst |Δ value| 1.2e-5, |Δ logit| 3.1e-5 against a tolerance of 1e-4. The first `full` stopped on the scratch volume's quota and was run again by itself on the same binaries. `cd8c31bf` added two stale headers under `src/gen/` by accident; `79fe20c4` untracked them, and they stay in that commit's history.
+
 ### M12. Designations and subsystems (L)
 
 **Today.** Each per-player or per-object field is hand-added across component, schema and encoder.
