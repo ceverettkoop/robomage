@@ -3629,8 +3629,14 @@ static void read_trigger_valid_card(const std::string &value,
     if (filter_names_token(value, "nonCreature"))    t.valid_card_non_creature = true;
     if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
     // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
-    // Card.wasCastByYou+Self).
-    if (filter_names_token(value, "Self"))           t.valid_card_self         = true;
+    // Card.wasCastByYou+Self). In one alternative of several (Pyrogoyf's
+    // Card.Self,Creature.Lhurgoyf+YouCtrl) it is no identity gate: the matcher reads the alternative.
+    if (filter_names_token(value, "Self")) {
+        if (value.find_first_of(",;") == std::string::npos)
+            t.valid_card_self = true;
+        else
+            ability.trigger_self_alternative = true;
+    }
     // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
     // source must have entered by being cast (Permanent::entered_by_cast).
     if (filter_names_token(value, "wasCastByYou"))

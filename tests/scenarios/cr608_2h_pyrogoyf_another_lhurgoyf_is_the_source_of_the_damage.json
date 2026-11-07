@@ -1,0 +1,44 @@
+{
+  "name": "cr608_2h_pyrogoyf_another_lhurgoyf_is_the_source_of_the_damage",
+  "why": "Pyrogoyf: \"another Lhurgoyf creature you control ... that creature deals damage equal to its power\": DamageSource$ TriggeredCard. Barrowgoyf deals it, so its lifelink gains A the life and its power, not Pyrogoyf's, is the amount (CR 120.3f).",
+  "hand_a": [
+    "Barrowgoyf",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Pyrogoyf",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Swamp",
+    "Lightning Bolt",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Barrowgoyf",
+    "A:target:Player B"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Barrowgoyf deals 3 damage to Player B \\(now at 17 life\\)",
+    "gains 3 life \\(lifelink\\)"
+  ]
+}

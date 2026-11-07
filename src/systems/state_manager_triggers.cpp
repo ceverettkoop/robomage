@@ -586,7 +586,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             const AbilityDef &ab = *abp;
             if (ab.ability_type != AbilityDef::TRIGGERED) continue;
             if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
-            if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
+            if (!ab.trigger_only_self && !ab.trigger_self_alternative) continue;  // the source's own move
             // Its row: the zones, the ValidCard$ and DisableTriggers (Doorkeeper Thrull), as in the
             // battlefield scan.
             if (!mode->match({ab, entity, ctrl, ev})) continue;

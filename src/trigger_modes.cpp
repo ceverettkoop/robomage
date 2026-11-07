@@ -269,10 +269,9 @@ static void bind_spell_cast(const TriggerMode &mode, const TriggerLine &t, Abili
 }
 
 // The move modes match ValidCard$ whole against the moving object (zone_change_object_matches), but
-// read Self and Other off the whole list; the others read only the tokens their binding names.
+// read Other off the whole list; the others read only the tokens their binding names.
 static bool card_read_move(const std::string &value, bool) {
-    return value.find(',') == std::string::npos ||
-           (!filter_names_token(value, "Self") && !filter_names_token(value, "Other"));
+    return value.find(',') == std::string::npos || !filter_names_token(value, "Other");
 }
 
 // match_spell_cast takes the filter whole, but the gates read YouCtrl, OppCtrl and Self off the whole

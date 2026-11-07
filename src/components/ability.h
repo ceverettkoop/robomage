@@ -386,6 +386,9 @@ struct AbilityDef {
     // 603.2c): it fires exactly ONCE per group of simultaneous matching zone changes, not once
     // per card. The trigger scan dedupes it to one firing per event batch (Moonshadow).
     bool trigger_batch_zone_all = false;
+    // ValidCard$ names Self in one alternative of several: its source's own move matches through the
+    // filter, not trigger_only_self, and the self look-back reads it too.
+    bool trigger_self_alternative = false;
     // ActivationLimit$ N: "this ability triggers only N times each turn", counted per source object as
     // it triggers (Game::limited_trigger_counts), whether or not it then finds a target. 0 = no limit.
     int trigger_turn_limit = 0;
