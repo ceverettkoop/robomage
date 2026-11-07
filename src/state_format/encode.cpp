@@ -1289,7 +1289,7 @@ static void write_player_effects(const Ctx &c, Zone::Ownership p) {
         if (fx.hexproof_from[i] && !(eot_hexproof & (1u << i))) static_hexproof |= 1u << i;
     if (static_hexproof)
         put(PlayerEffectKind::HEXPROOF_FROM, static_cast<uint8_t>(static_hexproof), Duration::STATIC, -1, "");
-    const bool eot_uncounterable = re.cant_counter_spells_of.count(p) > 0;
+    const bool eot_uncounterable = effect_object_protects_spells_of(p);
     if (eot_uncounterable) put(PlayerEffectKind::SPELLS_CANT_BE_COUNTERED, 0, Duration::END_OF_TURN, -1, "");
     if (fx.spells_cant_be_countered && !eot_uncounterable)
         put(PlayerEffectKind::SPELLS_CANT_BE_COUNTERED, 0, Duration::STATIC, -1, "");
@@ -1353,14 +1353,18 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
             }
         }
     }
-    for (const auto &s : cur_game.resolved_effects.combat_damage_prevention_shields) {
-        const uint32_t h = handle(c, s.creature.get());
-        if (h == 0) continue;
-        c.w.row(TableId::SHIELD)
-            .u8(static_cast<uint64_t>(rmstate::ShieldKind::COMBAT_DAMAGE))
-            .u32(h)
-            .u8(s.prevent_as_source ? 1 : 0)
-            .u8(s.prevent_as_target ? 1 : 0);
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects) {
+        const bool by = object.prevents_combat_damage_by(), to = object.prevents_combat_damage_to();
+        if (!by && !to) continue;
+        for (const ObjectRef &remembered : object.remembered) {
+            const uint32_t h = handle(c, remembered.get());
+            if (h == 0) continue;
+            c.w.row(TableId::SHIELD)
+                .u8(static_cast<uint64_t>(rmstate::ShieldKind::COMBAT_DAMAGE))
+                .u32(h)
+                .u8(by ? 1 : 0)
+                .u8(to ? 1 : 0);
+        }
     }
 }
 

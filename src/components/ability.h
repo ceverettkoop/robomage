@@ -8,6 +8,7 @@
 #include "ability_params.h"
 #include "copy_overlay.h"
 #include "cost_part.h"
+#include "effect.h"
 #include "mana_unit.h"
 #include "memory_ops.h"
 #include "object_spec.h"
@@ -608,22 +609,17 @@ struct AbilityDef {
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<AbilityDef> effect_floating_triggers;
 
-    // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
-    // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
-    // "Spells you control can't be countered this turn"). Set at parse time; the GrantCast
-    // handler records the effect's controller in cur_game.resolved_effects.cant_counter_spells_of for the rest
-    // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
-    // Squelcher's battlefield static).
-    bool effect_spells_uncounterable_this_turn = false;
-    // DB$ Effect | ReplacementEffects$ <SVar list> where a named SVar is a combat-damage
-    // prevention shield: "Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$
-    // Card.IsRemembered" (prevent all combat damage dealt BY the remembered creature) and/or
-    // "... | ValidTarget$ Card.IsRemembered" (prevent all combat damage dealt TO it) — Maze of
-    // Ith. Set at parse time from the SVar bodies; the GrantCast handler registers a turn-scoped
-    // shield on the remembered creature in cur_game.resolved_effects.combat_damage_prevention_shields (CR 615).
-    // General over any such DamageDone/Prevent Effect keyed on a remembered object.
-    bool effect_prevent_combat_damage_by_remembered = false;  // ValidSource$ Card.IsRemembered
-    bool effect_prevent_combat_damage_to_remembered = false;  // ValidTarget$ Card.IsRemembered
+    // DB$ Effect | ReplacementEffects$ <SVar list>: the replacement effects the Effect carries,
+    // read at parse time through the replacement table's EFFECT rows. The GrantCast handler puts
+    // them on the EffectObject it creates: Veil of Summer's "Spells you control can't be countered
+    // this turn" (a turn-long, sourceless grant, distinct from Hexing Squelcher's battlefield
+    // static), Maze of Ith's prevention on the remembered creature.
+    std::vector<Effect::Replacement> effect_replacements;
+    bool has_effect_replacement(Effect::Replacement::Kind kind) const {
+        for (const Effect::Replacement &r : effect_replacements)
+            if (r.kind == kind) return true;
+        return false;
+    }
     // AB$/DB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long
     // life-gain prohibition (CR 119.x, Roiling Vortex's {R} ability). The scope names whose life
     // gain is prohibited relative to the effect's controller. NONE = not a CantGainLife effect.

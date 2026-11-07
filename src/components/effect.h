@@ -25,6 +25,7 @@ struct Effect {
             DISCARD_ELSE_GRAVEYARD,     // 614.1a self-replacement — as this card would enter, its owner MAY pay an additional discard cost (a matching card); if paid it enters, otherwise it goes to its owner's graveyard instead (Mox Diamond, Chrome Mox)
             DRAW_EMPTY_WIN,             // 104.3a/121.4 — "if you would draw a card while your library has no cards in it, you win the game instead" (Jace, Wielder of Mysteries / Laboratory Maniac / Thassa's Oracle-adjacent). Applies to the CONTROLLER's empty-library draw.
             DRAW_ADD,                   // 614.1 — a MODIFYING draw replacement: "if you would draw one or more cards, you draw that many plus K instead" (Quantum Riddler). Applies to the source controller's draws while an optional CheckSVar condition holds; adds draw_add cards to the draw event.
+            PREVENT_COMBAT_DAMAGE,      // CR 615 — on an effect object: all combat damage dealt by and/or to what it remembers is prevented (Maze of Ith)
         };
         Kind kind = ENTERS_TAPPED;
         uint32_t script_line = 0;  // its R: line in the script-line store (script_line_text); 0 = none
@@ -90,6 +91,10 @@ struct Effect {
         int draw_add = 0;
         std::string draw_condition_count_expr = "";
         std::string draw_condition_compare = "";
+        // PREVENT_COMBAT_DAMAGE (Maze of Ith's RPrevent1 / RPrevent2): which side of the damage the
+        // remembered object is on, ValidSource$ Card.IsRemembered and ValidTarget$ Card.IsRemembered.
+        bool prevent_by_remembered = false;
+        bool prevent_to_remembered = false;
     };
 };
 

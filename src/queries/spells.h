@@ -78,9 +78,13 @@ bool spell_has_variable_life_cost(const CardData &cd);
 // permanent. `entities` is the iterating system's mEntities (e.g. orderer->mEntities).
 bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities);
 
+// True if an effect object protects every spell `player` controls from being countered (Veil of
+// Summer). Defined in spells.cpp.
+bool effect_object_protects_spells_of(Zone::Ownership player);
+
 // True if EVERY spell `player` controls is protected from being countered by an effect covering
-// the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): a
-// Game::resolved_effects.cant_counter_spells_of grant (Veil of Summer), or a live battlefield CANT_BE_COUNTERED
+// the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): an
+// effect object (effect_object_protects_spells_of), or a live battlefield CANT_BE_COUNTERED
 // replacement whose ValidSA$ filter is the bare controller-scoped spell filter — "Spell.YouCtrl" on
 // a permanent `player` controls (Hexing Squelcher) or "Spell.OppCtrl" on one the opponent controls.
 // A spell's own "This spell can't be countered" and a type/color-narrowed filter cover only some

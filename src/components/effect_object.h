@@ -42,6 +42,17 @@ struct EffectObject {
     std::vector<ObjectRef> remembered;  // RememberObjects$: what its abilities' IsRemembered reads
 
     bool is_emblem() const { return duration == Duration::GAME; }
+    // Is all combat damage dealt by (or to) what it remembers prevented (CR 615)?
+    bool prevents_combat_damage_by() const {
+        for (const Effect::Replacement &r : replacements)
+            if (r.kind == Effect::Replacement::PREVENT_COMBAT_DAMAGE && r.prevent_by_remembered) return true;
+        return false;
+    }
+    bool prevents_combat_damage_to() const {
+        for (const Effect::Replacement &r : replacements)
+            if (r.kind == Effect::Replacement::PREVENT_COMBAT_DAMAGE && r.prevent_to_remembered) return true;
+        return false;
+    }
 };
 
 #endif /* EFFECT_OBJECT_H */

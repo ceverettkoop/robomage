@@ -134,20 +134,27 @@ bool spell_uncounterable_by_static(Entity spell, const EntitySet &entities) {
     return false;
 }
 
-// True if `r` is a battlefield CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
+// True if `r` is a continuous CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
 // controller-scoped spell filter covering every spell `player` controls, given that the
 // replacement's source is controlled by `source_ctrl`.
 static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player) {
-    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) return false;
+    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || r.applies_to_self_only) return false;
     if (r.valid_sa_filter == "Spell.YouCtrl") return source_ctrl == player;
     if (r.valid_sa_filter == "Spell.OppCtrl") return source_ctrl != player;
     return false;
 }
 
+bool effect_object_protects_spells_of(Zone::Ownership player) {
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects)
+        for (const Effect::Replacement &r : object.replacements)
+            if (unfiltered_counter_protection_covers(r, object.controller, player)) return true;
+    return false;
+}
+
 bool player_spells_cant_be_countered(Zone::Ownership player, const EntitySet &entities) {
-    if (cur_game.resolved_effects.cant_counter_spells_of.count(player) > 0) return true;
+    if (effect_object_protects_spells_of(player)) return true;
     for (auto e : battlefield_permanents(entities)) {
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
         for (const auto &r : permanent_replacement_effects(e))

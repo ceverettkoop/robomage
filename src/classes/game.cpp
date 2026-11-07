@@ -56,20 +56,26 @@ void Game::ResolvedEffects::end(EffectObject::Duration duration, Zone::Ownership
 }
 
 bool Game::combat_damage_prevented(Entity source, Entity target) const {
-    for (const auto &shield : resolved_effects.combat_damage_prevention_shields) {
-        const Entity creature = shield.creature.get();
-        if (creature == 0) continue;
-        if (shield.prevent_as_source && creature == source) return true;
-        if (shield.prevent_as_target && creature == target) return true;
+    for (const EffectObject &object : resolved_effects.effect_objects) {
+        const bool by = object.prevents_combat_damage_by(), to = object.prevents_combat_damage_to();
+        if (!by && !to) continue;
+        for (const ObjectRef &remembered : object.remembered) {
+            const Entity creature = remembered.get();
+            if (creature == 0) continue;
+            if (by && creature == source) return true;
+            if (to && creature == target) return true;
+        }
     }
     return false;
 }
 
 bool Game::combat_damage_shielded(Entity creature) const {
     if (creature == 0) return false;
-    for (const auto &shield : resolved_effects.combat_damage_prevention_shields)
-        if (shield.creature.get() == creature && (shield.prevent_as_source || shield.prevent_as_target))
-            return true;
+    for (const EffectObject &object : resolved_effects.effect_objects) {
+        if (!object.prevents_combat_damage_by() && !object.prevents_combat_damage_to()) continue;
+        for (const ObjectRef &remembered : object.remembered)
+            if (remembered.get() == creature) return true;
+    }
     return false;
 }
 
@@ -221,9 +227,10 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
 
     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
     resolved_effects.may_cast_this_turn.clear();
-    // "This turn" effect objects (Forth Eorlingas!'s become-monarch trigger, CR 603.7e) last
-    // only their turn of creation. A Duration$ UntilYourNextTurn one (Tamiyo, Seasoned Scholar's
-    // +2) survives cleanup: it ends at its controller's next untap step instead.
+    // "This turn" effect objects (Forth Eorlingas!'s become-monarch trigger, CR 603.7e; Veil of
+    // Summer's can't-be-countered; Maze of Ith's prevention, CR 615) last only their turn of
+    // creation (514.2). A Duration$ UntilYourNextTurn one (Tamiyo, Seasoned Scholar's +2) survives
+    // cleanup: it ends at its controller's next untap step instead.
     resolved_effects.end(EffectObject::Duration::END_OF_TURN);
     // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
     // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
@@ -239,15 +246,10 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
         return !g.persist_until_end_of_next_turn ||
                (g.caster == active_player && turn_state.turn > g.grant_turn);
     });
-    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
-    // "Spells you control can't be countered this turn" + "hexproof from blue and
-    // from black until end of turn") lapse at cleanup (CR 514.2).
-    resolved_effects.cant_counter_spells_of.clear();
     // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
     resolved_effects.cant_gain_life_this_turn.clear();
-    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
-    // lapse at cleanup (514.2).
-    resolved_effects.combat_damage_prevention_shields.clear();
+    // Veil of Summer's "hexproof from blue and from black until end of turn" lapses at
+    // cleanup (514.2).
     resolved_effects.hexproof_from_colors_this_turn.clear();
     // An "until end of turn" player protection-from-everything grant lapses at
     // cleanup; an "until your next turn" grant persists (reverted at that player's

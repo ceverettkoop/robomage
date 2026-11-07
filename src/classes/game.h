@@ -643,20 +643,6 @@ struct Game {
             FilterSpec filter;  // ValidCard$ filter the flash permission applies to
             bool until_your_next_turn = false;
         };
-        // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |
-        // ReplacementEffects$ <Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$/
-        // ValidTarget$ Card.IsRemembered> (Maze of Ith's "Prevent all combat damage that would be
-        // dealt to and dealt by that creature this turn"). Each shield remembers one `creature`;
-        // while active, all COMBAT damage that creature would DEAL (prevent_as_source) and/or all
-        // combat damage that would be dealt TO it (prevent_as_target) is prevented. A sourceless
-        // turn-long grant (the Effect belongs to no permanent); consulted by deal_combat_damage
-        // via combat_damage_prevented() and cleared at cleanup. General over any DamageDone/Prevent
-        // Effect keyed on a remembered object (reusable by future fog/prevention cards).
-        struct CombatDamagePreventionShield {
-            ObjectRef creature;
-            bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
-            bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
-        };
         // A reveal window (src/queries/visibility.h): a card in a hidden zone (a library, a hand,
         // the sideboard, or face down in exile) whose identity `audience` may see right now. A
         // reveal shows it to all players for as long as the revealing effect needs it (CR
@@ -747,13 +733,6 @@ struct Game {
         // entry says ("this turn", "until your next turn", for the game); end_cleanup_effects and
         // the untap step end them.
         struct ResolvedEffects {
-            // Turn-long "spells you control can't be countered" grant created by a resolving spell/
-            // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
-            // CantHappen). A player here means every spell that player controls can't be countered
-            // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
-            // permanent (the instant is in the graveyard), so it is recorded here and cleared at
-            // cleanup. Consulted at counter-resolution time (effects::counter).
-            std::set<Zone::Ownership> cant_counter_spells_of;
             // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
             // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
             // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
@@ -764,14 +743,14 @@ struct Game {
             std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
             std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
             std::vector<CastWithFlashPermission> cast_with_flash_permissions;
-            std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
             ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
             ObjectMap<ImpulseCastPermission> impulse_cast_permission;
-            // The effect objects in play, in creation order: emblems (CR 114) and the Effects that
+            // The effect objects in play, in creation order: emblems (CR 114), the Effects that
             // carry floating triggered abilities (CR 603.7e-style "this turn" triggers, created by
             // a DB$ Effect | Triggers$ <SVar>, e.g. Forth Eorlingas!'s become-monarch-on-combat-
             // damage), which the trigger scan (collect_triggered_abilities) tests against drained
-            // events just like a permanent's triggered ability.
+            // events just like a permanent's triggered ability, and those that carry replacement
+            // effects (Veil of Summer's can't-be-countered, Maze of Ith's prevention).
             std::vector<EffectObject> effect_objects;
             int next_effect_object_id = 0;
 

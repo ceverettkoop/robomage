@@ -141,32 +141,31 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     }
 
     // DB$ Effect | ReplacementEffects$ <CantHappen Counter on Spell.YouCtrl> (Veil of Summer:
-    // "Spells you control can't be countered this turn"). Record the effect's controller in the
-    // turn-long can't-be-countered set; consulted by effects::counter and cleared at cleanup.
-    // A sourceless turn-long grant (the instant resolves to the graveyard), unlike Hexing
+    // "Spells you control can't be countered this turn"). An effect object for the turn, read by
+    // effects::counter: a sourceless grant (the instant resolves to the graveyard), unlike Hexing
     // Squelcher's battlefield static.
-    if (ab.def->effect_spells_uncounterable_this_turn) {
-        cur_game.resolved_effects.cant_counter_spells_of.insert(ab.controller);
+    if (ab.def->has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED)) {
+        EffectObject object = effect_object_of(ab, EffectObject::Duration::END_OF_TURN);
+        object.replacements = ab.def->effect_replacements;
+        cur_game.resolved_effects.add(std::move(object));
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
 
     // DB$ Effect | ReplacementEffects$ <DamageDone/Prevent shields> | RememberObjects$ Targeted
-    // (Maze of Ith): register a turn-scoped combat-damage prevention shield on the remembered
-    // creature — all combat damage it would deal (ValidSource$ Card.IsRemembered) and/or be dealt
-    // (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). The remembered creature is
-    // the ability's inherited target (RememberObjects$ Targeted also stashed it in
-    // the remembered set). Sourceless turn-long grant, cleared at cleanup. General over any such
+    // (Maze of Ith): an effect object for the turn remembering the creature — all combat damage it
+    // would deal (ValidSource$ Card.IsRemembered) and/or be dealt (ValidTarget$ Card.IsRemembered)
+    // this turn is prevented (CR 615). The remembered creature is the ability's inherited target
+    // (RememberObjects$ Targeted also stashed it in the remembered set). General over any such
     // Effect (reusable by future fog/prevention cards).
-    if (ab.def->effect_prevent_combat_damage_by_remembered || ab.def->effect_prevent_combat_damage_to_remembered) {
+    if (ab.def->has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE)) {
         Entity who = ab.target.get();
         if (who == 0 && !cur_game.resolution.memory.remembered.empty()) who = cur_game.resolution.memory.remembered.front().get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
-            Game::CombatDamagePreventionShield shield;
-            shield.creature = ObjectRef::of(who);
-            shield.prevent_as_source = ab.def->effect_prevent_combat_damage_by_remembered;
-            shield.prevent_as_target = ab.def->effect_prevent_combat_damage_to_remembered;
-            cur_game.resolved_effects.combat_damage_prevention_shields.push_back(shield);
+            EffectObject object = effect_object_of(ab, EffectObject::Duration::END_OF_TURN);
+            object.replacements = ab.def->effect_replacements;
+            object.remembered.push_back(ObjectRef::of(who));
+            cur_game.resolved_effects.add(std::move(object));
             game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n",
                      entity_name(who).c_str());
         }

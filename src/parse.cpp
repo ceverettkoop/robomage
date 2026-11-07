@@ -148,6 +148,28 @@ static StaticAbility parse_one_static_ability(const std::string& line, const std
 static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
+struct ReplacementLine;
+// Where a replacement line sits: on a card (an R: line) or on an Effect (ReplacementEffects$).
+enum class ReplacementHost { CARD, EFFECT };
+static ReplacementLine read_replacement_line(const std::string &line,
+                                             const std::map<std::string, std::string> &svars);
+static size_t read_replacement_rows(const std::string &line, const std::map<std::string, std::string> &svars,
+                                    ReplacementHost host, std::vector<Effect::Replacement> &out);
+static bool row_enters_tapped(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_enters_tapped_conditional(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_discard_else_graveyard(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_cant_be_countered_self(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_cant_be_countered_battlefield(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r);
 static bool take_direct_amount_expr(AbilityDef& ability);
 static void warn_unresolved_amount_svar(const AbilityDef& ability, const std::string& card_name);
 static uint32_t parse_power(std::string value);
@@ -2514,8 +2536,8 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     // Ith), an exile permission in exile, a may-cast in the graveyard (Emry).
     if (key == "ExileOnMoved") {
         if (value == "Battlefield")
-            return ability.effect_static_ability == "Unblockable" || ability.effect_prevent_combat_damage_by_remembered ||
-                   ability.effect_prevent_combat_damage_to_remembered;
+            return ability.effect_static_ability == "Unblockable" ||
+                   ability.has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
         return value == "Exile" ? ability.effect_may_play_from_exile : value == "Graveyard" && ability.target_in_graveyard;
     }
     // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing ChooseEach$;
@@ -2644,11 +2666,12 @@ static void ability_form_findings(const AbilityDef &ability, const std::string &
 static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars) {
     if (ability.category != "Effect") return;
     const bool emblem = !ability.effect_emblem_statics.empty();
-    const bool shield = ability.effect_prevent_combat_damage_by_remembered || ability.effect_prevent_combat_damage_to_remembered;
+    const bool uncounterable = ability.has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED);
+    const bool shield = ability.has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
     const bool cant_gain = ability.effect_cant_gain_life != AbilityDef::CantGainLifeScope::NONE;
     const int forms = int(emblem) + int(!ability.effect_floating_triggers.empty()) + int(ability.effect_may_play_from_exile) +
                       int(ability.effect_static_ability == "Unblockable") +
-                      int(ability.effect_spells_uncounterable_this_turn) + int(shield) + int(cant_gain) +
+                      int(uncounterable) + int(shield) + int(cant_gain) +
                       int(ability.effect_cast_with_flash);
     if (forms > 1) parse_finding("static_form", "Effect.Forms", "only the first of an Effect's forms applies");
     const std::string &name = ability.effect_static_ability;
@@ -2988,15 +3011,9 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         return true;
     }
     if (key == "ReplacementEffects") {
-        // Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement
-        // effects the transient Effect carries. Two forms are recognized:
-        //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
-        //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
-        //    GrantCast handler records the controller in cur_game.resolved_effects.cant_counter_spells_of.
-        //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
-        //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
-        //    combat damage dealt by/to the remembered creature this turn (CR 615); the
-        //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
+        // Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement effects
+        // the transient Effect carries, each read through the table's EFFECT rows and held for the
+        // GrantCast handler to put on the EffectObject it creates.
         for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
             auto it = svars.find(svar_name);
             if (it == svars.end()) {
@@ -3004,21 +3021,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
                 continue;
             }
             const std::string &body = it->second;
-            if (body.find("Event$ Counter") != std::string::npos &&
-                body.find("CantHappen") != std::string::npos &&
-                body.find("YouCtrl") != std::string::npos) {
-                ability.effect_spells_uncounterable_this_turn = true;
-            } else if (body.find("Event$ DamageDone") != std::string::npos &&
-                       body.find("Prevent$ True") != std::string::npos &&
-                       body.find("IsCombat$ True") != std::string::npos &&
-                       body.find("IsRemembered") != std::string::npos) {
-                if (body.find("ValidSource$") != std::string::npos)
-                    ability.effect_prevent_combat_damage_by_remembered = true;
-                if (body.find("ValidTarget$") != std::string::npos)
-                    ability.effect_prevent_combat_damage_to_remembered = true;
-            } else {
+            if (read_replacement_rows(body, svars, ReplacementHost::EFFECT, ability.effect_replacements) == 0)
                 parse_finding("replacement", "Effect:" + param_value(body, "Event"), body);
-            }
         }
         return true;
     }
@@ -4324,9 +4328,412 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
     return result;
 }
 
+// The params of a replacement line and what its ReplaceWith$ SVar says: an R: line, or an SVar an
+// Effect's ReplacementEffects$ names.
+struct ReplacementLine {
+    std::string event;                // Event$
+    std::string draw_check_svar;      // CheckSVar$ <var>, the count gate's SVar name
+    std::string draw_svar_compare;    // SVarCompare$ <cmp>, its comparator (e.g. "LE1")
+    bool valid_player_you = false;    // ValidPlayer$ You: the source controller's own draws
+    std::string produce_valid_type;   // ValidCard$ <type> for a ProduceMana replacement ("Land")
+    int produce_min_amount = 1;       // ManaAmount$ GEN, the minimum produced amount
+    std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
+    bool valid_card_self = false;
+    std::string valid_sa_filter;      // ValidSA$ spec (e.g. "Spell.YouCtrl")
+    std::string valid_source;         // ValidSource$ spec of a DamageDone replacement
+    std::string valid_target;         // ValidTarget$ spec of a DamageDone replacement
+    bool dest_is_battlefield = false;
+    bool dest_is_graveyard = false;
+    bool replace_with_etb_tapped = false;
+    bool replace_with_exile = false;
+    bool layer_cant_happen = false;
+    bool active_zones_battlefield = false;
+    bool valid_card_opp_non_token = false;
+    bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
+    bool prevent_true = false;                // Prevent$ True: the event simply doesn't happen
+    bool is_combat = false;                   // IsCombat$ True
+    bool valid_lki_creature = false;          // ValidLKI$ Creature.*: the moving card is (last known) a creature
+    bool origin_graveyard = false;            // Origin$ includes Graveyard
+    bool origin_library = false;              // Origin$ includes Library
+    std::string replace_with_svar;            // the SVar named by ReplaceWith$ (e.g. "Exile")
+    // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
+    // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
+    // sorcery cards in your graveyard). Left empty for an unconditional "can't be countered".
+    std::string cant_counter_present, cant_counter_zone, cant_counter_compare;
+    // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
+    // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
+    // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
+    bool replace_with_void_counter = false;
+    // Conditional "enters tapped" (Ba Sing Se): ReplaceWith$ <SVar> where the SVar is a
+    // DB$ Tap | ETB$ True with a ConditionPresent$/ConditionCompare$ gate ("enters tapped
+    // unless you control a basic land"). Detected here off the named SVar's body so the
+    // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
+    bool replace_with_etb_tapped_conditional = false;
+    std::string tapped_cond_filter, tapped_cond_compare;
+    int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
+    // ProduceMana replacement (Damping Sphere): the ReplaceWith$ SVar is a DB$ ReplaceMana
+    // whose ReplaceMana$ names the single color all the produced mana is converted to.
+    bool replace_with_produce_mana = false;
+    Colors produce_replacement_color = COLORLESS;
+    // Mox Diamond / Chrome Mox "pay-a-discard-as-it-enters-else-to-graveyard" form: the
+    // ReplaceWith$ SVar chain is an optional DB$ Discard (DiscardValid$ <filter>) whose
+    // subability moves the card (Defined$ ReplacedCard) to the graveyard when nothing was
+    // discarded. Walk the SubAbility$ chain of named SVars to recognize all three signals
+    // (an optional discard, its DiscardValid$ filter, an "else to graveyard" move) rather than
+    // retagging the R: line.
+    bool replace_with_discard_else_grave = false;
+    std::string discard_else_filter;
+    bool replace_with_win = false;  // the ReplaceWith$ SVar is a DB$ WinsGame
+    int draw_add = 0;               // the ReplaceWith$ SVar's DB$ Draw NumCards$ ReplaceCount$Number/Plus.K
+    std::string draw_condition_count_expr;  // CheckSVar$ resolved to the SVar's Count$ body
+};
+
+// Reads a replacement line's params, and the ReplaceWith$ SVar it names.
+static ReplacementLine read_replacement_line(const std::string &line,
+                                             const std::map<std::string, std::string> &svars) {
+    ReplacementLine l;
+    size_t param_pos = 0;
+    std::string key, value;
+    while (next_param(line, param_pos, key, value)) {
+        if      (key == "Event")       l.event = value;
+        else if (key == "ValidPlayer" && value == "You")         l.valid_player_you        = true;
+        else if (key == "CheckSVar")  l.draw_check_svar          = value;
+        else if (key == "SVarCompare") l.draw_svar_compare       = value;
+        else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
+            // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
+            std::string n = value.substr(2);
+            l.produce_min_amount = n.empty() ? 1 : std::stoi(n);
+        }
+        else if (key == "ValidSA")    l.valid_sa_filter          = value;
+        else if (key == "ValidSource") l.valid_source            = value;
+        else if (key == "ValidTarget") l.valid_target            = value;
+        else if (key == "IsCombat"    && value == "True")        l.is_combat               = true;
+        else if (key == "ValidCard"   && value == "Card.Self")   l.valid_card_self         = true;
+        else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
+            l.untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
+            l.produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
+        }
+        else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
+                 (value.find("!token") != std::string::npos ||
+                  value.find("nonToken") != std::string::npos)) l.valid_card_opp_non_token = true;
+        // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
+        else if (key == "ValidCard"   && filter_has_head(value, "Creature") &&
+                 value.find("!wasCast") != std::string::npos &&
+                 (value.find("!token") != std::string::npos ||
+                  value.find("nonToken") != std::string::npos)) l.valid_card_uncast_creature = true;
+        else if (key == "Destination" && value == "Battlefield") l.dest_is_battlefield     = true;
+        else if (key == "Destination" && value == "Graveyard")   l.dest_is_graveyard       = true;
+        else if (key == "ReplaceWith" && value == "ETBTapped")   l.replace_with_etb_tapped = true;
+        else if (key == "ReplaceWith") { l.replace_with_svar = value; if (value == "Exile") l.replace_with_exile = true; }
+        else if (key == "Layer"       && value == "CantHappen") l.layer_cant_happen        = true;
+        else if (key == "ActiveZones" && value == "Battlefield") l.active_zones_battlefield = true;
+        else if (key == "Prevent"     && value == "True")        l.prevent_true             = true;
+        else if (key == "ValidLKI"    && filter_has_head(value, "Creature"))
+            l.valid_lki_creature = true;
+        else if (key == "Origin") {
+            if (value.find("Graveyard") != std::string::npos) l.origin_graveyard = true;
+            if (value.find("Library")   != std::string::npos) l.origin_library   = true;
+        }
+        else if (key == "IsPresent")     l.cant_counter_present = value;
+        else if (key == "PresentZone")   l.cant_counter_zone    = value;
+        else if (key == "PresentCompare") l.cant_counter_compare = value;
+    }
+    if (l.replace_with_svar.empty()) return l;
+
+    std::string cur = l.replace_with_svar;
+    bool saw_discard = false, saw_optional = false, saw_grave = false;
+    for (int guard = 0; guard < 8 && !cur.empty(); guard++) {
+        auto sv2 = svars.find(cur);
+        if (sv2 == svars.end()) break;
+        const std::string &b = sv2->second;
+        if (b.find("DB$ Discard") != std::string::npos)          saw_discard = true;
+        if (b.find("Optional$ True") != std::string::npos)       saw_optional = true;
+        if (b.find("Destination$ Graveyard") != std::string::npos) saw_grave = true;
+        std::string next_sub;
+        size_t pp = 0; std::string k, v;
+        while (next_param(b, pp, k, v)) {
+            if (k == "DiscardValid" && l.discard_else_filter.empty()) l.discard_else_filter = v;
+            else if (k == "SubAbility") next_sub = v;
+        }
+        cur = next_sub;
+    }
+    if (saw_discard && saw_optional && saw_grave) l.replace_with_discard_else_grave = true;
+
+    auto sv = svars.find(l.replace_with_svar);
+    if (sv == svars.end()) return l;
+    const std::string &body = sv->second;
+    if (body.find("VOID") != std::string::npos) l.replace_with_void_counter = true;
+    if (body.find("WinsGame") != std::string::npos) l.replace_with_win = true;
+    if (body.find("DB$ ReplaceMana") != std::string::npos) {
+        l.replace_with_produce_mana = true;
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k != "ReplaceMana" || v.empty()) continue;
+            Colors color = mana_letter_color(v[0]);
+            l.produce_replacement_color = (color == NO_COLOR) ? COLORLESS : color;
+        }
+    }
+    if (body.find("DB$ Tap") != std::string::npos && body.find("ETB$ True") != std::string::npos) {
+        l.replace_with_etb_tapped_conditional = true;
+        // Pull ConditionPresent$ / ConditionCompare$ / UnlessCost$ out of the SVar body.
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k == "ConditionPresent") {
+                // Drop a "+YouCtrl" qualifier — the condition is always evaluated
+                // controller-relative (the permanent's controller as it enters).
+                std::string f = v;
+                size_t plus = f.find("+YouCtrl");
+                if (plus != std::string::npos) f.erase(plus);
+                l.tapped_cond_filter = f;
+            } else if (k == "ConditionCompare") {
+                l.tapped_cond_compare = v;
+            } else if (k == "UnlessCost") {
+                // "...unless you pay N life" — the controller may pay N life as the
+                // permanent enters to have it enter untapped (Witch-Blessed Meadow,
+                // shock lands).
+                CostPart part;
+                if (read_cost_token(v, part) && part.kind == CostPart::LIFE)
+                    l.tapped_unless_life = part.count;
+            }
+        }
+    }
+    if (l.event == "DrawCards" && body.find("DB$ Draw") != std::string::npos) {
+        // Pull the additive count out of NumCards$ ReplaceCount$Number/Plus.K.
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k != "NumCards") continue;
+            size_t plus = v.find("/Plus.");
+            if (plus != std::string::npos) l.draw_add = std::stoi(v.substr(plus + 6));
+            break;
+        }
+    }
+    // Resolve CheckSVar$ <var> to the SVar's Count$ body so the count gate can be evaluated
+    // directly (mirrors the trigger-side CheckSVar handling). An absent CheckSVar leaves the gate
+    // empty = the additive draw always applies.
+    if (!l.draw_check_svar.empty()) l.draw_condition_count_expr = svar_or_literal(svars, l.draw_check_svar);
+    return l;
+}
+
+static bool row_enters_tapped(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_etb_tapped) return false;
+    r.kind = Effect::Replacement::ENTERS_TAPPED;
+    r.applies_to_self_only = true;
+    return true;
+}
+
+// Conditional "enters tapped" (Ba Sing Se): an ENTERS_TAPPED replacement whose application is
+// gated on the controller's board (e.g. "unless you control a basic land").
+static bool row_enters_tapped_conditional(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_etb_tapped_conditional) return false;
+    r.kind = Effect::Replacement::ENTERS_TAPPED;
+    r.applies_to_self_only = true;
+    r.tapped_condition_filter = l.tapped_cond_filter;
+    r.tapped_condition_compare = l.tapped_cond_compare;
+    r.tapped_unless_life = l.tapped_unless_life;
+    return true;
+}
+
+// Mox Diamond / Chrome Mox: as this card would enter, its owner may discard a matching card (an
+// additional cost); if they don't, it goes to its owner's graveyard instead (614.1a
+// self-replacement).
+static bool row_discard_else_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_discard_else_grave) return false;
+    r.kind = Effect::Replacement::DISCARD_ELSE_GRAVEYARD;
+    r.applies_to_self_only = true;
+    r.discard_else_filter = l.discard_else_filter.empty() ? "Card" : l.discard_else_filter;
+    return true;
+}
+
+static bool row_cant_be_countered_self(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.layer_cant_happen) return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = true;
+    // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and re-evaluated at
+    // counter time. Empty = the unconditional self form.
+    r.cant_counter_present = l.cant_counter_present;
+    r.cant_counter_zone    = l.cant_counter_zone;
+    r.cant_counter_compare = l.cant_counter_compare;
+    return true;
+}
+
+// Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active
+// (ActiveZones$ Battlefield) can't-be-countered replacement scoped by a ValidSA$ filter (e.g.
+// Spell.YouCtrl) rather than the source spell itself. Consulted at counter-resolution time against
+// every spell on the stack (614.13/CantHappen).
+static bool row_cant_be_countered_battlefield(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !l.active_zones_battlefield || l.valid_card_self || l.valid_sa_filter.empty())
+        return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = false;
+    r.from_battlefield = true;
+    r.valid_sa_filter = l.valid_sa_filter;
+    return true;
+}
+
+// Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles with a void
+// counter; Leyline of the Void plain-exiles — distinguished by the SVar).
+static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_graveyard || !l.replace_with_exile || !l.valid_card_opp_non_token ||
+        !l.active_zones_battlefield)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
+    r.applies_to_self_only = false;
+    r.with_void_counter = l.replace_with_void_counter;
+    return true;
+}
+
+// Containment Priest: a non-token creature that wasn't cast is exiled instead of entering the
+// battlefield (614.1a). The replacement applies to any such creature entering the battlefield
+// while this permanent is on the battlefield.
+static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_battlefield || !l.replace_with_exile || !l.valid_card_uncast_creature ||
+        !l.active_zones_battlefield)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
+    r.applies_to_self_only = false;
+    return true;
+}
+
+// Grafdigger's Cage: creature cards in graveyards and libraries can't enter the battlefield
+// (614.13). This is a prevention (Prevent$ True) — the moving card simply doesn't enter and stays
+// in its origin zone, distinct from Containment Priest's exile-instead replacement above.
+static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_battlefield || !l.prevent_true || !l.valid_lki_creature || !l.active_zones_battlefield ||
+        !(l.origin_graveyard || l.origin_library))
+        return false;
+    r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
+    r.applies_to_self_only = false;
+    r.prevent_from_graveyard = l.origin_graveyard;
+    r.prevent_from_library = l.origin_library;
+    return true;
+}
+
+// Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in it, you
+// win the game instead." (CR 104.3a/121.4). A draw-event replacement whose ReplaceWith$ SVar is a
+// DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw (checked at the empty-draw
+// site in Orderer::perform_draw). We confirm the replacement's effect is a game win via the named
+// SVar body rather than retagging the R: line.
+static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.replace_with_win) return false;
+    r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
+    r.applies_to_self_only = false;  // scoped to the controller at the draw site
+    return true;
+}
+
+// Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one or more
+// cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw replacement —
+// Event$ DrawCards, ValidPlayer$ You (the source controller's own draws), whose ReplaceWith$ SVar
+// is a DB$ Draw with NumCards$ ReplaceCount$Number/Plus.K: the draw count is increased by K. The
+// optional CheckSVar$/SVarCompare$ gate ("one or fewer cards in hand") is carried onto the
+// replacement and re-evaluated for the drawing player at draw time
+// (replacement::draw_count_bonus). General over any additive draw replacement.
+static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.active_zones_battlefield || !l.valid_player_you || l.replace_with_svar.empty() || l.draw_add <= 0)
+        return false;
+    r.kind = Effect::Replacement::DRAW_ADD;
+    r.applies_to_self_only = false;
+    r.draw_add = l.draw_add;
+    if (!l.draw_check_svar.empty()) {
+        r.draw_condition_count_expr = l.draw_condition_count_expr;
+        r.draw_condition_compare = l.draw_svar_compare;
+    }
+    return true;
+}
+
+// Choke: matching lands don't untap during their controllers' untap steps (614.1d).
+static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || l.untap_valid_subtype.empty()) return false;
+    r.kind = Effect::Replacement::SKIP_UNTAP;
+    r.applies_to_self_only = false;
+    r.valid_subtype = l.untap_valid_subtype;
+    return true;
+}
+
+// Damping Sphere: "If a land is tapped for two or more mana, it produces {C} instead of any other
+// type and amount." A ProduceMana replacement (614.1) — when a permanent of the named type is
+// tapped for >= ManaAmount mana, replace its production with that much of the ReplaceMana color.
+static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.replace_with_produce_mana || !l.active_zones_battlefield || l.produce_valid_type.empty()) return false;
+    r.kind = Effect::Replacement::PRODUCE_MANA;
+    r.applies_to_self_only = false;
+    r.produce_valid_type = l.produce_valid_type;
+    r.produce_min_amount = l.produce_min_amount;
+    r.produce_replacement_color = l.produce_replacement_color;
+    return true;
+}
+
+// Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a
+// self-referential untap-prevention (ValidCard$ Card.Self). ValidStepTurnToController$ You is
+// implicit in a 2-player game (a permanent only untaps during its controller's untap step), so it
+// needs no extra gating here.
+static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !l.valid_card_self || !l.untap_valid_subtype.empty()) return false;
+    r.kind = Effect::Replacement::SKIP_UNTAP;
+    r.applies_to_self_only = true;
+    return true;
+}
+
+// Veil of Summer's AntiMagic: "Spells you control can't be countered this turn."
+static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !filter_names_token(l.valid_sa_filter, "YouCtrl")) return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = false;
+    r.valid_sa_filter = l.valid_sa_filter;
+    return true;
+}
+
+// Maze of Ith's RPrevent1/RPrevent2: prevent all combat damage dealt by (ValidSource$) or to
+// (ValidTarget$) the object the Effect remembers (CR 615).
+static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.prevent_true || !l.is_combat) return false;
+    r.prevent_by_remembered = filter_names_token(l.valid_source, "IsRemembered");
+    r.prevent_to_remembered = filter_names_token(l.valid_target, "IsRemembered");
+    if (!r.prevent_by_remembered && !r.prevent_to_remembered) return false;
+    r.kind = Effect::Replacement::PREVENT_COMBAT_DAMAGE;
+    return true;
+}
+
+// Every replacement a script can express: an Event$, the host it is written on, and the reader that
+// says whether this line is that form and fills it in. A line yields each row it matches, in order.
+static const struct {
+    const char *event;
+    ReplacementHost host;
+    bool (*read)(const ReplacementLine &, Effect::Replacement &);
+} kReplacementRows[] = {
+    {"Moved", ReplacementHost::CARD, row_enters_tapped},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional},
+    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb},
+    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones},
+    {"Draw", ReplacementHost::CARD, row_draw_empty_win},
+    {"DrawCards", ReplacementHost::CARD, row_draw_add},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype},
+    {"ProduceMana", ReplacementHost::CARD, row_produce_mana},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_self},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered},
+    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage},
+};
+
+// Appends what the replacement line yields on `host`, returning how many it did.
+static size_t read_replacement_rows(const std::string &line, const std::map<std::string, std::string> &svars,
+                                    ReplacementHost host, std::vector<Effect::Replacement> &out) {
+    const ReplacementLine l = read_replacement_line(line, svars);
+    size_t yielded = 0;
+    for (const auto &row : kReplacementRows) {
+        if (row.host != host || l.event != row.event) continue;
+        Effect::Replacement r;
+        if (!row.read(l, r)) continue;
+        out.push_back(std::move(r));
+        yielded++;
+    }
+    return yielded;
+}
+
 // Parses R: replacement-effect lines from a card script into the Effect::Replacement kinds they
-// express (enters tapped, can't be countered, exile instead, untap/entry prevention, mana and draw
-// replacements); an R: line of no recognized kind yields nothing.
+// express; an R: line of no recognized kind yields nothing.
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars) {
     std::vector<Effect::Replacement> result;
@@ -4334,345 +4741,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
     for (const auto& line : multi_values_from_script(script, "R")) {
         const FindingLine finding_line("R:" + line);
         const size_t line_first = result.size();  // the replacements this line yields start here
-        bool event_is_moved       = false;
-        bool event_is_counter     = false;
-        bool event_is_untap       = false;
-        bool event_is_produce_mana = false;       // Event$ ProduceMana (Damping Sphere)
-        bool event_is_draw        = false;        // Event$ Draw (Jace, Wielder of Mysteries: win on empty-library draw)
-        bool event_is_draw_cards  = false;        // Event$ DrawCards (Quantum Riddler: additive "draw that many plus one")
-        std::string draw_check_svar;              // CheckSVar$ <var> — the count-gate SVar name (resolved to its Count$ body below)
-        std::string draw_svar_compare;            // SVarCompare$ <cmp> — comparator for the count gate (e.g. "LE1")
-        bool valid_player_you     = false;        // ValidPlayer$ You — the replacement applies to the source controller's own draws
-        std::string produce_valid_type;           // ValidCard$ <type> for a ProduceMana replacement ("Land")
-        int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
-        std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
-        bool valid_card_self      = false;
-        std::string valid_sa_filter;  // ValidSA$ spec on an R: line (e.g. "Spell.YouCtrl")
-        bool dest_is_battlefield  = false;
-        bool dest_is_graveyard_r  = false;
-        bool replace_with_etb_tapped = false;
-        bool replace_with_exile   = false;
-        bool layer_cant_happen    = false;
-        bool active_zones_battlefield = false;
-        bool valid_card_opp_non_token = false;
-        bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
-        bool prevent_true         = false;        // Prevent$ True — the event simply doesn't happen
-        bool valid_lki_creature   = false;        // ValidLKI$ Creature.* — the moving card is (last known) a creature
-        bool origin_graveyard     = false;        // Origin$ includes Graveyard
-        bool origin_library       = false;        // Origin$ includes Library
-        std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
-        // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
-        // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
-        // sorcery cards in your graveyard). Left empty for an unconditional "can't be countered".
-        std::string cant_counter_present, cant_counter_zone, cant_counter_compare;
-
-        size_t param_pos = 0;
-        std::string key, value;
-        while (next_param(line, param_pos, key, value)) {
-            if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
-            else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
-            else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
-            else if (key == "Event"       && value == "ProduceMana") event_is_produce_mana  = true;
-            else if (key == "Event"       && value == "Draw")        event_is_draw           = true;
-            else if (key == "Event"       && value == "DrawCards")   event_is_draw_cards     = true;
-            else if (key == "ValidPlayer" && value == "You")         valid_player_you        = true;
-            else if (key == "CheckSVar")  draw_check_svar          = value;
-            else if (key == "SVarCompare") draw_svar_compare       = value;
-            else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
-                // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
-                std::string n = value.substr(2);
-                produce_min_amount = n.empty() ? 1 : std::stoi(n);
-            }
-            else if (key == "ValidSA")    valid_sa_filter          = value;
-            else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
-            else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
-                untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
-                produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
-            }
-            else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                     (value.find("!token") != std::string::npos ||
-                      value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
-            // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
-            else if (key == "ValidCard"   && filter_has_head(value, "Creature") &&
-                     value.find("!wasCast") != std::string::npos &&
-                     (value.find("!token") != std::string::npos ||
-                      value.find("nonToken") != std::string::npos)) valid_card_uncast_creature = true;
-            else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
-            else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
-            else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
-            else if (key == "ReplaceWith") { replace_with_svar = value; if (value == "Exile") replace_with_exile = true; }
-            else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
-            else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
-            else if (key == "Prevent"     && value == "True")        prevent_true             = true;
-            else if (key == "ValidLKI"    && filter_has_head(value, "Creature"))
-                valid_lki_creature = true;
-            else if (key == "Origin") {
-                if (value.find("Graveyard") != std::string::npos) origin_graveyard = true;
-                if (value.find("Library")   != std::string::npos) origin_library   = true;
-            }
-            else if (key == "IsPresent")     cant_counter_present = value;
-            else if (key == "PresentZone")   cant_counter_zone    = value;
-            else if (key == "PresentCompare") cant_counter_compare = value;
-        }
-
-        // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
-        // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
-        // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
-        bool replace_with_void_counter = false;
-        // Conditional "enters tapped" (Ba Sing Se): ReplaceWith$ <SVar> where the SVar is a
-        // DB$ Tap | ETB$ True with a ConditionPresent$/ConditionCompare$ gate ("enters tapped
-        // unless you control a basic land"). Detected here off the named SVar's body so the
-        // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
-        bool replace_with_etb_tapped_conditional = false;
-        std::string tapped_cond_filter, tapped_cond_compare;
-        int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
-        // ProduceMana replacement (Damping Sphere): the ReplaceWith$ SVar is a DB$ ReplaceMana
-        // whose ReplaceMana$ names the single color all the produced mana is converted to.
-        bool replace_with_produce_mana = false;
-        Colors produce_replacement_color = COLORLESS;
-        // Mox Diamond / Chrome Mox "pay-a-discard-as-it-enters-else-to-graveyard" form: the
-        // ReplaceWith$ SVar chain is an optional DB$ Discard (DiscardValid$ <filter>) whose
-        // subability moves the card (Defined$ ReplacedCard) to the graveyard when nothing was
-        // discarded. Walk the SubAbility$ chain of named SVars to recognize all three signals
-        // (an optional discard, its DiscardValid$ filter, an "else to graveyard" move) rather than
-        // retagging the R: line.
-        bool replace_with_discard_else_grave = false;
-        std::string discard_else_filter;
-        if (!replace_with_svar.empty()) {
-            std::string cur = replace_with_svar;
-            bool saw_discard = false, saw_optional = false, saw_grave = false;
-            for (int guard = 0; guard < 8 && !cur.empty(); guard++) {
-                auto sv2 = svars.find(cur);
-                if (sv2 == svars.end()) break;
-                const std::string &b = sv2->second;
-                if (b.find("DB$ Discard") != std::string::npos)          saw_discard = true;
-                if (b.find("Optional$ True") != std::string::npos)       saw_optional = true;
-                if (b.find("Destination$ Graveyard") != std::string::npos) saw_grave = true;
-                std::string next_sub;
-                size_t pp = 0; std::string k, v;
-                while (next_param(b, pp, k, v)) {
-                    if (k == "DiscardValid" && discard_else_filter.empty()) discard_else_filter = v;
-                    else if (k == "SubAbility") next_sub = v;
-                }
-                cur = next_sub;
-            }
-            if (saw_discard && saw_optional && saw_grave) replace_with_discard_else_grave = true;
-        }
-        if (!replace_with_svar.empty()) {
-            auto sv = svars.find(replace_with_svar);
-            if (sv != svars.end()) {
-                const std::string &body = sv->second;
-                if (body.find("VOID") != std::string::npos) replace_with_void_counter = true;
-                if (body.find("DB$ ReplaceMana") != std::string::npos) {
-                    replace_with_produce_mana = true;
-                    size_t pp = 0; std::string k, v;
-                    while (next_param(body, pp, k, v)) {
-                        if (k != "ReplaceMana" || v.empty()) continue;
-                        Colors color = mana_letter_color(v[0]);
-                        produce_replacement_color = (color == NO_COLOR) ? COLORLESS : color;
-                    }
-                }
-                if (body.find("DB$ Tap") != std::string::npos &&
-                    body.find("ETB$ True") != std::string::npos) {
-                    replace_with_etb_tapped_conditional = true;
-                    // Pull ConditionPresent$ / ConditionCompare$ / UnlessCost$ out of the SVar body.
-                    size_t pp = 0; std::string k, v;
-                    while (next_param(body, pp, k, v)) {
-                        if (k == "ConditionPresent") {
-                            // Drop a "+YouCtrl" qualifier — the condition is always evaluated
-                            // controller-relative (the permanent's controller as it enters).
-                            std::string f = v;
-                            size_t plus = f.find("+YouCtrl");
-                            if (plus != std::string::npos) f.erase(plus);
-                            tapped_cond_filter = f;
-                        } else if (k == "ConditionCompare") {
-                            tapped_cond_compare = v;
-                        } else if (k == "UnlessCost") {
-                            // "...unless you pay N life" — the controller may pay N life as the
-                            // permanent enters to have it enter untapped (Witch-Blessed Meadow,
-                            // shock lands).
-                            CostPart part;
-                            if (read_cost_token(v, part) && part.kind == CostPart::LIFE)
-                                tapped_unless_life = part.count;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::ENTERS_TAPPED;
-            r.applies_to_self_only = true;
-            result.push_back(r);
-        }
-        // Conditional "enters tapped" (Ba Sing Se): an ENTERS_TAPPED replacement whose
-        // application is gated on the controller's board (e.g. "unless you control a basic land").
-        if (event_is_moved && valid_card_self && dest_is_battlefield &&
-            replace_with_etb_tapped_conditional) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::ENTERS_TAPPED;
-            r.applies_to_self_only = true;
-            r.tapped_condition_filter = tapped_cond_filter;
-            r.tapped_condition_compare = tapped_cond_compare;
-            r.tapped_unless_life = tapped_unless_life;
-            result.push_back(r);
-        }
-        // Mox Diamond / Chrome Mox: as this card would enter, its owner may discard a matching
-        // card (an additional cost); if they don't, it goes to its owner's graveyard instead
-        // (614.1a self-replacement).
-        if (event_is_moved && valid_card_self && dest_is_battlefield &&
-            replace_with_discard_else_grave) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::DISCARD_ELSE_GRAVEYARD;
-            r.applies_to_self_only = true;
-            r.discard_else_filter = discard_else_filter.empty() ? "Card" : discard_else_filter;
-            result.push_back(r);
-        }
-        if (event_is_counter && valid_card_self && layer_cant_happen) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
-            r.applies_to_self_only = true;
-            // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and
-            // re-evaluated at counter time. Empty = the unconditional self form.
-            r.cant_counter_present = cant_counter_present;
-            r.cant_counter_zone    = cant_counter_zone;
-            r.cant_counter_compare = cant_counter_compare;
-            result.push_back(r);
-        }
-        // Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active
-        // (ActiveZones$ Battlefield) can't-be-countered replacement scoped by a ValidSA$ filter
-        // (e.g. Spell.YouCtrl) rather than the source spell itself. Consulted at counter-resolution
-        // time against every spell on the stack (614.13/CantHappen).
-        if (event_is_counter && layer_cant_happen && active_zones_battlefield && !valid_card_self &&
-            !valid_sa_filter.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
-            r.applies_to_self_only = false;
-            r.from_battlefield = true;
-            r.valid_sa_filter = valid_sa_filter;
-            result.push_back(r);
-        }
-        // Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles
-        // with a void counter; Leyline of the Void plain-exiles — distinguished by the SVar above).
-        if (event_is_moved && dest_is_graveyard_r && replace_with_exile &&
-            valid_card_opp_non_token && active_zones_battlefield) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
-            r.applies_to_self_only = false;
-            r.with_void_counter = replace_with_void_counter;
-            result.push_back(r);
-        }
-        // Containment Priest: a non-token creature that wasn't cast is exiled instead of
-        // entering the battlefield (614.1a). The replacement applies to any such creature
-        // entering the battlefield while this permanent is on the battlefield.
-        if (event_is_moved && dest_is_battlefield && replace_with_exile &&
-            valid_card_uncast_creature && active_zones_battlefield) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
-            r.applies_to_self_only = false;
-            result.push_back(r);
-        }
-        // Grafdigger's Cage: creature cards in graveyards and libraries can't enter the
-        // battlefield (614.13). This is a prevention (Prevent$ True) — the moving card simply
-        // doesn't enter and stays in its origin zone, distinct from Containment Priest's
-        // exile-instead replacement above.
-        if (event_is_moved && dest_is_battlefield && prevent_true && valid_lki_creature &&
-            active_zones_battlefield && (origin_graveyard || origin_library)) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
-            r.applies_to_self_only = false;
-            r.prevent_from_graveyard = origin_graveyard;
-            r.prevent_from_library = origin_library;
-            result.push_back(r);
-        }
-        // Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in
-        // it, you win the game instead." (CR 104.3a/121.4). A draw-event replacement whose
-        // ReplaceWith$ SVar is a DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw
-        // (checked at the empty-draw site in Orderer::perform_draw). We confirm the replacement's
-        // effect is a game win via the named SVar body rather than retagging the R: line.
-        {
-            bool replace_with_win = false;
-            if (!replace_with_svar.empty()) {
-                auto it = svars.find(replace_with_svar);
-                if (it != svars.end() && it->second.find("WinsGame") != std::string::npos)
-                    replace_with_win = true;
-            }
-            if (event_is_draw && replace_with_win) {
-                Effect::Replacement r;
-                r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
-                r.applies_to_self_only = false;  // scoped to the controller at the draw site
-                result.push_back(r);
-            }
-        }
-        // Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one
-        // or more cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw
-        // replacement — Event$ DrawCards, ValidPlayer$ You (the source controller's own draws),
-        // whose ReplaceWith$ SVar is a DB$ Draw with NumCards$ ReplaceCount$Number/Plus.K: the draw
-        // count is increased by K. The optional CheckSVar$/SVarCompare$ gate ("one or fewer cards in
-        // hand") is carried onto the replacement and re-evaluated for the drawing player at draw
-        // time (replacement::draw_count_bonus). General over any additive draw replacement.
-        if (event_is_draw_cards && active_zones_battlefield && valid_player_you &&
-            !replace_with_svar.empty()) {
-            auto it = svars.find(replace_with_svar);
-            int add = 0;
-            if (it != svars.end() && it->second.find("DB$ Draw") != std::string::npos) {
-                // Pull the additive count out of NumCards$ ReplaceCount$Number/Plus.K.
-                size_t pp = 0; std::string k, v;
-                while (next_param(it->second, pp, k, v)) {
-                    if (k != "NumCards") continue;
-                    size_t plus = v.find("/Plus.");
-                    if (plus != std::string::npos) add = std::stoi(v.substr(plus + 6));
-                    break;
-                }
-            }
-            if (add > 0) {
-                Effect::Replacement r;
-                r.kind = Effect::Replacement::DRAW_ADD;
-                r.applies_to_self_only = false;
-                r.draw_add = add;
-                // Resolve CheckSVar$ <var> to the SVar's Count$ body so the count gate can be
-                // evaluated directly (mirrors the trigger-side CheckSVar handling). An absent
-                // CheckSVar leaves the gate empty = the additive draw always applies.
-                if (!draw_check_svar.empty()) {
-                    r.draw_condition_count_expr = svar_or_literal(svars, draw_check_svar);
-                    r.draw_condition_compare = draw_svar_compare;
-                }
-                result.push_back(r);
-            }
-        }
-        // Choke: matching lands don't untap during their controllers' untap steps (614.1d).
-        if (event_is_untap && layer_cant_happen && !untap_valid_subtype.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::SKIP_UNTAP;
-            r.applies_to_self_only = false;
-            r.valid_subtype = untap_valid_subtype;
-            result.push_back(r);
-        }
-        // Damping Sphere: "If a land is tapped for two or more mana, it produces {C} instead of
-        // any other type and amount." A ProduceMana replacement (614.1) — when a permanent of the
-        // named type is tapped for >= ManaAmount mana, replace its production with that much of the
-        // ReplaceMana color.
-        if (event_is_produce_mana && replace_with_produce_mana && active_zones_battlefield &&
-            !produce_valid_type.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::PRODUCE_MANA;
-            r.applies_to_self_only = false;
-            r.produce_valid_type = produce_valid_type;
-            r.produce_min_amount = produce_min_amount;
-            r.produce_replacement_color = produce_replacement_color;
-            result.push_back(r);
-        }
-        // Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a
-        // self-referential untap-prevention (ValidCard$ Card.Self). ValidStepTurnToController$ You
-        // is implicit in a 2-player game (a permanent only untaps during its controller's untap
-        // step), so it needs no extra gating here.
-        if (event_is_untap && layer_cant_happen && valid_card_self && untap_valid_subtype.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::SKIP_UNTAP;
-            r.applies_to_self_only = true;
-            result.push_back(r);
-        }
+        read_replacement_rows(line, svars, ReplacementHost::CARD, result);
         for (size_t i = line_first; i < result.size(); ++i) result[i].script_line = intern_script_line("R:" + line);
         if (result.size() == line_first) parse_finding("replacement", param_value(line, "Event"), "yields no replacement");
     }
