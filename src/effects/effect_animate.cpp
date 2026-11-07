@@ -19,6 +19,7 @@
 #include "../queries/counters.h"
 #include "../queries/delayed_triggers.h"
 #include "../queries/entry.h"
+#include "../queries/keywords.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../svar_eval.h"
@@ -28,6 +29,8 @@ extern Coordinator global_coordinator;
 namespace effects {
 
 static void register_sacrifice_at_end_step(const Ability &ab, const std::vector<ObjectRef> &animated);
+static void change_keywords_until_eot(const Ability &ab, Entity tgt);
+static bool changes_keywords_alone(const AbilityDef &def);
 
 // Bootstrap a Creature (and Damage) component on a permanent that the Animate extension points
 // have turned into a creature (animate_make_creature). The base P/T come from animate_*; the
@@ -126,8 +129,34 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     return HandlerResult::DONE_RUN_SUBS;
 }
 
+// RemoveKeywords$ and an AnimateAll's AddKeyword$ / Keywords$ on one permanent.
+static void change_keywords_until_eot(const Ability &ab, Entity tgt) {
+    // Removal direction (CR 613 layer 6): suppress the named keyword(s) until end of turn.
+    auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
+    for (const auto &kw : ab.def->remove_keywords)
+        perm.removed_keywords_eot.insert(kw);
+
+    // Grant direction (until end of turn) — creatures only (keywords live on Creature).
+    if (!ab.def->add_keywords.empty() && global_coordinator.entity_has_component<Creature>(tgt)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+        cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
+        for (const auto &kw : ab.def->add_keywords) {
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
+        }
+    }
+}
+
+// An AnimateAll that names no type and no P/T changes keywords and nothing else, so it has no
+// layer-4 or layer-7 effect to timestamp.
+static bool changes_keywords_alone(const AbilityDef &def) {
+    return def.kind == EffectKind::AnimateAll && def.animate_types.empty() && !def.animate_has_pt;
+}
+
 // See declaration in effects.h.
 void animate_permanent(const Ability &ab, Entity tgt) {
+    change_keywords_until_eot(ab, tgt);
+    if (changes_keywords_alone(*ab.def)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
     // Duration (CR 613.7 + 514.2). Three variants:
