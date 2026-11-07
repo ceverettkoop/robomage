@@ -118,6 +118,7 @@ def featurize(work, engine, rmfeat, names, jobs):
     args = argparse.Namespace(out=FIXTURE, work=work, bin_dir=os.path.join(REPO_ROOT, "bin"), engine=engine,
                               rmfeat=rmfeat)
     p = OVB.Paths(args)
+    p.replay_limits = replay_limits()
     os.makedirs(p.work, exist_ok=True)
     OVB.export_tables(p)
     srcs = [s for s in OVB.sources(FIXTURE) if names is None or s[1] in names]
@@ -131,15 +132,17 @@ def featurize(work, engine, rmfeat, names, jobs):
         key = {(int(seat.fields["viewer"][i]), int(seat.fields["game"][i]), int(seat.fields["sideboarding"][i]),
                 int(seat.fields["decision"][i])): i for i in range(len(seat))}
         want = np.nonzero(idx["source"] == si)[0]
-        pick = []
+        pick, replayed = [], []
         for r in want:
             k = (int(idx["viewer"][r]), int(idx["game"][r]), int(idx["sideboarding"][r]), int(idx["decision"][r]))
-            if k not in key:
+            if k in key:
+                pick.append(key[k])
+                replayed.append(r)
+            elif name not in p.replay_limits:
                 raise SystemExit("open_vocab_acceptance: %s: fixture decision %s not replayed" % (name, k))
-            pick.append(key[k])
         seat_parts.append(seat.select(pick))
         omni_parts.append(omni.select(pick))
-        rows.append(want)
+        rows.append(np.array(replayed, np.int64))
     seat, omni = OVB.concat(seat_parts), OVB.concat(omni_parts)
     omni.fields["viewer"] = seat.fields["viewer"].copy()
     rows = np.concatenate(rows)
@@ -161,6 +164,15 @@ def recorded_decisions():
         return None
     with open(INPUTS) as fp:
         return json.load(fp)["decisions"]
+
+
+def replay_limits():
+    """{source: the decisions of its log that replay}: a behaviour change past them leaves the log's own choices
+    illegal, so ``featurize`` stops there and those decisions leave ``tests/open_vocab/inputs.json``."""
+    if not os.path.exists(INPUTS):
+        return {}
+    with open(INPUTS) as fp:
+        return json.load(fp).get("replay_limits", {})
 
 
 def recorded_only(seat, omni, rows):
@@ -625,7 +637,7 @@ def write_inputs(args):
                    "tok_card, tok_ability, tok_mask, rel, act_tok, act_mask), today's featurization equal to S0's "
                    "*_nolists decisions mapped by name; a decision whose inputs moved since is absent",
            "generator": "learn/open_vocab_acceptance.py inputs", "gate_sources": GATE_SOURCES,
-           "sources": [s["name"] for s in man["sources"]], "decisions": keep}
+           "sources": [s["name"] for s in man["sources"]], "replay_limits": replay_limits(), "decisions": keep}
     head = {k: v for k, v in doc.items() if k != "decisions"}
     with open(INPUTS, "w") as fp:          # one decision a line, so a drop's diff names the decisions
         fp.write(json.dumps(head, indent=1)[:-2] + ',\n "decisions": {\n')

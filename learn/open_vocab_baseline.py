@@ -139,6 +139,7 @@ class Paths:
         self.rmfeat = os.path.abspath(args.rmfeat)
         self.cards = os.path.join(self.work, "cards.rmstate")
         self.tables = os.path.join(self.work, "tables")
+        self.replay_limits = {}
 
 
 def export_tables(p):
@@ -156,12 +157,27 @@ def sources(out_dir):
     return out
 
 
+def limited_log(p, d, name, log):
+    """`log`, or with a limit in `p.replay_limits` a copy under `d` whose FLAGS line stops the run there."""
+    limit = p.replay_limits.get(name)
+    if limit is None:
+        return log
+    with open(log, "rb") as fp:
+        lines = fp.read().split(b"\n")
+    flags = [i for i, line in enumerate(lines) if line.startswith(b"FLAGS ")][0]
+    lines[flags] += b" max-decisions=%d" % limit
+    out = os.path.join(d, name + ".rmlog")
+    with open(out, "wb") as fp:
+        fp.write(b"\n".join(lines))
+    return out
+
+
 def featurize_source(p, kind, name, log):
     """Replays `log` into a dump and featurizes it per viewer; {viewer: tensors path}."""
     d = os.path.join(p.work, "feat", kind)
     os.makedirs(d, exist_ok=True)
     dump = os.path.join(d, name + ".rms")
-    run([p.engine, "--replay", log, "--machine", "--rmstate-dump", dump], p.bin_dir)
+    run([p.engine, "--replay", limited_log(p, d, name, log), "--machine", "--rmstate-dump", dump], p.bin_dir)
     out = {}
     for v in VIEWERS:
         t = os.path.join(d, "%s.%s.rmtb" % (name, v))
