@@ -1,0 +1,40 @@
+{
+  "name": "cr609_4_cauldron_mana_is_for_activations_alone",
+  "why": "CR 609.4: 'to activate abilities of creatures you control': a Forest doesn't pay for a white spell, nor the opponent's Forest for the opponent's creature's ability, beside Agatha's Soul Cauldron.",
+  "hand_a": [
+    "Swords to Plowshares"
+  ],
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "hand_b": [
+    "Shadowspear"
+  ],
+  "battlefield_b": [
+    "Stoneforge Mystic",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 8,
+  "expect_menu_not": [
+    "Cast Swords to Plowshares",
+    "Activate Stoneforge Mystic"
+  ],
+  "expect_menu": [
+    "Activate Agatha"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

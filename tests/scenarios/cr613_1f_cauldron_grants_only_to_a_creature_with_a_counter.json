@@ -1,0 +1,45 @@
+{
+  "name": "cr613_1f_cauldron_grants_only_to_a_creature_with_a_counter",
+  "why": "CR 613.1f: Agatha's Soul Cauldron grants to creatures with +1/+1 counters on them: the Bears with the counter have the exiled Stoneforge Mystic's ability, the Bears without it don't, and neither does a creature of the opponent's.",
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears",
+    "Scryb Ranger",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Stoneforge Mystic"
+  ],
+  "battlefield_b": [
+    "Frenzied Baloth",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Stoneforge Mystic",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect_menu": [
+    "Activate Grizzly Bears \\(ChangeZone\\)"
+  ],
+  "expect_menu_not": [
+    "Activate Scryb Ranger \\(ChangeZone\\)",
+    "Activate Frenzied Baloth"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "hand_a": [
+    "Shadowspear"
+  ]
+}

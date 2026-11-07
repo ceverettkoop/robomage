@@ -69,6 +69,7 @@ static MatchCtx static_match_ctx(const ActiveStatic &as);
 static bool printed_object_matches(const ActiveStatic &as, Entity e);
 static std::string strip_named_card_qualifier(const std::string &filter);
 static std::set<Colors> added_colors(const ActiveStatic &as);
+static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for);
 static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked);
 static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
@@ -102,6 +103,23 @@ static const char *zone_display_name(Zone::ZoneValue loc);
 template <typename Fn>
 static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn);
 static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target);
+
+// Per-pass runtime state of one static-granted ability, snapshotted before the grant is
+// stripped so it can be carried onto the freshly re-parsed copy in the same pass. Keyed by
+// (recipient permanent, granting static, ability identity) — mirroring restore_mana_state's
+// (entity, ability-identity) keying for normal mana abilities — so the ActivationLimit$
+// counter (Ability::activations_this_turn) survives the rebuild instead of resetting to 0
+// every continuous-effects pass. Without this a granted limited-activation ability could be
+// activated more than its ActivationLimit$ allows (CR 602.5). The ability is held by value so
+// identical_activated_ability can match it against the rebuilt copy regardless of vector index.
+struct GrantedAbilityRuntime {
+    Entity recipient = 0;
+    Entity granted_by_static = 0;
+    Ability ability;  // the pre-strip granted instance (carries activations_this_turn)
+};
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
+                               const std::vector<GrantedAbilityRuntime> &saved_runtime);
+static void grant_ability(Entity e, Ability copy, const std::vector<GrantedAbilityRuntime> &saved_runtime);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -537,11 +555,20 @@ bool apply_color_statics(Entity e, std::set<Colors> &colors) {
     return !effects.empty();
 }
 
-bool any_mana_as_any_color_active() {
+// Does ManaConvert static `as` reach a payment for `paid_for`? An activation is paid by the controller
+// of what it is activated from (CR 602.2), so that is who ValidPlayer$ You asks about.
+static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for) {
+    const StaticAbility &sa = *as.sa();
+    if (sa.mana_convert_activated && paid_for.purpose != ManaPurpose::ACTIVATE) return false;
+    if (sa.mana_convert_you && source_controller(paid_for.entity) != as.controller) return false;
+    return sa.mana_convert_card.empty() || object_matches_filter(paid_for.entity, sa.mana_convert_card, static_match_ctx(as));
+}
+
+bool any_mana_as_any_color_active(const ManaPayee &paid_for) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met) continue;
         if (as.sa()->category != "ManaConvert") continue;
-        if (as.sa()->mana_conversion == "AnyType->AnyColor") return true;
+        if (as.sa()->mana_conversion == "AnyType->AnyColor" && mana_convert_reaches(as, paid_for)) return true;
     }
     return false;
 }
@@ -2014,19 +2041,48 @@ void StateManager::apply_layer6_ability_effects() {
 // granting source enter/leave, and de-dupes per source static (one copy per recipient). It
 // runs unconditionally (even with no statics) so a grant left by a source that just left the
 // battlefield is cleaned up.
-// Per-pass runtime state of one static-granted ability, snapshotted before the grant is
-// stripped so it can be carried onto the freshly re-parsed copy in the same pass. Keyed by
-// (recipient permanent, granting static, ability identity) — mirroring restore_mana_state's
-// (entity, ability-identity) keying for normal mana abilities — so the ActivationLimit$
-// counter (Ability::activations_this_turn) survives the rebuild instead of resetting to 0
-// every continuous-effects pass. Without this a granted limited-activation ability could be
-// activated more than its ActivationLimit$ allows (CR 602.5). The ability is held by value so
-// identical_activated_ability can match it against the rebuilt copy regardless of vector index.
-struct GrantedAbilityRuntime {
-    Entity recipient = 0;
-    Entity granted_by_static = 0;
-    Ability ability;  // the pre-strip granted instance (carries activations_this_turn)
-};
+// Put `copy`, granted by a static, on permanent `e`, unless it has one the same.
+static void grant_ability(Entity e, Ability copy, const std::vector<GrantedAbilityRuntime> &saved_runtime) {
+    auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
+    copy.source = ObjectRef::of(e);
+    // Carry over this pass's runtime counter from the pre-strip instance of the same grant on the
+    // same recipient, so ActivationLimit$ is enforced across the whole turn even though continuous
+    // effects rebuild the ability every pass (CR 602.5).
+    for (auto &saved : saved_runtime) {
+        if (saved.recipient != e) continue;
+        if (saved.granted_by_static != copy.granted_by_static) continue;
+        if (!saved.ability.identical_activated_ability(copy.def)) continue;
+        copy.activations_this_turn = saved.ability.activations_this_turn;
+        break;
+    }
+    // De-dupe: skip if an identical ability (granted or intrinsic) already exists on the recipient,
+    // so a land that already has "{T}: Add {C}" isn't given a duplicate.
+    for (auto &existing : abilities)
+        if (existing.identical_activated_ability(copy.def)) return;
+    abilities.push_back(copy);
+}
+
+// Every permanent static `a` affects gets the activated abilities of the cards it names: those that
+// function on the battlefield, as a permanent has them (object_abilities).
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities,
+                               const std::vector<GrantedAbilityRuntime> &saved_runtime) {
+    const StaticAbility &sa = *a.sa();
+    const std::vector<Entity> targets = static_targets(a, entities);
+    if (targets.empty()) return;
+    const MatchCtx ctx = static_match_ctx(a);
+    for (Entity card : entities) {
+        if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        if (global_coordinator.GetComponent<Zone>(card).location != sa.gains_abilities_zone) continue;
+        if (!object_matches_filter(card, sa.gains_abilities_of, ctx)) continue;
+        for (const AbilityDef *def : object_abilities(card)) {
+            if (def->ability_type != AbilityDef::ACTIVATED || def->activation_zone != -1) continue;
+            Ability granted(def);
+            granted.granted_by_static = a.entity;
+            granted.granted_from = ObjectRef::of(card);
+            for (Entity e : targets) grant_ability(e, granted, saved_runtime);
+        }
+    }
+}
 
 void StateManager::apply_layer6_ability_grants() {
     // Phase 1: remove all previously static-granted abilities from every battlefield permanent,
@@ -2061,29 +2117,13 @@ void StateManager::apply_layer6_ability_grants() {
         if (granted.def->category.empty()) continue;  // unparsable body — grant nothing
         granted.granted_by_static = a.entity;
 
-        for (Entity e : targets) {
-            auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
-            Ability copy = granted;
-            copy.source = ObjectRef::of(e);
-            // Carry over this pass's runtime counter from the pre-strip instance of the same
-            // grant on the same recipient, so ActivationLimit$ is enforced across the whole turn
-            // even though continuous effects rebuild the ability every pass (CR 602.5).
-            for (auto &saved : saved_runtime) {
-                if (saved.recipient != e) continue;
-                if (saved.granted_by_static != a.entity) continue;
-                if (!saved.ability.identical_activated_ability(copy.def)) continue;
-                copy.activations_this_turn = saved.ability.activations_this_turn;
-                break;
-            }
-            // De-dupe: skip if an identical ability (granted or intrinsic) already exists on
-            // the recipient, so a land that already has "{T}: Add {C}" isn't given a duplicate.
-            bool dup = false;
-            for (auto &existing : abilities) {
-                if (existing.identical_activated_ability(copy.def)) { dup = true; break; }
-            }
-            if (dup) continue;
-            abilities.push_back(copy);
-        }
+        for (Entity e : targets) grant_ability(e, granted, saved_runtime);
+    }
+
+    // Phase 2b: GainsAbilitiesOf$ (Agatha's Soul Cauldron).
+    for (auto &a : g_active_statics) {
+        if (a.suppressed || !a.condition_met || a.sa()->category != "Continuous") continue;
+        if (!a.sa()->gains_abilities_of.empty()) grant_abilities_of(a, mEntities, saved_runtime);
     }
 
     // Phase 3: re-grant from each active AddTrigger$ static whose condition is met (The Tabernacle

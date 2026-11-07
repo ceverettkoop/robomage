@@ -2,7 +2,9 @@
 #define STATIC_ABILITY_H
 #include <cstdint>
 #include <string>
+#include "filter_spec.h"
 #include "object_spec.h"
+#include "zone.h"
 
 struct StaticAbility {
     std::string category  = "";  // "Continuous", "MustAttack"
@@ -33,6 +35,11 @@ struct StaticAbility {
     std::string add_trigger = "";
     std::string add_trigger_svar_name = "";
     std::string add_trigger_svar = "";
+    // GainsAbilitiesOf$ <filter> (Agatha's Soul Cauldron): every permanent Affected$ designates has
+    // the activated abilities of the cards matching it in the GainsAbilitiesOfZones$ zones, layer 6
+    // (CR 613.1f). Each ability is the definition the card's script gave it, with that script's SVars.
+    FilterSpec gains_abilities_of;
+    Zone::ZoneValue gains_abilities_zone = Zone::BATTLEFIELD;
     FilterSpec affected;        // Affected$: the filter over what this static affects
     // AffectedDefined$: the one object this static affects (Self, or what its source is attached
     // to), which `affected` restricts further ("Card" when the script gives no Affected$).
@@ -216,6 +223,12 @@ struct StaticAbility {
     // AnyType->AnyColor (Mycosynth Lattice's "Players may spend mana as though it were mana of
     // any color.") lets any mana pay any colored pip. Consumed by any_mana_as_any_color_active.
     std::string mana_conversion = "";       // ManaConversion$ AnyType->AnyColor
+    // Who and what a conversion reaches (Agatha's Soul Cauldron: "to activate abilities of creatures
+    // you control"): ValidPlayer$ You, the payer is the static's controller; ValidCard$, the object
+    // paid for; ValidSA$ Activated, what is paid for is an activation. With none, every payment.
+    bool mana_convert_you = false;
+    FilterSpec mana_convert_card;
+    bool mana_convert_activated = false;
 
     // Self card-type animate static (Kaito, Bane of Nightmares' "During your turn ... he's a 3/4
     // Ninja creature with hexproof that's still a planeswalker"). When Affected$ references the

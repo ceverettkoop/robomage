@@ -26,8 +26,7 @@ namespace effects {
 // ImmediateTrigger ("when you do ...") creates a reflexive triggered ability mid-resolution of
 // its parent ability (Ajani's [0]: create a token; when you do, if you control a red permanent
 // other than Ajani, deal damage). Reflexive triggers follow the rules for delayed triggered
-// abilities (CR 603.12): the Execute$ ability triggers now if the ConditionPresent$ filter holds,
-// and is put on the stack the next time a player would receive priority, with its targets chosen
+// abilities (CR 603.12): the Execute$ ability triggers now, and is put on the stack the next time a player would receive priority, with its targets chosen
 // then (CR 603.3d) — so opponents can respond to it and Ward can counter it. The parent's own
 // SubAbility$ chain (a Cleanup clearing remembered objects) runs here, as part of the parent.
 //
@@ -36,22 +35,16 @@ namespace effects {
 // controller can actually pay it, and paid during the parent's resolution; on decline (or when
 // it can't be paid) nothing triggers.
 //
-// Suspendable: the fire decision (condition scan + energy yes/no) resolves once into
+// Suspendable: the fire decision (the costs offered) resolves once into
 // ImmediateRt, and each parent-chain sub resolves as a persisted IMMEDIATE FrameLevel.
 HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     ImmediateRt local_rt;
     ImmediateRt &rt = ctx.can_suspend() ? ctx.rt<ImmediateRt>() : local_rt;
 
     if (!rt.init) {
-        bool fire = ab.def->condition_present.empty();
-        if (!fire) {
-            for (auto e : orderer->mEntities) {
-                if (permanent_matches_filter(e, ab.def->condition_present, MatchCtx{ab.controller, ab.source.lki_entity()})) {
-                    fire = true;
-                    break;
-                }
-            }
-        }
+        // A ConditionPresent$, over the battlefield or what ConditionDefined$ names, was read before
+        // the handler ran (resolve_ability), so only a condition that holds reaches this.
+        bool fire = true;
 
         // UnlessCost$ with UnlessSwitched$ True: "you may sacrifice a creature. When you do, ..."
         // (Grist, CR 603.12). What is paid decides whether it triggers.

@@ -1,0 +1,40 @@
+{
+  "name": "cr613_1f_cauldron_grants_only_what_it_exiled",
+  "why": "CR 613.1f: 'exiled with Agatha's Soul Cauldron': a creature card in exile by another route lends nothing, and the one the Cauldron exiled does.",
+  "hand_a": [
+    "Shadowspear"
+  ],
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Scryb Ranger"
+  ],
+  "exile_a": [
+    "Stoneforge Mystic"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Scryb Ranger"
+  ],
+  "max_decisions": 7,
+  "expect_menu_not": [
+    "Activate Grizzly Bears \\(ChangeZone\\)"
+  ],
+  "expect_menu": [
+    "Activate Grizzly Bears \\(Untap\\)"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

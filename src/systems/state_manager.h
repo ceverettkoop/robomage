@@ -84,7 +84,8 @@ bool entering_object_loses_abilities(Entity entity);
 // payment matching. Read by the mana-payment path (mana_system.cpp) so affordability and the
 // actual spend agree. Scans g_active_statics (rebuilt each SBA pass), so callers must run after
 // gather_active_statics — true of every cast/pay path.
-bool any_mana_as_any_color_active();
+struct ManaPayee;
+bool any_mana_as_any_color_active(const ManaPayee &paid_for);
 
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard

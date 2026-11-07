@@ -829,6 +829,9 @@ struct Ability {
     // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
     // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
     Entity granted_by_static = 0;
+    // The card a grant of another object's ability took it from (GainsAbilitiesOf$), whose script
+    // the definition belongs to. Null for any other ability.
+    ObjectRef granted_from;
 
     // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
     // put on the stack (0 for an activation with no X); the resolution frame takes it as the

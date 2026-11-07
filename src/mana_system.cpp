@@ -719,7 +719,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 
     // Try to pay colored costs from the hypothetical pool. Under ManaConvert (Mycosynth Lattice)
     // any mana pays any colored pip, so every pip is treated as generic against the total pool.
-    bool any_color = any_mana_as_any_color_active();
+    bool any_color = any_mana_as_any_color_active(paid_for);
     auto remaining = hypothetical;
     size_t flexible_used = 0;
     if (!any_color) {
@@ -824,7 +824,7 @@ ManaValue pay_from_pool(ManaPool &pool, const ManaValue &cost, ManaPayee paid_fo
     // pip may be paid with mana of ANY type. Pay exact-color matches first (so on-color mana is
     // preferred and never wasted), then satisfy any still-unpaid colored pip from any remaining
     // mana — exactly the generic-pip rule applied to colored pips.
-    bool any_color = any_mana_as_any_color_active();
+    bool any_color = any_mana_as_any_color_active(paid_for);
     std::vector<Colors> unpaid_colored;
     for (auto color : cost) {
         if (color == GENERIC) continue;
@@ -1259,7 +1259,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, any mana
     // can pay any colored pip. We keep the colored pips colored (so Delve, which reduces only
     // generic costs, never touches them) and instead relax the colored source-matching below.
-    bool any_color = any_mana_as_any_color_active();
+    bool any_color = any_mana_as_any_color_active(paid_for);
 
     // Delve, in a simulated payment: each card it could exile takes a generic pip off. A real one
     // is paid by the cost's delve steps, before any mana (cost_payment.cpp).

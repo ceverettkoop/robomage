@@ -150,7 +150,7 @@ static bool mana_payable(const CostParts &cost, const CostCheck &check) {
         return resolve_hybrid_cost(check.payer, owed, *hybrid, payee, check.orderer, check.delve, tap,
                                    nullptr, cost.life() + check.life_reserve, exclude);
     if (owed.empty()) return true;
-    if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude);
+    if (check.estimate_mana) return can_afford_with_sources(check.payer, owed, check.orderer, exclude, payee);
     return can_pay_mana(check.payer, owed, payee, check.orderer, check.delve, tap, exclude,
                         cost.life() + check.life_reserve);
 }

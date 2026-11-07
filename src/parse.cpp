@@ -2545,7 +2545,6 @@ static bool param_form_read(const AbilityDef &ability, const std::string &text, 
     if (key == "RestrictValid")
         return ability.mana_restriction.kind != ManaRestriction::NONE;
     if (key == "ConditionDefined") {
-        if (category == "ImmediateTrigger") return false;  // it scans the battlefield for ConditionPresent$
         for (const char *name : {"Targeted", "Remembered", "Imprinted", "RememberedLKI", "TriggeredCard", "ExiledWith"})
             if (value == name) return true;
         return false;
@@ -4010,6 +4009,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     // The spells the cost floor applies to (Trinisphere: ValidCard$ Card = every
                     // spell). A bare "Card" is left empty (matches all) to skip a useless filter run.
                     if (value != "Card") sa.set_cost_filter = value;
+                } else if (sa.category == "ManaConvert") {
+                    sa.mana_convert_card = value;
                 }
             } else if (key == "NumLimitEachTurn") {
                 sa.cant_cast_limit_per_turn = std::stoi(value);
@@ -4079,6 +4080,14 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.affected_zone = value;
             } else if (key == "ExcludeZone") {
                 sa.exclude_zone = value;
+            } else if (key == "ValidPlayer" && sa.category == "ManaConvert" && value == "You") {
+                sa.mana_convert_you = true;
+            } else if (key == "ValidSA" && sa.category == "ManaConvert" && value == "Activated") {
+                sa.mana_convert_activated = true;
+            } else if (key == "GainsAbilitiesOf") {
+                sa.gains_abilities_of = value;
+            } else if (key == "GainsAbilitiesOfZones") {
+                if (!Zone::from_script_name(value, sa.gains_abilities_zone)) static_value_finding(sa, key, value);
             } else if (key == "ManaConversion") {
                 // ManaConvert static (Mycosynth Lattice): AnyType->AnyColor lets any mana pay any
                 // colored pip. Read by any_mana_as_any_color_active during mana payment.
@@ -4157,6 +4166,11 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             sa.affected_defined = spec;
             if (sa.affected.empty()) sa.affected = "Card";
         }
+    }
+    // A counters_ qualifier on anything but the source is the filter's own, read of each object.
+    if (!sa.affected_defined.is(ObjectSpec::SELF) && !filter_names_token(sa.affected, "Self")) {
+        sa.self_counter_type.clear();
+        sa.self_counter_compare.clear();
     }
     if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
     if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
@@ -4720,7 +4734,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
     } kModeKeys[] = {
         {"Continuous", true,
          "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddAbility AddTrigger AddSVar "
-         "AddType "
+         "AddType GainsAbilitiesOf GainsAbilitiesOfZones "
          "SetPower SetToughness SetColor AddColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
          "AdjustLandPlays MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
          "CharacteristicDefining"},
@@ -4734,7 +4748,7 @@ static bool static_mode_reads(const std::string &mode, const std::string &key) {
         {"CantPreventDamage", true, "IsCombat"},
         {"MustAttack", true, "ValidCreature"},
         {"DisableTriggers", false, "ValidCause ValidMode Destination"},
-        {"ManaConvert", false, "ManaConversion"},
+        {"ManaConvert", false, "ManaConversion ValidPlayer ValidCard ValidSA"},
         {"ManaRestriction", false, "ValidSource InvertValidSource"},
     };
     if (key == "Mode" || key == "Description" || key == "Secondary" || key == "EffectZone") return true;
@@ -4761,9 +4775,6 @@ static void static_form_findings(const StaticAbility &sa, const std::string &lin
     if (!sa.condition.empty() && sa.condition != "Delirium" && sa.condition != "PlayerTurn")
         static_value_finding(sa, "Condition", sa.condition);
     // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
-    if (!sa.self_counter_type.empty() && !sa.affected_defined.is(ObjectSpec::SELF) &&
-        !filter_names_token(sa.affected, "Self"))
-        parse_finding("static_form", "Affected.Counters", "read as a counter on the source: " + sa.affected.text());
     if (sa.category == "Continuous") {
         // The layer appliers act on the battlefield; only a play permission and a colour reach past
         // it (affected_zone_matches).

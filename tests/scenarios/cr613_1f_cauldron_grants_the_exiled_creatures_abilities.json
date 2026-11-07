@@ -1,0 +1,45 @@
+{
+  "name": "cr613_1f_cauldron_grants_the_exiled_creatures_abilities",
+  "why": "CR 613.1f, 113.3: a creature with a +1/+1 counter has the activated abilities of the creature cards exiled with Agatha's Soul Cauldron, and its controller may spend any mana on them (CR 609.4): Forests pay Stoneforge Mystic's {1}{W}.",
+  "hand_a": [
+    "Shadowspear",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Stoneforge Mystic"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Stoneforge Mystic",
+    "A:activate:Grizzly Bears",
+    "A:search:Shadowspear"
+  ],
+  "max_decisions": 10,
+  "expect_menu": [
+    "Activate Grizzly Bears \\(ChangeZone\\)"
+  ],
+  "expect": [
+    "Shadowspear"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

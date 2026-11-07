@@ -1,0 +1,31 @@
+{
+  "name": "cr603_12_cauldron_counter_follows_a_creature_card",
+  "why": "CR 603.12: 'When a creature card is exiled this way': the reflexive trigger is read of the exiled card (ConditionDefined$ Remembered), which is no permanent, and goes on the stack after the exile with its own target.",
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears"
+  ],
+  "graveyard_b": [
+    "Scryb Ranger"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Scryb Ranger"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Scryb Ranger is moved to exile",
+    "reflexive trigger",
+    "Put 1 \\+1/\\+1 counter"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

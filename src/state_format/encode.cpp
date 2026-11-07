@@ -908,7 +908,8 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
             for (const CardAbility &a : own) printed = printed || a.def == ab.def;
             Row r = c.w.row(TableId::OBJECT_ABILITY);
             r.u32(h);
-            put_abref(r, ab.def, ab_card, e);
+            const Entity lent_by = ab.granted_from.get();
+            put_abref(r, ab.def, lent_by != 0 ? visible_card_id(lent_by, c.viewer) : ab_card, e);
             const bool exhausted = ab.def->activation_limit > 0 && ab.activations_this_turn >= ab.def->activation_limit;
             r.u8(printed && ab.granted_by_static == 0 ? 0 : 1)
                 .u8(u8_count(ab.activations_this_turn))
