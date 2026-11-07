@@ -8,6 +8,7 @@
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
 #include "../queries/characteristics.h"
+#include "../queries/face_down.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 
@@ -106,7 +107,7 @@ static std::string describe(Entity e, Zone::Ownership viewer) {
     if (z.location == Zone::LIBRARY) out += "@" + std::to_string(z.distance_from_top);
     out += " ";
     out += identity_visible(e, viewer) ? entity_name(e) : std::string("face-down");
-    if (z.is_face_down && viewer_key(viewer) == Zone::UNKNOWN) out += " (face down)";
+    if (is_face_down(e) && viewer_key(viewer) == Zone::UNKNOWN) out += " (face down)";
     return out;
 }
 

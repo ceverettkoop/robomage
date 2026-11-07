@@ -30,6 +30,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/combat.h"
 #include "../queries/delayed_triggers.h"
+#include "../queries/face_down.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
 #include "../queries/overlays.h"
@@ -805,7 +806,7 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u16(pos_known
               ? u16_count(static_cast<int64_t>(stack_pos >= 0 ? static_cast<size_t>(stack_pos) : z.distance_from_top))
               : NONE16);
-    r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(z.is_face_down ? 1 : 0);
+    r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(is_face_down(e) ? 1 : 0);
     const bool transformed =
         visible && ((perm && perm->transformed) || global_coordinator.entity_has_component<PreparedCopy>(e) ||
                     (global_coordinator.entity_has_component<Spell>(e) &&

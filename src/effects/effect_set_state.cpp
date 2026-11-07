@@ -6,6 +6,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../queries/characteristics.h"
+#include "../queries/face_down.h"
 #include "../queries/zones.h"
 #include "../queries/visibility.h"
 #include "../queries/affected.h"
@@ -35,7 +36,7 @@ static void set_object_state(const Ability &ab, Entity subject) {
     auto &z = global_coordinator.GetComponent<Zone>(subject);
 
     if (ab.def->set_state_mode == "TurnFaceUp") {
-        if (z.is_face_down) {
+        if (is_face_down(subject)) {
             z.is_face_down = false;
             close_windows_on_face_up(subject);
             obs_face_turned(subject, true);

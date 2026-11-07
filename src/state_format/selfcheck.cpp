@@ -18,6 +18,7 @@
 #include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../game_driver.h"
+#include "../queries/face_down.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
@@ -194,7 +195,7 @@ static bool hidden_from(Entity e, Zone::Ownership viewer) {
     if (!is_seat(viewer) || !global_coordinator.entity_has_component<Zone>(e)) return false;
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     bool seen = false;
-    if (z.is_face_down) {
+    if (is_face_down(e)) {
         seen = (z.location == Zone::BATTLEFIELD || z.location == Zone::STACK) && z.controller == viewer;
     } else {
         switch (z.location) {
@@ -723,8 +724,8 @@ static void permute_hidden(Zone::Ownership viewer, const std::vector<Entity> &ke
         if (!is_seat(z.owner)) continue;
         const bool hidden_zone =
             z.location == Zone::HAND || z.location == Zone::LIBRARY || z.location == Zone::SIDEBOARD;
-        if (hidden_zone || (z.location == Zone::EXILE && z.is_face_down)) identities[z.owner].push_back(e);
-        if (!hidden_zone || z.is_face_down || in_window(e, z, viewer, true)) continue;
+        if (hidden_zone || (z.location == Zone::EXILE && is_face_down(e))) identities[z.owner].push_back(e);
+        if (!hidden_zone || is_face_down(e) || in_window(e, z, viewer, true)) continue;
         if (z.owner == opp)
             dealt.push_back(e);
         else if (z.location == Zone::LIBRARY)

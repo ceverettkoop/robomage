@@ -19,6 +19,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/entry.h"
+#include "../queries/face_down.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../resolution_memory.h"
@@ -259,7 +260,7 @@ static size_t move_all_cards(Ability &ab, std::shared_ptr<Orderer> orderer, cons
             game_log("%s moves %s to %s\n", player_name(owner).c_str(), entity_name(entity).c_str(), dest_str);
         } else if (global_coordinator.entity_has_component<CardData>(entity)) {
             // A face-down exiled card's identity is hidden from every player (CR 406.3).
-            if (global_coordinator.GetComponent<Zone>(entity).is_face_down) {
+            if (is_face_down(entity)) {
                 game_log("%s moves a face-down card to %s\n", player_name(owner).c_str(), dest_str);
             } else {
                 auto &cd = global_coordinator.GetComponent<CardData>(entity);

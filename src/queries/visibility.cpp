@@ -20,6 +20,7 @@
 #include "../state_format/handles.h"
 #include "characteristics.h"
 #include "entry.h"
+#include "face_down.h"
 #include "lki.h"
 #include "players.h"
 #include "zones.h"
@@ -73,15 +74,14 @@ static bool window_shown_to(const Window &w, Zone::Ownership viewer) {
 // down (CR 400.2, 406.3).
 static bool in_hidden_zone(Entity card) {
     if (!global_coordinator.entity_has_component<Zone>(card)) return false;
-    const Zone &z = global_coordinator.GetComponent<Zone>(card);
-    return !is_public_zone(z.location) || z.is_face_down;
+    return !is_public_zone(global_coordinator.GetComponent<Zone>(card).location) || is_face_down(card);
 }
 
 // What `viewer` sees of `card` by the zone rules alone, without a window.
 static bool sees_without_window(Entity card, Zone::Ownership viewer) {
     if (!is_seat(viewer) || !global_coordinator.entity_has_component<Zone>(card)) return true;
     const Zone &z = global_coordinator.GetComponent<Zone>(card);
-    if (z.is_face_down) {
+    if (is_face_down(card)) {
         // CR 708.5: the controller may look at a face-down permanent or spell; a face-down card in
         // any other zone is seen only through a window (CR 406.3).
         return (z.location == Zone::BATTLEFIELD || z.location == Zone::STACK) && z.controller == viewer;
@@ -195,7 +195,7 @@ static void trace_window(const char *verb, const Window &w, Entity card, const c
     std::string where = "(gone)";
     if (card != 0) {
         const Zone &z = global_coordinator.GetComponent<Zone>(card);
-        where = std::string("in ") + trace_zone_word(z.location) + (z.is_face_down ? " face down" : "") + " of " +
+        where = std::string("in ") + trace_zone_word(z.location) + (is_face_down(card) ? " face down" : "") + " of " +
                 trace_seat_word(z.owner);
         if (z.location == Zone::LIBRARY) where += " at " + std::to_string(z.distance_from_top);
     }

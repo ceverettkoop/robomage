@@ -15,6 +15,7 @@
 #include "../knowledge/k_rows.h"
 #include "../knowledge/knowledge.h"
 #include "../knowledge/truth.h"
+#include "../queries/face_down.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "decode.h"
@@ -96,7 +97,7 @@ static bool build_truth(Zone::Ownership viewer, knowledge::Truth *out) {
             default:
                 break;
         }
-        if (z.is_face_down) {
+        if (is_face_down(e)) {
             const uint32_t h = handle_of(viewer, e);
             if (h != 0) out->face_down[h] = card;
         }

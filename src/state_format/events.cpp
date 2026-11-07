@@ -17,6 +17,7 @@
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
 #include "../queries/characteristics.h"
+#include "../queries/face_down.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
@@ -202,7 +203,7 @@ static ObsEventCard object_card(Entity e, Zone::Ownership viewer, bool issue) {
     if (identity_visible(e, viewer)) c.card = visible_card_id(e, viewer);
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     if (z.location == Zone::LIBRARY) c.from = c.to = position_seen(e, viewer);
-    c.face_down = z.is_face_down;
+    c.face_down = is_face_down(e);
     c.token = is_token_object(e);
     return c;
 }
@@ -221,7 +222,7 @@ ObsMoveCapture obs_begin_move(Entity e) {
     if (cap.created) return cap;
     cap.origin = z.location;
     cap.origin_owner = z.owner;
-    cap.origin_hidden = !is_public_zone(z.location) || z.is_face_down;
+    cap.origin_hidden = !is_public_zone(z.location) || is_face_down(e);
     if (z.location == Zone::STACK) note_stack_departure(e);
     if (z.location == Zone::HAND) cap.hand_subset = cur_game.obs_events.hand_subset;
     for (Zone::Ownership viewer : VIEWERS) {
@@ -338,7 +339,7 @@ void obs_end_move(const ObsMoveCapture &cap, Entity e, const uint32_t after_hand
             if (c.handle_after == 0 && individually_identifiable(e, viewer)) c.handle_after = handle_of(viewer, e);
             c.card = identity_visible(e, viewer) ? visible_card_id(e, viewer) : seen.card;
             c.from = seen.from;
-            c.face_down = z.location == Zone::EXILE && z.is_face_down;
+            c.face_down = z.location == Zone::EXILE && is_face_down(e);
             c.token = cap.token;
             c.hand_subset = cap.hand_subset;
             if (info.draw) {
