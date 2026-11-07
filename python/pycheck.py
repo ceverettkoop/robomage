@@ -538,36 +538,36 @@ def _guides_unit_fails(g):
             diff = {k: (got.get(k, 0), want.get(k, 0)) for k in set(got) | set(want) if got.get(k, 0) != want.get(k, 0)}
             fails.append(f"guides unit: {label}: main differs from the target (got, want): {diff}")
 
-    play = g.target("burn", "bw_dnt", True)
-    draw = g.target("burn", "bw_dnt", False)
+    play = g.target("burn", "death_and_taxes", True)
+    draw = g.target("burn", "death_and_taxes", False)
     reg = g.decks["burn"][0]
     if play is None or play.get("Smash to Smithereens") != 2 or play.get("Eidolon of the Great Revel", 0) != 0 \
             or play.get("Mountain") != reg["Mountain"]:
-        fails.append(f"guides unit: burn vs bw_dnt on the play: target {play}")
+        fails.append(f"guides unit: burn vs death_and_taxes on the play: target {play}")
     if draw is None or draw.get("Smash to Smithereens") != 3 or draw.get("Mountain") != reg["Mountain"] - 1:
-        fails.append(f"guides unit: burn vs bw_dnt on the draw: target {draw}")
-    m, s, n = phase("burn", "bw_dnt", True)
-    expect("burn vs bw_dnt on the play", m, play)
+        fails.append(f"guides unit: burn vs death_and_taxes on the draw: target {draw}")
+    m, s, n = phase("burn", "death_and_taxes", True)
+    expect("burn vs death_and_taxes on the play", m, play)
     if n != 7:
-        fails.append(f"guides unit: burn vs bw_dnt on the play: {n} swaps, want 7")
-    m2, s2, n = phase("burn", "bw_dnt", False)
-    expect("burn vs bw_dnt on the draw", m2, draw)
+        fails.append(f"guides unit: burn vs death_and_taxes on the play: {n} swaps, want 7")
+    m2, s2, n = phase("burn", "death_and_taxes", False)
+    expect("burn vs death_and_taxes on the draw", m2, draw)
     # Game 3 after a flip from the draw to the play: the land swap is undone, nothing else moves.
-    m3, _s3, n = phase("burn", "bw_dnt", True, start=(m2, s2))
-    expect("burn vs bw_dnt, game 3 from the draw to the play", m3, play)
+    m3, _s3, n = phase("burn", "death_and_taxes", True, start=(m2, s2))
+    expect("burn vs death_and_taxes, game 3 from the draw to the play", m3, play)
     if n != 1:
-        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the draw to the play: {n} swaps, want 1")
+        fails.append(f"guides unit: burn vs death_and_taxes, game 3 from the draw to the play: {n} swaps, want 1")
     # And back: the play configuration onto the draw.
-    m4, _s4, n = phase("burn", "bw_dnt", False, start=(m, s))
-    expect("burn vs bw_dnt, game 3 from the play to the draw", m4, draw)
+    m4, _s4, n = phase("burn", "death_and_taxes", False, start=(m, s))
+    expect("burn vs death_and_taxes, game 3 from the play to the draw", m4, draw)
     if n != 1:
-        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the play to the draw: {n} swaps, want 1")
+        fails.append(f"guides unit: burn vs death_and_taxes, game 3 from the play to the draw: {n} swaps, want 1")
     # A deck with no draw land boards the same on the play and on the draw.
-    mp, _, _ = phase("gw_maverick", "bug", True)
-    md, _, _ = phase("gw_maverick", "bug", False)
-    expect("gw_maverick vs bug on the play", mp, g.target("gw_maverick", "bug", True))
-    if _nonzero(mp) != _nonzero(md) or g.target("gw_maverick", "bug", True) != g.target("gw_maverick", "bug", False):
-        fails.append("guides unit: gw_maverick vs bug boards differently on the play and on the draw")
+    mp, _, _ = phase("lands_top8", "bug", True)
+    md, _, _ = phase("lands_top8", "bug", False)
+    expect("lands_top8 vs bug on the play", mp, g.target("lands_top8", "bug", True))
+    if _nonzero(mp) != _nonzero(md) or g.target("lands_top8", "bug", True) != g.target("lands_top8", "bug", False):
+        fails.append("guides unit: lands_top8 vs bug boards differently on the play and on the draw")
     # A held-out pair, and an opponent that is no league deck: Done at once.
     if g.target("bug", "reanimator", False) is not None or g.target("bug", "reanimator", False, holdout=False) is None:
         fails.append("guides unit: bug vs reanimator is not held out (or has no row)")
@@ -601,12 +601,14 @@ def check_guides():
 
 
 # The sideboard part's bo3 matches, scripted:hard+sb on both seats: (deck_a, deck_b, seed). Burn has
-# a draw land, gw_maverick none; bug vs reanimator is held out for bug (not for reanimator). The seeds
-# are matches that go to three games (each seat's play/draw flips between games 2 and 3); the part
-# fails when none of them does any more (repin the seeds).
-SIDEBOARD_MATCHES = (("league/burn", "league/gw_maverick", 4),
+# a draw land, lands_top8 none; bug vs reanimator is held out for bug (not for reanimator); ur_tempo
+# boards in a split card and an Adventure card against death_and_taxes. The seeds are matches that
+# go to three games (each seat's play/draw flips between games 2 and 3); the part fails when none of
+# them does any more (repin the seeds).
+SIDEBOARD_MATCHES = (("league/burn", "league/lands_top8", 4),
                      ("league/bug", "league/reanimator", 3),
-                     ("league/uw_control", "league/wubg_doomsday", 9))
+                     ("league/uw_control", "league/wubg_doomsday", 9),
+                     ("league/ur_tempo", "league/death_and_taxes", 1))
 _SB_HEADER = re.compile(r"^Player ([AB]) sideboarding \(\d+ in sideboard, (\d+) swap\(s\) made\):")
 _GAME_RESULT = re.compile(r"^GAME_RESULT: (\d+) (?:Player ([AB]) wins|draw)")
 

@@ -2132,9 +2132,9 @@ def check_benchmark_sideboarding(tmp):
         _bench_line(5, 1, "A", "burn", "bug", -1, first="A"),
         _bench_line(5, 2, "A", "burn", "bug", 1, first="A",
                     sb={"A": seat(True, 2, ["Dead", "Dead"], ["Mountain", "Mountain"]), "B": seat(False, 0)}),
-        # 6: bug vs bw_dnt on the play, the guide's board, cutting the frames' "Lórien Revealed".
-        _bench_line(6, 1, "A", "bug", "bw_dnt", -1, first="A"),
-        _bench_line(6, 2, "A", "bug", "bw_dnt", 1, first="A",
+        # 6: bug vs death_and_taxes on the play, the guide's board, cutting the frames' "Lórien Revealed".
+        _bench_line(6, 1, "A", "bug", "death_and_taxes", -1, first="A"),
+        _bench_line(6, 2, "A", "bug", "death_and_taxes", 1, first="A",
                     sb={"A": seat(False, 3, ["Pernicious Deed", "Pernicious Deed", "Toxic Deluge"],
                                   ["Thoughtseize", "Thoughtseize", "Lórien Revealed"]), "B": seat(False, 0)}),
     ]
@@ -2171,7 +2171,7 @@ def check_benchmark_sideboarding(tmp):
           "sb_report per deck: %s" % json.dumps(rep["by_deck"])[:800])
     opp = SB.report(lines, "b")
     check(opp["all"]["phases"] == 7 and opp["all"]["hist"][:2] == [6, 1] and opp["by_deck"]["uw_control"]["in"]
-          == [["Containment Priest", 1]] and "bw_dnt" in opp["by_deck"], "sb_report opponent: %s" % json.dumps(opp)[:600])
+          == [["Containment Priest", 1]] and "death_and_taxes" in opp["by_deck"], "sb_report opponent: %s" % json.dumps(opp)[:600])
     # The summary: the section with the policy's row and, against hard+sb, the opponent's.
     reps = {"p": MT.report([MT.game_record(x) for x in lines])}
     s = BM.summarize(reps, sideboards={"p": {"policy": rep, "opponent": opp}})
