@@ -59,6 +59,42 @@ inline const CardData &card_characteristics(Entity e, const CardData &cd) {
     return cd.combined ? *cd.combined : cd;
 }
 
+// ── One object in any zone (CR 109.3) ─────────────────────────────────────────
+// What an object is where it is now: the reader behind filters and target checks. The layers own
+// the battlefield (CR 613), so a permanent's values are what they left on its components. Anywhere
+// else a card has its printed values, read through card_characteristics, and only the color a
+// layer-5 static sets there changes them. None of these read last-known information: a card in a
+// new zone is a new object with its own characteristics (CR 400.7), and a look back at the object
+// that left is lki_for's, through effective_power and its neighbours below.
+struct ObjectCharacteristics {
+    const std::set<Type> *types = nullptr;
+    std::set<Colors> colors;
+    bool has_pt = false;  // a card always has its printed P/T; a head type guard scopes P/T filters
+    int power = 0;
+    int toughness = 0;
+};
+
+// `cd` as printed, on the face `e` shows; with e == 0, the face `cd` on its own.
+ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd);
+
+// The card `e` (`cd` its CardData) as a card, wherever it is: printed, but for the color a layer-5
+// static sets in any zone (setcolor_override_for).
+ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd);
+
+// The battlefield permanent `e`, as the layers left it.
+ObjectCharacteristics permanent_characteristics(Entity e, const Permanent &perm);
+
+// The type line of `e` where it is now: Permanent::types on the battlefield (layer 4 writes there,
+// CR 613.1d), the face card_characteristics reads anywhere else, a token's own. Empty for an object
+// with none of these (a player, an ability).
+const std::set<Type> &effective_types(Entity e);
+
+// The abilities `e` has where it is now. A permanent has those of the face it shows, unless an
+// effect removed them, and every ability on Permanent::abilities (CR 613.1f); a card anywhere else
+// those of card_characteristics, a token its Token's. Keywords are read through
+// permanent_has_keyword (queries/keywords.h), in any zone too.
+std::vector<const AbilityDef *> object_abilities(Entity e);
+
 // The replacement effects permanent `e` generates (CR 614): those of a card's face that's up
 // (CR 712.8e), or a token's (a token copy has the copied card's, CR 707.2). Empty otherwise.
 const std::vector<Effect::Replacement> &permanent_replacement_effects(Entity e);

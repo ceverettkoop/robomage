@@ -130,14 +130,6 @@ static AnnounceStatus announce_trigger(PendingTrigger &pt, TriggerPlacementRT &t
 // `entity` controlled by `controller`. `perm` is its Permanent while it is on the battlefield; a
 // `departed` source (nullptr perm) left the battlefield with the objects its abilities watch and
 // triggers only through the leaves-the-battlefield look-back (CR 603.10a).
-static void append_ability_defs(std::vector<const AbilityDef *> &out,
-                                const std::vector<const AbilityDef *> &defs);
-static void append_ability_defs(std::vector<const AbilityDef *> &out,
-                                const std::vector<Ability> &abilities);
-// The definitions of every ability battlefield permanent `entity` has that can trigger: its
-// active face's (or token's) printed abilities, unless layer-6 removal took them (CR 613.1f /
-// 305.7), then the abilities on its Permanent (grants, keyword-derived triggers).
-static std::vector<const AbilityDef *> permanent_ability_defs(Entity entity, const Permanent &perm);
 static void match_event_triggers(Entity entity, Zone::Ownership controller, const Permanent *perm,
                                  const std::string &ent_name,
                                  const std::vector<const AbilityDef *> &ab_defs,
@@ -167,33 +159,6 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
 // subabilities/charm_choices. Only abilities naming Defined$ TriggeredActivator are touched.
-static void append_ability_defs(std::vector<const AbilityDef *> &out,
-                                const std::vector<const AbilityDef *> &defs) {
-    out.insert(out.end(), defs.begin(), defs.end());
-}
-
-static void append_ability_defs(std::vector<const AbilityDef *> &out,
-                                const std::vector<Ability> &abilities) {
-    for (const Ability &ab : abilities) out.push_back(ab.def);
-}
-
-// Face selection happens here (a transformed permanent reads its back face), so a scan never
-// needs a per-ability front-face skip.
-static std::vector<const AbilityDef *> permanent_ability_defs(Entity entity, const Permanent &perm) {
-    std::vector<const AbilityDef *> defs;
-    if (!perm.abilities_removed) {
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
-            append_ability_defs(defs, (perm.transformed && cd.backside) ? cd.backside->abilities
-                                                                        : cd.abilities);
-        }
-        if (global_coordinator.entity_has_component<Token>(entity))
-            append_ability_defs(defs, global_coordinator.GetComponent<Token>(entity).abilities);
-    }
-    append_ability_defs(defs, perm.abilities);
-    return defs;
-}
-
 // The object a CARD_CHANGED_ZONE event moved, as it was before the move.
 static ObjectRef moved_object(const Event &ev) {
     return ObjectRef::of_object(
@@ -567,7 +532,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         // perm.abilities stays in the list: the layer pass already filtered it down to what
         // survives the removal (an ability granted by the remover itself, or the regenerated
         // subtype-derived mana ability), so anything still there is legitimately functioning.
-        std::vector<const AbilityDef *> ab_defs = permanent_ability_defs(entity, perm);
+        std::vector<const AbilityDef *> ab_defs = object_abilities(entity);
         if (ab_defs.empty()) continue;
 
         match_event_triggers(entity, perm.controller, &perm, entity_name(entity), ab_defs,
@@ -826,7 +791,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         const std::string ent_name = entity_name(entity);
-        for (const AbilityDef *abp : permanent_ability_defs(entity, perm)) {
+        for (const AbilityDef *abp : object_abilities(entity)) {
             {
                 const AbilityDef &ab = *abp;
                 if (ab.ability_type != AbilityDef::TRIGGERED) continue;
@@ -894,9 +859,8 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
         if (!lki || lki->abilities_removed) continue;
         const CardData &cd = lki->copied_card ? *lki->copied_card
                                               : global_coordinator.GetComponent<CardData>(watcher);
-        std::vector<const AbilityDef *> ab_defs;
-        append_ability_defs(ab_defs,
-                            (lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities);
+        const std::vector<const AbilityDef *> &ab_defs =
+            (lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities;
         const std::string name = lki->name.empty() ? entity_name(watcher) : lki->name;
         match_event_triggers(watcher, last_known_controller(watcher), nullptr, name, ab_defs,
                              events, /*departed=*/true, orderer, pending);

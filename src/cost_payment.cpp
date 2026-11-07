@@ -666,7 +666,7 @@ static void record_pick(const PickRule &rule, Entity chosen, const CostPayer &wh
     item.log = player_name(who.payer) + rule.log + item_name(rule, chosen) + rule.log_tail;
     run.items.push_back(std::move(item));
     if (rule.amount == PickRule::BY_TYPES)
-        for (const auto &t : global_coordinator.GetComponent<CardData>(chosen).types)
+        for (const auto &t : effective_types(chosen))
             if (t.kind == TYPE) run.exiled_types.insert(t.name);
     if (rule.kind == CostPart::DISCARD) run.discards_chosen++;
     // Ninjutsu's ninja attacks what the returned creature was attacking (CR 702.49c), read while

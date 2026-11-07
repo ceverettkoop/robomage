@@ -60,9 +60,8 @@ static bool stack_spell_alt_matches(const std::string &alt, Entity cand) {
         alt.find("Creature") == std::string::npos;
     if ((non_creature_only || instant_sorcery_only) &&
         global_coordinator.entity_has_component<CardData>(cand)) {
-        auto &cd = global_coordinator.GetComponent<CardData>(cand);
         bool is_creature = false, is_instant = false, is_sorcery = false;
-        for (auto &t : cd.types) {
+        for (auto &t : effective_types(cand)) {
             if (t.name == "Creature") is_creature = true;
             if (t.name == "Instant") is_instant = true;
             if (t.name == "Sorcery") is_sorcery = true;

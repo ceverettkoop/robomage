@@ -765,7 +765,7 @@ static int ev_aggregate(const SvarExpr &x, const SvarArgs &a) {
     case Aggregate::DISTINCT_CARD_TYPES: {
         std::set<std::string> type_names;
         for (Entity e : objects)
-            for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
+            for (auto &t : effective_types(e))
                 if (t.kind == TYPE) type_names.insert(t.name);
         return static_cast<int>(type_names.size());
     }
@@ -889,7 +889,7 @@ static void set_your_library(const SvarExpr &, const SvarArgs &a, std::vector<En
 static void set_your_yard_of_type(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
     for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, a.controller)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
+        for (auto &t : effective_types(e))
             if (t.name == x.text) {
                 out.push_back(e);
                 break;

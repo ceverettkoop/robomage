@@ -51,7 +51,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // the library yet (the trailing Defined$ Remembered move runs after the whole type loop).
             if (refs_contain(cur_game.resolution.memory.remembered, e)) continue;
             if (!cur_game.resolution.memory.chosen_type.empty() &&
-                !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.resolution.memory.chosen_type))
+                !type_set_has(effective_types(e), cur_game.resolution.memory.chosen_type))
                 continue;
             cands.push_back(e);
         }

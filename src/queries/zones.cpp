@@ -9,6 +9,7 @@
 #include "../error.h"
 #include "../object_ref.h"
 #include "../systems/rules_modifying.h"
+#include "characteristics.h"
 #include "permissions.h"
 #include "players.h"
 #include "types.h"
@@ -45,7 +46,7 @@ int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entit
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
+        for (auto &t : effective_types(entity))
             if (t.kind == TYPE) type_names.insert(t.name);
     }
     return static_cast<int>(type_names.size());

@@ -161,6 +161,8 @@ static bool object_in_set(const CharView &v, const Qualifier &q, const MatchCtx 
 static CharView printed_view(Entity e, const CardData &cd);
 // The card as a filter reads it: printed, but for the color a layer-5 static sets in any zone.
 static CharView card_view(Entity e, const CardData &cd);
+static void read_characteristics(CharView &v, ObjectCharacteristics &&c);
+static CharView card_identity_view(Entity e, const CardData &cd);
 static void set_permanent_mana_value(CharView &v, Entity e, bool transformed);
 static CharView permanent_view(Entity e, const Permanent &perm);
 static CharView lki_view(Entity e, const LastKnownInfo &lki);
@@ -970,25 +972,34 @@ static bool ev_unknown(const CharView &, const Qualifier &q) {
     return false;
 }
 
-static CharView printed_view(Entity e, const CardData &cd) {
-    const CardData &face = e != 0 ? card_characteristics(e, cd) : cd;
+static void read_characteristics(CharView &v, ObjectCharacteristics &&c) {
+    v.types = c.types;
+    v.colors = std::move(c.colors);
+    v.has_pt = c.has_pt;
+    v.power = c.power;
+    v.toughness = c.toughness;
+}
+
+// What a card view holds beside the object's characteristics.
+static CharView card_identity_view(Entity e, const CardData &cd) {
     CharView v;
     v.entity = e;
-    v.types = &face.types;
-    v.colors = card_colors(face);
     v.cmc = object_mana_value(e, cd);
-    v.has_pt = true;  // printed P/T (a head type guard keeps P/T filters scoped to creatures)
-    v.power = static_cast<int>(face.power);
-    v.toughness = static_cast<int>(face.toughness);
-    v.has_x_cost = face.has_x_cost;
+    v.has_x_cost = (e != 0 ? card_characteristics(e, cd) : cd).has_x_cost;
     if (e != 0 && global_coordinator.entity_has_component<Zone>(e))
         v.owner = global_coordinator.GetComponent<Zone>(e).owner;
     return v;
 }
 
+static CharView printed_view(Entity e, const CardData &cd) {
+    CharView v = card_identity_view(e, cd);
+    read_characteristics(v, printed_characteristics(e, cd));
+    return v;
+}
+
 static CharView card_view(Entity e, const CardData &cd) {
-    CharView v = printed_view(e, cd);
-    if (e != 0) setcolor_override_for(e, v.colors);
+    CharView v = card_identity_view(e, cd);
+    read_characteristics(v, card_object_characteristics(e, cd));
     return v;
 }
 
@@ -1009,8 +1020,7 @@ static void set_permanent_mana_value(CharView &v, Entity e, bool transformed) {
 static CharView permanent_view(Entity e, const Permanent &perm) {
     CharView v;
     v.entity = e;
-    v.types = &perm.types;                 // live type line (type-changing effects write here)
-    v.colors = effective_colors(e);        // CR 105: color from the card (no live color layer)
+    read_characteristics(v, permanent_characteristics(e, perm));
     v.is_token = perm.is_token;
     v.controller = perm.controller;
     if (global_coordinator.entity_has_component<Zone>(e))
@@ -1020,9 +1030,6 @@ static CharView permanent_view(Entity e, const Permanent &perm) {
     v.is_tapped = perm.is_tapped;
     v.entered_by_cast = perm.entered_by_cast;
     if (global_coordinator.entity_has_component<Creature>(e)) {
-        v.has_pt = true;
-        v.power = effective_power(e);
-        v.toughness = effective_toughness(e);
         auto &cr = global_coordinator.GetComponent<Creature>(e);
         v.is_attacking = cr.is_attacking;
         v.is_blocking = cr.is_blocking;

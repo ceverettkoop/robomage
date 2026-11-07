@@ -11,12 +11,83 @@
 static int token_vocab_idx(Entity e);
 static int last_known_vocab_idx(Entity e);
 static bool named_vocab_idx(Entity e, int *idx);
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs);
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
 // and counter-modified characteristics), otherwise its last-known information. They live here
 // rather than inline in characteristics.h so the header does not need to depend on game.h (and the
 // cur_game.last_known_info store).
+
+ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd) {
+    const CardData &face = e != 0 ? card_characteristics(e, cd) : cd;
+    ObjectCharacteristics c;
+    c.types = &face.types;
+    c.colors = card_colors(face);
+    c.has_pt = true;
+    c.power = static_cast<int>(face.power);
+    c.toughness = static_cast<int>(face.toughness);
+    return c;
+}
+
+ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd) {
+    ObjectCharacteristics c = printed_characteristics(e, cd);
+    if (e != 0) setcolor_override_for(e, c.colors);
+    return c;
+}
+
+ObjectCharacteristics permanent_characteristics(Entity e, const Permanent &perm) {
+    ObjectCharacteristics c;
+    c.types = &perm.types;
+    c.colors = effective_colors(e);
+    if (global_coordinator.entity_has_component<Creature>(e)) {
+        c.has_pt = true;
+        c.power = effective_power(e);
+        c.toughness = effective_toughness(e);
+    }
+    return c;
+}
+
+const std::set<Type> &effective_types(Entity e) {
+    static const std::set<Type> none;
+    if (is_battlefield_permanent(e)) return global_coordinator.GetComponent<Permanent>(e).types;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_characteristics(e, global_coordinator.GetComponent<CardData>(e)).types;
+    if (global_coordinator.entity_has_component<Token>(e)) return global_coordinator.GetComponent<Token>(e).types;
+    return none;
+}
+
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs) {
+    out.insert(out.end(), defs.begin(), defs.end());
+}
+
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities) {
+    for (const Ability &ab : abilities) out.push_back(ab.def);
+}
+
+// Face selection happens here (a transformed permanent reads its back face), so a scan never
+// needs a per-ability front-face skip.
+std::vector<const AbilityDef *> object_abilities(Entity e) {
+    std::vector<const AbilityDef *> defs;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (!perm.abilities_removed) {
+            if (global_coordinator.entity_has_component<CardData>(e)) {
+                const CardData &cd = global_coordinator.GetComponent<CardData>(e);
+                append_ability_defs(defs, (perm.transformed && cd.backside) ? cd.backside->abilities : cd.abilities);
+            }
+            if (global_coordinator.entity_has_component<Token>(e))
+                append_ability_defs(defs, global_coordinator.GetComponent<Token>(e).abilities);
+        }
+        append_ability_defs(defs, perm.abilities);
+    } else if (global_coordinator.entity_has_component<CardData>(e)) {
+        append_ability_defs(defs, card_characteristics(e, global_coordinator.GetComponent<CardData>(e)).abilities);
+    } else if (global_coordinator.entity_has_component<Token>(e)) {
+        append_ability_defs(defs, global_coordinator.GetComponent<Token>(e).abilities);
+    }
+    return defs;
+}
 
 const std::vector<Effect::Replacement> &permanent_replacement_effects(Entity e) {
     static const std::vector<Effect::Replacement> none;

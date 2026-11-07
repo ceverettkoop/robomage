@@ -16,6 +16,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../resolution_memory.h"
@@ -123,7 +124,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // Shown to all players (CR 701.20a).
         reveal_card(top_card);
         bool is_instant_or_sorcery = false;
-        for (auto &t : top_cd.types) {
+        for (auto &t : effective_types(top_card)) {
             if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
                 is_instant_or_sorcery = true;
                 break;

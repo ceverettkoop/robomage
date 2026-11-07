@@ -10,6 +10,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../queries/affected.h"
+#include "../queries/characteristics.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../resolution.h"
@@ -36,7 +37,7 @@ static std::vector<std::string> imprinted_types(Zone::Ownership owner) {
             if (global_coordinator.entity_has_component<Zone>(e) &&
                 global_coordinator.GetComponent<Zone>(e).owner != owner)
                 continue;
-            if (card_has_type(global_coordinator.GetComponent<CardData>(e), t)) {
+            if (type_set_has(effective_types(e), t)) {
                 present.push_back(t);
                 break;
             }
