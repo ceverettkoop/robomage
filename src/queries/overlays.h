@@ -36,9 +36,11 @@ struct SpellOverlayRow {
         // it has for it: the way an object came to be face down is a row, so what it is given
         // that way (CR 708.2) is that row's.
         bool face_down;
-        // What a permanent lying face down this way may be turned face up for, with `card` under
-        // it: a cost for each procedure the rules give it, none when it can't be. Null elsewhere.
-        void (*turns_up)(const CardData &card, std::vector<CostParts> &costs);
+        // What a permanent lying face down this way may be turned face up for: a cost for each
+        // procedure the rules give it, none when it can't be. `values` is what it would show, and
+        // `card` the card representing it, which a face-down copy tells apart (CR 708.10). Null
+        // elsewhere.
+        void (*turns_up)(const CardData &values, const CardData &card, std::vector<CostParts> &costs);
 };
 
 const SpellOverlayRow &spell_overlay(SpellOverlay kind);

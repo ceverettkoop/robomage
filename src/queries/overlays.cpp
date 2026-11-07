@@ -27,8 +27,8 @@ static void bestow_aura(CardData &face);
 static bool has_morph(const CardData &card);
 static void no_characteristics_but_2_2(CardData &face);
 static void cloaked_2_2(CardData &face);
-static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs);
-static void turns_up_as_cloaked(const CardData &card, std::vector<CostParts> &costs);
+static void turns_up_for_morph(const CardData &values, const CardData &card, std::vector<CostParts> &costs);
+static void turns_up_as_cloaked(const CardData &values, const CardData &card, std::vector<CostParts> &costs);
 
 static const SpellOverlayRow kSpellOverlayRows[] = {
     // kind                   name         variant                                            resolved_to      has           change                     resolved         stays  copy   face_down  turns_up
@@ -139,15 +139,15 @@ static void cloaked_2_2(CardData &face) {
     face.keywords.push_back("Ward");
 }
 
-// CR 702.37e: a card with morph, for its morph cost.
-static void turns_up_for_morph(const CardData &card, std::vector<CostParts> &costs) {
-    if (card.has_morph) costs.push_back(card.morph_cost);
+// CR 702.37e: for the morph cost it would have face up.
+static void turns_up_for_morph(const CardData &values, const CardData &, std::vector<CostParts> &costs) {
+    if (values.has_morph) costs.push_back(values.morph_cost);
 }
 
-// CR 701.58b, c: a creature card with a mana cost, for that cost, X in it being 0 (CR 107.3h); and a
-// card with morph either way. Two procedures of one cost are one choice.
-static void turns_up_as_cloaked(const CardData &card, std::vector<CostParts> &costs) {
-    turns_up_for_morph(card, costs);
+// CR 701.58b, c: the card representing it, if a creature card with a mana cost, for that cost, X in
+// it being 0 (CR 107.3h); and one with morph either way. Two procedures of one cost are one choice.
+static void turns_up_as_cloaked(const CardData &values, const CardData &card, std::vector<CostParts> &costs) {
+    turns_up_for_morph(values, card, costs);
     if (!is_creature_card(card) || card.no_mana_cost) return;
     CostPart mana = CostPart::of(CostPart::MANA);
     mana.mana = card.mana_cost;
@@ -192,8 +192,9 @@ std::vector<CostParts> turn_up_costs(Entity e) {
     std::vector<CostParts> costs;
     const CardData *under = face_down_card(e);
     if (!under || !global_coordinator.entity_has_component<Permanent>(e)) return costs;
-    const SpellOverlayRow &row = spell_overlay(global_coordinator.GetComponent<Permanent>(e).overlay);
-    if (row.turns_up) row.turns_up(*under, costs);
+    const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+    const SpellOverlayRow &row = spell_overlay(perm.overlay);
+    if (row.turns_up) row.turns_up(*under, perm.printed_card ? *perm.printed_card : *under, costs);
     return costs;
 }
 
