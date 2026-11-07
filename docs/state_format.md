@@ -199,8 +199,8 @@ closes the batch with the range.
 | `shuffle` | library owner |
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
 | `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle`. Emitted once the pick is made, per searched hidden zone (a library, a sideboard, another player's hand; a pick from the searcher's own hand, such as a put-back, is no search), with the cards found in that zone; the `look` at the searched zone comes first |
-| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity |
-| `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is |
+| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity. A card cast face down (CR 708.4) moves with the face-down flag and no identity for anyone who couldn't see it where it was, and a reversed proposal of one returns it with a `zone_move` that shows none: nothing was revealed |
+| `face_down` / `face_up` | handle; identity at face-up. Exiling face down, like any entry face down, is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is. `face_up` is `SetState`'s `TurnFaceUp` or the special action that turns a morph up (CR 702.37e): the same handle, the card to both seats |
 | `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
 | `game_end` / `match_end` | game number, winner (or draw); match wins per player. `game_end` is queued when the game's loop ends, after the game's last events; `match_end` after the last `game_end` (a single game is a match of one game) |
 
@@ -266,7 +266,8 @@ built for the viewer drains its queue into `event` / `event_card` / `event_playe
   turn.
 - `reorder` has no engine site (rearrangements are library → library `zone_move`s), and
   `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses; the `--face-down-a/-b`
-  presets enter face down, a created object's `zone_move` with the flag.
+  presets enter face down, a created object's `zone_move` with the flag, and a morph is cast face
+  down, a `cast_from_hidden` with the flag and then a `play_from_hidden` from the stack.
 
 ## 6. Handles
 
@@ -878,7 +879,7 @@ computes neither outside its legal-action enumeration.
 | | `x` | i16 | `signed` | −1 = no X |
 | | `amount` | u16 | `count` | `Ability::amount` |
 | | `kicked`, `replicate` | u8 | `count` | |
-| | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face, fused, and its overlay (overload, adventure, bestow, prepared) |
+| | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face, fused, and its overlay (overload, adventure, bestow, prepared, face down) |
 | | `copy`, `cant_be_countered`, `gift_promised` | u8 | `bool` | |
 | | `mana_spent` | u8 | `count` | the mana that left the pool: a pip a delve exile or a tap paid is none |
 | | `colors_spent` | u8 | `mask:color` | |
@@ -955,7 +956,7 @@ computes neither outside its legal-action enumeration.
 | | `source_player`, `target_player` | seat | | when the source / target is a player |
 | | ability | abref | | an ACTIVATE_ABILITY action's ability |
 | | `ordinal` | i16 | `signed` | `option_ordinal`; −1 = n/a |
-| | `variant` | u32 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static), fused, and its overlay (overload, adventure, bestow, prepared) |
+| | `variant` | u32 | `mask:cast_variant` | the action's flags: flashback, escape, offspring, back face (cast or play), alt cost, impulse, companion, suspend, cancel, without paying its mana cost (a free-cast static), fused, and its overlay (overload, adventure, bestow, prepared, face down) |
 | | `card_public` | u8 | `bool` | |
 | | `description` | text | `text` | covered by the leak checks (register 12). For a seat, an entry whose source or target's identity the viewer cannot see (and that is not `card_public`) gets `(hidden card)` instead |
 | `match` (47) | `game` | u8 | `count` | as `header.game` |
@@ -1067,7 +1068,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `permission_kind` | FLASHBACK, ESCAPE, GRAVEYARD_CAST, GRAVEYARD_LAND, EXILE_GRANT, PREPARED, GRAVEYARD_SELF (the `Permission` bits, in bit order) |
 | `permission_resource` | MANA, ENERGY, LIFE, FREE |
 | `shield_kind` | COMBAT_DAMAGE |
-| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard), BARGAINED |
+| `cast_variant` | FLASHBACK, EVOKE, ESCAPE, OFFSPRING, IMPENDING, WARP, BACK_FACE, ALT_COST, IMPULSE, COMPANION, SUSPEND, CANCEL, WITHOUT_MANA_COST, OVERLOAD, FUSED, ADVENTURE, BESTOW, PREPARED, GRAVEYARD_REPLACED (what cast it sends it elsewhere if it would go to a graveyard), BARGAINED, FACE_DOWN |
 | `knowledge_level` | OFF, EXPERT |
 | `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
 | `amount_kind` | NONE, FIXED, VARIABLE |
