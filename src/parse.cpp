@@ -2961,10 +2961,6 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end()) {
                 AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                 if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
-                // The floating-trigger scan watches these two events (collect_triggered_abilities).
-                if (trig.trigger_on != 0 && trig.trigger_on != Events::CREATURE_ATTACKED &&
-                    trig.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER)
-                    parse_finding("trigger_form", "Effect." + param_value(it->second, "Mode"), it->second);
             } else {
                 parse_finding("svar_missing", svar_name, "Triggers$ names no SVar");
             }
