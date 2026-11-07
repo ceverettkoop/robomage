@@ -18,12 +18,9 @@
     "A:attack:done"
   ],
   "max_decisions": 10,
-  "expect_count": [
-    {
-      "pattern": "their speed triggers",
-      "count": 1
-    }
-  ],
+  "expect_count": {
+    "their speed triggers": 1
+  },
   "expect": [
     "Grizzly Bears deals 2 damage to Player B"
   ],

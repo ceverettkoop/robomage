@@ -32,6 +32,9 @@
     "Grizzly Bears is moved to exile",
     "Grizzly Bears is moved to the battlefield"
   ],
+  "expect_not": [
+    "Delayed trigger fires"
+  ],
   "library_a": [
     "Plains",
     "Plains",

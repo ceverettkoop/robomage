@@ -21,13 +21,10 @@
     "A:attack:Grizzly Bears",
     "A:attack:done"
   ],
-  "max_decisions": 50,
-  "expect_count": [
-    {
-      "pattern": "their speed triggers",
-      "count": 3
-    }
-  ],
+  "max_decisions": 22,
+  "expect_count": {
+    "their speed triggers": 3
+  },
   "expect": [
     "Player A's speed is 4"
   ],

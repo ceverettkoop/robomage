@@ -22,12 +22,9 @@
     "their speed triggers",
     "Player A's speed is 2"
   ],
-  "expect_count": [
-    {
-      "pattern": "their speed triggers",
-      "count": 1
-    }
-  ],
+  "expect_count": {
+    "their speed triggers": 1
+  },
   "hand_a": [
     "Plains"
   ],
