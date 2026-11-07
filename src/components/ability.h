@@ -572,12 +572,12 @@ struct AbilityDef {
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
 
-    // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
-    // its controller an emblem carrying the named continuous static ("Ninjas you control get
-    // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
-    // GrantCast handler creates a player-owned EffectObject carrying them — an unremovable,
-    // zoneless source whose statics are gathered into g_active_statics each SBA pass.
-    std::vector<StaticAbility> effect_emblem_statics;
+    // StaticAbilities$ <SVar>: the continuous statics an Effect holds, parsed here ("Ninjas you
+    // control get +1/+1." on Kaito's [+1]). The GrantCast handler puts them on the EffectObject it
+    // creates, whose statics are gathered into g_active_statics each SBA pass.
+    std::vector<StaticAbility> effect_statics;
+    // Duration$ Permanent on an Effect: its object is an emblem (CR 114), lasting the game.
+    bool duration_permanent = false;
 
     // DB$ Effect | StaticAbilities$ <SVar> where the named static is a MayPlay$ True continuous
     // effect with AffectedZone$ Exile: "you may play/cast those cards" (Light Up the Stage: "Until

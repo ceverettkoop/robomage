@@ -2366,6 +2366,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // exiled card(s) return when the ability's host leaves the battlefield. See
         // effects::register_exile_until_host_leaves.
         ability.duration_until_host_leaves = true;
+    } else if (key == "Duration" && value == "Permanent" && ability.category == "Effect") {
+        ability.duration_permanent = true;
     } else if (key == "Duration" && value == "UntilYourNextTurn") {
         // Generic "until your next turn" duration on a non-Animate effect (The One Ring's ETB Pump
         // granting the controller protection from everything). Reverted at the controller's untap.
@@ -2602,7 +2604,7 @@ static bool duration_read(const AbilityDef &ability, const std::string &value) {
         return value == "UntilEndOfTurn" || (value == "UntilYourNextTurn" && pp && pp->grant_protection_from_everything);
     }
     if (category != "Effect") return false;
-    if (value == "Permanent") return !ability.effect_emblem_statics.empty();
+    if (value == "Permanent") return !ability.effect_statics.empty();
     if (value == "UntilTheEndOfYourNextTurn") return ability.effect_may_play_from_exile;
     return value == "UntilYourNextTurn" && (!ability.effect_floating_triggers.empty() || ability.effect_cast_with_flash);
 }
@@ -2624,19 +2626,10 @@ static void ability_form_findings(const AbilityDef &ability, const std::string &
             if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted by " + ability.category);
 }
 
-// grant_cast applies the first form an Effect matches, so an Effect is honoured as one form, and a
-// static only as one of the forms parse_ability_text resolves.
+// An Effect's static is honoured only as one of the forms parse_ability_text resolves.
 static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars) {
     if (ability.category != "Effect") return;
-    const bool emblem = !ability.effect_emblem_statics.empty();
-    const bool uncounterable = ability.has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED);
-    const bool shield = ability.has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
-    const bool cant_gain = ability.effect_cant_gain_life != AbilityDef::CantGainLifeScope::NONE;
-    const int forms = int(emblem) + int(!ability.effect_floating_triggers.empty()) + int(ability.effect_may_play_from_exile) +
-                      int(ability.effect_static_ability == "Unblockable") +
-                      int(uncounterable) + int(shield) + int(cant_gain) +
-                      int(ability.effect_cast_with_flash);
-    if (forms > 1) parse_finding("static_form", "Effect.Forms", "only the first of an Effect's forms applies");
+    const bool emblem = !ability.effect_statics.empty();
     const std::string &name = ability.effect_static_ability;
     if (name.empty()) return;
     const auto it = svars.find(name);
@@ -3117,7 +3110,7 @@ static void resolve_effect_static_svars(AbilityDef &ability, const std::string &
     if (text.find("Duration$ Permanent") != std::string::npos &&
         body.find("Mode$ Continuous") != std::string::npos) {
         StaticAbility est = parse_one_static_ability(body, svars);
-        if (!est.category.empty()) ability.effect_emblem_statics.push_back(est);
+        if (!est.category.empty()) ability.effect_statics.push_back(est);
     }
     // StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long life-gain
     // prohibition (CR 119.x, Roiling Vortex's {R}: "Your opponents can't gain life this turn.").
