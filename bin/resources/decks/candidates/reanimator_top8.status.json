@@ -19,118 +19,68 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "Top creature of a graveyard (Shallow Grave)": {
-      "cards": [
-       "Shallow Grave"
-      ],
-      "findings": [
-       "ability_param:Animate.AtEOT",
-       "filter:TopGraveyardCreature"
-      ],
-      "size": "S"
-     }
-    },
-    "needs": {
-     "Shallow Grave": [
-      "Top creature of a graveyard (Shallow Grave)"
-     ]
-    },
-    "new_cards": [
-     "Shallow Grave"
-    ],
-    "size_points": 1
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
-   "time": "2026-11-06T18:37:06"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-06T19:54:17"
   },
   "diff": {
    "detail": {
     "distinct": 28,
-    "in_vocab": 27,
+    "in_vocab": 28,
     "no_script": [],
-    "not_in_vocab": [
-     "Shallow Grave"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "28 cards: 27 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T18:37:06"
+   "summary": "28 cards: 28 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-06T19:54:17"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Top creature of a graveyard (Shallow Grave)"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: Top creature of a graveyard (Shallow Grave)",
-   "time": "2026-11-06T18:37:06"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-06T19:54:17"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Shallow Grave": {
-      "card": "Shallow Grave",
-      "faces": [
-       "Shallow Grave"
-      ],
-      "findings": [
-       {
-        "detail": "Animate AtEOT$ Exile",
-        "kind": "ability_param",
-        "line": "A:SP$ ChangeZone | Origin$ Graveyard | Destination$ Battlefield | ChangeType$ Creature.TopGraveyardCreature+YouCtrl | Hidden$ True | Mandatory$ True | RememberChanged$ True | SubAbility$ DBPump | SpellDescription$ Return the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
-        "name": "Animate.AtEOT"
-       },
-       {
-        "detail": "ChangeType$ Creature.TopGraveyardCreature+YouCtrl",
-        "kind": "filter",
-        "line": "A:SP$ ChangeZone | Origin$ Graveyard | Destination$ Battlefield | ChangeType$ Creature.TopGraveyardCreature+YouCtrl | Hidden$ True | Mandatory$ True | RememberChanged$ True | SubAbility$ DBPump | SpellDescription$ Return the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
-        "name": "TopGraveyardCreature"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/s/shallow_grave.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-06T18:37:06"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-06T19:54:17"
   },
   "provision": {
    "detail": {
@@ -144,11 +94,11 @@
    "inputs": {
     "deck": "4e17fa9475cc20868aac3c52b275e2a319ea5b0d1fe72c3af6213e63eaf25ac9",
     "scripts": "0bdbff03f2d5efcbd5d3e497514b226a8c7fcbfe18867d116367a62b78558cc2",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T18:37:06"
+   "time": "2026-11-06T19:54:17"
   },
   "scrape": {
    "detail": {

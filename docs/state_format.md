@@ -800,7 +800,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `pos` | u16 | `index` | stack from the top (0 = top); graveyard / exile from the top (0 = newest); library position for a card in a window; none elsewhere |
 | | `card` | u16 | `card` | `visible_card_id`: 0xFFFF = face down to this viewer; an ability on the stack shows its source's card (else its last-known card, else a delayed or floating trigger's creator) |
 | | `token`, `face_down`, `transformed` | u8 | `bool` | register 24; transformed also for a spell cast as its back face |
-| | `copy_of` | u16 | `card` | the card a copy effect made a permanent a copy of (its printed card is `card`) |
+| | `copy_of` | u16 | `card` | the card or token a copy effect made a permanent a copy of (its printed card is `card`); a token copy of a card has the token sentinel as `card`, and this column names the card it copied, whose rows its `object_ability` rows reference |
 | | `tapped`, `sick`, `phased_out` | u8 | `bool` | engine flags (register 15); `sick` is effective summoning sickness (`is_summoning_sick`: a creature, haste considered) |
 | | `attacking`, `blocking`, `blocked` | u8 | `bool` | details in `combat` |
 | | `damage` | u16 | `count` | |

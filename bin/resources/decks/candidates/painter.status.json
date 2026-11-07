@@ -80,17 +80,6 @@
       ],
       "size": "M"
      },
-     "Fable of the Mirror-Breaker": {
-      "cards": [
-       "Fable of the Mirror-Breaker"
-      ],
-      "findings": [
-       "ability_param:CopyPermanent.AddKeywords",
-       "ability_param:CopyPermanent.AtEOT",
-       "ability_param:Discard.RememberDiscarded"
-      ],
-      "size": "M"
-     },
      "Goblin Welder swap": {
       "cards": [
        "Goblin Welder"
@@ -123,9 +112,6 @@
      }
     },
     "needs": {
-     "Fable of the Mirror-Breaker": [
-      "Fable of the Mirror-Breaker"
-     ],
      "Fury": [
       "Divided damage (CR 601.2d)"
      ],
@@ -147,34 +133,32 @@
      ]
     },
     "new_cards": [
-     "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Welder",
      "Phyrexian Dragon Engine",
      "Unlicensed Hearse",
      "Untimely Malfunction"
     ],
-    "size_points": 33
+    "size_points": 30
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "6 new card(s): 0 clean, 6 need 10 mechanic(s) (33 points)",
-   "time": "2026-11-06T18:37:06"
+   "summary": "5 new card(s): 0 clean, 5 need 9 mechanic(s) (30 points)",
+   "time": "2026-11-06T19:54:17"
   },
   "diff": {
    "detail": {
     "distinct": 41,
-    "in_vocab": 35,
+    "in_vocab": 36,
     "no_script": [],
     "not_in_vocab": [
-     "Fable of the Mirror-Breaker",
      "Fury",
      "Goblin Welder",
      "Phyrexian Dragon Engine",
@@ -185,11 +169,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "41 cards: 35 in vocab, 6 new (0 without a script)",
-   "time": "2026-11-06T18:37:06"
+   "summary": "41 cards: 36 in vocab, 5 new (0 without a script)",
+   "time": "2026-11-06T19:54:17"
   },
   "implement": {
    "detail": {
@@ -200,7 +184,6 @@
      "Crew and vehicles (CR 702.122)",
      "Discard-a-card activation cost",
      "Divided damage (CR 601.2d)",
-     "Fable of the Mirror-Breaker",
      "Goblin Welder swap",
      "Meld (CR 712)",
      "filter:sharesControllerWith Remembered"
@@ -208,58 +191,19 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "pending",
-   "summary": "10 mechanic(s) to implement: Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Fable of the Mirror-Breaker, Goblin Welder swap, Meld (CR 712), filter:sharesControllerWith Remembered",
-   "time": "2026-11-06T18:37:06"
+   "summary": "9 mechanic(s) to implement: Branch effect (DB$ Branch), Can't-block restrictions (CantBlockBy), Change targets (CR 115.7), Crew and vehicles (CR 702.122), Discard-a-card activation cost, Divided damage (CR 601.2d), Goblin Welder swap, Meld (CR 712), filter:sharesControllerWith Remembered",
+   "time": "2026-11-06T19:54:17"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Fable of the Mirror-Breaker": {
-      "card": "Fable of the Mirror-Breaker",
-      "faces": [
-       "Fable of the Mirror-Breaker",
-       "Reflection of Kiki-Jiki"
-      ],
-      "findings": [
-       {
-        "detail": "Discard RememberDiscarded$ True",
-        "kind": "ability_param",
-        "line": "K:Chapter:3:DBToken,DBDiscard,DBTransform",
-        "name": "Discard.RememberDiscarded"
-       },
-       {
-        "detail": "CopyPermanent AddKeywords$ Haste",
-        "kind": "ability_param",
-        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
-        "name": "CopyPermanent.AddKeywords"
-       },
-       {
-        "detail": "CopyPermanent AtEOT$ Sacrifice",
-        "kind": "ability_param",
-        "line": "A:AB$ CopyPermanent | Cost$ 1 T | ValidTgts$ Creature.YouCtrl+nonLegendary+Other | TgtPrompt$ Select another target nonlegendary creature you control | AddKeywords$ Haste | AtEOT$ Sacrifice | AILogic$ Different | SpellDescription$ Create a token that's a copy of another target nonlegendary creature you control, except it has haste. Sacrifice it at the beginning of the next end step.",
-        "name": "CopyPermanent.AtEOT"
-       }
-      ],
-      "layout": "transform",
-      "script": "cardsfolder/f/fable_of_the_mirror_breaker_reflection_of_kiki_jiki.txt",
-      "tokens": [
-       {
-        "present": true,
-        "script": "r_2_2_goblin_shaman_treasure"
-       }
-      ],
-      "vocab": [
-       -1,
-       -1
-      ]
-     },
      "Fury": {
       "card": "Fury",
       "faces": [
@@ -443,22 +387,20 @@
    },
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "6 new card(s), 6 with findings (21 findings), 0 without a script",
-   "time": "2026-11-06T18:37:06"
+   "summary": "5 new card(s), 5 with findings (18 findings), 0 without a script",
+   "time": "2026-11-06T19:54:17"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [
-     "r_2_2_goblin_shaman_treasure"
-    ],
+    "tokens": [],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -466,11 +408,11 @@
    "inputs": {
     "deck": "ebc60e84440bd9ab45e6c2c09ff9ceffd9866ce5e5ab78112e864195ee466292",
     "scripts": "a0430a92ad25de5f595a4397b340b64b74dc3a32b7fcaf063da680dfb3d551a5",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T18:37:06"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-06T19:54:17"
   },
   "scrape": {
    "detail": {

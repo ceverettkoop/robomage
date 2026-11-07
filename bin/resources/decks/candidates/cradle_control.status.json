@@ -19,125 +19,68 @@
   "capability": {
    "detail": {
     "clean": [],
-    "mechanics": {
-     "AnimateAll power, toughness and types": {
-      "cards": [
-       "Allosaurus Shepherd"
-      ],
-      "findings": [
-       "ability_param:AnimateAll.Power",
-       "ability_param:AnimateAll.Toughness",
-       "ability_param:AnimateAll.Types"
-      ],
-      "size": "S"
-     }
-    },
-    "needs": {
-     "Allosaurus Shepherd": [
-      "AnimateAll power, toughness and types"
-     ]
-    },
-    "new_cards": [
-     "Allosaurus Shepherd"
-    ],
-    "size_points": 1
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
-   "time": "2026-11-06T18:37:05"
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-06T19:54:17"
   },
   "diff": {
    "detail": {
     "distinct": 34,
-    "in_vocab": 33,
+    "in_vocab": 34,
     "no_script": [],
-    "not_in_vocab": [
-     "Allosaurus Shepherd"
-    ]
+    "not_in_vocab": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "34 cards: 33 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-06T18:37:05"
+   "summary": "34 cards: 34 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-06T19:54:17"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "AnimateAll power, toughness and types"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: AnimateAll power, toughness and types",
-   "time": "2026-11-06T18:37:05"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-06T19:54:17"
   },
   "parse": {
    "detail": {
-    "cards": {
-     "Allosaurus Shepherd": {
-      "card": "Allosaurus Shepherd",
-      "faces": [
-       "Allosaurus Shepherd"
-      ],
-      "findings": [
-       {
-        "detail": "AnimateAll Power$ 5",
-        "kind": "ability_param",
-        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
-        "name": "AnimateAll.Power"
-       },
-       {
-        "detail": "AnimateAll Toughness$ 5",
-        "kind": "ability_param",
-        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
-        "name": "AnimateAll.Toughness"
-       },
-       {
-        "detail": "AnimateAll Types$ Dinosaur",
-        "kind": "ability_param",
-        "line": "A:AB$ AnimateAll | Cost$ 4 G G | ValidCards$ Creature.Elf+YouCtrl | Power$ 5 | Toughness$ 5 | Types$ Dinosaur | StackDescription$ SpellDescription | SpellDescription$ Until end of turn, each Elf creature you control has base power and toughness 5/5 and becomes a Dinosaur in addition to its other creature types.",
-        "name": "AnimateAll.Types"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/a/allosaurus_shepherd.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     }
-    },
+    "cards": {},
     "no_script": []
    },
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (3 findings), 0 without a script",
-   "time": "2026-11-06T18:37:05"
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-06T19:54:17"
   },
   "provision": {
    "detail": {
@@ -151,11 +94,11 @@
    "inputs": {
     "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
     "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T18:37:05"
+   "time": "2026-11-06T19:54:17"
   },
   "scrape": {
    "detail": {

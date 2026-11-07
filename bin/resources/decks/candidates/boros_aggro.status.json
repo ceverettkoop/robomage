@@ -20,27 +20,6 @@
    "detail": {
     "clean": [],
     "mechanics": {
-     "Copy with exceptions (CopyPermanent Set*)": {
-      "cards": [
-       "Lazotep Quarry"
-      ],
-      "findings": [
-       "ability_param:CopyPermanent.SetColor",
-       "ability_param:CopyPermanent.SetCreatureTypes",
-       "ability_param:CopyPermanent.SetPower",
-       "ability_param:CopyPermanent.SetToughness"
-      ],
-      "size": "M"
-     },
-     "Mana value bound from an SVar": {
-      "cards": [
-       "Lazotep Quarry"
-      ],
-      "findings": [
-       "filter:cmcEQX"
-      ],
-      "size": "S"
-     },
      "Sand Scout": {
       "cards": [
        "Sand Scout"
@@ -53,118 +32,66 @@
      }
     },
     "needs": {
-     "Lazotep Quarry": [
-      "Copy with exceptions (CopyPermanent Set*)",
-      "Mana value bound from an SVar"
-     ],
      "Sand Scout": [
       "Sand Scout"
      ]
     },
     "new_cards": [
-     "Lazotep Quarry",
      "Sand Scout"
     ],
-    "size_points": 5
+    "size_points": 1
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "2 new card(s): 0 clean, 2 need 3 mechanic(s) (5 points)",
-   "time": "2026-11-06T18:37:05"
+   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (1 points)",
+   "time": "2026-11-06T19:54:16"
   },
   "diff": {
    "detail": {
     "distinct": 31,
-    "in_vocab": 29,
+    "in_vocab": 30,
     "no_script": [],
     "not_in_vocab": [
-     "Lazotep Quarry",
      "Sand Scout"
     ]
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "31 cards: 29 in vocab, 2 new (0 without a script)",
-   "time": "2026-11-06T18:37:05"
+   "summary": "31 cards: 30 in vocab, 1 new (0 without a script)",
+   "time": "2026-11-06T19:54:16"
   },
   "implement": {
    "detail": {
     "mechanics": [
-     "Copy with exceptions (CopyPermanent Set*)",
-     "Mana value bound from an SVar",
      "Sand Scout"
     ]
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "sizes": "f102270e34912ea51fbad1a6b016cac767e180cc4cc874ddc4a6387d70b7c09b",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "pending",
-   "summary": "3 mechanic(s) to implement: Copy with exceptions (CopyPermanent Set*), Mana value bound from an SVar, Sand Scout",
-   "time": "2026-11-06T18:37:05"
+   "summary": "1 mechanic(s) to implement: Sand Scout",
+   "time": "2026-11-06T19:54:16"
   },
   "parse": {
    "detail": {
     "cards": {
-     "Lazotep Quarry": {
-      "card": "Lazotep Quarry",
-      "faces": [
-       "Lazotep Quarry"
-      ],
-      "findings": [
-       {
-        "detail": "CopyPermanent SetPower$ 4",
-        "kind": "ability_param",
-        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
-        "name": "CopyPermanent.SetPower"
-       },
-       {
-        "detail": "CopyPermanent SetToughness$ 4",
-        "kind": "ability_param",
-        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
-        "name": "CopyPermanent.SetToughness"
-       },
-       {
-        "detail": "CopyPermanent SetColor$ Black",
-        "kind": "ability_param",
-        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
-        "name": "CopyPermanent.SetColor"
-       },
-       {
-        "detail": "CopyPermanent SetCreatureTypes$ Zombie",
-        "kind": "ability_param",
-        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
-        "name": "CopyPermanent.SetCreatureTypes"
-       },
-       {
-        "detail": "ValidTgts$ Creature.YouOwn+cmcEQX",
-        "kind": "filter",
-        "line": "A:AB$ ChangeZone | Cost$ X 2 T Sac<1/Desert> | RememberLKI$ True | Origin$ Graveyard | Destination$ Exile | ValidTgts$ Creature.YouOwn+cmcEQX | ChangeNum$ 1 | SubAbility$ DBCopy | AILogic$ TheScarabGod | SorcerySpeed$ True | SpellDescription$ Exile target creature card with mana value X from your graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie. Activate only as a sorcery.",
-        "name": "cmcEQX"
-       }
-      ],
-      "layout": "normal",
-      "script": "cardsfolder/l/lazotep_quarry.txt",
-      "tokens": [],
-      "vocab": [
-       -1
-      ]
-     },
      "Sand Scout": {
       "card": "Sand Scout",
       "faces": [
@@ -201,14 +128,14 @@
    },
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
-    "engine": "ddb7a60870163eb731c09f7180c900d16c51cac0d0935d2b29eb08adfa5fe078",
+    "engine": "aa406ff32dd0f5b175baf66be2f2c888303e3cfa93a6ad2ab65950ce1e3589e8",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
     "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
-   "summary": "2 new card(s), 2 with findings (7 findings), 0 without a script",
-   "time": "2026-11-06T18:37:05"
+   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
+   "time": "2026-11-06T19:54:16"
   },
   "provision": {
    "detail": {
@@ -224,11 +151,11 @@
    "inputs": {
     "deck": "4099451547769f5a88aadeeb0f33ab28f462a95114f0d52516c35f5347e2709a",
     "scripts": "44afd06ba8cb12e1af5f9e5ffd543cd8ff44daabf092a75c8ae25efaf9cf75db",
-    "vocab": "6ac186845adf80eab0d1f502122a3f7d648c1ffcf1bfb47cf4d094ee7ad0f0c9"
+    "vocab": "a8311297009a06d6363c75ab0136116bd08f6261f851f7988cc23fd86ee6f53a"
    },
    "result": "ok",
    "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-06T18:37:05"
+   "time": "2026-11-06T19:54:16"
   },
   "scrape": {
    "detail": {
