@@ -19,6 +19,7 @@
 extern Coordinator global_coordinator;
 
 static bool part_payable(const CostPart &part, const CostCheck &check);
+static bool others_cover(const CostPart &part, const CostCheck &check);
 static bool controls_enough(const CostPart &part, const CostCheck &check, Entity except);
 static bool pitch_covers(const CostPart &part, const CostCheck &check);
 static bool hand_covers(const CostPart &part, const CostCheck &check);
@@ -77,9 +78,27 @@ static bool part_payable(const CostPart &part, const CostCheck &check) {
             return pitch_covers(part, check);
         case CostPart::EXILE_FROM_GRAVEYARD:
             return graveyard_covers(part, check);
+        case CostPart::TAP_OTHERS:
+            return others_cover(part, check);
         default:
             return true;
     }
+}
+
+std::vector<Entity> tappable_for_cost(
+    const CostPart &part, Zone::Ownership payer, const EntitySet &entities, Entity source) {
+    std::vector<Entity> tappable;
+    for (Entity e : controlled_permanents_matching(payer, part.filter, entities, source))
+        if (!global_coordinator.GetComponent<Permanent>(e).is_tapped) tappable.push_back(e);
+    return tappable;
+}
+
+// Is the power of everything the payer could tap for the part enough?
+static bool others_cover(const CostPart &part, const CostCheck &check) {
+    int power = 0;
+    for (Entity e : tappable_for_cost(part, check.payer, check.orderer->mEntities, check.source))
+        power += std::max(0, effective_power(e));
+    return power >= part.count;
 }
 
 // Does the payer control `part.count` permanents matching its filter, `except` left out of a .Other?

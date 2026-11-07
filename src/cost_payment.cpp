@@ -78,6 +78,7 @@ struct CostStep {
             TAP_TO_PAY,      // which permanents a TapToPay that asks taps
             SNAPSHOT,        // the snapshot a reversed payment restores
             TAP,             // {T}: the source taps
+            TAP_OTHERS,      // which other permanents a TAP_OTHERS part taps
             EXERT,           // the source is exerted
             OWE_ACTIVATION,  // what an activation owes
             FLOAT_LEAVING,   // CR 601.2g: mana from a permanent about to leave to pay the cost
@@ -141,6 +142,7 @@ static const char *path_form(CostPath path);
 static bool resources_payable(const CostPayer &who);
 static void pay_loyalty(const CostPayer &who);
 static void move_items(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
+static PayStatus tap_others(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer);
 static void pay_life_x(const CostPayer &who);
 static void sacrifice_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
 static void exile_self(const CostPayer &who, const std::shared_ptr<Orderer> &orderer);
@@ -242,6 +244,7 @@ static const CostStep kActivationSteps[] = {
     {CostStep::PICK, &kActivationReturn},
     {CostStep::SNAPSHOT},
     {CostStep::TAP},
+    {CostStep::TAP_OTHERS},
     {CostStep::EXERT},
     {CostStep::OWE_ACTIVATION},
     {CostStep::TAP_TO_PAY},
@@ -429,6 +432,8 @@ static PayStatus pay_step(
             if (who.commit && who.cost->taps() && global_coordinator.entity_has_component<Permanent>(who.source))
                 tap_permanent(who.source);
             break;
+        case CostStep::TAP_OTHERS:
+            return tap_others(who, ctx, orderer);
         case CostStep::EXERT:
             exert_source(who);
             break;
@@ -816,6 +821,40 @@ static PayStatus choose_taps(const CostPayer &who, FrameCtx &ctx, const std::sha
     }
     run.tap_to_pay = TapToPay::NONE;
     return PayStatus::PAID;
+}
+
+// Crew (CR 702.122a): other creatures, tapped one at a time, the rows re-derived from the live board
+// at each pass, until their total power reaches the cost; the player may tap more ("any number").
+// Each taps at once, the snapshot undoing it if the payment is reversed.
+static PayStatus tap_others(const CostPayer &who, FrameCtx &ctx, const std::shared_ptr<Orderer> &orderer) {
+    CostRun &run = *who.run;
+    const CostPart *part = who.cost->find(CostPart::TAP_OTHERS);
+    if (!part) return PayStatus::PAID;
+    for (;;) {
+        const std::vector<Entity> pool = tappable_for_cost(*part, who.payer, orderer->mEntities, who.source);
+        const bool paid = run.tapped_power >= part->count;
+        if (pool.empty()) return paid ? PayStatus::PAID : PayStatus::FAILED;
+        std::vector<LegalAction> rows;
+        for (Entity e : pool) {
+            LegalAction row(PASS_PRIORITY, e, "Tap " + entity_name(e) + " (Crew)");
+            row.category = ActionCategory::PAYING_COSTS;
+            rows.push_back(row);
+        }
+        if (paid) {
+            LegalAction done(PASS_PRIORITY, "Tap nothing more");
+            done.category = ActionCategory::PAYING_COSTS;
+            rows.push_back(done);
+        }
+        const int choice = ctx.ask(std::move(rows), who.payer, who.source);
+        if (choice < 0 && decision_suspended()) return PayStatus::SUSPENDED;
+        if (static_cast<size_t>(choice) >= pool.size()) return PayStatus::PAID;
+        const Entity tapped = pool[static_cast<size_t>(choice)];
+        run.tapped_power += std::max(0, effective_power(tapped));
+        tap_permanent(tapped);
+        game_log("%s taps %s to crew %s\n", player_name(who.payer).c_str(), entity_name(tapped).c_str(),
+            entity_name(who.source).c_str());
+        coverage_cost(CostPart::TAP_OTHERS);
+    }
 }
 
 // Exert (CR 701.43a): the source passes the payer's next untap step by, however often it is exerted

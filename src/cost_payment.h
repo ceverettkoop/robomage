@@ -78,6 +78,7 @@ struct CostRun {
         // `life` only so the narrative can still say "pays N life (X = N)". -1 = no such cost.
         int life_x = -1;
         bool committed = false;  // the mana is paid and the rest of the cost is being paid
+        int tapped_power = 0;  // the total power tapped so far for a TAP_OTHERS part
         bool mana_announced = false;  // `mana` was determined as the cost was announced (its hybrid pips)
         // Delve (CR 702.66): the chosen exile count, and the pre-delve priority seat. Both delve steps
         // are seated on the caster; delve_seat_held says the seat is still to be restored.

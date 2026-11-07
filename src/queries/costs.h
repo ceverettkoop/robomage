@@ -54,6 +54,12 @@ constexpr uint16_t kAllButMana = static_cast<uint16_t>(~CostParts::kind_bit(Cost
 //   ExileFromGrave<1/CARDNAME>.
 bool can_pay(const CostParts &cost, const CostCheck &check);
 
+// The permanents `payer` can tap for a TAP_OTHERS part of `source`'s cost: untapped, matching its
+// filter, `source` left out of a .Other. They need no freedom from summoning sickness, the cost
+// having no {T} (CR 302.6).
+std::vector<Entity> tappable_for_cost(
+    const CostPart &part, Zone::Ownership payer, const EntitySet &entities, Entity source);
+
 // Which of a spell's additional-cost forms can be paid (CR 601.2b): their indices, in order.
 std::vector<size_t> payable_choices(const std::vector<CostParts> &choices, const CostCheck &check);
 

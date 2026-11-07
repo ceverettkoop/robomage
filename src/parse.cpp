@@ -236,6 +236,7 @@ static void kw_etb_replacement(const std::string& kw_line, KeywordContext& ctx);
 static void kw_etb_counter(const std::string& kw_line, KeywordContext& ctx);
 static void kw_equip(const std::string& kw_line, KeywordContext& ctx);
 static void kw_reconfigure(const std::string& kw_line, KeywordContext& ctx);
+static void kw_crew(const std::string& kw_line, KeywordContext& ctx);
 static void kw_impending(const std::string& kw_line, KeywordContext& ctx);
 static void kw_suspend(const std::string& kw_line, KeywordContext& ctx);
 static void kw_overload(const std::string& kw_line, KeywordContext& ctx);
@@ -297,6 +298,7 @@ static const KeywordEntry kKeywordTable[] = {
     {"etbCounter", KeywordEntry::PREFIX, kw_etb_counter},
     {"Equip", KeywordEntry::PREFIX, kw_equip},
     {"Reconfigure", KeywordEntry::PREFIX, kw_reconfigure},
+    {"Crew", KeywordEntry::PREFIX, kw_crew},
     {"Impending", KeywordEntry::PREFIX, kw_impending},
     {"Suspend", KeywordEntry::PREFIX, kw_suspend},
     // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
@@ -619,6 +621,13 @@ static bool read_cost_token(const std::string &tok, CostPart &part) {
         for (int i = 0; i < generic; i++) part.mana.insert(GENERIC);
         part.tap_to_pay = TapToPay::WATERBEND;
         return true;
+    }
+    if (cost_token_arg(tok, "Crew", args)) {
+        // Crew<N> — what K:Crew:N costs: "Tap any number of other untapped creatures you control
+        // with total power N or greater" (CR 702.122a).
+        part = CostPart::of(CostPart::TAP_OTHERS);
+        part.filter = FilterSpec("Creature.Other");
+        return args.size() == 1 && read_cost_count(args[0], part.count);
     }
     if (cost_token_arg(tok, "PayEnergy", args)) {
         // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
@@ -1162,6 +1171,16 @@ static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
 // A keyword's cost argument, for a keyword the engine pays in mana alone.
 static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword) {
     return parse_cost(cost, CostForm::MANA_ONLY, keyword + ":" + cost);
+}
+
+// K:Crew:N (CR 702.122a): "Tap any number of other untapped creatures you control with total power
+// N or greater: This permanent becomes an artifact creature until end of turn."
+static void kw_crew(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string text = "AB$ Animate | Cost$ Crew<" + keyword_arg(kw_line) + "> | Defined$ Self | Types$ Artifact,Creature";
+    AbilityDef crew = parse_ability_text(text, 4, AbilityDef::ACTIVATED, {}, ctx.card.name);
+    crew.keyword_label = "Crew";
+    ctx.face_defs.abilities.push_back(crew);
+    ctx.card.keywords.push_back("Crew");
 }
 
 // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an

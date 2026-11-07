@@ -44,6 +44,7 @@ struct CostPart {
         MANDATORY,             // not a payment: a triggered ability's cost is not optional (CR 603.8)
         EXILE,                 // Exile<1/CARDNAME>: the source exiles itself from the battlefield
         EXERT,                 // Exert<1/CARDNAME/...>: the source won't untap in its exerter's next untap step
+        TAP_OTHERS,            // Crew<count>: other untapped permanents matching `filter`, of total power `count` or more
     };
 
     Kind kind = MANA;

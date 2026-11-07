@@ -158,6 +158,7 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"pay", {"PAYING_COSTS"}},
         {"convoke", {"PAYING_COSTS"}},
         {"waterbend", {"PAYING_COSTS"}},
+        {"crew", {"PAYING_COSTS"}},
         {"choice", other},
         {"shuffle", {"SHUFFLE"}},
         {"noshuffle", {"DONT_SHUFFLE"}},
@@ -236,7 +237,8 @@ static bool parse_spec(const std::string &token, Intent *out, std::string *err) 
         out->sentinel = s->second;
     } else if (verb == "mulligan" || verb == "keep") {
         out->keyword = verb;
-    } else if ((verb == "attack" || verb == "block" || verb == "mode" || verb == "convoke" || verb == "waterbend") &&
+    } else if ((verb == "attack" || verb == "block" || verb == "mode" || verb == "convoke" || verb == "waterbend" ||
+                verb == "crew") &&
                (low == "done" || low == "confirm" || low.empty())) {
         out->keyword = "done";
     } else if (verb == "search" && (low == "fail" || low == "none" || low.empty())) {
