@@ -142,14 +142,6 @@ bool activation_condition_known(const std::string &name) {
     return activation_condition_named(name) != &kNoSuchCondition;
 }
 
-bool reads_attacked_this_turn(const Permanent &perm) {
-    const ActivationCondition *attacked = activation_condition_named("AttackedThisTurn");
-    for (const Ability &ab : perm.abilities)
-        for (const ActivationRule &rule : ab.def->activation_rules)
-            if (rule.kind == ActivationRule::CONDITION && rule.condition == attacked) return true;
-    return false;
-}
-
 bool activates_as_sorcery(const AbilityDef &def) {
     for (const ActivationRule &rule : def.activation_rules)
         if (rule.kind == ActivationRule::TIMING) return true;
