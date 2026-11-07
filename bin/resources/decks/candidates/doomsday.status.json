@@ -18,40 +18,27 @@
  "stages": {
   "capability": {
    "detail": {
-    "clean": [],
-    "mechanics": {
-     "Empower": {
-      "cards": [
-       "Theorist's Proxy"
-      ],
-      "findings": [
-       "ability_param:Empower.Type",
-       "category:Empower"
-      ],
-      "size": "M"
-     }
-    },
-    "needs": {
-     "Theorist's Proxy": [
-      "Empower"
-     ]
-    },
+    "clean": [
+     "Theorist's Proxy"
+    ],
+    "mechanics": {},
+    "needs": {},
     "new_cards": [
      "Theorist's Proxy"
     ],
-    "size_points": 3
+    "size_points": 0
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
    },
    "result": "ok",
-   "summary": "1 new card(s): 0 clean, 1 need 1 mechanic(s) (3 points)",
-   "time": "2026-11-07T12:28:01"
+   "summary": "1 new card(s): 1 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:36:59"
   },
   "diff": {
    "detail": {
@@ -65,29 +52,25 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
    },
    "result": "ok",
    "summary": "33 cards: 32 in vocab, 1 new (0 without a script)",
-   "time": "2026-11-07T12:28:01"
+   "time": "2026-11-07T13:36:59"
   },
   "implement": {
-   "detail": {
-    "mechanics": [
-     "Empower"
-    ]
-   },
+   "detail": {},
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
    },
-   "result": "pending",
-   "summary": "1 mechanic(s) to implement: Empower",
-   "time": "2026-11-07T12:28:02"
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T13:36:59"
   },
   "parse": {
    "detail": {
@@ -97,23 +80,15 @@
       "faces": [
        "Theorist's Proxy"
       ],
-      "findings": [
-       {
-        "detail": "resolves as a no-op",
-        "kind": "category",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | Execute$ DBEmpower | TriggerDescription$ When this creature enters, empower Jace 3. (Put three loyalty counters on a Jace token you control. If you don't control one, first create a blue Jace planeswalker token with \"[-1]: Surveil 1\" and \"[-3]: Draw a card.\")",
-        "name": "Empower"
-       },
-       {
-        "detail": "Empower Type$ Jace",
-        "kind": "ability_param",
-        "line": "T:Mode$ ChangesZone | ValidCard$ Card.Self | Origin$ Any | Destination$ Battlefield | Execute$ DBEmpower | TriggerDescription$ When this creature enters, empower Jace 3. (Put three loyalty counters on a Jace token you control. If you don't control one, first create a blue Jace planeswalker token with \"[-1]: Surveil 1\" and \"[-3]: Draw a card.\")",
-        "name": "Empower.Type"
-       }
-      ],
+      "findings": [],
       "layout": "normal",
       "script": "cardsfolder/t/theorists_proxy.txt",
-      "tokens": [],
+      "tokens": [
+       {
+        "present": true,
+        "script": "u_empower_jace"
+       }
+      ],
       "vocab": [
        -1
       ]
@@ -123,20 +98,22 @@
    },
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
-    "engine": "7b246cbb560da446eca1b6a579ef5a93afd763fd2e79aa00659ac418c9509cd9",
+    "engine": "f1cd3021bbdd7e91c7a2a7d155a2f29614b7ee3af6894f5895450d926f07df27",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "tokens": "3108563933f28028cf645875dd9038b457ec0b97a3df7d6e57c83ef7c9707f1d",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
    },
    "result": "ok",
-   "summary": "1 new card(s), 1 with findings (2 findings), 0 without a script",
-   "time": "2026-11-07T12:28:01"
+   "summary": "1 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:36:59"
   },
   "provision": {
    "detail": {
     "fetched": [],
     "on_forge_master": [],
-    "tokens": [],
+    "tokens": [
+     "u_empower_jace"
+    ],
     "tokens_fetched": [],
     "tokens_missing": [],
     "unobtainable": []
@@ -144,11 +121,11 @@
    "inputs": {
     "deck": "9f6bec5be7c53c0edbf25e8a5cbe52196f19bb618ab2035bcc0ae969188bc79c",
     "scripts": "fba4f33fba85830a3d7af3b3f85f7bb16f70ffe4ff58cd35a6408378ba220341",
-    "vocab": "bff6225afc9ad2ae6641153d693ca216b4438578d5678b1501c09d82b6a85ceb"
+    "vocab": "061dcb033ad1780e855563de5cb3680b74c279f4e2ec00a850b8c6f33066c18a"
    },
    "result": "ok",
-   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
-   "time": "2026-11-07T12:28:01"
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 1 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:36:59"
   },
   "scrape": {
    "detail": {

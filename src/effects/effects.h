@@ -44,6 +44,9 @@ inline constexpr const char *MOBILIZE_TOKEN_SCRIPT = "r_1_1_warrior";
 std::string amass_army_token_script(const std::string &subtype);
 // The creature subtype an Amass definition amasses (its Type$; Orc when unset).
 std::string amass_subtype(const AbilityDef &def);
+// The token an empower of `subtype` makes, empty for no row; and the subtype of an Empower definition.
+std::string empower_token_script(const std::string &subtype);
+std::string empower_subtype(const AbilityDef &def);
 
 // The per-effect handlers, one per src/effects/effect_*.cpp (documented in effect_kinds.def).
 #define EFFECT_KIND(kind, category, handler) \
@@ -164,6 +167,7 @@ bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &va
 bool parse_peek_and_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_empower(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value);

@@ -30,8 +30,8 @@ Size estimates (`tools/onboard/mechanic_sizes.json`): S ≤ ½ day (a param or a
 | ur_tempo | UR Tempo | 4.0 | aggro | 32 | 0 | 0 | 0 | designate |
 | uwx_control | UWx Control | 8.0 | control | 28 | 0 | 0 | 0 | implement |
 | welder_cam | Welder Cam | 2.0 | combo | 33 | 0 | 0 | 0 | implement |
+| doomsday | Doomsday | 4.0 | combo | 33 | 1 | 0 | 0 | implement |
 | painter | Painter | 1.0 | combo | 41 | 1 | 0 | 0 | implement |
-| doomsday | Doomsday | 4.0 | combo | 33 | 1 | 1 | 3 | capability |
 
 ## Mechanics ranked by the decks that need them
 
@@ -39,7 +39,6 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 
 | mechanic | size | decks needing it | sole blocker of | cards | findings | note |
 |---|---|---|---|---|---|---|
-| Empower | M | 1 | doomsday | Theorist's Proxy | `ability_param:Empower.Type`, `category:Empower` | Theorist's Proxy: loyalty counters on a Jace token, created if absent; not in the checked-in CR |
 
 ## Unlock order (greedy: the next cheapest deck given what is already implemented)
 
@@ -53,22 +52,22 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 | 6 | cradle_control | - | 0 | 0 | 6 |
 | 7 | death_and_taxes | - | 0 | 0 | 7 |
 | 8 | dimir_tempo | - | 0 | 0 | 8 |
-| 9 | dragon_stompy | - | 0 | 0 | 9 |
-| 10 | eldrazi_aggro | - | 0 | 0 | 10 |
-| 11 | elves | - | 0 | 0 | 11 |
-| 12 | hogaak | - | 0 | 0 | 12 |
-| 13 | lands_top8 | - | 0 | 0 | 13 |
-| 14 | maverick | - | 0 | 0 | 14 |
-| 15 | mystic_forge | - | 0 | 0 | 15 |
-| 16 | painter | - | 0 | 0 | 16 |
-| 17 | reanimator_top8 | - | 0 | 0 | 17 |
-| 18 | show_and_tell | - | 0 | 0 | 18 |
-| 19 | stoneblade | - | 0 | 0 | 19 |
-| 20 | storm | - | 0 | 0 | 20 |
-| 21 | ur_tempo | - | 0 | 0 | 21 |
-| 22 | uwx_control | - | 0 | 0 | 22 |
-| 23 | welder_cam | - | 0 | 0 | 23 |
-| 24 | doomsday | Empower | 3 | 3 | 24 |
+| 9 | doomsday | - | 0 | 0 | 9 |
+| 10 | dragon_stompy | - | 0 | 0 | 10 |
+| 11 | eldrazi_aggro | - | 0 | 0 | 11 |
+| 12 | elves | - | 0 | 0 | 12 |
+| 13 | hogaak | - | 0 | 0 | 13 |
+| 14 | lands_top8 | - | 0 | 0 | 14 |
+| 15 | maverick | - | 0 | 0 | 15 |
+| 16 | mystic_forge | - | 0 | 0 | 16 |
+| 17 | painter | - | 0 | 0 | 17 |
+| 18 | reanimator_top8 | - | 0 | 0 | 18 |
+| 19 | show_and_tell | - | 0 | 0 | 19 |
+| 20 | stoneblade | - | 0 | 0 | 20 |
+| 21 | storm | - | 0 | 0 | 21 |
+| 22 | ur_tempo | - | 0 | 0 | 22 |
+| 23 | uwx_control | - | 0 | 0 | 23 |
+| 24 | welder_cam | - | 0 | 0 | 24 |
 
 ## Per deck
 
@@ -182,13 +181,11 @@ A deck is unlocked when every mechanic it needs exists; *sole blocker of* lists 
 33 cards, 0 new; clean: -
 
 
+### doomsday — Doomsday (4.0%, combo)
+
+33 cards, 1 new; clean: Theorist's Proxy
+
+
 ### painter — Painter (1.0%, combo)
 
 41 cards, 1 new; clean: Phyrexian Dragon Engine
-
-
-### doomsday — Doomsday (4.0%, combo)
-
-33 cards, 1 new; clean: -
-
-- Theorist's Proxy: Empower

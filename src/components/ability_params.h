@@ -166,6 +166,12 @@ struct AmassParams {
     std::string subtype = "";  // Type$ — amassed creature subtype, e.g. "Orc"
 };
 
+// Empower (Theorist's Proxy: "empower Jace 3"). The counter count lives in the shared
+// Ability::amount field; the subtype names the token and which of them the counters go on.
+struct EmpowerParams {
+    std::string subtype = "";  // Type$, a row of effect_empower.cpp's kEmpowerTokens
+};
+
 // DB$ Play: a card cast during the resolution (CR 608.2g). The optionality is carried by
 // optional_choice (Optional$ True).
 struct PlayParams {

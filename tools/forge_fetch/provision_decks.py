@@ -93,11 +93,13 @@ def collect_tokens(names, cards_dir):
     amass_re = re.compile(r"Amass\b.*?Type\$\s*([A-Za-z]+)")
     # Some tokens are SYNTHESIZED by the engine from a keyword/effect with no TokenScript$
     # field to scan (src/effects/effect_*.cpp): an Investigate effect makes the Clue token
-    # "c_a_clue_draw" and a Mobilize effect makes the Warrior token "r_1_1_warrior". Detect
-    # those by keyword so their scripts are provisioned too (Amass is handled above).
+    # "c_a_clue_draw", a Mobilize effect makes the Warrior token "r_1_1_warrior" and an Empower
+    # of Jace makes the planeswalker token "u_empower_jace". Detect those by keyword so their
+    # scripts are provisioned too (Amass is handled above).
     keyword_tokens = [
         (re.compile(r"\bInvestigate\b"), "c_a_clue_draw"),
         (re.compile(r"\bMobilize\b"), "r_1_1_warrior"),
+        (re.compile(r"\bEmpower \| Type\$ Jace\b"), "u_empower_jace"),
     ]
     tokens = set()
     for nm in names:

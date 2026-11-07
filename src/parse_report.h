@@ -11,8 +11,8 @@
 // src/card_vocab.h) or "@FILE" (FILE's cards: a .dk deck's main deck and sideboard, else one card
 // name per line; relative to the working directory). Each distinct script is parsed afresh with
 // the parser's findings collected (parse.h, ParseFinding), and with it every token script it names
-// (TokenScript$, and the stems the engine synthesizes for Amass, Investigate and Mobilize), and one
-// JSON object per card is printed on stdout, in argument order:
+// (TokenScript$, and the stems the engine synthesizes for Amass, Empower, Investigate and
+// Mobilize), and one JSON object per card is printed on stdout, in argument order:
 //
 //   {"query": <arg's name>, "card": <front face name>, "script": <path under resources/>,
 //    "faces": [<face names>], "layout": "normal"|"transform"|"modal"|"split", "vocab": [<ids>],

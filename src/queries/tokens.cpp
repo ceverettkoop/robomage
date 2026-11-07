@@ -12,6 +12,7 @@ void ability_token_scripts(const AbilityDef &def, std::set<std::string> &out) {
     if (def.kind == EffectKind::Investigate) out.insert(effects::INVESTIGATE_TOKEN_SCRIPT);
     if (def.kind == EffectKind::Amass) out.insert(effects::amass_army_token_script(effects::amass_subtype(def)));
     if (def.kind == EffectKind::Mobilize) out.insert(effects::MOBILIZE_TOKEN_SCRIPT);
+    if (def.kind == EffectKind::Empower) out.insert(effects::empower_token_script(effects::empower_subtype(def)));
     for (const AbilityDef &sub : def.subabilities) ability_token_scripts(sub, out);
     for (const AbilityDef &mode : def.charm_choices) ability_token_scripts(mode, out);
     for (const AbilityDef &trig : def.effect_floating_triggers) ability_token_scripts(trig, out);

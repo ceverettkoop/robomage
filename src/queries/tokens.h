@@ -10,7 +10,7 @@ struct CardData;
 // ── Token scripts a card can make (CR 111) ────────────────────────────────────
 
 // The token script stems `def` can make — its Token effects' TokenScript$, the Clue an Investigate
-// makes, an Amass's Army, a Mobilize's Warrior — with its sub-abilities, modes, floating triggers
+// makes, an Amass's Army, a Mobilize's Warrior, an Empower's planeswalker — with its sub-abilities, modes, floating triggers
 // and granted abilities, added to `out`.
 void ability_token_scripts(const AbilityDef &def, std::set<std::string> &out);
 

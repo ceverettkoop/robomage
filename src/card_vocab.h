@@ -414,7 +414,7 @@ static constexpr int TOKEN_SENTINEL = N_CARD_TYPES - 1;
 // whose script is not registered here. Entries are keyed by token SCRIPT filename stem
 // (Token::script_name — display names collide across scripts, stems do not). Keep this
 // table modest: only token scripts actually created by cards in card_vocab_entries
-// (TokenScript$ references plus the engine-synthesized Amass/Investigate/Mobilize stems).
+// (TokenScript$ references plus the engine-synthesized Amass/Empower/Investigate/Mobilize stems).
 struct TokenVocabEntry {
     const char *script;  // token script stem (matches Token::script_name)
     const char *name;    // display name for observers (card_index_to_name)

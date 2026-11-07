@@ -32,6 +32,7 @@ bool apply_parse_hook(AbilityDef &ab, const std::string &key, const std::string 
         || parse_peek_and_reveal(ab, key, value)
         || parse_reveal(ab, key, value)
         || parse_amass(ab, key, value)
+        || parse_empower(ab, key, value)
         || parse_choose_number(ab, key, value)
         || parse_dig_until(ab, key, value)
         || parse_play(ab, key, value)

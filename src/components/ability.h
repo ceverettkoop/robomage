@@ -374,7 +374,7 @@ struct AbilityDef {
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams, PlayParams> params;
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams, PlayParams, EmpowerParams> params;
 
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers); the
     // origin also filters LAND_PLAYED (Mode$ LandPlayed's Origin$: the zone the land was played from)
