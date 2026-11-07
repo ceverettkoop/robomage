@@ -3549,11 +3549,10 @@ static TriggerLine read_trigger_line(const std::string &line,
     return t;
 }
 
-// The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone; only the
-// battlefield and graveyard filters are modeled).
+// The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone).
 static int trigger_zone_filter(const std::string &value) {
-    if (value == "Battlefield") return Zone::BATTLEFIELD;
-    if (value == "Graveyard") return Zone::GRAVEYARD;
+    Zone::ZoneValue zone;
+    if (Zone::from_script_name(value, zone)) return zone;
     if (value != "Any") parse_finding("trigger_zone", "ChangesZone:" + value, "read as any zone");
     return -1;
 }
