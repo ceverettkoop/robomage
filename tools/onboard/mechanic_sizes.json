@@ -17,6 +17,7 @@
   "static_param": "S",
   "static_form": "S",
   "replacement": "M",
+  "replacement_param": "S",
   "keyword": "M",
   "cost": "S",
   "layout": "L",

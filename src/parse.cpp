@@ -4123,6 +4123,7 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
 // The params of a replacement line and what its ReplaceWith$ SVar says: an R: line, or an SVar an
 // Effect's ReplacementEffects$ names.
 struct ReplacementLine {
+    std::vector<std::pair<std::string, std::string>> params;  // every key and value, in script order
     std::string event;                // Event$
     std::string draw_check_svar;      // CheckSVar$ <var>, the count gate's SVar name
     std::string draw_svar_compare;    // SVarCompare$ <cmp>, its comparator (e.g. "LE1")
@@ -4139,6 +4140,7 @@ struct ReplacementLine {
     bool replace_with_etb_tapped = false;
     bool replace_with_exile = false;
     bool layer_cant_happen = false;
+    bool untap_step_of_another = false;       // ValidStepTurnToController$ other than You
     bool active_zones_battlefield = false;
     bool valid_card_opp_non_token = false;
     bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
@@ -4147,6 +4149,7 @@ struct ReplacementLine {
     bool valid_lki_creature = false;          // ValidLKI$ Creature.*: the moving card is (last known) a creature
     bool origin_graveyard = false;            // Origin$ includes Graveyard
     bool origin_library = false;              // Origin$ includes Library
+    bool origin_elsewhere = false;            // Origin$ names another zone, which no row watches
     std::string replace_with_svar;            // the SVar named by ReplaceWith$ (e.g. "Exile")
     // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
     // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
@@ -4188,14 +4191,16 @@ static ReplacementLine read_replacement_line(const std::string &line,
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
+        l.params.emplace_back(key, value);
         if      (key == "Event")       l.event = value;
         else if (key == "ValidPlayer" && value == "You")         l.valid_player_you        = true;
         else if (key == "CheckSVar")  l.draw_check_svar          = value;
         else if (key == "SVarCompare") l.draw_svar_compare       = value;
-        else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
+        else if (key == "ManaAmount") {
             // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
+            // Any other comparison is no form the row has.
             std::string n = value.substr(2);
-            l.produce_min_amount = n.empty() ? 1 : std::stoi(n);
+            l.produce_min_amount = value.rfind("GE", 0) != 0 ? 0 : n.empty() ? 1 : std::stoi(n);
         }
         else if (key == "ValidSA")    l.valid_sa_filter          = value;
         else if (key == "ValidSource") l.valid_source            = value;
@@ -4206,26 +4211,26 @@ static ReplacementLine read_replacement_line(const std::string &line,
             l.untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
             l.produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
         }
-        else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                 (value.find("!token") != std::string::npos ||
-                  value.find("nonToken") != std::string::npos)) l.valid_card_opp_non_token = true;
-        // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
-        else if (key == "ValidCard"   && filter_has_head(value, "Creature") &&
-                 value.find("!wasCast") != std::string::npos &&
-                 (value.find("!token") != std::string::npos ||
-                  value.find("nonToken") != std::string::npos)) l.valid_card_uncast_creature = true;
+        else if (key == "ValidCard"   && value == "Card.!token+OppOwn") l.valid_card_opp_non_token = true;
+        // Containment Priest: a non-token creature that wasn't cast.
+        else if (key == "ValidCard"   && value == "Creature.!token+!wasCast") l.valid_card_uncast_creature = true;
         else if (key == "Destination" && value == "Battlefield") l.dest_is_battlefield     = true;
         else if (key == "Destination" && value == "Graveyard")   l.dest_is_graveyard       = true;
         else if (key == "ReplaceWith" && value == "ETBTapped")   l.replace_with_etb_tapped = true;
         else if (key == "ReplaceWith") { l.replace_with_svar = value; if (value == "Exile") l.replace_with_exile = true; }
         else if (key == "Layer"       && value == "CantHappen") l.layer_cant_happen        = true;
+        else if (key == "ValidStepTurnToController") l.untap_step_of_another = value != "You";
         else if (key == "ActiveZones" && value == "Battlefield") l.active_zones_battlefield = true;
         else if (key == "Prevent"     && value == "True")        l.prevent_true             = true;
-        else if (key == "ValidLKI"    && filter_has_head(value, "Creature"))
+        // Creature.Other: the moving card is no source of this line, which is on the battlefield.
+        else if (key == "ValidLKI"    && (value == "Creature" || value == "Creature.Other"))
             l.valid_lki_creature = true;
         else if (key == "Origin") {
-            if (value.find("Graveyard") != std::string::npos) l.origin_graveyard = true;
-            if (value.find("Library")   != std::string::npos) l.origin_library   = true;
+            for (const std::string &zone : split(value, ',')) {
+                if (zone == "Graveyard") l.origin_graveyard = true;
+                else if (zone == "Library") l.origin_library = true;
+                else l.origin_elsewhere = true;
+            }
         }
         else if (key == "IsPresent")     l.cant_counter_present = value;
         else if (key == "PresentZone")   l.cant_counter_zone    = value;
@@ -4339,7 +4344,7 @@ static bool row_discard_else_graveyard(const ReplacementLine &l, Effect::Replace
 }
 
 static bool row_cant_be_countered_self(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.valid_card_self || !l.layer_cant_happen) return false;
+    if (!l.valid_card_self || !l.layer_cant_happen || l.valid_sa_filter != "Spell") return false;
     r.kind = Effect::Replacement::CANT_BE_COUNTERED;
     r.applies_to_self_only = true;
     // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and re-evaluated at
@@ -4393,7 +4398,7 @@ static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replaceme
 // in its origin zone, distinct from Containment Priest's exile-instead replacement above.
 static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r) {
     if (!l.dest_is_battlefield || !l.prevent_true || !l.valid_lki_creature || !l.active_zones_battlefield ||
-        !(l.origin_graveyard || l.origin_library))
+        !(l.origin_graveyard || l.origin_library) || l.origin_elsewhere)
         return false;
     r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
     r.applies_to_self_only = false;
@@ -4408,7 +4413,9 @@ static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replace
 // site in Orderer::perform_draw). The row stands for a win alone: any other body at that site is
 // a finding, not a body to run.
 static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.replace_with_win) return false;
+    if (!l.replace_with_win || !l.valid_player_you || !l.active_zones_battlefield) return false;
+    if (l.cant_counter_present != "Card.YouOwn" || l.cant_counter_zone != "Library" || l.cant_counter_compare != "EQ0")
+        return false;
     r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
     r.applies_to_self_only = false;  // scoped to the controller at the draw site
     return true;
@@ -4436,7 +4443,7 @@ static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r) {
 
 // Choke: matching lands don't untap during their controllers' untap steps (614.1d).
 static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.layer_cant_happen || l.untap_valid_subtype.empty()) return false;
+    if (!l.layer_cant_happen || l.untap_valid_subtype.empty() || l.untap_step_of_another) return false;
     r.kind = Effect::Replacement::SKIP_UNTAP;
     r.applies_to_self_only = false;
     r.valid_subtype = l.untap_valid_subtype;
@@ -4447,7 +4454,9 @@ static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement
 // type and amount." A ProduceMana replacement (614.1) — when a permanent of the named type is
 // tapped for >= ManaAmount mana, replace its production with that much of the ReplaceMana color.
 static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.replace_with_produce_mana || !l.active_zones_battlefield || l.produce_valid_type.empty()) return false;
+    if (!l.replace_with_produce_mana || !l.active_zones_battlefield || l.produce_valid_type.empty() ||
+        l.produce_min_amount < 1)
+        return false;
     r.kind = Effect::Replacement::PRODUCE_MANA;
     r.applies_to_self_only = false;
     r.produce_valid_type = l.produce_valid_type;
@@ -4461,7 +4470,8 @@ static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r) {
 // implicit in a 2-player game (a permanent only untaps during its controller's untap step), so it
 // needs no extra gating here.
 static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r) {
-    if (!l.layer_cant_happen || !l.valid_card_self || !l.untap_valid_subtype.empty()) return false;
+    if (!l.layer_cant_happen || !l.valid_card_self || !l.untap_valid_subtype.empty() || l.untap_step_of_another)
+        return false;
     r.kind = Effect::Replacement::SKIP_UNTAP;
     r.applies_to_self_only = true;
     return true;
@@ -4488,37 +4498,50 @@ static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::R
 }
 
 // Every replacement a script can express: an Event$, the host it is written on, the reader that
-// says whether this line is that form and fills it in, and whether it runs its ReplaceWith$ body
-// (parsed like any SVar, Effect::Replacement::replace_with) rather than reading it into fields. A
-// line yields each row it matches, in order.
+// says whether this line is that form and fills it in, whether it runs its ReplaceWith$ body (parsed
+// like any SVar, Effect::Replacement::replace_with) rather than reading it into fields, and the
+// params the row acts on, beside the Event$ every row has. A line yields each row it matches, in
+// order.
 static const struct {
     const char *event;
     ReplacementHost host;
     bool (*read)(const ReplacementLine &, Effect::Replacement &);
     bool runs_body;
+    const char *reads;
 } kReplacementRows[] = {
-    {"Moved", ReplacementHost::CARD, row_enters_tapped, false},
-    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional, false},
-    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard, false},
-    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self, false},
-    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield, false},
-    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard, false},
-    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb, false},
-    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones, false},
-    {"Draw", ReplacementHost::CARD, row_draw_empty_win, true},
-    {"DrawCards", ReplacementHost::CARD, row_draw_add, false},
-    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype, false},
-    {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false},
-    {"Untap", ReplacementHost::CARD, row_skip_untap_self, false},
-    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false},
-    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped, false, "ValidCard Destination ReplaceWith"},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional, false, "ValidCard Destination ReplaceWith"},
+    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard, false, "ValidCard Destination ReplaceWith"},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self, false,
+     "ValidCard ValidSA Layer IsPresent PresentZone PresentCompare"},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield, false, "ValidSA Layer ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard, false, "ValidCard Destination ReplaceWith ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb, false, "ValidCard Destination ReplaceWith ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones, false,
+     "ValidLKI Origin Destination Prevent Layer ActiveZones"},
+    {"Draw", ReplacementHost::CARD, row_draw_empty_win, true,
+     "ValidPlayer IsPresent PresentZone PresentCompare ReplaceWith ActiveZones"},
+    {"DrawCards", ReplacementHost::CARD, row_draw_add, false, "ValidPlayer CheckSVar SVarCompare ReplaceWith ActiveZones"},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype, false, "ValidCard ValidStepTurnToController Layer ActiveZones"},
+    {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false, "ValidCard ManaAmount ReplaceWith ActiveZones"},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_self, false, "ValidCard ValidStepTurnToController Layer"},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false, "ValidSA Layer"},
+    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false, "Prevent IsCombat ValidSource ValidTarget"},
 };
 
-// Appends what the replacement line yields on `host`, returning how many it did.
+// Is `key` a param no row needs to act on: the event's name, the card's text, Forge's own note on
+// the event it hands on?
+static bool replacement_param_prose(const std::string &key) {
+    return key == "Event" || key == "Description" || key == "Secondary" || key == "ReplacementResult";
+}
+
+// Appends what the replacement line yields on `host`, returning how many it did. A param none of
+// the rows it yielded acts on is a finding: a line may match on some params and say more.
 static size_t read_replacement_rows(const std::string &line, const std::map<std::string, std::string> &svars,
                                     ReplacementHost host, std::vector<Effect::Replacement> &out) {
     const ReplacementLine l = read_replacement_line(line, svars);
     size_t yielded = 0;
+    std::vector<std::string> read;
     for (const auto &row : kReplacementRows) {
         if (row.host != host || l.event != row.event) continue;
         Effect::Replacement r;
@@ -4527,7 +4550,12 @@ static size_t read_replacement_rows(const std::string &line, const std::map<std:
             r.replace_with = intern_ability_def(parse_svar_ability(l.replace_with_body, AbilityDef::TRIGGERED, svars, ""));
         out.push_back(std::move(r));
         yielded++;
+        for (const std::string &key : split(row.reads, ' ')) read.push_back(key);
     }
+    if (yielded == 0) return 0;
+    for (const auto &param : l.params)
+        if (!replacement_param_prose(param.first) && std::find(read.begin(), read.end(), param.first) == read.end())
+            parse_finding("replacement_param", l.event + "." + param.first, param.first + "$ " + param.second);
     return yielded;
 }
 
