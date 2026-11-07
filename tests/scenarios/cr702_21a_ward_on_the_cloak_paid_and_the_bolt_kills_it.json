@@ -1,0 +1,72 @@
+{
+  "name": "cr702_21a_ward_on_the_cloak_paid_and_the_bolt_kills_it",
+  "why": "CR 702.21a, 708.9: ward {2} paid, the Bolt resolves and the cloak dies, revealed as it leaves.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat",
+    "B:pass",
+    "B:pass",
+    "B:cast:Lightning Bolt",
+    "B:desc:hidden",
+    "B:desc:Tap Mountain",
+    "B:desc:Tap Mountain"
+  ],
+  "max_decisions": 18,
+  "expect_order": [
+    "Ward \\{2\\}: Face-down creature's controller may pay",
+    "Lightning Bolt deals 3 damage to Face-down creature",
+    "is revealed as Grizzly Bears"
+  ],
+  "expect_dump": [
+    "^B .*event ZONE_MOVE BATTLEFIELD>GRAVEYARD card=Grizzly Bears face_down=0"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

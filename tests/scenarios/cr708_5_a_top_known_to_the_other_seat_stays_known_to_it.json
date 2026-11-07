@@ -1,0 +1,73 @@
+{
+  "name": "cr708_5_a_top_known_to_the_other_seat_stays_known_to_it",
+  "why": "CR 708.5, 701.20e: B looks at A's top with its own Mishra's Bauble: it can't look at the cloak (CR 708.5), its object row shows no card, but it knows what went there: its k_ pool for the cloak is that one card, and A sees it only once it is on the battlefield.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mishra's Bauble"
+  ],
+  "library_a": [
+    "Springheart Nantuko",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:activate:Mishra's Bauble",
+    "B:target:Player A",
+    "A:cast:Cryptic Coat",
+    "A:pass"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A cloaks Springheart Nantuko"
+  ],
+  "expect_dump": [
+    "^B .*position opp top0 = Springheart Nantuko",
+    "^B .*face_down opp BATTLEFIELD card=none",
+    "^B .*pool opp face_down size=1: Springheart Nantuko 1-1",
+    "^A .*face_down self BATTLEFIELD card=Springheart Nantuko"
+  ],
+  "expect_dump_not": [
+    "^A .*position self top0 = Springheart Nantuko",
+    "^B .*face_down opp BATTLEFIELD card=Springheart"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

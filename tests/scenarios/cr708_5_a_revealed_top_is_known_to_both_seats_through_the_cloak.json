@@ -1,0 +1,70 @@
+{
+  "name": "cr708_5_a_revealed_top_is_known_to_both_seats_through_the_cloak",
+  "why": "CR 701.20a, 708.5: Delver of Secrets reveals A's top in the upkeep, an instant, so both seats know it; cloaked in the main phase it stays known to both: A's by the look, B's by its k_ pool, with no card in B's object row.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Delver of Secrets"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Counterspell",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:#1",
+    "A:cast:Cryptic Coat",
+    "A:pass"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A cloaks Counterspell"
+  ],
+  "expect_dump": [
+    "^A .*face_down self BATTLEFIELD card=Counterspell",
+    "^B .*face_down opp BATTLEFIELD card=none",
+    "^B .*pool opp face_down size=1: Counterspell 1-1"
+  ],
+  "expect_dump_not": [
+    "^B .*face_down opp BATTLEFIELD card=Counterspell"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

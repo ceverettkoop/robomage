@@ -1,0 +1,69 @@
+{
+  "name": "cr400_7_a_blinked_cloak_returns_face_up_a_new_object",
+  "why": "CR 708.9, 400.7: Phelia exiles the cloak, which is revealed, and it returns at the end step face up, a new object with no ward and no Coat on it.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Phelia Exuberant Shepherd"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat",
+    "A:attack:Phelia",
+    "A:attack:done",
+    "A:target:Grizzly Bears@own"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "is revealed as Grizzly Bears"
+  ],
+  "expect_dump": [
+    "^B .*event ZONE_MOVE BATTLEFIELD>EXILE card=Grizzly Bears face_down=0"
+  ],
+  "expect_dump_final_not": [
+    "^A .*face_down self BATTLEFIELD"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}
