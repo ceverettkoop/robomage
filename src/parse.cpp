@@ -2321,10 +2321,12 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         for (const std::string &kw : split_keyword_list(value))
             if (kw.rfind("Enchant", 0) != 0) ability.animate_keywords.push_back(kw);
     } else if (key == "AtEOT" && ability.category == "Animate") {
-        // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack): sacrifice it at the next end step. Any
-        // other value is an unmodelled param.
+        // DB$ Animate | AtEOT$ Sacrifice (Sneak Attack), Exile (Shallow Grave): where it goes at the
+        // next end step. Any other value is an unmodelled param.
         if (value == "Sacrifice") {
             ability.at_eot = AtEotMove::SACRIFICE;
+        } else if (value == "Exile") {
+            ability.at_eot = AtEotMove::EXILE;
         } else {
             warning("Unrecognized ability param: AtEOT$ " + value + (card_name.empty() ? "" : " (card: " + card_name + ")"));
             parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);

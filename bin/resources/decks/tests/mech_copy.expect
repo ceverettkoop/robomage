@@ -1,3 +1,5 @@
 # M8 (b2): copies and end-of-turn animation.
 # An until-end-of-turn base P/T (Allosaurus Shepherd).
 row:animate_eot_base_pt
+# The top creature of a graveyard (Shallow Grave), exiled at the next end step.
+row:TopGraveyardCreature

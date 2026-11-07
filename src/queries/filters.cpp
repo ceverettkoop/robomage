@@ -195,6 +195,7 @@ static bool ev_named_card(const CharView &v, const Qualifier &q);
 static bool ev_other(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_self(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
+static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_not_in_set(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_attached_to(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
 static bool ev_you_ctrl(const CharView &v, const Qualifier &q, const MatchCtx &ctx);
@@ -431,6 +432,9 @@ static const QualifierRow kQualifierRows[] = {
     elsewhere_row("YouDontCtrl"),
     // ExiledWithSource — a card the filter's source exiled and still tracks (Agatha's Soul Cauldron).
     relative_row("ExiledWithSource", ev_exiled_with_source),
+    // TopGraveyardCreature — the creature card nearest the top of its owner's graveyard (Shallow
+    // Grave; a card put there goes on top, CR 404.1).
+    relative_row("TopGraveyardCreature", ev_top_graveyard_creature),
     elsewhere_row("sameName"),
     elsewhere_row("Remembered"),
     elsewhere_row("TargetedCard"),
@@ -953,6 +957,20 @@ static bool ev_pt_literal(const CharView &v, const Qualifier &q) {
 static bool ev_exiled_with_source(const CharView &v, const Qualifier &, const MatchCtx &ctx) {
     if (v.entity == 0 || !global_coordinator.entity_has_component<Permanent>(ctx.source)) return false;
     return refs_contain(global_coordinator.GetComponent<Permanent>(ctx.source).exiled_with, v.entity);
+}
+
+static bool ev_top_graveyard_creature(const CharView &v, const Qualifier &, const MatchCtx &) {
+    if (v.entity == 0 || !global_coordinator.entity_has_component<Zone>(v.entity)) return false;
+    const Zone &zone = global_coordinator.GetComponent<Zone>(v.entity);
+    if (zone.location != Zone::GRAVEYARD) return false;
+    coverage_row("TopGraveyardCreature");
+    for (Entity e : zoned_entities()) {
+        const Zone &other = global_coordinator.GetComponent<Zone>(e);
+        if (other.location != Zone::GRAVEYARD || other.owner != zone.owner) continue;
+        if (other.distance_from_top < zone.distance_from_top && type_set_has(effective_types(e), "Creature"))
+            return false;
+    }
+    return true;
 }
 
 static bool ev_counters(const CharView &v, const Qualifier &q) {

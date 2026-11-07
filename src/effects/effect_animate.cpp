@@ -319,14 +319,15 @@ void animate_permanent(const Ability &ab, Entity tgt) {
 // See declaration in effects.h.
 void register_at_eot_move(const Ability &ab, const std::vector<ObjectRef> &objects) {
     if (ab.def->at_eot == AtEotMove::NONE || objects.empty()) return;
-    Ability fire_ab(keyed_ability_def("animate_sacrifice_at_eot", [] {
+    const bool exiled = ab.def->at_eot == AtEotMove::EXILE;
+    Ability fire_ab(keyed_ability_def(exiled ? "animate_exile_at_eot" : "animate_sacrifice_at_eot", [exiled] {
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "ChangeZone";
         d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
         d.origin = Zone::BATTLEFIELD;
         d.origins = {Zone::BATTLEFIELD};
-        d.destination = Zone::GRAVEYARD;
+        d.destination = exiled ? Zone::EXILE : Zone::GRAVEYARD;
         return d;
     }));
     fire_ab.restore_remembered_exiled_with = objects;  // resolve() seeds the remembered set to them
