@@ -476,14 +476,16 @@ class Pipeline:
         detail.update({"fuzz": r.returncode, "fuzz_cmd": " ".join(cmd[1:]), "out_dir": os.path.relpath(out_dir, REPO)})
         if r.returncode != 0:
             return "fail", "the fuzz campaign found errors (%s)" % os.path.relpath(out_dir, REPO), detail
-        warn_files = []
+        warn_files, reviewed = [], []
         for fn in sorted(os.listdir(out_dir)) if os.path.isdir(out_dir) else []:
             if "_draw_" in fn:
-                warn_files.append(fn)
+                (reviewed if fn.split("_draw_")[0] in self.args.reviewed_draw else warn_files).append(fn)
         detail["draws"] = warn_files
+        detail["draws_reviewed"] = reviewed
         if warn_files:
             return "fail", "%d drawn game(s) to review (%s)" % (len(warn_files), os.path.relpath(out_dir, REPO)), detail
-        return "ok", "make check and %d fuzz games per matchup clean" % self.args.fuzz_games, detail
+        return "ok", "make check and %d fuzz games per matchup clean%s" % (
+            self.args.fuzz_games, ", %d reviewed draw(s)" % len(reviewed) if reviewed else ""), detail
 
     # 10 designate
     def stage_designate(self, status):
@@ -1037,6 +1039,9 @@ def main(argv=None):
     ap.add_argument("--dry-run", action="store_true", help="vocab: print the entries without editing")
     ap.add_argument("--to", help="designate: league or heldout")
     ap.add_argument("--skip-make-check", action="store_true", help="checks: only the fuzz campaign")
+    ap.add_argument("--reviewed-draw", action="append", default=[], metavar="GAME",
+                    help="checks: a drawn game reviewed as the rules' outcome (CR 104.4a), named as its transcript "
+                         "is before _draw_ (fuzz_<deck>__<opp>_g<i>); it no longer fails the stage (repeatable)")
     ap.add_argument("--fuzz-games", type=int, default=100, help="checks: bo1 games per matchup (default 100)")
     ap.add_argument("--manual-mana-games", type=int, default=10,
                     help="checks: --no-auto-mana games per matchup (default 10)")
