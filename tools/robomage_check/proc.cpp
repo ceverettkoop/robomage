@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
+#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -16,8 +17,7 @@
 
 extern char **environ;
 
-// The argv and environment of a child, built before fork (the child may only call
-// async-signal-safe functions until it execs).
+// The argv and environment of a child, built before it is spawned.
 struct ChildImage {
         std::vector<std::string> argv_store, env_store;
         std::vector<char *> argv, envp;
@@ -47,8 +47,10 @@ static void build_image(const rmcheck::ProcSpec &spec, ChildImage *img) {
     img->envp.push_back(nullptr);
 }
 
-// Forks and execs `spec`; the parent's ends of the pipes come back non-blocking and close-on-exec
-// (so a child another thread starts never holds them open).
+// Starts `spec` with posix_spawn, which copies none of this process's memory (a fork's page-table
+// copy grows with the transcripts a fuzz run holds, and serialises the spawns); the parent's ends of
+// the pipes come back non-blocking and close-on-exec (so a child another thread starts never holds
+// them open).
 static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *err_fd, bool merge, std::string *err) {
     if (spec.argv.empty()) {
         *err = "no program";
@@ -61,22 +63,20 @@ static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *
         *err = std::string("pipe: ") + std::strerror(errno);
         return -1;
     }
-    const char *cwd = spec.cwd.empty() ? nullptr : spec.cwd.c_str();
-    const pid_t pid = fork();
-    if (pid < 0) {
-        *err = std::string("fork: ") + std::strerror(errno);
+    posix_spawn_file_actions_t actions;
+    posix_spawn_file_actions_init(&actions);
+    posix_spawn_file_actions_adddup2(&actions, in_p[0], 0);
+    posix_spawn_file_actions_adddup2(&actions, out_p[1], 1);
+    posix_spawn_file_actions_adddup2(&actions, merge ? out_p[1] : err_p[1], 2);
+    if (!spec.cwd.empty()) posix_spawn_file_actions_addchdir_np(&actions, spec.cwd.c_str());
+    pid_t pid = -1;
+    const int rc = posix_spawn(&pid, img.argv[0], &actions, nullptr, img.argv.data(), img.envp.data());
+    posix_spawn_file_actions_destroy(&actions);
+    if (rc != 0) {
+        *err = std::string("spawn: ") + std::strerror(rc);
+        for (int fd : {in_p[0], in_p[1], out_p[0], out_p[1], err_p[0], err_p[1]})
+            if (fd >= 0) close(fd);
         return -1;
-    }
-    if (pid == 0) {
-        dup2(in_p[0], 0);
-        dup2(out_p[1], 1);
-        dup2(merge ? out_p[1] : err_p[1], 2);
-        if (cwd && chdir(cwd) != 0) _exit(127);
-        execve(img.argv[0], img.argv.data(), img.envp.data());
-        const char msg[] = "robomage_check: exec failed\n";
-        ssize_t ignored = write(2, msg, sizeof msg - 1);
-        (void)ignored;
-        _exit(127);
     }
     close(in_p[0]);
     close(out_p[1]);
