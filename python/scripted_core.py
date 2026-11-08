@@ -2452,6 +2452,9 @@ _WITCH_ENCHANTER = "Witch Enchanter"   # its land face pays 3 life
 _GRISELBRAND = "Griselbrand"
 _GRISELBRAND_DRAW = 7
 _GRISELBRAND_MIN_LIFE = 15
+# Basalt Monolith's abilities in script order: {T}: Add {C}{C}{C}, then {3}: Untap.
+_BASALT_MONOLITH = "Basalt Monolith"
+_BASALT_MONOLITH_UNTAP_ORD = 1
 # Blast Zone's abilities in script order: mana, charge (X), destroy.
 _BLAST_ZONE_CHARGE_ORD = 1
 _BLAST_ZONE_DESTROY_ORD = 2
@@ -2527,8 +2530,10 @@ def _activation_holds(v) -> set[int]:
     activation sacrifices a creature for 1 damage), Blast Zone off its plan
     (_blast_zone_plan: charge only toward the target mana value, destroy only
     at it), Dauthi Voidwalker's sacrifice without an exiled void card
-    worth more than the 3/2 itself, and Griselbrand's pay-7-life draw 7
-    unless the life and the library can both afford it."""
+    worth more than the 3/2 itself, Griselbrand's pay-7-life draw 7
+    unless the life and the library can both afford it, and Basalt Monolith's
+    {3}: Untap (three mana for the three it makes again: paid with its own,
+    it untaps itself for nothing and without end)."""
     holds = _equip_holds(v)
     plan = None
     for i in range(v.n):
@@ -2547,6 +2552,9 @@ def _activation_holds(v) -> set[int]:
                 holds.add(i)
         elif card == _MYSTIC_FORGE:
             if not _forge_exile_worthwhile(v):
+                holds.add(i)
+        elif card == _BASALT_MONOLITH:
+            if v.ordinal(i) == _BASALT_MONOLITH_UNTAP_ORD:
                 holds.add(i)
         elif card == _BLAST_ZONE:
             plan = plan or _blast_zone_plan(v) or (0, -1)
