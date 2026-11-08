@@ -163,6 +163,11 @@ background** and make the live output inspectable by the user:
 
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
+  - Deck onboarding's stage 9 (`onboard.py checks`) fails on any draw in its fuzz campaign;
+    `--reviewed-draw fuzz_<deck>__<opp>_g<i>` names one reviewed as the rules' outcome (CR 104.4a,
+    both players losing at once), which the status file records under `draws_reviewed`.
+    `ROBOMAGE_BUILD=release` runs the stage on `bin/release/robomage` and `bin/release/robomage_check`
+    (its `make check` with `BUILD=RELEASE`).
 - Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 - **Agent games** (the quick check of a new build): `python3 python/rm_driver.py --player-a
   scripted --player-b explore --deck-a league/bug --deck-b league/burn --format bo1 --games N`
@@ -187,7 +192,7 @@ The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./d
 board, pending decision, numbered menu and the choice made, as the CLI renders the deciding seat's
 frame: `| ` lines),
 the test-setup presets and `--play`; `--help` lists every flag (zone presets
-`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
+`--battlefield/face-down/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
 `--decision-log`, …).
 
 - **Format:** one game by default; `--bo3` plays a match with sideboarding. Cap the run with
@@ -197,7 +202,8 @@ the test-setup presets and `--play`; `--help` lists every flag (zone presets
   raw engine seed instead.
 - **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked deck (hand first; padded
   to 15 cards with its last card). `--battlefield-a/-b` permanents start in play without summoning
-  sickness. Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
+  sickness. `--face-down-a/-b` cards start there the same way, face down (2/2 with no text, CR
+  708.2a). Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
 - **Shuffling:** libraries shuffle with the seeded RNG unless `--no-shuffle` (deck-file order =
   draw order; first 7 = opening hand). Any `--hand-a/-b` implies `--no-shuffle` for both seats.
 - **No commas in card names.** List flags (`--play`, `--hand-*`, `--library-*`, zone presets)
@@ -225,12 +231,16 @@ reordering; an unmatched or ambiguous spec **fails loudly with the legal menu** 
 | `pass` | pass priority / take the first choice |
 | `keep` / `mulligan` | opening mulligan decision |
 | `cast:<card>` · `play:<card>` / `land:<card>` | cast a spell / play a land |
+| `morph:<card>` | cast it face down |
 | `activate:<card>[@own/opp]` | activate a permanent's ability |
 | `target:<card>[@own/opp]` / `target:<text>` | choose a target (card, or player/mode by description) |
+| `divide:<card>[@own/opp]` / `divide:<text>` | give that target one more point of the divided damage |
 | `attack:<card>` / `attack:done` · `block:<card>` / `block:done` | declare / confirm attackers, blockers |
 | `mana:<w/u/b/r/g/c>` / `tap:<land>` | tap for mana |
 | `search:<card>` / `search:fail` · `top:` · `bottom:` · `dig:<card>` | library search / top / bottom / dig pick |
 | `pay:<text>` · `choice:<text>` · `sb-in:` / `sb-out:<card>` / `sb-done` | optional cost · generic/modal choice · sideboarding |
+| `convoke:<card>` / `convoke:done` · `waterbend:` · `crew:` | tap a permanent toward a cost / tap no more |
+| `turn-up:<card>` | turn a face-down permanent face up (a cloaked morph card's first row of two; `desc:` names the other) |
 | `sacrifice:` `return:` `x:` `discard:` `mode:` `color:` `name:` `exile:` `shuffle:` `companion:` … | the matching choice category, by text / card |
 | `mode:done` | choose no further mode ("choose one or more", `CONFIRM_MODES`) |
 | `concede` / `concede:game` / `concede:match` | the `-2` / `-3` sentinels |
@@ -284,11 +294,17 @@ asserted event, check it passes (`bin/debug/robomage_check --tier scenarios --sc
 
 **JSON scenarios** (`tests/scenarios/*.json`, run by `robomage_check --tier scenarios --scenario
 <glob>`) capture a reproducible setup: keys `name`, `hand_a/b`, `library_a/b`, `deck_a/b`,
-`battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
+`battlefield_a/b`, `face_down_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
 or `actions`, `seed` (the `--game-seed`, default 1), `max_decisions` (default 60), `format`,
 `offer_cancel`, `engine_flags`, `variants`, plus the assertions (incl. `expect_count`,
 `expect_unique`, `expect_same` and the knowledge-dump keys `expect_dump*`). Each runs as one engine
 process with `--narrative --trace-decisions`; once its script runs out a seat takes action 0.
+The `expect_dump*` regexes match the seats' knowledge lines (`tools/robomage_check/knowledge_lines.{h,cpp}`:
+each seat STATE frame's facts, one per line, `<A|B> d=<decision> g<game> <t<turn>|sb> <fact>`), among
+them `pt <owner> <zone> <card> <p>/<t>` (a card off the battlefield whose P/T is not 0/0),
+`face_down …`, `reveal <window> <zone> pos=<n> card=<card>`, `permission <player> <kind> card=<card>`,
+`speed <player> v=<n> triggered=<0|1>` (a player who has one) and `pending_cost <part> discard=<n>`
+(a cost being paid).
 ```json
 {"name": "bolt_kills_bear", "why": "CR 120.6: …", "hand_a": ["Mountain", "Lightning Bolt"],
  "battlefield_b": ["Grizzly Bears"],
@@ -316,6 +332,10 @@ Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared 
 (`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the driver and the gate do).
 **Per-object state lives on components; `Game` holds only game-scoped state and cross-object
 registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
+A **designation** (what a player, a permanent or the game is marked with: monarch, the city's
+blessing, speed, day/night, monstrous, prepared, a chosen name/type/color, …) is a row of
+`src/state_format/designations.def`, which declares its field (on `Player`, `Permanent` or `Game`),
+its frame column and the encoder's cell together, so a new one is one row there.
 
 **Components:** `CardData` (printed card: name, types, cost, P/T, ability definitions, statics,
 replacements), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
@@ -458,7 +478,8 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 - `tools/forge_fetch/provision_decks.py` (run by CI and by the SessionStart hook, remote sessions
   only) fetches every vocab card plus the top-level/`league/`/`heldout/`/`candidates/` deck cards and their tokens,
   including engine-synthesized ones (Amass → `b_0_0_<subtype>_army`, Investigate →
-  `c_a_clue_draw`, Mobilize → `r_1_1_warrior`). A card that synthesizes a NEW token kind needs its
+  `c_a_clue_draw`, Mobilize → `r_1_1_warrior`, Empower of Jace → `u_empower_jace`,
+  `src/effects/effect_empower.cpp`'s `kEmpowerTokens`). A card that synthesizes a NEW token kind needs its
   stem added to that script's `keyword_tokens`.
 
 ### Adding a New Card
@@ -500,7 +521,7 @@ agent that is not a human seat, the RMSTATE stream (`src/state_format/stream.h`,
 offers. Mana payment is the match-wide **auto-mana** option, on by default for every consumer
 (ordinary mana abilities hidden at priority, costs auto-paid, hybrid pips auto-resolved);
 `--no-auto-mana` (recorded in the RMLOG header) lists every mana ability and pays costs through the
-interactive payment loop (`prompt_mana_payment`):
+interactive payment loop (`pay_mana_cost`, `src/mana_system.h`):
 
 - stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
   `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.
@@ -516,7 +537,10 @@ interactive payment loop (`prompt_mana_payment`):
 Every menu goes through `InputLogger::get_input`, which leaves out a choice interchangeable with
 an earlier one (two identical cards in the same graveyard, or in the same library when each seat
 sees both or neither right now — `interchangeable_cards`, `src/queries/zones.cpp`); menu row *i*
-is reply *i*.
+is reply *i*. Before the menu and its frames, `get_input` brings the standing looks into line
+(`sync_standing_looks`, `src/queries/visibility.h`): a `MayLookAt$` static's look at the top card
+of a library (Mystic Forge, CR 401.5) is a window on whatever card is on top at that decision, so
+within a resolution it lags (`docs/rules_deviations.md` §2.6a).
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, in-process agents, CLI); the pending-decision seat loses via
@@ -551,6 +575,29 @@ sections above are not repeated here.
   concession
 - `src/action_processor.cpp` — executes a chosen action (`process_action`), cast/activation/targeting
   flows, `proc_mandatory_choice`
+- `src/cast_options.{h,cpp}` — how a card may be cast: `kCastSections`, a section per zone and the
+  `Permission` it needs (the hand, a graveyard, exile, the top of a library under
+  `Permission::LIBRARY`), each a table of rows (a way of casting, its `CastCost`, what offers it), and a
+  resolution's casts; `src/components/cast_option.h` (`CastOption`, the face, cost and overlay a
+  menu row casts by), `src/components/chosen_cost.h` (`ChosenCost`, what a cast committed to and
+  paid: on `PendingCast`, then on the `Spell`)
+- `src/cost_payment.{h,cpp}` — every cost is paid by `run_cost_parts`: a payment path is a table of
+  steps, its progress a `CostRun` on `Game`, so a payment parked mid-way is in a snapshot
+- `src/components/activation_rule.h` — an ability's activation restrictions (CR 602.5), `ActivationRule`
+  rows on its definition, every one checked by `activation_source_ready` (`src/queries/activation.h`)
+- `src/target_gate.{h,cpp}` — the constraints across a spell's or ability's targets, a row each,
+  narrowing every target pick (`apply_target_gate`)
+- `src/trigger_modes.{h,cpp}` — the trigger-mode table: per `Mode$` its event, binder, the params it
+  reads, its match and capture; the parser, the trigger scan and `--parse-report` read the same row
+- `src/resolution_memory.{h,cpp}` — the resolution-memory table: an effect reports what it did
+  (`report_object`, `src/components/memory_ops.h`) and the rows its definition's params chose write
+  `cur_game.resolution.memory`
+- `src/components/effect_object.h` — `EffectObject`: what a resolved spell or ability leaves that
+  belongs to no permanent, or an emblem (CR 611.2, 114), on `Game::resolved_effects`
+- `src/components/mana_unit.h` — mana with provenance: `ManaUnit` (one mana's color, source,
+  restriction and rider), `ManaPool`, `ManaPaid` (what a cost spent)
+- `src/components/face_down_card.h` — `FaceDownCard`, the card under a face-down permanent or spell
+  (read through `face_down_card`, `src/queries/face_down.h`)
 - `src/systems/state_manager*.cpp` — SBAs + `determine_legal_actions`, split by concern (`_actions`,
   `_combat`, `_layers` = CR 613 layer driver, `_statics`, `_triggers` = APNAP placement)
 - `src/systems/replacement_effects.{h,cpp}` — CR 614/616 dispatcher; `rules_modifying.{h,cpp}` —
@@ -558,7 +605,8 @@ sections above are not repeated here.
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
 - `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
   candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
-  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator, its expressions, sets, properties and suffixes one table each;
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator, its expressions, sets, properties and suffixes one table each
+  (an amount SVar is kept for run time when that table reads it, `svar_expr_recognized`);
   `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
@@ -566,8 +614,13 @@ sections above are not repeated here.
   `FilterSpec` a definition holds, `src/components/filter_spec.h`), `players` (seats,
   controller), `affected` (the `Defined$` table, `ResolveCtx`, `resolve_objects` / `resolve_players`,
   and the objects / player an effect acts on: targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
-  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
-  exile, `interchangeable_cards`), `lki` (object identity stamp, last-known info), `entry`
+  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, `library_top` /
+  `is_library_top`, linked exile, `interchangeable_cards`), `permissions` (the play-permission rows:
+  which `Permission` lets a player play a card from the zone it is in, `play_permissions`,
+  `play_routes`), `copies` (copiable values, CR 707), `face_down` (CR 708: `is_face_down`,
+  `face_down_card`, turning over), `overlays` (`SpellOverlay` rows: what a cast changes on the
+  spell, the face-down face, turn-up costs), `static_conditions` (a static's `Condition$`, one row
+  each), `speed` (CR 702.179), `prepared` (CR 722.3: the prepared copies in exile), `lki` (object identity stamp, last-known info), `entry`
   (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal
   windows, `individually_identifiable`, `canonical_object_order`, and `visible_card_id` /
   `card_identity`, the state format's one identity read), `costs` (`can_pay`, the one affordability
@@ -577,7 +630,8 @@ sections above are not repeated here.
   decisions (makes every prompt a loop-safe snapshot point)
 - `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
 - `src/coverage.{h,cpp}` — `--coverage FILE`: hit counts of effects, triggers, replacements, decisions by
-  category, cost parts and cast modes, written at exit (`docs/game_running.md`); kept out of `Game` and
+  category, filter and SVar table rows (`row`), cost parts, cast modes and the cast table's offered
+  and cast rows, written at exit (`docs/game_running.md`); kept out of `Game` and
   the ECS so a snapshot restore cannot rewind them
 - `src/file_util.{h,cpp}` — `make_dirs` (mkdir -p) and `write_file_atomic` (a temporary file renamed
   into place)
@@ -587,6 +641,8 @@ sections above are not repeated here.
   `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
 - `src/state_format/schema.{h,cpp}` — the RMSTATE format's single definition (std-only): table/column
   definitions, the format's enums, the frame writer (debug-checked rows), SCHEMA frame and hash
+- `src/state_format/designations.def` — the designations, a row each: the field, its `SCHEMA` column
+  and the encoder's cell (the ECS notes above)
 - `src/state_format/enum_names.{h,cpp}` — the engine's enums as SCHEMA string tables, type-mask and
   keyword indices
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
@@ -708,7 +764,9 @@ handshake JSON, the shared region, request / response layouts.
 **Tools (`tools/`)**
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
   the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
-  one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
+  one `tier_*.cpp` per tier group, `proc.*` (engine subprocesses, started with `posix_spawn`, and the
+  job pool), `scenarios.{h,cpp}` (the scenario keys and runner), `knowledge_lines.*` (the
+  `expect_dump*` lines), `corpus.*`,
   `traj.*` (episode reading and comparisons, the `traj`, `actorloop` and `actor` tiers),
   `featurize_layout.*` (the layout registry's append-only property, `featurize` tier),
   `registry_check.*` (the registry's and the card digest's checks, `vocab` tier), `coverage_check.*` (the
