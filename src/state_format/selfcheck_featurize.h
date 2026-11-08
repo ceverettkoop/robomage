@@ -21,14 +21,24 @@
 //   isolation    the omniscient frame is refused by featurize_seat and featurized by
 //                featurize_viewer.
 //
+// Under --feature-history N the seats' specs have the recent-event history types (docs/featurizer.md
+// §3.7): each seat's frames are fed, once each and in order, to the seat's EventHistory
+// (selfcheck_featurize_seat_frame), which gives both sides of every comparison their history tokens.
+//
 // A failure is an ERROR: line of check `featurize` (selfcheck_state_mismatch); at match end one
-// summary line on stderr: SELFCHECK-FEATURIZE: decisions=<n> compared=<n> refused=<n> errors=<n>.
+// summary line on stderr: SELFCHECK-FEATURIZE: decisions=<n> compared=<n> refused=<n> errors=<n>
+// (with history_tokens=<n> before errors=, the compared tensors' history tokens, under
+// --feature-history).
 
 extern bool selfcheck_featurize;  // --selfcheck-featurize
 
 // The seat's match frames (SCHEMA, CARDS, DECKLISTS), once per match; ignored for the
 // omniscient viewer.
 void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<std::string> &payloads);
+
+// A seat's STATE frame (with its k_* tables), each of the seat's frames once and in order: into the
+// seat's event history under --feature-history, before its comparisons.
+void selfcheck_featurize_seat_frame(Zone::Ownership viewer, const std::string &frame);
 
 // `frame` (a seat's STATE frame with its k_* tables) against `other` (the same decision's frame as
 // a `check` re-encoded it, without k_* tables): equal tensors.

@@ -55,6 +55,13 @@ tokens on some 120). Step 3 of §2 measures that shift.
 2. **`make check` with the opt-in tier.** Build `make actor`, set `$ROBOMAGE_TORCH_PYTHON`, and run the `actor` tier: it
    hasn't run during the mechanics plan. Add a history-on case: `nn:` bo3 games, a `--selfcheck-featurize` pass, an
    exact re-featurization of a `--replay`, and `check_rmtrain.py --smoke` with the key on.
+
+   *Done (2026-11-07).* The `actor` tier passed unchanged on its first run since M0 (84 s). `--selfcheck-featurize`
+   ignored `--feature-history`; it now builds the seats' specs with it and feeds each seat's frames to an event
+   history. The tier's history case: an `nn:` self-play bo3 match under `--feature-history 32`, its `--replay`
+   re-featurized byte for byte with history tokens, its episodes and a replay's the same, the replay clean under
+   `--selfcheck-featurize`, and exports refused across the option. The rmtrain smoke needs the GPU and stays out
+   of the gate (`docs/ci.md`).
 3. **Entry shift.** On the open-vocab fixtures, `m11` with history on against off: max |Δ logit|, |Δ value| and how often the
    argmax moves. Then a paired `rmtrain bench` of both. Bar: no regression beyond two SEs. If the shift fails it,
    leave history tokens out of `Summary`'s mean at first, or raise their share with an `event_dropout` from 1 to 0 over

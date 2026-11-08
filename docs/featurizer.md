@@ -239,8 +239,9 @@ removed rows dropped; a sideboard maximum off by one) fail it.
 The network has no recurrence, and a `STATE` frame's event tables hold only the events since the
 viewer's previous frame, so by default the featurizer leaves them out: what a seat remembers is the
 knowledge sidecar's facts. The history option (`FeatureOptions::history_events` N > 0; `rmfeat
---history N`, the engine's `--feature-history N` for the trajectory writer, `nn:` and
-`--featurize-seats`, `python -m rmlearn.corpus --refeaturize … --feature-history N`, a training run's `run.feature_history`, `docs/rmtrain.md` §3) adds the seat's
+--history N`, the engine's `--feature-history N` for the trajectory writer, `nn:`,
+`--featurize-seats` and `--selfcheck-featurize`, `python -m rmlearn.corpus --refeaturize …
+--feature-history N`, a training run's `run.feature_history`, `docs/rmtrain.md` §3) adds the seat's
 recent observation events as tokens. Off, every output is what it is without the option: the spec
 document, its hash, the tensors and the episodes, byte for byte. On, the spec gains two token types
 and a `history` key, so its hash differs; its `layout_hash` does not (the history types' positions

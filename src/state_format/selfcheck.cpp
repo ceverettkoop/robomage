@@ -888,6 +888,7 @@ void selfcheck_state_decision(const std::vector<LegalAction> &actions) {
         const bool gets_menu = !is_seat(viewer) || viewer == decider;
         check_frame(viewer, frames[i], gets_menu ? actions.size() : 0);
         if (!is_seat(viewer)) continue;
+        selfcheck_featurize_seat_frame(viewer, frames[i]);
         check_scramble(viewer, actions, decider, events, keep, plain, frames[i], false);
         if (sampled) check_permutation(viewer, actions, decider, events, keep, plain, frames[i]);
     }
@@ -908,7 +909,9 @@ void selfcheck_state_match_over() {
         const std::string frame = encode_state_frame(viewer, {}, Zone::UNKNOWN, events, true);
         const std::string known = with_knowledge(viewer, frame);
         check_frame(viewer, known, 0);
-        if (is_seat(viewer)) check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, known, true);
+        if (!is_seat(viewer)) continue;
+        selfcheck_featurize_seat_frame(viewer, known);
+        check_scramble(viewer, {}, Zone::UNKNOWN, events, {}, frame, known, true);
     }
     std::fflush(stdout);
     std::fprintf(stderr,

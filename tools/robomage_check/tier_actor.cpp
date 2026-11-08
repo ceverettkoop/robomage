@@ -30,6 +30,9 @@ const double PROJECT_THRESH = 0.03;
 const int PROJECT_DISC = 16;
 const char *const PROJECT_OPTIONS = "temp=0.02:thresh=0.03:disc=16";
 
+// The history case's recent-event cap (--feature-history, rmfeat --history; docs/featurizer.md §3.7).
+const char *const HISTORY_EVENTS = "32";
+
 }  // namespace
 
 static std::string file_stamp(const std::string &path);
@@ -46,6 +49,10 @@ static void check_trajectories(const rmcheck::Options &opt, rmcheck::Report &rep
 static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, const char *tier,
     const rmcheck::ActorSetup &a, const std::string &out_ts, void (*mutate)(featurize::Manifest *));
 static void check_open_vocab(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a);
+static bool history_policy(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &dir, std::string *ts);
+static double stats_rows_mean(const std::string &out, const std::string &type);
+static void check_history(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a);
 
 // The FNV-1a 64 of a file's bytes (16 hex digits), "" when it cannot be read.
 static std::string file_stamp(const std::string &path) {
@@ -286,6 +293,193 @@ static void check_open_vocab(const rmcheck::Options &opt, rmcheck::Report &rep, 
     rep.info("open_vocab: " + last.substr(std::string("OPEN-VOCAB-ACCEPTANCE: ").size()) + " -> " + log);
 }
 
+// The reference policy (TorchScript) over tables exported with the history types (rmfeat --history),
+// rebuilt when its stamp (their spec hash and the script's) changes; `ts` gets its path.
+static bool history_policy(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a,
+    const std::string &dir, std::string *ts) {
+    const std::string tables = rmcheck::path_join(dir, "tables"), prefix = rmcheck::path_join(dir, "ref");
+    rmcheck::remove_tree(tables);
+    rmcheck::make_dirs(tables);
+    rmcheck::ProcSpec exp;
+    exp.argv = {
+        opt.rmfeat, "--export-tables", a.cards, tables, "--text-table", TEXT_TABLE, "--history", HISTORY_EVENTS};
+    exp.cwd = opt.bin_dir;
+    if (!run_step(rep, "actor", "rmfeat --export-tables --history", exp, rmcheck::path_join(dir, "export_tables.txt")))
+        return false;
+    *ts = prefix + ".ts.pt";
+    const std::string stamp = file_stamp(rmcheck::path_join(tables, "spec.json")) + " " + file_stamp(a.script) + "\n";
+    std::string old;
+    if (rmcheck::read_file(prefix + ".stamp", &old) && old == stamp && rmcheck::file_exists(*ts)) return true;
+    rmcheck::ProcSpec build;
+    build.argv = {a.python, a.script, "build", "--tables", tables, "--out", prefix, "--text-table",
+        rmcheck::path_join(opt.bin_dir, TEXT_TABLE), "--formats", "ts"};
+    build.timeout_s = 600;
+    build.merge_stderr = true;
+    build.env = {"HIP_VISIBLE_DEVICES=-1", "CUDA_VISIBLE_DEVICES=-1"};
+    const rmcheck::ProcResult r = rmcheck::run_process(build);
+    const std::string log = rmcheck::path_join(dir, "build_reference_policy.txt");
+    rmcheck::write_file(log, r.out);
+    if (!r.ok()) {
+        rep.error("actor", "make_reference_policy.py build (history tables) " + r.status_text() + " (see " + log + ")");
+        return false;
+    }
+    rmcheck::write_file(prefix + ".stamp", stamp);
+    return true;
+}
+
+// The rows_mean of token type `type` in rmfeat --stats output (RMFEAT_STATS: type <name> rows_mean=…), -1
+// when it is not listed.
+static double stats_rows_mean(const std::string &out, const std::string &type) {
+    const std::string head = "RMFEAT_STATS: type " + type + " rows_mean=";
+    for (const std::string &line : rmcheck::split_lines(out))
+        if (rmcheck::starts_with(line, head.c_str())) return std::strtod(line.c_str() + head.size(), nullptr);
+    return -1;
+}
+
+// The recent-event history case (docs/featurizer.md §3.7), under <out>/actor/history/: the reference
+// policy exported over the history tables, an nn: self-play bo3 match under --feature-history (seat A
+// dump= and recorded); rmfeat --featurize --history over a --replay of its decision log
+// equal to nn:'s live tensors byte for byte, with history tokens; its episodes holding those tensors
+// and a --replay --trajectory-out --feature-history writing the same episodes; the replay under
+// --selfcheck-featurize --feature-history clean, with history tokens compared; and the exports
+// refused across the option (an export of the tables without history under --feature-history, the
+// history export without it: the spec hash, rebuild it).
+static void check_history(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a) {
+    const std::string dir = rmcheck::path_join(a.dir, "history");
+    rmcheck::make_dirs(dir);
+    std::string ts;
+    if (!history_policy(opt, rep, a, dir, &ts)) return;
+    const std::string live = rmcheck::path_join(dir, "match_live.rmtb"), rmlog = rmcheck::path_join(dir, "match.rmlog");
+    for (const char *t : {"traj_match", "traj_replay"}) rmcheck::remove_tree(rmcheck::path_join(dir, t));
+    ActorMatch m{"match",
+        {"--feature-history", HISTORY_EVENTS, "--agent-a", "nn:" + ts + ":dump=" + live, "--agent-b", "nn:" + ts,
+            "--deck-a", "league/ur_tempo", "--deck-b", "league/death_and_taxes", "--trajectory-out",
+            rmcheck::path_join(dir, "traj_match"), "--trajectory-seats", "A", "--bo3", "--game-seed",
+            std::to_string(opt.seed + 11), "--narrative", "--decision-log", rmlog},
+        {}};
+    rmcheck::ProcSpec spec;
+    spec.argv = {a.nn_binary};
+    spec.argv.insert(spec.argv.end(), m.args.begin(), m.args.end());
+    spec.cwd = opt.bin_dir;
+    spec.timeout_s = 1800;
+    m.result = rmcheck::run_process(spec);
+    rmcheck::ActorSetup ha = a;
+    ha.dir = dir;
+    check_match(rep, ha, m);
+    if (!m.result.ok()) return;
+    // The replays: a dump for rmfeat, the episodes again, the featurizer's self-check.
+    const std::string dump = rmcheck::path_join(dir, "match_replay.rmd");
+    struct Step {
+            std::string what, log;
+            rmcheck::ProcSpec spec;
+            rmcheck::ProcResult result;
+    };
+    std::vector<Step> steps(3);
+    steps[0].what = "robomage --replay --rmstate-dump";
+    steps[0].spec.argv = {opt.binary, "--replay", rmlog, "--rmstate-dump", dump};
+    steps[1].what = "robomage --replay --trajectory-out --feature-history";
+    steps[1].spec.argv = {opt.binary, "--replay", rmlog, "--trajectory-out", rmcheck::path_join(dir, "traj_replay"),
+        "--trajectory-seats", "A", "--feature-history", HISTORY_EVENTS};
+    steps[2].what = "robomage --replay --selfcheck-featurize --feature-history";
+    steps[2].spec.argv = {opt.binary, "--replay", rmlog, "--selfcheck-featurize", "--feature-history", HISTORY_EVENTS};
+    const char *logs[] = {"match_replay.txt", "traj_replay.txt", "selfcheck.txt"};
+    rmcheck::parallel_for(steps.size(), opt.jobs, [&](size_t i) {
+        steps[i].spec.cwd = opt.bin_dir;
+        steps[i].spec.timeout_s = 1800;
+        steps[i].log = rmcheck::path_join(dir, logs[i]);
+        steps[i].result = rmcheck::run_process(steps[i].spec);
+        rmcheck::write_file(steps[i].log, steps[i].result.out + steps[i].result.err);
+    });
+    bool ok = true;
+    for (const Step &st : steps) {
+        std::vector<rmcheck::ScanLine> errors;
+        rmcheck::scan_transcript(st.result.out + st.result.err, &errors, nullptr);
+        if (st.result.ok() && errors.empty()) continue;
+        rep.error("actor", "history: " + st.what + " " + st.result.status_text() +
+                               (errors.empty() ? "" : ": " + errors[0].line) + " (see " + st.log + ")");
+        ok = false;
+    }
+    if (!ok) return;
+    // rmfeat over the replay's dump: nn:'s live tensors, with history tokens.
+    const std::string out = rmcheck::path_join(dir, "match_replay.rmtb");
+    rmcheck::ProcSpec feat;
+    feat.argv = {opt.rmfeat, "--featurize", dump, "--viewer", "A", "--out", out, "--cards", a.cards, "--text-table",
+        TEXT_TABLE, "--history", HISTORY_EVENTS, "--stats"};
+    feat.cwd = opt.bin_dir;
+    const rmcheck::ProcResult fr = rmcheck::run_process(feat);
+    rmcheck::write_file(rmcheck::path_join(dir, "match_replay_rmfeat.txt"), fr.out + fr.err);
+    std::string want, got, err;
+    featurize::RmtbFile f;
+    const double events = stats_rows_mean(fr.out, "hist_event"), cards = stats_rows_mean(fr.out, "hist_card");
+    if (!fr.ok() || !rmcheck::read_file(live, &want) || !rmcheck::read_file(out, &got) ||
+        !featurize::rmtb_decode(want, &f, &err)) {
+        rep.error("actor", "history: rmfeat --featurize --history over the replay " + fr.status_text() + " " + err +
+                               " (see " + rmcheck::path_join(dir, "match_replay_rmfeat.txt") + ")");
+        return;
+    }
+    const featurize::RmtbArray *viewer = f.find("viewer");
+    const size_t n = viewer ? static_cast<size_t>(viewer->count()) : 0;
+    if (want != got || n == 0 || events <= 0 || cards <= 0)
+        rep.error("actor", "history: rmfeat --featurize --history over the replay (" + out +
+                               ") is not the bytes nn: featurized live (" + live + ", " + std::to_string(n) +
+                               " decisions), or has no history tokens (hist_event " + rmcheck::fmt1(events) +
+                               ", hist_card " + rmcheck::fmt1(cards) + " a decision)");
+    else
+        rep.info("history: rmfeat --featurize --history over a --replay of the nn: match under --feature-history " +
+                 std::string(HISTORY_EVENTS) + " equals nn:'s live tensors byte for byte (" + std::to_string(n) +
+                 " decisions; " + rmcheck::fmt1(events) + " event and " + rmcheck::fmt1(cards) +
+                 " card history tokens a decision)");
+    // The episodes: seat A's steps the live tensors; the replay's the same episodes.
+    std::vector<rmcheck::EpisodeFile> match, replayed;
+    if (!rmcheck::read_episodes(rmcheck::path_join(dir, "traj_match"), &match, &err) ||
+        !rmcheck::read_episodes(rmcheck::path_join(dir, "traj_replay"), &replayed, &err)) {
+        rep.error("actor", "history: trajectories: " + err);
+        return;
+    }
+    size_t dumped = 0;
+    std::vector<std::string> fails = rmcheck::check_against_dump(match, 0, live, &dumped);
+    for (const std::string &x : rmcheck::compare_replayed(match, replayed)) fails.push_back(x);
+    for (const std::string &x : fails) rep.error("actor", "history: trajectories: " + x);
+    if (fails.empty())
+        rep.info("history: the match's " + std::to_string(match.size()) + " episodes hold its " +
+                 std::to_string(dumped) + " live tensors and a --replay --feature-history writes them again");
+    // The self-check: every match summary clean, history tokens compared.
+    size_t summaries = 0, tokens = 0;
+    for (const std::string &line : rmcheck::split_lines(steps[2].result.out + steps[2].result.err)) {
+        if (!rmcheck::starts_with(line, "SELFCHECK-FEATURIZE: ")) continue;
+        ++summaries;
+        const size_t at = line.find(" history_tokens=");
+        if (at != std::string::npos) tokens += std::strtoull(line.c_str() + at + 16, nullptr, 10);
+    }
+    if (summaries == 0 || tokens == 0)
+        rep.error("actor",
+            "history: --selfcheck-featurize --feature-history compared no history tokens (see " + steps[2].log + ")");
+    else
+        rep.info("history: --selfcheck-featurize --feature-history over the replay clean, " + std::to_string(tokens) +
+                 " history tokens compared");
+    // The exports across the option: the spec hash refused, rebuild the export.
+    const struct {
+            std::string model;
+            bool history;
+    } cases[] = {{a.ts(), true}, {ts, false}};
+    for (const auto &c : cases) {
+        rmcheck::ProcSpec r;
+        r.argv = {a.nn_binary, "--agent-a", "nn:" + c.model, "--agent-b", "explore", "--game-seed", "1"};
+        if (c.history) r.argv.insert(r.argv.end(), {"--feature-history", HISTORY_EVENTS});
+        r.cwd = opt.bin_dir;
+        r.merge_stderr = true;
+        const rmcheck::ProcResult res = rmcheck::run_process(r);
+        if (res.ok() || !rmcheck::contains(res.out, "spec_hash") ||
+            !rmcheck::contains(res.out, "rebuild it from its checkpoint"))
+            rep.error("actor", "history: nn:" + c.model + (c.history ? " under" : " without") +
+                                   " --feature-history: expected a spec_hash refusal (rebuild the export), got " +
+                                   res.status_text() + ": " + rmcheck::quoted(rmcheck::trim(res.out).substr(0, 200)));
+    }
+    rep.info(
+        "history: an export of the tables without history is refused under --feature-history, the history "
+        "export without it (spec_hash: rebuild it from its checkpoint)");
+}
+
 namespace rmcheck {
 
 const char *const TORCH_PYTHON_ENV = "ROBOMAGE_TORCH_PYTHON";
@@ -361,9 +555,9 @@ bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *
 // behaviour distributions are the projection (check_projected_evals), the .pt2 export playing the
 // same argmax bo3 match as the TorchScript one, the refusals, the three exports' agreement on the
 // match's decisions, then the remote evaluation checks (actor_remote_checks), the actor's hot
-// reload of an in-process model (actor_reload_check), the continuous smoke run (actor_smoke_check)
-// and the actor's sideboard exploration (actor_sb_explore_check); first the checkpoint migration's
-// acceptance (check_open_vocab).
+// reload of an in-process model (actor_reload_check), the continuous smoke run (actor_smoke_check),
+// the actor's sideboard exploration (actor_sb_explore_check) and the recent-event history case
+// (check_history); first the checkpoint migration's acceptance (check_open_vocab).
 void tier_actor(const Options &opt, Report &rep) {
     projection_checks(rep);
     ActorSetup a;
@@ -388,8 +582,8 @@ void tier_actor(const Options &opt, Report &rep) {
                 path_join(a.dir, "traj_projected")},
             {}},
         {"argmax_ts",
-            {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_tempo",
-                "--deck-b", "league/bug"},
+            {"--agent-a", "nn:" + a.ts() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_tempo", "--deck-b",
+                "league/bug"},
             {}},
         {"argmax_pt2",
             {"--agent-a", "nn:" + a.pt2() + ":argmax", "--agent-b", "explore", "--deck-a", "league/ur_tempo",
@@ -431,6 +625,7 @@ void tier_actor(const Options &opt, Report &rep) {
     actor_reload_check(opt, rep, a);
     actor_smoke_check(opt, rep, a);
     actor_sb_explore_check(opt, rep, a);
+    check_history(opt, rep, a);
 }
 
 }  // namespace rmcheck
