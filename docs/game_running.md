@@ -374,8 +374,8 @@ something the engine does not do. Every kind and the JSON shape: `src/parse_repo
 
 ```bash
 cd bin
-./debug/robomage --check-decks --check-decks-dir candidates/aluren.dk
-./debug/robomage --parse-report "City of Traitors" --parse-report @../bin/resources/decks/candidates/storm.dk
+./debug/robomage --check-decks --check-decks-dir heldout/storm.dk
+./debug/robomage --parse-report "City of Traitors" --parse-report @../bin/resources/decks/heldout/storm.dk
 ./debug/robomage --parse-report @vocab | python3 -c "import json,sys; [print(r['card'], f['kind'], f['name']) for r in map(json.loads, sys.stdin) for f in r.get('findings', [])]"
 ```
 

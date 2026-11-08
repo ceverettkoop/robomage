@@ -1,6 +1,6 @@
 {
  "deck": "elves",
- "location": "candidates",
+ "location": "league",
  "source": {
   "archetype_id": 38,
   "deck_id": 903814,
@@ -26,7 +26,7 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
@@ -34,7 +34,34 @@
    },
    "result": "ok",
    "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
-   "time": "2026-11-07T13:48:41"
+   "time": "2026-11-07T15:34:50"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "draws_reviewed": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/elves:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_elves",
+    "out_dir": "ci_out/onboard_elves"
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-07T15:35:30"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-07T15:35:30"
   },
   "diff": {
    "detail": {
@@ -56,7 +83,7 @@
    "detail": {},
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
@@ -64,7 +91,7 @@
    },
    "result": "ok",
    "summary": "every new card parses clean",
-   "time": "2026-11-07T13:48:41"
+   "time": "2026-11-07T15:34:50"
   },
   "parse": {
    "detail": {
@@ -73,14 +100,14 @@
    },
    "inputs": {
     "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a",
-    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
     "scripts": "3ab6d64ab9ab8838b6f86ffbc3b562a478cceb61cc8da3674ff25b79d9cdba91",
     "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
     "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
    },
    "result": "ok",
    "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
-   "time": "2026-11-07T13:48:41"
+   "time": "2026-11-07T15:34:50"
   },
   "provision": {
    "detail": {
@@ -108,6 +135,28 @@
    "result": "ok",
    "summary": "Elves, 2.0% (combo), 60 main + 15 side",
    "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4a69a0b64a933245fb2debf6ba672ffb3df620ca65a12a0de4caec55ffda4ea0",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-07T15:28:17"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "085070e35864f0c0c818618e8c0f0442d6e782ddecda70a70fad89b154a9709a"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-07T15:23:08"
   }
  }
 }
