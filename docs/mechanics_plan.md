@@ -1651,6 +1651,8 @@ Where the plan was off. Nothing on the list was wrong or gone. `prepared`, `wate
 
 Evidence. `make check` green before the commit, 285 s, `robomage_check: 0 error(s), 0 warning(s)`. No code changed.
 
+**Stage gate (2026-11-07), at `f5105985`.** `make check` 0 errors, 0 warnings. Release `bench`, seven alternating rounds against M12's `53ae6227`, medians: the actor loop 2,586 to 2,582 decisions/s (-0.2%), engine alone 128.7 to 130.6 us per decision, inside the new binary's rounds (127.7 to 133.9), + knowledge 363.9 to 364.3. Acceptance `gate`: 4 networks, 449 decisions, after the Goyf drop. `full`: 35 networks, 7,675 decisions, 18 cut-over files equal, worst |Δ value| 1.2e-5, |Δ logit| 3.1e-5 against a tolerance of 1e-4. This is the `full` (a) didn't run after its drop.
+
 **The mechanics plan is complete.** The next work is `docs/open_vocab_training_plan.md` §2.
 
 ## 6. Risks

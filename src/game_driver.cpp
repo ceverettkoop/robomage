@@ -117,7 +117,7 @@ bool offer_cast_cancel = false;
 // off the priority menu, the greedy payer (auto_pay_mana) pays the part of a cost the pool doesn't
 // cover, and hybrid pips resolve to the first payable assignment. Off, every mana ability is
 // offered at priority and costs are paid through the interactive payment loop
-// (prompt_mana_payment). Recorded in the RMLOG header.
+// (pay_mana_cost). Recorded in the RMLOG header.
 bool auto_mana = true;
 bool narrative_mode = false;
 bool bo3_mode = false;
