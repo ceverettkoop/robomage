@@ -66,6 +66,28 @@ tokens on some 120). Step 3 of §2 measures that shift.
    argmax moves. Then a paired `rmtrain bench` of both. Bar: no regression beyond two SEs. If the shift fails it,
    leave history tokens out of `Summary`'s mean at first, or raise their share with an `event_dropout` from 1 to 0 over
    the opening steps (BC has the option; R-NaD doesn't). Either is a model change, made once, before the run.
+
+   *Measured (2026-11-07), no model change.* Offline, the 8,779 fixture seat decisions that replay (the frozen
+   sources, `replay_limits`), featurized by today's engine off and with `--history 32`, `m11` fp32 on the CPU (a scratch
+   script, not kept). History adds 37.9 tokens a decision on average (max 99) to 154.4, 19.7% of the tokens.
+   With the history tokens and their relations removed, every decision's tensors equal the off ones, and the
+   history tokens come last. In `m11` the history type, categorical and relation-bias rows are zero, but a history
+   token holding a card (65k of 146k event tokens, 134k of 187k card tokens) reads that card's row and card slot
+   0's trained vector. On against off: |Δ logit| max 2.78, mean 0.112; |Δ value| max 0.65, mean 0.047; the argmax
+   moves on 1.0% of decisions (2.6% by index, the rest ties between equal rows); mean total variation 0.014 (p99
+   0.21). Worst sources are doomsday ones: `delver_vs_doomsday` (169 decisions) TV 0.041, argmax 4.1%, max |Δ
+   logit| 2.78; `lg_uw_control__wubg_doomsday` argmax 4.3%. Where it enters, by hooking the model: history tokens
+   out of `Summary`'s mean, mean |Δ logit| 0.104, TV 0.014, argmax 1.0% (out of the attention pool too, the same);
+   their card parts zeroed, TV 0.013; masked out of attention and the summary, |Δ logit| < 1e-5, no argmax move.
+   So the shift comes from the attention, not from the summary's mean: leaving history out of the mean would not
+   remove it, and masking every history token (an `event_dropout` of 1) gives back `m11` exactly.
+   Paired bench, `m11` at argmax against scripted:hard over the run's ten decks (`bug`, `burn`, `reanimator`,
+   `uw_control`, `wrb_energy`, `wubg_doomsday`, `ur_tempo`, `lands_top8`, `death_and_taxes`, `maverick`; 45 pairs),
+   seed 11, 12 actors, the off policy's results copied into the on benchmark so the two are paired. At the default
+   480 matches (93 s off, 111 s on): off 0.503 (SE 0.016), on 0.500 (SE 0.016), paired Δ −0.003 ± 0.012 (two SEs),
+   47% of matches identical: inside the bar. At 4,800 matches (892 s, 1,039 s): off 0.514 (SE 0.005), on 0.509
+   (SE 0.005), paired Δ −0.0047 ± 0.0046, i.e. 2.0 SEs, at the bar's edge; no deck's playing or facing Δ is
+   beyond its two SEs except facing `burn` (−0.021 ± 0.014) and playing `wrb_energy` (−0.015 ± 0.013).
 4. **Acceptance.** `learn/open_vocab_acceptance.py full`, with `tests/open_vocab/s0_rows.json` holding every card M7 to M13
    drifted, from the card digest's diff.
 5. **Throughput.** History cost about 25% more per BC step and 9% more per episode. Measure an R-NaD step and the
