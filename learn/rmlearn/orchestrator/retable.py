@@ -7,8 +7,9 @@ and its tables from the run's ``tables/``. The actors featurize with the engine'
 export bakes the card rows in, so a run must not resume on stale tables: ``check_start`` (the
 orchestrator, at every start) stops it with the command to run, and ``retable`` (a stopped run):
 
-1. writes the engine's cards frame and exports its tables (``rmfeat --export-tables``) into
-   ``<run>/tables.new/``; when the frame is the run's and the tables' spec hash too, nothing changed;
+1. writes the engine's cards frame and exports its tables (``rmfeat --export-tables``, with ``--history
+   N`` for a run with ``run.feature_history`` N) into ``<run>/tables.new/``; when the frame is the run's
+   and the tables' spec hash too, nothing changed;
 2. checks the new tables against the old ones (the old tables' manifest compatible with the new:
    the same layout and text model, every old card id present under its name; across a layout bump the
    same but for the layout) and every checkpoint of the run (``ckpt/**/*.pt``) against the new tables
@@ -26,6 +27,9 @@ orchestrator, at every start) stops it with the command to run, and ``retable`` 
 6. records the change in ``state.json`` (``tables``, ``retables``) and ``metrics.jsonl`` (a
    ``retable`` line).
 
+``check_start`` also stops a run whose tables (its own or ``run.tables``) were exported with another
+recent-event history than its ``run.feature_history`` (``history_mismatch``).
+
 At start, when the run's tables differ from the ones ``state.json`` records (``same_tables``: the
 tables were replaced by hand, or a retable's exports did not finish), the orchestrator re-exports
 every export (``latest_exports``). Stdlib only but for the checkpoint check (torch, the learner's venv).
@@ -40,6 +44,7 @@ import sys
 import tempfile
 import time
 
+from . import config as C
 from .actors import cpu_env
 from .rundir import REPO_ROOT, JsonLines, read_json, write_json
 
@@ -69,6 +74,25 @@ def _spec_hash_of(tables_dir):
         return None
     from .. import spec as S
     return "%016x" % S.fnv1a64(raw.rstrip(b"\n"))
+
+
+def tables_history(tables_dir):
+    """The recent-event history cap a tables directory's spec.json was built with (0: none; None: no
+    spec.json)."""
+    raw = _read_bytes(os.path.join(tables_dir, "spec.json"))
+    if raw is None:
+        return None
+    return int((json.loads(raw).get("history") or {}).get("events", 0))
+
+
+def history_mismatch(tables_dir, cfg):
+    """"" when the tables at `tables_dir` were exported with the run's run.feature_history, else why not."""
+    have, want = tables_history(tables_dir), C.feature_history(cfg)
+    if have is None or have == want:
+        return ""
+    return ("the tables %s are of recent-event history %s, the run's run.feature_history is %d (the history is fixed "
+            "when a run is created: its tables, episodes and exports are of one spec)" % (tables_dir, have or "off",
+                                                                                         want))
 
 
 def engine_paths(cfg):
@@ -106,7 +130,10 @@ def engine_cards_differ(engine, bin_dir, cards_path):
 def check_start(run, cfg, engine, bin_dir):
     """At an orchestrator start: "" when the run's tables are the engine's, else why not and what to run."""
     if cfg["run"]["tables"]:
-        return ""                    # tables the user manages (run.tables)
+        return history_mismatch(cfg["run"]["tables"], cfg)   # tables the user manages (run.tables)
+    why = history_mismatch(run.tables, cfg)
+    if why:
+        return why
     hint = "stop the run and `learn/rmtrain retable %s` (docs/rmtrain.md §1.1)" % run.path
     if tables_summary(run.tables) is None:
         return "the run's tables %s were exported before model manifests: %s" % (run.tables, hint)
@@ -200,8 +227,8 @@ def retable(run, cfg, log=print):
     new_cards = os.path.join(new_dir, "cards.rmstate")
     try:
         write_cards_frame(engine, bin_dir, new_cards)
-        subprocess.run([rmfeat, "--export-tables", new_cards, new_dir], cwd=bin_dir, env=cpu_env(), check=True,
-                       stdout=subprocess.DEVNULL)
+        subprocess.run([rmfeat, "--export-tables", new_cards, new_dir] + C.rmfeat_feature_args(cfg), cwd=bin_dir,
+                       env=cpu_env(), check=True, stdout=subprocess.DEVNULL)
         old, new = tables_summary(run.tables), tables_summary(new_dir)
         if old is not None and old["spec_hash"] == new["spec_hash"] and _read_bytes(new_cards) == _read_bytes(run.cards):
             log("the run's tables are the engine's (spec %s, %d cards): nothing to do" % (new["spec_hash"],

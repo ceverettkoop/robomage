@@ -44,6 +44,7 @@ from .. import evaluate as EV
 from .. import matches as MT
 from ..ladder import Ladder
 from ..sprt import SPRT
+from . import config as C
 from .actors import ActorPool
 from .rundir import write_json
 from .live import export_path
@@ -314,7 +315,8 @@ class EvalJob:
         n = max(1, min(int(self.cfg["eval"]["actors"]), total))
         per = {k: total // n + (1 if k < total % n else 0) for k in range(n)}
         self.pool = ActorPool(self.engine, self.bin_dir, sched, self.dir, os.path.join(self.dir, "logs"),
-                              self.cfg["run"]["seed"] * 1000 + self.seq, self.cfg["actors"], self.log, matches=per)
+                              self.cfg["run"]["seed"] * 1000 + self.seq, self.cfg["actors"], self.log, matches=per,
+                              extra_args=C.engine_feature_args(self.cfg))
         self.pool.set_count(n)
         self.reader = MT.ResultsReader(self.dir)
         self.started = time.time()
@@ -420,7 +422,8 @@ class ExploitJob:
         sched = os.path.join(self.dir, "schedule.json")
         write_json(sched, r["schedule"])
         self.pool = ActorPool(self.engine, self.bin_dir, sched, self.dir, os.path.join(self.dir, "logs"),
-                              self.cfg["run"]["seed"] * 1000 + self.seq, self.cfg["actors"], self.log)
+                              self.cfg["run"]["seed"] * 1000 + self.seq, self.cfg["actors"], self.log,
+                              extra_args=C.engine_feature_args(self.cfg))
         self.pool.set_count(self.spec.actors)
         self.started = time.time()
         self.log("exploiter %s: %.1f min against the policy at version %s on %d actors in %s"

@@ -40,6 +40,18 @@ tokens on some 120). Step 3 of §2 measures that shift.
    schedule, `nn:`, evaluation, the ladder and `bench`. Check `retable`, `add-decks` and `accepted_spec_hashes` with
    it on: a history spec's hash differs from the checkpoint's tables. `docs/featurizer.md` §3.7's "refused" should be
    checked against what `load_checkpoint` does today, and the text corrected.
+
+   *Done (2026-11-07).* `run.feature_history` (default 0) is fixed at creation: `set` refuses it, a resume
+   that changes it is refused, and the start check stops a run whose tables (or `run.tables`) are of another
+   history. It reaches the tables export (start and `retable`: `rmfeat --history`), every actor pool of the
+   run (training, evaluations with their ladder rungs and SPRT groups, the exploiter: `--feature-history`),
+   `rmtrain bench` (the run's value by default) and the standalone `sprt` / `ladder` (`--feature-history`).
+   `add-decks` is unaffected (the cards frame has no history); `accepted_spec_hashes` is the history spec and
+   its lineage, so episodes without history are skipped. The code was right: a checkpoint is checked by
+   layout, text model and vocab, an export by spec hash too, so `m11` loads on the history tables (checked by
+   hand on today's tables) and an export is refused across the option. §3.7 now says so. Tests:
+   `check_rmtrain.py`'s CPU checks, `--smoke --feature-history 32` (with a short run from a checkpoint
+   without history).
 2. **`make check` with the opt-in tier.** Build `make actor`, set `$ROBOMAGE_TORCH_PYTHON`, and run the `actor` tier: it
    hasn't run during the mechanics plan. Add a history-on case: `nn:` bo3 games, a `--selfcheck-featurize` pass, an
    exact re-featurization of a `--replay`, and `check_rmtrain.py --smoke` with the key on.

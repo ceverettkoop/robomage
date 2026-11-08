@@ -174,7 +174,8 @@ class Orchestrator:
         self.counters = Counters(res.get("counters"))
         self.sb_cov = SBX.Coverage(self.state.get("sb_explore"))
         self.pool = ActorPool(self.engine, self.bin_dir, self.run.schedule, self.run.actors, self.run.actor_logs,
-                              self.cfg["run"]["seed"], self.cfg["actors"], self.log)
+                              self.cfg["run"]["seed"], self.cfg["actors"], self.log,
+                              extra_args=C.engine_feature_args(self.cfg))
         for sig in (signal.SIGTERM, signal.SIGINT):
             signal.signal(sig, lambda s, f: self.request_stop("signal %d" % s))
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
@@ -1168,8 +1169,8 @@ class Orchestrator:
             rmfeat = os.path.join(self.bin_dir, self.cfg["run"]["build"], "rmfeat")
             self.log("exporting the card tables into %s" % self.run.tables)
             os.makedirs(self.run.tables, exist_ok=True)
-            subprocess.run([rmfeat, "--export-tables", self.run.cards, self.run.tables], cwd=self.bin_dir, env=env,
-                           check=True, stdout=subprocess.DEVNULL)
+            argv = [rmfeat, "--export-tables", self.run.cards, self.run.tables] + C.rmfeat_feature_args(self.cfg)
+            subprocess.run(argv, cwd=self.bin_dir, env=env, check=True, stdout=subprocess.DEVNULL)
 
     def note_tables(self):
         """The run's tables against the engine's (a stale run is stopped: rmtrain retable) and against

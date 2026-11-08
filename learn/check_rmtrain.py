@@ -3,6 +3,7 @@
 
     learn/.venv/bin/python learn/check_rmtrain.py                 # CPU only, no engine: RMTRAIN-CHECK: ok
     learn/.venv/bin/python learn/check_rmtrain.py --smoke [--run DIR] [--keep]   # the end-to-end tiny run (GPU)
+    learn/.venv/bin/python learn/check_rmtrain.py --smoke --feature-history 32 [--start-from CKPT]  # with history
 
 **CPU checks** (the GPU hidden; no engine): the config (defaults valid, the defaults' TOML parsing back
 to the defaults, files and ``--set`` overrides, refusals naming the key, live parameters); the
@@ -27,8 +28,9 @@ weights, the self-play schedule's ``sb_explore`` and no other schedule's, the or
 cadence, metrics, status and state; the engine's own schedule check when a built engine knows the key),
 and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
-ladder record and ratings), and the end-of-run benchmark (its policy set, summary, sideboarding report
-and ``--opponent``).
+ladder record and ratings), the end-of-run benchmark (its policy set, summary, sideboarding report
+and ``--opponent``), and ``run.feature_history`` (not live, fixed at creation, its flags, the start
+check against the tables' history, the actors' argv, the benchmark's default).
 
 **The smoke** (``--smoke``; needs ``bin/release/robomage_nn`` and ``rmfeat``, the learner's venv and
 the GPU): a tiny run (3 actors, a d 64 / 2-layer model, B0 a few thousand decisions, B1 a few
@@ -37,8 +39,10 @@ hundred BC steps ended by ``phase next``, one short DAgger round, R-NaD with Δm
 ``kill -9``'ed in B4 and the run resumed from its checkpoint (by systemd's restart, else by
 ``start``; same phase, learner step not behind the checkpoint), then ``stop`` and ``start`` again,
 then run to its end (B5, done); per-iteration SPRT evaluations and one exploiter (``rmtrain eval
---evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``. Prints
-per-phase timings and ``RMTRAIN-SMOKE: ok``.
+--evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``.
+``--feature-history N`` runs it with ``run.feature_history`` N (its episodes carry history tokens),
+then a short run with it from a checkpoint without history (``--start-from``, else a d 64 network
+built here: docs/open_vocab_training_plan.md §1). Prints per-phase timings and ``RMTRAIN-SMOKE: ok``.
 """
 
 import os
@@ -1444,9 +1448,13 @@ def smoke(args):
     mode = args.policy_eval or C.defaults()["actors"]["policy_eval"]
     local = mode == "local"
     sets = ["--set", "actors.policy_eval=" + mode, "--set", "eval.policy_eval=" + mode]
+    history = args.feature_history
+    if history:
+        sets += ["--set", "run.feature_history=%d" % history]
     r = sh([rmtrain, "start", run.path, "--config", cfgp] + sets)
-    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s%s)" % (
-        env_note, ", local actors and evaluations" if local else ""))
+    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s%s%s)" % (
+        env_note, ", local actors and evaluations" if local else "",
+        ", recent-event history %d" % history if history else ""))
     print(r.stdout.strip(), flush=True)
     daemon = RD.read_json(os.path.join(run.path, "daemon.json")) or {}
 
@@ -1488,6 +1496,8 @@ def smoke(args):
     check(sh([rmtrain, "tail", run.path, "metrics", "-n", "3", "--no-follow"]).returncode == 0, "tail metrics")
     check("rnad.eta = 0.18" in sh([rmtrain, "set", run.path, "rnad.eta", "0.18"]).stdout, "set rnad.eta")
     check(sh([rmtrain, "set", run.path, "model.d", "32"], check_ok=False).returncode != 0, "set refuses model.d")
+    check(sh([rmtrain, "set", run.path, "run.feature_history", str(history + 8)], check_ok=False).returncode != 0,
+          "set refuses run.feature_history")
     check(sh([rmtrain, "phase", run.path, "hold"]).returncode == 0, "phase hold")
     check("[hold" in sh([rmtrain, "phase", run.path, "status"]).stdout, "phase status shows the hold")
     check(sh([rmtrain, "pause", run.path]).returncode == 0, "pause")
@@ -1559,6 +1569,9 @@ def smoke(args):
     r = sh([rmtrain, "add-decks", run.path, "eldrazi_aggro"])
     check(r.returncode == 0 and "written" in r.stdout and "eldrazi_aggro" in RD.read_json(run.config)["league"]["decks"],
           "add-decks on the stopped run")
+    r = sh([rmtrain, "start", run.path, "--set", "run.feature_history=%d" % (history + 8)], check_ok=False)
+    check(r.returncode != 0 and "fixed when a run is created" in r.stderr and
+          RD.read_json(run.config)["run"]["feature_history"] == history, "a resume refuses to change run.feature_history")
     r = sh([rmtrain, "start", run.path])
     check(r.returncode == 0 and "resuming" in r.stdout, "start resumes the stopped run")
     s = wait(lambda s: s.get("running") and (s.get("gpu") or {}).get("learner_steps") is not None, "the resume", 300)
@@ -1601,15 +1614,165 @@ def smoke(args):
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     smoke_sideboarding_checks(run, mets)
     smoke_expansion_checks(run)
+    smoke_history_checks(run, history, mets)
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
     if local:
         smoke_local_checks(run, mets, evs)
     print("smoke: phase start times (s): %s; total %.1f s" % (json.dumps({k: round(v, 1) for k, v in
                                                                         phase_at.items()}), total))
+    if history:
+        smoke_start_from(args, rmtrain, run, history)
     if not args.keep and not FAILURES:
         stop_unit(run)
         shutil.rmtree(run.path)
+
+
+def history_tokens(run, dirs):
+    """(episodes, of the tables' spec, with history tokens, steps) over the .rmtraj files under `dirs`."""
+    from rmlearn import episodes as EP
+    from rmlearn import spec as S
+    spec = S.load_spec(os.path.join(run.tables, "spec.json"))
+    hist = {spec.type_ids[spec.history[k]] for k in ("event_type", "card_type")} if spec.history else set()
+    n = same = with_hist = steps = 0
+    for d in dirs:
+        for path in glob.glob(os.path.join(d, "**", "*.rmtraj"), recursive=True):
+            ep = EP.read_episode(path)
+            n += 1
+            same += ep.spec_hash == spec.hash
+            steps += len(ep)
+            with_hist += bool(hist) and bool(np.isin(ep.seat_feat.tok_type, list(hist)).any())
+    return n, same, with_hist, steps
+
+
+def smoke_history_checks(run, history, mets):
+    """run.feature_history: the run's tables of the spec with (or without) the history types, every episode
+    left (B0's corpus, DAgger's, self-play's) of that spec and, with history, holding history tokens; the
+    learner stepped on them."""
+    from rmlearn import spec as S
+    spec = S.load_spec(os.path.join(run.tables, "spec.json"))
+    check(((spec.history or {}).get("events") or 0) == history, "the run's tables are of history %d (%s)"
+          % (history, spec.history))
+    n, same, with_hist, steps = history_tokens(run, [run.episodes])
+    check(n > 0 and same == n, "every episode is of the tables' spec (%d of %d)" % (same, n))
+    if history:
+        check(with_hist == n, "every episode carries history tokens (%d of %d, %d steps)" % (with_hist, n, steps))
+    check(any(m["event"] == "rnad_step" for m in mets) and any(m["event"] == "bc_eval" for m in mets),
+          "BC and R-NaD stepped on them")
+    print("smoke: history %d: %d episodes (%d steps) of spec %s, %d with history tokens" % (history, n, steps,
+                                                                                          spec.hash, with_hist))
+
+
+START_FROM_CONFIG = """
+[run]
+seed = 6
+memory_max = "24G"
+gpu_lock_wait = true
+restart_on_failure = false
+[league]
+decks = ["ur_tempo", "burn", "death_and_taxes"]
+max_game_decisions = 3000
+[actors]
+count = 3
+local_count = 0
+[model]
+d = 64
+heads = 2
+layers = 2
+[rnad]
+games_per_step = 2
+chunk_len = 16
+entropy_schedule_sizes = [20]
+push_every = 10
+report_every = 5
+[b4]
+max_learner_steps = 30
+[b5]
+max_learner_steps = 40
+[eval]
+pairs = [["ur_tempo", "burn"]]
+matches = 2
+actors = 2
+opponents = ["scripted"]
+every_minutes = 0
+evaluators = ["fixed"]
+[checkpoint]
+every_minutes = 0.5
+"""
+
+
+def smoke_start_from(args, rmtrain, base, history):
+    """docs/open_vocab_training_plan.md §1: a checkpoint trained without history (``--start-from``, else a
+    d 64 network built here over the run's tables exported without history) starts a run with
+    run.feature_history: it loads (the same layout_hash; spec.check_compatible compares no spec hash for a
+    checkpoint), an export of it is refused across the option (exact: the spec hash), and the run reaches B4
+    and steps on history episodes."""
+    import torch
+    from rmlearn import model as M
+    from rmlearn import spec as S
+    run = RD.RunDir(base.path + "-from")
+    if os.path.exists(run.path):
+        stop_unit(run)
+        shutil.rmtree(run.path)
+    work = tempfile.mkdtemp(prefix="rmtrain-from-")
+    off = os.path.join(work, "tables-off")
+    os.makedirs(off)
+    bin_dir = os.path.join(REPO_ROOT, "bin")
+    r = subprocess.run([os.path.join(bin_dir, "release", "rmfeat"), "--export-tables", base.cards, off], cwd=bin_dir,
+                       capture_output=True, text=True, timeout=300)
+    if not check(r.returncode == 0, "the run's tables exported without history (%s)" % r.stderr.strip()):
+        return
+    on = S.load_tables(base.tables)
+    ck = args.start_from
+    if not ck:
+        torch.manual_seed(3)
+        ck = os.path.join(work, "off.pt")
+        M.save_checkpoint(M.RMNet(M.ModelConfig(d=64, heads=2, layers=2), S.load_tables(off)), ck)
+    hashes = torch.load(ck, map_location="cpu", weights_only=True)["hashes"]
+    check(S.load_spec(os.path.join(off, "spec.json")).hash != on.spec.hash and
+          hashes.get("layout_hash") == on.hashes["layout_hash"], "the checkpoint's spec is not the history tables', "
+          "its layout is")
+    check(S.check_compatible(hashes, on.hashes) is None, "the checkpoint is compatible with the history tables")
+    r = S.check_compatible(hashes, on.hashes, exact=True)
+    check(r is not None and r[0] == "spec_hash", "an export of it is refused on the history tables (%s)" % (r,))
+    r = sh([rmtrain, "start", run.path, "--config", _write(os.path.join(work, "from.toml"), START_FROM_CONFIG),
+            "--set", "run.start_from=" + ck, "--set", "run.feature_history=%d" % history])
+    check(r.returncode == 0 and "started as" in r.stdout, "a run with history starts from the checkpoint %s" % ck)
+    end = time.time() + 900
+    s = {}
+    while time.time() < end:
+        try:
+            s = CT.request(run.control_sock, {"cmd": "status"}, 15)
+        except (ConnectionError, ValueError):
+            s = RD.read_json(run.status) or {}
+        if s.get("phase") == "B4" and (s.get("progress") or {}).get("learner_steps", 0) >= 20:
+            break
+        if not CT.alive(run.control_sock) and s.get("phase") not in (None, "B0", "B3"):
+            break
+        time.sleep(2)
+    check(s.get("phase") == "B4" and (s.get("progress") or {}).get("learner_steps", 0) >= 20,
+          "the run from the checkpoint reached B4 and stepped (%s, %s)" % (s.get("phase"), s.get("progress")))
+    r = sh([rmtrain, "stop", run.path], timeout=900)
+    check(r.returncode == 0 and "stopped" in r.stdout, "stop of the run from the checkpoint")
+    mets = RD.read_jsonl(run.metrics)
+    tr = [(m["from"], m["to"]) for m in mets if m["event"] == "transition"]
+    check(("B0", "B3") in tr and ("B3", "B4") in tr and not any(m["event"] == "fatal" for m in mets),
+          "B0 -> B3 (run.start_from) -> B4, no fatal (%s)" % tr)
+    n, same, with_hist, steps = history_tokens(run, [run.episodes])
+    check(n > 0 and same == n and with_hist == n, "its self-play episodes are of the history spec, with history "
+          "tokens (%d, %d, %d of %d)" % (same, with_hist, steps, n))
+    print("smoke: start_from %s (history off) into a run with history %d: B4 at step %s, %d episodes" % (
+        ck, history, (s.get("progress") or {}).get("learner_steps"), n), flush=True)
+    shutil.rmtree(work, ignore_errors=True)
+    if not args.keep and not FAILURES:
+        stop_unit(run)
+        shutil.rmtree(run.path)
+
+
+def _write(path, text):
+    with open(path, "w") as fp:
+        fp.write(text)
+    return path
 
 
 def smoke_expansion_checks(run):
@@ -1803,6 +1966,77 @@ def check_retable(tmp):
           "the window keeps the lineage's episodes: %s" % dict(win.counts))
     print("  retable: the start check (no manifest, a stale cards frame: retable; current; run.tables), the "
           "exports rebuilt and removed, the window keeping the lineage's episodes", flush=True)
+
+
+def check_feature_history(tmp):
+    """run.feature_history (docs/featurizer.md §3.7): off by default, not live, fixed at creation (a
+    resume refusing a change, another key still set), carried to the tables export (rmfeat --history),
+    every actor's argv (--feature-history) and rmtrain bench's default; the start check stopping a run
+    whose tables are of another history (its own tables and run.tables)."""
+    from rmlearn import benchmark as BM
+    from rmlearn.orchestrator import retable as RTB
+    d = C.defaults()
+    check(d["run"]["feature_history"] == 0 and C.engine_feature_args(d) == [] and C.rmfeat_feature_args(d) == [],
+          "run.feature_history is off by default (no engine or rmfeat flag)")
+    on = C.resolve(None, ["run.feature_history=32"])
+    check(C.engine_feature_args(on) == ["--feature-history", "32"] and C.rmfeat_feature_args(on) == ["--history", "32"],
+          "run.feature_history 32: --feature-history 32 for the engines, --history 32 for the tables")
+    check(raises(lambda: C.resolve(None, ["run.feature_history=-1"]), "run.feature_history"), "a negative cap refused")
+    check("run.feature_history" not in C.LIVE and raises(lambda: C.parse_live("run.feature_history", "32"),
+                                                         "not settable"), "set refuses run.feature_history")
+    check(C.fixed_changes(d, on) == [("run.feature_history", 0, 32)] and C.fixed_changes(on, on) == [],
+          "fixed_changes names the changed fixed key")
+    run, cfg = fake_run(tmp, "history")
+    args = types.SimpleNamespace(config=None, set=["run.feature_history=32"])
+    try:
+        RT.prepare(run, args)
+        refused = False
+    except SystemExit:
+        refused = True
+    check(refused and RD.read_json(run.config)["run"]["feature_history"] == 0,
+          "a resume refuses to change run.feature_history (config.json unchanged)")
+    cfg2, _ = RT.prepare(run, types.SimpleNamespace(config=None, set=["actors.count=2", "run.feature_history=0"]))
+    check(cfg2["actors"]["count"] == 2, "a resume sets other keys (the fixed one at its value)")
+    # The tables' history against the run's.
+    os.makedirs(run.tables, exist_ok=True)
+    with open(os.path.join(run.tables, "spec.json"), "w") as fp:
+        fp.write('{"history":{"events":32,"cards_per_event":8}}\n')
+    check(RTB.tables_history(run.tables) == 32, "tables_history reads spec.json's history")
+    why = RTB.check_start(run, cfg, "/bin/false", tmp)
+    check("recent-event history 32" in why and "run.feature_history is 0" in why,
+          "the start check stops a run whose tables are of another history: %r" % why)
+    other = os.path.join(tmp, "history_tables")
+    os.makedirs(other)
+    with open(os.path.join(other, "spec.json"), "w") as fp:
+        fp.write('{"vocab_hash":"x"}\n')
+    why = RTB.check_start(run, dict(on, run=dict(on["run"], tables=other)), "/bin/false", tmp)
+    check("recent-event history off" in why and "run.feature_history is 32" in why,
+          "the start check stops a run whose run.tables are of another history: %r" % why)
+    check(RTB.check_start(run, dict(cfg, run=dict(cfg["run"], tables=other)), "/bin/false", tmp) == "",
+          "run.tables of the run's history pass")
+    # Every actor of the pool gets the flags.
+    eng = os.path.join(tmp, "history_engine.sh")
+    argv_file = os.path.join(tmp, "history_argv.txt")
+    with open(eng, "w") as fp:
+        fp.write("#!/bin/sh\necho \"$@\" > %s\n" % argv_file)
+    os.chmod(eng, 0o755)
+    pdir = os.path.join(tmp, "history_pool")
+    pool = A.ActorPool(eng, tmp, os.path.join(tmp, "sched.json"), pdir, os.path.join(pdir, "logs"), 1, on["actors"],
+                       lambda m: None, matches={0: 1}, extra_args=C.engine_feature_args(on))
+    pool.set_count(1)
+    end = time.time() + 10
+    while time.time() < end and not os.path.exists(argv_file):
+        time.sleep(0.05)
+    pool.stop_all(timeout=5)
+    got = open(argv_file).read().split() if os.path.exists(argv_file) else []
+    check(got[-2:] == ["--feature-history", "32"] and "--actor" in got, "an actor's argv carries the run's "
+          "--feature-history (%s)" % got)
+    check(BM.run_feature_history(run) == 0, "rmtrain bench's history: the run's (0)")
+    RD.write_json(run.config, dict(cfg, run=dict(cfg["run"], feature_history=32)))
+    check(BM.run_feature_history(run) == 32, "rmtrain bench's history: the run's (32)")
+    print("  feature history: the key off by default, not live, fixed at creation (resume refused), the engines' "
+          "and rmfeat's flags, the start check against the tables' history, the actors' argv, bench's default",
+          flush=True)
 
 
 def check_benchmark(tmp):
@@ -2467,6 +2701,11 @@ def main():
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
     ap.add_argument("--run", help="--smoke: the run directory (default runs/smoke-rmtrain)")
     ap.add_argument("--keep", action="store_true", help="--smoke: keep the run directory")
+    ap.add_argument("--feature-history", type=int, default=0, metavar="N",
+                    help="--smoke: the run with run.feature_history N (its episodes and learner on the recent-event "
+                    "history tokens), then a short run with it started from a checkpoint without history")
+    ap.add_argument("--start-from", help="--smoke --feature-history: that short run's checkpoint (default: a d 64 "
+                    "network built over the run's tables exported without history)")
     ap.add_argument("--policy-eval", choices=("remote", "local"),
                     help="--smoke: the actors' and evaluations' policy_eval (actors.policy_eval, eval.policy_eval; "
                     "default: the config's default)")
@@ -2493,6 +2732,7 @@ def main():
             check_benchmark_decks(tmp)
             check_league_expansion(tmp)
             check_retable(tmp)
+            check_feature_history(tmp)
             check_benchmark_sideboarding(tmp)
             check_local(tmp)
             check_sb_explore(tmp)

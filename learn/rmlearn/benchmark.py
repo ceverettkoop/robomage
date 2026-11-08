@@ -18,6 +18,9 @@ plays `matches` matches (side a, both decks of each pair and both seats: ``match
 on `actors` actors with the same run seed, actor ids and match counts, so every policy meets the
 same deck pairs, seats and game seeds (common random numbers): differences between policies are
 the policies'. ``--wait`` waits for the run to stop first (its shutdown finishes the final export).
+The actors run with the run's ``run.feature_history`` (the engine's ``--feature-history``), so the
+run's exports, of its tables' spec, load; ``--feature-history N`` overrides it (exports of another
+spec: every policy of one benchmark is of one).
 
 **Decks** (``--decks``, ``matches.resolve_decks``): the schedule is every pair of the listed decks —
 ``league`` (every deck of ``decks/league/``), ``heldout`` (``decks/heldout/``) or single decks, comma
@@ -560,12 +563,19 @@ def add_args(ap):
     ap.add_argument("--actors", type=int, default=DEFAULT_ACTORS)
     ap.add_argument("--seed", type=int, default=11, help="the actors' run seed (the same for every policy)")
     ap.add_argument("--engine", help="robomage_nn (default bin/release/robomage_nn)")
-    ap.add_argument("--feature-history", type=int, default=0, help="the policies' recent-event history cap")
+    ap.add_argument("--feature-history", type=int, help="the policies' recent-event history cap (the engine's "
+                                                        "--feature-history; default: the run's run.feature_history)")
     ap.add_argument("--wait", action="store_true", help="wait for the run to stop first")
 
 
+def run_feature_history(run):
+    """The run's recent-event history cap (run.feature_history of its config; 0 off)."""
+    return int(((read_json(run.config) or {}).get("run") or {}).get("feature_history", 0))
+
+
 def run_from_args(run, a):
-    extra = ["--feature-history", str(a.feature_history)] if a.feature_history > 0 else []
+    history = run_feature_history(run) if a.feature_history is None else a.feature_history
+    extra = ["--feature-history", str(history)] if history > 0 else []
     pol = [p for p in a.policies.split(",") if p] if a.policies else None
     focus = [f for f in a.focus.split(",") if f] if a.focus else None
     run_benchmark(run, pol, a.label, a.matches, a.actors, a.seed, a.engine, extra, a.wait,

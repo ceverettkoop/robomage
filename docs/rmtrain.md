@@ -31,7 +31,8 @@ learn/rmtrain bench r1 --decks league,heldout --label heldout   # the benchmark 
   key), written as `config.json` (the live, resolved config) and `config.toml` (as created, with
   the documentation).
 - An existing run is **resumed**: its `config.json` is used (`--set` changes keys of it, also
-  non-live ones such as `model.*` — at your own risk; `--config` is refused). The phase and stage
+  non-live ones such as `model.*` — at your own risk; `--config` is refused), but not
+  `run.feature_history`, fixed when the run is created: a resume that changes it is refused. The phase and stage
   come from `state.json`, the GPU process reloads the last checkpoint, the actors start after their
   last match. A finished run (phase `done`) is refused.
 - Detached (the default): `systemd-run --user --unit=rmtrain-<name>-<hash>` with
@@ -55,7 +56,8 @@ learn/rmtrain bench r1 --decks league,heldout --label heldout   # the benchmark 
   differ from the ones `state.json` records (`tables`: replaced since, or a retable whose exports did
   not all finish), every export of `state.json` is queued again from its checkpoint, the evaluations'
   and the live exports removed (made again on demand), and a `tables_changed` metrics line written.
-  An external `run.tables` directory is the user's: neither check applies.
+  An external `run.tables` directory is the user's: neither check applies. Both kinds of tables must
+  be of the run's `run.feature_history` (their `spec.json`'s `history`), else the start stops.
 
 ### 1.1 Adding decks: `rmtrain retable <run>` and `rmtrain add-decks <run>`
 
@@ -108,7 +110,8 @@ league's pairs, the new ones included).
 parses a known card) needs a rebuild and a stopped run. `retable` (refused while the run runs;
 `orchestrator/retable.py`):
 
-1. writes the engine's cards frame and exports its tables into `<run>/tables.new/`; when the frame
+1. writes the engine's cards frame and exports its tables into `<run>/tables.new/` (with `--history N`
+   for a run with `run.feature_history` N, so the new spec is of the run's setting); when the frame
    and the spec hash are the run's, nothing changed (it says so, exit 0);
 2. checks the old tables' manifest against the new one and **every checkpoint** of the run
    (`ckpt/**/*.pt`) against the new tables (`spec.check_compatible`: the same layout and text model,
@@ -214,6 +217,7 @@ reference's function of the learner step, so a changed Δm can move α and the n
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
 | `run.crash_loop_fatals` | 3 | fatal stops in a row without progress after which the daemon exits with status 4, which systemd does not restart (0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (another run's `ckpt/bc-final.pt`): the run starts at B3, R-NaD seeded from it (B0–B2 skipped; the model is the checkpoint's) |
+| `run.feature_history` | 0 | the recent-event history tokens (`docs/featurizer.md` §3.7), at most N events (0: off). Fixed when the run is created: not live (`set` refuses it) and a resume that changes it is refused. It reaches the tables export (`rmfeat --export-tables --history N`, at the start and in `retable`) and every engine the run starts (`--feature-history N`: the training actors' trajectory writer and `nn:` / `nn:remote:` agents, every evaluation, the ladder and the exploiter's actors; `rmtrain bench`'s default). The spec hash differs from a run without history, the layout hash does not: a checkpoint of either setting starts the run (`run.start_from`), the replay window keeps only the tables' spec, and an export is rebuilt from its checkpoint for the other setting |
 | `league.decks` / `league.pairs` | the eleven league decks (named in `config.py`'s `LEAGUE`, not read from `decks/league/`: a deck onboarded there later joins a run only by being added here, `rmtrain add-decks`, §1.1) / every pair | matchups and weights (`[[a, b, w], …]`, naming exactly `league.decks`); never a `heldout/` deck; live |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
 | `league.omniscient` | true | B0/B2 episodes carry the omniscient part (aux targets) |
@@ -707,6 +711,7 @@ pilots the simple decks well and the complex ones (doomsday, control, reanimator
 learn/.venv/bin/python learn/check_rmtrain.py            # CPU, no engine, ~4 s: RMTRAIN-CHECK: ok
 learn/.venv/bin/python learn/check_rmtrain.py --smoke    # GPU + bin/release: RMTRAIN-SMOKE: ok
 learn/.venv/bin/python learn/check_rmtrain.py --smoke --policy-eval remote   # the server path
+learn/.venv/bin/python learn/check_rmtrain.py --smoke --feature-history 32   # with run.feature_history
 ```
 
 The CPU checks: config parsing and validation, local evaluation (the schedules' in-process specs,
@@ -745,7 +750,10 @@ and its summary (per-deck playing and facing rates, the difference from the base
 sideboarding report (from synthetic results lines: the swap rate and histogram, the top cards, the
 next game after swaps vs Done, guide agreement on the play and on the draw with a game-3 flip carried
 from game 2's maindeck, held-in vs held-out, explored and missing phases left out, the opponent's side
-apart), `--opponent` (its directory, report reuse against the same opponent only) and `--decks` (the deck sets, `--focus`, the default unchanged, no reuse over other pairs, the facing differences and deck groups paired by match); the expansion procedure (`league.decks` / `league.pairs` live and validated together — a held-out deck, an unpaired deck refused —, `add-decks`' new pairs at the league's mean weight, a live set rewriting the self-play schedule and re-reading the coverage cells, the deck check against a fake engine, `add-decks` on a stopped run). The smoke runs a tiny run
+apart), `--opponent` (its directory, report reuse against the same opponent only) and `--decks` (the deck sets, `--focus`, the default unchanged, no reuse over other pairs, the facing differences and deck groups paired by match); the expansion procedure (`league.decks` / `league.pairs` live and validated together — a held-out deck, an unpaired deck refused —, `add-decks`' new pairs at the league's mean weight, a live set rewriting the self-play schedule and re-reading the coverage cells, the deck check against a fake engine, `add-decks` on a stopped run), and `run.feature_history` (off by default, not live, a resume that
+changes it refused with `config.json` unchanged while another key is still set, the engines' and
+`rmfeat`'s flags, the start check against a run's tables and `run.tables` of another history, an
+actor's argv carrying `--feature-history`, `rmtrain bench`'s default the run's). The smoke runs a tiny run
 (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`, one DAgger round of
 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises every command, kills
 the whole unit with SIGKILL in B4 (systemd restarts it; it resumes at the checkpoint), stops and
@@ -757,7 +765,15 @@ kill, and the resumes' `restore` lines. In local mode (the default; `--policy-ev
 server path) it also checks that the live exports followed the learner, that DAgger played one,
 that every self-play game's policy versions are exported versions, that the learner recorded no
 regularisation log π and recomputed them, that the steps report the lag percentiles, and that the
-local evaluations ran.
+local evaluations ran. Every smoke checks that `set` and a resume refuse `run.feature_history`, that
+the run's tables are of its history setting and that every episode left is of their spec;
+`--feature-history N` runs it with `run.feature_history` N (every episode then carries history
+tokens; BC and R-NaD step on them), then a short second run (`<run>-from`: three decks, R-NaD to
+step 20) with the same history, started (`run.start_from`) from a checkpoint without it
+(`--start-from CKPT`, by default a d 64 network built over the run's tables exported without
+history): the checkpoint compatible with the history tables and an export of it refused
+(`spec_hash`), B0 → B3 → B4 with no fatal, its self-play episodes of the history spec with history
+tokens.
 
 Measured (the training box, after T7; other agents' jobs on the GPU and CPU): B0 ~2 s (5,300
 decisions on 3 actors), B1 ~20 s (the commands exercised, then `phase next`), B2 ~14 s (one round:

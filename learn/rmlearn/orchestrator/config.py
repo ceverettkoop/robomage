@@ -11,7 +11,8 @@ The config is nested: ``{section: {key: value}}``. Every key has a default (``SP
 override may set only known keys, with the default's type (an int where a float is expected is
 accepted; a list's items are not typed beyond being scalars or lists). ``LIVE`` names the keys
 ``rmtrain set`` may change on a running run; the others are read once at start (a resumed run reads
-its resolved ``config.json``, so ``start --set`` changes them for the resumed run).
+its resolved ``config.json``, so ``start --set`` changes them for the resumed run), but for ``FIXED``,
+the keys fixed when the run is created (``run.feature_history``), which a resume refuses to change.
 """
 
 import copy
@@ -48,6 +49,11 @@ SPEC = {
         ("status_every_s", 2.0, "how often status.json is rewritten"),
         ("start_from", "", "a BC checkpoint (model.save_checkpoint, e.g. another run's ckpt/bc-final.pt): the run "
          "starts at B3, R-NaD seeded from it (B0–B2 skipped; the model's config is the checkpoint's)"),
+        ("feature_history", 0, "the recent-event history tokens (docs/featurizer.md §3.7), at most N events (0: off): "
+         "the tables' spec (rmfeat --history) and every engine the run starts (--feature-history: the actors' "
+         "trajectories and nn: / nn:remote: agents, evaluations, the ladder, the exploiter, rmtrain bench). Fixed "
+         "when the run is created: not live, and a resume refuses a change (a checkpoint of either setting starts "
+         "the run: run.start_from)"),
     ],
     "league": [
         ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/ (never heldout/); a deck is added to a "
@@ -292,6 +298,9 @@ LIVE = {
     "sb_explore.rewrite_every_s", "replay.max_decision_tokens", "league.decks", "league.pairs",
 }
 
+# Keys fixed when the run is created: a resume (``start --set``) may not change them.
+FIXED = {"run.feature_history"}
+
 # Live keys the GPU process applies (the others are the orchestrator's).
 GPU_LIVE = {"bc.lr", "bc.report_every", "bc.eval_every", "rnad.eta", "rnad.learning_rate",
             "rnad.entropy_schedule_sizes", "rnad.entropy_schedule_repeats", "rnad.reg_eps",
@@ -454,6 +463,7 @@ def validate(cfg):
              "played (`rmtrain add-decks` adds a deck with its pairs)" % ", ".join(sorted(set(lg["decks"]) - paired)))
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
     need(cfg["run"]["crash_loop_fatals"] >= 0, "run.crash_loop_fatals >= 0")
+    need(cfg["run"]["feature_history"] >= 0, "run.feature_history >= 0")
     need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
     need(re.fullmatch(r"[a-z][a-z0-9+:_-]*", cfg["actors"]["teacher_tier"]) is not None,
          "actors.teacher_tier is a scripted tier name (hard, hard+sb, ...), not %r" % cfg["actors"]["teacher_tier"])
@@ -519,6 +529,28 @@ def validate(cfg):
     need(c["every_minutes"] > 0 and c["keep"] >= 1, "checkpoint.every_minutes > 0, keep >= 1")
     need(all(f in ("ts", "pt2", "onnx") for f in c["export_formats"]), "checkpoint.export_formats: ts, pt2, onnx")
     return cfg
+
+
+def fixed_changes(old, new):
+    """The FIXED keys whose values differ between the configs `old` and `new`: [(key, old, new)]."""
+    return [(k, get_key(old, k), get_key(new, k)) for k in sorted(FIXED) if get_key(old, k) != get_key(new, k)]
+
+
+def feature_history(cfg):
+    """The run's recent-event history cap (run.feature_history; 0 off)."""
+    return int(cfg["run"].get("feature_history", 0))
+
+
+def engine_feature_args(cfg):
+    """The engine flags every engine process of the run takes: ``--feature-history N`` when on."""
+    n = feature_history(cfg)
+    return ["--feature-history", str(n)] if n > 0 else []
+
+
+def rmfeat_feature_args(cfg):
+    """The rmfeat flags of the run's tables export: ``--history N`` when on."""
+    n = feature_history(cfg)
+    return ["--history", str(n)] if n > 0 else []
 
 
 def parse_live(key, text):

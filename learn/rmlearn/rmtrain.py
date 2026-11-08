@@ -53,12 +53,17 @@ def prepare(run, args):
         if args.config:
             die("run %s exists: its config is %s (change keys with --set, or `set` while it runs)"
                 % (run.path, run.config))
-        cfg, added = C.fill_defaults(read_json(run.config))
+        old, added = C.fill_defaults(read_json(run.config))
         try:
-            cfg = C.absolute_paths(C.apply_sets(cfg, args.set))
+            cfg = C.absolute_paths(C.apply_sets(old, args.set))
             C.validate(cfg)
         except ValueError as err:
             die(str(err))
+        fixed = C.fixed_changes(old, cfg)
+        if fixed:
+            die("run %s: %s is fixed when a run is created (%s); start a new run for another value"
+                % (run.name, ", ".join(k for k, _, _ in fixed),
+                   ", ".join("%s, not %s" % (json.dumps(o), json.dumps(n)) for _, o, n in fixed)))
         if added:
             print("rmtrain: keys new since the run was created, at their defaults: %s" % ", ".join(added))
         if args.set or added:

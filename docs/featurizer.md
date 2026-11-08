@@ -240,10 +240,17 @@ The network has no recurrence, and a `STATE` frame's event tables hold only the 
 viewer's previous frame, so by default the featurizer leaves them out: what a seat remembers is the
 knowledge sidecar's facts. The history option (`FeatureOptions::history_events` N > 0; `rmfeat
 --history N`, the engine's `--feature-history N` for the trajectory writer, `nn:` and
-`--featurize-seats`, `python -m rmlearn.corpus --refeaturize … --feature-history N`) adds the seat's
+`--featurize-seats`, `python -m rmlearn.corpus --refeaturize … --feature-history N`, a training run's `run.feature_history`, `docs/rmtrain.md` §3) adds the seat's
 recent observation events as tokens. Off, every output is what it is without the option: the spec
 document, its hash, the tensors and the episodes, byte for byte. On, the spec gains two token types
-and a `history` key, so its hash differs and a model trained one way is refused by the other.
+and a `history` key, so its hash differs; its `layout_hash` does not (the history types' positions
+are the registry's, §6.1). So, by §6.2's check: a **checkpoint** loads on tables either way (it is
+compared by layout, text model and vocab, not by spec hash), and a model trained without history
+starts a run with it (its history inputs untrained); an **export** is exact, so one folded from tables without history is refused
+(`spec_hash`) by an evaluator featurizing with it, and one with history by an evaluator without it:
+rebuild it from its checkpoint on the other tables. A run's replay window keeps only episodes of its
+tables' spec (`spec.Tables.accepted_spec_hashes`), so the episodes of one setting never train a run of
+the other.
 
 - **The event history** (`featurize::EventHistory`, `src/featurize/history.h`): kept per seat and
   match by whoever featurizes (the trajectory writer per recorded seat, the `nn:` agent through the
