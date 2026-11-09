@@ -56,3 +56,5 @@ bin/robomage
 archive/*
 learn/.venv
 runs/
+bin/debug/az_actor
+.gitignore
