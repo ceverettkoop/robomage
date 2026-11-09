@@ -1,0 +1,44 @@
+{
+  "name": "cr608_2c_soul_guide_lantern_exiles_only_the_opponents_graveyard",
+  "why": "CR 608.2c: {T}, sacrifice exiles each opponent's graveyard: every card of theirs, none of its controller's, the Lantern itself included",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Soul-Guide Lantern"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Activate Soul-Guide Lantern (ChangeZoneAll)"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "^Player B moves Grizzly Bears to exile",
+    "^Player B moves Forest to exile"
+  ],
+  "expect_not": [
+    "moves Lightning Bolt",
+    "moves Soul-Guide Lantern"
+  ]
+}

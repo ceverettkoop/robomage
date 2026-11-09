@@ -1,0 +1,14 @@
+{
+  "name": "cr715_3d_adventure_exiled_and_cast_from_exile_later",
+  "why": "CR 715.3d: Petty Theft cast as an Adventure is exiled as it resolves instead of going to the graveyard, and its caster may cast Brazen Borrower from exile later, on a later turn too; not as an Adventure again.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Petty Theft", "A:target:Grizzly Bears", "A:desc:Cast Brazen Borrower (from exile)"],
+  "max_decisions": 30,
+  "expect_order": ["Player A casts Petty Theft targeting Grizzly Bears", "Grizzly Bears is moved to hand", "Petty Theft is exiled \\(adventure\\)", "Player A casts Brazen Borrower", "Brazen Borrower enters the battlefield"],
+  "expect_menu": ["Cast Brazen Borrower \\(from exile\\)"],
+  "expect_menu_not": ["Cast Petty Theft \\(from exile\\)"]
+}

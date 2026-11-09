@@ -1,0 +1,76 @@
+{
+  "name": "cr514_2_gaeas_will_ends_with_its_turn",
+  "why": "CR 514.2: Gaea's Will's effects end at cleanup: next turn a creature of yours goes to your graveyard and is no longer offered from there",
+  "hand_a": [
+    "Gaea's Will",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "battlefield_b": [],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:desc:Cast Gaea's Will without",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:play:Forest",
+    "A:attack:done",
+    "A:cast:Lightning Bolt",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 130,
+  "expect": [
+    "Lightning Bolt deals 3 damage to Grizzly Bears"
+  ],
+  "expect_not": [
+    "Grizzly Bears is exiled instead",
+    "Lightning Bolt is exiled instead"
+  ],
+  "expect_menu_not": [
+    "from graveyard"
+  ]
+}

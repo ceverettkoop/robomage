@@ -1,0 +1,51 @@
+{
+  "name": "cr707_4_myriad_pools_over_a_lasting_copy_gives_it_back",
+  "why": "CR 707.4, 514.2: a Thespian's Stage that is a copy of a Forest, then a copy of the spell until end of turn: at cleanup it is the Stage's Forest again, not the printed Stage.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Thespian's Stage",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Thespian's Stage",
+    "A:target:Forest",
+    "A:pass",
+    "B:play:Island",
+    "A:cast:Grizzly Bears",
+    "A:#1",
+    "A:pass"
+  ],
+  "max_decisions": 30,
+  "expect_order": [
+    "Thespian's Stage becomes a copy of Forest",
+    "Forest becomes a copy of Grizzly Bears",
+    "Forest is no longer a copy"
+  ]
+}

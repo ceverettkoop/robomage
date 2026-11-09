@@ -11,7 +11,8 @@ The config is nested: ``{section: {key: value}}``. Every key has a default (``SP
 override may set only known keys, with the default's type (an int where a float is expected is
 accepted; a list's items are not typed beyond being scalars or lists). ``LIVE`` names the keys
 ``rmtrain set`` may change on a running run; the others are read once at start (a resumed run reads
-its resolved ``config.json``, so ``start --set`` changes them for the resumed run).
+its resolved ``config.json``, so ``start --set`` changes them for the resumed run), but for ``FIXED``,
+the keys fixed when the run is created (``run.feature_history``), which a resume refuses to change.
 """
 
 import copy
@@ -20,9 +21,12 @@ import os
 import re
 import tomllib
 
-LEAGUE = ["bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator", "ur_delver", "uw_control", "wrb_energy",
-          "wubg_doomsday"]
-EVAL_PAIRS = [["ur_delver", "burn"], ["bug", "bw_dnt"], ["uw_control", "wrb_energy"], ["gw_maverick", "lands"]]
+# The default league.decks: the eleven league decks, named, not read from decks/league/, so a deck
+# onboarded there later joins a run only through its league.decks (docs/rmtrain.md §1.1).
+LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "maverick", "reanimator", "ur_tempo",
+          "uw_control", "wrb_energy", "wubg_doomsday"]
+EVAL_PAIRS = [["ur_tempo", "burn"], ["bug", "death_and_taxes"], ["uw_control", "wrb_energy"],
+              ["eldrazi_aggro", "lands_top8"]]
 
 # section -> [(key, default, doc)]
 SPEC = {
@@ -45,12 +49,18 @@ SPEC = {
         ("status_every_s", 2.0, "how often status.json is rewritten"),
         ("start_from", "", "a BC checkpoint (model.save_checkpoint, e.g. another run's ckpt/bc-final.pt): the run "
          "starts at B3, R-NaD seeded from it (B0–B2 skipped; the model's config is the checkpoint's)"),
+        ("feature_history", 0, "the recent-event history tokens (docs/featurizer.md §3.7), at most N events (0: off): "
+         "the tables' spec (rmfeat --history) and every engine the run starts (--feature-history: the actors' "
+         "trajectories and nn: / nn:remote: agents, evaluations, the ladder, the exploiter, rmtrain bench). Fixed "
+         "when the run is created: not live, and a resume refuses a change (a checkpoint of either setting starts "
+         "the run: run.start_from)"),
     ],
     "league": [
-        ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/"),
-        ("pairs", [], "[[deck_a, deck_b, weight], ...]; empty: every pair of decks, weight 1"),
+        ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/ (never heldout/); a deck is added to a "
+         "run with `rmtrain add-decks` (docs/rmtrain.md §1.1)"),
+        ("pairs", [], "[[deck_a, deck_b, weight], ...] over exactly league.decks; empty: every pair of decks, weight 1"),
         ("format", "bo3", "bo3 or bo1"),
-        ("knowledge", "expert", "both seats' knowledge level (off, expert, expert+belief)"),
+        ("knowledge", "expert", "both seats' knowledge level (off, expert)"),
         ("max_game_decisions", 5000, "the per-game decision cap"),
         ("omniscient", True, "episodes carry the omniscient featurization (aux targets; the omniscient critic)"),
     ],
@@ -81,9 +91,12 @@ SPEC = {
         ("heads", 4, "attention heads"),
         ("layers", 4, "transformer layers"),
         ("ff_mult", 4, "feed-forward width multiple"),
-        ("id_dropout", 0.1, "card id-dropout"),
+        ("id_dropout", 0.1, "card id-dropout: the probability a card slot reads the unknown-card vector, the path "
+         "a card no training batch has held plays (docs/rmtrain.md §1.1); 0.2-0.25 for runs meant to "
+         "generalise to unseen decks, to be decided by the held-out benchmark (docs/rmtrain.md §7.1). The run's value applies to "
+         "a resumed BC or R-NaD model and to a start_from checkpoint"),
         ("aux_heads", True, "hidden-information heads"),
-        ("omniscient_critic", False, "the omniscient critic (an A/B experiment, plan §4 L4)"),
+        ("omniscient_critic", False, "the omniscient critic (an A/B experiment)"),
         ("critic_layers", 2, "the omniscient critic's depth"),
     ],
     "replay": [
@@ -171,7 +184,7 @@ SPEC = {
         ("precision", "fp16", "fp32, fp16 or bf16"),
         ("reg_eps", 0.1, "π_0,reg's smoothing ε (live)"),
         ("reg_eps_sideboarding", 0.25, "π_0,reg's smoothing ε at sideboarding steps; about 0 with a sideboarding "
-         "teacher (actors.teacher_tier hard+sb: exploration belongs to the actors, plan §6.2) (live)"),
+         "teacher (actors.teacher_tier hard+sb: exploration belongs to the actors) (live)"),
         ("stale_reg", "recompute", "recompute or drop"),
         ("finetune_threshold", 0.03, "B5's threshold"),
         ("finetune_discretization", 16, "B5's discretisation"),
@@ -259,7 +272,7 @@ SPEC = {
 
 CHOICES = {
     "league.format": ("bo1", "bo3"),
-    "league.knowledge": ("off", "expert", "expert+belief"),
+    "league.knowledge": ("off", "expert"),
     "server.precision": ("fp32", "fp16", "bf16"),
     "bc.amp": ("fp16", "bf16", "off"),
     "rnad.precision": ("fp32", "fp16", "bf16"),
@@ -282,8 +295,11 @@ LIVE = {
     "eval.per_iteration", "eval.also_sampled", "eval.sprt_max_games", "eval.exploiter_every_minutes",
     "eval.exploiter_minutes", "checkpoint.every_minutes", "sb_explore.p_start", "sb_explore.p_end",
     "sb_explore.hold_frac", "sb_explore.count_weights", "sb_explore.coverage", "sb_explore.coverage_power",
-    "sb_explore.rewrite_every_s", "replay.max_decision_tokens",
+    "sb_explore.rewrite_every_s", "replay.max_decision_tokens", "league.decks", "league.pairs",
 }
+
+# Keys fixed when the run is created: a resume (``start --set``) may not change them.
+FIXED = {"run.feature_history"}
 
 # Live keys the GPU process applies (the others are the orchestrator's).
 GPU_LIVE = {"bc.lr", "bc.report_every", "bc.eval_every", "rnad.eta", "rnad.learning_rate",
@@ -437,8 +453,17 @@ def validate(cfg):
              "league.pairs entries are [deck_a, deck_b] or [deck_a, deck_b, weight], not %r" % (p,))
     need(not lg["pairs"] or len(lg["decks"]) >= 1, "league.pairs needs decks")
     need(lg["pairs"] or len(lg["decks"]) >= 2, "league.decks needs two decks (or league.pairs)")
+    held = [d for d in lg["decks"] + [x for p in lg["pairs"] for x in p[:2]] if d.startswith("heldout/")]
+    need(not held, "league: %s is held out (decks/heldout/: never trained on)" % (held[0] if held else ""))
+    if lg["pairs"]:
+        paired = {x for p in lg["pairs"] for x in p[:2]}
+        need(not paired - set(lg["decks"]), "league.pairs names %s, not in league.decks"
+             % ", ".join(sorted(paired - set(lg["decks"]))))
+        need(not set(lg["decks"]) - paired, "league.decks' %s is in no league.pairs entry, so it would never be "
+             "played (`rmtrain add-decks` adds a deck with its pairs)" % ", ".join(sorted(set(lg["decks"]) - paired)))
     need(lg["max_game_decisions"] >= 0, "league.max_game_decisions >= 0")
     need(cfg["run"]["crash_loop_fatals"] >= 0, "run.crash_loop_fatals >= 0")
+    need(cfg["run"]["feature_history"] >= 0, "run.feature_history >= 0")
     need(cfg["actors"]["count"] >= 0 and cfg["actors"]["local_count"] >= 0, "actors.count, local_count >= 0")
     need(re.fullmatch(r"[a-z][a-z0-9+:_-]*", cfg["actors"]["teacher_tier"]) is not None,
          "actors.teacher_tier is a scripted tier name (hard, hard+sb, ...), not %r" % cfg["actors"]["teacher_tier"])
@@ -506,6 +531,28 @@ def validate(cfg):
     return cfg
 
 
+def fixed_changes(old, new):
+    """The FIXED keys whose values differ between the configs `old` and `new`: [(key, old, new)]."""
+    return [(k, get_key(old, k), get_key(new, k)) for k in sorted(FIXED) if get_key(old, k) != get_key(new, k)]
+
+
+def feature_history(cfg):
+    """The run's recent-event history cap (run.feature_history; 0 off)."""
+    return int(cfg["run"].get("feature_history", 0))
+
+
+def engine_feature_args(cfg):
+    """The engine flags every engine process of the run takes: ``--feature-history N`` when on."""
+    n = feature_history(cfg)
+    return ["--feature-history", str(n)] if n > 0 else []
+
+
+def rmfeat_feature_args(cfg):
+    """The rmfeat flags of the run's tables export: ``--history N`` when on."""
+    n = feature_history(cfg)
+    return ["--history", str(n)] if n > 0 else []
+
+
 def parse_live(key, text):
     """(key, value) of ``rmtrain set key value``; ValueError when the key is unknown, not live or the
     value does not fit."""
@@ -519,9 +566,15 @@ def parse_live(key, text):
 
 
 def set_key(cfg, key, value):
-    sec, _, k = key.partition(".")
+    return set_keys(cfg, {key: value})
+
+
+def set_keys(cfg, changes):
+    """`cfg` with every ``section.key`` of `changes` set (coerced), validated as one config."""
     out = copy.deepcopy(cfg)
-    out[sec][k] = value
+    for key, value in changes.items():
+        sec, _, k = key.partition(".")
+        out[sec][k] = coerce(key, value)
     validate(out)
     return out
 

@@ -1,0 +1,48 @@
+{
+  "name": "cr205_2a_great_furnace_is_an_artifact_land",
+  "why": "CR 205.2a, 305.1: Great Furnace is played as a land, taps for {R}, and is an artifact to whatever targets one",
+  "hand_a": [
+    "Great Furnace",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Smash to Smithereens"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Great Furnace",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Smash to Smithereens",
+    "B:target:Great Furnace@opp"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A played Great Furnace",
+    "Player A activated Great Furnace for 1\\(R\\)",
+    "^Player A casts Lightning Bolt",
+    "Great Furnace (is destroyed|dies)"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

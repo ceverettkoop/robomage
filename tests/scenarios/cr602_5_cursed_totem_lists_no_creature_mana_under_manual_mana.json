@@ -1,0 +1,41 @@
+{
+  "name": "cr602_5_cursed_totem_lists_no_creature_mana_under_manual_mana",
+  "why": "CR 602.5, 605.1a: under --no-auto-mana a creature's mana row is gone with Cursed Totem out, the Forest's stays",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Cursed Totem",
+    "Llanowar Elves",
+    "Dryad Arbor",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 7,
+  "expect_menu": [
+    "Tap Forest for \\(G\\)"
+  ],
+  "expect_menu_not": [
+    "Tap Llanowar Elves",
+    "Tap Dryad Arbor"
+  ]
+}

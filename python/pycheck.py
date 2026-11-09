@@ -51,6 +51,14 @@ playing does not:
             μ, policy version, teacher label and evaluations as the C++ reader read them, and
             tensors files holding the C++ reader's expansion of every step's tensors, and of the
             omniscient tensors and the targets of an omniscient episode) to exactly those values.
+  open_vocab  (not in the default set: the ``featurize`` tier runs it) the migration acceptance's inputs: the
+            gate's sources of the open-vocabulary fixtures (``tests/open_vocab/inputs.json``'s
+            ``gate_sources``, decision logs under ``tests/open_vocab/sources/``) replayed by the engine
+            (``--machine --rmstate-dump``) and featurized by ``rmfeat`` beside it (seats A and B, the
+            omniscient viewer, over its own ``--cards-frame`` tables): every fixture decision of them
+            still listed in ``inputs.json`` has the digest recorded there (sha256 of its seat and its
+            omniscient decision's arrays as written), the inputs on which the migrated checkpoints were
+            shown to reproduce the fixtures' recorded outputs (``learn/open_vocab_acceptance.py``).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -65,6 +73,7 @@ exit 1 on any finding::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -86,14 +95,21 @@ import rmtb  # noqa: E402
 import rmtraj  # noqa: E402
 
 PARTS = ("decode", "refusals", "selfkill", "driver", "guides", "sideboard", "rmtb", "featurize", "traj")
+OPTIONAL_PARTS = ("open_vocab",)   # run only when named
+# The open-vocabulary fixtures.
+OPEN_VOCAB = os.path.join(os.path.dirname(_HERE), "tests", "open_vocab")
+# The decision arrays of a tensors file a digest covers, in order, with the count naming their rows.
+OPEN_VOCAB_TENSORS = (("tok_type", "tok_type"), ("tok_num", "tok_type"), ("tok_cat", "tok_type"),
+                      ("tok_card", "tok_type"), ("tok_ability", "tok_type"), ("tok_mask", "tok_type"),
+                      ("rel", "rel"), ("act_tok", "act_tok"), ("act_mask", "act_tok"))
 # The committed oracle-text table (docs/featurizer.md §5).
 TEXT_TABLE = os.path.join(os.path.dirname(_HERE), "bin", "resources", "embeddings", "oracle_text.rmtb")
 _TIMEOUT_S = 900
 # The in-process agents' dumps: (deck_a, deck_b, bo3, game seed).
-ENGINE_DUMPS = (("league/ur_delver", "league/gw_maverick", False, 41),
+ENGINE_DUMPS = (("league/ur_tempo", "league/eldrazi_aggro", False, 41),
                 ("league/reanimator", "league/uw_control", True, 42))
 # The driver's closed-decklist session: (deck_a, deck_b, bo3, seed).
-STREAM_DUMP = ("league/wrb_energy", "league/bw_dnt", True, 43)
+STREAM_DUMP = ("league/wrb_energy", "league/death_and_taxes", True, 43)
 # rm_driver.engine_seed's values (numpy's SeedSequence → PCG64 derivation, computed without numpy).
 PINNED_ENGINE_SEEDS = ((0, 1826701614), (1, 1016164991), (2, 1798679647), (7, 2029167940),
                        (1001, 1940026651), (2147483647, 1751933748), (4294967295, 409763535),
@@ -395,7 +411,9 @@ def _guides_data_fails(g, doc_text):
 
     def keyed(cards):
         return {key(n): c for n, c in cards.items()}
-    if set(g.draw_land) != set(g.decks) or set(doc_land) != set(g.decks):
+    # The guided decks: the league decks the guides cover (a deck onboarded later has none).
+    guided = set(g.draw_land)
+    if set(doc_land) != guided or not guided <= set(g.decks):
         fails.append(f"guides: draw lands for {sorted(g.draw_land)} (doc {sorted(doc_land)}), "
                      f"league decks {sorted(g.decks)}")
     for deck, land in g.draw_land.items():
@@ -409,8 +427,8 @@ def _guides_data_fails(g, doc_text):
                      f"{sorted(set(doc_rows) - set(json_rows))}")
     for (deck, opp), r in sorted(json_rows.items()):
         where = f"guides: {deck} vs {opp}"
-        if deck not in g.decks or opp not in g.decks or deck == opp:
-            fails.append(f"{where}: not a pair of league decks")
+        if deck not in guided or opp not in guided or deck not in g.decks or opp not in g.decks or deck == opp:
+            fails.append(f"{where}: not a pair of guided league decks")
             continue
         doc = doc_rows.get((deck, opp))
         if doc is not None and (keyed(r["in"]), keyed(r["out"]), r["draw"] and key(r["draw"])) != \
@@ -440,7 +458,7 @@ def _guides_data_fails(g, doc_text):
         if (deck, opp) not in json_rows:
             fails.append(f"guides: held-out {deck} vs {opp} has no guide row")
     held = sorted(g.holdout)
-    if len(held) != len(g.decks) or {d for d, _ in held} != set(g.decks) or {o for _, o in held} != set(g.decks):
+    if len(held) != len(guided) or {d for d, _ in held} != guided or {o for _, o in held} != guided:
         fails.append(f"guides: the holdout {held} does not hold each deck out once as each side")
     return fails
 
@@ -520,36 +538,36 @@ def _guides_unit_fails(g):
             diff = {k: (got.get(k, 0), want.get(k, 0)) for k in set(got) | set(want) if got.get(k, 0) != want.get(k, 0)}
             fails.append(f"guides unit: {label}: main differs from the target (got, want): {diff}")
 
-    play = g.target("burn", "bw_dnt", True)
-    draw = g.target("burn", "bw_dnt", False)
+    play = g.target("burn", "death_and_taxes", True)
+    draw = g.target("burn", "death_and_taxes", False)
     reg = g.decks["burn"][0]
     if play is None or play.get("Smash to Smithereens") != 2 or play.get("Eidolon of the Great Revel", 0) != 0 \
             or play.get("Mountain") != reg["Mountain"]:
-        fails.append(f"guides unit: burn vs bw_dnt on the play: target {play}")
+        fails.append(f"guides unit: burn vs death_and_taxes on the play: target {play}")
     if draw is None or draw.get("Smash to Smithereens") != 3 or draw.get("Mountain") != reg["Mountain"] - 1:
-        fails.append(f"guides unit: burn vs bw_dnt on the draw: target {draw}")
-    m, s, n = phase("burn", "bw_dnt", True)
-    expect("burn vs bw_dnt on the play", m, play)
+        fails.append(f"guides unit: burn vs death_and_taxes on the draw: target {draw}")
+    m, s, n = phase("burn", "death_and_taxes", True)
+    expect("burn vs death_and_taxes on the play", m, play)
     if n != 7:
-        fails.append(f"guides unit: burn vs bw_dnt on the play: {n} swaps, want 7")
-    m2, s2, n = phase("burn", "bw_dnt", False)
-    expect("burn vs bw_dnt on the draw", m2, draw)
+        fails.append(f"guides unit: burn vs death_and_taxes on the play: {n} swaps, want 7")
+    m2, s2, n = phase("burn", "death_and_taxes", False)
+    expect("burn vs death_and_taxes on the draw", m2, draw)
     # Game 3 after a flip from the draw to the play: the land swap is undone, nothing else moves.
-    m3, _s3, n = phase("burn", "bw_dnt", True, start=(m2, s2))
-    expect("burn vs bw_dnt, game 3 from the draw to the play", m3, play)
+    m3, _s3, n = phase("burn", "death_and_taxes", True, start=(m2, s2))
+    expect("burn vs death_and_taxes, game 3 from the draw to the play", m3, play)
     if n != 1:
-        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the draw to the play: {n} swaps, want 1")
+        fails.append(f"guides unit: burn vs death_and_taxes, game 3 from the draw to the play: {n} swaps, want 1")
     # And back: the play configuration onto the draw.
-    m4, _s4, n = phase("burn", "bw_dnt", False, start=(m, s))
-    expect("burn vs bw_dnt, game 3 from the play to the draw", m4, draw)
+    m4, _s4, n = phase("burn", "death_and_taxes", False, start=(m, s))
+    expect("burn vs death_and_taxes, game 3 from the play to the draw", m4, draw)
     if n != 1:
-        fails.append(f"guides unit: burn vs bw_dnt, game 3 from the play to the draw: {n} swaps, want 1")
+        fails.append(f"guides unit: burn vs death_and_taxes, game 3 from the play to the draw: {n} swaps, want 1")
     # A deck with no draw land boards the same on the play and on the draw.
-    mp, _, _ = phase("gw_maverick", "bug", True)
-    md, _, _ = phase("gw_maverick", "bug", False)
-    expect("gw_maverick vs bug on the play", mp, g.target("gw_maverick", "bug", True))
-    if _nonzero(mp) != _nonzero(md) or g.target("gw_maverick", "bug", True) != g.target("gw_maverick", "bug", False):
-        fails.append("guides unit: gw_maverick vs bug boards differently on the play and on the draw")
+    mp, _, _ = phase("lands_top8", "bug", True)
+    md, _, _ = phase("lands_top8", "bug", False)
+    expect("lands_top8 vs bug on the play", mp, g.target("lands_top8", "bug", True))
+    if _nonzero(mp) != _nonzero(md) or g.target("lands_top8", "bug", True) != g.target("lands_top8", "bug", False):
+        fails.append("guides unit: lands_top8 vs bug boards differently on the play and on the draw")
     # A held-out pair, and an opponent that is no league deck: Done at once.
     if g.target("bug", "reanimator", False) is not None or g.target("bug", "reanimator", False, holdout=False) is None:
         fails.append("guides unit: bug vs reanimator is not held out (or has no row)")
@@ -583,12 +601,15 @@ def check_guides():
 
 
 # The sideboard part's bo3 matches, scripted:hard+sb on both seats: (deck_a, deck_b, seed). Burn has
-# a draw land, gw_maverick none; bug vs reanimator is held out for bug (not for reanimator). The seeds
-# are matches that go to three games (each seat's play/draw flips between games 2 and 3); the part
-# fails when none of them does any more (repin the seeds).
-SIDEBOARD_MATCHES = (("league/burn", "league/gw_maverick", 4),
+# a draw land, lands_top8 none; bug vs reanimator is held out for bug (not for reanimator); ur_tempo
+# boards in a split card and an Adventure card against death_and_taxes; maverick moves nine cards
+# against wubg_doomsday. The seeds are matches that go to three games (each seat's play/draw flips
+# between games 2 and 3); the part fails when none of them does any more (repin the seeds).
+SIDEBOARD_MATCHES = (("league/burn", "league/lands_top8", 4),
                      ("league/bug", "league/reanimator", 3),
-                     ("league/uw_control", "league/wubg_doomsday", 9))
+                     ("league/uw_control", "league/wubg_doomsday", 9),
+                     ("league/ur_tempo", "league/death_and_taxes", 1),
+                     ("league/maverick", "league/wubg_doomsday", 2))
 _SB_HEADER = re.compile(r"^Player ([AB]) sideboarding \(\d+ in sideboard, (\d+) swap\(s\) made\):")
 _GAME_RESULT = re.compile(r"^GAME_RESULT: (\d+) (?:Player ([AB]) wins|draw)")
 
@@ -771,7 +792,8 @@ def _table_fails(kind, arrays, want, spec):
         fails.append("featurize: the card table's back_face is not one entry per card row")
     if kind == "ability":
         keys = arrays["key_rows"]
-        if keys.columns != spec["ab_keys"] or any(not 0 <= r < want["rows"] for r in keys.values):
+        if keys.columns != spec["ab_keys"] or keys.values != spec["ab_key_rows"] or \
+                any(not want["key_base"] <= r < want["rows"] for r in keys.values):
             fails.append("featurize: the ability table's key_rows are not the spec's keys within its rows")
     if kind == "part":
         rows = spec["card_tables"]["ability"]["rows"]
@@ -789,15 +811,16 @@ def _tensor_fails(arrays, spec):
             fails.append(f"featurize: {name} has shape {arrays[name].shape}, width {w} in the spec")
     if fails:
         return fails
-    types = spec["token_types"]
-    menu = next(i for i, t in enumerate(types) if t["name"] == spec["menu"])
+    type_ids = {t["id"] for t in spec["token_types"]}
+    rel_ids = {r["id"] for r in spec["relation_types"]}
+    menu = next(t["id"] for t in spec["token_types"] if t["name"] == spec["menu"])
     cards, abilities = spec["card_tables"]["card"]["rows"], spec["card_tables"]["ability"]["rows"]
     tok_off, rel_off, act_off = (arrays[n + "_offsets"].values for n in ("tok_type", "rel", "act_tok"))
     for name in ("tok_num", "tok_cat", "tok_card", "tok_ability", "tok_mask"):
         if arrays[name + "_offsets"].values != tok_off:
             fails.append(f"featurize: {name}_offsets differ from tok_type_offsets")
     tt, rel, act = arrays["tok_type"].values, arrays["rel"].values, arrays["act_tok"].values
-    if any(not 0 <= t < len(types) for t in tt):
+    if any(t not in type_ids for t in tt):
         fails.append("featurize: a tok_type is no token type")
     if any(not -1 <= c < cards for c in arrays["tok_card"].values):
         fails.append("featurize: a tok_card is no card row")
@@ -809,7 +832,7 @@ def _tensor_fails(arrays, spec):
         n = tok_off[d + 1] - tok_off[d]
         for r in range(rel_off[d], rel_off[d + 1]):
             src, dst, ty = rel[3 * r:3 * r + 3]
-            if not (0 <= src < n and 0 <= dst < n and 0 <= ty < len(spec["relation_types"])):
+            if not (0 <= src < n and 0 <= dst < n and ty in rel_ids):
                 fails.append(f"featurize: decision {d}: a relation outside its tokens")
                 break
         for a in act[act_off[d]:act_off[d + 1]]:
@@ -856,13 +879,11 @@ def check_featurize(expected_path):
         elif kind == "tensors":
             fails += _tensor_fails(arrays, spec)
         elif kind == "targets":
-            depth, lists = spec["library_depth"], spec["metagame"].get("meta_list", 0)
+            depth = spec["library_depth"]
             for lib in ("own_library", "opp_library"):
                 off = arrays[lib + "_offsets"].values
                 if any(off[d + 1] - off[d] > depth for d in range(len(off) - 1)):
                     fails.append(f"featurize: {name}: {lib} deeper than {depth}")
-            if any(not -1 <= v < lists for v in arrays["opp_list"].values):
-                fails.append(f"featurize: {name}: an opp_list is no meta_list row")
     if not fails:
         print(f"  OK   featurize: {len(expected['files'])} files read as written, spec {spec_hash}: shapes and "
               "indices agree", flush=True)
@@ -916,7 +937,6 @@ def _episode_fails(want):
             if _decision_slices(omni, rmtraj.TENSORS, d) != {k: s.omniscient[k] for k in rmtraj.TENSORS}:
                 fails.append(f"traj: {name}: step {d}: the omniscient tensors differ from the C++ reader's")
             tg = _decision_slices(targets, ("opp_hand", "own_library", "opp_library"), d)
-            tg["opp_list"], tg["opp_archetype"] = targets["opp_list"].values[d], targets["opp_archetype"].values[d]
             if tg != s.targets:
                 fails.append(f"traj: {name}: step {d}: the targets differ from the C++ reader's")
         if len(fails) > 10:
@@ -937,6 +957,119 @@ def check_traj(expected_path):
     if not fails:
         steps = sum(len(w["steps"]) for w in expected)
         print(f"  OK   traj: {len(expected)} episodes, {steps} steps read as the C++ reader reads them", flush=True)
+    return fails
+
+
+# ── The open-vocabulary acceptance's inputs ─────────────────────────────────────────────────
+
+def _rmtb_raw(path):
+    """(meta, {name: (dtype, shape, the array's bytes)}) of an RMTB file, nothing decoded."""
+    with open(path, "rb") as fp:
+        data = fp.read()
+    _, _, meta_len = rmtb._HEADER.unpack_from(data, 0)
+    meta = json.loads(data[rmtb._HEADER.size:rmtb._HEADER.size + meta_len].decode("utf-8"))
+    body = memoryview(data)[rmtb._HEADER.size + meta_len:]
+    out = {}
+    for a in meta.get("arrays", ()):
+        n = 1
+        for d in a["shape"]:
+            n *= d
+        width = rmtb.DTYPES[a["dtype"]][1]
+        out[a["name"]] = (a["dtype"], a["shape"], body[a["offset"]:a["offset"] + n * width])
+    return meta, out
+
+
+def _ints(raw):
+    dtype, shape, b = raw
+    code, width = rmtb.DTYPES[dtype]
+    return list(struct.unpack("<%d%s" % (len(b) // width, code), b))
+
+
+def _decision_digests(path):
+    """{(viewer, game, sideboarding, decision): sha256 hex[:16]} of a tensors file's decisions."""
+    _, arr = _rmtb_raw(path)
+    offs = {k: _ints(arr[k + "_offsets"]) for k in ("tok_type", "rel", "act_tok")}
+    fields = {k: _ints(arr[k]) for k in ("viewer", "game", "sideboarding", "decision")}
+    out = {}
+    for d in range(len(fields["game"])):
+        h = hashlib.sha256()
+        for name, count in OPEN_VOCAB_TENSORS:
+            dtype, shape, b = arr[name]
+            row = rmtb.DTYPES[dtype][1]
+            for x in shape[1:]:
+                row *= x
+            h.update(b[offs[count][d] * row:offs[count][d + 1] * row])
+        out[(fields["viewer"][d], fields["game"][d], fields["sideboarding"][d], fields["decision"][d])] = \
+            h.hexdigest()[:16]
+    return out
+
+
+def check_open_vocab(binary, work):
+    """The open_vocab part; returns failures."""
+    path = os.path.join(OPEN_VOCAB, "inputs.json")
+    if not os.path.exists(path):
+        return [f"open_vocab: no {path}"]
+    with open(path, encoding="utf-8") as f:
+        inputs = json.load(f)
+    with open(os.path.join(OPEN_VOCAB, "manifest.json"), encoding="utf-8") as f:
+        man = json.load(f)
+    _, index = _rmtb_raw(os.path.join(OPEN_VOCAB, "baseline", "decisions.rmtb"))
+    idx = {k: _ints(index[k]) for k in ("source", "viewer", "game", "sideboarding", "decision")}
+    bin_dir = os.path.join(os.path.dirname(_HERE), "bin")
+    rmfeat = os.path.join(os.path.dirname(binary), "rmfeat")
+    cards, tables = os.path.join(work, "cards.rmstate"), os.path.join(work, "tables")
+    os.makedirs(tables, exist_ok=True)
+    fails = []
+
+    def run_(argv):
+        r = subprocess.run(argv, cwd=bin_dir, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True,
+                           timeout=_TIMEOUT_S)
+        if r.returncode != 0:
+            fails.append(f"open_vocab: {' '.join(argv)} exited {r.returncode}: {r.stderr[-300:]}")
+        return r.returncode == 0
+
+    if not (run_([binary, "--cards-frame", cards]) and run_([rmfeat, "--export-tables", cards, tables])):
+        return fails
+    sources = {s["name"]: s for s in man["sources"]}
+    checked = moved = 0
+    for name in inputs["gate_sources"]:
+        src = sources[name]
+        dump = os.path.join(work, name + ".rms")
+        if not run_([binary, "--replay", os.path.join(OPEN_VOCAB, src["log"]), "--machine", "--rmstate-dump", dump]):
+            continue
+        dig = {}
+        for viewer in ("A", "B", "omniscient"):
+            out = os.path.join(work, f"{name}.{viewer}.rmtb")
+            if not run_([rmfeat, "--featurize", dump, "--viewer", viewer, "--out", out, "--cards", cards,
+                         "--tables", tables]):
+                break
+            dig[viewer] = _decision_digests(out)
+            os.unlink(out)
+        os.unlink(dump)
+        if len(dig) != 3:
+            continue
+        seat = {**dig["A"], **dig["B"]}
+        omni = {k[1:]: v for k, v in dig["omniscient"].items()}
+        for r in range(len(idx["source"])):
+            want = inputs["decisions"].get(str(r))
+            if idx["source"][r] != src["index"] or want is None:
+                continue
+            key = (idx["viewer"][r], idx["game"][r], idx["sideboarding"][r], idx["decision"][r])
+            got = [seat.get(key), omni.get(key[1:])]
+            checked += 1
+            if got != want:
+                moved += 1
+                if moved <= 5:
+                    fails.append(f"open_vocab: {name}: fixture decision {r} {key}: inputs {got}, recorded {want}")
+    if moved > 5:
+        fails.append(f"open_vocab: {moved - 5} more fixture decisions' inputs moved")
+    if moved:
+        fails.append("open_vocab: the featurization of the open-vocabulary fixtures moved: the migration's acceptance "
+                     "holds on the recorded inputs only; if intended, drop the moved "
+                     "decisions: learn/open_vocab_acceptance.py inputs --drop-moved")
+    if not fails:
+        print(f"  OK   open_vocab: {checked} fixture decisions of {len(inputs['gate_sources'])} sources featurize to "
+              "their recorded inputs", flush=True)
     return fails
 
 
@@ -973,6 +1106,8 @@ def run(binary, out_dir=None, parts=PARTS, rmtb_samples=None, featurize_expected
             fails += check_featurize(featurize_expected)
         if "traj" in parts:
             fails += check_traj(traj_expected)
+        if "open_vocab" in parts:
+            fails += check_open_vocab(binary, work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return fails
@@ -983,7 +1118,8 @@ def main(argv=None) -> int:
                                  "smoke tier runs them).")
     ap.add_argument("--binary", default=rm_driver.DEFAULT_BINARY, help="the engine (default %(default)s)")
     ap.add_argument("--out-dir", default=None, help="the scratch directory's parent (default the system's)")
-    ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS)} (default all)")
+    ap.add_argument("--part", default=",".join(PARTS), help=f"comma list of {', '.join(PARTS + OPTIONAL_PARTS)} "
+                                                           f"(default all but {', '.join(OPTIONAL_PARTS)})")
     ap.add_argument("--rmtb-samples", default=None, help="the rmtb part's samples (robomage_check's smoke tier "
                     "writes them)")
     ap.add_argument("--featurize-expected", default=None, help="the featurize part's file list (robomage_check's "
@@ -992,7 +1128,7 @@ def main(argv=None) -> int:
                     "traj tier writes it)")
     args = ap.parse_args(argv)
     parts = [p for p in args.part.split(",") if p]
-    unknown = [p for p in parts if p not in PARTS]
+    unknown = [p for p in parts if p not in PARTS + OPTIONAL_PARTS]
     if unknown:
         ap.error(f"unknown part(s) {', '.join(unknown)}")
     fails = run(args.binary, args.out_dir, parts, args.rmtb_samples, args.featurize_expected, args.traj_expected)

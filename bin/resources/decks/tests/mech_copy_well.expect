@@ -1,0 +1,6 @@
+# M8 (b2): a copy until end of turn. The deck mills itself so that The Everflowing Well transforms.
+effect:SetState
+effect:Clone
+row:copy_until_eot
+# A lasting continuous effect on what a ChangeZoneAll put back (Ghost Vacuum).
+row:static_effect

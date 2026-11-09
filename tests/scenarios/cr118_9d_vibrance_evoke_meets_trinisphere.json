@@ -1,0 +1,40 @@
+{
+  "name": "cr118_9d_vibrance_evoke_meets_trinisphere",
+  "why": "CR 118.9d: Trinisphere's floor of three counts a hybrid pip: Vibrance's evoke {R/G}{R/G} pays one more, not three more",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Trinisphere"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)",
+    "A:desc:Vibrance (DealDamage",
+    "A:target:Player B"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A casts Vibrance"
+  ],
+  "expect_count": {
+    "Player A activated (Mountain|Island)": 3
+  }
+}

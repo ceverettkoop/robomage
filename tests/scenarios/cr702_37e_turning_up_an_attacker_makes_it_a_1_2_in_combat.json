@@ -1,0 +1,52 @@
+{
+  "name": "cr702_37e_turning_up_an_attacker_makes_it_a_1_2_in_combat",
+  "why": "CR 702.37e, 116.2b: its controller turns it face up any time they have priority, with blockers declared too: it stays attacking, the same object, and deals the 1 damage it now has.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Aphetto",
+    "A:attack:done",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A pays \\{U\\} and turns Aphetto Alchemist face up",
+    "Aphetto Alchemist deals 1 damage to Player B"
+  ],
+  "expect_not": [
+    "Face-down creature deals"
+  ],
+  "expect_dump": [
+    "^B .*face_down opp BATTLEFIELD card=none pt=2/2",
+    "^B .*event FACE_UP .*card=Aphetto Alchemist"
+  ],
+  "expect_dump_final_not": [
+    "^B .*face_down opp"
+  ]
+}

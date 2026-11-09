@@ -1,0 +1,50 @@
+{
+  "name": "cr603_2_tezzeret_takes_a_counter_for_your_artifacts_alone",
+  "why": "CR 603.2: Tezzeret, Cruel Captain gets a loyalty counter whenever an artifact you control enters, not an opponent's and not a nonartifact",
+  "hand_a": [
+    "Lotus Petal",
+    "Lotus Petal",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lotus Petal",
+    "Tormod's Crypt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Tezzeret Cruel Captain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:play:Island",
+    "B:cast:Lotus Petal"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Put 1 LOYALTY counter\\(s\\) on Tezzeret, Cruel Captain \\(now 5\\)"
+  ],
+  "expect_count": {
+    "^Put 1 LOYALTY": 1
+  }
+}

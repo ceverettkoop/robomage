@@ -1,0 +1,45 @@
+{
+  "name": "cr118_9_unmask_no_other_black_card_no_pitch",
+  "why": "CR 118.9, 601.2f: Unmask can't exile itself, and a nonblack card pays nothing: with no other black card only its mana cost is offered",
+  "hand_a": [
+    "Unmask",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu": [
+    "^Cast Unmask$"
+  ],
+  "expect_menu_not": [
+    "Cast Unmask \\(alternate cost\\)"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

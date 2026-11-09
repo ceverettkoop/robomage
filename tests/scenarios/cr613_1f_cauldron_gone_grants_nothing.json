@@ -1,0 +1,48 @@
+{
+  "name": "cr613_1f_cauldron_gone_grants_nothing",
+  "why": "CR 613.1f, 400.7: with Agatha's Soul Cauldron gone the static is gone: destroyed in response to the reflexive trigger, its counter still arrives and no ability comes with it.",
+  "hand_a": [
+    "Shadowspear"
+  ],
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Stoneforge Mystic"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Stoneforge Mystic",
+    "B:cast:Abrade",
+    "B:mode:Destroy target artifact",
+    "B:target:Agatha"
+  ],
+  "max_decisions": 11,
+  "expect": [
+    "Put 1 \\+1/\\+1 counter",
+    "Agatha's Soul Cauldron is destroyed"
+  ],
+  "expect_menu_not": [
+    "Activate Grizzly Bears \\(ChangeZone\\)"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

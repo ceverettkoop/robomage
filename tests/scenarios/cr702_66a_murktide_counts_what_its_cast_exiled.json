@@ -1,0 +1,13 @@
+{
+  "name": "cr702_66a_murktide_counts_what_its_cast_exiled",
+  "why": "CR 702.66a: Murktide Regent enters with a +1/+1 counter for each instant and sorcery its cast exiled, a land exiled with them left out",
+  "hand_a": ["Murktide Regent"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island"],
+  "graveyard_a": ["Lightning Bolt", "Lightning Bolt", "Mountain"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Murktide Regent", "#2"],
+  "max_decisions": 8,
+  "expect": ["Murktide Regent enters with 2 \\+1/\\+1 counter"],
+  "expect_count": {"exiles .* via Delve": 3}
+}

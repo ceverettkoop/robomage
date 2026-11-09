@@ -1,0 +1,36 @@
+{
+  "name": "cr701_8_untimely_malfunction_destroys_an_artifact",
+  "why": "Untimely Malfunction's first mode.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Destroy"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Mox Opal is destroyed|Mox Opal dies|Mox Opal is put"
+  ]
+}

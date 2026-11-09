@@ -1,0 +1,51 @@
+{
+  "name": "cr603_5_nihil_spellbomb_pays_b_and_draws",
+  "why": "CR 603.5 / 118.3: Nihil Spellbomb put into a graveyard from the battlefield: you may pay {B}; if you do, draw a card. The mana part of TRIGGER's table, asked once, not once for the \"may\" and again for the cost",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Nihil Spellbomb",
+    "Swamp"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Nihil Spellbomb",
+    "A:target:Player B",
+    "A:choice:Accept: pay"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A sacrifices Nihil Spellbomb",
+    "Player A activated Swamp",
+    "Player A draws Grizzly Bears"
+  ],
+  "expect": [
+    "Player A draws Grizzly Bears"
+  ],
+  "expect_menu": [
+    "Accept: pay \\{B\\}"
+  ],
+  "expect_menu_not": [
+    "use Nihil Spellbomb's triggered ability"
+  ],
+  "expect_not": [
+    "Player B shuffles"
+  ]
+}

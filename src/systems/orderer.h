@@ -3,7 +3,9 @@
 
 #include "../ecs/system.h"
 #include "../ecs/entity.h"
+#include "../components/cast_option.h"
 #include "../components/zone.h"
+#include "../object_ref.h"
 #include <vector>
 #include <memory>
 
@@ -18,6 +20,11 @@ public:
     // its Zone::is_face_down flag is set (its identity stays hidden from the opponent until an
     // effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down = false);
+
+    // CR 708.3: `card` is turned face down as `how` says (a face-down row of kSpellOverlayRows) and
+    // put onto the battlefield, and true. What would enter is that face, so a rule or effect that
+    // keeps it off the battlefield leaves the card as it was, where it was, and false (CR 701.58f).
+    bool put_onto_battlefield_face_down(Entity card, SpellOverlay how);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
@@ -26,6 +33,10 @@ public:
     // an object that was never in that zone. Use for copies/tokens that come into existence on the
     // stack rather than add_to_zone (which models a genuine zone transition).
     void place_created_on_stack(Entity target, Zone::Ownership controller);
+    // The same for an object that comes into existence in `owner`'s exile (CR 722.3c).
+    void place_created_in_exile(Entity target, Zone::Ownership owner);
+    // An object that was no card ceases to exist where it is (CR 704.5e).
+    void remove_created_object(Entity target);
     // Take a spell or ability off the stack without resolving it: countered (CR 701.5a), exiled
     // from the stack (Mindbreak Trap), or removed as it fails to resolve (CR 608.3b). A card goes
     // to `destination`, or to exile when it was cast with flashback (CR 702.34a). A copy of a
@@ -37,7 +48,7 @@ public:
     // The three stages of the card's move while it is cast (CR 601.2a / 601.2i / 733.1). The
     // card moves when the proposal begins, but its zone change becomes an EVENT only once the
     // spell becomes cast, so a proposal that is reversed leaves no trace behind.
-    //   begin_cast_move: CR 601.2a — move `card` from its hand, graveyard or exile to the top of
+    //   begin_cast_move: CR 601.2a — move `card` from its hand, graveyard, exile or library to the top of
     //     the stack, controlled by `caster`, as a new object (CR 400.7) whose identity is public.
     //     Returns the card's Zone as it was, for complete_cast_move / rewind_cast_move.
     //   complete_cast_move: CR 601.2i — the spell became cast: the move's CARD_CHANGED_ZONE event
@@ -46,7 +57,7 @@ public:
     //   rewind_cast_move: CR 601.5 / 733.1 — the proposal was reversed: the card returns to the
     //     zone and position `origin` records, as the same object it was, with no zone-change
     //     event. Its identity stays known to both players (it was revealed on the stack).
-    Zone begin_cast_move(Entity card, Zone::Ownership caster);
+    Zone begin_cast_move(Entity card, Zone::Ownership caster, SpellOverlay overlay);
     void complete_cast_move(Entity card, const Zone &origin);
     void rewind_cast_move(Entity card, const Zone &origin);
     // Create a standalone ability entity and place it on the stack. `ability` must
@@ -79,20 +90,12 @@ public:
     void draw(Zone::Ownership player, size_t ct, bool fire_draw_event = true);
     // The post-replacement half of a single draw: move the top library card to hand
     // (or set the decked-out loss on an empty library), with the draw logs and the
-    // PLAYER_DREW_CARD event. Called directly by the suspendable draw loops
-    // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
-    // question is settled; draw_one routes through it after its blocking dispatch.
+    // PLAYER_DREW_CARD event. Called by the suspendable draw loops
+    // (resume_pending_draws, effects::draw_n_with_replacements) once the replacement
+    // question is settled.
     void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
-    // Performs the base draw plus any additive-draw-replacement bonus cards (CR 614.1/614.5,
-    // Quantum Riddler) as one replaced event. Single owner of the additive-draw application:
-    // every draw path routes its "the draw actually happens" case through here (never the
-    // dredge-replaced case), so the bonus is applied in exactly one place. The bonus is read
-    // immediately before the base draw, so its "one or fewer cards in hand" gate sees the
-    // pre-draw hand.
-    void perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event = true);
     // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
-    // graveyard to hand, and log — the replaced draw's outcome. Shared by the
-    // blocking draw_one path and the suspendable draw loops.
+    // graveyard to hand, and log — the replaced draw's outcome.
     void apply_dredge(Zone::Ownership player, Entity source, int mill_ct);
     // Move the top `ct` cards of a player's library to their graveyard. Returns the
     // milled entities in mill order (top first).
@@ -103,8 +106,9 @@ public:
     // game_driver.cpp's pregame gate (run_pregame_step) — loop-top, snapshot-safe
     // decisions driven by PregameState. Only the zone operations they use
     // (get_hand / add_to_zone / shuffle_library / draw) belong to the Orderer.
+    // `how` is a face-down row of kSpellOverlayRows for cards that start face down (CR 708.3).
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
-                                             Zone::Ownership owner);
+                                             Zone::Ownership owner, SpellOverlay how = SpellOverlay::NONE);
     // Test-harness helper: start cards already in a player's graveyard (mirrors
     // place_on_battlefield) so graveyard-functioning cards can be exercised in isolation.
     std::vector<Entity> place_in_graveyard(const std::vector<std::string> &card_names,
@@ -116,27 +120,28 @@ public:
     std::vector<Entity> place_in_zone(const std::vector<std::string> &card_names,
                                       Zone::Ownership owner, Zone::ZoneValue zone);
 
+    // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
+    // leaves, shifting the objects beneath it up one.
+    void close_zone_gap(Entity target);
+
 private:
     // How move_object reports and finishes a move: `library_depth` sinks a card put on top of a
     // library below that many cards (put_in_library_at_depth); `draw` reports it as a draw, an
-    // opening-hand or mulligan draw when `opening_draw` (perform_draw).
+    // opening-hand or mulligan draw when `opening_draw` (perform_draw); `face_down` turns it over as
+    // it goes (put_onto_battlefield_face_down).
     struct MoveOptions {
             size_t library_depth = 0;
             bool draw = false;
             bool opening_draw = false;
+            SpellOverlay face_down = SpellOverlay::NONE;
     };
     // The one zone move behind add_to_zone, put_in_library_at_depth and perform_draw (see
     // add_to_zone), reported as an observation event (state_format/events.h).
     void move_object(
         bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down, const MoveOptions &opts);
-    // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
-    // leaves, shifting the objects beneath it up one.
-    void close_zone_gap(Entity target);
-    // Draw a single card for `player`, first offering any available dredge
-    // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
-    // loss if the library is empty.
-    void draw_one(Zone::Ownership player, bool fire_draw_event = true);
-
+    // CR 610.3: `host` has just left the battlefield, so the second one-shot effect of each "until"
+    // exile waiting on it happens, all before anything else does (610.3d).
+    void end_until_exiles(const ObjectRef &host);
 };
 
 #endif /* ORDERER_H */

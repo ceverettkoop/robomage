@@ -1,0 +1,48 @@
+{
+  "name": "cr400_7_a_blinked_face_down_creature_returns_face_up",
+  "why": "CR 708.9, 400.7: Phelia exiles the face-down creature, which is revealed, and it comes back at the end step face up, a new object, summoning sick.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Phelia Exuberant Shepherd"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Phelia",
+    "A:attack:done",
+    "A:target:Aphetto"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "is revealed as Aphetto Alchemist",
+    "Aphetto Alchemist is moved to the battlefield"
+  ],
+  "expect_dump": [
+    "^B .*event ZONE_MOVE BATTLEFIELD>EXILE card=Aphetto Alchemist face_down=0"
+  ],
+  "expect_dump_final_not": [
+    "face_down (self|opp)"
+  ]
+}

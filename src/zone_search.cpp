@@ -16,6 +16,7 @@
 #include "queries/visibility.h"
 #include "queries/zones.h"
 #include "resolution_frame.h"
+#include "resolution_memory.h"
 #include "state_format/events.h"
 #include "systems/orderer.h"
 
@@ -31,6 +32,8 @@ static void log_search(const ZoneSearch &search);
 static ActionCategory search_menu_category(const ZoneSearch &search);
 static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
                                    Zone::Ownership searcher);
+// Is `e` left out of `search` as a card already chosen (ZoneSearch::exclude_remembered)?
+static bool excluded_from_search(const ZoneSearch &search, Entity e);
 static void report_search(const ZoneSearch &search, Zone::Ownership searcher, Entity found);
 
 // The cards `owner` has in `zone`, in the zone's own order. Graveyard / face-up exile / sideboard
@@ -59,15 +62,14 @@ static std::vector<Entity> zone_contents(const std::shared_ptr<Orderer> &orderer
 // through the shared filter matcher in whatever zone the candidate sits: a card by its printed
 // characteristics, a battlefield permanent (a multi-zone search's Battlefield origin) by its live
 // ones. An empty spec or the catch-all "Card" (a bare "search for a card", Demonic Tutor) matches
-// every candidate. The owner is the YouOwn/YouCtrl reference, `chain_target` the targetedBy card,
-// and a dynamic mana-value bound (Aether Vial) flows in through cmc_bound / cmc_op.
+// every candidate. The owner is the YouOwn/YouCtrl reference, `resolve` holds the targetedBy card,
+// and a dynamic mana-value bound (Aether Vial) flows in through cmc_bound.
 static bool search_candidate_matches(Entity entity, const ZoneSearch &search) {
     if (search.change_type.empty() || search.change_type == "Card") return true;
     MatchCtx ctx;
     ctx.cmc_bound = search.cmc_bound;
-    ctx.cmc_op = search.cmc_op;
     ctx.controller = search.owner;
-    ctx.chain_target = search.chain_target;
+    ctx.resolve = search.resolve;
     return object_matches_filter(entity, search.change_type, ctx);
 }
 
@@ -122,14 +124,19 @@ static ActionCategory search_menu_category(const ZoneSearch &search) {
 // still looked at, never from the ones already chosen).
 static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
                                    Zone::Ownership searcher) {
-    const std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
     for (auto zone : search.zones) {
         if (is_public_zone(zone)) continue;
         std::vector<Entity> looked;
         for (Entity e : zone_contents(orderer, search.owner, zone))
-            if (!search.exclude_remembered || !refs_contain(remembered, e)) looked.push_back(e);
+            if (!excluded_from_search(search, e)) looked.push_back(e);
         look_at_cards(looked, searcher);
     }
+}
+
+static bool excluded_from_search(const ZoneSearch &search, Entity e) {
+    if (!search.exclude_remembered) return false;
+    return refs_contain(cur_game.resolution.memory.remembered, e) ||
+           (search.picking && reported_object(*search.picking, e));
 }
 
 // A search event per searched hidden zone, once the pick is made (CR 701.23): a library, a
@@ -146,11 +153,10 @@ static void report_search(const ZoneSearch &search, Zone::Ownership searcher, En
 Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, FrameCtx &ctx,
                     Entity decision_source, bool &suspended) {
     suspended = false;
-    const std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
     std::vector<Entity> choices;
     for (auto zone : search.zones)
         for (auto entity : zone_contents(orderer, search.owner, zone)) {
-            if (search.exclude_remembered && refs_contain(remembered, entity)) continue;
+            if (excluded_from_search(search, entity)) continue;
             if (search_candidate_matches(entity, search)) choices.push_back(entity);
         }
 

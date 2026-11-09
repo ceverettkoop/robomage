@@ -1,0 +1,57 @@
+{
+  "name": "cr702_179d_stifled_it_has_still_triggered",
+  "why": "CR 702.179d, 603.2: Stifle counters the sourceless ability on the stack: no rise, and it has triggered this turn, so a second loss does nothing",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Stifle"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Stifle",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 7,
+  "expect_count": {
+    "their speed triggers": 1
+  },
+  "expect": [
+    "Grizzly Bears deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "Player A's speed is 2"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

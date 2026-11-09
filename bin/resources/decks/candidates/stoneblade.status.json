@@ -1,0 +1,162 @@
+{
+ "deck": "stoneblade",
+ "location": "league",
+ "source": {
+  "archetype_id": 172,
+  "deck_id": 903619,
+  "deck_url": "https://mtgtop8.com/event?d=903619&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Stoneblade",
+  "rank": 24,
+  "scraped": "2026-10-24",
+  "section": "control",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [],
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T15:41:53"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "draws_reviewed": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/stoneblade:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_stoneblade",
+    "out_dir": "ci_out/onboard_stoneblade"
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-07T15:43:11"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-07T15:43:11"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 38,
+    "in_vocab": 38,
+    "no_script": [],
+    "not_in_vocab": []
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "38 cards: 38 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:42"
+  },
+  "implement": {
+   "detail": {},
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T15:41:53"
+  },
+  "parse": {
+   "detail": {
+    "cards": {},
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T15:41:53"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a",
+    "scripts": "594b6c075b6a24086c05a7502409cef52116dd0da46da8bdc87215aa2457b9b2",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:48:42"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "e2cb0692d9f3b3ceda5ebd3a0d416685276ca7feb927d82eeb952c300995bf21"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Stoneblade, 1.0% (control), 80 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4a69a0b64a933245fb2debf6ba672ffb3df620ca65a12a0de4caec55ffda4ea0",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-07T15:28:32"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "714bee492cdecfc69be3a7f088bf4156b661a486ed8793c8c305293140eb346a"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-07T15:23:08"
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "cr116_2b_turning_up_in_response_uses_no_stack",
+  "why": "CR 116.2b, 116.3, 708.8: with Lightning Bolt on the stack aimed at it, the face-down creature is turned up: a special action, so nothing goes on the stack above the Bolt, and it is the same object, so the Bolt still has its target.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Lightning Bolt",
+    "B:desc:hidden",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player B casts Lightning Bolt",
+    "turns Aphetto Alchemist face up",
+    "Lightning Bolt deals 3 damage to Aphetto Alchemist"
+  ],
+  "expect_not": [
+    "ability is on the stack",
+    "revealed as"
+  ]
+}

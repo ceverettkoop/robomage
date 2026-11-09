@@ -16,9 +16,11 @@
 //
 //   pass                         pass priority / take the first choice    (PASS_PRIORITY)
 //   cast:<card>                  cast a spell                              (CAST_SPELL)
+//   morph:<card>                 cast it face down                         (CAST_SPELL, FACE_DOWN variant)
 //   play:<card> | land:<card>    play a land                               (PLAY_LAND)
 //   activate:<card>[@side]       activate an ability                       (ACTIVATE_ABILITY)
 //   target:<card|text>[@side]    choose a target                           (SELECT_TARGET)
+//   divide:<card|text>[@side]    give that target one more point of the damage  (DIVIDE_DAMAGE)
 //   attack:<card> | attack:done  declare an attacker / confirm             (SELECT_/CONFIRM_ATTACKERS)
 //   block:<card> | block:done    declare a blocker / confirm               (SELECT_/CONFIRM_BLOCKERS)
 //   mana:<w|u|b|r|g|c> | tap:<land>   tap for mana                         (MANA_*; tap: also the
@@ -27,11 +29,18 @@
 //   top:<card>  bottom:<card>  dig:<card>                                  (TOP_LIBRARY, BOTTOM_DECK_CARD, DIG_CHOICE)
 //   mulligan | keep              the mulligan decision                     (MULLIGAN, KEEP_HAND)
 //   pay:<text>                   pay an optional cost                      (PAYING_COSTS)
+//   convoke:<card> | convoke:done  tap a creature toward a cost / tap no more  (PAYING_COSTS)
+//   waterbend:<card> | waterbend:done  the same, an artifact or creature
+//   crew:<card> | crew:done  tap a creature for a crew cost / tap no more
 //   choice:<text>                any dedicated choice category or OTHER_CHOICE
 //   shuffle:<text>  noshuffle:<text>                                       (SHUFFLE, DONT_SHUFFLE)
 //   sb-in:<card>  sb-out:<card>  sb-done                                   sideboarding (bo3)
 //   companion:<card>             companion to hand                         (COMPANION)
-//   sacrifice: return: x: discard: mode: color: name: exile:  <text>        the matching choice category
+//   turn-up:<card>               turn a face-down permanent face up        (TURN_FACE_UP)
+//                                (the first row of a cloaked morph card's two; desc: names the other)
+//   sacrifice: return: x: discard: color: name: exile:  <text>        the matching choice category
+//   mode:<text>                  a mode by its text, a whole row's before a part of one  (CHOOSE_MODE)
+//   mode:done                    choose no further mode ("choose one or more")  (CONFIRM_MODES)
 //   desc:<text>                  any action, by description substring
 //   concede | concede:game | concede:match   the sentinels -2 / -3 (not a menu row)
 //   #<n> | <n>                   a literal menu index
@@ -55,6 +64,7 @@ struct MenuAction {
         std::optional<std::string> card;
         int controller = -1;  // 1 own, 0 opp, -1 none
         std::string description;
+        bool face_down = false;  // a cast of the card face down
 };
 
 // The menu of `v` as the resolver reads it.

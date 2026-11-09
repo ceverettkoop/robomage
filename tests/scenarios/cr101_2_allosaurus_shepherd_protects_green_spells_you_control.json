@@ -1,0 +1,42 @@
+{
+  "name": "cr101_2_allosaurus_shepherd_protects_green_spells_you_control",
+  "why": "CR 101.2: Spell.Green+YouCtrl: Allosaurus Shepherd's controller's green spell can't be countered.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Allosaurus Shepherd",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grizzly Bears",
+    "B:cast:Counterspell",
+    "B:target:Grizzly Bears"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Grizzly Bears can't be countered",
+    "Grizzly Bears enters the battlefield"
+  ],
+  "expect_not": [
+    "Grizzly Bears is countered"
+  ]
+}

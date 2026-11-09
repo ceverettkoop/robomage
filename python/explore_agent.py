@@ -7,7 +7,7 @@ with its per-game novelty set. It reads the same view the rest of the agent read
 (category names), ``card(i)`` (the action's card name or None), ``hand`` (own hand card names) and
 ``cards.mana_value(name)``. No numpy, no layout.
 
-**Decision rules** (in order; what a port, e.g. the C++ explore agent of plan step 3a, implements):
+**Decision rules** (in order; what a port, e.g. ``src/agents/explore.h``, implements):
 
 1. A menu of one row (or none) is answered 0 with no draw.
 2. A menu holding a ``MULLIGAN`` row starts a game: the novelty set ``seen`` is cleared.
@@ -51,6 +51,7 @@ _CAT_MULLIGAN = "MULLIGAN"
 _CAT_SEARCH = "SEARCH_LIBRARY"
 _CAT_SB_DONE = "SIDEBOARD_DONE"
 _CAT_COMPANION = "COMPANION"
+_CAT_TURN_UP = "TURN_FACE_UP"
 
 # Per-action-category weights for the EXPLORE tier (explore_choice). Higher weight =
 # more likely to be chosen. The bias is toward the categories that exercise the most
@@ -75,6 +76,7 @@ _EXPLORE_WEIGHTS: dict[str, float] = {
     _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
     _CAT_COMPANION: 8.0,  # once-per-game and rarely offered — take it when legal so
                           # the companion machinery (and the card itself) gets fuzzed
+    _CAT_TURN_UP:  6.0,   # a special action: the card under it and its abilities come to light
 }
 
 # Novelty bias for the EXPLORE tier: a CAST_SPELL / ACTIVATE_ABILITY option whose
@@ -125,6 +127,7 @@ _EXPLORE_PATIENT_WEIGHTS: dict[str, float] = {
     _CAT_CONF_BLK: 0.6,   # _EXPLORE_WEIGHTS, so a few get declared first
     _CAT_SB_DONE:  0.6,
     _CAT_COMPANION: 8.0,  # as in _EXPLORE_WEIGHTS: once-per-game, take it when legal
+    _CAT_TURN_UP:  6.0,   # as in _EXPLORE_WEIGHTS
 }
 
 # Patient-only CAST scaling: weight *= (1 + mana_value * factor). A legal MV-7

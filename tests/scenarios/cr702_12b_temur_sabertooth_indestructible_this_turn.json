@@ -1,0 +1,19 @@
+{
+  "name": "cr702_12b_temur_sabertooth_indestructible_this_turn",
+  "why": "CR 702.12b, 514.2: returning a creature gives Temur Sabertooth indestructible until end of turn, so lethal damage destroys it this turn and not after the cleanup step; an untargeted Pump acts on what its Defined$ names",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest", "Lightning Bolt", "Lightning Bolt"],
+  "library_b": ["Forest", "Forest", "Forest"],
+  "battlefield_a": ["Temur Sabertooth", "Grizzly Bears", "Forest", "Forest"],
+  "battlefield_b": ["Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:activate:Temur Sabertooth", "A:choice:Grizzly Bears",
+           "B:cast:Lightning Bolt", "B:target:Temur Sabertooth@opp", "B:land:Forest",
+           "B:cast:Lightning Bolt", "B:target:Temur Sabertooth@opp"],
+  "max_decisions": 30,
+  "expect_order": ["^Temur Sabertooth gains Indestructible until end of turn\\.$",
+                   "^Lightning Bolt deals 3 damage to Temur Sabertooth",
+                   "^Lightning Bolt deals 3 damage to Temur Sabertooth",
+                   "Temur Sabertooth (is destroyed|dies)"],
+  "expect_count": {"Temur Sabertooth (is destroyed|dies)": 1}
+}

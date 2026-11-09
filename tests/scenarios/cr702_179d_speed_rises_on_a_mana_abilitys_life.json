@@ -1,0 +1,51 @@
+{
+  "name": "cr702_179d_speed_rises_on_a_mana_abilitys_life",
+  "why": "CR 702.179d, 119.4: B pays 1 life to Horizon Canopy's mana ability for Swords, auto-paid, on A's turn; the payer's simulation pays from a copy and the real payment counts once",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Swords to Plowshares"
+  ],
+  "battlefield_b": [
+    "Horizon Canopy"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Swords to Plowshares"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player B pays 1 life",
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "expect_count": {
+    "their speed triggers": 1
+  },
+  "hand_a": [
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -22,8 +22,8 @@
 // everything else the engine prints (narrative under --narrative, GAME_RESULT / MATCH_RESULT) goes
 // to stderr. At
 // each such seat's decision the deciding seat (the sideboarding player between games, else the
-// priority holder) gets, the first time it decides in the match, its SCHEMA, CARDS, DECKLISTS
-// and METAGAME frames, then its STATE frame with the menu (ending with the k_* tables of the
+// priority holder) gets, the first time it decides in the match, its SCHEMA, CARDS and DECKLISTS
+// frames, then its STATE frame with the menu (ending with the k_* tables of the
 // stream's own knowledge instance for that seat, state_format/knowledge_feed.h); the engine then
 // reads one integer line from stdin: a menu row index, -1 (the last row: confirm), -2 / -3
 // (concede game / match); end of input or an unparseable line is -1. Menu row i is the action

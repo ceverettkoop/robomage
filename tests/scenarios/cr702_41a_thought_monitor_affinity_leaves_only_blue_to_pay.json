@@ -1,0 +1,41 @@
+{
+  "name": "cr702_41a_thought_monitor_affinity_leaves_only_blue_to_pay",
+  "why": "CR 702.41a: six artifacts you control, artifact lands included, take all six generic off Thought Monitor; {U} from one land pays it, and it draws two",
+  "hand_a": [
+    "Thought Monitor"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Great Furnace",
+    "Seat of the Synod",
+    "Urza's Bauble",
+    "Tormod's Crypt",
+    "Mishra's Bauble",
+    "Voltaic Key"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Thought Monitor"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Player A activated Seat of the Synod for 1\\(U\\)"
+  ],
+  "expect_count": {
+    "^Player A activated ": 1,
+    "^Player A draws ": 2
+  }
+}

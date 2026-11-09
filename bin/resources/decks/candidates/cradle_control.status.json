@@ -1,0 +1,162 @@
+{
+ "deck": "cradle_control",
+ "location": "league",
+ "source": {
+  "archetype_id": 79,
+  "deck_id": 904045,
+  "deck_url": "https://mtgtop8.com/event?d=904045&f=LE",
+  "format": "LE",
+  "meta_share": 1.0,
+  "name": "Cradle Control",
+  "rank": 23,
+  "scraped": "2026-10-24",
+  "section": "control",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [],
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T15:40:01"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "draws_reviewed": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/cradle_control:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_cradle_control",
+    "out_dir": "ci_out/onboard_cradle_control"
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-07T15:40:59"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-07T15:41:00"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 34,
+    "in_vocab": 34,
+    "no_script": [],
+    "not_in_vocab": []
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "34 cards: 34 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "implement": {
+   "detail": {},
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T15:40:01"
+  },
+  "parse": {
+   "detail": {
+    "cards": {},
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T15:40:01"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb",
+    "scripts": "0217ba7fff1ba341e376ff483f788090364e02de3bfd136af142d42b705e6441",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Cradle Control, 1.0% (control), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4a69a0b64a933245fb2debf6ba672ffb3df620ca65a12a0de4caec55ffda4ea0",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-07T15:28:05"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "fecc6e2ee0483f9af747c86ec3b8addead11be914f2813b6adb01bf2e0dfd7fb"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-07T15:23:07"
+  }
+ }
+}

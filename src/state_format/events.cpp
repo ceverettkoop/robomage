@@ -10,12 +10,14 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/prepared_copy.h"
 #include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
 #include "../queries/characteristics.h"
+#include "../queries/face_down.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
@@ -95,7 +97,8 @@ static bool is_card_object(Entity e) {
 }
 
 static bool is_token_object(Entity e) {
-    if (global_coordinator.entity_has_component<Token>(e)) return true;
+    if (global_coordinator.entity_has_component<Token>(e) || global_coordinator.entity_has_component<PreparedCopy>(e))
+        return true;
     return global_coordinator.entity_has_component<Spell>(e) && global_coordinator.GetComponent<Spell>(e).is_copy;
 }
 
@@ -200,7 +203,7 @@ static ObsEventCard object_card(Entity e, Zone::Ownership viewer, bool issue) {
     if (identity_visible(e, viewer)) c.card = visible_card_id(e, viewer);
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     if (z.location == Zone::LIBRARY) c.from = c.to = position_seen(e, viewer);
-    c.face_down = z.is_face_down;
+    c.face_down = is_face_down(e);
     c.token = is_token_object(e);
     return c;
 }
@@ -219,7 +222,7 @@ ObsMoveCapture obs_begin_move(Entity e) {
     if (cap.created) return cap;
     cap.origin = z.location;
     cap.origin_owner = z.owner;
-    cap.origin_hidden = !is_public_zone(z.location) || z.is_face_down;
+    cap.origin_hidden = !is_public_zone(z.location) || is_face_down(e);
     if (z.location == Zone::STACK) note_stack_departure(e);
     if (z.location == Zone::HAND) cap.hand_subset = cur_game.obs_events.hand_subset;
     for (Zone::Ownership viewer : VIEWERS) {
@@ -336,7 +339,7 @@ void obs_end_move(const ObsMoveCapture &cap, Entity e, const uint32_t after_hand
             if (c.handle_after == 0 && individually_identifiable(e, viewer)) c.handle_after = handle_of(viewer, e);
             c.card = identity_visible(e, viewer) ? visible_card_id(e, viewer) : seen.card;
             c.from = seen.from;
-            c.face_down = z.location == Zone::EXILE && z.is_face_down;
+            c.face_down = is_face_down(e);
             c.token = cap.token;
             c.hand_subset = cap.hand_subset;
             if (info.draw) {
@@ -464,8 +467,8 @@ static std::vector<std::vector<Item>> group_by(const std::vector<Item> &items, K
     return groups;
 }
 
-void obs_windows_opened(
-    const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public, bool draw_link) {
+void obs_windows_opened(const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public,
+    bool draw_link, bool to_others) {
     if (!reporting() || cards.empty()) return;
     const ObsEventState &st = cur_game.obs_events;
     const auto zone_key = [](Entity c) {
@@ -475,6 +478,7 @@ void obs_windows_opened(
     for (const std::vector<Entity> &group : group_by(cards, zone_key)) {
         const Zone &gz = global_coordinator.GetComponent<Zone>(group.front());
         for (Zone::Ownership viewer : VIEWERS) {
+            if (!to_others && is_seat(viewer) && viewer != audience) continue;
             emit(viewer, [&] {
                 ObsEvent ev = new_event(look ? EventKind::LOOK : EventKind::REVEAL_START, viewer);
                 if (look) ev.player = audience;

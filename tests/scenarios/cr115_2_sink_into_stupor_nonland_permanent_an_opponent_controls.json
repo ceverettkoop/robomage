@@ -1,0 +1,14 @@
+{
+  "name": "cr115_2_sink_into_stupor_nonland_permanent_an_opponent_controls",
+  "why": "CR 115.2: Sink into Stupor's permanent alternative is a nonland permanent an opponent controls: the opponent's land and B's own creature aren't offered, and a spell of its own controller isn't one either (OppCtrl reads a spell's controller, CR 110.2).",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Grizzly Bears"],
+  "hand_b": ["Sink into Stupor", "Consider"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Island", "Island", "Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "B:cast:Consider", "B:cast:Sink into Stupor", "B:target:Grizzly Bears"],
+  "max_decisions": 10,
+  "expect": ["Grizzly Bears is moved to hand"],
+  "expect_menu_not": ["^Mishra's Bauble$", "^Mountain$", "^Consider$"]
+}

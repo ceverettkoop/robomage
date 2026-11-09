@@ -37,6 +37,9 @@ typedef enum Step {
 #include <vector>
 
 #include "../components/ability.h"
+#include "../components/chosen_cost.h"
+#include "../components/effect_object.h"
+#include "../cost_payment.h"
 #include "../ecs/entity.h"
 #include "../ecs/entity_set.h"
 #include "../mana_system.h"
@@ -69,6 +72,12 @@ struct DelayedTrigger {
     // "when X leaves, do Y" delayed trigger; empty = not object-watched (the phase-based default).
     ObjectRef watched;                // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match `watched` leaving the battlefield, not a phase
+    // CR 610.3: no trigger but the wait for an "until" exile's event. `watched` leaving returns the
+    // card at once (Orderer::move_object), with nothing on the stack.
+    bool one_shot_return = false;
+    // Static$ True: it resolves as its event happens, off the stack (fired on the spell of a
+    // Mode$ SpellCast, which its ability finds as the triggered card).
+    bool off_stack = false;
     // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
     // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
     // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a
@@ -112,6 +121,9 @@ struct LastKnownInfo {
     std::set<Type> types;                  // its type line (types, subtypes, supertypes)
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
+    // What was attached to it as it left (strip_permanent_components, which ends those links): "equipped
+    // creature" of a creature a cost tapped and sacrificed.
+    std::vector<ObjectRef> attached;
     std::vector<ObjectRef> exiled_with;    // Permanent::exiled_with snapshot — the cards this permanent
                                            // had exiled, so a leaves-the-battlefield ability (Skyclave
                                            // Apparition's TrigToken) can still find them after the
@@ -122,6 +134,7 @@ struct LastKnownInfo {
     // the permanent entered (CR 603.3a), even though its Permanent component is gone by now.
     bool entered_by_cast = false;          // "if you cast it" gate (The One Ring)
     bool evoked = false;                   // evoke self-sacrifice gate
+    ManaPaid cast_mana_paid;               // "if {R}{R} was spent to cast it", read past a sacrifice
     bool entered_with_offspring = false;   // offspring token-copy gate
     bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
     bool abilities_removed = false;        // Permanent::abilities_removed snapshot: a permanent that
@@ -162,34 +175,17 @@ enum MandatoryChoice {
 // the enum's last value.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
-// An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
-// and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
-// (Kaito's [+1] "Ninjas you control get +1/+1."). Its statics are gathered into g_active_statics
-// every SBA pass with the owner as their controller, so they apply through the normal layer
-// engine without the emblem being a real (targetable, counted, destructible) permanent. Persists
-// for the rest of the game; a fresh Game (new game of a match) starts with none.
-struct Emblem {
-    Zone::Ownership controller = Zone::PLAYER_A;
-    std::vector<StaticAbility> statics;
-    // The card whose ability created the emblem (Kaito, Bane of Nightmares; Tamiyo, Seasoned
-    // Scholar) and its vocab idx captured at creation. The emblem's identity in the observation's
-    // player-effects block. Display-only (the vocab idx is what the observation reads), so a plain
-    // Entity.
-    Entity source = 0;
-    int source_vocab_idx = -1;
-};
-
 struct Game {
         Game() {};
         Game(size_t _seed) {
             rng.seed = _seed;
             rng.engine = std::mt19937(rng.seed);
         };
-        // Day/Night designation the game itself can have (CR 731.1). Starts at "neither" and, once
-        // set, is always exactly one of day/night. Driven by the daybound/nightbound subsystem
-        // (src/day_night.*); read by day-/night-conditional effects. A fresh Game starts neither.
         enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
-        DayNight day_night = DN_NEITHER;
+        // The designations the game holds (designations.def).
+#define DESIGNATION_TURN(type, field, init, ...) type field = init;
+#define DESIGNATION_GAME_PLAYER(type, field, init, ...) type field = init;
+#include "../state_format/designations.def"
         size_t timestamp = 0;
         // The game's seeded random number generator (every shuffle and random choice).
         struct Rng {
@@ -275,10 +271,6 @@ struct Game {
         // Next DelayedTriggerLink::seq register_delayed_trigger hands out (monotonic per game,
         // starting at 1 so 0 stays "not a delayed trigger").
         uint32_t next_delayed_seq = 1;
-        // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
-        // the monarch).
-        Entity monarch_entity = MAX_ENTITIES;
-        std::vector<ObjectRef> delve_exiled;  // cards exiled during current delve cast; cleared after ETB
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play.
@@ -286,7 +278,21 @@ struct Game {
                                             // object (see lki_for); an entry is unread once its
                                             // entity id is issued again (LastKnownInfo::issue)
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
-        bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
+        // ResolvedLimit$ (AbilityDef::trigger_resolved_limit): how many times one limited
+        // triggered ability of an object resolved this turn under one controller.
+        struct LimitedResolution {
+                const AbilityDef *def = nullptr;
+                Zone::Ownership controller = Zone::UNKNOWN;
+                int count = 0;
+        };
+        // Per source object; a new object (CR 400.7) starts with none. Cleared each turn.
+        ObjectMap<std::vector<LimitedResolution>> limited_resolution_counts;
+        // How often each ActivationLimit$ triggered ability of a source object triggered this turn.
+        struct LimitedTrigger {
+            const AbilityDef *def = nullptr;
+            int count = 0;
+        };
+        ObjectMap<std::vector<LimitedTrigger>> limited_trigger_counts;
         // The persisted resolve() continuation of the resolving spell or ability
         // (resolution_frame.h): a resolution that parked a decision resumes from it.
         ResolutionFrame resolution;
@@ -324,48 +330,40 @@ struct Game {
         // primary/sub/aura targets — via the shared TargetSelectRT machine and
         // the CAST-tag asker) and the replicate copy retargeting (CopySpellRT);
         // Batch 11 the deferred-payment picks (delve count/picks, flashback
-        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); only
-        // the interactive mana payment and the interactive hybrid pips remain
-        // blocking (machine mode auto-resolves both with zero decisions).
+        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); the
+        // interactive mana payment and the interactive hybrid pips park as well
+        // (machine mode auto-resolves both with zero decisions).
         // active == true from the CAST_SPELL action until the spell becomes
         // cast (COPY_TARGETS end) or the proposal is reversed (rewind_cast).
         // The card is on the stack for that whole span (CR 601.2a).
         struct PendingCast {
             // Where the flow resumes. The enum is listed in RUN order, which follows
             // CR 601.2: announce (601.2b) -> targets (601.2c) -> pay every cost
-            // (601.2f-h). Everything from ALT_PITCH to PAY_APPLY is the single payment
-            // phase: it CHOOSES each non-mana cost item first, then floats and pays
-            // mana, then applies the chosen items and every other cost (CR 601.2h).
-            // Nothing irreversible happens before MANA_PAY commits, so a proposal
-            // reversed at any step before PAY_APPLY (CR 601.5 / 733.1) is undone by
-            // rewind_cast: the card returns to cast_origin, mana_snap restores the
-            // payment's mana abilities, and the chosen items are simply dropped.
+            // (601.2f-h). PAY_COSTS is the single payment phase: run_cost_parts CHOOSES
+            // each non-mana cost item first, then floats and pays mana, then applies the
+            // chosen items and every other cost (CR 601.2h). Nothing irreversible
+            // happens before the mana commits, so a proposal reversed before then
+            // (CR 601.5 / 733.1) is undone by rewind_cast: the card returns to
+            // cast_origin, the run's mana_snap restores the payment's mana abilities,
+            // and the chosen items are simply dropped.
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 KICKER,           // per-kicker optional-additional-cost y/n
+                BARGAIN,          // whether its bargain cost will be paid
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
-                HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
+                HYBRID,           // hybrid pips (auto-mana resolves them; otherwise one prompt per pip)
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
-                                  // CR 601.2b announces the value, the life is paid at PAY_APPLY)
+                                  // CR 601.2b announces the value, the life is paid with the cost)
+                ALT_HYBRID,       // an alternative cost's hybrid pips, then the mana it owes
+                ADDITIONAL,       // which form of a mandatory additional cost (CR 601.2b)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 MODES_TARGETS,    // modes (CR 601.2b) and every target (601.2c) via run_announce
                                   // (pc.announce; ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
-                // ── payment phase (CR 601.2f-h), all of it after targets ──
-                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
-                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
-                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
-                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
-                DELVE_COUNT,      // delve exile count menu (CR 702.66)
-                DELVE_PICK,       // delve exile picks, one card at a time
-                DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
-                DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
-                DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
-                MANA_PAY,         // float doomed permanents, then pay mana (interactive payer stays blocking)
-                PAY_APPLY,        // apply the chosen cost items + life + energy, once the mana committed
+                PAY_COSTS,        // the payment phase (CR 601.2f-h), all of it after targets
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // the spell becomes cast (CR 601.2i): cast events; seeds COPY_TARGETS
             };
@@ -375,102 +373,29 @@ struct Game {
             // suspension gap.
             Entity spell_entity = 0;
             bool caster_is_a = true;
-            bool use_flashback = false;
-            bool use_escape = false;
-            bool use_alt_cost = false;
-            bool use_offspring = false;
-            bool impulse_cast = false;
-            bool cast_back_face = false;
+            ChosenCost chosen;  // how it is being cast and what it has committed to
             // The card's Zone before the cast moved it to the stack (CR 601.2a):
             // where a reversed proposal returns it (Orderer::rewind_cast_move) and
             // the origin of the zone change reported once it becomes cast.
             Zone cast_origin;
-            // The X announced for this spell (CR 601.2b / 107.3a; a variable life cost's X
-            // too), recorded on its Spell as the cast finishes.
-            int x_paid = 0;
-            // Snapshot of mana state taken as MANA_PAY begins (the first step that
-            // can activate a mana ability), restored when the proposal is reversed
-            // after it (mana_snap_taken).
-            ManaPaymentSnapshot mana_snap;
-            bool mana_snap_taken = false;
             // The regular-cost accumulation (base + offspring/kicker/replicate/
-            // X/hybrid/phyrexian folds), deferred into deferred_mana_cost once
-            // the cost is fully resolved.
+            // X/hybrid/phyrexian folds), moved to pay.mana once the cost is fully
+            // resolved.
             ManaValue cost_to_pay;
-            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
-            // branch and copied onto the Spell so linked "if it was kicked with its [N]
-            // kicker" triggers can read them. Empty unless the card has K:Kicker.
-            std::vector<bool> kicked_flags;
             size_t kicker_idx = 0;     // next kicker pip to offer/apply
-            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
-            // the regular-cost branch. Drives the on-cast copy effect. 0 unless the card
-            // has K:Replicate and the caster chose to pay it.
-            int replicate_count = 0;
+            bool bargaining = false;   // its bargain cost was declared (CR 702.166b)
             size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
-            bool gift_promised = false;
-            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
-            // mana payment is therefore captured here and deferred until after targets are chosen.
-            // This matters when the mana is paid by sacrificing a permanent for mana
-            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
-            // target before it is chosen, crashing on an empty target menu. With the payment
-            // deferred, the target is chosen while the would-be mana source is still on the
-            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
-            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
-            ManaValue deferred_mana_cost;
-            bool deferred_mana_pending = false;
-            // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
-            // deferred_mana_cost at the MANA_PAY step (after any delve/improvise reduction) and
-            // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
-            // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
-            int mana_spent = 0;
-            // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
-            // accumulated by the payment (prompt_mana_payment's spent-sink) as pips leave the pool.
-            // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
-            // whose size the resolution frame reads as Converge. Empty for a free / no-mana cast.
-            ManaValue mana_spent_colors;
-            bool deferred_delve = false;
-            bool deferred_improvise = false;
-            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
-            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
-            // then every cost (601.2g/h). They are paid only after the deferred mana
-            // payment commits, so a cancelled payment never costs life or a creature.
-            // An exile grant's LIFE resource cost (CR 118.9) adds to it too.
-            int deferred_life_cost = 0;
-            // Life paid for Phyrexian pips (CR 107.4f). Paid as each pip is announced, so the
-            // choice shows in the life total at the prompts that follow; a rewind gives it back.
-            int phyrexian_life_paid = 0;
-            // An exile grant's ENERGY resource cost (Amped Raptor, CR 118.9 / 107.14), paid at
-            // PAY_APPLY with the rest of the non-mana costs.
-            int deferred_energy_cost = 0;
-            // Variable life X (Toxic Deluge's PayLife<X>): the value ANNOUNCED at LIFE_X
-            // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
-            // the narrative can still say "pays N life (X = N)". -1 = no such cost.
-            int life_x_announced = -1;
-            std::string deferred_sac_spec;
-            int deferred_exile_min_types = 0;
-            int deferred_exile_count = 0;
-            // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
-            // that moves a card (the alt cost's pitch/bounce/sacrifice, a spell's
-            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles,
-            // delve's graveyard exiles) is picked before the mana payment and applied
-            // only after it commits, at PAY_APPLY. That split is what makes a reversed
-            // proposal a CLEAN rewind: before PAY_APPLY nothing irreversible has happened,
-            // so rewind_cast restores the whole game (CR 601.2h lets the costs be paid in
-            // any order, and CR 733.1 wants the reversal to leave no trace). It also lets
-            // the payment SEE the doomed permanents — MANA_PAY floats their mana before
-            // spending, since they are still on the battlefield at that point.
-            struct CostRemoval {
-                Entity entity = 0;
-                Zone::ZoneValue dest = Zone::GRAVEYARD;
-                // The narrative line, formatted at PICK time (while the card is still
-                // where it was) and emitted at PAY_APPLY, where the move happens. Held
-                // whole so each cost keeps its own wording ("sacrifices X", "returns X
-                // to hand", "exiles X from their graveyard").
-                std::string log;
-                // A delve exile (CR 702.66a): recorded in cur_game.delve_exiled as it moves.
-                bool delve = false;
-            };
-            std::vector<CostRemoval> cost_removals;
+            size_t hybrid_idx = 0;     // next hybrid pip to ask about (auto-mana off)
+            // An alternative cost, or nothing, is paid rather than the mana cost (CR 118.9): its X is 0
+            // (CR 107.3b) and its hybrid and Phyrexian pips aren't owed. Additional costs, cost
+            // increases, Delve and TapToPay still apply to the total (CR 118.9d, 702.66a).
+            bool mana_cost_replaced = false;
+            // The regular cost is reduced by a ValidTarget$-conditioned ReduceCost static once
+            // the targets are chosen (Mystical Dispute; CR 601.2c before 601.2f): the target
+            // picks are limited to those whose cost is payable, and the reduction comes off
+            // pay.mana as the payment phase begins.
+            bool target_cost_reduction = false;
+            CostRun pay;  // the cost: what it comes to as it is announced, then the payment
             // The half-built primary spell ability. The ENTITY's Ability
             // component is added at the same point as the blocking flow did
             // (at the end of MODES_TARGETS, once every announce target is
@@ -493,27 +418,6 @@ struct Game {
             // Replicate copies' retargeting machine (COPY_TARGETS; see
             // CopySpellRT / effect_copy_spell.cpp).
             CopySpellRT copy_rt;
-            // ── Deferred-payment progress (Batch 11) ──
-            // Alt-cost pick loops (Force of Will's pitch, Daze's return):
-            // completed picks.
-            int alt_pitch_done = 0;
-            int alt_return_done = 0;
-            int alt_sac_done = 0;  // alt-cost Sac<N/Type> sacrifices completed (Fireblast)
-            // Delve (CR 702.66): the chosen exile count, completed picks, and
-            // the pre-delve priority seat (the blocking prompt seated both
-            // delve stages on the caster and restored the seat afterwards;
-            // the arm-time repoint persists its prev value here instead, and
-            // delve_seat_held says it is still to be restored).
-            size_t delve_exile_ct = 0;
-            size_t delve_picks_done = 0;
-            bool delve_prev_priority_a = true;
-            bool delve_seat_held = false;
-            // Escape ExileFromGrave progress (CR 702.139): distinct card types
-            // exiled so far (min-types form) / cards exiled so far (Uro's
-            // literal-count form). Candidate lists are re-derived from the
-            // live graveyard at each arm, exactly like the blocking loops.
-            std::set<std::string> escape_exiled_types;
-            int escape_exiled_count = 0;
         };
         // Activated-ability suspension state (pending.query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY
@@ -524,27 +428,23 @@ struct Game {
         // loop-top pending decision: the X-activation and loyalty-X ladders,
         // the pre-cost target selection (battlefield and hand/graveyard
         // activation zones), and the sacrifice/return cost picks (including
-        // ninjutsu's return-an-attacker pick). The interactive mana payment
-        // stays blocking (machine mode auto-pays with zero decisions).
+        // ninjutsu's return-an-attacker pick) and the interactive mana
+        // payment (machine mode auto-pays with zero decisions).
         // active == true from the ACTIVATE_ABILITY action until the ability
         // resolves off-stack (mana ability), becomes activated, or the
         // proposal is reversed (rewind_activation). A non-mana ability is on
         // the stack for that whole span (CR 602.2a).
         struct PendingActivation {
-            // Where the flow resumes, in CR 602.2 order: announce and choose (X,
-            // targets, the cost items to sacrifice/return), then pay every cost
-            // (602.2b -> 601.2g-h). Nothing is paid before PAY, and PAY_APPLY applies
-            // the non-mana costs only once the mana committed, so a proposal reversed
-            // at any step before PAY_APPLY (CR 733.1) leaves no trace.
+            // Where the flow resumes, in CR 602.2 order: announce (X, targets), then
+            // pay every cost (602.2b -> 601.2g-h). Nothing moves until the mana has
+            // committed, so a proposal reversed before then (CR 733.1) leaves no trace.
             enum Step {
                 ZONE_TARGET,       // hand/graveyard activation: pre-cost modes/targets
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
+                HYBRID,            // hybrid pips, announced with the mana owed (Fiend Artisan)
                 TARGET,            // battlefield pre-cost modes/targets (run_announce)
-                COST_SAC,          // type-based sacrifice-cost pick (chosen, not yet moved)
-                COST_RETURN,       // return-to-hand-cost pick (chosen, not yet moved)
-                PAY,               // tap cost + mana payment (failure rewinds; sync)
-                PAY_APPLY,         // loyalty/life/energy/sacrifice/return/discard costs (sync)
+                PAY_COSTS,         // the cost's parts, through run_cost_parts (failure rewinds)
                 FINISH             // mana production, or the ability becomes activated + take_action
             };
             bool active = false;
@@ -568,20 +468,33 @@ struct Game {
             // activation is proposed; 0 for a mana ability (CR 605.3b).
             Entity stack_entity = 0;
             // X chosen at the X_LADDER step (added as generic pips to the
-            // PAY cost). Every announced X (a loyalty X too) is stack_ab.x_paid.
+            // cost's mana). Every announced X (a loyalty X too) is stack_ab.x_paid.
             size_t x_activation = 0;
-            // The permanents chosen at COST_SAC / COST_RETURN, moved at PAY_APPLY
-            // (0 = none).
-            Entity sac_choice = 0;
-            Entity return_choice = 0;
-            // Snapshot of mana state taken as PAY begins, restored when the payment
-            // fails (mana_snap_taken).
-            ManaPaymentSnapshot mana_snap;
-            bool mana_snap_taken = false;
+            size_t hybrid_idx = 0;  // the next hybrid pip to announce
+            CostRun pay;  // the PAY_COSTS step's payment
             // The modes-and-targets announcement (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).
             AnnounceRT announce;
+        };
+        // A special action paid for in mana (pending.query tag SPECIAL_ACTION): what it does once
+        // paid. Taken at priority and off the stack, so nothing has moved until its mana is paid.
+        // active == true from the action until the card moves or the payment fails.
+        enum class SpecialAction : uint8_t {
+            SUSPEND,    // CR 702.62a: exile the card with its time counters
+            COMPANION,  // CR 702.139a: bring the companion to hand
+            TURN_FACE_UP,  // CR 702.37e, 701.58b: turn the face-down permanent face up
+        };
+        struct PendingSpecialAction {
+            bool active = false;
+            Entity card = 0;
+            SpecialAction kind = SpecialAction::SUSPEND;
+            Zone::Ownership payer = Zone::UNKNOWN;  // who took it (CR 116.2)
+            ManaValue cost;
+            std::vector<HybridPip> hybrid;  // the pips `cost` is yet to be announced with (CR 107.4e)
+            size_t hybrid_next = 0;
+            ManaPaymentSnapshot mana_snap;  // restored when the payment fails
+            ManaPaymentRT mana;
         };
         // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
         // actions run as loop-top decisions driven by the main loop's pregame
@@ -647,7 +560,7 @@ struct Game {
         struct PendingDrawRT {
             bool active = false;
             Zone::Ownership player = Zone::UNKNOWN;
-            int remaining = 0;
+            DrawBatch batch;
         };
         // Suspended decisions (see pending_query.h / resolution_frame.h): the decision parked for
         // the main loop to emit, and the persisted state of each flow that can park one midway.
@@ -681,6 +594,7 @@ struct Game {
             TriggerPlacementRT trigger_placement;
             PendingCast cast;  // pending.query tag CAST
             PendingActivation activation;  // pending.query tag ACTIVATION
+            PendingSpecialAction special_action;  // pending.query tag SPECIAL_ACTION
             PendingDrawRT draw;  // pending.query tag TURN_DRAW
             // Miracle (CR 702.94): miracle_reveal is a first-of-turn miracle card just drawn,
             // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
@@ -693,14 +607,15 @@ struct Game {
             // priority-menu cast (can_afford_alt returns false for it).
             Entity miracle_reveal = 0;
             // A cost being paid at a decision that neither the cast nor the activation state
-            // machine holds: the interactive mana payment loop (prompt_mana_payment) and an
+            // machine holds: the interactive mana payment loop (pay_mana_cost) and an
             // unless-cost offer (run_unless_loop, CR 118.12). Set for the span of the payment
             // (CostPaymentScope, queries/pending_cost.h) and read only by the state format's
             // pending_cost; nothing in the game decides on it. Value member, so a snapshot of a
-            // parked unless-offer keeps it.
+            // parked payment keeps it.
             struct CostPayment {
                 bool active = false;
                 bool unless = false;  // an unless-cost offered to its payer
+                bool trigger = false;  // a triggered ability's cost offered to its controller
                 Entity paid_for = 0;  // the spell or ability (or the resolving ability's source)
                 ManaValue remaining;  // mana still to pay
                 int life = 0;
@@ -743,22 +658,8 @@ struct Game {
         // permanent). Consulted by the cast-speed gate (rules_mod::cast_with_flash_active).
         struct CastWithFlashPermission {
             Zone::Ownership controller = Zone::UNKNOWN;
-            std::string filter = "";  // ValidCard$ filter the flash permission applies to
+            FilterSpec filter;  // ValidCard$ filter the flash permission applies to
             bool until_your_next_turn = false;
-        };
-        // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |
-        // ReplacementEffects$ <Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$/
-        // ValidTarget$ Card.IsRemembered> (Maze of Ith's "Prevent all combat damage that would be
-        // dealt to and dealt by that creature this turn"). Each shield remembers one `creature`;
-        // while active, all COMBAT damage that creature would DEAL (prevent_as_source) and/or all
-        // combat damage that would be dealt TO it (prevent_as_target) is prevented. A sourceless
-        // turn-long grant (the Effect belongs to no permanent); consulted by deal_combat_damage
-        // via combat_damage_prevented() and cleared at cleanup. General over any DamageDone/Prevent
-        // Effect keyed on a remembered object (reusable by future fog/prevention cards).
-        struct CombatDamagePreventionShield {
-            ObjectRef creature;
-            bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
-            bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
         };
         // A reveal window (src/queries/visibility.h): a card in a hidden zone (a library, a hand,
         // the sideboard, or face down in exile) whose identity `audience` may see right now. A
@@ -766,9 +667,11 @@ struct Game {
         // 701.20a), a look only to the looker (CR 701.20e), and a player who looked at a card that
         // is then exiled face down may keep looking at it until it leaves exile (CR 406.3). Every
         // window ends when its card changes zones or its library is shuffled (CR 701.20d), and as
-        // its `until` says.
+        // its `until` says. A standing look is the window a MayLookAt$ static gives on a library's
+        // top card: sync_standing_looks keeps it on the live top card, and its card leaving the top
+        // ends it too.
         struct RevealWindow {
-            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL };
+            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL, STANDING_LOOK };
             enum End : uint8_t {
                 RESOLUTION,    // the resolution in progress (or top-level effect) finishes
                 STACK_OBJECT,  // `stack_object` leaves the stack (CR 701.20a, 702.94b)
@@ -786,6 +689,12 @@ struct Game {
         };
         // The open reveal windows, in the order they opened (visibility.cpp keeps them).
         std::vector<RevealWindow> reveal_windows;
+        // Whether a gathered static has MayLookAt$ (gather_active_statics), so that a game without
+        // one asks nothing at a decision.
+        bool may_look_statics = false;
+        // The standing looks going on as of the last sync_standing_looks: a bit per looker and
+        // library (visibility.cpp).
+        uint8_t standing_lookers = 0;
         // One viewer's handle table (src/state_format/handles.h): the opaque per-viewer id of each
         // object the viewer can individually identify right now (docs/state_format.md §6). A handle
         // names one object (CR 400.7: the object a zone change makes is a new one), is retired as
@@ -811,21 +720,19 @@ struct Game {
         // not yet delivered in a frame, with its match-long seq counter. Carried into the next
         // game of a bo3 match (obs_events_for_next_game); written only while events are consumed.
         ObsEventState obs_events;
-        // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
-        // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
-        // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution
-        // only (Amped Raptor's DB$ Play, suspend's last time counter; during_resolution, CR
-        // 608.2g). Keyed by the exiled card as an object: it lapses once the card becomes a new
-        // object, except that it follows the card onto the stack as it is cast (CR 400.7g). The
-        // casting path reads it for the cost that replaces the card's mana cost (CR 118.9) and
-        // consumes it as the card is cast.
+        // Play-from-exile permission: a card in EXILE that an effect lets a player play at priority
+        // for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp;
+        // cleared at cleanup unless it lasts longer). Keyed by the exiled card as an object: it
+        // lapses once the card becomes a new object, except that it follows the card onto the stack
+        // as it is cast (CR 400.7g). A row offers what it grants (CastOption::grant), and the cast
+        // consumes it.
         struct ImpulseCastPermission {
-            // FREE = cast without paying its mana cost (Ugin, Eye of the Storms' -11: "cast those
-            // cards without paying their mana costs"; Dauthi Voidwalker: "play it ... without
-            // paying its mana cost", CR 118.9 / 601.2f). ENERGY/LIFE pay an alternative resource
-            // cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL = PLAY the card for its
-            // NORMAL cost (Light Up the Stage's "you may play those cards").
-            enum Resource { ENERGY, LIFE, FREE, NORMAL } resource = ENERGY;
+            using Resource = GrantResource;
+            static constexpr Resource ENERGY = GrantResource::ENERGY;
+            static constexpr Resource LIFE = GrantResource::LIFE;
+            static constexpr Resource FREE = GrantResource::FREE;
+            static constexpr Resource NORMAL = GrantResource::NORMAL;
+            Resource resource = ENERGY;
             int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
             bool allow_land = false;   // a "play" grant may also play a LAND card from exile (CR 305.1)
@@ -835,32 +742,23 @@ struct Game {
             // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
             bool persist_until_end_of_next_turn = false;
             size_t grant_turn = 0;
-            // during_resolution: granted by a resolving effect for a cast made as part of that
-            // resolution (CR 608.2g; cast_during_resolution — Suspend's last time counter, CR
-            // 702.62a). The cast ignores the card's type-based timing, and the permission is never
-            // offered at priority: it is consumed by that cast or dropped when it isn't made.
-            // Ordinary free casts (Ugin) leave this false and keep their type-based timing.
-            bool during_resolution = false;
             // warp: granted when a warp-cast object is exiled at the next end step. Unlike the
             // per-turn grants above, a warp permission persists across turns FOR AS LONG AS the
             // card remains in exile — it lapses only once the card leaves exile (cast, or moved
             // by another effect). The recast keeps the card's normal sorcery/instant timing (a
-            // creature is recast at sorcery speed), so during_resolution stays false. See
-            // effect_warp.cpp.
+            // creature is recast at sorcery speed). See effect_warp.cpp.
             bool warp = false;
+            // on_an_adventure: its caster may play the card that resolved as an Adventure for as
+            // long as it remains exiled, though not as an Adventure again (CR 715.3d).
+            bool on_an_adventure = false;
+            bool lasts_while_exiled() const { return warp || on_an_adventure; }
+            CastGrant grant() const { return {resource, amount}; }
         };
         // Continuous effects and floating triggered abilities that belong to no permanent: created
         // by resolved spells and abilities (CR 611.2), and emblems (CR 114). Each lasts as its
         // entry says ("this turn", "until your next turn", for the game); end_cleanup_effects and
         // the untap step end them.
         struct ResolvedEffects {
-            // Turn-long "spells you control can't be countered" grant created by a resolving spell/
-            // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
-            // CantHappen). A player here means every spell that player controls can't be countered
-            // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
-            // permanent (the instant is in the graveyard), so it is recorded here and cleared at
-            // cleanup. Consulted at counter-resolution time (effects::counter).
-            std::set<Zone::Ownership> cant_counter_spells_of;
             // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
             // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
             // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
@@ -871,19 +769,23 @@ struct Game {
             std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
             std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
             std::vector<CastWithFlashPermission> cast_with_flash_permissions;
-            std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
             ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
             ObjectMap<ImpulseCastPermission> impulse_cast_permission;
-            // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
-            // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
-            // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
-            // the trigger scan (collect_triggered_abilities) tests them against drained events just like
-            // a permanent's triggered ability. Cleared at the cleanup step so they last only their
-            // turn of creation. General over any until-end-of-turn floating triggered ability.
-            std::vector<Ability> floating_triggers;
-            // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
-            // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
-            std::vector<Emblem> emblems;
+            // The effect objects in play, in creation order: emblems (CR 114), the Effects that
+            // carry floating triggered abilities (CR 603.7e-style "this turn" triggers, created by
+            // a DB$ Effect | Triggers$ <SVar>, e.g. Forth Eorlingas!'s become-monarch-on-combat-
+            // damage), which the trigger scan (collect_triggered_abilities) tests against drained
+            // events just like a permanent's triggered ability, and those that carry replacement
+            // effects (Veil of Summer's can't-be-countered, Maze of Ith's prevention).
+            std::vector<EffectObject> effect_objects;
+            int next_effect_object_id = 0;
+
+            // Puts `object` into play under a fresh id.
+            void add(EffectObject object);
+            // The effect object with `id`, or nullptr once it has ended.
+            EffectObject *find(int id);
+            // Ends every effect object of `duration`, or only `controller`'s when one is named.
+            void end(EffectObject::Duration duration, Zone::Ownership controller = Zone::UNKNOWN);
         };
         ResolvedEffects resolved_effects;
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass

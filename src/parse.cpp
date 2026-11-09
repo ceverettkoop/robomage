@@ -1,4 +1,5 @@
 #include "parse.h"
+#include "trigger_modes.h"
 
 #include <algorithm>
 #include <cctype>
@@ -22,21 +23,97 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/filters.h"
+#include "queries/overlays.h"
+#include "queries/static_conditions.h"
+#include "queries/types.h"
+#include "resolution_memory.h"
 #include "str_util.h"
+#include "svar_eval.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
+// The findings of the parse_card_findings / parse_token_findings call in progress (nullptr while
+// games parse), and the script line they are met on.
+static std::vector<ParseFinding> *g_findings = nullptr;
+static std::string g_finding_line;
+// The script line findings are recorded against while it is in scope.
+struct FindingLine {
+    std::string saved;
+    explicit FindingLine(const std::string &line) : saved(g_finding_line) { g_finding_line = line; }
+    ~FindingLine() { g_finding_line = saved; }
+};
+// Where a cost string is written, which fixes what the engine pays of it (cost_form_pays).
+enum class CostForm {
+    ACTIVATED,          // an activated ability's Cost$, and a keyword that makes one
+    SPELL,              // a spell's Cost$: its mana cost again, and its additional costs
+    TRIGGERED,          // a triggered ability's Cost$, paid as it resolves
+    IMMEDIATE_TRIGGER,  // the same on an ImmediateTrigger
+    ALTERNATIVE,        // an alternative cost: S:Mode$ AlternativeCost, and a keyword that is one
+    FLASHBACK,          // what the cast path pays of an ACTIVATED-form K:Flashback cost
+    ESCAPE,             // K:Escape
+    MANA_ONLY,          // a keyword the engine pays in mana alone
+    ESCALATE,           // K:Escalate
+    WARD,               // K:Ward and a granted Ward:
+    UNLESS,             // UnlessCost$
+    ADDITIONAL_CHOICE,  // one form of K:AlternateAdditionalCost
+};
+static bool is_mana_cost_token(const std::string &tok);
+static bool is_plain_mana_token(const std::string &tok);
+static std::string cost_finding_name(const std::string &tok);
+static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *hybrid_out);
+static std::vector<std::string> cost_tokens(const std::string &cost_str);
+static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts);
+static bool read_cost_count(const std::string &text, int &count);
+static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context);
+static bool read_cost_token(const std::string &tok, CostPart &part);
+static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part);
+// Is `zone` one determine_legal_actions offers abilities from (offer_zone_activations)? An
+// ActivationZone$ naming another stays unread, a finding. No script names one.
+static bool activation_zone_offered(Zone::ZoneValue zone);
+static bool read_loyalty_cost_token(const std::string &tok, CostPart &part);
+static bool read_exile_from_grave_token(const std::string &tok, CostPart &part);
+static bool cost_form_pays(CostForm form, const CostPart &part);
+static CostForm ability_cost_form(const AbilityDef &ability);
+static void read_ability_cost(const std::string &cost_str, AbilityDef &ability);
+static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword);
+static bool read_ward_cost(const std::string &arg, CostPart &part);
+static void read_unless_cost(AbilityDef &ability, const std::string &value);
+static bool unless_cost_read_by(const std::string &category);
+static bool plain_keyword_modelled(const std::string &keyword);
+static std::string keyword_finding_name(const std::string &keyword);
+static bool alt_cost_param_assumed(const std::string &key, const std::string &value);
+static bool static_mode_modelled(const std::string &mode);
+static bool static_mode_reads(const std::string &mode, const std::string &key);
+static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value);
+static void static_value_finding(const StaticAbility &sa, const std::string &key, const std::string &value);
+static void static_form_findings(const StaticAbility &sa, const std::string &line,
+                                 const std::map<std::string, std::string> &svars);
+static void granted_keyword_findings(const std::string &spec);
+static bool granted_keyword_modelled(const std::string &keyword);
+static bool static_effect_zone_modelled(const StaticAbility &sa);
+static bool trigger_param_assumed(const std::string &key, const std::string &value);
+static bool read_by_trigger_branch(const std::string &key);
+static bool trigger_value_read(const TriggerMode &mode, const TriggerLine &t, const std::string &key,
+                               const std::string &value, bool floating);
+static void trigger_form_findings(const std::string &line, const TriggerLine &t);
+
 static std::string value_from_script(const std::string &script, const std::string &key);
 static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
                                              std::vector<HybridPip> *hybrid_out = nullptr);
-static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
+static void read_alternative_cost(const std::string &cost_str, AltCost &ac);
+static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken);
 static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
+static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value);
+static void read_static_effect(AbilityDef &ability, const std::string &svar, const std::map<std::string, std::string> &svars);
+static void resolve_clone_bound(AbilityDef &ability, const std::map<std::string, std::string> &svars);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
 // qualifier.
 static const struct {
@@ -50,10 +127,10 @@ static const struct {
 static Colors mana_letter_color(char c);
 static bool is_colored_mana_letter(char c);
 static Colors color_word_color(const std::string &word);
-static Colors filter_color(const std::string &filter);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string svar_or_literal(const std::map<std::string, std::string>& svars,
                                    const std::string& name);
+static std::string expand_svar_head(const std::string& body, const std::map<std::string, std::string>& svars);
 static void resolve_svar_ref(std::string& ref, const std::map<std::string, std::string>& svars);
 static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
@@ -66,8 +143,36 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string& scri
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static StaticAbility parse_one_static_ability(const std::string& line, const std::map<std::string, std::string>& svars);
+static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission);
+static bool reaches_a_library_top(const StaticAbility &sa);
+static void resolve_may_look_form(StaticAbility &sa);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
+struct ReplacementLine;
+// Where a replacement line sits: on a card (an R: line) or on an Effect (ReplacementEffects$).
+enum class ReplacementHost { CARD, EFFECT };
+static ReplacementLine read_replacement_line(const std::string &line,
+                                             const std::map<std::string, std::string> &svars);
+static size_t read_replacement_rows(const std::string &line, const std::map<std::string, std::string> &svars,
+                                    ReplacementHost host, std::vector<Effect::Replacement> &out);
+static bool row_enters_tapped(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_enters_tapped_conditional(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_discard_else_graveyard(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_cant_be_countered_self(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_cant_be_countered_battlefield(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_by_opponent(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_cant_counter_remembered(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r);
+static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r);
 static bool take_direct_amount_expr(AbilityDef& ability);
 static void warn_unresolved_amount_svar(const AbilityDef& ability, const std::string& card_name);
 static uint32_t parse_power(std::string value);
@@ -75,6 +180,7 @@ static uint32_t parse_toughness(std::string value);
 static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name);
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
+static std::vector<std::string> split_keyword_list(const std::string& value);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
 static std::string svar_key_param(const std::string& line, const std::string& want_key);
@@ -84,52 +190,22 @@ struct FaceAbilityDefs {
     std::vector<AbilityDef> abilities;
     std::vector<AbilityDef> gift_abilities;
     std::vector<AbilityDef> saga_chapters;
+    std::vector<AbilityDef> enters_as_copy;  // K:ETBReplacement:Copy's effect: none or one
     std::vector<AbilityDef> opening_hand_abilities;
 };
 // The facts a trigger line (a T: line or trigger SVar) states that decide which event its
 // ability fires on and how that event is filtered, read in one pass over its params.
-struct TriggerLine {
-    std::string mode;                 // Mode$
-    std::vector<std::string> phases;  // Phase$ list (Mode$ Phase)
-    int origin = -1;                  // Origin$ / Destination$ zone filter (Mode$ ChangesZone); -1 = any
-    int destination = -1;
-    bool player_is_you = false;       // the event's player is the source's controller (ValidPlayer$ You, ...)
-    bool valid_card_creature = false;
-    bool valid_card_self = false;
-    bool valid_card_non_creature = false;
-    bool valid_card_colorless = false;
-    bool valid_card_untapped = false;
-    bool valid_card_opp_own = false;
-    bool valid_card_opp_ctrl = false;
-    int kicked_index = 0;             // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
-    bool source_is_spell = false;     // ValidSource$ Spell...
-    bool source_opp_ctrl = false;     // ValidSource$ ...OppCtrl
-    bool source_creature_youctrl = false;  // ValidSource$ Creature.YouCtrl
-    bool target_self = false;         // ValidTarget$ Card.Self
-    bool is_static = false;           // Static$ True
-    bool attacking_player_is_you = false;
-    bool exclude_first_draw_step = false;
-    bool optional = false;            // OptionalDecider$
-    bool combat_damage_only = false;  // CombatDamage$ True
-    bool from_graveyard = false;      // TriggerZones$ Graveyard
-    size_t draw_number_eq = 0;        // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
-    size_t cast_count_eq = 0;         // ActivatorThisTurnCast$ EQN
-    // 603.4 intervening-if (IsPresent$/PresentCompare$ or a CheckSVar$ count gate).
-    bool intervening_if = false;
-    std::string condition_present;
-    std::string condition_compare;
-};
 static TriggerLine read_trigger_line(const std::string& line,
                                      const std::map<std::string, std::string>& svars,
                                      AbilityDef& ability);
+static void read_svar_compare(const std::string &value, const std::map<std::string, std::string> &svars,
+                              TriggerLine &t);
 static int trigger_zone_filter(const std::string& value);
 static void read_mana_spent_filter(const std::string& value, AbilityDef& ability);
 static void read_trigger_valid_card(const std::string& value,
                                     const std::map<std::string, std::string>& svars, TriggerLine& t,
                                     AbilityDef& ability);
-static void bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
-static void bind_phase_trigger(const TriggerLine& t, AbilityDef& ability);
-static void bind_spell_cast_trigger(const TriggerLine& t, AbilityDef& ability);
+static bool bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
 // The face a K: keyword line is parsed into.
 struct KeywordContext {
     CardData &card;
@@ -156,6 +232,7 @@ static AbilityDef keyword_activated_ability(const std::string& category, Zone::Z
                                             const std::string& cost);
 static AbilityDef keyword_self_trigger(const std::string& category, EventId event);
 static void kw_companion(const std::string& kw_line, KeywordContext& ctx);
+static void kw_morph(const std::string& kw_line, KeywordContext& ctx);
 static void kw_enchant(const std::string& kw_line, KeywordContext& ctx);
 static void kw_ward(const std::string& kw_line, KeywordContext& ctx);
 static void kw_affinity(const std::string& kw_line, KeywordContext& ctx);
@@ -163,8 +240,10 @@ static void kw_etb_replacement(const std::string& kw_line, KeywordContext& ctx);
 static void kw_etb_counter(const std::string& kw_line, KeywordContext& ctx);
 static void kw_equip(const std::string& kw_line, KeywordContext& ctx);
 static void kw_reconfigure(const std::string& kw_line, KeywordContext& ctx);
+static void kw_crew(const std::string& kw_line, KeywordContext& ctx);
 static void kw_impending(const std::string& kw_line, KeywordContext& ctx);
 static void kw_suspend(const std::string& kw_line, KeywordContext& ctx);
+static void kw_overload(const std::string& kw_line, KeywordContext& ctx);
 static void kw_chapter(const std::string& kw_line, KeywordContext& ctx);
 static void kw_dredge(const std::string& kw_line, KeywordContext& ctx);
 static void kw_landwalk(const std::string& kw_line, KeywordContext& ctx);
@@ -173,12 +252,15 @@ static void kw_ninjutsu(const std::string& kw_line, KeywordContext& ctx);
 static void kw_type_cycling(const std::string& kw_line, KeywordContext& ctx);
 static void kw_flashback(const std::string& kw_line, KeywordContext& ctx);
 static void kw_unearth(const std::string& kw_line, KeywordContext& ctx);
+static void kw_alternate_additional_cost(const std::string& kw_line, KeywordContext& ctx);
 static void kw_escape(const std::string& kw_line, KeywordContext& ctx);
 static void kw_evoke(const std::string& kw_line, KeywordContext& ctx);
 static void kw_offspring(const std::string& kw_line, KeywordContext& ctx);
 static void kw_kicker(const std::string& kw_line, KeywordContext& ctx);
 static void kw_replicate(const std::string& kw_line, KeywordContext& ctx);
+static void kw_escalate(const std::string& kw_line, KeywordContext& ctx);
 static void kw_devoid(const std::string& kw_line, KeywordContext& ctx);
+static void kw_sunburst(const std::string& kw_line, KeywordContext& ctx);
 static void kw_gift(const std::string& kw_line, KeywordContext& ctx);
 static void kw_opening_hand(const std::string& kw_line, KeywordContext& ctx);
 static void kw_storm(const std::string& kw_line, KeywordContext& ctx);
@@ -193,12 +275,24 @@ static const KeywordEntry kKeywordTable[] = {
      }},
     // K:Improvise — your artifacts can help cast this spell; each untapped artifact you
     // tap after activating mana abilities pays for {1} of the generic cost (CR 702.126).
-    // A cast-time generic cost reduction, mirroring Delve but tapping battlefield
-    // artifacts instead of exiling graveyard cards.
     {"Improvise", KeywordEntry::PREFIX,
      [](const std::string &, KeywordContext &ctx) {
-         ctx.card.has_improvise = true;
+         ctx.card.tap_to_pay = TapToPay::IMPROVISE;
          ctx.card.keywords.push_back("Improvise");
+     }},
+    // K:Convoke (CR 702.51): each creature tapped pays for {1} or one mana of its color.
+    {"Convoke", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.tap_to_pay = TapToPay::CONVOKE;
+         ctx.card.keywords.push_back("Convoke");
+     }},
+    {"Bargain", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         CostPart sacrifice = CostPart::of(CostPart::SACRIFICE, 1);
+         sacrifice.filter = FilterSpec("Artifact;Enchantment;Permanent.token");
+         ctx.card.bargain_cost.add(sacrifice);
+         ctx.card.has_bargain = true;
+         ctx.card.keywords.push_back("Bargain");
      }},
     {"Companion:", KeywordEntry::PREFIX, kw_companion},
     {"Enchant:", KeywordEntry::PREFIX, kw_enchant},
@@ -208,6 +302,10 @@ static const KeywordEntry kKeywordTable[] = {
     {"etbCounter", KeywordEntry::PREFIX, kw_etb_counter},
     {"Equip", KeywordEntry::PREFIX, kw_equip},
     {"Reconfigure", KeywordEntry::PREFIX, kw_reconfigure},
+    {"Crew", KeywordEntry::PREFIX, kw_crew},
+    // K:Start your engines (CR 702.179a): the state-based action reads it off the keyword list.
+    {"Start your engines", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) { ctx.card.keywords.push_back("Start your engines"); }},
     {"Impending", KeywordEntry::PREFIX, kw_impending},
     {"Suspend", KeywordEntry::PREFIX, kw_suspend},
     // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
@@ -236,6 +334,18 @@ static const KeywordEntry kKeywordTable[] = {
      [](const std::string &kw_line, KeywordContext &ctx) {
          add_keyword_alt_cost(kw_line, "Miracle", &AltCost::is_miracle, ctx.card);
      }},
+    {"Overload", KeywordEntry::PREFIX, kw_overload},
+    // K:Bestow:<cost> — Bestow (CR 702.103). An alternative cost whose row makes the spell an Aura.
+    {"Bestow", KeywordEntry::PREFIX,
+     [](const std::string &kw_line, KeywordContext &ctx) {
+         add_keyword_alt_cost(kw_line, "Bestow", &AltCost::is_bestow, ctx.card);
+     }},
+    // K:Fuse (CR 702.102): a split card's two halves may be cast together from the hand.
+    {"Fuse", KeywordEntry::EXACT,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.has_fuse = true;
+         ctx.card.keywords.push_back("Fuse");
+     }},
     {"Chapter:", KeywordEntry::PREFIX, kw_chapter},
     // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
     {"Prowess", KeywordEntry::PREFIX,
@@ -251,13 +361,17 @@ static const KeywordEntry kKeywordTable[] = {
     {"Evoke", KeywordEntry::PREFIX, kw_evoke},
     {"Offspring", KeywordEntry::PREFIX, kw_offspring},
     {"Kicker:", KeywordEntry::PREFIX, kw_kicker},
+    {"AlternateAdditionalCost:", KeywordEntry::PREFIX, kw_alternate_additional_cost},
     {"Replicate:", KeywordEntry::PREFIX, kw_replicate},
     {"Devoid", KeywordEntry::EXACT, kw_devoid},
+    {"Sunburst", KeywordEntry::EXACT, kw_sunburst},
     {"Gift", KeywordEntry::PREFIX, kw_gift},
     {"MayEffectFromOpeningHand", KeywordEntry::PREFIX, kw_opening_hand},
     {"Storm", KeywordEntry::EXACT, kw_storm},
     {"Annihilator", KeywordEntry::PREFIX, kw_annihilator},
     {"Protection:", KeywordEntry::PREFIX, kw_protection},
+    {"Escalate:", KeywordEntry::PREFIX, kw_escalate},
+    {"Morph:", KeywordEntry::PREFIX, kw_morph},
 };
 static void parse_card_face_body(const std::string& front_script, CardData& card,
                                  FaceAbilityDefs& face_defs);
@@ -284,11 +398,18 @@ static void resolve_ability_svars(AbilityDef& ability, const std::string& text,
                                   const std::string& card_name);
 static void resolve_effect_static_svars(AbilityDef& ability, const std::string& text,
                                         const std::map<std::string, std::string>& svars);
+static bool param_form_checked(const std::string &key);
+static bool param_form_read(const AbilityDef &ability, const std::string &text, const std::string &key,
+                            const std::string &value);
+static bool duration_read(const AbilityDef &ability, const std::string &value);
+static void ability_form_findings(const AbilityDef &ability, const std::string &text,
+                                  const std::map<std::string, std::string> &svars);
+static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars);
 static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string, std::string>& svars,
                                 const std::string& card_name);
 static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
                                        const std::map<std::string, std::string>& svars);
-static bool is_runtime_amount_expr(const std::string& sv);
+static std::string compare_of_svars(const std::string& sv, const std::map<std::string, std::string>& svars);
 static size_t delirium_scale_pos(const std::string& sv);
 static void resolve_condition_svars(AbilityDef& ability,
                                     const std::map<std::string, std::string>& svars);
@@ -299,7 +420,7 @@ static void resolve_pump_exprs(AbilityDef& ability, const std::map<std::string, 
 static void resolve_destroyall_svars(AbilityDef& ability, const std::map<std::string, std::string>& svars);
 static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
                                   std::vector<std::string>& terms);
-static bool find_cmc_bound(const std::string& filter, const char* only_op, std::string& op,
+static bool find_cmc_bound(const FilterSpec& filter, const char* only_op, std::string& op,
                            std::string& bound);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
@@ -308,6 +429,20 @@ static void split_keywords(const std::string& kw_line, std::vector<std::string>&
         std::string trimmed = trim(kw);
         if (!trimmed.empty()) out.push_back(trimmed);
     }
+}
+
+// Split an ability param's " & "-separated keyword list (Animate's Keywords$) into trimmed keywords.
+static std::vector<std::string> split_keyword_list(const std::string& value) {
+    std::vector<std::string> out;
+    size_t pos = 0;
+    while (pos <= value.size()) {
+        size_t amp = value.find(" & ", pos);
+        if (amp == std::string::npos) amp = value.size();
+        std::string kw = trim(value.substr(pos, amp - pos));
+        if (!kw.empty()) out.push_back(kw);
+        pos = amp + 3;
+    }
+    return out;
 }
 
 // Walk a '|'-delimited Forge parameter line ("Key$Value | Key$Value | ...").
@@ -354,25 +489,21 @@ static std::string svar_key_param(const std::string& line, const std::string& wa
     return value;
 }
 
-// Parse a Ward cost argument (the text after "Ward:") into its amount and payment kind
-// (CR 702.21). "PayLife<N>" is a life payment; a plain numeric arg is {N} generic mana.
-// Parse the amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
-// non-numeric body would abort, so validate digits first and degrade to a {1} mana ward
-// on a malformed or missing arg rather than crashing card load.
-void parse_ward_cost(const std::string &arg, int &cost, bool &is_life) {
-    cost = 1;
-    is_life = false;
-    if (arg.rfind("PayLife<", 0) == 0) {
-        size_t close = arg.find('>');
-        std::string n = (close != std::string::npos && close > 8) ? arg.substr(8, close - 8)
-                                                                  : std::string();
-        if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
-            cost = std::stoi(n);
-            is_life = true;
-        }
-    } else if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos) {
-        cost = std::stoi(arg);
+// A Ward cost is one token, PayLife<N> or N. See parse.h.
+static bool read_ward_cost(const std::string &arg, CostPart &part) {
+    return read_cost_token(arg, part) && cost_form_pays(CostForm::WARD, part);
+}
+
+// See parse.h.
+CostParts parse_ward_cost(const std::string &arg) {
+    CostParts cost;
+    CostPart part;
+    if (!read_ward_cost(arg, part)) {
+        part = CostPart::of(CostPart::MANA);
+        part.mana.insert(GENERIC);
     }
+    cost.add(part);
+    return cost;
 }
 
 // all to lowercase, spaces to underscores, other characters removed
@@ -412,210 +543,261 @@ std::string name_to_uid(std::string name) {
     return collapsed;
 }
 
-// Parses the cost portion of an alternate cost string (the value after Cost$ / after
-// "Evoke:") into an AltCost. Recognises "0" (free), PayLife<N>, ExileFromHand<n/filter>
-// (pitch), Return<n/Type>; anything else is treated as a mana cost (e.g. Evoke:R).
-// Condition fields (CheckSVar etc.) are parsed separately by the caller.
-static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
+// An alternative cost's cost string (the value after Cost$ / after "Evoke:"). Condition fields
+// (CheckSVar etc.) are parsed separately by the caller.
+static void read_alternative_cost(const std::string &cost_str, AltCost &ac) {
     ac.has_alt_cost = true;
-    bool matched_special = false;
+    ac.cost = parse_cost(cost_str, CostForm::ALTERNATIVE, "alternative cost " + cost_str);
+}
+
+// Parses a cost string (a Cost$ value, the argument of a cost-bearing keyword) into its parts, the
+// one grammar for every cost: read_cost_token says what a token is, cost_form_pays whether `form`
+// pays it. A token neither can place is a parse finding, with `context`, and adds nothing.
+static CostParts parse_cost(const std::string &cost_str, CostForm form, const std::string &context) {
+    CostParts cost;
     // Cost$ 0 means free
-    if (cost_str == "0") {
-        ac.is_free = true;
-        return;
+    if (form == CostForm::ALTERNATIVE && cost_str == "0") {
+        cost.set_free();
+        return cost;
     }
-    size_t pl = cost_str.find("PayLife<");
-    if (pl != std::string::npos) {
-        size_t close = cost_str.find('>', pl);
-        ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
-        matched_special = true;
-    }
-    size_t pe = cost_str.find("PayEnergy<");
-    if (pe != std::string::npos) {
-        size_t close = cost_str.find('>', pe);
-        ac.energy_cost = std::stoi(cost_str.substr(pe + 10, close - pe - 10));
-        matched_special = true;
-    }
-    size_t ef = cost_str.find("ExileFromHand<");
-    if (ef != std::string::npos) {
-        size_t slash = cost_str.find('/', ef);
-        ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
-        // Extract color from filter e.g. "Card.Blue+Other" → BLUE
-        std::string filter = cost_str.substr(slash + 1);
-        size_t close = filter.find('>');
-        if (close != std::string::npos) filter = filter.substr(0, close);
-        ac.exile_from_hand_color = filter_color(filter);
-        matched_special = true;
-    }
-    // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
-    // (CR 118.9, Fireblast: "sacrifice two Mountains"). Mirrors the Sac token grammar in
-    // parse_activation_cost: the count precedes the first '/', the filter follows it (a trailing
-    // ';'/'/label' is stripped so "2/Mountain" and "1/Forest;Plains/label" both parse).
-    size_t sc = cost_str.find("Sac<");
-    if (sc != std::string::npos) {
-        size_t slash = cost_str.find('/', sc);
-        size_t close = cost_str.find('>', sc);
-        if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-            ac.sac_cost_count = std::stoi(cost_str.substr(sc + 4, slash - (sc + 4)));
-            std::string spec = cost_str.substr(slash + 1, close - slash - 1);
-            size_t spec_slash = spec.find('/');
-            if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-            ac.sac_cost_spec = spec;
-            matched_special = true;
-        }
-    }
-    size_t rf = cost_str.find("Return<");
-    if (rf != std::string::npos) {
-        size_t slash = cost_str.find('/', rf);
-        size_t close = cost_str.find('>', rf);
-        ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
-        ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
-        matched_special = true;
-    }
-    // ExileFromGrave<X/<filter>/<label>> (Escape: Nethergoyf): exile any number of other
-    // cards from your graveyard, constrained so the chosen set collectively has at least N
-    // distinct card types. The "N" is encoded in the filter as "withTypesGE<N>" (CR 702.139).
-    size_t eg = cost_str.find("ExileFromGrave<");
-    if (eg != std::string::npos) {
-        size_t ge = cost_str.find("withTypesGE", eg);
-        if (ge != std::string::npos) {
-            size_t num_start = ge + strlen("withTypesGE");
-            size_t num_end = num_start;
-            while (num_end < cost_str.size() &&
-                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
-                num_end++;
-            if (num_end > num_start)
-                ac.exile_grave_min_types = std::stoi(cost_str.substr(num_start, num_end - num_start));
+    size_t tap_pips = 0;  // the mana of a token that lets its payer tap toward it
+    for (const std::string &tok : cost_tokens(cost_str)) {
+        CostPart part;
+        if (read_cost_token(tok, part) && cost_form_pays(form, part)) {
+            cost.add(part);
+            if (part.tap_to_pay != TapToPay::NONE) {
+                cost.set_tap_to_pay(part.tap_to_pay);
+                tap_pips = part.mana.size();
+            }
         } else {
-            // Literal-count form ExileFromGrave<N/<filter>/<label>> (Escape: Uro — "Exile five
-            // other cards from your graveyard"): the leading token before the first '/' is the
-            // fixed number of OTHER graveyard cards to exile. Only digits qualify; a non-numeric
-            // leading token (e.g. Nethergoyf's "X") is handled by the withTypesGE branch above.
-            size_t num_start = eg + strlen("ExileFromGrave<");
-            size_t num_end = num_start;
-            while (num_end < cost_str.size() &&
-                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
-                num_end++;
-            if (num_end > num_start)
-                ac.exile_grave_count = std::stoi(cost_str.substr(num_start, num_end - num_start));
+            parse_finding("cost", cost_finding_name(tok), context);
         }
-        matched_special = true;
     }
-    // No special cost token: the whole string is a mana cost (e.g. Evoke:R, Evoke:2 R)
-    if (!matched_special && !cost_str.empty()) {
-        ac.mana_cost = parse_mana_cost(cost_str);
+    // CR 701.67b: a tap pays only for the generic mana of the waterbend cost, and the payer doesn't
+    // tell a pip of it from the rest of the total.
+    if (tap_pips != 0 && (cost.mana().size() != tap_pips || !cost.hybrid().empty() || cost.x_pips() != 0))
+        parse_finding("cost", "Waterbend", context + ": beside other mana");
+    return cost;
+}
+
+// Reads one cost token. False for a token, or a form of one, that names no cost part.
+static bool read_cost_token(const std::string &tok, CostPart &part) {
+    if (tok == "T") {
+        part = CostPart::of(CostPart::TAP);
+        return true;
+    }
+    if (tok == "Mandatory") {
+        // "Mandatory" prefix on a triggered-ability cost (Dark Depths' TrigToken:
+        // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
+        // triggered ability's resolution, not an optional cost the controller may decline.
+        // CR 603.8 / the card's "sacrifice it. If you do, ...".
+        part = CostPart::of(CostPart::MANDATORY);
+        return true;
+    }
+    if (tok == "X") {
+        // A bare {X} (Candelabra of Tawnos: Cost$ X T). parse_mana_cost drops X (it has no fixed
+        // value); the activator chooses it, and owes X generic mana per pip: a cost may repeat X
+        // (Blast Zone's "Cost$ X X T" = {X}{X}). X = Count$xPaid.
+        part = CostPart::of(CostPart::X_MANA, 1);
+        return true;
+    }
+    if (is_plain_mana_token(tok)) {
+        part = CostPart::of(CostPart::MANA);
+        part.mana = parse_mana_cost(tok);
+        return true;
+    }
+    std::vector<HybridPip> pips;
+    if (parse_hybrid_token(tok, &pips)) {
+        part = CostPart::of(CostPart::MANA);
+        part.hybrid = pips;
+        return true;
+    }
+    std::vector<std::string> args;
+    if (cost_token_arg(tok, "PayLife", args)) {
+        // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid), chosen as an
+        // additional cost while casting (Toxic Deluge).
+        if (args.size() != 1) return false;
+        part = CostPart::of(CostPart::LIFE);
+        part.count_is_x = args[0] == "X";
+        return part.count_is_x || read_cost_count(args[0], part.count);
+    }
+    if (cost_token_arg(tok, "Waterbend", args)) {
+        // Waterbend<N> — pay {N}, tapping an artifact or creature for any of it (CR 701.67a).
+        int generic = 0;
+        if (args.size() != 1 || !read_cost_count(args[0], generic) || generic == 0) return false;
+        part = CostPart::of(CostPart::MANA);
+        for (int i = 0; i < generic; i++) part.mana.insert(GENERIC);
+        part.tap_to_pay = TapToPay::WATERBEND;
+        return true;
+    }
+    if (cost_token_arg(tok, "Crew", args)) {
+        // Crew<N> — what K:Crew:N costs: "Tap any number of other untapped creatures you control
+        // with total power N or greater" (CR 702.122a).
+        part = CostPart::of(CostPart::TAP_OTHERS);
+        part.filter = FilterSpec("Creature.Other");
+        return args.size() == 1 && read_cost_count(args[0], part.count);
+    }
+    if (cost_token_arg(tok, "PayEnergy", args)) {
+        // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
+        // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
+        part = CostPart::of(CostPart::ENERGY);
+        return args.size() == 1 && read_cost_count(args[0], part.count);
+    }
+    return read_cost_filter_token(tok, "Sac", CostPart::SACRIFICE, part) ||
+           read_cost_filter_token(tok, "Discard", CostPart::DISCARD, part) ||
+           read_cost_filter_token(tok, "Return", CostPart::RETURN, part) ||
+           read_cost_filter_token(tok, "ExileFromHand", CostPart::EXILE_FROM_HAND, part) ||
+           read_cost_filter_token(tok, "Exile", CostPart::EXILE, part) ||
+           read_cost_filter_token(tok, "Exert", CostPart::EXERT, part) ||
+           read_exile_from_grave_token(tok, part) || read_loyalty_cost_token(tok, part);
+}
+
+// <name><N/Filter[/label]>: N objects matching Filter; CARDNAME for the filter is the source, and
+// Discard's Hand the whole hand, whatever its N: Discard<0/Hand> (Lion's Eye Diamond),
+// Discard<1/Hand> (Phyrexian Dragon Engine).
+static bool read_cost_filter_token(const std::string &tok, const char *name, CostPart::Kind kind, CostPart &part) {
+    std::vector<std::string> args;
+    if (!cost_token_arg(tok, name, args) || args.size() < 2) return false;
+    part = CostPart::of(kind);
+    if (!read_cost_count(args[0], part.count)) return false;
+    if (args[1] == "CARDNAME")
+        part.object = ObjectSpec(ObjectSpec::SELF);
+    else if (kind == CostPart::DISCARD && args[1] == "Hand") {
+        part.whole_hand = true;
+        part.count = 0;
+    } else
+        part.filter = args[1];
+    return true;
+}
+
+// ExileFromGrave<N/Card.Other/<label>> (Escape: Uro — "Exile five other cards from your graveyard"):
+// the fixed number of OTHER graveyard cards to exile. ExileFromGrave<X/Card.Other+withTypesGE<N>/
+// <label>> (Escape: Nethergoyf): any number of them, constrained so the chosen set collectively has
+// at least N distinct card types (CR 702.139). ExileFromGrave<1/CARDNAME> (Runehorn Hellkite): the
+// source, from the graveyard it is activated in.
+static bool read_exile_from_grave_token(const std::string &tok, CostPart &part) {
+    std::vector<std::string> args;
+    if (!cost_token_arg(tok, "ExileFromGrave", args) || args.size() < 2) return false;
+    part = CostPart::of(CostPart::EXILE_FROM_GRAVEYARD);
+    static const std::string kTypesFilter = "Card.Other+withTypesGE";
+    if (args[0] == "X" && args[1].rfind(kTypesFilter, 0) == 0) {
+        part.count_is_x = true;
+        part.filter = "Card.Other";
+        return read_cost_count(args[1].substr(kTypesFilter.size()), part.min_types);
+    }
+    if (args[1] == "CARDNAME") {
+        part.object = ObjectSpec(ObjectSpec::SELF);
+        return read_cost_count(args[0], part.count);
+    }
+    part.filter = args[1];
+    return args[1] == "Card.Other" && read_cost_count(args[0], part.count);
+}
+
+// Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
+// SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X] ultimate). The amount
+// X is chosen at activation; the count holds only the sign.
+static bool read_loyalty_cost_token(const std::string &tok, CostPart &part) {
+    std::vector<std::string> args;
+    const bool add_counter = cost_token_arg(tok, "AddCounter", args);
+    if (!add_counter && !cost_token_arg(tok, "SubCounter", args)) return false;
+    if (args.size() != 2 || args[1] != "LOYALTY") return false;
+    part = CostPart::of(CostPart::LOYALTY);
+    if (read_cost_count(args[0], part.count)) {
+        part.count = add_counter ? part.count : -part.count;
+        return true;
+    }
+    if (args[0] != "X") return false;
+    part.count_is_x = true;
+    part.count = add_counter ? 1 : -1;
+    return true;
+}
+
+// Does the engine pay `part` of a cost written in `form`? An activated ability pays its whole cost
+// as it is activated, one sacrifice or return at most, of a discard only the whole hand or itself,
+// and of an exile only itself, from the zone it is activated in; a variable life cost only exists as a spell's (spell_has_variable_life_cost). A spell's
+// Cost$ repeats its mana cost; beyond that the cast path pays a sacrifice of another permanent
+// (spell_additional_sac_spec) and PayLife<X>. A triggered ability pays as it resolves:
+// Sac<1/CARDNAME>, mana, a discard of N matching cards and of the hand (pay_trigger_cost); an ImmediateTrigger
+// Sac<1/CARDNAME> and PayEnergy<N>. An alternative cost
+// pays mana, fixed life, N sacrifices or returns of other permanents and a pitch; flashback mana,
+// fixed life and a sacrifice of another permanent; escape mana, fixed life and its ExileFromGrave;
+// Escalate mana and a discard of N matching cards; a form of AlternateAdditionalCost fixed life or
+// a discard of N matching cards. A Ward cost is {N} or fixed life; an unless-cost
+// mana, energy or a discard of N cards of the payer's choice (run_discard_unless takes any card).
+static bool cost_form_pays(CostForm form, const CostPart &part) {
+    const bool sacrifices_one = part.kind == CostPart::SACRIFICE && part.count == 1;
+    // A cost's own TapToPay is asked for by the steps of an activation.
+    if (part.tap_to_pay != TapToPay::NONE && form != CostForm::ACTIVATED) return false;
+    // Hybrid pips are announced where announce_hybrid_pips is called; anywhere else they are a finding.
+    if (!part.hybrid.empty() && form != CostForm::ACTIVATED && form != CostForm::ALTERNATIVE) return false;
+    const bool fixed_mana_or_life = part.kind == CostPart::MANA || (part.kind == CostPart::LIFE && !part.count_is_x);
+    switch (form) {
+        case CostForm::ACTIVATED:
+            switch (part.kind) {
+                case CostPart::LIFE: return !part.count_is_x;
+                case CostPart::SACRIFICE: return sacrifices_one;
+                case CostPart::RETURN: return part.count == 1 && !part.is_self();
+                case CostPart::DISCARD:
+                    return (part.whole_hand && part.count == 0) || (part.is_self() && part.count == 1);
+                case CostPart::EXILE:
+                case CostPart::EXERT: return part.is_self() && part.count == 1;
+                case CostPart::EXILE_FROM_HAND:
+                case CostPart::EXILE_FROM_GRAVEYARD: return part.is_self() && part.count == 1;
+                default: return true;
+            }
+        case CostForm::SPELL:
+            return part.kind == CostPart::X_MANA || part.kind == CostPart::MANA ||
+                   (part.kind == CostPart::LIFE && part.count_is_x) || (sacrifices_one && !part.is_self());
+        case CostForm::IMMEDIATE_TRIGGER:
+            return part.kind == CostPart::ENERGY || part.kind == CostPart::MANDATORY ||
+                   (sacrifices_one && part.is_self());
+        case CostForm::TRIGGERED:
+            return part.kind == CostPart::MANDATORY || (sacrifices_one && part.is_self()) ||
+                   part.kind == CostPart::MANA || (part.kind == CostPart::DISCARD && !part.is_self());
+        case CostForm::ALTERNATIVE:
+            return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self()) ||
+                   (part.kind == CostPart::RETURN && !part.is_self()) ||
+                   (part.kind == CostPart::EXILE_FROM_HAND && !part.is_self());
+        case CostForm::FLASHBACK:
+            return fixed_mana_or_life || (part.kind == CostPart::SACRIFICE && !part.is_self());
+        case CostForm::ESCAPE:
+            return fixed_mana_or_life || (part.kind == CostPart::EXILE_FROM_GRAVEYARD && !part.is_self());
+        case CostForm::MANA_ONLY:
+            return part.kind == CostPart::MANA;
+        case CostForm::ESCALATE:
+            return part.kind == CostPart::MANA ||
+                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
+        case CostForm::WARD:
+            return (part.kind == CostPart::LIFE && !part.count_is_x) ||
+                   (part.kind == CostPart::MANA && part.mana.count(GENERIC) == part.mana.size());
+        case CostForm::ADDITIONAL_CHOICE:
+            return (part.kind == CostPart::LIFE && !part.count_is_x) ||
+                   (part.kind == CostPart::DISCARD && !part.is_self() && !part.whole_hand);
+        case CostForm::UNLESS:
+            return part.kind == CostPart::MANA || part.kind == CostPart::ENERGY ||
+                   (part.kind == CostPart::DISCARD && part.filter == "Card") ||
+                   (part.kind == CostPart::SACRIFICE && !part.is_self());
+    }
+    return false;
+}
+
+static bool activation_zone_offered(Zone::ZoneValue zone) { return zone == Zone::HAND || zone == Zone::GRAVEYARD; }
+
+static CostForm ability_cost_form(const AbilityDef &ability) {
+    switch (ability.ability_type) {
+        case AbilityDef::SPELL:
+            return CostForm::SPELL;
+        case AbilityDef::TRIGGERED:
+            return ability.category == "ImmediateTrigger" ? CostForm::IMMEDIATE_TRIGGER : CostForm::TRIGGERED;
+        default:
+            return CostForm::ACTIVATED;
     }
 }
 
-// Parses a space-separated activation-cost string (the value after Cost$, or after a
-// Cycling:/Flashback: keyword) into the cost fields of `ability`. Recognises the tap
-// symbol `T`, PayLife<N>, Sac<.../...> (CARDNAME → sacrifice self), Discard<0/Hand or
-// CARDNAME>, Return<N/Type>, and bare mana symbols. Single source for the cost-token
-// grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
-// Cycling/Flashback open-coded partial copies that silently dropped tokens).
-static void parse_activation_cost(const std::string &cost_str, AbilityDef &ability) {
-    size_t tok_pos = 0;
-    while (tok_pos < cost_str.size()) {
-        size_t tok_end = cost_str.find(' ', tok_pos);
-        if (tok_end == std::string::npos) tok_end = cost_str.size();
-        std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-        if (tok == "T") {
-            ability.tap_cost = true;
-        } else if (tok == "Mandatory") {
-            // "Mandatory" prefix on a triggered-ability cost (Dark Depths' TrigToken:
-            // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
-            // triggered ability's resolution, not an optional cost the controller may decline —
-            // record it and, crucially, do NOT let it fall through to parse_mana_cost (which
-            // would read the word as a spurious mana symbol). CR 603.8 / the card's "sacrifice
-            // it. If you do, ...".
-            ability.mandatory = true;
-        } else if (tok.rfind("PayLife<", 0) == 0) {
-            size_t angle = tok.find('<');
-            size_t close = tok.find('>');
-            if (angle != std::string::npos && close != std::string::npos && close > angle + 1) {
-                std::string arg = tok.substr(angle + 1, close - angle - 1);
-                if (!arg.empty() && std::isdigit(static_cast<unsigned char>(arg[0])))
-                    ability.life_cost = std::stoi(arg);
-                else
-                    // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid),
-                    // chosen as an additional cost while casting (Toxic Deluge). Don't stoi("X").
-                    ability.life_cost_is_x = true;
-            }
-        } else if (tok == "X") {
-            // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
-            // drops X (it has no fixed value); record that the activator chooses X, so the cost
-            // path can prompt for it and add X generic mana. X = Count$xPaid.
-            // COUNT the pips: a cost may repeat X (Blast Zone's "Cost$ X X T" = {X}{X}), and the
-            // one chosen X is then owed once per pip.
-            ability.activation_has_x = true;
-            ability.activation_x_count++;
-        } else if (tok.rfind("PayEnergy<", 0) == 0) {
-            // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
-            // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
-            size_t angle = tok.find('<');
-            size_t close = tok.find('>');
-            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                ability.energy_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-        } else if (tok.rfind("Sac<", 0) == 0) {
-            // Consume additional tokens if '>' not found (label may contain spaces)
-            while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
-                tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
-            size_t slash = tok.find('/');
-            size_t close = tok.find('>');
-            if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                std::string spec = tok.substr(slash + 1, close - slash - 1);
-                // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
-                size_t spec_slash = spec.find('/');
-                if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                if (spec == "CARDNAME") {
-                    ability.sac_self = true;
-                } else {
-                    ability.sac_cost_spec = spec;
-                }
-            }
-        } else if (tok.rfind("Discard<", 0) == 0) {
-            // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-            if (tok.find("0/Hand") != std::string::npos) {
-                ability.discard_hand_cost = true;
-            } else if (tok.find("CARDNAME") != std::string::npos) {
-                ability.discard_self_cost = true;
-            }
-        } else if (tok.rfind("Return<", 0) == 0) {
-            // Return<1/Forest> — bounce a land of given subtype
-            size_t slash = tok.find('/');
-            size_t close = tok.find('>');
-            if (slash != std::string::npos && close != std::string::npos) {
-                ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
-                ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
-            }
-        } else if ((tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0) &&
-                   tok.find("/LOYALTY>") != std::string::npos) {
-            // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
-            size_t angle = tok.find('<');
-            size_t slash = tok.find('/');
-            std::string amt = tok.substr(angle + 1, slash - angle - 1);
-            bool is_sub = (tok[0] == 'S');
-            if (!amt.empty() && std::isdigit(static_cast<unsigned char>(amt[0]))) {
-                int n = std::stoi(amt);
-                ability.loyalty_cost = is_sub ? -n : n;
-            } else {
-                // SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X]
-                // ultimate). The amount X is chosen at activation; loyalty_cost holds only the sign.
-                // Don't stoi("X") (it would throw/abort — see PayLife<X> above).
-                ability.loyalty_cost_is_x = true;
-                ability.loyalty_cost = is_sub ? -1 : 1;
-            }
-        } else {
-            // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
-            auto mana = parse_mana_cost(tok);
-            ability.activation_mana_cost.insert(mana.begin(), mana.end());
-        }
-        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-    }
+// `ability`'s Cost$ (or the cost a keyword gives the ability it makes).
+static void read_ability_cost(const std::string &cost_str, AbilityDef &ability) {
+    ability.cost = parse_cost(cost_str, ability_cost_form(ability), "Cost$ " + cost_str);
+    if (ability.cost.has(CostPart::MANDATORY)) ability.mandatory = true;
 }
 
 // One of the sorcery-speed activated abilities an equip-style keyword line (K:Equip:<cost>,
@@ -629,16 +811,13 @@ static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::s
     AbilityDef ab;
     ab.ability_type = AbilityDef::ACTIVATED;
     ab.category = category;
-    ab.sorcery_speed_only = true;
+    ab.activation_rules.push_back(ActivationRule::as_sorcery());
     ab.keyword_label = label;
-    if (category == "Attach") {
-        ab.valid_tgts = "Creature.Other+YouCtrl";
-        ab.activation_condition = "CanEquip";
-    } else {
-        ab.activation_condition = "Attached";
-    }
+    if (category == "Attach") ab.valid_tgts = "Creature.Other+YouCtrl";
+    ab.activation_rules.push_back(
+        ActivationRule::only_if(activation_condition_named(category == "Attach" ? "CanEquip" : "Attached")));
     size_t colon = kw_line.find(':');
-    if (colon != std::string::npos) parse_activation_cost(kw_line.substr(colon + 1), ab);
+    if (colon != std::string::npos) read_ability_cost(kw_line.substr(colon + 1), ab);
     return ab;
 }
 
@@ -685,6 +864,11 @@ static bool parse_card_file(const std::string &path, CardData &card) {
     }
 
     parse_card_face(front_script, card);
+    // A half of a meld pair with no ALTERNATE block (Phyrexian Dragon Engine) is a plain face: the
+    // meld action and the melded back are its other half's (CR 712.4a), and it never transforms
+    // (CR 712.4c). The half that holds them isn't built.
+    if (!back_script.empty() && value_from_script(front_script, "AlternateMode") == "Meld")
+        parse_finding("layout", "Meld", "AlternateMode:Meld is read as a transforming card");
 
     // Parse the DFC back face as a complete second face so a transformed permanent
     // (Delver -> Insectile Aberration, Ajani Pariah -> Avenger) has its own name,
@@ -694,6 +878,7 @@ static bool parse_card_file(const std::string &path, CardData &card) {
         parse_card_face(back_script, *backside);
         card.backside = backside;
     }
+    build_overlay_faces(card);
 
     return true;
 }
@@ -718,11 +903,13 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
+    card.no_mana_cost = mana_cost_str == "no cost";
     card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana, &card.hybrid_mana);
     card.x_pip_count = static_cast<int>(std::count(mana_cost_str.begin(), mana_cost_str.end(), 'X'));
     card.has_x_cost = (card.x_pip_count > 0);
     card.types_text = value_from_script(front_script, "Types");
     card.types = parse_types(card.types_text);
+    card.is_equipment = card.types.count(Type{SUBTYPE, "Equipment"}) > 0;
     // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
     // playable from hand (front spell OR back face). Only the front face carries this line; the
     // back face (parsed from the ALTERNATE block) leaves it false. Distinct from a transform DFC.
@@ -731,6 +918,13 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     // permanent. Only the front face carries this line; the back half (from the ALTERNATE block)
     // leaves it false. Distinct from a modal DFC so split cards skip MDFC permanent logic.
     card.is_split = (value_from_script(front_script, "AlternateMode") == "Split");
+    // AlternateMode:DoubleFaced is a transforming double-faced card (the ALTERNATE face is its back).
+    const std::string alternate_mode = value_from_script(front_script, "AlternateMode");
+    card.is_adventure = alternate_mode == "Adventure";
+    card.is_prepare = alternate_mode == "Prepare";
+    if (!alternate_mode.empty() && alternate_mode != "Modal" && alternate_mode != "Split" &&
+        alternate_mode != "DoubleFaced" && alternate_mode != "Meld" && !card.is_adventure && !card.is_prepare)
+        parse_finding("layout", alternate_mode, "AlternateMode:" + alternate_mode + " is read as a transforming card");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
     card.oracle_text = expand_newline_escapes(value_from_script(front_script, "Oracle"));
@@ -772,13 +966,20 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     for (auto &trig : parse_triggered_abilities(front_script, svars, card.name))
         face_defs.abilities.push_back(trig);
 
-    // Parse S: lines for alternate costs
+    // Parse S: lines for alternate costs (a card has one AltCost)
+    bool alt_cost_read = false;
     for (auto& line : multi_values_from_script(front_script, "S")) {
         if (line.find("AlternativeCost") == std::string::npos) continue;
+        const FindingLine finding_line("S:" + line);
         std::string cost_str = param_value(line, "Cost");
         if (cost_str.empty()) continue;
+        if (alt_cost_read) {
+            parse_finding("static_form", "AlternativeCost.Second", "only a card's first alternative cost is offered");
+            continue;
+        }
+        alt_cost_read = true;
         AltCost ac;
-        parse_alt_cost_tokens(cost_str, ac);
+        read_alternative_cost(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
         size_t pp = 0;
         std::string key, value;
@@ -787,26 +988,37 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
                 ac.condition_svar = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
                 ac.condition_compare = value;
+            } else if (key == "CheckSecondSVar") {
+                ac.condition_second_svar = svar_or_literal(svars, value);
+            } else if (key == "SecondSVarCompare") {
+                ac.condition_second_compare = value;
             } else if (key == "Condition" && value == "NotPlayerTurn") {
                 ac.condition_not_your_turn = true;
             } else if (key == "IsPresent") {
                 ac.condition_is_present = value;
+            } else if (!alt_cost_param_assumed(key, value)) {
+                parse_finding("static_param", key, "AlternativeCost " + key + "$ " + value);
             }
         }
         card.alt_cost = ac;
-        break;
     }
 
     // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
     card.static_abilities = parse_static_abilities(front_script, svars);
+    for (const StaticAbility &sa : card.static_abilities) {
+        if (sa.may_cast_self_from_graveyard) card.may_cast_from_graveyard = true;
+        if (sa.category == "ManaRestriction") card.restricts_mana_spent = true;
+    }
 
     // Parse R: lines for replacement effects (e.g. enters tapped)
     card.replacement_effects = parse_replacement_effects(front_script, svars);
 
     // Parse K: keyword lines
     KeywordContext kw_ctx{card, face_defs, svars};
-    for (const auto& kw_line : multi_values_from_script(front_script, "K"))
+    for (const auto& kw_line : multi_values_from_script(front_script, "K")) {
+        const FindingLine finding_line("K:" + kw_line);
         parse_keyword_line(kw_line, kw_ctx);
+    }
 }
 
 // Parses one K: keyword line through kKeywordTable: the first entry whose name matches handles it;
@@ -837,7 +1049,11 @@ static void parse_keyword_line(const std::string &kw_line, KeywordContext &ctx) 
         }
         return;
     }
+    const size_t first = ctx.card.keywords.size();
     split_keywords(kw_line, ctx.card.keywords);
+    for (size_t i = first; i < ctx.card.keywords.size(); ++i)
+        if (!plain_keyword_modelled(ctx.card.keywords[i]))
+            parse_finding("keyword", keyword_finding_name(ctx.card.keywords[i]), ctx.card.keywords[i]);
 }
 
 // An Oracle: line with its literal \n escape sequences expanded to real newlines (for word-wrap
@@ -905,10 +1121,19 @@ static std::string keyword_arg(const std::string &kw_line) {
 static void add_keyword_alt_cost(const std::string &kw_line, const char *name, bool AltCost::*flag,
                                  CardData &card) {
     AltCost ac;
-    parse_alt_cost_tokens(keyword_arg(kw_line), ac);
+    read_alternative_cost(keyword_arg(kw_line), ac);
     ac.*flag = true;
     card.alt_cost = ac;
     card.keywords.push_back(name);
+}
+
+// K:Overload:<cost> (CR 702.96): an alternative cost that makes the spell act on every object its
+// target spec matches (overload_spell), so a spell whose effect doesn't read such a set can't have it.
+static void kw_overload(const std::string &kw_line, KeywordContext &ctx) {
+    add_keyword_alt_cost(kw_line, "Overload", &AltCost::is_overload, ctx.card);
+    for (const AbilityDef &ability : ctx.face_defs.abilities)
+        if (ability.ability_type == AbilityDef::SPELL && !defined_name_read(ability, "Valid Permanent"))
+            parse_finding("keyword", "Overload." + ability.category, kw_line + ": the effect reads no such set");
 }
 
 // An activated ability a keyword grants (Cycling, Ninjutsu, typecycling, Unearth): activated from
@@ -919,7 +1144,7 @@ static AbilityDef keyword_activated_ability(const std::string &category, Zone::Z
     ab.ability_type = AbilityDef::ACTIVATED;
     ab.category = category;
     ab.activation_zone = zone;
-    parse_activation_cost(cost, ab);
+    read_ability_cost(cost, ab);
     return ab;
 }
 
@@ -958,13 +1183,33 @@ static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.keywords.push_back("Enchant");
 }
 
+// A keyword's cost argument, for a keyword the engine pays in mana alone.
+static CostParts keyword_mana_cost(const std::string &cost, const std::string &keyword) {
+    return parse_cost(cost, CostForm::MANA_ONLY, keyword + ":" + cost);
+}
+
+// K:Crew:N (CR 702.122a): "Tap any number of other untapped creatures you control with total power
+// N or greater: This permanent becomes an artifact creature until end of turn."
+static void kw_crew(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string text = "AB$ Animate | Cost$ Crew<" + keyword_arg(kw_line) + "> | Defined$ Self | Types$ Artifact,Creature";
+    AbilityDef crew = parse_ability_text(text, 4, AbilityDef::ACTIVATED, {}, ctx.card.name);
+    crew.keyword_label = "Crew";
+    ctx.face_defs.abilities.push_back(crew);
+    ctx.card.keywords.push_back("Crew");
+}
+
 // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
 // opponent controls, counter that spell or ability unless that player pays {N}."
 // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
 // is synthesized when a targeting spell/ability is put on the stack.
 static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
-    // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
-    parse_ward_cost(keyword_arg(kw_line), ctx.card.ward_cost, ctx.card.ward_is_life);
+    // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost. A cost it cannot
+    // express is a parse finding: it reads as a {1} ward.
+    const std::string arg = keyword_arg(kw_line);
+    ctx.card.ward_cost = parse_ward_cost(arg);
+    CostPart part;
+    if (!arg.empty() && !read_ward_cost(arg, part))
+        parse_finding("cost", "Ward", "Ward:" + arg + " is read as a {1} ward");
     ctx.card.keywords.push_back("Ward");
 }
 
@@ -972,20 +1217,40 @@ static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
 // control (CR 702.41). A generic cost reduction applied at cast time in
 // effective_base_cost(); only the artifact variant is supported.
 static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
-    if (kw_line.find("Artifact") != std::string::npos) ctx.card.affinity_artifact = true;
+    if (kw_line == "Affinity:Artifact")
+        ctx.card.affinity_artifact = true;
+    else
+        parse_finding("keyword", "Affinity", kw_line + ": only Affinity:Artifact reduces a cost");
     ctx.card.keywords.push_back("Affinity");
 }
 
 // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls);
-// K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute). Any other
-// ETBReplacement is kept as a plain keyword.
+// K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute);
+// K:ETBReplacement:Other:<SVar> whose SVar is DB$ ChooseColor — choose a color on ETB (Painter's Servant);
+// K:ETBReplacement:Other:<SVar> whose SVar is DB$ AlterAttribute | Attributes$ Prepared — this
+// creature enters prepared (CR 722.3a);
+// K:ETBReplacement:Copy:<SVar>[:Optional] whose SVar is DB$ Clone — it enters as a copy (CR 707.5,
+// Mockingbird). Any other ETBReplacement names an effect nothing reads, a parse finding, and is
+// kept as a plain keyword.
 static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) {
-    if (kw_line.find("ChooseCT") != std::string::npos)
+    const std::vector<std::string> parts = split(kw_line, ':');
+    const auto svar = ctx.svars.find(parts.size() > 2 ? parts[2] : "");
+    if (parts.size() > 1 && parts[1] == "Copy" && svar != ctx.svars.end() && param_value(svar->second, "DB") == "Clone") {
+        ctx.face_defs.enters_as_copy.push_back(parse_svar_ability(svar->second, AbilityDef::SPELL, ctx.svars, ctx.card.name));
+        ctx.card.enters_as_copy_optional = parts.size() > 3 && parts[3] == "Optional";
+    } else if (kw_line.find("ChooseCT") != std::string::npos)
         ctx.card.has_etb_choose_creature_type = true;
     else if (kw_line.find("NameCard") != std::string::npos)
         ctx.card.has_etb_name_card = true;
-    else
+    else if (svar != ctx.svars.end() && param_value(svar->second, "DB") == "ChooseColor")
+        ctx.card.has_etb_choose_color = true;
+    else if (svar != ctx.svars.end() && param_value(svar->second, "DB") == "AlterAttribute" &&
+             param_value(svar->second, "Attributes") == "Prepared")
+        ctx.card.enters_prepared = true;
+    else {
+        parse_finding("keyword", "ETBReplacement:" + (parts.size() > 2 ? parts[2] : kw_line), kw_line);
         split_keywords(kw_line, ctx.card.keywords);
+    }
 }
 
 // K:etbCounter:P1P1:X:... — "this card enters with counters"
@@ -1021,19 +1286,19 @@ static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
                         // Sorcery.ExiledWithSource") so the ETB counter count is
                         // restricted to the matching delve exiles — Delve itself may
                         // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
-                        // is implied by membership in cur_game.delve_exiled, so strip
-                        // it; the remainder ("Instant,Sorcery") is a card_matches_any
+                        // is implied by the spell's cost having exiled it, so strip
+                        // it; the remainder ("Instant,Sorcery") is a card_matches_filter
                         // spec.
                         const std::string ve_prefix = "Count$ValidExile ";
                         size_t vp = svar_it->second.find(ve_prefix);
                         if (vp != std::string::npos) {
-                            std::string &delve_filter = sa.counter_count_delve_filter;
-                            delve_filter = svar_it->second.substr(vp + ve_prefix.size());
+                            std::string delve_filter = svar_it->second.substr(vp + ve_prefix.size());
                             for (const char *qual : {".ExiledWithSource", "+ExiledWithSource"}) {
                                 size_t qp;
                                 while ((qp = delve_filter.find(qual)) != std::string::npos)
                                     delve_filter.erase(qp, strlen(qual));
                             }
+                            sa.counter_count_delve_filter = delve_filter;
                         }
                     }
                     // Count$xPaid — the count equals the X value paid at cast time
@@ -1047,12 +1312,21 @@ static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.static_abilities.push_back(sa);
 }
 
+// K:Sunburst (CR 702.44a): an "enters with counters" whose count is the colors of mana spent to cast
+// it and whose kind is the card's (replacement_effects.cpp).
+static void kw_sunburst(const std::string &, KeywordContext &ctx) {
+    StaticAbility sa;
+    sa.category = "EtbCounter";
+    sa.counter_count_from_sunburst = true;
+    ctx.card.static_abilities.push_back(sa);
+    ctx.card.keywords.push_back("Sunburst");
+}
+
 // K:Equip:<cost> (CR 702.6a): "[Cost]: Attach this permanent to target creature you
 // control. Activate only as a sorcery." Stored as an ordinary activated ability on the
 // card (resolved by effects::attach), gated on the Equipment being able to equip some
 // creature (CR 301.5c).
 static void kw_equip(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.is_equipment = true;
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
     ctx.card.keywords.push_back("Equip");
 }
@@ -1064,7 +1338,6 @@ static void kw_equip(const std::string &kw_line, KeywordContext &ctx) {
 // equip-attach machinery; is_reconfigure additionally lets it equip while a creature
 // (CR 301.5c) and makes it stop being a creature while attached (CR 702.151b).
 static void kw_reconfigure(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.is_equipment = true;
     ctx.card.is_reconfigure = true;
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
     ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
@@ -1074,7 +1347,7 @@ static void kw_reconfigure(const std::string &kw_line, KeywordContext &ctx) {
 // K:Impending:<N>:<mana> — Impending (CR 702.175). An alternative casting cost: the spell
 // may be cast for <mana> instead of its normal mana cost; if so the permanent enters with N
 // time counters and isn't a creature until the last is removed (CR 702.175d-e). Encoded on
-// the shared AltCost (mana portion = parse_mana_cost(<mana>), is_impending + impending_count
+// the shared AltCost (its cost = <mana>, is_impending + impending_count
 // flag the impending-specific entry/shed behaviour). The format mirrors Reconfigure's
 // colon-split (Equip/Reconfigure), with an extra leading count field: "Impending:5:1 B".
 static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
@@ -1086,7 +1359,7 @@ static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
         ac.has_alt_cost = true;
         ac.is_impending = true;
         ac.impending_count = std::stoi(rest.substr(0, colon));
-        ac.mana_cost = parse_mana_cost(rest.substr(colon + 1));
+        ac.cost = keyword_mana_cost(rest.substr(colon + 1), "Impending");
         ctx.card.alt_cost = ac;
     }
     ctx.card.keywords.push_back("Impending");
@@ -1105,9 +1378,17 @@ static void kw_suspend(const std::string &kw_line, KeywordContext &ctx) {
     if (colon != std::string::npos) {
         ctx.card.has_suspend = true;
         ctx.card.suspend_count = std::stoi(rest.substr(0, colon));
-        ctx.card.suspend_cost = parse_mana_cost(rest.substr(colon + 1));
+        ctx.card.suspend_cost = keyword_mana_cost(rest.substr(colon + 1), "Suspend");
     }
     ctx.card.keywords.push_back("Suspend");
+}
+
+// K:Morph:<cost> — Morph (CR 702.37a). The cast face down for {3} is a row of the cast table, and
+// the turn up for <cost> a special action; neither is a cost of the printed card.
+static void kw_morph(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.has_morph = true;
+    ctx.card.morph_cost = keyword_mana_cost(keyword_arg(kw_line), "Morph");
+    ctx.card.keywords.push_back("Morph");
 }
 
 // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
@@ -1137,7 +1418,7 @@ static void kw_chapter(const std::string &kw_line, KeywordContext &ctx) {
 
 // K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
 // milling N cards and returning this card to hand. Value stored on CardData;
-// the replacement is offered in Orderer::draw.
+// the replacement is offered by replacement::collect_draw_replacements.
 static void kw_dredge(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
     ctx.card.keywords.push_back("Dredge");
@@ -1167,7 +1448,7 @@ static void kw_ninjutsu(const std::string &kw_line, KeywordContext &ctx) {
         "Ninjutsu", Zone::HAND,
         kw_line.substr(strlen("Ninjutsu:")) + " Return<1/Creature.attacking+unblocked>");
     ab.is_ninjutsu = true;
-    ab.defined_self = true;
+    ab.defined = ObjectSpec(ObjectSpec::SELF);
     ctx.face_defs.abilities.push_back(ab);
     ctx.card.keywords.push_back("Ninjutsu");
 }
@@ -1196,16 +1477,20 @@ static void kw_type_cycling(const std::string &kw_line, KeywordContext &ctx) {
 // K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
 static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.has_flashback = true;
-    // Shared Cost$ token grammar, then map onto the flashback cost fields the
-    // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
-    // mana and life — which the token-by-token grammar handles in one pass.
-    AbilityDef fb;
-    parse_activation_cost(kw_line.substr(strlen("Flashback:")), fb);
-    ctx.card.flashback_mana_cost = fb.activation_mana_cost;
-    ctx.card.flashback_alt_cost.life_cost = fb.life_cost;
-    // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
-    // flashback cost. Carry the sac filter so the cast path pays it.
-    ctx.card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
+    // The cost reads as an activated ability's, then the cast path pays what it can of it. Deep
+    // Analysis is "1 U PayLife<3>" — both mana and life — and Cabal Therapy's Flashback—Sacrifice a
+    // creature is Sac<1/Creature>.
+    const std::string cost_str = kw_line.substr(strlen("Flashback:"));
+    const CostParts cost = parse_cost(cost_str, CostForm::ACTIVATED, "Cost$ " + cost_str);
+    bool unpaid = false;
+    for (const CostPart &part : cost.parts()) {
+        if (cost_form_pays(CostForm::FLASHBACK, part))
+            ctx.card.flashback_cost.add(part);
+        else
+            unpaid = true;
+    }
+    if (unpaid)
+        parse_finding("cost", "Flashback", "the cast path pays only the mana, PayLife<N> and Sac<1/Type> of " + kw_line);
     ctx.card.keywords.push_back("Flashback");
 }
 
@@ -1221,33 +1506,29 @@ static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
                                               kw_line.substr(strlen("Unearth:")));
     ab.origin = Zone::GRAVEYARD;
     ab.destination = Zone::BATTLEFIELD;
-    ab.defined_self = true;        // returns its own source from the graveyard
-    ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
+    ab.defined = ObjectSpec(ObjectSpec::SELF);  // returns its own source from the graveyard
+    ab.activation_rules.push_back(ActivationRule::as_sorcery());  // "Unearth only as a sorcery." (CR 702.84a)
     ab.is_unearth = true;
     ctx.face_defs.abilities.push_back(ab);
     ctx.card.keywords.push_back("Unearth");
 }
 
+// K:AlternateAdditionalCost:<cost>:<cost>... — an additional cost the caster pays in one of several
+// forms (CR 118.8, 601.2b).
+static void kw_alternate_additional_cost(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string forms = kw_line.substr(strlen("AlternateAdditionalCost:"));
+    for (const std::string &form : split(forms, ':'))
+        ctx.card.additional_choices.push_back(
+            parse_cost(form, CostForm::ADDITIONAL_CHOICE, "AlternateAdditionalCost:" + form));
+}
+
 // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
-// escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
-// token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from
-// the leading mana symbols; the additional cost is parsed by the shared alt-cost grammar.
+// escape cost (CR 702.139): its mana (e.g. "2 B") and any additional cost token (e.g.
+// ExileFromGrave<.../withTypesGE4/...> for Nethergoyf).
 static void kw_escape(const std::string &kw_line, KeywordContext &ctx) {
-    std::string cost_str = kw_line.substr(strlen("Escape:"));
+    const std::string cost_str = kw_line.substr(strlen("Escape:"));
     ctx.card.has_escape = true;
-    // The mana portion runs up to the first additional-cost keyword (ExileFromGrave/
-    // PayLife/Sac/Return...); take the substring before "ExileFromGrave" (the only
-    // additional cost currently in the vocab) as mana, the remainder as the alt cost.
-    std::string mana_part = cost_str;
-    std::string alt_part;
-    size_t eg = cost_str.find("ExileFromGrave");
-    if (eg != std::string::npos) {
-        mana_part = cost_str.substr(0, eg);
-        alt_part = cost_str.substr(eg);
-    }
-    mana_part = trim(mana_part);
-    if (!mana_part.empty()) ctx.card.escape_mana_cost = parse_mana_cost(mana_part);
-    if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, ctx.card.escape_alt_cost);
+    ctx.card.escape_cost = parse_cost(cost_str, CostForm::ESCAPE, "Escape:" + cost_str);
     ctx.card.keywords.push_back("Escape");
 }
 
@@ -1260,7 +1541,7 @@ static void kw_evoke(const std::string &kw_line, KeywordContext &ctx) {
     AbilityDef sac = keyword_self_trigger("ChangeZone", Events::CARD_CHANGED_ZONE);
     sac.trigger_zone_destination = Zone::BATTLEFIELD;
     sac.is_evoke_sacrifice = true;
-    sac.defined_self = true;          // moves its own source (no targeting)
+    sac.defined = ObjectSpec(ObjectSpec::SELF);  // moves its own source (no targeting)
     sac.origin = Zone::BATTLEFIELD;
     sac.destination = Zone::GRAVEYARD;
     ctx.face_defs.abilities.push_back(sac);
@@ -1273,13 +1554,16 @@ static void kw_evoke(const std::string &kw_line, KeywordContext &ctx) {
 // gating a synthetic ETB self-trigger that creates the 1/1 token copy.
 static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
     if (kw_line.find(':') != std::string::npos)
-        ctx.card.offspring_cost = parse_mana_cost(keyword_arg(kw_line));
+        ctx.card.offspring_cost = keyword_mana_cost(keyword_arg(kw_line), "Offspring");
     ctx.card.has_offspring = true;
     ctx.card.keywords.push_back("Offspring");
     AbilityDef tok = keyword_self_trigger("CopyPermanent", Events::CARD_CHANGED_ZONE);
     tok.trigger_zone_destination = Zone::BATTLEFIELD;
     tok.is_offspring_token = true;
-    tok.defined_self = true;          // copies its own source (no targeting)
+    tok.copy_overlay.sets_pt = true;  // "except it's 1/1"
+    tok.copy_overlay.power = 1;
+    tok.copy_overlay.toughness = 1;
+    tok.defined = ObjectSpec(ObjectSpec::SELF);  // copies its own source (no targeting)
     ctx.face_defs.abilities.push_back(tok);
 }
 
@@ -1291,7 +1575,7 @@ static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
 // the linked "if it was kicked with its [N] kicker" triggers index into it.
 static void kw_kicker(const std::string &kw_line, KeywordContext &ctx) {
     for (const std::string &seg : split(kw_line.substr(strlen("Kicker:")), ':', /*skip_empty=*/true))
-        ctx.card.kicker_costs.push_back(parse_mana_cost(seg));
+        ctx.card.kicker_costs.push_back(keyword_mana_cost(seg, "Kicker"));
     ctx.card.keywords.push_back("Kicker");
 }
 
@@ -1300,9 +1584,19 @@ static void kw_kicker(const std::string &kw_line, KeywordContext &ctx) {
 // (the copies may choose new targets). Stored as a single per-instance mana cost; the
 // count paid is decided at cast time (see action_processor) and recorded per-Spell.
 static void kw_replicate(const std::string &kw_line, KeywordContext &ctx) {
-    ctx.card.replicate_cost = parse_mana_cost(kw_line.substr(strlen("Replicate:")));
+    ctx.card.replicate_cost = keyword_mana_cost(kw_line.substr(strlen("Replicate:")), "Replicate");
     ctx.card.has_replicate = true;
     ctx.card.keywords.push_back("Replicate");
+}
+
+// K:Escalate:<cost> — an ADDITIONAL cost of a modal spell paid for each mode chosen beyond the
+// first (CR 702.120a). Its mana tokens are a mana cost; Discard<N/Filter> discards N cards matching
+// Filter from the hand. Any other cost token is a parse finding (paid as nothing).
+static void kw_escalate(const std::string &kw_line, KeywordContext &ctx) {
+    const std::string cost = keyword_arg(kw_line);
+    ctx.card.escalate_cost = parse_cost(cost, CostForm::ESCALATE, "Escalate:" + cost);
+    ctx.card.has_escalate = true;
+    ctx.card.keywords.push_back("Escalate");
 }
 
 // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
@@ -1320,7 +1614,7 @@ static void kw_devoid(const std::string &, KeywordContext &ctx) {
 // receives the gift as the spell resolves, before its other effects. The gift effect is
 // held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
 // card.gift_abilities; the cast path (action_processor) offers the promise choice and the
-// resolving spell runs these when Spell::gift_promised is set (resolve_ability).
+// resolving spell runs these when ChosenCost::gift_promised is set (resolve_ability).
 static void kw_gift(const std::string &, KeywordContext &ctx) {
     ctx.card.has_gift = true;
     ctx.card.keywords.push_back("Gift");
@@ -1366,7 +1660,7 @@ static void kw_storm(const std::string &, KeywordContext &ctx) {
 // K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
 // player sacrifices N permanents." Synthesize the self-attack trigger here (general over any
 // Annihilator card): a TRIGGERED Sacrifice that fires once per declared attack of this
-// creature (CREATURE_ATTACKED). defined_each_opponent routes the edict to the defending
+// creature (CREATURE_ATTACKED). ObjectSpec::OPPONENT routes the edict to the defending
 // player (the controller's opponent in the two-player engine), who chooses and sacrifices N
 // of their own permanents one at a time (sac_count). It resolves like any triggered ability,
 // i.e. before blockers are declared. SacValid$ Permanent = any permanent they control.
@@ -1376,7 +1670,7 @@ static void kw_annihilator(const std::string &kw_line, KeywordContext &ctx) {
     ctx.card.keywords.push_back(kw_line);
     // ValidCard$ Card.Self — only this creature's own attack
     AbilityDef ab = keyword_self_trigger("Sacrifice", Events::CREATURE_ATTACKED);
-    ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
+    ab.defined = ObjectSpec(ObjectSpec::OPPONENT);  // the defending player sacrifices (CR 702.85b)
     ab.sac_valid = "Permanent";       // any permanent the defending player controls
     ab.sac_count = static_cast<size_t>(n);
     ctx.face_defs.abilities.push_back(ab);
@@ -1403,6 +1697,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.abilities = intern_ability_defs(std::move(face_defs.abilities));
     card.gift_abilities = intern_ability_defs(std::move(face_defs.gift_abilities));
     card.saga_chapters = intern_ability_defs(std::move(face_defs.saga_chapters));
+    if (!face_defs.enters_as_copy.empty()) card.enters_as_copy = intern_ability_def(std::move(face_defs.enters_as_copy.front()));
     card.opening_hand_abilities = intern_ability_defs(std::move(face_defs.opening_hand_abilities));
 }
 
@@ -1542,14 +1837,6 @@ static Colors color_word_color(const std::string &word) {
     return NO_COLOR;
 }
 
-// The first of the five colors a card filter names as a qualifier ("Card.Blue+Other" → BLUE), or
-// NO_COLOR.
-static Colors filter_color(const std::string &filter) {
-    for (const auto &cn : kColorNames)
-        if (cn.color != COLORLESS && filter.find(cn.word) != std::string::npos) return cn.color;
-    return NO_COLOR;
-}
-
 // Recognize a HYBRID mana token (CR 107.4b/107.4e) within a single space-separated ManaCost
 // token and, if matched, append the pip to *hybrid_out and return true. Two Forge encodings:
 //   - color hybrid: two adjacent color letters ("WU") or a slashed pair ("W/U") → one pip
@@ -1648,6 +1935,30 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
 // Shared by card and token parsing so both compute colorlessness identically: an empty set
 // (no Colors: line) leaves the object's color to be derived from its mana cost (CR 105.2),
 // which for a costless token means colorless.
+// The exceptions a copy effect's params make (CopyOverlay, CR 707.9): a param of a CopyPermanent or
+// Clone is a row here.
+static bool read_copy_overlay_param(AbilityDef &ability, const std::string &key, const std::string &value) {
+    if (ability.category != "CopyPermanent" && ability.category != "Clone") return false;
+    CopyOverlay &overlay = ability.copy_overlay;
+    if (key == "GainThisAbility") {
+        overlay.gains_this_ability = (value == "True");
+    } else if (key == "AddKeywords") {
+        overlay.add_keywords = split_keyword_list(value);
+    } else if (key == "AddTypes") {
+        overlay.add_types = parse_added_types(value);
+    } else if (key == "SetCreatureTypes") {
+        overlay.set_creature_types = parse_added_types(value);
+    } else if (key == "SetColor") {
+        overlay.set_colors = parse_colors_field(value);
+    } else if ((key == "SetPower" || key == "SetToughness") && !value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+        overlay.sets_pt = true;
+        (key == "SetPower" ? overlay.power : overlay.toughness) = static_cast<uint32_t>(std::stoi(value));
+    } else {
+        return false;
+    }
+    return true;
+}
+
 static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     std::set<Colors> ret;
     if (colors_field.empty()) return ret;
@@ -1661,20 +1972,44 @@ static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     return ret;
 }
 
+// The subtype a type line's tokens spell from `at` on, longest first (a multi-word subtype such as
+// Time Lord or a planar type, CR 205.3m-n), with the number of tokens it takes; nullptr when none.
+static const std::string *type_line_subtype(const std::vector<std::string> &tokens, size_t at, size_t &taken) {
+    for (size_t n = std::min(subtype_max_words(), tokens.size() - at); n >= 1; --n) {
+        std::string name = tokens[at];
+        for (size_t k = 1; k < n; ++k) name += " " + tokens[at + k];
+        if (const std::string *entry = subtype_entry(name)) {
+            taken = n;
+            return entry;
+        }
+    }
+    return nullptr;
+}
+
 static std::set<Type> parse_types(const std::string &value) {
     std::set<Type> ret_val;
-    for (const std::string &name : split(value, ' ', /*skip_empty=*/true)) {
+    const std::vector<std::string> tokens = split(value, ' ', /*skip_empty=*/true);
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        const std::string &name = tokens[i];
         Type found;
         found.name = name;
+        size_t taken = 1;
         // subtypes before types as bandaid for weird types in my list due to... unset cards?
-        if (all_subtypes.find(name) != all_subtypes.end()) {
+        if (const std::string *entry = type_line_subtype(tokens, i, taken)) {
+            found.name = *entry;
             found.kind = SUBTYPE;
+            i += taken - 1;
         } else if (all_types.find(name) != all_types.end()) {
             found.kind = TYPE;
         } else if (all_supertypes.find(name) != all_supertypes.end()) {
             found.kind = SUPERTYPE;
         } else {
-            non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + name + " registering as subtype");
+            // A token no type list has (a subtype newer than all_subtypes, a misspelling): the parse
+            // report's finding while findings are collected, a game's non-fatal error otherwise.
+            if (g_findings)
+                parse_finding("type_token", name, "Types:" + value + " (read as a subtype)");
+            else
+                non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + name + " registering as subtype");
             found.kind = SUBTYPE;
         }
         ret_val.emplace(found);
@@ -1711,7 +2046,19 @@ static uint32_t parse_toughness(std::string value) {
 static std::string svar_or_literal(const std::map<std::string, std::string> &svars,
                                    const std::string &name) {
     auto it = svars.find(name);
-    return (it != svars.end()) ? it->second : name;
+    return (it != svars.end()) ? expand_svar_head(it->second, svars) : name;
+}
+
+// An SVar body that opens with a reference to another SVar reads as that SVar's body with this one's
+// trailing steps after it, which the evaluator can read alone (Dark Matter Manipulator's X:
+// SVar$Y/Times.2, Y a count). A body with no such head, or naming no SVar, is left as it is.
+static std::string expand_svar_head(const std::string &body, const std::map<std::string, std::string> &svars) {
+    const std::string prefix = "SVar$";
+    if (body.rfind(prefix, 0) != 0) return body;
+    const size_t steps = body.find('/', prefix.size());
+    auto it = svars.find(body.substr(prefix.size(), steps == std::string::npos ? steps : steps - prefix.size()));
+    if (it == svars.end()) return body;
+    return expand_svar_head(it->second, svars) + (steps == std::string::npos ? "" : body.substr(steps));
 }
 
 // Replaces a non-empty SVar reference with the SVar's body; a name the script has no SVar for is
@@ -1741,9 +2088,47 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
     return svars;
 }
 
+// The handlers that run an UnlessCost$ (run_unless_loop, DestroyAll's energy payment); on any other
+// effect it is a parse finding, and the effect happens unconditionally.
+static bool unless_cost_read_by(const std::string &category) {
+    for (const char *c : {"Counter", "Destroy", "Sacrifice", "CopySpellAbility", "CopyPermanent", "DestroyAll", "DealDamage",
+                          "ImmediateTrigger"})
+        if (category == c) return true;
+    return false;
+}
+
+// Reads UnlessCost$ onto `ability`. A token it cannot express is a parse finding and adds nothing.
+static void read_unless_cost(AbilityDef &ability, const std::string &value) {
+    if (!unless_cost_read_by(ability.category)) {
+        parse_finding("ability_param", ability.category + ".UnlessCost", "UnlessCost$ " + value + " is not offered");
+        return;
+    }
+    std::vector<std::string> parts;
+    if (cost_token_arg(value, "PayEnergy", parts) && parts.size() == 1 &&
+        (ability.category == "DestroyAll" || ability.category == "DealDamage")) {
+        // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
+        // not the generic {N} mana unless-cost: the energy amount is an SVar read as it resolves.
+        // Galvanic Discharge's DealDamage pays the same way.
+        ability.unless_energy_expr = parts[0];  // SVar token; resolved post-parse
+        return;
+    }
+    if (ability.category == "DealDamage") {
+        parse_finding("ability_param", "DealDamage.UnlessCost", "UnlessCost$ " + value + " is not offered");
+        return;
+    }
+    ability.unless_cost = parse_cost(value, CostForm::UNLESS, "UnlessCost$ " + value);
+    // Only a reflexive trigger's offer pays a sacrifice, of one permanent.
+    const int sacrifices = ability.unless_cost.count(CostPart::SACRIFICE);
+    if (sacrifices != 0 && (ability.category != "ImmediateTrigger" || sacrifices != 1)) {
+        parse_finding("ability_param", ability.category + ".UnlessCost", "UnlessCost$ " + value + " is not offered");
+        ability.unless_cost = CostParts{};
+    }
+}
+
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
+    const bool memory_param = read_memory_param(ability, key, value);
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
         key == "TokenAmount" || key == "ScryNum" || key == "Num" || key == "NumTurns") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
@@ -1756,6 +2141,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // (no player choice / DIG_CHOICE prompt). Goblin Guide reveals the top card and
             // the defender takes it if it's a land.
             ability.change_num_all = true;
+        } else if (key == "Amount" && value == "All" && ability.category == "Play") {
+            // Every Defined$ card: Beseech the Mirror, the one script that says so, names one.
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
             // For Dig, ChangeNum$ is the exact take count and 0 is meaningful ("take nothing"),
@@ -1767,51 +2154,11 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
-    } else if (key == "GainThisAbility") {
-        // GainThisAbility$ True on an AB$ Clone (Thespian's Stage): the in-place copy retains this
-        // very ability ("...except it has this ability."). CR 706.2. Consumed by the clone handler.
-        ability.gain_this_ability = (value == "True");
+    } else if (read_copy_overlay_param(ability, key, value)) {
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
-        // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
-        // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
-        // DestroyAll params. A numeric value is the legacy generic-mana unless-cost.
-        size_t pe = value.find("PayEnergy<");
-        size_t pd = value.find("Discard<");
-        if (pe != std::string::npos) {
-            size_t close = value.find('>', pe);
-            std::string n = (close != std::string::npos)
-                                ? value.substr(pe + 10, close - (pe + 10)) : "";
-            if (ability.category == "DestroyAll") {
-                effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
-            } else {
-                // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice):
-                // pay N energy ({E}) to prevent the effect. The count is a literal here; route it
-                // through the generic unless-cost count + an energy flag so run_unless_loop pays it.
-                ability.unless_cost_is_energy = true;
-                bool numeric = !n.empty() &&
-                               n.find_first_not_of("0123456789") == std::string::npos;
-                ability.unless_generic_cost = numeric ? static_cast<size_t>(std::stoi(n)) : 1;
-            }
-        } else if (pd != std::string::npos) {
-            // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from
-            // hand to prevent the counter. The N count rides on unless_generic_cost; the discard
-            // flag selects the discard payment path in run_unless_loop. The "/Card" filter is the
-            // (only) supported discard-any-card filter today.
-            std::string inner = value.substr(pd + 8);  // after "Discard<"
-            size_t slash = inner.find('/');
-            std::string n = (slash != std::string::npos) ? inner.substr(0, slash) : inner;
-            ability.unless_generic_cost = static_cast<size_t>(std::stoi(n));
-            ability.unless_cost_is_discard = true;
-        } else if (value.find_first_not_of("0123456789") == std::string::npos) {
-            ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
-        } else {
-            // A colored/mixed unless-cost (Chain Lightning: UnlessCost$ R R = {R}{R}). Parse the
-            // exact pips; the pip count drives the >0 gate and logging, the pips drive payment.
-            ability.unless_cost_pips = parse_mana_cost(value);
-            ability.unless_generic_cost = ability.unless_cost_pips.size();
-        }
+        read_unless_cost(ability, value);
     } else if (key == "UnlessPayer") {
         // UnlessPayer$ You — the controller is the payer of the unless-cost (the only payer we
         // model for the energy unless-cost). Cosmetic given the energy is paid by the controller.
@@ -1823,15 +2170,13 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // permanent's controller; derived from the target at resolution.
         else if (value == "TargetedOrController")
             ability.unless_payer_is_targeted_or_controller = true;
+    } else if (key == "UnlessResolveSubs") {
+        ability.unless_subs_when_not_paid = value == "WhenNotPaid";
     } else if (key == "UnlessSwitched") {
-        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid". For a
-        // DestroyAll (Wrath of the Skies: destroy only if the energy was paid) it rides on the
-        // DestroyAll params; for any other effect (Chain Lightning's CopySpellAbility: copy only if
-        // {R}{R} was paid) it rides on the generic unless_switched flag.
-        if (ability.category == "DestroyAll")
-            effect_params<DestroyAllParams>(ability).energy_unless_switched = (value == "True");
-        else
-            ability.unless_switched = (value == "True");
+        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid" (Wrath of
+        // the Skies: destroy only if the energy was paid; Chain Lightning's CopySpellAbility: copy
+        // only if {R}{R} was paid).
+        ability.unless_switched = (value == "True");
     } else if (key == "MayChooseTarget") {
         // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets.
         // The shared copy machine (effect_copy_spell.cpp) re-runs target selection for every copy
@@ -1853,72 +2198,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
-        // Keep the raw token verbatim (CR 608.2c) so sub-ability target binding can read the
-        // script's stated intent; the specific bools below remain authoritative per effect.
-        ability.defined = value;
-        if (value == "Remembered") ability.defined_remembered = true;
-        // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
-        // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
-        // cur_game.resolution.memory.remembered before the fire ability resolves, so this resolves
-        // exactly like Defined$ Remembered (Flickerwisp / Phelia return the exiled card).
-        else if (value == "DelayTriggerRememberedLKI") ability.defined_remembered = true;
-        // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
-        // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
-        else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
-            ability.defined_triggered_spell = true;
-        // Defined$ TriggeredSourceSA — the effect acts on the spell/ability that targeted the
-        // source (Reality Smasher: "counter that spell"). Bound at trigger fire time from the
-        // BECAME_TARGET event's ENTITY (the targeting object).
-        else if (value == "TriggeredSourceSA")
-            ability.defined_triggered_source_sa = true;
-        // Defined$ TriggeredAttacker(LKICopy) — the effect acts on the creature whose attack
-        // fired this trigger (Tamiyo, Seasoned Scholar: the attacking creature gets -1/-0).
-        // Bound as the ability's target at trigger-fire time from the CREATURE_ATTACKED event.
-        else if (value == "TriggeredAttacker" || value == "TriggeredAttackerLKICopy")
-            ability.defined_triggered_attacker_lki = true;
-        else if (value == "TargetedController") ability.defined_targeted_controller = true;
-        // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
-        // (the caster of the triggering spell). The actual player is bound at trigger-fire
-        // time from the event's PLAYER param. CR 603.x.
-        else if (value == "TriggeredActivator") ability.defined_triggered_activator = true;
-        // Defined$ TriggeredDefendingPlayer — the effect acts on the defending player of the
-        // attack that fired this trigger (Goblin Guide). Bound at trigger-fire time from the
-        // CREATURE_ATTACKED event (the opponent of the attacker's controller in a 2-player game).
-        else if (value == "TriggeredDefendingPlayer") ability.defined_triggered_defending_player = true;
-        // Defined$ TriggeredPlayer — the effect acts on the player whose event fired this trigger
-        // (Roiling Vortex: each player's upkeep damages THAT player). The actual player is bound at
-        // trigger-fire time from the event's PLAYER param.
-        else if (value == "TriggeredPlayer") ability.defined_triggered_player = true;
-        // Defined$ TriggeredCardController — the effect's player is the controller of the card
-        // whose zone change fired the (Mode$ ChangesZone delayed) trigger (Searing Blood: the
-        // dead creature's controller). Bound from the watched card's last-known controller at
-        // trigger-fire time (CR 608.2g); the card is already in the graveyard by then.
-        else if (value == "TriggeredCardController") ability.defined_triggered_card_controller = true;
-        // Defined$ TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed
-        // zones and fired this trigger, referenced in its NEW zone. For a Card.Self ChangesZone
-        // trigger (CR 603.6e) the triggering object IS the ability's own source (e.g. Triumph of
-        // Saint Katherine's dies-trigger, which exiles itself from the graveyard as the head of a
-        // "Descend"-style recursion), so bind it to the source. The LKICopy variant is a
-        // last-known snapshot of that same card; moving the real card in its new zone is
-        // equivalent here. General over self-referential graveyard-recursion cards.
-        else if (value == "TriggeredNewCardLKICopy" || value == "TriggeredNewCard" ||
-                 value == "TriggeredCardLKICopy" || value == "TriggeredCard")
-            ability.defined_self = true;
-        else if (value == "Self") ability.defined_self = true;
-        // Defined$ ExiledWith — the effect acts on the card this permanent's Saga chapter I
-        // exiled face down, tracked in Permanent::exiled_with on the source (The Creation of
-        // Avacyn chapters II & III). Resolved to that entity at resolution by exiled_with_card().
-        else if (value == "ExiledWith") ability.defined_exiled_with = true;
-        // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
-        // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
-        else if (value == "You") ability.defined_you = true;
-        // Defined$ Player.Opponent — the effect's player is "each opponent" (no chosen
-        // target). CR 109.5 / 102.1: in a two-player game this is the single opponent.
-        else if (value == "Player.Opponent" || value == "Opponent") ability.defined_each_opponent = true;
-        // Defined$ Valid <filter> (CopyPermanent's "for each token you control that entered
-        // this turn") — store the filter spec the same place ValidCards$ writes it, so the
-        // effect can scan the battlefield for matches.
-        else if (value.rfind("Valid ", 0) == 0) ability.valid_cards_filter = value.substr(6);
+        ability.defined = parse_object_spec(value);
     } else if (key == "Chooser") {
         // Chooser$ You on a search/move ChangeZone over another player's hidden zone: the
         // ABILITY'S CONTROLLER makes the selection, not the searched zone's owner (Thought-Knot
@@ -1931,12 +2211,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // GainControl$ True on a ChangeZone Destination$ Battlefield: the moved card enters under
         // the ability controller's control, not its owner's (Animate Dead's reanimation). CR 110.2a.
         ability.gain_control = (value == "True");
-    } else if (key == "RememberTargets") {
-        ability.remember_targeted = (value == "True");
     } else if (key == "RememberObjects") {
-        // RememberObjects$ Targeted — remember the spell's target(s) for later
-        // Remembered.sameName subabilities (Surgical Extraction).
-        if (value.find("Targeted") != std::string::npos) ability.remember_targeted = true;
+        // What an Effect's object remembers (EffectObject::remembered), for its abilities' IsRemembered.
+        if (ability.category == "Effect") ability.effect_remember = parse_object_spec(value);
         // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
         // can't-be-blocked effect remembers the creature it applies to).
         if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
@@ -1949,19 +2226,14 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // chose (Dauthi Voidwalker's "You may play it this turn").
         if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
     } else if (key == "TgtZone") {
-        if (value == "Graveyard") ability.target_in_graveyard = true;
-    } else if (key == "RememberRevealed") {
-        // RememberRevealed$ True (Cloak and Dagger): the revealed hand becomes the remembered
-        // candidate set for a later Defined$ Remembered exile (handled in effect_reveal_hand).
-        ability.remember_revealed = (value == "True");
-    } else if (key == "RememberPumped") {
-        // RememberPumped$ True (Cloak and Dagger): the optionally-chosen creature is appended
-        // to the remembered candidate set (handled in effect_pump).
-        ability.remember_pumped = (value == "True");
-    } else if (key == "ClearRemembered") {
-        ability.clear_remembered = (value == "True");
-    } else if (key == "ClearChosenCard") {
-        ability.clear_chosen = (value == "True");
+        for (const std::string &name : split(value, ',')) {
+            Zone::ZoneValue zone;
+            if (Zone::from_script_name(name, zone)) ability.add_target_zone(zone);
+        }
+    } else if (key == "TargetsWithSameController") {
+        ability.targets_same_controller = value == "True";
+    } else if (key == "TargetsWithDefinedController") {
+        ability.targets_defined_controller = parse_object_spec(value);
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {
@@ -1984,15 +2256,26 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             ability.target_max = MAX_ENTITIES;
         }
     } else if (key == "ActivationZone") {
-        if (value == "Hand") ability.activation_zone = Zone::HAND;
+        Zone::ZoneValue zone;
+        if (Zone::from_script_name(value, zone) && activation_zone_offered(zone)) ability.activation_zone = zone;
     } else if (key == "Activation") {
         // Activation$ <condition> — "activate only if <condition>" gate (CR 602.5). The
         // named condition (e.g. "Metalcraft") is evaluated against the activator at
-        // activation-legality time by activation_condition_met(); kept general so other
+        // activation-legality time through the rule list; kept general so other
         // gated activations name their condition here without retagging.
-        ability.activation_condition = value;
+        ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named(value)));
     } else if (key == "ActivationLimit") {
-        ability.activation_limit = std::stoi(value);
+        ability.activation_rules.push_back(ActivationRule::per_turn(std::stoi(value)));
+    } else if (key == "Boast") {
+        // Boast$ True (CR 702.142a): "Activate only if this creature attacked this turn and only
+        // once each turn."
+        if (value == "True") {
+            ability.activation_rules.push_back(ActivationRule::only_if(activation_condition_named("AttackedThisTurn")));
+            ability.activation_rules.push_back(ActivationRule::per_turn(1));
+        }
+    } else if (key == "Exhaust") {
+        // Exhaust$ True (CR 702.177a): "Activate only once."
+        if (value == "True") ability.activation_rules.push_back(ActivationRule::per_lifetime(1));
     } else if (key == "ReduceCost") {
         // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
         // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
@@ -2001,38 +2284,52 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // activation time (CR 601.2f).
         ability.reduce_cost_expr = value;
     } else if (key == "RestrictValid") {
+        // An Activated. clause lets the mana pay for abilities as well as cast spells (Secluded
+        // Courtyard); with inZoneBattlefield, abilities of battlefield permanents only (Eldrazi
+        // Temple). The subject is the same as the Spell. clause's, which the branches below read.
+        for (const std::string &clause : split(value, ',')) {
+            if (clause.rfind("Activated.", 0) != 0) continue;
+            ability.mana_restriction.allows_activated = true;
+            ability.mana_restriction.activated_on_battlefield = filter_names_token(clause, "inZoneBattlefield");
+        }
         if (filter_names_token(value, "Creature") &&
             value.find("ChosenType") != std::string::npos) {
-            ability.restrict_to_chosen_type_creature = true;
+            ability.mana_restriction.kind = ManaRestriction::CHOSEN_TYPE_CREATURE;
         } else if (value.find("Eldrazi") != std::string::npos &&
                    value.find("Colorless") != std::string::npos) {
             // RestrictValid$ Spell.Eldrazi+Colorless,... — mana usable only to cast a
-            // colorless Eldrazi spell (Eldrazi Temple). The trailing Activated.Eldrazi…
-            // clause (activate abilities of colorless Eldrazi) is folded into the same
-            // restriction. CR 106.7.
-            ability.restrict_to_colorless_eldrazi = true;
+            // colorless Eldrazi spell (Eldrazi Temple) or, by its Activated. clause, to
+            // activate an ability of a colorless Eldrazi. CR 106.7.
+            ability.mana_restriction.kind = ManaRestriction::COLORLESS_ELDRAZI;
         } else if (filter_names_token(value, "Creature")) {
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
             // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
-            ability.restrict_to_creature = true;
+            ability.mana_restriction.kind = ManaRestriction::CREATURE;
+        } else if (value == "CantCastNonArtifactSpells") {
+            // A Powerstone's mana: spendable on anything but casting a nonartifact spell.
+            ability.mana_restriction.kind = ManaRestriction::NO_NONARTIFACT_SPELLS;
         }
-    } else if (key == "AddsNoCounter") {
-        ability.adds_no_counter = (value == "True");
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
     } else if (key == "SorcerySpeed") {
         // SorcerySpeed$ True — this activated ability can be activated only any time its
         // controller could cast a sorcery (main phase, their turn, empty stack). Used by the
         // activated form of Earthbend (Ba Sing Se). Gated in the legal-action enumeration.
-        ability.sorcery_speed_only = (value == "True");
+        if (value == "True") ability.activation_rules.push_back(ActivationRule::as_sorcery());
     } else if (key == "ETB") {
         // ETB$ True on a DB$ Tap (Ba Sing Se's LandTapped replacement SVar): the tap happens as
         // the permanent enters the battlefield. The conditional "enters tapped" is realized via
         // the ENTERS_TAPPED replacement, so the flag needs no field.
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
+        // CR 606.3: a loyalty ability is activated only as a sorcery could be cast, and once each
+        // turn among all its permanent's loyalty abilities.
+        if (ability.is_loyalty_ability) {
+            ability.activation_rules.push_back(ActivationRule::as_sorcery());
+            ability.activation_rules.push_back(ActivationRule::per_turn(1, ActivationRule::LOYALTY_ABILITIES));
+        }
     } else if (key == "Cost") {
-        parse_activation_cost(value, ability);
+        read_ability_cost(value, ability);
     } else if (key == "ConditionCheckSVar") {
         // ConditionCheckSVar$ <SVar> (Veil of Summer's SP$ Draw gate). Store the raw SVar name;
         // resolve_condition_svars resolves it to its Count$ expression and defaults the
@@ -2056,16 +2353,14 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.condition_on_target = (value == "Targeted");
         // "Remembered" → condition_present is counted over the remembered cards at
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
-        // "Imprinted" → the same evaluation, over the imprinted card. For the exile-and-return
-        // cards (Phelia) the imprinted card IS the returned card already held in
-        // cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI / Defined$
-        // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
-        // redundant Imprint$ True on the preceding ChangeZone is ignored.
+        // "Imprinted" → the same evaluation, over the imprinted cards (Phelia's returned card,
+        // the card Beseech the Mirror cast).
         // "RememberedLKI" → the same remembered-set condition path, but the remembered card is
         // now off the battlefield (Boomerang Basics bounced it to hand); its controller qualifier
         // is resolved from last-known information at resolution. See evaluate_present_condition.
         ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted" ||
                                            value == "RememberedLKI");
+        ability.condition_on_imprinted = (value == "Imprinted");
         // "TriggeredCard" → condition_present is a property check on the ability's source/
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
@@ -2080,7 +2375,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // SP$/DB$ NameCard ValidCards$ <filter> — the filter restricting the nameable card
         // set (Petrified Hamlet's Land, Cabal Therapy's Card.nonLand). The name_card handler
         // passes it to build_name_card_choices, which applies it to each candidate via the
-        // unified matcher (card_matches_any).
+        // unified matcher (card_matches_filter).
         ability.valid_cards_filter = value;
     } else if (key == "VoteCard") {
         // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
@@ -2089,33 +2384,22 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
-    } else if (key == "RememberLKI") {
-        // RememberLKI$ True on a ChangeZone (Boomerang Basics) — stash the moved object so a
-        // paired ConditionDefined$ RememberedLKI gate can read its last-known controller.
-        ability.remember_lki = (value == "True");
-    } else if (key == "RememberSacrificed") {
-        ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {
-        ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
+        ability.repeat_players = parse_object_spec(value);  // RepeatEach over players (Price of Progress)
     } else if (key == "RepeatTypesFrom") {
         // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
         // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
         ability.repeat_types_from = value;
-    } else if (key == "RememberChosen") {
-        // ChooseCard | RememberChosen$ True (Atraxa): append the chosen card to the remembered set.
-        ability.remember_chosen = (value == "True");
-    } else if (key == "ClearImprinted") {
-        // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.resolution.memory.imprinted. (For the
-        // exile-and-return cards whose "imprint" is actually the remembered set, memory.imprinted
-        // is empty, so this is a harmless no-op there.)
-        ability.clear_imprinted = (value == "True");
-    } else if (key == "Choices" && ability.category == "ChooseCard") {
+    } else if (key == "Choices" && (ability.category == "ChooseCard" || ability.category == "Clone")) {
         // ChooseCard | Choices$ <filter>: the cards the choice is made from (Dauthi Voidwalker:
         // Card.OppOwn+counters_GE1_VOID). Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa)
         // chooses one imprinted card of the current cur_game.resolution.memory.chosen_type. (The Ajani -4
-        // umbrella Choices$ is superseded by its per-type ChooseEach$.)
+        // umbrella Choices$ is superseded by its per-type ChooseEach$.) A Clone's names what it may
+        // copy (Mockingbird's Creature.Other+cmcLEY).
         ability.choose_card_filter = value;
         ability.choose_imprinted = filter_names_token(value, "IsImprinted");
+    } else if (key == "AtRandom" && ability.category == "ChooseCard") {
+        ability.choose_at_random = (value == "True");
     } else if (key == "ChoiceZone" && ability.category == "ChooseCard") {
         // ChooseCard | ChoiceZone$ <zone>: the zone the Choices$ cards are chosen from. (Atraxa's
         // ChoiceZone$ Library is implied by its imprinted set, which stays in the library.)
@@ -2123,7 +2407,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         else if (value == "Graveyard") ability.choose_card_zone = Zone::GRAVEYARD;
         else if (value == "Hand") ability.choose_card_zone = Zone::HAND;
         else if (value == "Library") ability.choose_card_zone = Zone::LIBRARY;
-    } else if (key == "Types" && ability.category == "Animate") {
+    } else if (key == "Types" && (ability.category == "Animate" || ability.category == "AnimateAll")) {
         // DB$ Animate | Types$ Angel [Cleric ...] — the type/subtype list the animated permanent
         // gains "in addition to its other types" (Guide of Souls: "Angel"; The Fantasticar:
         // "Creature,Artifact"). Forge separates this list with COMMAS (unlike the printed Types:
@@ -2132,12 +2416,32 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         std::string normalized = value;
         std::replace(normalized.begin(), normalized.end(), ',', ' ');
         for (const auto &t : parse_types(normalized)) ability.animate_types.push_back(t);
+    } else if (key == "CloneTarget" && ability.category == "Clone") {
+        ability.clone_target_targeted = (value == "Targeted");
+    } else if (key == "Duration" && ability.category == "Clone") {
+        ability.clone_until_eot = (value == "UntilEndOfTurn");
     } else if (key == "Duration" && ability.category == "Animate") {
         ability.animate_duration_permanent = (value == "Permanent");
         // Duration$ UntilYourNextTurn (Karn +1): a longer-than-EOT continuous effect that
         // reverts at the start of the animating player's next turn (see effect_animate.cpp).
         ability.animate_duration_until_your_next_turn = (value == "UntilYourNextTurn");
-    } else if ((key == "Power" || key == "Toughness") && ability.category == "Animate") {
+    } else if (key == "Keywords" && ability.category == "Animate") {
+        // DB$ Animate | Keywords$ Haste [& …] — the keywords the animated creature gains; an
+        // Enchant keyword is Animate Dead's cosmetic swap (see AbilityDef::animate_keywords).
+        for (const std::string &kw : split_keyword_list(value))
+            if (kw.rfind("Enchant", 0) != 0) ability.animate_keywords.push_back(kw);
+    } else if (key == "AtEOT" && (ability.category == "Animate" || ability.category == "CopyPermanent")) {
+        // AtEOT$ Sacrifice (Sneak Attack, Reflection of Kiki-Jiki's copy), Exile (Shallow Grave):
+        // where it goes at the next end step. Any other value is an unmodelled param.
+        if (value == "Sacrifice") {
+            ability.at_eot = AtEotMove::SACRIFICE;
+        } else if (value == "Exile") {
+            ability.at_eot = AtEotMove::EXILE;
+        } else {
+            warning("Unrecognized ability param: AtEOT$ " + value + (card_name.empty() ? "" : " (card: " + card_name + ")"));
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
+        }
+    } else if ((key == "Power" || key == "Toughness") && (ability.category == "Animate" || ability.category == "AnimateAll")) {
         // AB$ Animate | Power$/Toughness$ — the animated creature's base P/T. A bare integer is
         // the literal base; any other token is an SVar key resolved post-parse (Karn: Power$ X,
         // X = Targeted$CardManaCost → the target's mana value).
@@ -2150,6 +2454,8 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // exiled card(s) return when the ability's host leaves the battlefield. See
         // effects::register_exile_until_host_leaves.
         ability.duration_until_host_leaves = true;
+    } else if (key == "Duration" && value == "Permanent" && ability.category == "Effect") {
+        ability.duration_permanent = true;
     } else if (key == "Duration" && value == "UntilYourNextTurn") {
         // Generic "until your next turn" duration on a non-Animate effect (The One Ring's ETB Pump
         // granting the controller protection from everything). Reverted at the controller's untap.
@@ -2160,16 +2466,15 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         ability.duration_until_end_of_your_next_turn = true;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
+    } else if (memory_param) {
+        // A row of the memory table (resolution_memory.cpp).
     } else {
+        // Params with no effect of their own: prose shown to players, hints for Forge's AI, or a
+        // fact another param already states. A key that carries rules in some forms is checked once
+        // the whole ability is parsed instead (param_form_checked, param_form_read).
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
-            "ConditionDescription",
-            // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its
-            // art — both cosmetic. Duration$ is read load-bearingly from the raw line in
-            // resolve_effect_static_svars (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
-            // Animate/UntilHostLeavesPlay/UntilYourNextTurn Duration forms are consumed by their
-            // own branches above, so any Duration reaching here is already handled or cosmetic.
-            "Name", "Image", "Duration",
+            "ConditionDescription", "Secondary",
             // SelectPrompt$ — the prose prompt shown when a ChangeZone effect asks the player to
             // pick which permanents to move (Yorion: "Select any number of other nonland
             // permanents..."). Purely cosmetic, like TgtPrompt; the selection is driven by
@@ -2186,22 +2491,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // TriggerDescription$ — reminder/Oracle prose on an AB$ ImmediateTrigger's reflexive
             // ability (Guide of Souls). Purely cosmetic, like SpellDescription/StackDescription.
             "TriggerDescription",
-            // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
-            // chooses or how the search is hidden, but the change_zone_same_name handler
-            // already derives the full behavior from ChangeType/Origin/Destination/Defined.
-            // Hidden/ForgetOtherTargets are cosmetic given the "move the maximum" simplification.
-            // (Chooser$ is parsed above into chooser_is_controller — the search-based ChangeZone
-            // honors Chooser$ You. Shuffle$ is handled in apply_param_to_ability above.)
-            "Hidden", "ForgetOtherTargets",
-            // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage,
-            // Dauthi Voidwalker): tells Forge to drop a remembered object from the effect once it
-            // leaves the named zone. The exile-play permission already covers a card only while it
-            // stays in exile (card_play_permission), so the tag needs no separate handling.
-            "ForgetOnMoved",
-            // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
-            // ChooseEach$; ControlledByPlayer$ Chooser and Reveal$ are captured by / cosmetic to
-            // the choose_each handler. (A ChooseCard's Choices$ is read as its filter above.)
-            "ControlledByPlayer", "Reveal",
+            // Hidden$ True tells Forge a ChangeZone's origin is a hidden zone. The handlers take the
+            // same decision from ChangeType$ (a search) or Defined$ (a named object), which every
+            // Hidden$ script states.
+            "Hidden",
             // ChoiceTitle$ <text> (Dauthi Voidwalker's ChooseCard): the prose prompt shown for the
             // choice. Purely cosmetic — the load-bearing Choices$ / ChoiceZone$ are parsed above.
             "ChoiceTitle",
@@ -2211,29 +2504,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // Stackable$ False on an emblem-making Effect (Tamiyo's ultimate): tells Forge not to
             // create a second identical emblem. We don't model emblem de-duplication; cosmetic.
             "Stackable",
-            // ForgetOtherRemembered$ True on a Defined$ Remembered ChangeZone (Tamiyo's front
-            // exile-and-return-transformed): drops the OTHER remembered objects. Only the single
-            // returned card is ever remembered here, so this is a no-op — cosmetic.
-            "ForgetOtherRemembered",
-            // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge
-            // bookkeeping flag that the per-iteration damage is collected into one
-            // simultaneous damage event. Our resolution deals each player's damage in the
-            // repeat loop; the simultaneity is cosmetic for a one-shot instant.
-            "DamageMap",
-            // Announce$ X (Kozilek's Command): declares the X to announce while casting. The
-            // X cost is already auto-detected from a ManaCost containing X (has_x_cost), so
-            // the announce is prompted regardless; the tag is informational here.
-            "Announce",
-            // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
-            // Therapy): the name_card handler already restricts the candidate set to nonland
-            // vocab cards, so the filter spec and its prose are informational here.
-            "ValidCards", "ValidDescription",
-            // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
-            // already tracked in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI),
-            // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
-            // (ClearImprinted$ True is parsed above into clear_imprinted — a no-op for Phelia,
-            // whose memory.imprinted set is empty, but load-bearing for Atraxa.)
-            "Imprint",
+            // SP$ NameCard ValidDescription$ nonland (Cabal Therapy) and DigUntil's: the prose of
+            // the ValidCards$ / Valid$ filter, which is the load-bearing one.
+            "ValidDescription",
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
             // VoteCard$ filter and VoteSubAbility$ are parsed above.
@@ -2246,11 +2519,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // searched-for type ("basic land"). Purely cosmetic — the load-bearing ChangeType$
             // filter is parsed above.
             "ChangeTypeDesc",
-            // ShuffleNonMandatory$ True (Price of Freedom): marks the post-search shuffle as
-            // optional on a fail-to-find. The search-based ChangeZone already shuffles after a
-            // library fetch (the found case, which is all this card does in practice), so the
-            // flag adds nothing the handler doesn't already do.
-            "ShuffleNonMandatory",
             // ── AI-only / cosmetic params — no rules impact, safely ignored ──────────────
             // AITgts$ <filter> (Into the Flood Maw, Pyroblast, Hydroblast, Fatal Push) and
             // AIXMax$ <svar> (Green Sun's Zenith): hints that steer Forge's own AI (which
@@ -2260,46 +2528,223 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // AISearchGoal$ <filter> (Natural Order): tells Forge's AI which card to look for.
             // It repeats the load-bearing ChangeType$ filter, which drives the search here.
             "AISearchGoal",
+            // AIManaPref$ <hint> (Basalt Monolith): which mana source Forge's AI prefers to pay with.
+            "AIManaPref",
+            // DiscardValidDesc$ <text> (Collective Brutality): the prose name of the DiscardValid$
+            // filter, which is the load-bearing one.
+            "DiscardValidDesc",
             // GiftDescription$ <text> (Into the Flood Maw) and ChangeValidDesc$ <text>
             // (Once Upon a Time): prose describing the gift offered / the ChangeZone filter.
             // Purely cosmetic — the load-bearing filters are parsed from the other params.
             "GiftDescription", "ChangeValidDesc",
-            // ForceRevealToController$ True (Once Upon a Time): reveals the looked-at card to
-            // its own controller. Informational in a perfect-information engine.
+            // ForceRevealToController$ True (Once Upon a Time): shows the looked-at cards to the
+            // ability's controller, who is the player digging, and sees them anyway.
             "ForceRevealToController",
             // NoRegen$ True (Snuff Out's SP$ Destroy): "it can't be regenerated". The engine has
             // no regeneration (no vocab card creates a regeneration shield), so a destroy is
             // never replaced by one and the tag has nothing to prevent.
             "NoRegen",
-            // ── Params for mechanics NOT YET MODELED — currently no-ops, tracked in todo.md ─
-            // Suppressed here to keep the log clean; each still needs a real handler (see the
-            // "Audit: ability-param keys the parser silently ignores" section of todo.md):
-            //   Reorder$ True (Brainstorm) — let the player order the cards put back on top.
-            //   TriggerAmount$ / RememberOriginalTokens$ (Ajani, Nacatl Avenger) — the token
-            //     count carried to the transform trigger, and tracking the original tokens.
-            //   LockTokenScript$ True (Into the Flood Maw) — pin the gifted Fish token's script.
-            //   ExileOnMoved$ Battlefield (Manifold Key) — exile the permanent when it moves.
-            "Reorder", "TriggerAmount", "RememberOriginalTokens", "LockTokenScript",
-            "ExileOnMoved",
-            // Controller$ <token> (Chain Lightning's DB$ CopySpellAbility: Controller$
-            // TargetedOrController) — names who controls the resolving sub-ability. The
-            // copy_spell_ability handler derives the copy's controller from UnlessPayer$
-            // TargetedOrController directly, so this is informational here.
-            "Controller",
-            // DB$ Animate | Keywords$ / RemoveKeywords$ (Animate Dead): the keyword swap that
-            // re-anchors the aura's Enchant restriction from "creature card in a graveyard" to
-            // "the creature put onto the battlefield with this" is cosmetic here — the reanimation
-            // + Attach chain already anchors the aura to the returned creature (equipped_to), and
-            // the "unattached aura" state-based action reads that link, not the Enchant filter
-            // string. So the live keyword text is never re-evaluated; ignoring the swap is a no-op.
-            "Keywords", "RemoveKeywords"
+            // LockTokenScript$ True (Into the Flood Maw): keeps Forge from swapping the gifted Fish's
+            // script. Nothing here replaces a token's script.
+            "LockTokenScript",
+            // UseAllOriginZones$ True (Echo of Eons): the move takes every zone of Origin$, as it
+            // always does here.
+            "UseAllOriginZones"
         };
-        if (ignored_keys.find(key) == ignored_keys.end()) {
+        if (ignored_keys.find(key) == ignored_keys.end() && !param_form_checked(key)) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
             if (!card_name.empty()) msg += " (card: " + card_name + ")";
             warning(msg);
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
         }
     }
+}
+
+// The ability params that carry rules in some forms and have no field of their own, which
+// apply_param_to_ability passes over for param_form_read to judge with the whole ability parsed.
+static bool param_form_checked(const std::string &key) {
+    static const std::set<std::string> kKeys = {"Name", "Image", "Duration", "ForgetOnMoved", "ExileOnMoved",
+        "ControlledByPlayer", "Reveal", "ForgetOtherRemembered", "DamageMap", "Announce", "Imprint", "Reorder",
+        "TriggerAmount", "RememberOriginalTokens", "Controller", "RemoveKeywords"};
+    return kKeys.count(key) > 0;
+}
+
+// Does the engine honour param `key` as `value` on the fully parsed `ability`? The params of
+// param_form_checked, and the ones a branch of apply_param_to_ability reads only some values of.
+// True for any other key.
+static bool param_form_read(const AbilityDef &ability, const std::string &text, const std::string &key,
+                            const std::string &value) {
+    const std::string &category = ability.category;
+    // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its art.
+    if (key == "Name" || key == "Image") return category == "Effect";
+    if (key == "Duration") return duration_read(ability, value);
+    // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage, Dauthi
+    // Voidwalker): tells Forge to drop a remembered object from the effect once it leaves the named
+    // zone. The exile-play permission already covers a card only while it stays in exile
+    // (play_permissions).
+    // An object the effect's object remembers is held by identity, so it is forgotten as it moves
+    // whatever the zone (CR 400.7): what a spell's protection needs of ForgetOnMoved$ Stack.
+    if (key == "ForgetOnMoved")
+        return (ability.effect_may_play_from_exile && value == "Exile") ||
+               (ability.has_effect_replacement(Effect::Replacement::CANT_BE_COUNTERED) && value == "Stack");
+    // ExileOnMoved$ <zone>: the Effect ends when its object leaves that zone. Each grant of
+    // grant_cast is kept on the object's own state or by identity, and ends with it: the
+    // can't-be-blocked mark and a prevention shield on the battlefield (Kappa Cannoneer, Maze of
+    // Ith), an exile permission in exile, a may-cast in the graveyard (Emry).
+    if (key == "ExileOnMoved") {
+        if (value == "Battlefield")
+            return ability.effect_static_ability == "Unblockable" ||
+                   ability.has_effect_replacement(Effect::Replacement::PREVENT_COMBAT_DAMAGE);
+        return value == "Exile" ? ability.effect_may_play_from_exile : value == "Graveyard" && ability.targets_in(Zone::GRAVEYARD);
+    }
+    // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing ChooseEach$;
+    // ControlledByPlayer$ Chooser is captured by the choose_each handler.
+    if (key == "ControlledByPlayer") return !ability.choose_each.empty() && value == "Chooser";
+    // Reveal$ True on a ChooseCard among public objects shows what is already public (Ajani -4); a
+    // restricted search reveals its find anyway (search_reveals_card).
+    if (key == "Reveal") {
+        if (category == "Dig") return true;
+        if (category == "ChooseCard") return param_value(text, "ChoiceZone").empty();
+        return category == "ChangeZone" && !ability.change_type.empty() && ability.change_type != "Card";
+    }
+    // ForgetOtherRemembered$ True drops what the resolution remembered before this move: nothing,
+    // at the head of a chain (Sneak Attack), or the move's own object (Tamiyo's Defined$ Remembered).
+    if (key == "ForgetOtherRemembered")
+        return category == "ChangeZone" && (ability.defined.is_remembered() || text.find("DB$") == std::string::npos);
+    // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge bookkeeping flag that
+    // the per-iteration damage is collected into one simultaneous damage event. Our resolution deals
+    // each player's damage in the repeat loop, and state-based actions wait for the whole spell.
+    if (key == "DamageMap") return category == "RepeatEach";
+    // Announce$ X (Kozilek's Command): declares the X to announce while casting. The X cost is
+    // already auto-detected from a ManaCost containing X (has_x_cost).
+    if (key == "Announce") return value == "X";
+    // Reorder$ True (Brainstorm): cards go back on top one pick at a time, so the picks are the
+    // order the player chooses.
+    if (key == "Reorder") return ability.origin == Zone::HAND && ability.destination == Zone::LIBRARY;
+    // TriggerAmount$ (Ajani, Nacatl Avenger): how many times a reflexive ability triggers. It
+    // triggers once.
+    if (key == "TriggerAmount") return false;
+    // RememberOriginalTokens$ True: token() remembers every token it creates, and no effect here
+    // makes a token beyond the originals.
+    if (key == "RememberOriginalTokens") return category == "Token";
+    // Controller$ <token> (Chain Lightning's DB$ CopySpellAbility: Controller$ TargetedOrController)
+    // names who controls the resolving sub-ability. The copy_spell_ability handler derives the
+    // copy's controller from UnlessPayer$ TargetedOrController directly; a Play is the controller's.
+    if (key == "Controller")
+        return value == (category == "CopySpellAbility" ? "TargetedOrController" : category == "Play" ? "You" : "");
+    // DB$ Animate | RemoveKeywords$ (Animate Dead): the Enchant keyword swap re-anchors the aura to
+    // the creature put onto the battlefield with it. The reanimation + Attach chain already anchors
+    // it (equipped_to), and the "unattached aura" state-based action reads that link.
+    if (key == "RemoveKeywords") return category == "AnimateAll" || (category == "Animate" && value.rfind("Enchant", 0) == 0);
+    if (key == "Defined" || key == "DefinedPlayer") return defined_name_read(ability, value);
+    if (key == "RepeatPlayers") return !ability.repeat_players.is(ObjectSpec::UNREAD);
+    // UnlessCost$ on an effect that does not run it is reported where it is read (read_unless_cost).
+    if (key == "UnlessPayer") {
+        if (!unless_cost_read_by(category)) return true;
+        if (category == "Counter") return value == "TriggeredSourceSAController";
+        return value == (category == "CopySpellAbility" ? "TargetedOrController" : "You");
+    }
+    // DealDamage reads only the form that pays before it deals.
+    if (key == "UnlessCost") return category != "DealDamage" || ability.unless_switched;
+    if (key == "UnlessSwitched") return !unless_cost_read_by(category) || category == "DestroyAll" || category == "CopySpellAbility" ||
+                                        category == "DealDamage" || category == "CopyPermanent" ||
+                                        category == "ImmediateTrigger";
+    if (key == "UnlessResolveSubs") return category == "CopyPermanent" && value == "WhenNotPaid";
+    if (key == "Chooser") return value == "You";
+    if (key == "RememberObjects") {
+        for (const char *name : {"Targeted", "Self", "RememberedLKI", "ChosenCard"})
+            if (value.find(name) != std::string::npos) return true;
+        return category == "Effect" && (value == "Remembered" || value == "TriggeredCard");
+    }
+    if (key == "TgtZone") {
+        for (const std::string &name : split(value, ','))
+            if (name != "Graveyard" && name != "Battlefield" && name != "Stack") return false;
+        return true;
+    }
+    if (key == "ActivationZone") return ability.activation_zone != -1;
+    if (key == "Activation") return activation_condition_known(value);
+    if (key == "RestrictValid")
+        return ability.mana_restriction.kind != ManaRestriction::NONE;
+    if (key == "ConditionDefined") {
+        for (const char *name : {"Targeted", "Remembered", "Imprinted", "RememberedLKI", "TriggeredCard", "ExiledWith"})
+            if (value == name) return true;
+        return false;
+    }
+    if (key == "ChoiceZone")
+        return value == "Exile" || value == "Graveyard" || value == "Hand" || (value == "Library" && ability.choose_imprinted);
+    if (key == "TokenOwner") {
+        for (const char *name : {"You", "Targeted", "Remembered", "Promised"})
+            if (value.find(name) != std::string::npos) return true;
+        return false;
+    }
+    if (key == "ColorOrType") return value == "Color";
+    if (key == "ReflectProperty") return value == "Is";
+    if (key == "Produced")
+        return value == "Any" || value.rfind("Combo", 0) == 0 || effects::produced_pips(value) > 0;
+    if (key == "AtEOT") return category == "Animate" || category == "CopyPermanent" || (category == "Token" && value == "ExileCombat");
+    if (key == "GainControl") return category == "ChangeZone" || category == "ChangeZoneAll";
+    if (key == "CloneTarget") return value == "Targeted";
+    return true;
+}
+
+// Does a reader honour Duration$ `value` on `ability`? Each effect has its own durations: an
+// Effect's by what it grants (grant_cast).
+static bool duration_read(const AbilityDef &ability, const std::string &value) {
+    const std::string &category = ability.category;
+    if (category == "Animate") return value == "Permanent" || value == "UntilYourNextTurn" || value == "UntilEndOfTurn";
+    if (category == "ChangeZone") return value == "UntilHostLeavesPlay";
+    if (category == "Clone") return value == "UntilEndOfTurn";
+    if (category == "Pump") {
+        const auto *pp = std::get_if<PumpParams>(&ability.params);
+        return value == "UntilEndOfTurn" || (value == "UntilYourNextTurn" && pp && pp->grant_protection_from_everything);
+    }
+    if (category != "Effect") return false;
+    if (value == "Permanent") return !ability.effect_statics.empty() || !ability.effect_floating_triggers.empty();
+    if (value == "UntilTheEndOfYourNextTurn") return ability.effect_may_play_from_exile;
+    return value == "UntilYourNextTurn" && (!ability.effect_floating_triggers.empty() || ability.effect_cast_with_flash);
+}
+
+// Reports what a parsed ability's reader ignores, read off its script `text` and its fields.
+static void ability_form_findings(const AbilityDef &ability, const std::string &text,
+                                  const std::map<std::string, std::string> &svars) {
+    size_t pos = text.find('|');
+    std::string key, value;
+    while (next_param(text, pos, key, value))
+        if (!param_form_read(ability, text, key, value))
+            parse_finding("ability_param", ability.category + "." + key, ability.category + " " + key + "$ " + value);
+    effect_form_findings(ability, svars);
+    if (const auto *pp = std::get_if<PumpParams>(&ability.params))
+        for (const std::string &kw : pp->grant_keywords)
+            if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted by " + ability.category);
+    for (const std::vector<std::string> *list : {&ability.animate_keywords, &ability.add_keywords})
+        for (const std::string &kw : *list)
+            if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted by " + ability.category);
+}
+
+// An Effect's static is honoured only as one of the forms parse_ability_text resolves.
+static void effect_form_findings(const AbilityDef &ability, const std::map<std::string, std::string> &svars) {
+    if (ability.category != "Effect") return;
+    const bool holds_static = !ability.effect_statics.empty();
+    const std::string &name = ability.effect_static_ability;
+    if (name.empty()) return;
+    const auto it = svars.find(name);
+    if (it == svars.end()) {
+        parse_finding("svar_missing", name, "StaticAbilities$ names no SVar");
+        return;
+    }
+    const std::string &body = it->second;
+    const std::string mode = param_value(body, "Mode");
+    const std::string zone = param_value(body, "AffectedZone");
+    const bool may_play = param_value(body, "MayPlay") == "True";
+    const bool remembered = filter_names_token(param_value(body, "Affected"), "IsRemembered");
+    const bool read = (may_play && zone == "Exile") || (may_play && zone == "Graveyard" && remembered && ability.targets_in(Zone::GRAVEYARD)) ||
+                      (holds_static && mode == "Continuous") || mode == "CantGainLife" || mode == "CastWithFlash" ||
+                      (name == "Unblockable" && mode == "CantBlockBy" && param_value(body, "ValidAttacker") == "Card.IsRemembered");
+    if (read) return;
+    if (may_play)
+        parse_finding("static_form", "MayPlay." + zone, "an Effect's permission to play from " + zone);
+    else
+        parse_finding("static_form", "Effect." + mode, body);
 }
 
 // Normalizes script category names to the internal names used throughout the engine. A category
@@ -2311,6 +2756,7 @@ static std::string normalize_category(std::string category, const std::string& c
         std::string msg = "Unknown ability category: " + category + " (resolves as a no-op)";
         if (!card_name.empty()) msg += " (card: " + card_name + ")";
         warning(msg);
+        parse_finding("category", category, "resolves as a no-op");
     }
     return category;
 }
@@ -2381,10 +2827,52 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
     std::string msg = "Unresolved amount SVar: " + ability.amount_svar;
     if (!card_name.empty()) msg += " (card: " + card_name + ")";
     warning(msg);
+    parse_finding("amount_svar", ability.amount_svar, ability.category + ": the amount names no SVar");
+}
+
+// StaticEffect$ <svar>: the Mode$ Continuous body as the Animate it amounts to, on the moved cards
+// (Affected$ Card.IsRemembered names them). Any other form is a finding.
+static void read_static_effect(AbilityDef &ability, const std::string &svar, const std::map<std::string, std::string> &svars) {
+    const auto it = svars.find(svar);
+    AbilityDef effect;
+    effect.category = "Animate";
+    effect.animate_duration_permanent = true;
+    bool read = it != svars.end() && param_value(it->second, "Mode") == "Continuous" &&
+                param_value(it->second, "Affected") == "Card.IsRemembered";
+    if (it != svars.end()) {
+        size_t pos = 0;
+        std::string key, value;
+        while (next_param(it->second, pos, key, value)) {
+            if (key == "AddType") {
+                effect.animate_types = parse_added_types(value);
+            } else if ((key == "SetPower" || key == "SetToughness") && !value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+                effect.animate_has_pt = true;
+                (key == "SetPower" ? effect.animate_base_power : effect.animate_base_toughness) = std::stoi(value);
+            } else if (key != "Mode" && key != "Affected") {
+                read = false;
+            }
+        }
+    }
+    if (!read) {
+        parse_finding("ability_param", "ChangeZoneAll.StaticEffect", "ChangeZoneAll StaticEffect$ " + svar);
+        return;
+    }
+    ability.static_effect.push_back(effect);
+}
+
+// Resolve a Clone's Choices$ mana-value bound (Mockingbird's cmcLEY, Y = Count$CastTotalManaSpent)
+// to its Count$ expression.
+static void resolve_clone_bound(AbilityDef &ability, const std::map<std::string, std::string> &svars) {
+    if (ability.category != "Clone") return;
+    std::string op, bound;
+    if (!find_cmc_bound(ability.choose_card_filter, nullptr, op, bound)) return;
+    const auto it = svars.find(bound);
+    if (it != svars.end()) ability.clone_cmc_expr = it->second;
 }
 
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
-// "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE) and an energy UnlessCost SVar into
+// "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE; its first, for alternatives all naming
+// the one SVar: Powder Keg's "Artifact.cmcEQX,Creature.cmcEQX") and an energy UnlessCost SVar into
 // their runtime Count$ expressions + comparator on DestroyAllParams, so effect_destroy_all can
 // gate candidates by mana value at resolution.
 static void resolve_destroyall_svars(AbilityDef &ability,
@@ -2392,36 +2880,32 @@ static void resolve_destroyall_svars(AbilityDef &ability,
     if (ability.category != "DestroyAll") return;
     auto &dp = effect_params<DestroyAllParams>(ability);
     std::string op, bound;
-    // A pure-numeric or "X" bound stays on the legacy path (handled at resolution); only a named
-    // SVar resolving to a Count$ expression routes here.
+    // A pure-numeric bound is its qualifier's own and cmcLEX reads the X paid (Meltdown); any other
+    // named SVar resolving to a Count$ expression routes here (Powder Keg's cmcEQX).
     if (dp.cmc_expr.empty() && find_cmc_bound(ability.valid_cards_filter, nullptr, op, bound) &&
-        bound != "X") {
+        !(op == "LE" && bound == "X")) {
         auto it = svars.find(bound);
         if (it != svars.end()) {
             dp.cmc_expr = it->second;
-            dp.cmc_op = op;
         }
     }
-    resolve_svar_ref(dp.energy_unless_expr, svars);
 }
 
 // The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
-// → "LE", "X"): its two-letter comparator and its bound, the SVar name or number that follows (a
-// run of letters, digits and '_'). OP is tried in the order EQ, LE, GE, LT, GT, NE, or is only
-// `only_op` when given. False when the filter has no such qualifier.
-static bool find_cmc_bound(const std::string &filter, const char *only_op, std::string &op,
+// → "LE", "X"): its two-letter comparator and its bound, the SVar name or number that follows. OP
+// is tried in the order EQ, LE, GE, LT, GT, NE, or is only `only_op` when given. False when the
+// filter has no such qualifier.
+static bool find_cmc_bound(const FilterSpec &filter, const char *only_op, std::string &op,
                            std::string &bound) {
+    const std::vector<FilterCmcBound> bounds = filter_cmc_bounds(filter);
     for (const char *cmp : {"EQ", "LE", "GE", "LT", "GT", "NE"}) {
         if (only_op && std::strcmp(cmp, only_op) != 0) continue;
-        size_t pos = filter.find(std::string("cmc") + cmp);
-        if (pos == std::string::npos) continue;
-        size_t start = pos + 5, end = start;
-        while (end < filter.size() &&
-               (std::isalnum(static_cast<unsigned char>(filter[end])) || filter[end] == '_'))
-            end++;
-        op = cmp;
-        bound = filter.substr(start, end - start);
-        return true;
+        for (const FilterCmcBound &b : bounds) {
+            if (b.op != cmp) continue;
+            op = cmp;
+            bound = b.bound;
+            return true;
+        }
     }
     return false;
 }
@@ -2453,6 +2937,7 @@ static AbilityDef parse_ability_text(const std::string &text, size_t category_po
         if (!apply_composite_param(ability, key, value, svars, card_name))
             apply_param_to_ability(ability, key, value, card_name);
     resolve_ability_svars(ability, text, svars, card_name);
+    if (g_findings) ability_form_findings(ability, text, svars);
     return ability;
 }
 
@@ -2486,18 +2971,40 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         // per-type RepeatEach (Atraxa) the RepeatSubAbility entries are the per-iteration body; count
         // them so repeat_each_types knows how many leading subs are the body vs. trailing links.
         auto it = svars.find(value);
-        if (it == svars.end()) return true;
+        if (it == svars.end()) {
+            parse_finding("svar_missing", value, key + "$ names no SVar");
+            return true;
+        }
         ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
         if (key == "RepeatSubAbility") ability.repeat_sub_count++;
         return true;
     }
-    if (key == "Choices" && ability.category != "ChooseCard") {
+    if ((key == "TrueSubAbility" || key == "FalseSubAbility") && ability.category == "Branch") {
+        auto it = svars.find(value);
+        if (it == svars.end()) {
+            parse_finding("svar_missing", value, key + "$ names no SVar");
+            return true;
+        }
+        (key == "TrueSubAbility" ? ability.branch_true : ability.branch_false) =
+            static_cast<int>(ability.subabilities.size());
+        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+        ability.repeat_sub_count++;
+        return true;
+    }
+    if (key == "StaticEffect" && ability.category == "ChangeZoneAll") {
+        read_static_effect(ability, value, svars);
+        return true;
+    }
+    if (key == "Choices" && ability.category != "ChooseCard" && ability.category != "Clone") {
         // Charm modal: resolve comma-separated SVar names into modes. Excludes ChooseCard, whose
         // Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+IsImprinted) consumed by
         // apply_param_to_ability, not a list of modal SVars.
         for (const std::string &svar_name : split(value, ',')) {
             auto it = svars.find(svar_name);
-            if (it == svars.end()) continue;
+            if (it == svars.end()) {
+                parse_finding("svar_missing", svar_name, "Choices$ names no SVar");
+                continue;
+            }
             ability.charm_choices.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
             // The mode's SpellDescription$, shown when the modes are offered.
             ability.charm_choice_descriptions.push_back(param_value(it->second, "SpellDescription"));
@@ -2506,6 +3013,14 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
     }
     if (key == "CharmNum") {
         ability.charm_num = std::stoi(value);
+        return true;
+    }
+    if (key == "MinCharmNum") {
+        ability.charm_min_num = std::stoi(value);
+        return true;
+    }
+    if (key == "CanRepeatModes") {
+        ability.charm_repeat_modes = value == "True";
         return true;
     }
     if (key == "Abilities" && ability.category == "Animate") {
@@ -2518,6 +3033,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             if (it != svars.end())
                 ability.animate_granted_abilities.push_back(
                     parse_svar_ability(it->second, AbilityDef::ACTIVATED, svars, card_name));
+            else
+                parse_finding("svar_missing", svar_name, "Abilities$ names no SVar");
         }
         return true;
     }
@@ -2529,6 +3046,8 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
             AbilityDef exec = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
             exec.from_delayed_execute = true;  // delayed_trigger() fires this one
             ability.subabilities.push_back(exec);
+        } else {
+            parse_finding("svar_missing", value, "Execute$ names no SVar");
         }
         return true;
     }
@@ -2537,44 +3056,35 @@ static bool apply_composite_param(AbilityDef &ability, const std::string &key, c
         // Eorlingas!'s monarch trigger; Tamiyo, Seasoned Scholar's +2, whose Duration$ the
         // GrantCast handler applies to it). Each named SVar holds a trigger line (Mode$ ... |
         // Execute$ ...); parse it like a card's T: line so it carries the same trigger metadata and
-        // its Execute$ effect, and store it on the Effect to be registered (controller-bound) into
-        // cur_game.resolved_effects.floating_triggers at resolution.
+        // its Execute$ effect, and store it on the Effect to be put (controller-bound) on an
+        // EffectObject at resolution.
         for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
             auto it = svars.find(svar_name);
             if (it != svars.end()) {
                 AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                 if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
+                // A trigger's count is kept by its source, and an effect object has none.
+                if (trig.trigger_turn_limit > 0)
+                    parse_finding("trigger_param", "ActivationLimit", "on an Effect: " + it->second);
+            } else {
+                parse_finding("svar_missing", svar_name, "Triggers$ names no SVar");
             }
         }
         return true;
     }
     if (key == "ReplacementEffects") {
-        // Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement
-        // effects the transient Effect carries. Two forms are recognized:
-        //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
-        //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
-        //    GrantCast handler records the controller in cur_game.resolved_effects.cant_counter_spells_of.
-        //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
-        //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
-        //    combat damage dealt by/to the remembered creature this turn (CR 615); the
-        //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
+        // Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement effects
+        // the transient Effect carries, each read through the table's EFFECT rows and held for the
+        // GrantCast handler to put on the EffectObject it creates.
         for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
             auto it = svars.find(svar_name);
-            if (it == svars.end()) continue;
-            const std::string &body = it->second;
-            if (body.find("Event$ Counter") != std::string::npos &&
-                body.find("CantHappen") != std::string::npos &&
-                body.find("YouCtrl") != std::string::npos) {
-                ability.effect_spells_uncounterable_this_turn = true;
-            } else if (body.find("Event$ DamageDone") != std::string::npos &&
-                       body.find("Prevent$ True") != std::string::npos &&
-                       body.find("IsCombat$ True") != std::string::npos &&
-                       body.find("IsRemembered") != std::string::npos) {
-                if (body.find("ValidSource$") != std::string::npos)
-                    ability.effect_prevent_combat_damage_by_remembered = true;
-                if (body.find("ValidTarget$") != std::string::npos)
-                    ability.effect_prevent_combat_damage_to_remembered = true;
+            if (it == svars.end()) {
+                parse_finding("svar_missing", svar_name, "ReplacementEffects$ names no SVar");
+                continue;
             }
+            const std::string &body = it->second;
+            if (read_replacement_rows(body, svars, ReplacementHost::EFFECT, ability.effect_replacements) == 0)
+                parse_finding("replacement", "Effect:" + param_value(body, "Event"), body);
         }
         return true;
     }
@@ -2618,6 +3128,13 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         svars.find(bound) != svars.end())
         ability.amount_svar = bound;
     resolve_amount_svar(ability, svars, card_name);
+    if (auto *dp = std::get_if<DamageParams>(&ability.params)) {
+        const auto it = svars.find(dp->divided_expr);
+        if (it != svars.end()) {
+            const std::string compared = compare_of_svars(it->second, svars);
+            dp->divided_expr = compared.empty() ? it->second : compared;
+        }
+    }
     // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
     // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
     // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
@@ -2635,13 +3152,13 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         auto it = svars.find(bound);
         if (it != svars.end()) {
             ability.change_type_cmc_expr = it->second;
-            ability.change_type_cmc_op = op;
         }
     }
     // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
     // Skies, Blast Zone): resolve the "cmc<op><SVar>" threshold from the ValidCards$ filter and
     // the PayEnergy<SVar> amount into their runtime Count$ expressions.
     resolve_destroyall_svars(ability, svars);
+    resolve_clone_bound(ability, svars);
     resolve_condition_svars(ability, svars);
     // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (Toxic Deluge: -X/-X → Count$xPaid;
     // Eldrazi Linebreaker: +X, X = Count$Valid Eldrazi.YouCtrl) to its runtime Count$ expression,
@@ -2653,7 +3170,7 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
     // the animate target at resolution. A token that is not an SVar key is left as no dynamic
     // expr (the numeric base, parsed by apply_param_to_ability, stands).
-    if (ability.category == "Animate") {
+    if (ability.category == "Animate" || ability.category == "AnimateAll") {
         for (int which = 0; which < 2; which++) {
             const std::string tok = svar_key_param(text, which == 0 ? "Power" : "Toughness");
             std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
@@ -2669,6 +3186,9 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // SVar references to their runtime Count$ expressions so the effect can evaluate them at
     // resolution.
     if (ability.category == "ChooseNumber") resolve_svar_ref(ability.dynamic_amount_expr, svars);
+    resolve_svar_ref(ability.repeat_check_svar, svars);
+    if (ability.category == "Branch") resolve_additive_svar(ability.repeat_check_svar, svars, ability.branch_terms);
+    resolve_svar_ref(ability.unless_energy_expr, svars);
     if (auto *cp = std::get_if<CounterParams>(&ability.params)) resolve_svar_ref(cp->count_expr, svars);
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →
     // Remembered$CardManaCost): resolve the reference to its runtime expression so the Token
@@ -2694,18 +3214,18 @@ static void resolve_effect_static_svars(AbilityDef &ability, const std::string &
     auto it = svars.find(ability.effect_static_ability);
     if (it == svars.end()) return;
     const std::string &body = it->second;
-    // Emblem (CR 114): an Effect that grants a permanent continuous static to its controller —
-    // Kaito's "[+1]: You get an emblem with 'Ninjas you control get +1/+1.'"; Tamiyo, Seasoned
-    // Scholar's ultimate "You get an emblem with 'You have no maximum hand size.'"
-    // (StaticAbilities$ <SVar> + Duration$ Permanent). Resolve the named continuous static SVar
-    // into a StaticAbility and store it on the ability; the Effect handler creates a player-owned
-    // emblem carrying it at resolution. Distinguished from the transient StaticAbilities$ Effects
-    // (Unblockable, Ugin's MayPlay) by Duration$ Permanent — those are EOT/until-leaves and
-    // handled by their own flags.
-    if (text.find("Duration$ Permanent") != std::string::npos &&
-        body.find("Mode$ Continuous") != std::string::npos) {
+    // A continuous static the Effect's object holds: an emblem's (Kaito's "[+1]: You get an emblem
+    // with 'Ninjas you control get +1/+1.'"; Tamiyo, Seasoned Scholar's ultimate), or one for the
+    // Effect's duration (Sundering Eruption's "Creatures without flying can't block this turn.").
+    // Resolve the named SVar into a StaticAbility on the ability for the GrantCast handler. A play
+    // permission over cards the Effect remembers or in exile is no such static: its grant is typed
+    // (Light Up the Stage, Emry), kept per card.
+    const bool may_play = param_value(body, "MayPlay") == "True";
+    const bool typed_grant = may_play && (param_value(body, "AffectedZone") == "Exile" ||
+                                          filter_names_token(param_value(body, "Affected"), "IsRemembered"));
+    if (param_value(body, "Mode") == "Continuous" && !typed_grant) {
         StaticAbility est = parse_one_static_ability(body, svars);
-        if (!est.category.empty()) ability.effect_emblem_statics.push_back(est);
+        if (!est.category.empty()) ability.effect_statics.push_back(est);
     }
     // StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long life-gain
     // prohibition (CR 119.x, Roiling Vortex's {R}: "Your opponents can't gain life this turn.").
@@ -2734,7 +3254,8 @@ static void resolve_effect_static_svars(AbilityDef &ability, const std::string &
 // Resolves a non-numeric amount param (NumCards$, NumDmg$, LifeAmount$, ...) that named an SVar:
 // a direct dynamic expression is kept as is; otherwise the SVar body becomes the combat-damage
 // amount, a conditional amount (Flow State), a delirium scale (Unholy Heat), or a runtime
-// expression evaluated at activation/resolution.
+// expression the evaluator recognises (svar_expr_recognized), evaluated at activation/resolution;
+// any other body is an amount_expr finding.
 static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string, std::string> &svars,
                                 const std::string &card_name) {
     if (ability.amount_svar.empty() || take_direct_amount_expr(ability)) return;
@@ -2749,6 +3270,8 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         return;
     }
     if (resolve_conditional_amount(ability, sv, svars)) return;
+    ability.dynamic_amount_expr = compare_of_svars(sv, svars);
+    if (!ability.dynamic_amount_expr.empty()) return;
     // Delirium-conditional value. Two equivalent Forge spellings, both
     // meaning "<yes> if the caster has delirium, else <no>":
     //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
@@ -2766,7 +3289,14 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         dp.is_delirium_scale = true;
         return;
     }
-    if (is_runtime_amount_expr(sv)) ability.dynamic_amount_expr = sv;
+    const std::string expanded = expand_svar_head(sv, svars);
+    if (svar_expr_recognized(expanded)) {
+        ability.dynamic_amount_expr = expanded;
+        return;
+    }
+    parse_finding("amount_expr", expanded.substr(0, expanded.find(' ')),
+                  ability.category + ": " + it->first + " = " + sv +
+                      " is not kept for runtime: the amount falls back to its default");
 }
 
 // Where the ".<yes>.<no>" tail of a delirium-conditional amount starts in `sv`: right after
@@ -2812,37 +3342,18 @@ static bool resolve_conditional_amount(AbilityDef &ability, const std::string &s
     return true;
 }
 
-// An amount SVar body that is a runtime expression, kept verbatim for evaluate_amount at
-// activation/resolution.
-static bool is_runtime_amount_expr(const std::string &sv) {
-    static const char *const kRuntimeMarkers[] = {
-        "Count$Valid", "Targeted$", "Count$InYourLibrary", "Count$YourLifeTotal", "Count$Revolt",
-        // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling (Cabal Ritual: Amount$ X,
-        // X = Count$Threshold.5.3 → BBBBB if the caster has 7+ cards in their graveyard, else BBB).
-        "Count$Threshold",
-        // Count$UrzaLands.<hi>.<lo> — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): hi
-        // colorless mana if the controller controls a complete set of all three, else lo
-        // (mana-ability path via eval_mana_amount).
-        "Count$UrzaLands",
-        // Count$CardCounters.<TYPE> — counters on the source permanent (The One Ring:
-        // NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN), evaluated against the source.
-        "Count$CardCounters",
-        // Count$Converge (Prismatic Ending) — the distinct colors of mana spent to cast the spell,
-        // from current_converge(). Used as the cmcLEY exile threshold.
-        "Count$Converge",
-        // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a RememberChanged$
-        // ChangeZoneAll) cards matching the filter (Canoptek Scarab Swarm: TokenAmount$ X, X =
-        // Remembered$Valid Land,Artifact). The RememberedLKI$ form reads the same remembered set,
-        // but populated from a RememberLKI$ ChangeZone last-known-info snapshot (Reanimate:
-        // LifeAmount$ X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
-        "Remembered$", "RememberedLKI$",
-        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
-        // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
-        "xPaid",
-    };
-    for (const char *marker : kRuntimeMarkers)
-        if (sv.find(marker) != std::string::npos) return true;
-    return false;
+// "Count$Compare <SVar> <op><n>.<then>.<else>" with SVars on its branches (Shatterskull Smashing:
+// Count$Compare X LT6.X.Z), as the expression the evaluator reads, each SVar's body in place. ""
+// for any other body: numbers on the branches are resolve_conditional_amount's or delirium's.
+static std::string compare_of_svars(const std::string &sv, const std::map<std::string, std::string> &svars) {
+    const std::string head = "Count$Compare ";
+    if (sv.rfind(head, 0) != 0) return "";
+    const size_t space = sv.find(' ', head.size());
+    if (space == std::string::npos) return "";
+    const std::vector<std::string> tail = split(sv.substr(space + 1), '.');
+    if (tail.size() != 3 || svars.find(tail[1]) == svars.end() || svars.find(tail[2]) == svars.end()) return "";
+    return head + svar_or_literal(svars, sv.substr(head.size(), space - head.size())) + ";" + tail[0] + ";" +
+           svar_or_literal(svars, tail[1]) + ";" + svar_or_literal(svars, tail[2]);
 }
 
 // Resolves a ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
@@ -2946,6 +3457,7 @@ static std::vector<AbilityDef> parse_abilities(const std::vector<std::string> &l
         size_t category_end = line.find_first_of(" |", pos);
         if (category_end == std::string::npos) category_end = line.length();
         if (category_end <= pos) continue;
+        const FindingLine finding_line("A:" + line);
         ret_val.push_back(parse_ability_text(
             line, pos, is_spell ? AbilityDef::SPELL : AbilityDef::ACTIVATED, svars, card_name));
         ret_val.back().script_line = "A:" + line;
@@ -2960,7 +3472,10 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     // The Execute$ SVar supplies the effect; the trigger metadata parsed from the T: line below is
     // written directly onto it, so no trigger field has to be carried over by hand.
     AbilityDef ability;
-    auto exec_it = svars.find(param_value(line, "Execute"));
+    const std::string execute = param_value(line, "Execute");
+    auto exec_it = svars.find(execute);
+    if (exec_it == svars.end())
+        parse_finding("svar_missing", execute, execute.empty() ? "the trigger has no Execute$" : "Execute$ names no SVar");
     if (exec_it != svars.end()) {
         // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
         if (exec_it->second.find("ChooseCard") != std::string::npos &&
@@ -2970,7 +3485,17 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
             ability = parse_svar_ability(exec_it->second, AbilityDef::TRIGGERED, svars, card_name);
     }
     ability.ability_type = AbilityDef::TRIGGERED;
-    bind_trigger_line(read_trigger_line(line, svars, ability), ability);
+    const TriggerLine t = read_trigger_line(line, svars, ability);
+    ability.trigger_mode = t.mode;
+    const bool mode_bound = bind_trigger_line(t, ability);
+    if (mode_bound) trigger_form_findings(line, t);
+    // It resolves inside the trigger scan, which can't suspend: no card's body asks anything.
+    if (t.is_static && (t.optional || (!ability.valid_tgts.empty() && ability.valid_tgts != "N_A")))
+        parse_finding("trigger_form", t.mode + ".Static", "a Static$ True ability that asks is blocking");
+    if (!mode_bound)
+        parse_finding("trigger_mode", t.mode, "no event binding: the trigger is dropped");
+    else if (ability.trigger_on == 0 && !ability.trigger_state_condition)
+        parse_finding("trigger_form", t.mode, "this form of the mode binds no event: the trigger is dropped");
     return ability;
 }
 
@@ -3002,9 +3527,12 @@ static TriggerLine read_trigger_line(const std::string &line,
             // permanent for mana fires this ("whenever YOU tap ...").
             if (value == "You") t.player_is_you = true;
         } else if (key == "Static") {
-            // Static$ True on a TapsForMana trigger: it is a mana-additional effect that does
-            // not use the stack (CR 605.1a) — resolved immediately by the mana system.
-            if (value == "True") t.is_static = true;
+            // Static$ True: the ability never uses the stack. It resolves as the trigger scan finds
+            // it (fire_trigger), a TapsForMana one inside the mana system (CR 605.1a).
+            if (value == "True")
+                t.is_static = true;
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "AttackingPlayer") {
             // Mode$ AttackersDeclared | AttackingPlayer$ You — the trigger fires only when
             // the player who declared attackers is this ability's controller ("whenever you attack").
@@ -3019,6 +3547,10 @@ static TriggerLine read_trigger_line(const std::string &line,
             // graveyard, so the trigger scan must look at graveyard cards, not just the
             // battlefield.
             if (value.find("Graveyard") != std::string::npos) t.from_graveyard = true;
+            // Command: a trigger an Effect carries (Triggers$), registered as a floating trigger.
+            for (const std::string &zone : split(value, ','))
+                if (zone != "Battlefield" && zone != "Graveyard" && zone != "Command")
+                    parse_finding("trigger_zone", "TriggerZones:" + zone, "the ability functions only on the battlefield or in a graveyard");
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
             if (value == "You") t.player_is_you = true;
             // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): the trigger fires only
@@ -3026,6 +3558,7 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (value == "Opponent") ability.trigger_valid_player_is_opponent = true;
         } else if (key == "ValidSA") {
             read_mana_spent_filter(value, ability);
+            if (value == "Spell.ManaFromCard.StrictlySelf") ability.trigger_mana_from_self = true;
             if (value.find("YouCtrl") != std::string::npos) t.player_is_you = true;
         } else if (key == "Origin") {
             t.origin = trigger_zone_filter(value);
@@ -3040,6 +3573,27 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (value.find("You") != std::string::npos ||
                 value.find("Controller") != std::string::npos)
                 t.optional = true;
+        } else if (key == "ResolvedLimit") {
+            // ResolvedLimit$ N: the ability resolves at most N times each turn for this source
+            // (Carpet of Flowers' "if you haven't added mana with this ability this turn").
+            if (!value.empty() && value.find_first_not_of("0123456789") == std::string::npos)
+                t.resolved_limit = std::stoi(value);
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+        } else if (key == "ActivationLimit") {
+            // ActivationLimit$ N: "this ability triggers only N times each turn", for this source.
+            if (!value.empty() && value.find_first_not_of("0123456789") == std::string::npos)
+                t.turn_limit = std::stoi(value);
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+        } else if (key == "NoResolvingCheck") {
+            // NoResolvingCheck$ True: the trigger's condition is checked when the trigger event
+            // occurs and not again at resolution (Moonshadow's "while" condition, part of the
+            // trigger event rather than an intervening "if").
+            if (value == "True")
+                t.no_resolving_check = true;
+            else
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") t.exclude_first_draw_step = true;
         } else if (key == "Number") {
@@ -3064,13 +3618,21 @@ static TriggerLine read_trigger_line(const std::string &line,
             t.intervening_if = true;
         } else if (key == "PresentCompare") {
             t.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+        } else if (key == "Revolt") {
+            // Revolt$ True: the intervening-if (603.4) "if a permanent you controlled left the
+            // battlefield this turn", on the player flag Count$Revolt reads.
+            if (value == "True") {
+                t.condition_present = "Count$Revolt.1.0";
+                t.intervening_if = true;
+            } else {
+                parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+            }
         } else if (key == "CheckSVar") {
             auto it = svars.find(value);
             const std::string svdef = (it != svars.end()) ? it->second : std::string();
             if (svdef.rfind("Number$", 0) == 0) {
-                // Per-permanent stored-SVar gate (Carpet of Flowers: CheckSVar$ CarpetX, where
-                // SVar:CarpetX:Number$0 is a scratch int latched by DB$ StoreSVar — "if you
-                // haven't added mana with this ability this turn"). Read the SOURCE permanent's
+                // Per-permanent stored-SVar gate (CheckSVar$ NAME, where SVar:NAME:Number$0 is a
+                // scratch int latched by DB$ StoreSVar). Read the SOURCE permanent's
                 // stored_svars[name] at trigger time AND resolution, NOT a board-presence count.
                 ability.stored_svar_gate_name = value;
             } else {
@@ -3078,7 +3640,14 @@ static TriggerLine read_trigger_line(const std::string &line,
                 // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
                 // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
                 // it as the intervening-if condition so the whole trigger fizzles when false.
-                t.condition_present = (it != svars.end()) ? it->second : value;
+                // CastSA> names the spell that cast the source: the expression reads the source's
+                // record of it (Vibrance: CastSA>Count$Adamant_2.Red.2.0).
+                static const std::string kCastSa = "CastSA>";
+                const std::string expr = (it != svars.end()) ? it->second : value;
+                const bool of_cast = expr.rfind(kCastSa, 0) == 0;
+                t.condition_present = of_cast ? expr.substr(kCastSa.size()) : expr;
+                if (of_cast && !svar_expr_recognized(t.condition_present))
+                    parse_finding("svar_expr", key, value);
                 t.intervening_if = true;
             }
         } else if (key == "SVarCompare") {
@@ -3086,17 +3655,31 @@ static TriggerLine read_trigger_line(const std::string &line,
             if (!ability.stored_svar_gate_name.empty())
                 ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
             else
-                t.condition_compare = value;  // explicit compare for the CheckSVar count gate
+                read_svar_compare(value, svars, t);  // explicit compare for the CheckSVar count gate
+        } else if (!trigger_param_assumed(key, value)) {
+            parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
         }
     }
     return t;
 }
 
-// The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone; only the
-// battlefield and graveyard filters are modeled).
+// A trigger's SVarCompare$: a comparator with its integer, or (Sand Scout's GTX) with an SVar on its
+// right-hand side, kept as that SVar's expression.
+static void read_svar_compare(const std::string &value, const std::map<std::string, std::string> &svars,
+                              TriggerLine &t) {
+    t.condition_compare = value;
+    if (value.size() < 3) return;
+    auto rhs = svars.find(value.substr(2));
+    if (rhs == svars.end()) return;
+    t.condition_compare = value.substr(0, 2);
+    t.condition_compare_expr = rhs->second;
+}
+
+// The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone).
 static int trigger_zone_filter(const std::string &value) {
-    if (value == "Battlefield") return Zone::BATTLEFIELD;
-    if (value == "Graveyard") return Zone::GRAVEYARD;
+    Zone::ZoneValue zone;
+    if (Zone::from_script_name(value, zone)) return zone;
+    if (value != "Any") parse_finding("trigger_zone", "ChangesZone:" + value, "read as any zone");
     return -1;
 }
 
@@ -3136,8 +3719,14 @@ static void read_trigger_valid_card(const std::string &value,
     if (filter_names_token(value, "nonCreature"))    t.valid_card_non_creature = true;
     if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
     // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
-    // Card.wasCastByYou+Self).
-    if (filter_names_token(value, "Self"))           t.valid_card_self         = true;
+    // Card.wasCastByYou+Self). In one alternative of several (Pyrogoyf's
+    // Card.Self,Creature.Lhurgoyf+YouCtrl) it is no identity gate: the matcher reads the alternative.
+    if (filter_names_token(value, "Self")) {
+        if (value.find_first_of(",;") == std::string::npos)
+            t.valid_card_self = true;
+        else
+            ability.trigger_self_alternative = true;
+    }
     // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
     // source must have entered by being cast (Permanent::entered_by_cast).
     if (filter_names_token(value, "wasCastByYou"))
@@ -3156,7 +3745,6 @@ static void read_trigger_valid_card(const std::string &value,
     }
     if (filter_names_token(value, "OppOwn"))         t.valid_card_opp_own      = true;
     if (filter_names_token(value, "OppCtrl"))        t.valid_card_opp_ctrl     = true;
-    if (filter_names_token(value, "Colorless"))      t.valid_card_colorless    = true;
     // "untapped" qualifier — the changing card must be untapped when the trigger checks
     // it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters untapped").
     if (filter_names_token(value, "untapped"))       t.valid_card_untapped     = true;
@@ -3167,7 +3755,7 @@ static void read_trigger_valid_card(const std::string &value,
     // qualifier to its runtime Count$ expression + comparison op, mirroring the
     // ChangeType cmcEQ handling used by Aether Vial.
     std::string op, bound;
-    if (find_cmc_bound(value, nullptr, op, bound)) {
+    if (find_cmc_bound(FilterSpec(value), nullptr, op, bound)) {
         auto it = svars.find(bound);
         if (it != svars.end()) {
             ability.trigger_cmc_expr = it->second;
@@ -3184,8 +3772,8 @@ static void read_trigger_valid_card(const std::string &value,
 }
 
 // Binds a read trigger line onto `ability`: its intervening-if and optionality, then the event its
-// Mode$ fires on together with that mode's filters.
-static void bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
+// Mode$ fires on together with that mode's filters. False when the mode has no binding.
+static bool bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
     // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
     // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
     // ConditionNotPresent$ Card.Self+escaped) is kept when the line declares none.
@@ -3193,214 +3781,28 @@ static void bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
         ability.intervening_if = true;
         ability.condition_present = t.condition_present;
         ability.condition_compare = t.condition_compare;
+        ability.condition_compare_expr = t.condition_compare_expr;
     }
     // OptionalDecider$ You ("At the beginning of your upkeep, you may ...") makes the whole
     // triggered ability optional at resolution, independent of the trigger mode (Aether
     // Vial's upkeep charge-counter trigger is a Phase trigger, not a zone-change trigger).
     ability.trigger_optional = t.optional;
-    // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
-    // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
-    // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its
-    // own dedicated flag (trigger_taps_for_mana_static) and inline mana-system handling, so it is
-    // excluded here. General over any Static$ True phase/ChangesZone trigger.
-    if (t.is_static && t.mode != "TapsForMana") ability.trigger_static_offstack = true;
+    // ResolvedLimit$ N — an intervening-if (CR 603.4) on how often the ability has resolved this
+    // turn, checked as the trigger is collected and again as it resolves.
+    ability.trigger_resolved_limit = t.resolved_limit;
+    ability.trigger_turn_limit = t.turn_limit;
+    // NoResolvingCheck$ True — the trigger's condition is not rechecked as the ability resolves.
+    ability.trigger_no_resolving_check = t.no_resolving_check;
+    // Static$ True (Animate Dead's leave-battlefield ClearRemembered cleanup) is a bookkeeping trigger
+    // that resolves immediately off the stack in any mode; the mode's row may take it over.
+    ability.trigger_static_offstack = t.is_static;
     // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
     ability.trigger_from_graveyard = t.from_graveyard;
 
-    const std::string &mode = t.mode;
-    if (mode == "ChangesZone" || mode == "ChangesZoneAll") {
-        // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied
-        // at match time. ChangesZone fires once per matching card. ChangesZoneAll ("whenever one
-        // or more cards ...") is a single batch trigger (CR 603.2c): it fires exactly ONCE for a
-        // group of simultaneous zone changes, no matter how many cards matched, so the trigger
-        // scan dedupes it to a single firing per batch (Moonshadow: milling 3 permanent cards
-        // removes ONE -1/-1 counter, not three).
-        ability.trigger_on = Events::CARD_CHANGED_ZONE;
-        ability.trigger_zone_origin = t.origin;
-        ability.trigger_zone_destination = t.destination;
-        // ValidCard$ (types, control, ownership, …) is matched against the moving object itself
-        // through ability.trigger_valid_card, not against the event's player.
-        ability.trigger_valid_card_untapped = t.valid_card_untapped;
-        ability.trigger_batch_zone_all = (mode == "ChangesZoneAll");
-        if (t.valid_card_self) ability.trigger_only_self = true;
-        // A Destination$ Battlefield trigger gated by IsPresent$ Card.Self (the source must
-        // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
-        // enters" — the source's own entry must not satisfy it (Kappa Cannoneer's Oracle text
-        // reads "another artifact you control"). Exclude the source from this trigger.
-        if (t.destination == Zone::BATTLEFIELD && t.intervening_if && t.condition_present == "Card.Self")
-            ability.trigger_self_excluded = true;
-    } else if (mode == "Phase") {
-        bind_phase_trigger(t, ability);
-    } else if (mode == "SpellCast") {
-        bind_spell_cast_trigger(t, ability);
-    } else if (mode == "DamageDone") {
-        // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
-        if (t.combat_damage_only) {
-            ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
-            ability.trigger_only_self = true;  // ValidSource$ Card.Self
-        }
-    } else if (mode == "DamageAll") {
-        // "Whenever one or more creatures you control deal combat damage to one or more players" —
-        // Forth Eorlingas!'s floating monarch trigger (Mode$ DamageAll | ValidSource$ Creature.YouCtrl
-        // | ValidTarget$ Player | CombatDamage$ True). Fires on COMBAT_DAMAGE_TO_PLAYER when the
-        // damaging creature is controlled by this trigger's controller (matched at fire time, since
-        // the floating trigger has no source permanent to self-reference).
-        if (t.combat_damage_only) {
-            ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
-            ability.trigger_damage_source_youctrl = t.source_creature_youctrl;
-        }
-    } else if (mode == "Drawn") {
-        // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
-        ability.trigger_on = Events::PLAYER_DREW_CARD;
-        ability.trigger_valid_card_opp_own = t.valid_card_opp_own;
-        ability.trigger_exclude_first_draw_step = t.exclude_first_draw_step;
-        ability.trigger_draw_number_eq = t.draw_number_eq;
-        // ValidCard$ Card.YouCtrl on a Drawn trigger ("whenever YOU draw ...", Tamiyo): the drawer
-        // must be the source's controller. Reuse the controller-is-event-player gate (the
-        // PLAYER_DREW_CARD event's PLAYER is the drawer), set by YouCtrl in the ValidCard parse.
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    } else if (mode == "Attacks") {
-        // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
-        // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$
-        // Card.Self → trigger_only_self matches the attacking ENTITY against the source.
-        ability.trigger_on = Events::CREATURE_ATTACKED;
-        if (t.valid_card_self) ability.trigger_only_self = true;
-        // ValidCard$ Creature.OppCtrl | Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned
-        // Scholar's +2 hosted trigger): an opponent's creature attacking you/your planeswalker.
-        // Matched at fire time against the attacker's controller (the trigger has no source perm).
-        ability.trigger_attacker_opp_ctrl = t.valid_card_opp_ctrl;
-    } else if (mode == "AttackersDeclared") {
-        // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
-        // Fires once per combat when the source's controller declares one or more attackers.
-        ability.trigger_on = Events::ATTACKERS_DECLARED;
-        ability.trigger_valid_player_is_controller = t.attacking_player_is_you;
-    } else if (mode == "TapsForMana") {
-        // "Whenever you tap a creature for mana, add an additional {G}." — Badgermole Cub
-        // (Mode$ TapsForMana | ValidCard$ Creature | Activator$ You | Static$ True). A
-        // mana-additional triggered ability resolved immediately by the mana system (off-stack,
-        // CR 605.1a) rather than placed on the stack.
-        ability.trigger_on = Events::TAPPED_FOR_MANA;
-        ability.trigger_valid_card_is_creature = t.valid_card_creature;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-        ability.trigger_taps_for_mana_static = t.is_static;
-    } else if (mode == "BecomesTarget") {
-        // "Whenever CARDNAME becomes the target of a spell an opponent controls, ..." — Reality
-        // Smasher (Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl | ValidTarget$ Card.Self). Fires
-        // when this permanent becomes the target of a matching spell (CR 603.2c). ValidTarget$
-        // Card.Self reuses trigger_only_self (the targeted permanent must be the source).
-        ability.trigger_on = Events::BECAME_TARGET;
-        ability.trigger_source_must_be_spell = t.source_is_spell;
-        ability.trigger_source_opp_ctrl = t.source_opp_ctrl;
-        if (t.target_self) ability.trigger_only_self = true;
-    } else if (mode == "BecomeMonstrous") {
-        // "When CARDNAME becomes monstrous, ..." — Mode$ BecomeMonstrous (CR 701.37). Fired by the
-        // resolving Monstrosity$ ability (effect_put_counter.cpp) with ENTITY = the permanent that
-        // became monstrous, so ValidCard$ Card.Self reuses the standard trigger_only_self ENTITY check.
-        // TriggerZones$ Battlefield is the default functioning zone; no extra handling needed.
-        ability.trigger_on = Events::BECAME_MONSTROUS;
-        if (t.valid_card_self) ability.trigger_only_self = true;
-    } else if (mode == "Always") {
-        // Mode$ Always — a state-triggered ability (CR 603.8). Its trigger condition is a game STATE
-        // (the IsPresent$ intervening-if bound above into condition_present/intervening_if), not a
-        // game event, so it has no trigger_on; the dedicated state-trigger scan in
-        // collect_triggered_abilities evaluates the condition each SBA pass and fires once when it
-        // becomes true. Dark Depths: IsPresent$ Card.Self+counters_EQ0_ICE ("when this has no ice
-        // counters on it"). trigger_only_self is set so the source is the permanent whose counters
-        // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.
-        ability.trigger_state_condition = true;
-        ability.trigger_only_self = true;
-    }
-}
-
-// Mode$ Phase: "at the beginning of [your] <step>". The first listed phase (in the order below)
-// binds trigger_on and any further one is an additional event the same trigger fires on (Carpet
-// of Flowers' Phase$ Main1,Main2 — "each of your main phases").
-static void bind_phase_trigger(const TriggerLine &t, AbilityDef &ability) {
-    static const struct {
-        const char *phase;
-        EventId event;
-    } kPhaseEvents[] = {
-        {"Upkeep", Events::UPKEEP_BEGAN},
-        // Forge writes the end step as either "EndStep" or "End of Turn".
-        {"EndStep", Events::END_STEP_BEGAN},
-        {"End of Turn", Events::END_STEP_BEGAN},
-        {"Draw", Events::DRAW_STEP_BEGAN},
-        {"BeginCombat", Events::BEGIN_COMBAT_BEGAN},
-        // Forge writes the (pre-combat) first main phase as "Main1", the post-combat one as "Main2".
-        {"Main1", Events::FIRST_MAIN_BEGAN},
-        {"Main2", Events::SECOND_MAIN_BEGAN},
-        // With no ValidPlayer$ You a Cleanup trigger fires at every cleanup (Carpet of Flowers'
-        // Static$ True reset re-arming its latch).
-        {"Cleanup", Events::CLEANUP_BEGAN},
-    };
-    for (const auto &pe : kPhaseEvents) {
-        if (std::find(t.phases.begin(), t.phases.end(), pe.phase) == t.phases.end()) continue;
-        if (ability.trigger_on == 0) ability.trigger_on = pe.event;
-        else if (ability.trigger_on != pe.event &&
-                 std::find(ability.trigger_on_extra.begin(), ability.trigger_on_extra.end(),
-                           pe.event) == ability.trigger_on_extra.end())
-            ability.trigger_on_extra.push_back(pe.event);
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
-}
-
-// Mode$ SpellCast: which cast event the trigger binds to, and its gates on the cast spell.
-static void bind_spell_cast_trigger(const TriggerLine &t, AbilityDef &ability) {
-    if (t.valid_card_non_creature) {
-        ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
-    // "Whenever you cast a colorless spell, ..." — Glaring Fleshraker
-    // (Mode$ SpellCast | ValidCard$ Card.Colorless | ValidActivatingPlayer$ You). A plain
-    // SpellCast with a colorless filter on the cast spell; matched at trigger time against the
-    // spell's colorlessness (CR 105.2c). Keyed on the general Colorless tag, not this card.
-    if (t.valid_card_colorless) {
-        ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_card_colorless = true;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
-    // "whenever you cast your Nth spell" — Cori-Steel Cutter; or "your Nth NONCREATURE spell each
-    // turn" — The Fantasticar. Bind to SPELL_CAST (fired AFTER the per-cast spell counters bump,
-    // unlike NONCREATURE_SPELL_CAST which fires before) so the count gate sees the current cast.
-    if (t.cast_count_eq > 0) {
-        ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-        ability.trigger_spell_count_eq = t.cast_count_eq;
-        if (t.valid_card_non_creature) {
-            // Count only noncreature spells, and only fire on a noncreature cast (the SPELL_CAST
-            // event carries every spell, so filter the triggering card to noncreature too).
-            ability.trigger_valid_card_non_creature = true;
-            ability.trigger_spell_count_noncreature = true;
-        }
-    }
-    // "Whenever a player casts a spell with mana value equal to ..." — Chalice of the Void
-    // (Mode$ SpellCast | ValidCard$ Card.cmcEQY | ValidActivatingPlayer$ Player). A dynamic
-    // mana-value filter on any player's spell. The cmc match is checked at trigger time.
-    if (!ability.trigger_cmc_expr.empty()) {
-        ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
-    // "When you cast this spell, [if it was kicked with its [N] kicker,] ..." — Wastescape
-    // Battlemage (Mode$ SpellCast | ValidCard$ Card.Self[+kicked N]). A linked self-cast
-    // trigger that fires while the spell is on the stack (CR 702.33e/f). trigger_only_self
-    // restricts it to the source spell; trigger_kicked_index (>0) additionally gates on the
-    // Nth kicker having been paid. Handled by the dedicated self-cast SPELL_CAST scan.
-    if (t.valid_card_self) {
-        ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_only_self = true;
-        ability.trigger_kicked_index = t.kicked_index;
-    }
-    // General "whenever you cast a spell, ..." — Paradox Engine
-    // (Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You). A plain, unfiltered
-    // SpellCast trigger that fires on EVERY spell the source's controller casts. None of the
-    // specialized SpellCast bindings above (noncreature/colorless/count/cmc/self) applied, so
-    // bind to SPELL_CAST and gate on the caster being this source's controller. The general
-    // battlefield trigger scan fires it (no extra ValidCard$ filter ⇒ any spell). Keyed on the
-    // bare SpellCast mode, not this card.
-    if (ability.trigger_on == 0) {
-        ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = t.player_is_you;
-    }
+    const TriggerMode *mode = trigger_mode_named(t.mode);
+    if (!mode) return false;
+    mode->bind(*mode, t, ability);
+    return true;
 }
 
 static std::vector<AbilityDef> parse_triggered_abilities(const std::string &script,
@@ -3408,6 +3810,7 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string &scri
                                                       const std::string& card_name) {
     std::vector<AbilityDef> result;
     for (const auto &line : multi_values_from_script(script, "T")) {
+        const FindingLine finding_line("T:" + line);
         AbilityDef ab = parse_one_trigger(line, svars, card_name);
         ab.script_line = "T:" + line;
         // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
@@ -3428,7 +3831,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
     StaticAbility sa;
     if (line.find("Mode$") == std::string::npos) return sa;
 
+    std::set<std::string> unread_keys;  // keys already reported by the branch chain below
     bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
+    bool may_play = false;              // MayPlay$ True (resolve_may_play_form)
+    bool may_look_at = false;           // MayLookAt$ You (resolve_may_look_form)
+    bool may_play_no_zone_grant = false;  // MayPlayDontGrantZonePermissions$ True
+    std::string affected_defined;       // AffectedDefined$, read with the whole line parsed
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
@@ -3450,12 +3858,21 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
+                granted_keyword_findings(value);
             } else if (key == "SetMaxHandSize") {
                 // SetMaxHandSize$ Unlimited (Tamiyo, Seasoned Scholar's emblem: "You have no
                 // maximum hand size.") → -1 (no maximum); a numeric value sets the maximum to N.
                 if (value == "Unlimited") sa.set_max_hand_size = -1;
                 else if (!value.empty() && isdigit((unsigned char)value[0]))
                     sa.set_max_hand_size = std::stoi(value);
+                else
+                    static_value_finding(sa, key, value);
+            } else if (key == "AddHiddenKeyword") {
+                // "CARDNAME can't block." is a rule of the game, not an ability the creature has
+                // (CR 509.1b, 611.2c): Humility takes nothing away, and it reaches a creature that
+                // comes later. Read by the block restrictions (rules_mod::block_prohibited).
+                if (value == "CARDNAME can't block.") sa.cant_block = true;
+                else static_value_finding(sa, key, value);
             } else if (key == "AddAbility") {
                 // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
                 // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
@@ -3473,6 +3890,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // its name (so the reparse's svars map is keyed correctly) and its resolved body.
                 sa.add_trigger_svar_name = value;
                 sa.add_trigger_svar = svar_or_literal(svars, value);
+            } else if (key == "AffectedDefined") {
+                affected_defined = value;
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Per-source counter gate (Kaito: Affected$ Permanent.Self+counters_GE1_LOYALTY).
@@ -3510,16 +3929,26 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     const std::string body = svar_or_literal(svars, value);
                     if (body.find("ThisTurnCast") != std::string::npos)
                         sa.raise_cost_per_spell_cast = true;
+                    else
+                        static_value_finding(sa, key, value);
+                } else {
+                    static_value_finding(sa, key, value);
                 }
             } else if (key == "RaiseTo") {
                 // SetCost RaiseTo$ True (Trinisphere): the Amount$ is a FLOOR — raise a sub-Amount
                 // total up to Amount, never lower a cost that is already at/above it.
                 if (sa.category == "SetCost") sa.set_cost_raise_to = (value == "True");
             } else if (key == "Activator") {
-                // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
-                // spells cast by the source's controller, not to everyone's spells.
+                // Whose spells a cost static applies to: every player's (Activator$ Player, what
+                // every other reader assumes), its controller's (ReduceCost Activator$ You, Eye of
+                // Ugin), or those of a player whose turn it isn't (RaiseCost Activator$
+                // Player.!Active, Defense Grid).
                 if (sa.category == "ReduceCost" && value == "You")
-                    sa.reduce_cost_you_only = true;
+                    sa.cost_activator = StaticAbility::CostActivator::CONTROLLER;
+                else if (sa.category == "RaiseCost" && value == "Player.!Active")
+                    sa.cost_activator = StaticAbility::CostActivator::NOT_ACTIVE;
+                else if (value != "Player")
+                    static_value_finding(sa, key, value);
             } else if (key == "ValidCard") {
                 // Card.NamedCard restricts the static to the source's chosen card name
                 // (RaiseCost / CantBeActivated on Disruptor Flute).
@@ -3528,10 +3957,17 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (sa.category == "RaiseCost") {
                     if (value.find("nonCreature") != std::string::npos)
                         sa.raise_cost_filter = "nonCreature";
+                    // The tax reads nothing else of the filter (active_raise_cost_for).
+                    if (value != "Card" && value != "Card.nonCreature" && value != "Card.NamedCard")
+                        static_value_finding(sa, key, value);
                 } else if (sa.category == "ReduceCost") {
                     // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
-                    // each spell's card characteristics when computing its cast cost.
-                    sa.reduce_cost_filter = value;
+                    // each spell's card characteristics when computing its cast cost. Card.Self
+                    // (Mystical Dispute) reduces only the card's own cost as it is cast.
+                    if (value == "Card.Self")
+                        sa.reduce_cost_self = true;
+                    else
+                        sa.reduce_cost_filter = value;
                 } else if (sa.category == "CantAttack") {
                     // The creatures the can't-attack restriction applies to (Ensnaring Bridge:
                     // "Creature.powerGTX"). A dynamic 'X' in a power/toughness qualifier references
@@ -3554,13 +3990,17 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     // The spells the cost floor applies to (Trinisphere: ValidCard$ Card = every
                     // spell). A bare "Card" is left empty (matches all) to skip a useless filter run.
                     if (value != "Card") sa.set_cost_filter = value;
+                } else if (sa.category == "ManaConvert") {
+                    sa.mana_convert_card = value;
                 }
             } else if (key == "NumLimitEachTurn") {
                 sa.cant_cast_limit_per_turn = std::stoi(value);
             } else if (key == "Caster") {
                 // CantBeCast Caster$ Opponent (Voice of Victory): the restriction applies to
-                // the source controller's opponents, not the controller themselves.
+                // the source controller's opponents, not the controller themselves. Caster$
+                // Player is the default; no other caster restricts it.
                 if (value == "Opponent") sa.cant_cast_by_opponent = true;
+                else if (value != "Player") static_value_finding(sa, key, value);
             } else if (key == "OnlySorcerySpeed") {
                 // CantBeCast OnlySorcerySpeed$ True (Teferi, Time Raveler): a TIMING restriction,
                 // not a blanket prohibition — the affected caster may cast spells only when they
@@ -3573,14 +4013,23 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (sa.category == "CantBeCast") {
                     if (value.find("Graveyard") != std::string::npos) sa.cant_cast_from_graveyard = true;
                     if (value.find("Library")   != std::string::npos) sa.cant_cast_from_library   = true;
+                    for (const std::string &zone : split(value, ','))
+                        if (zone != "Graveyard" && zone != "Library") static_value_finding(sa, key, value);
                 }
             } else if (key == "cmcGT") {
                 // CantBeCast cmcGT$ Land (Lavinia, Azorius Renegade): a DYNAMIC mana-value bound.
                 // The spell is prohibited when its mana value exceeds the number of lands the
                 // caster controls. Enforced in rules_mod::cast_prohibited on the opponent path.
                 if (sa.category == "CantBeCast" && value == "Land") sa.cant_cast_cmc_gt_land = true;
+                else static_value_finding(sa, key, value);
             } else if (key == "ValidCause") {
                 sa.disable_triggers_cause = value;
+            } else if (key == "ValidAttacker" && sa.category == "CantBlockBy") {
+                sa.cant_block_attacker = value;
+            } else if (key == "ValidBlocker" && sa.category == "CantBlockBy") {
+                sa.cant_block_blocker = value;
+            } else if (key == "IsCombat" && sa.category == "CantPreventDamage") {
+                sa.cant_prevent_combat_only = (value == "True");
             } else if (key == "CharacteristicDefining") {
                 sa.characteristic_defining = (value == "True");
             } else if (key == "SetPower") {
@@ -3604,10 +4053,22 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.add_type = value;
             } else if (key == "SetColor") {
                 // Layer-5 color-changing static (Mycosynth Lattice). The colorset spec ("Colorless"
-                // or a White/Blue/... list) is resolved in setcolor_override_for.
+                // or a White/Blue/... list) is resolved in apply_color_statics.
                 sa.set_color = value;
+            } else if (key == "AddColor") {
+                sa.add_color = value;
             } else if (key == "AffectedZone") {
                 sa.affected_zone = value;
+            } else if (key == "ExcludeZone") {
+                sa.exclude_zone = value;
+            } else if (key == "ValidPlayer" && sa.category == "ManaConvert" && value == "You") {
+                sa.mana_convert_you = true;
+            } else if (key == "ValidSA" && sa.category == "ManaConvert" && value == "Activated") {
+                sa.mana_convert_activated = true;
+            } else if (key == "GainsAbilitiesOf") {
+                sa.gains_abilities_of = value;
+            } else if (key == "GainsAbilitiesOfZones") {
+                if (!Zone::from_script_name(value, sa.gains_abilities_zone)) static_value_finding(sa, key, value);
             } else if (key == "ManaConversion") {
                 // ManaConvert static (Mycosynth Lattice): AnyType->AnyColor lets any mana pay any
                 // colored pip. Read by any_mana_as_any_color_active during mana payment.
@@ -3624,8 +4085,23 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             } else if (key == "AdjustLandPlays") {
                 if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                     sa.adjust_land_plays = std::stoi(value);
+                else
+                    static_value_finding(sa, key, value);
+            } else if (key == "MayLookAt" && value == "You") {
+                may_look_at = true;
             } else if (key == "MayPlay") {
-                if (value == "True") sa.may_play_from_graveyard = true;
+                may_play = (value == "True");
+            } else if (key == "MayPlayWithoutManaCost") {
+                sa.may_play_without_mana_cost = (value == "True");
+            } else if (key == "MayPlayWithFlash") {
+                sa.may_play_with_flash = (value == "True");
+            } else if (key == "MayPlayDontGrantZonePermissions") {
+                may_play_no_zone_grant = (value == "True");
+            } else if (key == "MayPlayPlayer" && (value == "You" || value == "Opponent" || value == "Player")) {
+                // Who may use the permission (Aluren: Player, any player); default its controller.
+                sa.may_play_player = value == "Player"     ? StaticAbility::MayPlayPlayer::ANY
+                                     : value == "Opponent" ? StaticAbility::MayPlayPlayer::OPPONENT
+                                                           : StaticAbility::MayPlayPlayer::YOU;
             } else if (key == "CheckSVar") {
                 sa.check_svar_expr = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
@@ -3645,14 +4121,118 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // the blanket form (no Target$) is implemented; flag the targeted form so it is
                 // not mistaken for a global can't-attack below.
                 if (sa.category == "CantAttack") cant_attack_targeted = true;
+            } else if (key == "ValidTarget" && sa.category == "ReduceCost") {
+                // ReduceCost ValidTarget$ Spell.Blue (Mystical Dispute: "if it targets a blue
+                // spell"): the reduction applies only once the spell's targets include a match.
+                sa.reduce_cost_valid_target = value;
+            } else if (key == "EffectZone") {
+                sa.effect_zone = value;
+            } else if (key == "ValidSource" && sa.category == "ManaRestriction") {
+                sa.mana_valid_source = value;
+            } else if (key == "InvertValidSource" && sa.category == "ManaRestriction") {
+                sa.mana_invert_valid_source = (value == "True");
+            } else if (!static_param_assumed(sa.category, key, value)) {
+                unread_keys.insert(key);
+                static_value_finding(sa, key, value);
             }
         }
+    param_pos = 0;
+    while (next_param(line, param_pos, key, value))
+        if (!static_mode_reads(sa.category, key) && unread_keys.insert(key).second) static_value_finding(sa, key, value);
+    // AffectedDefined$ names the one object a static affects and Affected$, when present, restricts
+    // it further. An Affected$ list is a form no reader restricts by.
+    if (!affected_defined.empty()) {
+        const ObjectSpec spec = parse_affected_defined(affected_defined);
+        if (spec.is(ObjectSpec::UNREAD) || sa.affected.text().find(',') != std::string::npos) {
+            parse_finding("static_param", "AffectedDefined", sa.category + " AffectedDefined$ " + affected_defined);
+        } else {
+            sa.affected_defined = spec;
+            if (sa.affected.empty()) sa.affected = "Card";
+        }
+    }
+    // A counters_ qualifier on anything but the source is the filter's own, read of each object.
+    if (!sa.affected_defined.is(ObjectSpec::SELF) && !filter_names_token(sa.affected, "Self")) {
+        sa.self_counter_type.clear();
+        sa.self_counter_compare.clear();
+    }
+    if (!static_mode_modelled(sa.category)) parse_finding("static_mode", sa.category, "the engine applies no such static");
+    if (may_play) resolve_may_play_form(sa, may_play_no_zone_grant);
+    if (may_look_at) resolve_may_look_form(sa);
+    if (!static_effect_zone_modelled(sa))
+        parse_finding("static_param", "EffectZone", sa.category + " EffectZone$ " + sa.effect_zone);
+    static_form_findings(sa, line, svars);
 
     // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
     // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
-    if (sa.category == "CantAttack" && cant_attack_targeted) sa.cant_attack_filter.clear();
+    if (sa.category == "CantAttack" && cant_attack_targeted) {
+        sa.cant_attack_filter = FilterSpec();
+        parse_finding("static_form", "CantAttack.Target", "a can't-attack restriction naming the attacked player");
+    }
 
     return sa;
+}
+
+// A Continuous MayPlay$ True static, read as the permission it is: a free cast (MayPlayWithout-
+// ManaCost$, over the hand and the zones another permission opens), or lands played from the
+// graveyard. The engine has no rule for any other play permission (a zone the static would open
+// itself, a cast for normal costs): the finding static_form MayPlay.<zone> for each such zone.
+static void resolve_may_play_form(StaticAbility &sa, bool grants_no_zone_permission) {
+    std::vector<std::string> zones;
+    for (size_t b = 0; b <= sa.affected_zone.size();) {
+        size_t e = sa.affected_zone.find(',', b);
+        if (e == std::string::npos) e = sa.affected_zone.size();
+        if (e > b) zones.push_back(sa.affected_zone.substr(b, e - b));
+        b = e + 1;
+    }
+    if (zones.empty()) zones.push_back("Battlefield");  // a Continuous static's default zone
+    if (sa.may_play_without_mana_cost) {
+        // The hand needs no permission to cast from; another zone does, which the static gives
+        // unless it says it grants none (Aluren).
+        for (const std::string &z : zones)
+            if (z != "Hand" && !grants_no_zone_permission)
+                parse_finding(
+                    "static_form", "MayPlay." + z, "a permission to cast from " + z + " without paying the mana cost");
+        return;
+    }
+    if (sa.affected == "Card.Self" && zones.size() == 1 && zones[0] == "Graveyard" && sa.effect_zone == "Graveyard") {
+        sa.may_cast_self_from_graveyard = true;
+        return;
+    }
+    // "You may play lands and cast spells from your graveyard" (Gaea's Will): a card in a graveyard
+    // has no controller, so "you control" is its owner there.
+    if (sa.affected == "Card.YouCtrl" && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
+        sa.may_play_from_graveyard = true;
+        sa.may_cast_from_graveyard = true;
+        return;
+    }
+    const bool lands = filter_has_head(sa.affected, "Land") && sa.affected.text().find(',') == std::string::npos;
+    if (lands && zones.size() == 1 && zones[0] == "Graveyard" && !sa.may_play_with_flash) {
+        sa.may_play_from_graveyard = true;
+        return;
+    }
+    if (reaches_a_library_top(sa) && !sa.may_play_with_flash) {
+        sa.may_play_from_library = true;
+        return;
+    }
+    for (const std::string &z : zones)
+        parse_finding("static_form", "MayPlay." + z, "a permission to play " + sa.affected.text() + " from " + z);
+}
+
+// A static over library cards that names only top cards: the one place in a library a player can
+// be allowed to look at or cast from without a search.
+static bool reaches_a_library_top(const StaticAbility &sa) {
+    return sa.affected_zone == "Library" && filter_every_alternative_names(sa.affected, "TopLibrary");
+}
+
+// A Continuous MayLookAt$ You static: a standing look at a library's top card, the only look of its
+// kind the engine has. Over another zone it is the finding static_form MayLookAt.<zone>.
+static void resolve_may_look_form(StaticAbility &sa) {
+    if (!reaches_a_library_top(sa)) {
+        parse_finding("static_form", "MayLookAt." + sa.affected_zone, "a standing look at " + sa.affected.text());
+        return;
+    }
+    sa.affected = owner_relative_filter(sa.affected);
+    sa.may_look_at = true;
 }
 
 static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
@@ -3660,6 +4240,7 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
     for (const auto &line : multi_values_from_script(script, "S")) {
         // Skip alt cost lines (handled separately) and garbage matches
         if (line.find("AlternativeCost") != std::string::npos) continue;
+        const FindingLine finding_line("S:" + line);
         StaticAbility sa = parse_one_static_ability(line, svars);
         sa.script_line = intern_script_line("S:" + line);
         if (!sa.category.empty()) result.push_back(sa);
@@ -3667,356 +4248,835 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
     return result;
 }
 
+// The params of a replacement line and what its ReplaceWith$ SVar says: an R: line, or an SVar an
+// Effect's ReplacementEffects$ names.
+struct ReplacementLine {
+    std::vector<std::pair<std::string, std::string>> params;  // every key and value, in script order
+    std::string event;                // Event$
+    std::string draw_check_svar;      // CheckSVar$ <var>, the count gate's SVar name
+    std::string draw_svar_compare;    // SVarCompare$ <cmp>, its comparator (e.g. "LE1")
+    bool valid_player_you = false;    // ValidPlayer$ You: the source controller's own draws
+    bool valid_player_opponent = false;       // ValidPlayer$ Opponent: their opponent's
+    bool not_first_in_draw_step = false;      // NotFirstCardInDrawStep$ True
+    std::string produce_valid_type;   // ValidCard$ <type> for a ProduceMana replacement ("Land")
+    int produce_min_amount = 1;       // ManaAmount$ GEN, the minimum produced amount
+    std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
+    bool valid_card_self = false;
+    std::string valid_sa_filter;      // ValidSA$ spec (e.g. "Spell.YouCtrl")
+    std::string valid_source;         // ValidSource$ spec of a DamageDone replacement
+    std::string valid_target;         // ValidTarget$ spec of a DamageDone replacement
+    bool dest_is_battlefield = false;
+    bool dest_is_graveyard = false;
+    bool replace_with_etb_tapped = false;
+    bool replace_with_exile = false;
+    bool layer_cant_happen = false;
+    bool untap_step_of_another = false;       // ValidStepTurnToController$ other than You
+    bool active_zones_battlefield = false;
+    bool active_zones_command = false;        // ActiveZones$ Command: an Effect's own
+    std::string valid_card_filter;            // ValidCard$ of a card a Moved replacement watches
+    bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
+    bool prevent_true = false;                // Prevent$ True: the event simply doesn't happen
+    bool is_combat = false;                   // IsCombat$ True
+    bool valid_lki_creature = false;          // ValidLKI$ Creature.*: the moving card is (last known) a creature
+    bool origin_graveyard = false;            // Origin$ includes Graveyard
+    bool origin_library = false;              // Origin$ includes Library
+    bool origin_elsewhere = false;            // Origin$ names another zone, which no row watches
+    std::string replace_with_svar;            // the SVar named by ReplaceWith$ (e.g. "Exile")
+    // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
+    // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
+    // sorcery cards in your graveyard). Left empty for an unconditional "can't be countered".
+    std::string cant_counter_present, cant_counter_zone, cant_counter_compare;
+    // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
+    // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
+    // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
+    bool replace_with_void_counter = false;
+    // Conditional "enters tapped" (Ba Sing Se): ReplaceWith$ <SVar> where the SVar is a
+    // DB$ Tap | ETB$ True with a ConditionPresent$/ConditionCompare$ gate ("enters tapped
+    // unless you control a basic land"). Detected here off the named SVar's body so the
+    // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
+    bool replace_with_etb_tapped_conditional = false;
+    std::string tapped_cond_filter, tapped_cond_compare;
+    int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
+    // ProduceMana replacement (Damping Sphere): the ReplaceWith$ SVar is a DB$ ReplaceMana
+    // whose ReplaceMana$ names the single color all the produced mana is converted to.
+    bool replace_with_produce_mana = false;
+    Colors produce_replacement_color = COLORLESS;
+    // Mox Diamond / Chrome Mox "pay-a-discard-as-it-enters-else-to-graveyard" form: the
+    // ReplaceWith$ SVar chain is an optional DB$ Discard (DiscardValid$ <filter>) whose
+    // subability moves the card (Defined$ ReplacedCard) to the graveyard when nothing was
+    // discarded. Walk the SubAbility$ chain of named SVars to recognize all three signals
+    // (an optional discard, its DiscardValid$ filter, an "else to graveyard" move) rather than
+    // retagging the R: line.
+    bool replace_with_discard_else_grave = false;
+    std::string discard_else_filter;
+    std::string replace_with_body;  // the ReplaceWith$ SVar's text
+    bool replace_with_win = false;  // the ReplaceWith$ SVar is a DB$ WinsGame
+    int draw_add = 0;               // the ReplaceWith$ SVar's DB$ Draw NumCards$ ReplaceCount$Number/Plus.K
+    std::string draw_condition_count_expr;  // CheckSVar$ resolved to the SVar's Count$ body
+};
+
+// Reads a replacement line's params, and the ReplaceWith$ SVar it names.
+static ReplacementLine read_replacement_line(const std::string &line,
+                                             const std::map<std::string, std::string> &svars) {
+    ReplacementLine l;
+    size_t param_pos = 0;
+    std::string key, value;
+    while (next_param(line, param_pos, key, value)) {
+        l.params.emplace_back(key, value);
+        if      (key == "Event")       l.event = value;
+        else if (key == "ValidPlayer" && value == "You")         l.valid_player_you        = true;
+        else if (key == "ValidPlayer" && value == "Opponent")    l.valid_player_opponent   = true;
+        else if (key == "NotFirstCardInDrawStep" && value == "True") l.not_first_in_draw_step = true;
+        else if (key == "CheckSVar")  l.draw_check_svar          = value;
+        else if (key == "SVarCompare") l.draw_svar_compare       = value;
+        else if (key == "ManaAmount") {
+            // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
+            // Any other comparison is no form the row has.
+            std::string n = value.substr(2);
+            l.produce_min_amount = value.rfind("GE", 0) != 0 ? 0 : n.empty() ? 1 : std::stoi(n);
+        }
+        else if (key == "ValidSA")    l.valid_sa_filter          = value;
+        else if (key == "ValidSource") l.valid_source            = value;
+        else if (key == "ValidTarget") l.valid_target            = value;
+        else if (key == "IsCombat"    && value == "True")        l.is_combat               = true;
+        else if (key == "ValidCard"   && value == "Card.Self")   l.valid_card_self         = true;
+        else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
+            l.untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
+            l.produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
+        }
+        else if (key == "ValidCard"   && filter_has_head(value, "Card")) l.valid_card_filter = value;
+        // Containment Priest: a non-token creature that wasn't cast.
+        else if (key == "ValidCard"   && value == "Creature.!token+!wasCast") l.valid_card_uncast_creature = true;
+        else if (key == "Destination" && value == "Battlefield") l.dest_is_battlefield     = true;
+        else if (key == "Destination" && value == "Graveyard")   l.dest_is_graveyard       = true;
+        else if (key == "ReplaceWith" && value == "ETBTapped")   l.replace_with_etb_tapped = true;
+        else if (key == "ReplaceWith") { l.replace_with_svar = value; if (value == "Exile") l.replace_with_exile = true; }
+        else if (key == "Layer"       && value == "CantHappen") l.layer_cant_happen        = true;
+        else if (key == "ValidStepTurnToController") l.untap_step_of_another = value != "You";
+        else if (key == "ActiveZones" && value == "Battlefield") l.active_zones_battlefield = true;
+        else if (key == "ActiveZones" && value == "Command")     l.active_zones_command     = true;
+        else if (key == "Prevent"     && value == "True")        l.prevent_true             = true;
+        // Creature.Other: the moving card is no source of this line, which is on the battlefield.
+        else if (key == "ValidLKI"    && (value == "Creature" || value == "Creature.Other"))
+            l.valid_lki_creature = true;
+        else if (key == "Origin") {
+            for (const std::string &zone : split(value, ',')) {
+                if (zone == "Graveyard") l.origin_graveyard = true;
+                else if (zone == "Library") l.origin_library = true;
+                else l.origin_elsewhere = true;
+            }
+        }
+        else if (key == "IsPresent")     l.cant_counter_present = value;
+        else if (key == "PresentZone")   l.cant_counter_zone    = value;
+        else if (key == "PresentCompare") l.cant_counter_compare = value;
+    }
+    if (l.replace_with_svar.empty()) return l;
+
+    std::string cur = l.replace_with_svar;
+    bool saw_discard = false, saw_optional = false, saw_grave = false;
+    for (int guard = 0; guard < 8 && !cur.empty(); guard++) {
+        auto sv2 = svars.find(cur);
+        if (sv2 == svars.end()) break;
+        const std::string &b = sv2->second;
+        if (b.find("DB$ Discard") != std::string::npos)          saw_discard = true;
+        if (b.find("Optional$ True") != std::string::npos)       saw_optional = true;
+        if (b.find("Destination$ Graveyard") != std::string::npos) saw_grave = true;
+        std::string next_sub;
+        size_t pp = 0; std::string k, v;
+        while (next_param(b, pp, k, v)) {
+            if (k == "DiscardValid" && l.discard_else_filter.empty()) l.discard_else_filter = v;
+            else if (k == "SubAbility") next_sub = v;
+        }
+        cur = next_sub;
+    }
+    if (saw_discard && saw_optional && saw_grave) l.replace_with_discard_else_grave = true;
+
+    auto sv = svars.find(l.replace_with_svar);
+    if (sv == svars.end()) return l;
+    const std::string &body = sv->second;
+    l.replace_with_body = body;
+    if (body.find("VOID") != std::string::npos) l.replace_with_void_counter = true;
+    if (body.rfind("DB$ WinsGame", 0) == 0) l.replace_with_win = true;
+    if (body.find("DB$ ReplaceMana") != std::string::npos) {
+        l.replace_with_produce_mana = true;
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k != "ReplaceMana" || v.empty()) continue;
+            Colors color = mana_letter_color(v[0]);
+            l.produce_replacement_color = (color == NO_COLOR) ? COLORLESS : color;
+        }
+    }
+    if (body.find("DB$ Tap") != std::string::npos && body.find("ETB$ True") != std::string::npos) {
+        l.replace_with_etb_tapped_conditional = true;
+        // Pull ConditionPresent$ / ConditionCompare$ / UnlessCost$ out of the SVar body.
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k == "ConditionPresent") {
+                // Drop a "+YouCtrl" qualifier — the condition is always evaluated
+                // controller-relative (the permanent's controller as it enters).
+                std::string f = v;
+                size_t plus = f.find("+YouCtrl");
+                if (plus != std::string::npos) f.erase(plus);
+                l.tapped_cond_filter = f;
+            } else if (k == "ConditionCompare") {
+                l.tapped_cond_compare = v;
+            } else if (k == "UnlessCost") {
+                // "...unless you pay N life" — the controller may pay N life as the
+                // permanent enters to have it enter untapped (Witch-Blessed Meadow,
+                // shock lands).
+                CostPart part;
+                if (read_cost_token(v, part) && part.kind == CostPart::LIFE)
+                    l.tapped_unless_life = part.count;
+            }
+        }
+    }
+    if (l.event == "DrawCards" && body.find("DB$ Draw") != std::string::npos) {
+        // Pull the additive count out of NumCards$ ReplaceCount$Number/Plus.K.
+        size_t pp = 0; std::string k, v;
+        while (next_param(body, pp, k, v)) {
+            if (k != "NumCards") continue;
+            size_t plus = v.find("/Plus.");
+            if (plus != std::string::npos) l.draw_add = std::stoi(v.substr(plus + 6));
+            break;
+        }
+    }
+    // Resolve CheckSVar$ <var> to the SVar's Count$ body so the count gate can be evaluated
+    // directly (mirrors the trigger-side CheckSVar handling). An absent CheckSVar leaves the gate
+    // empty = the additive draw always applies.
+    if (!l.draw_check_svar.empty()) l.draw_condition_count_expr = svar_or_literal(svars, l.draw_check_svar);
+    return l;
+}
+
+static bool row_enters_tapped(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_etb_tapped) return false;
+    r.kind = Effect::Replacement::ENTERS_TAPPED;
+    r.applies_to_self_only = true;
+    return true;
+}
+
+// Conditional "enters tapped" (Ba Sing Se): an ENTERS_TAPPED replacement whose application is
+// gated on the controller's board (e.g. "unless you control a basic land").
+static bool row_enters_tapped_conditional(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_etb_tapped_conditional) return false;
+    r.kind = Effect::Replacement::ENTERS_TAPPED;
+    r.applies_to_self_only = true;
+    r.tapped_condition_filter = l.tapped_cond_filter;
+    r.tapped_condition_compare = l.tapped_cond_compare;
+    r.tapped_unless_life = l.tapped_unless_life;
+    return true;
+}
+
+// Mox Diamond / Chrome Mox: as this card would enter, its owner may discard a matching card (an
+// additional cost); if they don't, it goes to its owner's graveyard instead (614.1a
+// self-replacement).
+static bool row_discard_else_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.dest_is_battlefield || !l.replace_with_discard_else_grave) return false;
+    r.kind = Effect::Replacement::DISCARD_ELSE_GRAVEYARD;
+    r.applies_to_self_only = true;
+    r.discard_else_filter = l.discard_else_filter.empty() ? "Card" : l.discard_else_filter;
+    return true;
+}
+
+static bool row_cant_be_countered_self(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_card_self || !l.layer_cant_happen || l.valid_sa_filter != "Spell") return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = true;
+    // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and re-evaluated at
+    // counter time. Empty = the unconditional self form.
+    r.cant_counter_present = l.cant_counter_present;
+    r.cant_counter_zone    = l.cant_counter_zone;
+    r.cant_counter_compare = l.cant_counter_compare;
+    return true;
+}
+
+// Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active
+// (ActiveZones$ Battlefield) can't-be-countered replacement scoped by a ValidSA$ filter (e.g.
+// Spell.YouCtrl) rather than the source spell itself. Consulted at counter-resolution time against
+// every spell on the stack (614.13/CantHappen).
+static bool row_cant_be_countered_battlefield(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !l.active_zones_battlefield || l.valid_card_self || l.valid_sa_filter.empty())
+        return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = false;
+    r.from_battlefield = true;
+    r.valid_sa_filter = l.valid_sa_filter;
+    return true;
+}
+
+// The cards ValidCard$ names go to exile instead of a graveyard (Dauthi Voidwalker exiles an
+// opponent's with a void counter; Leyline of the Void plain-exiles — distinguished by the SVar).
+static bool row_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_graveyard || !l.replace_with_exile || l.valid_card_filter.empty() ||
+        !l.active_zones_battlefield)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
+    r.applies_to_self_only = false;
+    r.valid_card = l.valid_card_filter;
+    r.with_void_counter = l.replace_with_void_counter;
+    return true;
+}
+
+// Gaea's Will's GraveToExile: an Effect's own exile-instead, the cards it watches read for its
+// controller.
+static bool row_effect_exile_instead_of_graveyard(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_graveyard || !l.replace_with_exile || l.valid_card_filter.empty() || !l.active_zones_command)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
+    r.valid_card = l.valid_card_filter;
+    r.with_void_counter = l.replace_with_void_counter;
+    return true;
+}
+
+// Containment Priest: a non-token creature that wasn't cast is exiled instead of entering the
+// battlefield (614.1a). The replacement applies to any such creature entering the battlefield
+// while this permanent is on the battlefield.
+static bool row_exile_instead_of_etb(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_battlefield || !l.replace_with_exile || !l.valid_card_uncast_creature ||
+        !l.active_zones_battlefield)
+        return false;
+    r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
+    r.applies_to_self_only = false;
+    return true;
+}
+
+// Grafdigger's Cage: creature cards in graveyards and libraries can't enter the battlefield
+// (614.13). This is a prevention (Prevent$ True) — the moving card simply doesn't enter and stays
+// in its origin zone, distinct from Containment Priest's exile-instead replacement above.
+static bool row_prevent_etb_from_zones(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.dest_is_battlefield || !l.prevent_true || !l.valid_lki_creature || !l.active_zones_battlefield ||
+        !(l.origin_graveyard || l.origin_library) || l.origin_elsewhere)
+        return false;
+    r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
+    r.applies_to_self_only = false;
+    r.prevent_from_graveyard = l.origin_graveyard;
+    r.prevent_from_library = l.origin_library;
+    return true;
+}
+
+// Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in it, you
+// win the game instead." (CR 104.3a, 121.6). The controller's own draw, from an empty library; what
+// replaces it is the ReplaceWith$ body, offered with the other replacements of that draw
+// (replacement::collect_draw_replacements).
+static bool row_draw_empty_win(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.replace_with_win || !l.valid_player_you || !l.active_zones_battlefield) return false;
+    if (l.cant_counter_present != "Card.YouOwn" || l.cant_counter_zone != "Library" || l.cant_counter_compare != "EQ0")
+        return false;
+    r.kind = Effect::Replacement::DRAW_REPLACED;
+    r.draw_from_empty_library = true;
+    return true;
+}
+
+// Hullbreacher: "If an opponent would draw a card except the first one they draw in each of their
+// draw steps, instead you create a Treasure token." The body runs in place of the draw, for this
+// replacement's controller (CR 121.6).
+static bool row_draw_by_opponent(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.valid_player_opponent || !l.active_zones_battlefield || l.replace_with_body.empty()) return false;
+    r.kind = Effect::Replacement::DRAW_REPLACED;
+    r.draw_by_opponent = true;
+    r.draw_not_first_in_step = l.not_first_in_draw_step;
+    return true;
+}
+
+// Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one or more
+// cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw replacement —
+// Event$ DrawCards, ValidPlayer$ You (the source controller's own draws), whose ReplaceWith$ SVar
+// is a DB$ Draw with NumCards$ ReplaceCount$Number/Plus.K: the draw count is increased by K. The
+// optional CheckSVar$/SVarCompare$ gate ("one or fewer cards in hand") is carried onto the
+// replacement and re-evaluated for the drawing player at draw time
+// (replacement::draw_count_bonus). General over any additive draw replacement.
+static bool row_draw_add(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.active_zones_battlefield || !l.valid_player_you || l.replace_with_svar.empty() || l.draw_add <= 0)
+        return false;
+    r.kind = Effect::Replacement::DRAW_ADD;
+    r.applies_to_self_only = false;
+    r.draw_add = l.draw_add;
+    if (!l.draw_check_svar.empty()) {
+        r.draw_condition_count_expr = l.draw_condition_count_expr;
+        r.draw_condition_compare = l.draw_svar_compare;
+    }
+    return true;
+}
+
+// Choke: matching lands don't untap during their controllers' untap steps (614.1d).
+static bool row_skip_untap_subtype(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || l.untap_valid_subtype.empty() || l.untap_step_of_another) return false;
+    r.kind = Effect::Replacement::SKIP_UNTAP;
+    r.applies_to_self_only = false;
+    r.valid_subtype = l.untap_valid_subtype;
+    return true;
+}
+
+// Damping Sphere: "If a land is tapped for two or more mana, it produces {C} instead of any other
+// type and amount." A ProduceMana replacement (614.1) — when a permanent of the named type is
+// tapped for >= ManaAmount mana, replace its production with that much of the ReplaceMana color.
+static bool row_produce_mana(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.replace_with_produce_mana || !l.active_zones_battlefield || l.produce_valid_type.empty() ||
+        l.produce_min_amount < 1)
+        return false;
+    r.kind = Effect::Replacement::PRODUCE_MANA;
+    r.applies_to_self_only = false;
+    r.produce_valid_type = l.produce_valid_type;
+    r.produce_min_amount = l.produce_min_amount;
+    r.produce_replacement_color = l.produce_replacement_color;
+    return true;
+}
+
+// Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a
+// self-referential untap-prevention (ValidCard$ Card.Self). ValidStepTurnToController$ You is
+// implicit in a 2-player game (a permanent only untaps during its controller's untap step), so it
+// needs no extra gating here.
+static bool row_skip_untap_self(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !l.valid_card_self || !l.untap_valid_subtype.empty() || l.untap_step_of_another)
+        return false;
+    r.kind = Effect::Replacement::SKIP_UNTAP;
+    r.applies_to_self_only = true;
+    return true;
+}
+
+// Veil of Summer's AntiMagic: "Spells you control can't be countered this turn."
+static bool row_effect_cant_be_countered(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || !filter_names_token(l.valid_sa_filter, "YouCtrl")) return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.applies_to_self_only = false;
+    r.valid_sa_filter = l.valid_sa_filter;
+    return true;
+}
+
+// Theorist's Proxy's AntiMagic: the spell the Effect remembers can't be countered.
+static bool row_effect_cant_counter_remembered(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.layer_cant_happen || l.valid_card_filter != "Card.IsRemembered" || l.valid_sa_filter != "Spell") return false;
+    r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+    r.protects_remembered = true;
+    return true;
+}
+
+// Maze of Ith's RPrevent1/RPrevent2: prevent all combat damage dealt by (ValidSource$) or to
+// (ValidTarget$) the object the Effect remembers (CR 615).
+static bool row_effect_prevent_combat_damage(const ReplacementLine &l, Effect::Replacement &r) {
+    if (!l.prevent_true || !l.is_combat) return false;
+    r.prevent_by_remembered = filter_names_token(l.valid_source, "IsRemembered");
+    r.prevent_to_remembered = filter_names_token(l.valid_target, "IsRemembered");
+    if (!r.prevent_by_remembered && !r.prevent_to_remembered) return false;
+    r.kind = Effect::Replacement::PREVENT_COMBAT_DAMAGE;
+    return true;
+}
+
+// Every replacement a script can express: an Event$, the host it is written on, the reader that
+// says whether this line is that form and fills it in, whether it runs its ReplaceWith$ body (parsed
+// like any SVar, Effect::Replacement::replace_with) rather than reading it into fields, and the
+// params the row acts on, beside the Event$ every row has. A line yields each row it matches, in
+// order.
+static const struct {
+    const char *event;
+    ReplacementHost host;
+    bool (*read)(const ReplacementLine &, Effect::Replacement &);
+    bool runs_body;
+    const char *reads;
+} kReplacementRows[] = {
+    {"Moved", ReplacementHost::CARD, row_enters_tapped, false, "ValidCard Destination ReplaceWith"},
+    {"Moved", ReplacementHost::CARD, row_enters_tapped_conditional, false, "ValidCard Destination ReplaceWith"},
+    {"Moved", ReplacementHost::CARD, row_discard_else_graveyard, false, "ValidCard Destination ReplaceWith"},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_self, false,
+     "ValidCard ValidSA Layer IsPresent PresentZone PresentCompare"},
+    {"Counter", ReplacementHost::CARD, row_cant_be_countered_battlefield, false, "ValidSA Layer ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_graveyard, false, "ValidCard Destination ReplaceWith ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_exile_instead_of_etb, false, "ValidCard Destination ReplaceWith ActiveZones"},
+    {"Moved", ReplacementHost::CARD, row_prevent_etb_from_zones, false,
+     "ValidLKI Origin Destination Prevent Layer ActiveZones"},
+    {"Draw", ReplacementHost::CARD, row_draw_empty_win, true,
+     "ValidPlayer IsPresent PresentZone PresentCompare ReplaceWith ActiveZones"},
+    {"Draw", ReplacementHost::CARD, row_draw_by_opponent, true, "ValidPlayer NotFirstCardInDrawStep ReplaceWith ActiveZones"},
+    {"DrawCards", ReplacementHost::CARD, row_draw_add, false, "ValidPlayer CheckSVar SVarCompare ReplaceWith ActiveZones"},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_subtype, false, "ValidCard ValidStepTurnToController Layer ActiveZones"},
+    {"ProduceMana", ReplacementHost::CARD, row_produce_mana, false, "ValidCard ManaAmount ReplaceWith ActiveZones"},
+    {"Untap", ReplacementHost::CARD, row_skip_untap_self, false, "ValidCard ValidStepTurnToController Layer"},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_be_countered, false, "ValidSA Layer"},
+    {"Counter", ReplacementHost::EFFECT, row_effect_cant_counter_remembered, false, "ValidCard ValidSA Layer"},
+    {"Moved", ReplacementHost::EFFECT, row_effect_exile_instead_of_graveyard, false,
+     "ValidCard Destination ReplaceWith ActiveZones"},
+    {"DamageDone", ReplacementHost::EFFECT, row_effect_prevent_combat_damage, false, "Prevent IsCombat ValidSource ValidTarget"},
+};
+
+// Is `key` a param no row needs to act on: the event's name, the card's text, Forge's own note on
+// the event it hands on?
+static bool replacement_param_prose(const std::string &key) {
+    return key == "Event" || key == "Description" || key == "Secondary" || key == "ReplacementResult";
+}
+
+// Appends what the replacement line yields on `host`, returning how many it did. A param none of
+// the rows it yielded acts on is a finding: a line may match on some params and say more.
+static size_t read_replacement_rows(const std::string &line, const std::map<std::string, std::string> &svars,
+                                    ReplacementHost host, std::vector<Effect::Replacement> &out) {
+    const ReplacementLine l = read_replacement_line(line, svars);
+    size_t yielded = 0;
+    std::vector<std::string> read;
+    for (const auto &row : kReplacementRows) {
+        if (row.host != host || l.event != row.event) continue;
+        Effect::Replacement r;
+        if (!row.read(l, r)) continue;
+        if (row.runs_body)
+            r.replace_with = intern_ability_def(parse_svar_ability(l.replace_with_body, AbilityDef::TRIGGERED, svars, ""));
+        out.push_back(std::move(r));
+        yielded++;
+        for (const std::string &key : split(row.reads, ' ')) read.push_back(key);
+    }
+    if (yielded == 0) return 0;
+    for (const auto &param : l.params)
+        if (!replacement_param_prose(param.first) && std::find(read.begin(), read.end(), param.first) == read.end())
+            parse_finding("replacement_param", l.event + "." + param.first, param.first + "$ " + param.second);
+    return yielded;
+}
+
 // Parses R: replacement-effect lines from a card script into the Effect::Replacement kinds they
-// express (enters tapped, can't be countered, exile instead, untap/entry prevention, mana and draw
-// replacements); an R: line of no recognized kind yields nothing.
+// express; an R: line of no recognized kind yields nothing.
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars) {
     std::vector<Effect::Replacement> result;
 
     for (const auto& line : multi_values_from_script(script, "R")) {
+        const FindingLine finding_line("R:" + line);
         const size_t line_first = result.size();  // the replacements this line yields start here
-        bool event_is_moved       = false;
-        bool event_is_counter     = false;
-        bool event_is_untap       = false;
-        bool event_is_produce_mana = false;       // Event$ ProduceMana (Damping Sphere)
-        bool event_is_draw        = false;        // Event$ Draw (Jace, Wielder of Mysteries: win on empty-library draw)
-        bool event_is_draw_cards  = false;        // Event$ DrawCards (Quantum Riddler: additive "draw that many plus one")
-        std::string draw_check_svar;              // CheckSVar$ <var> — the count-gate SVar name (resolved to its Count$ body below)
-        std::string draw_svar_compare;            // SVarCompare$ <cmp> — comparator for the count gate (e.g. "LE1")
-        bool valid_player_you     = false;        // ValidPlayer$ You — the replacement applies to the source controller's own draws
-        std::string produce_valid_type;           // ValidCard$ <type> for a ProduceMana replacement ("Land")
-        int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
-        std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
-        bool valid_card_self      = false;
-        std::string valid_sa_filter;  // ValidSA$ spec on an R: line (e.g. "Spell.YouCtrl")
-        bool dest_is_battlefield  = false;
-        bool dest_is_graveyard_r  = false;
-        bool replace_with_etb_tapped = false;
-        bool replace_with_exile   = false;
-        bool layer_cant_happen    = false;
-        bool active_zones_battlefield = false;
-        bool valid_card_opp_non_token = false;
-        bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
-        bool prevent_true         = false;        // Prevent$ True — the event simply doesn't happen
-        bool valid_lki_creature   = false;        // ValidLKI$ Creature.* — the moving card is (last known) a creature
-        bool origin_graveyard     = false;        // Origin$ includes Graveyard
-        bool origin_library       = false;        // Origin$ includes Library
-        std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
-        // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
-        // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
-        // sorcery cards in your graveyard). Left empty for an unconditional "can't be countered".
-        std::string cant_counter_present, cant_counter_zone, cant_counter_compare;
-
-        size_t param_pos = 0;
-        std::string key, value;
-        while (next_param(line, param_pos, key, value)) {
-            if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
-            else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
-            else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
-            else if (key == "Event"       && value == "ProduceMana") event_is_produce_mana  = true;
-            else if (key == "Event"       && value == "Draw")        event_is_draw           = true;
-            else if (key == "Event"       && value == "DrawCards")   event_is_draw_cards     = true;
-            else if (key == "ValidPlayer" && value == "You")         valid_player_you        = true;
-            else if (key == "CheckSVar")  draw_check_svar          = value;
-            else if (key == "SVarCompare") draw_svar_compare       = value;
-            else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
-                // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
-                std::string n = value.substr(2);
-                produce_min_amount = n.empty() ? 1 : std::stoi(n);
-            }
-            else if (key == "ValidSA")    valid_sa_filter          = value;
-            else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
-            else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
-                untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
-                produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
-            }
-            else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                     (value.find("!token") != std::string::npos ||
-                      value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
-            // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
-            else if (key == "ValidCard"   && filter_has_head(value, "Creature") &&
-                     value.find("!wasCast") != std::string::npos &&
-                     (value.find("!token") != std::string::npos ||
-                      value.find("nonToken") != std::string::npos)) valid_card_uncast_creature = true;
-            else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
-            else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
-            else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
-            else if (key == "ReplaceWith") { replace_with_svar = value; if (value == "Exile") replace_with_exile = true; }
-            else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
-            else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
-            else if (key == "Prevent"     && value == "True")        prevent_true             = true;
-            else if (key == "ValidLKI"    && filter_has_head(value, "Creature"))
-                valid_lki_creature = true;
-            else if (key == "Origin") {
-                if (value.find("Graveyard") != std::string::npos) origin_graveyard = true;
-                if (value.find("Library")   != std::string::npos) origin_library   = true;
-            }
-            else if (key == "IsPresent")     cant_counter_present = value;
-            else if (key == "PresentZone")   cant_counter_zone    = value;
-            else if (key == "PresentCompare") cant_counter_compare = value;
-        }
-
-        // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
-        // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
-        // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
-        bool replace_with_void_counter = false;
-        // Conditional "enters tapped" (Ba Sing Se): ReplaceWith$ <SVar> where the SVar is a
-        // DB$ Tap | ETB$ True with a ConditionPresent$/ConditionCompare$ gate ("enters tapped
-        // unless you control a basic land"). Detected here off the named SVar's body so the
-        // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
-        bool replace_with_etb_tapped_conditional = false;
-        std::string tapped_cond_filter, tapped_cond_compare;
-        int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
-        // ProduceMana replacement (Damping Sphere): the ReplaceWith$ SVar is a DB$ ReplaceMana
-        // whose ReplaceMana$ names the single color all the produced mana is converted to.
-        bool replace_with_produce_mana = false;
-        Colors produce_replacement_color = COLORLESS;
-        // Mox Diamond / Chrome Mox "pay-a-discard-as-it-enters-else-to-graveyard" form: the
-        // ReplaceWith$ SVar chain is an optional DB$ Discard (DiscardValid$ <filter>) whose
-        // subability moves the card (Defined$ ReplacedCard) to the graveyard when nothing was
-        // discarded. Walk the SubAbility$ chain of named SVars to recognize all three signals
-        // (an optional discard, its DiscardValid$ filter, an "else to graveyard" move) rather than
-        // retagging the R: line.
-        bool replace_with_discard_else_grave = false;
-        std::string discard_else_filter;
-        if (!replace_with_svar.empty()) {
-            std::string cur = replace_with_svar;
-            bool saw_discard = false, saw_optional = false, saw_grave = false;
-            for (int guard = 0; guard < 8 && !cur.empty(); guard++) {
-                auto sv2 = svars.find(cur);
-                if (sv2 == svars.end()) break;
-                const std::string &b = sv2->second;
-                if (b.find("DB$ Discard") != std::string::npos)          saw_discard = true;
-                if (b.find("Optional$ True") != std::string::npos)       saw_optional = true;
-                if (b.find("Destination$ Graveyard") != std::string::npos) saw_grave = true;
-                std::string next_sub;
-                size_t pp = 0; std::string k, v;
-                while (next_param(b, pp, k, v)) {
-                    if (k == "DiscardValid" && discard_else_filter.empty()) discard_else_filter = v;
-                    else if (k == "SubAbility") next_sub = v;
-                }
-                cur = next_sub;
-            }
-            if (saw_discard && saw_optional && saw_grave) replace_with_discard_else_grave = true;
-        }
-        if (!replace_with_svar.empty()) {
-            auto sv = svars.find(replace_with_svar);
-            if (sv != svars.end()) {
-                const std::string &body = sv->second;
-                if (body.find("VOID") != std::string::npos) replace_with_void_counter = true;
-                if (body.find("DB$ ReplaceMana") != std::string::npos) {
-                    replace_with_produce_mana = true;
-                    size_t pp = 0; std::string k, v;
-                    while (next_param(body, pp, k, v)) {
-                        if (k != "ReplaceMana" || v.empty()) continue;
-                        Colors color = mana_letter_color(v[0]);
-                        produce_replacement_color = (color == NO_COLOR) ? COLORLESS : color;
-                    }
-                }
-                if (body.find("DB$ Tap") != std::string::npos &&
-                    body.find("ETB$ True") != std::string::npos) {
-                    replace_with_etb_tapped_conditional = true;
-                    // Pull ConditionPresent$ / ConditionCompare$ / UnlessCost$ out of the SVar body.
-                    size_t pp = 0; std::string k, v;
-                    while (next_param(body, pp, k, v)) {
-                        if (k == "ConditionPresent") {
-                            // Drop a "+YouCtrl" qualifier — the condition is always evaluated
-                            // controller-relative (the permanent's controller as it enters).
-                            std::string f = v;
-                            size_t plus = f.find("+YouCtrl");
-                            if (plus != std::string::npos) f.erase(plus);
-                            tapped_cond_filter = f;
-                        } else if (k == "ConditionCompare") {
-                            tapped_cond_compare = v;
-                        } else if (k == "UnlessCost" && v.rfind("PayLife<", 0) == 0) {
-                            // "...unless you pay N life" — the controller may pay N life as the
-                            // permanent enters to have it enter untapped (Witch-Blessed Meadow,
-                            // shock lands). Parse the N out of PayLife<N>.
-                            size_t lt = v.find('<'), gt = v.find('>');
-                            if (lt != std::string::npos && gt != std::string::npos && gt > lt + 1)
-                                tapped_unless_life = std::stoi(v.substr(lt + 1, gt - lt - 1));
-                        }
-                    }
-                }
-            }
-        }
-
-        if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::ENTERS_TAPPED;
-            r.applies_to_self_only = true;
-            result.push_back(r);
-        }
-        // Conditional "enters tapped" (Ba Sing Se): an ENTERS_TAPPED replacement whose
-        // application is gated on the controller's board (e.g. "unless you control a basic land").
-        if (event_is_moved && valid_card_self && dest_is_battlefield &&
-            replace_with_etb_tapped_conditional) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::ENTERS_TAPPED;
-            r.applies_to_self_only = true;
-            r.tapped_condition_filter = tapped_cond_filter;
-            r.tapped_condition_compare = tapped_cond_compare;
-            r.tapped_unless_life = tapped_unless_life;
-            result.push_back(r);
-        }
-        // Mox Diamond / Chrome Mox: as this card would enter, its owner may discard a matching
-        // card (an additional cost); if they don't, it goes to its owner's graveyard instead
-        // (614.1a self-replacement).
-        if (event_is_moved && valid_card_self && dest_is_battlefield &&
-            replace_with_discard_else_grave) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::DISCARD_ELSE_GRAVEYARD;
-            r.applies_to_self_only = true;
-            r.discard_else_filter = discard_else_filter.empty() ? "Card" : discard_else_filter;
-            result.push_back(r);
-        }
-        if (event_is_counter && valid_card_self && layer_cant_happen) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
-            r.applies_to_self_only = true;
-            // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and
-            // re-evaluated at counter time. Empty = the unconditional self form.
-            r.cant_counter_present = cant_counter_present;
-            r.cant_counter_zone    = cant_counter_zone;
-            r.cant_counter_compare = cant_counter_compare;
-            result.push_back(r);
-        }
-        // Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active
-        // (ActiveZones$ Battlefield) can't-be-countered replacement scoped by a ValidSA$ filter
-        // (e.g. Spell.YouCtrl) rather than the source spell itself. Consulted at counter-resolution
-        // time against every spell on the stack (614.13/CantHappen).
-        if (event_is_counter && layer_cant_happen && active_zones_battlefield && !valid_card_self &&
-            !valid_sa_filter.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
-            r.applies_to_self_only = false;
-            r.from_battlefield = true;
-            r.valid_sa_filter = valid_sa_filter;
-            result.push_back(r);
-        }
-        // Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles
-        // with a void counter; Leyline of the Void plain-exiles — distinguished by the SVar above).
-        if (event_is_moved && dest_is_graveyard_r && replace_with_exile &&
-            valid_card_opp_non_token && active_zones_battlefield) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
-            r.applies_to_self_only = false;
-            r.with_void_counter = replace_with_void_counter;
-            result.push_back(r);
-        }
-        // Containment Priest: a non-token creature that wasn't cast is exiled instead of
-        // entering the battlefield (614.1a). The replacement applies to any such creature
-        // entering the battlefield while this permanent is on the battlefield.
-        if (event_is_moved && dest_is_battlefield && replace_with_exile &&
-            valid_card_uncast_creature && active_zones_battlefield) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
-            r.applies_to_self_only = false;
-            result.push_back(r);
-        }
-        // Grafdigger's Cage: creature cards in graveyards and libraries can't enter the
-        // battlefield (614.13). This is a prevention (Prevent$ True) — the moving card simply
-        // doesn't enter and stays in its origin zone, distinct from Containment Priest's
-        // exile-instead replacement above.
-        if (event_is_moved && dest_is_battlefield && prevent_true && valid_lki_creature &&
-            active_zones_battlefield && (origin_graveyard || origin_library)) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
-            r.applies_to_self_only = false;
-            r.prevent_from_graveyard = origin_graveyard;
-            r.prevent_from_library = origin_library;
-            result.push_back(r);
-        }
-        // Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in
-        // it, you win the game instead." (CR 104.3a/121.4). A draw-event replacement whose
-        // ReplaceWith$ SVar is a DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw
-        // (checked at the empty-draw site in Orderer::perform_draw). We confirm the replacement's
-        // effect is a game win via the named SVar body rather than retagging the R: line.
-        {
-            bool replace_with_win = false;
-            if (!replace_with_svar.empty()) {
-                auto it = svars.find(replace_with_svar);
-                if (it != svars.end() && it->second.find("WinsGame") != std::string::npos)
-                    replace_with_win = true;
-            }
-            if (event_is_draw && replace_with_win) {
-                Effect::Replacement r;
-                r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
-                r.applies_to_self_only = false;  // scoped to the controller at the draw site
-                result.push_back(r);
-            }
-        }
-        // Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one
-        // or more cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw
-        // replacement — Event$ DrawCards, ValidPlayer$ You (the source controller's own draws),
-        // whose ReplaceWith$ SVar is a DB$ Draw with NumCards$ ReplaceCount$Number/Plus.K: the draw
-        // count is increased by K. The optional CheckSVar$/SVarCompare$ gate ("one or fewer cards in
-        // hand") is carried onto the replacement and re-evaluated for the drawing player at draw
-        // time (replacement::draw_count_bonus). General over any additive draw replacement.
-        if (event_is_draw_cards && active_zones_battlefield && valid_player_you &&
-            !replace_with_svar.empty()) {
-            auto it = svars.find(replace_with_svar);
-            int add = 0;
-            if (it != svars.end() && it->second.find("DB$ Draw") != std::string::npos) {
-                // Pull the additive count out of NumCards$ ReplaceCount$Number/Plus.K.
-                size_t pp = 0; std::string k, v;
-                while (next_param(it->second, pp, k, v)) {
-                    if (k != "NumCards") continue;
-                    size_t plus = v.find("/Plus.");
-                    if (plus != std::string::npos) add = std::stoi(v.substr(plus + 6));
-                    break;
-                }
-            }
-            if (add > 0) {
-                Effect::Replacement r;
-                r.kind = Effect::Replacement::DRAW_ADD;
-                r.applies_to_self_only = false;
-                r.draw_add = add;
-                // Resolve CheckSVar$ <var> to the SVar's Count$ body so the count gate can be
-                // evaluated directly (mirrors the trigger-side CheckSVar handling). An absent
-                // CheckSVar leaves the gate empty = the additive draw always applies.
-                if (!draw_check_svar.empty()) {
-                    r.draw_condition_count_expr = svar_or_literal(svars, draw_check_svar);
-                    r.draw_condition_compare = draw_svar_compare;
-                }
-                result.push_back(r);
-            }
-        }
-        // Choke: matching lands don't untap during their controllers' untap steps (614.1d).
-        if (event_is_untap && layer_cant_happen && !untap_valid_subtype.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::SKIP_UNTAP;
-            r.applies_to_self_only = false;
-            r.valid_subtype = untap_valid_subtype;
-            result.push_back(r);
-        }
-        // Damping Sphere: "If a land is tapped for two or more mana, it produces {C} instead of
-        // any other type and amount." A ProduceMana replacement (614.1) — when a permanent of the
-        // named type is tapped for >= ManaAmount mana, replace its production with that much of the
-        // ReplaceMana color.
-        if (event_is_produce_mana && replace_with_produce_mana && active_zones_battlefield &&
-            !produce_valid_type.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::PRODUCE_MANA;
-            r.applies_to_self_only = false;
-            r.produce_valid_type = produce_valid_type;
-            r.produce_min_amount = produce_min_amount;
-            r.produce_replacement_color = produce_replacement_color;
-            result.push_back(r);
-        }
-        // Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a
-        // self-referential untap-prevention (ValidCard$ Card.Self). ValidStepTurnToController$ You
-        // is implicit in a 2-player game (a permanent only untaps during its controller's untap
-        // step), so it needs no extra gating here.
-        if (event_is_untap && layer_cant_happen && valid_card_self && untap_valid_subtype.empty()) {
-            Effect::Replacement r;
-            r.kind = Effect::Replacement::SKIP_UNTAP;
-            r.applies_to_self_only = true;
-            result.push_back(r);
-        }
+        read_replacement_rows(line, svars, ReplacementHost::CARD, result);
         for (size_t i = line_first; i < result.size(); ++i) result[i].script_line = intern_script_line("R:" + line);
+        if (result.size() == line_first) parse_finding("replacement", param_value(line, "Event"), "yields no replacement");
     }
 
     return result;
+}
+// ── Parser findings (parse.h) ──────────────────────────────────────────────────────────────────
+
+bool parse_card_findings(const std::string &path, CardData &card, std::vector<ParseFinding> &findings) {
+    std::vector<ParseFinding> *saved = g_findings;
+    g_findings = &findings;
+    const bool ok = parse_card_file(path, card);
+    g_findings = saved;
+    return ok;
+}
+
+bool parse_token_findings(const std::string &script_name, Token &tok, std::vector<ParseFinding> &findings) {
+    std::vector<ParseFinding> *saved = g_findings;
+    g_findings = &findings;
+    const bool ok = parse_token_file(script_name, tok);
+    g_findings = saved;
+    return ok;
+}
+
+// Records a finding against the script line in scope, while a findings parse runs.
+void parse_finding(const char *kind, const std::string &name, const std::string &detail) {
+    if (g_findings == nullptr) return;
+    g_findings->push_back({kind, name, detail, g_finding_line});
+}
+
+// True when `tok` is a run of mana symbols parse_mana_cost reads: generic amounts, the colour and
+// colourless letters, snow, X, hybrid ("W/U", "2/W") and Phyrexian ("W/P", "WP") pips.
+static bool is_mana_cost_token(const std::string &tok) {
+    if (tok.empty()) return false;
+    for (char c : tok)
+        if (!std::isdigit(static_cast<unsigned char>(c)) && std::strchr("WUBRGCSXP/", c) == nullptr) return false;
+    return true;
+}
+
+// The space-separated tokens of a cost string, a token's "<...>" argument kept whole (its label may
+// hold spaces: "Sac<1/Creature.Other/another creature>").
+static std::vector<std::string> cost_tokens(const std::string &cost_str) {
+    std::vector<std::string> out;
+    std::string cur;
+    int depth = 0;
+    for (char c : cost_str) {
+        if (c == '<') depth++;
+        if (c == '>' && depth > 0) depth--;
+        if (c == ' ' && depth == 0) {
+            if (!cur.empty()) out.push_back(cur);
+            cur.clear();
+            continue;
+        }
+        cur += c;
+    }
+    if (!cur.empty()) out.push_back(cur);
+    return out;
+}
+
+// True for a mana token every cost parser pays: a generic amount or one colour or colourless
+// letter. Only a printed ManaCost: keeps a hybrid or Phyrexian pip as what it is.
+static bool is_plain_mana_token(const std::string &tok) {
+    if (tok.size() == 1 && std::strchr("WUBRGC", tok[0]) != nullptr) return true;
+    return !tok.empty() && std::all_of(tok.begin(), tok.end(), [](unsigned char c) { return std::isdigit(c); });
+}
+
+// The name of the cost: finding for token `tok`: a token's own name ("Sac<2/Land>" → "Sac"), or
+// what kind of mana symbol it is.
+static std::string cost_finding_name(const std::string &tok) {
+    if (is_plain_mana_token(tok)) return "Mana";
+    if (tok == "X") return tok;
+    if (!is_mana_cost_token(tok)) return tok.substr(0, tok.find('<'));
+    if (tok.find('P') != std::string::npos) return "Phyrexian";
+    return tok.find('S') != std::string::npos ? "Snow" : "Hybrid";
+}
+
+// The '/'-separated parts of cost token <name><...> ("Sac<1/Creature/a creature>" → "1", "Creature",
+// "a creature"); false when `tok` is no such token.
+static bool cost_token_arg(const std::string &tok, const char *name, std::vector<std::string> &parts) {
+    const std::string open = std::string(name) + "<";
+    if (tok.rfind(open, 0) != 0 || tok.back() != '>') return false;
+    parts = split(tok.substr(open.size(), tok.size() - open.size() - 1), '/');
+    return true;
+}
+
+// Reads a literal count; false for an empty or non-numeric one (X, an SVar name).
+static bool read_cost_count(const std::string &text, int &count) {
+    if (text.empty() || text.find_first_not_of("0123456789") != std::string::npos) return false;
+    count = std::stoi(text);
+    return true;
+}
+
+// The plain keywords (a K: line no kKeywordTable entry parses) some rule of the engine reads from
+// a keyword list: combat (action_processor.cpp), damage (components/damage.cpp), targeting,
+// keyword-triggered abilities (keyword_triggered_ability, state_manager_statics.cpp), day/night,
+// the city's blessing. A keyword missing here is a name nothing acts on.
+static bool plain_keyword_modelled(const std::string &keyword) {
+    static const char *const kExact[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
+        "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Indestructible", "Hexproof", "Shroud", "Flash",
+        "Shadow", "Infect", "Wither", "Exalted", "Daybound", "Nightbound", "Ascend", kCantBlockKeyword};
+    static const char *const kPrefix[] = {"Mobilize:", "Protection from ", "Protection:"};
+    for (const char *k : kExact)
+        if (keyword == k) return true;
+    for (const char *k : kPrefix)
+        if (keyword.rfind(k, 0) == 0) return true;
+    return false;
+}
+
+// A plain keyword's name without its arguments ("Bushido:1" → "Bushido", "Protection from blue" →
+// "Protection").
+static std::string keyword_finding_name(const std::string &keyword) {
+    std::string name = keyword.substr(0, keyword.find(':'));
+    if (name.rfind("Protection from", 0) == 0) return "Protection";
+    if (name.rfind("Hexproof from", 0) == 0) return "Hexproof from";
+    return name;
+}
+
+// An AlternativeCost param whose value is what the cast path assumes anyway: its own card, cast by
+// its controller, from any zone the card can be cast from.
+static bool alt_cost_param_assumed(const std::string &key, const std::string &value) {
+    if (key == "Mode" || key == "Cost" || key == "Description" || key == "Secondary") return true;
+    if (key == "ValidSA") return value == "Spell" || value == "Spell.Self";
+    if (key == "ValidCard") return value == "Card.Self";
+    if (key == "ValidPlayer") return value == "You";
+    return key == "EffectZone" && value == "All";
+}
+
+// The S: modes the engine applies (state_manager_statics.cpp, rules_modifying.cpp; EtbCounter is the
+// etbCounter keyword's own). AlternativeCost lines are parsed apart (parse_card_face_body).
+static bool static_mode_modelled(const std::string &mode) {
+    static const char *const kModes[] = {"Continuous", "CantBeActivated", "CantBeCast", "RaiseCost", "ReduceCost",
+        "SetCost", "MustAttack", "ManaConvert", "ManaRestriction", "DisableTriggers", "CantAttack", "CantBlockBy",
+        "CantPreventDamage", "EtbCounter"};
+    for (const char *m : kModes)
+        if (mode == m) return true;
+    return false;
+}
+
+// The params the reader of each S: mode acts on: the mode's own, and with `gated` the gate of
+// ActiveStatic::condition_met, which that mode's reader checks. Any other param on the mode reads
+// as nothing, whichever branch of parse_one_static_ability consumes it.
+static bool static_mode_reads(const std::string &mode, const std::string &key) {
+    static const struct {
+        const char *mode;
+        bool gated;
+        const char *keys;
+    } kModeKeys[] = {
+        {"Continuous", true,
+         "Affected AffectedDefined AffectedZone ExcludeZone AddPower AddToughness AddKeyword AddHiddenKeyword AddAbility "
+         "AddTrigger AddSVar "
+         "AddType GainsAbilitiesOf GainsAbilitiesOfZones "
+         "SetPower SetToughness SetColor AddColor SetMaxHandSize RemoveLandTypes RemoveCardTypes RemoveAllAbilities "
+         "AdjustLandPlays MayLookAt MayPlay MayPlayWithoutManaCost MayPlayWithFlash MayPlayDontGrantZonePermissions MayPlayPlayer "
+         "CharacteristicDefining"},
+        {"RaiseCost", false, "Amount Type Relative Activator ValidCard"},
+        {"ReduceCost", false, "Amount Type Activator ValidCard ValidTarget"},
+        {"SetCost", true, "Amount Type RaiseTo ValidCard"},
+        {"CantBeCast", true, "ValidCard Caster NumLimitEachTurn OnlySorcerySpeed Origin cmcGT"},
+        {"CantBeActivated", false, "ValidCard ValidSA AffectedZone Activator"},
+        {"CantAttack", true, "ValidCard Target"},
+        {"CantBlockBy", true, "ValidAttacker ValidBlocker"},
+        {"CantPreventDamage", true, "IsCombat"},
+        {"MustAttack", true, "ValidCreature"},
+        {"DisableTriggers", false, "ValidCause ValidMode Destination"},
+        {"ManaConvert", false, "ManaConversion ValidPlayer ValidCard ValidSA"},
+        {"ManaRestriction", false, "ValidSource InvertValidSource"},
+    };
+    if (key == "Mode" || key == "Description" || key == "Secondary" || key == "EffectZone") return true;
+    for (const auto &row : kModeKeys) {
+        if (mode != row.mode) continue;
+        if (row.gated)
+            for (const char *gate : {"Condition", "CheckSVar", "SVarCompare", "IsPresent", "PresentZone", "PresentCompare"})
+                if (key == gate) return true;
+        const std::vector<std::string> keys = split(row.keys, ' ');
+        return std::find(keys.begin(), keys.end(), key) != keys.end();
+    }
+    return true;  // a mode the engine doesn't apply is its own finding (static_mode)
+}
+
+// A static param read as nothing: the param of `sa` with this value has no effect.
+static void static_value_finding(const StaticAbility &sa, const std::string &key, const std::string &value) {
+    parse_finding("static_param", key, sa.category + " " + key + "$ " + value);
+}
+
+// The forms of a whole static line its reader does not honour, each named for what is ignored.
+static void static_form_findings(const StaticAbility &sa, const std::string &line,
+                                 const std::map<std::string, std::string> &svars) {
+    // The gates ActiveStatic::condition_met evaluates by name.
+    if (!sa.condition.empty() && !static_condition_row(sa.condition))
+        static_value_finding(sa, "Condition", sa.condition);
+    // gather_active_statics reads a counters_ qualifier of Affected$ as a gate on the source itself.
+    if (sa.category == "Continuous") {
+        // The layer appliers act on the battlefield; only a play permission and a colour reach past
+        // it (affected_zone_matches).
+        const bool layered = sa.add_power != 0 || sa.add_toughness != 0 || !sa.add_power_svar.empty() ||
+                             !sa.add_toughness_svar.empty() || !sa.add_keyword.empty() || !sa.add_type.empty() ||
+                             !sa.set_power_svar.empty() || !sa.set_toughness_svar.empty() || sa.remove_all_abilities;
+        if (layered && !sa.affected_zone.empty() && sa.affected_zone != "Battlefield")
+            static_value_finding(sa, "AffectedZone", sa.affected_zone);
+        // A hand size or land drop belongs to the static's controller (state_manager.cpp,
+        // rules_modifying.cpp).
+        if ((sa.set_max_hand_size != 0 || sa.adjust_land_plays != 0) && sa.affected != "You")
+            static_value_finding(sa, "Affected", sa.affected);
+    } else if (sa.category == "CantBeCast") {
+        // cast_prohibited takes the first form that matches: the Origin$ zones, the opponent lock
+        // (a blanket one unless it is Lavinia's bound, its ValidCard$ then read by mv_land_bound),
+        // the per-turn limit (on noncreature spells), or the ValidCard$ filter; only the opponent
+        // forms read the gate.
+        const bool origin = sa.cant_cast_from_graveyard || sa.cant_cast_from_library;
+        const bool opponent_filter_read = sa.cant_cast_cmc_gt_land;
+        if (!sa.cant_cast_filter.empty() && sa.cant_cast_filter != "Card" &&
+            (origin || (sa.cant_cast_by_opponent && !opponent_filter_read)))
+            static_value_finding(sa, "ValidCard", sa.cant_cast_filter);
+        if (sa.cant_cast_limit_per_turn > 0 && sa.cant_cast_filter != "Card.nonCreature")
+            static_value_finding(sa, "NumLimitEachTurn", std::to_string(sa.cant_cast_limit_per_turn));
+        if (sa.cant_cast_cmc_gt_land && !sa.cant_cast_by_opponent) static_value_finding(sa, "cmcGT", "Land");
+        if (sa.only_sorcery_speed && !sa.cant_cast_by_opponent) static_value_finding(sa, "OnlySorcerySpeed", "True");
+        if (!sa.cant_cast_by_opponent && (!sa.condition.empty() || !sa.check_svar_expr.empty() || !sa.present_filter.empty()))
+            parse_finding("static_param", "Condition", "CantBeCast reads its gate on Caster$ Opponent only: " + line);
+    } else if (sa.category == "CantBeActivated") {
+        // The chosen-name form leaves mana abilities usable and every other form stops them
+        // (rules_mod::activation_prohibited), whatever ValidSA$ says.
+        const std::string valid_sa = param_value(line, "ValidSA");
+        if (valid_sa != (sa.match_named_card ? "Activated.!ManaAbility" : "Activated"))
+            static_value_finding(sa, "ValidSA", valid_sa);
+        const std::string zone = param_value(line, "AffectedZone");
+        if (!zone.empty() && zone != "Battlefield") static_value_finding(sa, "AffectedZone", zone);
+    } else if (sa.category == "ManaConvert") {
+        if (sa.mana_conversion != "AnyType->AnyColor") static_value_finding(sa, "ManaConversion", sa.mana_conversion);
+    } else if (sa.category == "SetCost") {
+        if (!sa.set_cost_raise_to) parse_finding("static_form", "SetCost", "only a floor (RaiseTo$ True) is applied");
+    }
+    // A granted ability or trigger is parsed where it is granted, with no SVars but the one AddSVar$
+    // names (parse_ability_body, parse_granted_trigger): parsed the same way here for its findings.
+    if (g_findings == nullptr) return;
+    const std::string add_ability = param_value(line, "AddAbility");
+    if (!add_ability.empty() && svars.find(add_ability) == svars.end())
+        parse_finding("svar_missing", add_ability, "AddAbility$ names no SVar");
+    if (!sa.add_ability.empty()) parse_svar_ability(sa.add_ability, AbilityDef::ACTIVATED, {}, "");
+    if (!sa.add_trigger.empty()) {
+        std::map<std::string, std::string> trigger_svars;
+        if (!sa.add_trigger_svar_name.empty()) trigger_svars[sa.add_trigger_svar_name] = sa.add_trigger_svar;
+        parse_one_trigger(sa.add_trigger, trigger_svars, "");
+    }
+}
+
+// Each keyword of an AddKeyword$ / KW$ list ("Trample & Haste") nothing reads is a keyword finding.
+static void granted_keyword_findings(const std::string &spec) {
+    for (const std::string &kw : split_keyword_list(spec))
+        if (!granted_keyword_modelled(kw)) parse_finding("keyword", keyword_finding_name(kw), "granted: " + spec);
+}
+
+// A keyword a static or effect grants that some rule reads: a plain one or a Ward with a cost
+// parse_ward_cost reads.
+static bool granted_keyword_modelled(const std::string &keyword) {
+    return plain_keyword_modelled(keyword) || keyword == "Ward" || keyword.rfind("Ward:", 0) == 0;
+}
+
+// Does the engine apply static `sa` from the zones its EffectZone$ names (CR 113.6b)? The
+// battlefield (the default) for every static; a ReduceCost of the card's own cost (ValidCard$
+// Card.Self) also from the stack, where it functions as its card is cast (CR 113.6d).
+static bool static_effect_zone_modelled(const StaticAbility &sa) {
+    return sa.effect_zone.empty() || sa.effect_zone == "Battlefield" || sa.self_reduction_functions() ||
+           sa.may_cast_self_from_graveyard || (sa.category == "ManaRestriction" && sa.effect_zone == "All");
+}
+
+// A static param no branch of parse_one_static_ability reads, whose value is what the engine
+// assumes anyway (a cosmetic description, a cost change applying to spells).
+static bool static_param_assumed(const std::string &mode, const std::string &key, const std::string &value) {
+    if (key == "Description" || key == "Secondary") return true;
+    if (key == "Type") return (mode == "RaiseCost" || mode == "ReduceCost" || mode == "SetCost") && value == "Spell";
+    // Damping Sphere's "for each other spell": read off its Amount$ SVar (raise_cost_per_spell_cast).
+    if (key == "Relative") return mode == "RaiseCost" && value == "True";
+    // A type-filtered CantBeActivated stops every activated ability (mana abilities too); the
+    // chosen-name form leaves mana abilities usable (rules_mod::activation_prohibited).
+    if (key == "ValidSA") return mode == "CantBeActivated" && (value == "Activated" || value == "Activated.!ManaAbility");
+    // MustAttack applies to the static's own creature (apply_rules_modifying_effects).
+    if (key == "ValidCreature") return mode == "MustAttack" && value == "Card.Self";
+    // DisableTriggers suppresses the triggers of objects entering the battlefield (etb_triggers_suppressed).
+    if (key == "ValidMode") return mode == "DisableTriggers" && (value == "ChangesZone,ChangesZoneAll" || value == "ChangesZone");
+    if (key == "Destination") return mode == "DisableTriggers" && value == "Battlefield";
+    return false;
+}
+
+// A trigger param no branch of read_trigger_line reads, that needs none: its description, the
+// Execute$ parse_one_trigger reads, the battlefield as the zone it functions from.
+static bool trigger_param_assumed(const std::string &key, const std::string &value) {
+    (void)value;
+    return key == "TriggerDescription" || key == "Execute" || key == "Secondary";
+}
+
+// The keys read_trigger_line has a branch for (it reports any other itself).
+static bool read_by_trigger_branch(const std::string &key) {
+    static const char *const kKeys[] = {"ValidSource", "ValidTarget", "Activator", "AttackingPlayer", "Phase",
+        "ValidPlayer", "ValidActivatingPlayer", "ValidSA", "Origin", "Destination", "ValidCard", "ValidCards",
+        "FirstCardInDrawStep", "Number", "Attacked", "CombatDamage", "ActivatorThisTurnCast"};
+    for (const char *k : kKeys)
+        if (key == k) return true;
+    return false;
+}
+
+// Does a param of a key `mode` reads have a value its reader honours? `floating`: the trigger sits
+// on an Effect (TriggerZones$ Command).
+static bool trigger_value_read(const TriggerMode &mode, const TriggerLine &t, const std::string &key,
+                               const std::string &value, bool floating) {
+    if (key == "ValidCard" || key == "ValidCards") return mode.card_read && mode.card_read(value, floating);
+    if (key == "ValidSource") return mode.source_read && mode.source_read(value);
+    if (key == "ValidTarget") return mode.valid_target && value == mode.valid_target;
+    if (key == "ValidPlayer") return value == "You" || value == "Player";
+    if (key == "ValidActivatingPlayer") return value == "You" || value == "Player" || value == "Opponent";
+    if (key == "ValidSA") return value == "Spell" || value == "Spell.ManaFromCard.StrictlySelf" || value.rfind("Spell.ManaSpent ", 0) == 0;
+    if (key == "Activator" || key == "AttackingPlayer") return value == "You" || value == "Player";
+    if (key == "Attacked") return value == "You,Planeswalker.YouCtrl";
+    if (key == "CombatDamage") return value == "True";
+    if (key == "FirstCardInDrawStep") return value == "False";
+    if (key == "Number") return t.draw_number_eq > 0;
+    if (key == "ActivatorThisTurnCast") return t.cast_count_eq > 0;
+    return true;
+}
+
+// Reports the params of a bound trigger line that its mode's reader does not honour: a key the mode
+// does not read, or a value of one it does. Every mode reads the gates and optionality of
+// bind_trigger_line.
+static void trigger_form_findings(const std::string &line, const TriggerLine &t) {
+    static const char *const kEveryMode[] = {"Mode", "Execute", "TriggerDescription", "Secondary", "TriggerZones",
+        "OptionalDecider", "IsPresent", "PresentCompare", "CheckSVar", "SVarCompare", "Revolt", "ResolvedLimit",
+        "ActivationLimit", "NoResolvingCheck", "Static"};
+    const TriggerMode &mode = *trigger_mode_named(t.mode);
+    const std::string zones = param_value(line, "TriggerZones");
+    const bool floating = zones.find("Command") != std::string::npos;
+    size_t pos = 0;
+    std::string key, value;
+    while (next_param(line, pos, key, value)) {
+        bool every_mode = false;
+        for (const char *k : kEveryMode) every_mode = every_mode || key == k;
+        if (every_mode || !read_by_trigger_branch(key)) continue;
+        if (trigger_mode_reads_key(mode, key) && trigger_value_read(mode, t, key, value, floating)) continue;
+        if (key == "ValidCard" || key == "ValidCards")
+            parse_finding("trigger_form", t.mode + ".ValidCard", key + "$ " + value);
+        else
+            parse_finding("trigger_param", key, t.mode + " " + key + "$ " + value);
+    }
 }

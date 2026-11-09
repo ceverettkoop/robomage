@@ -1,0 +1,37 @@
+{
+  "name": "cr613_1e_lattice_colorless_in_a_library_search",
+  "why": "CR 613.1e / 105.2c: under Mycosynth Lattice no card in a library is green, so Green Sun's Zenith finds no creature: a filter's color qualifier reads the layer-5 override in every zone, not the printed color",
+  "hand_a": [
+    "Green Sun's Zenith",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mycosynth Lattice",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Green Sun's Zenith",
+    "A:x:2"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player A casts Green Sun's Zenith"
+  ],
+  "expect_menu_not": [
+    "Grizzly Bears"
+  ]
+}

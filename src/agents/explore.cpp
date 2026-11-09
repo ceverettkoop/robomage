@@ -18,10 +18,12 @@ static constexpr double PATIENT_HOLD_MV_FACTOR = 1.0;
 static double category_weight(const std::string &cat, bool patient) {
     static const std::map<std::string, double> plain = {{"CAST_SPELL", 8.0}, {"ACTIVATE_ABILITY", 6.0},
         {"PLAY_LAND", 4.0}, {"SELECT_ATTACKER", 3.0}, {"SELECT_BLOCKER", 3.0}, {"PASS_PRIORITY", 1.0},
-        {"CONFIRM_ATTACKERS", 0.6}, {"CONFIRM_BLOCKERS", 0.6}, {"SIDEBOARD_DONE", 0.6}, {"COMPANION", 8.0}};
+        {"CONFIRM_ATTACKERS", 0.6}, {"CONFIRM_BLOCKERS", 0.6}, {"SIDEBOARD_DONE", 0.6}, {"COMPANION", 8.0},
+        {"TURN_FACE_UP", 6.0}};
     static const std::map<std::string, double> big_mana = {{"CAST_SPELL", 8.0}, {"ACTIVATE_ABILITY", 1.0},
         {"PLAY_LAND", 100.0}, {"SELECT_ATTACKER", 3.0}, {"SELECT_BLOCKER", 3.0}, {"PASS_PRIORITY", 6.0},
-        {"CONFIRM_ATTACKERS", 0.6}, {"CONFIRM_BLOCKERS", 0.6}, {"SIDEBOARD_DONE", 0.6}, {"COMPANION", 8.0}};
+        {"CONFIRM_ATTACKERS", 0.6}, {"CONFIRM_BLOCKERS", 0.6}, {"SIDEBOARD_DONE", 0.6}, {"COMPANION", 8.0},
+        {"TURN_FACE_UP", 6.0}};
     const std::map<std::string, double> &table = patient ? big_mana : plain;
     auto it = table.find(cat);
     return it != table.end() ? it->second : DEFAULT_WEIGHT;

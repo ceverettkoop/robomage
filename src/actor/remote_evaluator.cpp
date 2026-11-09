@@ -98,9 +98,8 @@ bool RemoteEvaluator::connect(const featurize::Featurization &f, std::string *er
     std::string why;
     info_.path = opt_.endpoint;
     info_.format = "remote";
-    info_.spec_hash = featurize::hex16(f.spec.hash);
-    info_.vocab_hash = featurize::hex16(f.spec.vocab_hash);
-    info_.text_model = f.text_model;
+    info_.manifest = f.manifest();
+    info_.manifest.registry.clear();
     spec_hash_ = f.spec.hash;
     dims_ = {static_cast<uint32_t>(f.spec.F), static_cast<uint32_t>(f.spec.C), static_cast<uint32_t>(f.spec.K),
         static_cast<uint32_t>(f.spec.Q)};
@@ -111,9 +110,7 @@ bool RemoteEvaluator::connect(const featurize::Featurization &f, std::string *er
     if (!region_.create("/rmip", request_bytes + response_bytes_, &why)) return fail(why, err);
     inference::Hello h;
     h.client = opt_.client.empty() ? "robomage_nn pid " + std::to_string(getpid()) : opt_.client;
-    h.spec_hash = info_.spec_hash;
-    h.vocab_hash = info_.vocab_hash;
-    h.text_model = info_.text_model;
+    h.tables = info_.manifest;
     h.dims = dims_;
     h.shm = region_.name();
     h.request_bytes = request_bytes;

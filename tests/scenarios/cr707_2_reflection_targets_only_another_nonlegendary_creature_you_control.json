@@ -1,0 +1,43 @@
+{
+  "name": "cr707_2_reflection_targets_only_another_nonlegendary_creature_you_control",
+  "why": "CR 115.1: Creature.YouCtrl+nonLegendary+Other: neither a legendary creature, nor an opponent's, nor Reflection itself can be copied, so with only those the ability isn't offered.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Reflection of Kiki-Jiki",
+    "Thalia Guardian of Thraben",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu_not": [
+    "Activate Reflection of Kiki-Jiki"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "cr608_2g_bilbo_offers_artifact_instant_or_sorcery_only",
+  "why": "Bilbo's ValidSA$ Spell.Artifact,Spell.Instant,Spell.Sorcery: a creature, a land and an opponent's card aren't offered; an artifact creature is. Valid$ Card.YouOwn: the opponent's graveyard isn't looked at.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Grizzly Bears",
+    "Lightning Bolt",
+    "Island",
+    "Haywire Mite"
+  ],
+  "graveyard_b": [
+    "Faithless Looting"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Do not cast"
+  ],
+  "max_decisions": 15,
+  "expect_menu": [
+    "Cast Lightning Bolt \\(from graveyard\\)",
+    "Cast Haywire Mite \\(from graveyard\\)"
+  ],
+  "expect_menu_not": [
+    "Cast Grizzly Bears",
+    "Cast Island",
+    "Cast Faithless Looting"
+  ],
+  "expect_not": [
+    "Lightning Bolt is exiled"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "cr700_2d_fiery_confluence_same_mode_three_times_is_three_damage",
+  "why": "CR 700.2d: the same mode chosen three times happens three times: 1 damage to each creature thrice kills a toughness-3 creature, not a toughness-4 one",
+  "hand_a": [
+    "Fiery Confluence"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Kappa Cannoneer"
+  ],
+  "battlefield_b": [
+    "Voice of Victory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fiery Confluence",
+    "A:mode:1 damage",
+    "A:mode:1 damage",
+    "A:mode:1 damage"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^Voice of Victory is destroyed \\(lethal damage\\)"
+  ],
+  "expect_not": [
+    "^Kappa Cannoneer is destroyed"
+  ],
+  "expect_count": {
+    "^Fiery Confluence deals 1 damage to Voice of Victory": 3
+  }
+}

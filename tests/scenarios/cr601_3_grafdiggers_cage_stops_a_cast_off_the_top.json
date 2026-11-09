@@ -1,0 +1,59 @@
+{
+  "name": "cr601_3_grafdiggers_cage_stops_a_cast_off_the_top",
+  "why": "CR 601.3: Grafdigger's Cage says players can't cast spells from libraries, so the Forge offers nothing, and its look stands.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Grafdigger's Cage"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Cast Lotus Petal"
+  ],
+  "expect_dump": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Lotus Petal"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

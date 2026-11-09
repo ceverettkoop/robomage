@@ -1,0 +1,50 @@
+{
+  "name": "cr601_2f_bitter_triumph_neither_form_not_offered",
+  "why": "CR 601.2f: at 2 life with only the spell left in hand neither form of Bitter Triumph's additional cost can be paid, so it isn't offered",
+  "hand_a": [
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph"
+  ],
+  "library_a": [
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph",
+    "Bitter Triumph"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:mulligan",
+    "A:keep",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph",
+    "A:bottom:Bitter Triumph"
+  ],
+  "life_a": 2,
+  "max_decisions": 16,
+  "expect_menu_not": [
+    "Cast Bitter Triumph"
+  ]
+}

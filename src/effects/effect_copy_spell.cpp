@@ -76,7 +76,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // spell): copy its resolving Ability and Spell flags directly.
         const Spell &orig_spell = global_coordinator.GetComponent<Spell>(rt.original);
         cant_be_countered = orig_spell.cant_be_countered;
-        x_paid = orig_spell.x_paid;  // copies copy the X chosen for the original (CR 707.10b)
+        x_paid = orig_spell.chosen.x;  // copies copy the X chosen for the original (CR 707.10b)
         if (global_coordinator.entity_has_component<Ability>(rt.original))
             orig_ability = &stack_object_ability(rt.original);
     } else {
@@ -108,7 +108,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
             Spell copy_spell;
             copy_spell.caster = controller;
             copy_spell.cant_be_countered = cant_be_countered;
-            copy_spell.x_paid = x_paid;
+            copy_spell.chosen.x = x_paid;
             copy_spell.is_copy = true;               // ceases to exist when it leaves the stack
             // A copy is not cast: it has no replicate count of its own and copies no further.
             global_coordinator.AddComponent(copy, copy_spell);
@@ -252,15 +252,15 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
 
         // Offer the optional unless-cost. UnlessSwitched inverts the meaning of "paid".
         bool do_copy;
-        if (ab.def->unless_generic_cost > 0) {
+        if (unless_amount(ab.def->unless_cost) > 0) {
             if (!ctx.resuming())
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
                          entity_name(ab.source.lki_entity()).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
+            bool prevented = run_unless_loop(unless_amount(ab.def->unless_cost), payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                              suspended,
                                              UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.def->unless_switched},
-                                             UnlessPayKind::MANA, &ab.def->unless_cost_pips);
+                                             UnlessPayKind::MANA, &ab.def->unless_cost.mana());
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.

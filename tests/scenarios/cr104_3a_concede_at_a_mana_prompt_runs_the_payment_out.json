@@ -1,0 +1,14 @@
+{
+  "name": "cr104_3a_concede_at_a_mana_prompt_runs_the_payment_out",
+  "why": "CR 104.3a: a concession read at a prompt of the interactive mana payment ends the game there; the payment it belongs to runs out on first choices, as it did while that prompt blocked, and nothing after it is asked",
+  "hand_a": ["Mountain", "Mountain", "Lightning Bolt"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B", "concede"],
+  "max_decisions": 12,
+  "expect_order": ["Player A concedes", "Player A activated Mountain for 1\\(R\\)", "Player A casts Lightning Bolt targeting Player B"],
+  "expect_result": "B"
+}

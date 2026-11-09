@@ -1,0 +1,34 @@
+{
+  "name": "cr614_12_arena_of_glory_enters_tapped_without_a_mountain",
+  "why": "CR 614.12: Arena of Glory enters tapped unless you control a Mountain",
+  "hand_a": [
+    "Arena of Glory",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Arena of Glory"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Arena of Glory enters tapped"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

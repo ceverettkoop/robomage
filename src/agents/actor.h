@@ -6,7 +6,7 @@
 
 #include "agent.h"
 
-// ── The actor: one process playing match after match from a schedule (training plan T3, T5) ───
+// ── The actor: one process playing match after match from a schedule ──────────────────────────
 //
 // Engine side, like agents/driver.h. docs/actor.md is the reference (the schedule file, the status
 // and results files, seeding, signals); the schedule itself is agents/actor_schedule.h.

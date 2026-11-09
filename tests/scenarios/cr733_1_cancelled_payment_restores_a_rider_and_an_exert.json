@@ -1,0 +1,47 @@
+{
+  "name": "cr733_1_cancelled_payment_restores_a_rider_and_an_exert",
+  "why": "CR 733.1: a cancelled payment gives back the units with their rider and undoes an exert made at its rows: Simian Spirit Guide's cast is given up, Hexing Squelcher then gains haste from the mana restored",
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Hexing Squelcher",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:desc:Tap Mountain",
+    "A:desc:Tap and exert Arena",
+    "A:cast:Simian Spirit Guide",
+    "A:desc:Cancel casting",
+    "A:cast:Hexing Squelcher"
+  ],
+  "max_decisions": 16,
+  "expect_order": [
+    "Player A exerts Arena of Glory",
+    "Hexing Squelcher gains Haste until end of turn"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

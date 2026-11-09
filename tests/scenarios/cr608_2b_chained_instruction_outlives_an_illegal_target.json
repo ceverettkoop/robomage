@@ -1,0 +1,13 @@
+{
+  "name": "cr608_2b_chained_instruction_outlives_an_illegal_target",
+  "why": "CR 608.2b: Cloak and Dagger's creature target killed in response is illegal, but the opponent is still a legal target, so the ability resolves, and what is chained after the Pump goes on: its controller may still exile a nonland card from their hand.",
+  "hand_a": ["Cloak and Dagger Entwined", "Lightning Bolt"],
+  "library_a": ["Plains"],
+  "battlefield_a": ["Plains", "Swamp", "Swamp", "Mountain"],
+  "hand_b": ["Counterspell"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Cloak and Dagger", "A:target:Grizzly Bears", "A:cast:Lightning Bolt", "A:target:Grizzly Bears", "A:search:Counterspell"],
+  "max_decisions": 14,
+  "expect_order": ["Pump fizzles", "Resolving ability \\(category: ChangeZone", "puts Counterspell to exile"]
+}

@@ -1,0 +1,72 @@
+{
+  "name": "cr601_3_a_coloured_spell_a_land_and_an_artifact_land_are_not_offered",
+  "why": "CR 601.3, 305.1: Lightning Bolt is neither an artifact nor colorless; Island and Seat of the Synod are lands, which are played, not cast, and the Forge's filter is nonLand; Pre-War Formalwear, a coloured artifact, is offered. Three Forges exile their way down, so each card is on top with its mana in play.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Mystic Forge",
+    "Mystic Forge",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Mountain"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Seat of the Synod",
+    "Pre-War Formalwear",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Island",
+    "A:activate:Mystic Forge",
+    "A:pass",
+    "A:activate:Mystic Forge",
+    "A:pass",
+    "A:activate:Mystic Forge",
+    "A:pass"
+  ],
+  "max_decisions": 16,
+  "expect_menu": [
+    "Cast Pre-War Formalwear \\(from library\\)"
+  ],
+  "expect_menu_not": [
+    "Lightning Bolt",
+    "Island \\(from",
+    "Seat of the Synod"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

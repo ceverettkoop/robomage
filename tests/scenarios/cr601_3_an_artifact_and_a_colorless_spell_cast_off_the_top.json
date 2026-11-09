@@ -1,0 +1,62 @@
+{
+  "name": "cr601_3_an_artifact_and_a_colorless_spell_cast_off_the_top",
+  "why": "CR 601.3: Mystic Forge allows artifact spells and colorless spells from the top: Lotus Petal, then It That Heralds the End, a colorless creature that is no artifact, each for its own cost at its own timing.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Ancient Tomb"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "It That Heralds the End",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:cast:It That Heralds the End"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A casts Lotus Petal",
+    "Player A casts It That Heralds the End"
+  ],
+  "expect_dump_not": [
+    "^A d=3 .*menu CAST_SPELL",
+    "^A d=4 .*menu CAST_SPELL"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

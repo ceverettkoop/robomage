@@ -1,0 +1,58 @@
+{
+  "name": "cr707_2_a_copy_of_a_jace_token_has_no_loyalty",
+  "why": "CR 707.2, 306.5b, 704.5i: Ocelot Pride's copy of the token has none of its counters and its script's loyalty is 0, so it dies at once and the empowered token stays: no two Jace tokens this way",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Ocelot Pride",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:attack:Ocelot Pride",
+    "A:attack:done",
+    "A:desc:[-1]"
+  ],
+  "max_decisions": 34,
+  "expect": [
+    "Token copy created: 0/0 Jace",
+    "loyalty now 2"
+  ],
+  "expect_count": {
+    "Jace token dies \\(0 loyalty\\)": 1
+  },
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

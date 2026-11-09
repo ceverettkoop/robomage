@@ -1,0 +1,37 @@
+{
+  "name": "cr708_2_fatal_push_reads_a_face_down_mana_value_of_0",
+  "why": "CR 708.2a: a face-down object has no mana cost, so a face-down Murktide Regent is mana value 0 and Fatal Push's condition holds.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Swamp",
+    "Fatal Push"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "face_down_a": [
+    "Murktide Regent"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Swamp",
+    "B:cast:Fatal Push",
+    "B:desc:hidden"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "is revealed as Murktide Regent"
+  ]
+}

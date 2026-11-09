@@ -1,0 +1,64 @@
+{
+  "name": "cr401_look_top_shown_to_its_controller_alone",
+  "why": "CR 401.2, 701.20e: Mystic Forge lets its controller look at the top card of their library. A's frames show the card in a STANDING_LOOK window; B's frames, menu and knowledge hold none of it, only that a look happened.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_dump": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Lotus Petal",
+    "^A .*position self top0 = Lotus Petal",
+    "^A .*event LOOK LIBRARY> card=Lotus Petal",
+    "^B .*event LOOK LIBRARY> card=none",
+    "^A .*permission self LIBRARY card=Lotus Petal"
+  ],
+  "expect_dump_not": [
+    "^B .*reveal ",
+    "^B .*(card=|seen \\w+ |known_hand |= )Lotus Petal",
+    "^B .*permission "
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

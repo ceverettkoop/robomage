@@ -1,0 +1,16 @@
+{
+  "name": "cr305_1_city_of_traitors_not_triggered_by_itself",
+  "why": "CR 305.1 / 603.2: City of Traitors' \"when you play ANOTHER land\" (ValidCard$ Land.Other+YouCtrl) does not trigger on its own land play; it taps for {C}{C} (paying Ensnaring Bridge's {3} with a Mountain). (LAND_PLAYED event, the LandPlayed trigger binding)",
+  "hand_a": ["City of Traitors", "Ensnaring Bridge"],
+  "battlefield_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:land:City of Traitors", "A:cast:Ensnaring Bridge", "A:tap:City of Traitors", "A:tap:Mountain"],
+  "seed": 1,
+  "max_decisions": 9,
+  "expect_order": ["Player A played City of Traitors", "Player A activated City of Traitors for 2\\(C\\)",
+                   "Player A casts Ensnaring Bridge", "Ensnaring Bridge enters the battlefield"],
+  "expect_not": ["City of Traitors triggered", "sacrifices City of Traitors"]
+}

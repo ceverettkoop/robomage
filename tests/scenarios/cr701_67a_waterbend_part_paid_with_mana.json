@@ -1,0 +1,53 @@
+{
+  "name": "cr701_67a_waterbend_part_paid_with_mana",
+  "why": "CR 701.67a: a tap is a choice for each generic mana: one Bears tapped, then the lands pay the rest, offered as tap nothing more",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Grizzly Bears",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:Grizzly Bears",
+    "A:waterbend:done"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "taps Grizzly Bears for Waterbend"
+  ],
+  "expect_not": [
+    "taps Invasion Submersible for Waterbend"
+  ],
+  "expect_menu": [
+    "Tap nothing more"
+  ]
+}

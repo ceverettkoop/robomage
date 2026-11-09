@@ -1,0 +1,39 @@
+{
+  "name": "cr702_120a_collective_brutality_one_mode_discards_nothing",
+  "why": "CR 702.120a: \"for each mode chosen beyond the first\": one mode costs no discard",
+  "hand_a": [
+    "Collective Brutality",
+    "Ponder"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Collective Brutality",
+    "A:mode:loses 2 life",
+    "A:mode:done"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Player B loses 2 life \\(now at 18\\)"
+  ],
+  "expect_not": [
+    "escalate"
+  ]
+}

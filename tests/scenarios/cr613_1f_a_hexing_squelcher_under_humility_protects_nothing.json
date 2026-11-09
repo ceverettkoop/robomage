@@ -1,0 +1,50 @@
+{
+  "name": "cr613_1f_a_hexing_squelcher_under_humility_protects_nothing",
+  "why": "CR 613.1f: Humility takes Hexing Squelcher's abilities, so its \"Spells you control can't be countered\" no longer applies. The counter check read the replacement off the card whatever the permanent had lost.",
+  "battlefield_a": [
+    "Mountain",
+    "Hexing Squelcher",
+    "Humility"
+  ],
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Lightning Bolt is countered"
+  ],
+  "expect_not": [
+    "Lightning Bolt can't be countered"
+  ]
+}

@@ -1,0 +1,20 @@
+# The clean cards that entered after M4, each read and played; this deck keeps them under fuzz.
+# Tendrils of Agony and Empty the Warrens.
+trigger:Storm
+effect:Storm
+# Aluren.
+cast:without_mana_cost
+# Collective Brutality and Fiery Confluence.
+category:CHOOSE_MODE
+effect:Charm
+# Portable Hole's return and Mishra's Research Desk's permission.
+trigger:Delayed
+cast:impulse
+# Basalt Monolith.
+replacement:SKIP_UNTAP
+# Temur Sabertooth.
+category:RETURN_PERMANENT
+effect:Pump
+# Lush Portico, Raucous Theater.
+replacement:SELF_TAPPED
+effect:Surveil

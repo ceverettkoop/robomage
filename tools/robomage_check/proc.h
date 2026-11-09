@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-// ── robomage_check: engine subprocesses (fork/exec, pipes, poll) and the job pool ─────────────
+// ── robomage_check: engine subprocesses (posix_spawn, pipes, poll) and the job pool ─────────────
 
 namespace rmcheck {
 
@@ -22,7 +22,7 @@ struct ProcSpec {
 };
 
 struct ProcResult {
-        bool started = false;    // false: the fork or exec failed (`err` says why)
+        bool started = false;    // false: the spawn failed (`err` says why)
         int exit_code = -1;      // the exit status, or -1 when killed by a signal
         int signal = 0;          // the signal that killed it, or 0
         bool timed_out = false;  // killed by the timeout

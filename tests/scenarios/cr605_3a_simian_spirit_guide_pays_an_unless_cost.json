@@ -1,0 +1,54 @@
+{
+  "name": "cr605_3a_simian_spirit_guide_pays_an_unless_cost",
+  "why": "CR 605.3a: \"whenever a rule or effect asks for a mana payment\": Simian Spirit Guide is offered at Daze's unless-cost and pays it",
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Daze",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Daze",
+    "B:target:Lightning Bolt",
+    "A:pass",
+    "A:desc:Exile Simian Spirit Guide",
+    "A:desc:Pay {1}"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Lightning Bolt's controller may pay",
+    "Player A exiles Simian Spirit Guide",
+    "Player A pays \\{1\\}"
+  ],
+  "expect_not": [
+    "Lightning Bolt is countered"
+  ]
+}

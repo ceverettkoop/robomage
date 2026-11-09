@@ -1,0 +1,13 @@
+{
+  "name": "cr118_9d_additional_life_x_on_a_free_cast_from_exile",
+  "why": "CR 107.3a, 107.3b, 118.9d: Toxic Deluge's X is in its additional cost, not its mana cost, so cast free from exile it is still announced and paid in life",
+  "hand_a": ["Thoughtseize"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Dauthi Voidwalker"],
+  "hand_b": ["Toxic Deluge"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Thoughtseize", "A:target:Player B", "A:desc:Toxic Deluge", "A:activate:Dauthi Voidwalker", "A:cast:Toxic Deluge", "A:x:3"],
+  "max_decisions": 24,
+  "expect_order": ["Player A pays 3 life \\(X = 3\\)", "Player A casts Toxic Deluge"]
+}

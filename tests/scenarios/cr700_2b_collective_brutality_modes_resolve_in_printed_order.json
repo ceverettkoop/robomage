@@ -1,0 +1,37 @@
+{
+  "name": "cr700_2b_collective_brutality_modes_resolve_in_printed_order",
+  "why": "CR 700.2a: modes chosen in any order resolve as printed: the drain picked first still follows the discard",
+  "hand_a": [
+    "Collective Brutality",
+    "Ponder"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Collective Brutality",
+    "A:mode:loses 2 life",
+    "A:mode:reveals their hand"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "^Player B discards Lightning Bolt",
+    "^Player B loses 2 life"
+  ]
+}

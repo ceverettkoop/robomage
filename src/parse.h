@@ -47,12 +47,33 @@ const AbilityDef *parse_granted_trigger(const std::string &trigger_line,
                                         const std::string &svar_body);
 
 // Parse a Ward cost argument — the text after "Ward:" in a K: line or a granted keyword
-// (CR 702.21). Sets `cost` and `is_life` for the two supported shapes: "PayLife<N>"
-// (Ward—Pay N life) and a plain numeric "N" ({N} generic mana). A missing or malformed arg
-// degrades to a {1} mana ward rather than crashing card load (with -fno-exceptions a stray
-// std::stoi would abort). Shared by the printed-ward K: parse (parse.cpp) and the
-// granted-ward keyword scan (collect_ward_instances in action_processor.cpp) so both paths
-// enforce the same cost shapes.
-void parse_ward_cost(const std::string &arg, int &cost, bool &is_life);
+// (CR 702.21), in its two supported shapes: "PayLife<N>" (Ward—Pay N life) and a plain numeric
+// "N" ({N} generic mana). A missing or malformed arg degrades to a {1} mana ward. Shared by the
+// printed-ward K: parse (parse.cpp) and the granted-ward keyword scan (collect_ward_costs in
+// action_processor.cpp) so both paths enforce the same cost shapes.
+CostParts parse_ward_cost(const std::string &arg);
+
+// Records a finding against the script line in scope, while a findings parse runs.
+void parse_finding(const char *kind, const std::string &name, const std::string &detail);
+
+// ── Parser findings (--parse-report, parse_report.h) ─────────────────────────────────────────
+//
+// Something a script says that the parser met and does not model: an ability category with no
+// effect handler, a param no branch reads, a trigger mode with no event binding, a static mode or
+// replacement form the engine never applies, a plain keyword no rule reads, a cost token, an SVar
+// a param names that the script lacks. Recorded only while parse_card_findings /
+// parse_token_findings run; games parse through the caches above and record nothing.
+struct ParseFinding {
+    std::string kind;    // what was not modelled ("category", "ability_param", "trigger_mode", ...)
+    std::string name;    // the mechanic it names: the category, key, mode, keyword or token
+    std::string detail;  // the value or context it was met with
+    std::string line;    // the script line it was met on ("A:...", "T:...", "K:..."); "" when none
+};
+
+// Parses the card script at `path` into `card` (not the cache: a fresh parse) and appends every
+// finding to `findings`; false when the file can't be opened.
+bool parse_card_findings(const std::string &path, CardData &card, std::vector<ParseFinding> &findings);
+// The same for token script `script_name` (resources/tokenscripts/<script_name>.txt).
+bool parse_token_findings(const std::string &script_name, Token &tok, std::vector<ParseFinding> &findings);
 
 #endif /* PARSE_H */

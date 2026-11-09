@@ -1,0 +1,13 @@
+{
+  "name": "cr106_6_creature_only_mana_refuses_an_adventure",
+  "why": "CR 106.6, 715.3b: Abundant Countryside's mana is spent only to cast a creature spell, and Petty Theft on the stack is an instant, so the mana can't pay for it though the card is a creature card (its restriction read the front face until M8 (b1)). The same lands cast Brazen Borrower itself.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Abundant Countryside", "Abundant Countryside", "Abundant Countryside"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 3,
+  "expect_menu": ["Cast Brazen Borrower"],
+  "expect_menu_not": ["Cast Petty Theft"]
+}

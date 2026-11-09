@@ -1,0 +1,55 @@
+{
+  "name": "cr702_66a_delve_exiles_dont_outlive_the_spell",
+  "why": "CR 400.7, 702.66a: Murktide Regent cast with three delve exiles and countered is a new object in the graveyard; reanimated by Animate Dead nothing was exiled with it, so it enters with no +1/+1 counters",
+  "hand_a": [
+    "Murktide Regent",
+    "Animate Dead"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Murktide Regent",
+    "#2",
+    "B:cast:Counterspell",
+    "B:target:Murktide Regent",
+    "A:cast:Animate Dead",
+    "A:target:Murktide Regent"
+  ],
+  "max_decisions": 30,
+  "expect_order": [
+    "exiles Lightning Bolt via Delve",
+    "Murktide Regent is countered",
+    "Player A casts Animate Dead",
+    "Murktide Regent deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "\\+1/\\+1",
+    "P1P1"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "cr700_2d_eldrazi_confluence_repeated_modes_resolve_in_printed_order",
+  "why": "CR 700.2d / 608.2c: a mode chosen more than once is treated as appearing that many times in sequence, in printed order whatever the order picked; each instance has its own target. Picked exile-and-return (own Grizzly Bears), then +3/-3 on Air Elemental, then +3/-3 on the opponent's Grizzly Bears: both pumps resolve first, one on each creature, then the exile (repeated modes, onboarding stage 6)",
+  "hand_a": ["Eldrazi Confluence"],
+  "battlefield_a": ["Wastes", "Wastes", "Wastes", "Wastes", "Grizzly Bears"],
+  "battlefield_b": ["Air Elemental", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Eldrazi Confluence",
+           "A:desc:Exile target", "A:target:Grizzly Bears@own",
+           "A:desc:+3/-3", "A:target:Air Elemental",
+           "A:desc:+3/-3", "A:target:Grizzly Bears@opp"],
+  "seed": 1,
+  "max_decisions": 10,
+  "expect_order": ["chooses mode — Exile target", "chooses mode — Target creature gets \\+3/-3",
+                   "chooses mode — Target creature gets \\+3/-3", "Player A casts Eldrazi Confluence",
+                   "Air Elemental gets \\+3/-3 \\(now 7/1\\)", "Grizzly Bears gets \\+3/-3 \\(now 5/0\\)",
+                   "Grizzly Bears is moved to exile", "Grizzly Bears is moved to the battlefield",
+                   "Grizzly Bears dies"],
+  "expect_count": {"Air Elemental gets \\+3/-3": 1, "Grizzly Bears gets \\+3/-3": 1, "Air Elemental dies": 0}
+}

@@ -1,0 +1,46 @@
+{
+  "name": "cr603_2_displacer_kitten_sees_a_storm_spell_once",
+  "why": "CR 603.2, 702.40a: copies aren't cast: Tendrils of Agony with one copy triggers the Kitten once, and the target list holds no land",
+  "hand_a": [
+    "Lotus Petal",
+    "Tendrils of Agony"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:target:No target",
+    "A:cast:Tendrils",
+    "A:target:Player B",
+    "A:desc:Displacer Kitten",
+    "A:target:No target"
+  ],
+  "max_decisions": 14,
+  "expect_count": {
+    "^Displacer Kitten triggered": 2
+  },
+  "expect_menu_not": [
+    "^Swamp$"
+  ]
+}

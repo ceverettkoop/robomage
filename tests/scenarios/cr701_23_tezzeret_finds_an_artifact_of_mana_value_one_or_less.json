@@ -1,0 +1,50 @@
+{
+  "name": "cr701_23_tezzeret_finds_an_artifact_of_mana_value_one_or_less",
+  "why": "CR 701.23: Tezzeret's [-3] searches for an artifact card of mana value 1 or less, reveals it, puts it in hand and shuffles",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Grindstone",
+    "Cursed Totem"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Tezzeret Cruel Captain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:[-3]",
+    "A:search:Grindstone"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Grindstone"
+  ],
+  "expect_menu": [
+    "^Search|Grindstone"
+  ],
+  "expect_menu_not": [
+    "Cursed Totem$"
+  ]
+}

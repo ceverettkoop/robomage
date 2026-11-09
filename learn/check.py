@@ -14,10 +14,18 @@ Checks: the numpy RMTB reader against ``python/rmtb.py`` and its writer's round 
 hashes; the model's forward (shapes, finite outputs, padded rows), padding invariance (a decision's
 outputs do not depend on its batch or its padding), the training model against its folded
 inference module, auxiliary losses and a backward pass, the omniscient critic on paired decisions,
-the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; the inference
-server on the CPU through the Python client (results against the model, several policies and
-versions, a swap, batching across concurrent clients, handshake and request refusals, shutdown);
-BC's event dropout; the replay window's splits by game and by match and its probe sample.
+the smoothed policy; the TorchScript and ``.pt2`` exports' metadata and outputs; the seen-card mask
+(an unseen card's folded row is its features plus ``unknown_id``, marking it seen changes that row
+alone, training's marking moves no output, the mask through a checkpoint and the exports); model
+compatibility (``spec.check_compatible``: a checkpoint loads on tables with a card appended and
+carries their manifest, a removed or renamed card, another layout, text model or a moved registry
+entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
+verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the checkpoint
+migration (``rmlearn.migrate``) from a synthetic old layout and from a synthetic earlier registry
+layout (a layout bump, the seen mask carried), exact; the inference server on the CPU
+through the Python client (results against the model, several policies and versions, a swap, batching
+across concurrent clients, handshake and request refusals, shutdown); BC's event dropout; the replay
+window's splits by game and by match and its probe sample.
 Prints ``RMLEARN-CHECK: ok`` and exits 0, or the failures and exits 1.
 """
 
@@ -27,6 +35,7 @@ os.environ["HIP_VISIBLE_DEVICES"] = ""
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import argparse  # noqa: E402
+import copy  # noqa: E402
 import json  # noqa: E402
 import subprocess  # noqa: E402
 import sys  # noqa: E402
@@ -47,6 +56,7 @@ from rmlearn import bc as BC  # noqa: E402
 from rmlearn import client as CL  # noqa: E402
 from rmlearn import episodes as EP  # noqa: E402
 from rmlearn import export as E  # noqa: E402
+from rmlearn import migrate as MG  # noqa: E402
 from rmlearn import model as M  # noqa: E402
 from rmlearn import replay as RP  # noqa: E402
 from rmlearn import rmtb  # noqa: E402
@@ -85,7 +95,7 @@ def make_inputs(args):
         [eng, "--cards-frame", cards],
         [rmfeat, "--export-tables", cards, tables, "--text-table", text],
         [eng, "--agent-a", "explore", "--agent-b", "explore", "--bo3", "--game-seed", "1", "--deck-a",
-         "league/ur_delver", "--deck-b", "league/burn", "--max-decisions", "300", "--rmstate-dump", dump],
+         "league/ur_tempo", "--deck-b", "league/burn", "--max-decisions", "300", "--rmstate-dump", dump],
         [rmfeat, "--featurize", dump, "--viewer", "A", "--out", os.path.join(w, "A.rmtb"), "--cards", cards,
          "--tables", tables, "--text-table", text],
         [rmfeat, "--featurize", dump, "--viewer", "omniscient", "--out", os.path.join(w, "omniscient.rmtb"),
@@ -145,6 +155,7 @@ def check_model(args, tables, decs):
     torch.manual_seed(3)
     cfg = M.ModelConfig(d=64, heads=4, layers=2, omniscient_critic=True, critic_layers=1)
     model = M.RMNet(cfg, tables)
+    model.cards.set_seen(range(model.cards.n_cards - 1))     # a trained network's: every card seen
     with torch.no_grad():
         for p in model.parameters():
             p.add_(torch.randn_like(p) * 0.02)
@@ -263,6 +274,412 @@ def check_exports(args, model, pol, x):
         info("%s: metadata %s; outputs vs eager %.3g" % (f, meta, d))
 
 
+def check_seen(args, tables, model, x):
+    """The seen-card mask (docs/rmtrain.md §1.1): a never-seen card's folded export row is its
+    features plus ``unknown_id`` and marking it seen changes that row only; training's marking moves
+    no output; the mask round-trips through a checkpoint, and a checkpoint without it is refused unless
+    given a seen set; the TorchScript and ``.pt2`` exports of a network with an unseen card agree with
+    eager."""
+    print("seen cards", flush=True)
+    cards_in = sorted(set(int(c) for c in x[3].flatten().tolist() if c >= 0))
+    u = cards_in[len(cards_in) // 2]
+    every = list(range(model.cards.n_cards - 1))
+    m = copy.deepcopy(model).eval()
+    m.cards.set_seen([i for i in every if i != u])
+    c = m.cards
+    ok(not bool(c.card_seen[u]) and int(c.card_seen.sum()) == len(every) - 1 and not bool(c.card_id.weight[u].any()),
+       "set_seen: card %d unseen with a zero id row, every other card seen" % u)
+    with torch.no_grad():
+        feat = c.card_feature_rows().float()
+        folded = m.inference_module(0).folded_rows
+        n = c.n_cards
+        ok(torch.equal(folded[u], feat[u] + c.unknown_id), "the unseen card's folded row is not its features plus "
+           "unknown_id")
+        seen_rows = feat + c.card_id.weight * c.card_real
+        others = [i for i in range(n) if i != u]
+        ok(torch.equal(folded[others], seen_rows[others]), "a seen card's folded row is not its features plus its id "
+           "row")
+        table = c.token_table()
+        K = max(model.spec.K, 1)
+        ok(all(torch.equal(table[k * n + u], feat[u] + c.unknown_id + c.card_slot[k]) for k in range(K)),
+           "the training token table's unseen row")
+        drop = c.token_table(True)
+        ok(all(torch.equal(drop[k * 2 * n + n + u], feat[u] + c.unknown_id + c.card_slot[k]) for k in range(K)),
+           "the id-dropout copy of the unseen row")
+        ref_lg, ref_v = m.inference_module(0)(*x)
+        # Marking it seen (its id row zero) changes its row and nothing else.
+        m2 = copy.deepcopy(m)
+        m2.cards.set_seen(every)
+        f2 = m2.inference_module(0).folded_rows
+        changed = torch.nonzero((f2 != folded).any(1)).squeeze(1).tolist()
+        ok(changed == [u], "marking card %d seen changed folded rows %s" % (u, changed[:8]))
+        lg2, _ = m2.inference_module(0)(*x)
+        ok(maxdiff(lg2, ref_lg) > 0, "marking a card of the batch seen moved no output")
+    # The aux heads score every id: the unseen one reads unknown_id there too, but trains neither it nor
+    # its own id row.
+    if model.cfg.aux_heads:
+        ma = copy.deepcopy(m).train()
+        lse = ma.aux(torch.randn(3, ma.cfg.d))["aux_hand"].logsumexp(-1).sum()
+        lse.backward()
+        g_unk, g_id = ma.cards.unknown_id.grad, ma.cards.card_id.weight.grad
+        ok((g_unk is None or not bool(g_unk.any())) and not bool(g_id[u].any()) and bool(g_id[others[0]].any()),
+           "the aux heads' gradient reaches unknown_id or the unseen card's id row")
+    # Training's marking: the batch's cards seen, the newly seen card's id row unknown_id, no output moved.
+    m3 = copy.deepcopy(m).train()
+    m3.cards.mark_seen(x[3])
+    ok(set(m3.cards.seen_ids()) == set(every), "mark_seen left cards of the batch unseen or marked others")
+    ok(torch.equal(m3.cards.card_id.weight[u], m3.cards.unknown_id.detach()),
+       "a newly seen card's id row is not unknown_id")
+    other = [i for i in range(n) if i != u]
+    ok(torch.equal(m3.cards.card_id.weight[other], m.cards.card_id.weight[other]), "mark_seen moved another id row")
+    with torch.no_grad():
+        lg3, v3 = m3.eval().inference_module(0)(*x)
+    d = max(maxdiff(lg3, ref_lg), maxdiff(v3, ref_v))
+    ok(d == 0.0, "training's first marking moved the outputs: %.3g" % d)
+    # The checkpoint round trip, and a checkpoint made before the mask.
+    path = os.path.join(args.work, "seen_check.pt")
+    M.save_checkpoint(m, path)
+    back = M.load_checkpoint(path, tables)
+    ok(torch.equal(back.cards.card_seen, m.cards.card_seen) and
+       all(torch.equal(a, b) for a, b in zip(back.state_dict().values(), m.state_dict().values())),
+       "the seen mask's checkpoint round trip")
+    data = torch.load(path, map_location="cpu", weights_only=True)
+    del data["state_dict"]["cards.card_seen"]
+    old = os.path.join(args.work, "seen_check_old.pt")
+    torch.save(data, old)
+    try:
+        M.load_checkpoint(old, tables)
+        ok(False, "a checkpoint without card_seen loaded")
+    except RuntimeError as e:
+        ok("card_seen is missing" in str(e) and "S4" in str(e), "the refusal of a checkpoint without the mask: %s" % e)
+    given = [i for i in every if i != u]
+    m4 = M.load_checkpoint(old, tables, seen=given)
+    ok(m4.cards.seen_ids() == given and not bool(m4.cards.card_id.weight[u].any()),
+       "load_checkpoint(seen=...) on a checkpoint without the mask")
+    try:
+        M.load_checkpoint(path, tables, seen=given)
+        ok(False, "seen= accepted for a checkpoint that has the mask")
+    except ValueError:
+        pass
+    # The exports of the network with an unseen card.
+    formats = ("ts",) if args.no_pt2 else ("ts", "pt2")
+    paths = E.export_policy(m.inference_module(5), os.path.join(args.work, "seen_policy"), 5, formats=formats)
+    worst = {}
+    for f, p in paths.items():
+        loaded = E.load(p)
+        with torch.no_grad():
+            r = loaded(*x)
+        worst[f] = max(maxdiff(r[0], ref_lg), maxdiff(r[1], ref_v))
+        ok(worst[f] <= 1e-4, "%s export with an unseen card differs from eager: %.3g" % (f, worst[f]))
+        if f == "ts":
+            ok(torch.equal(loaded.folded_rows[u], folded[u]), "the TorchScript export's row of the unseen card")
+    info("card %d unseen of %d in the batch: its folded row = features + unknown_id (training table and id-dropout "
+         "copy too); marking it seen changes that row alone; training's marking sets its id row to unknown_id and "
+         "moves no output; the aux heads train neither unknown_id nor its row; checkpoint round trip; a checkpoint "
+         "without the mask refused, loaded with seen=; exports vs eager %s"
+         % (u, len(cards_in), ", ".join("%s %.3g" % kv for kv in sorted(worst.items()))))
+
+
+def manifest_variants(m):
+    """Named variants of manifest `m` (what the compatibility checks run on): a card appended (new
+    spec and vocab hashes), an id renamed, an id removed, another layout or text model, two ability
+    keys' rows swapped in the registry, another tables' digest (a known card's rows changed), a model
+    made before manifests."""
+    a, b = json.loads(m["registry"])["ab_keys"][:2]
+    line = lambda row, key: '{"row":%d,"key":%s}' % (row, json.dumps(key))  # noqa: E731
+    swapped = m["registry"].replace(line(a["row"], a["key"]), "\x01") \
+        .replace(line(b["row"], b["key"]), line(a["row"], b["key"])).replace("\x01", line(b["row"], a["key"]))
+    v = m["vocab"]
+    return {
+        "same": dict(m),
+        "appended": dict(m, vocab=v + [[899, "A Card Appended"]], spec_hash="0123456789abcdef",
+                         vocab_hash="00000000000000aa"),
+        "renamed": dict(m, vocab=[[i, n + " Renamed" if k == 3 else n] for k, (i, n) in enumerate(v)],
+                        vocab_hash="00000000000000bb"),
+        "removed": dict(m, vocab=v[:3] + v[4:], vocab_hash="00000000000000cc"),
+        "layout": dict(m, layout_hash="0123456789abcdef"),
+        "text": dict(m, text_model="other/model@0"),
+        "registry_moved": dict(m, registry=swapped),
+        "drifted": dict(m, tables_digest="0123456789abcdef"),
+        "legacy": {k: m[k] for k in ("spec_hash", "vocab_hash", "text_model")},
+    }
+
+
+def check_compat(args, tables, model):
+    """spec.check_compatible on checkpoints and exports across manifest variants, and against the C++
+    rule (rmfeat --compat) when the engine is given."""
+    print("compatibility", flush=True)
+    m = S.manifest_of(tables.hashes)
+    var = manifest_variants(m)
+    ok(var["registry_moved"]["registry"] != m["registry"], "the registry variant moved nothing")
+    want = {  # (model, now, exact) -> the refusal code (None: compatible)
+        ("same", "same", False): None, ("same", "same", True): None,
+        ("same", "appended", False): None, ("same", "appended", True): "vocab_hash",
+        ("same", "renamed", False): "vocab_hash", ("same", "removed", False): "vocab_hash",
+        ("same", "layout", False): "layout_hash", ("same", "text", False): "text_model",
+        ("same", "registry_moved", False): "layout_hash", ("appended", "same", False): "vocab_hash",
+        ("legacy", "same", False): None, ("legacy", "appended", False): "spec_hash",
+        ("legacy", "renamed", True): "vocab_hash",
+        ("same", "drifted", False): None, ("same", "drifted", True): "tables_digest",
+    }
+    for (a, b, exact), code in want.items():
+        r = S.check_compatible(var[a], var[b], exact)
+        ok((r and r[0]) == code, "check_compatible(%s, %s, exact=%s): %r, expected %s" % (a, b, exact, r, code))
+        if r and exact:
+            ok("rebuild it from its checkpoint" in r[1], "an exact refusal does not say to rebuild: %s" % r[1])
+    r = S.check_compatible(var["same"], var["removed"])
+    ok(r and "card %d" % m["vocab"][3][0] in r[1], "a removed card is named: %r" % (r,))
+    # A checkpoint of these tables loads on tables with a card appended and carries their manifest.
+    path = os.path.join(args.work, "compat_check.pt")
+    M.save_checkpoint(model, path)
+    grown = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                     var["appended"])
+    m2 = M.load_checkpoint(path, grown)
+    ok(m2.hashes["vocab"] == var["appended"]["vocab"], "the loaded model carries the new tables' manifest")
+    ok(all(torch.equal(a, b) for a, b in zip(m2.state_dict().values(), model.state_dict().values())),
+       "the checkpoint's parameters across the expansion")
+    for bad in ("renamed", "removed", "layout", "text", "registry_moved"):
+        t = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                     var[bad])
+        try:
+            M.load_checkpoint(path, t)
+            ok(False, "a checkpoint loaded on the %s tables" % bad)
+        except ValueError as e:
+            ok(path in str(e), "the refusal names the checkpoint: %s" % e)
+    # An export of these tables runs on them only.
+    prefix = os.path.join(args.work, "compat_policy")
+    ts = E.export_policy(model, prefix, 4, formats=("ts",))["ts"]
+    ok(E.export_refusal(ts, tables.hashes) is None, "the export refused on its own tables: %s"
+       % E.export_refusal(ts, tables.hashes))
+    why = E.export_refusal(ts, var["appended"])
+    ok(why is not None and "A Card Appended" in why and "rebuild it from its checkpoint" in why,
+       "the export on the grown vocab: %s" % why)
+    meta = E.read_metadata(ts)
+    ok(meta["layout_hash"] == m["layout_hash"] and json.loads(meta["vocab"]) == m["vocab"],
+       "the export's layout_hash and vocab metadata")
+    parity = 0
+    if args.engine_dir:
+        rmfeat = os.path.join(args.engine_dir, "rmfeat")
+        files = {}
+        for name, mm in var.items():
+            files[name] = os.path.join(args.work, "manifest_%s.json" % name)
+            with open(files[name], "w") as fp:
+                json.dump(mm, fp)
+        for (a, b, exact), code in want.items():
+            r = subprocess.run([rmfeat, "--compat", files[a], files[b]] + (["--exact"] if exact else []),
+                               capture_output=True, text=True)
+            got = None if r.returncode == 0 else (r.stdout.split("COMPAT-REFUSED: ", 1)[-1].split(":", 1)[0]
+                                                   if r.returncode == 1 else "error %d: %s" % (r.returncode, r.stderr))
+            ok(got == code, "rmfeat --compat %s %s%s: %r, Python %s" % (a, b, " --exact" if exact else "", got, code))
+            parity += 1
+    info("%d manifest cases (%s); a checkpoint loads across a card appended and is refused on a removed or renamed "
+         "card, another layout, text model or a moved registry entry; its export runs on its own tables only (the "
+         "rebuild message)%s" % (len(want), ", ".join(sorted(var)),
+                                 "; rmfeat --compat agrees on all %d" % parity if parity else ""))
+
+
+# ── the checkpoint migration ─────────────────────────────────────────────────────────────────
+
+def synthetic_old_layout(doc, rng):
+    """A layout before the registry (ids in order, running offsets, no reserved positions) holding the
+    same names as the spec document `doc` in other orders: token types, numeric slots, enum values,
+    relations and table columns permuted, plus the removed inputs (a ``lists`` type, the knowledge level
+    ``EXPERT_BELIEF``); (the spec document, its enums)."""
+    enums = {k: list(v)[::-1] for k, v in doc["enums"].items()}
+    enums["knowledge_level"] = enums["knowledge_level"] + ["EXPERT_BELIEF"]
+    types, cat = [], 1
+    for i, ti in enumerate(rng.permutation(len(doc["token_types"]))):
+        t = doc["token_types"][int(ti)]
+        cats = []
+        for c in t["categorical"]:
+            size = len(enums[c["source"][5:]]) + 1 if c["source"].startswith("enum:") else c["size"]
+            cats.append({"name": c["name"], "source": c["source"], "offset": cat, "size": size})
+            cat += size
+        types.append({"id": i, "name": t["name"], "numeric": [{"name": n["name"]} for n in t["numeric"]][::-1],
+                      "categorical": cats,
+                      "cards": [{"name": c["name"]} for c in sorted(t["cards"], key=lambda c: c["col"])],
+                      "abilities": [{"name": c["name"]} for c in sorted(t["abilities"], key=lambda c: c["col"])]})
+    types.append({"id": len(types), "name": "lists", "numeric": [{"name": "a"}, {"name": "b"}],
+                  "categorical": [{"name": "player_rel", "source": "player-rel", "offset": cat, "size": 4}],
+                  "cards": [], "abilities": []})
+    rels = [doc["relation_types"][int(i)] for i in rng.permutation(len(doc["relation_types"]))]
+    tables = {}
+    for k in ("card", "ability", "part"):
+        cols = [c for c in doc["card_tables"][k]["columns"] if not c.startswith("#")]
+        tables[k] = {"columns": [cols[int(i)] for i in rng.permutation(len(cols))]}
+    return ({"token_types": types, "relation_types": [dict(r, id=j) for j, r in enumerate(rels)],
+             "card_tables": tables, "categorical_size": cat + 4, "K": doc["K"], "Q": doc["Q"]}, enums)
+
+
+def synthetic_registry_layout(doc, rng):
+    """A layout of the registry form (positions, capacities, reserved columns) holding the same names as
+    the spec document `doc` elsewhere, as a layout bump moves them: type ids and numeric blocks, each
+    type's slot columns, categorical ranges, relation ids and table columns permuted within larger
+    capacities, reserved table columns (``#<i>``) between them, and every enum's values in another
+    order (the registry's, which a categorical id follows); the spec document."""
+    enums = {k: list(v)[::-1] for k, v in doc["enums"].items()}
+    n = len(doc["token_types"])
+    ids = rng.permutation(doc["type_capacity"] + 8)[:n]
+    types, at, cat = [], 0, 1
+    for j, ti in enumerate(rng.permutation(n)):
+        t = doc["token_types"][int(ti)]
+        cap = len(t["numeric"]) + 8
+        cols = rng.permutation(cap)[:len(t["numeric"])]
+        cats = []
+        for c in t["categorical"]:
+            size = c["size"] + 3 if c["source"].startswith("enum:") else c["size"]
+            cats.append(dict(c, offset=cat, size=size))
+            cat += size + 2
+        types.append(dict(t, id=int(ids[j]), num_at=at, num_capacity=cap, categorical=cats,
+                          numeric=[dict(sl, at=int(cols[i])) for i, sl in enumerate(t["numeric"])]))
+        at += cap
+    rel_ids = rng.permutation(doc["relation_capacity"] + 8)[:len(doc["relation_types"])]
+    tables = {}
+    for k in ("card", "ability", "part"):
+        cols = [c for c in doc["card_tables"][k]["columns"] if not c.startswith("#")]
+        cols = [cols[int(i)] for i in rng.permutation(len(cols))]
+        for r in range(0, len(cols), 7):
+            cols.insert(r, "#%d" % r)
+        tables[k] = {"columns": cols}
+    return dict(doc, layout_hash="synthetic", token_types=types, enums=enums, G=at, categorical_size=cat + 4,
+                type_capacity=doc["type_capacity"] + 8, relation_capacity=doc["relation_capacity"] + 8,
+                relation_types=[dict(r, id=int(rel_ids[j])) for j, r in enumerate(doc["relation_types"])],
+                card_tables=tables)
+
+
+def old_state_of(lm, sd, rng, keep_seen=False):
+    """`sd` (a state_dict of the current layout) laid out in `lm`'s old layout: each layout-indexed
+    tensor at its old positions (random where the current one has none), the removed aux heads
+    added (unless `keep_seen`: a network of a later layout, which keeps its seen mask)."""
+    g = torch.Generator().manual_seed(int(rng.integers(1 << 30)))
+    out = {}
+    for k, v in sd.items():
+        if k == "cards.card_seen":
+            if keep_seen:
+                out[k] = v.clone()
+            continue
+        p = lm.pairs(k)
+        if p is None:
+            out[k] = v.clone()
+            continue
+        kind, pairs, n_old = p
+        shape = (n_old,) + tuple(v.shape[1:]) if kind == "rows" else (v.shape[0], n_old)
+        o = torch.randn(shape, generator=g)
+        ij = torch.tensor(pairs, dtype=torch.int64).reshape(-1, 2)
+        if kind == "rows":
+            o[ij[:, 0]] = v[ij[:, 1]]
+        else:
+            o[:, ij[:, 0]] = v[:, ij[:, 1]]
+        out[k] = o
+    if keep_seen:
+        return out
+    d = sd["cards.card_proj.weight"].shape[0]
+    out["aux_list.weight"], out["aux_list.bias"] = torch.randn(13, d, generator=g), torch.zeros(13)
+    out["aux_archetype.weight"], out["aux_archetype.bias"] = torch.randn(8, d, generator=g), torch.zeros(8)
+    return out
+
+
+def zero_unmapped(lm, sd):
+    """`sd` with every layout-indexed position the old layout of `lm` lacks set to zero (what a migration
+    gives there)."""
+    want = {k: v.clone() for k, v in sd.items()}
+    for k, v in want.items():
+        p = lm.pairs(k)
+        if p is not None:
+            kind, pairs, _ = p
+            keep = torch.zeros(v.shape[0] if kind == "rows" else v.shape[1], dtype=torch.bool)
+            keep[torch.tensor([b for _, b in pairs], dtype=torch.int64)] = True
+            v.mul_((keep.view(-1, *([1] * (v.dim() - 1))) if kind == "rows" else keep.view(1, -1)).to(v.dtype))
+    return want
+
+
+def check_migration_bump(doc, tables, model, x, rng):
+    """A layout bump's migration (registry layout to registry layout): a network of a synthetic earlier
+    registry layout, carrying its seen mask, migrates back exactly, mask, ``card_id`` rows and Adam's
+    moments untouched; a --seen set that differs from the mask refused."""
+    old_doc = synthetic_registry_layout(doc, rng)
+    lm = MG.LayoutMap(MG.Layout(old_doc, old_doc["enums"]), MG.Layout(doc, doc["enums"]))
+    ok(lm.dropped == [], "migration (bump): dropped %s" % lm.dropped)
+    ref = copy.deepcopy(model).cpu().eval()
+    seen = sorted(set(range(1, 900, 5)) | {901})
+    ref.cards.set_seen(seen)
+    with torch.no_grad():
+        ref.cards.card_id.weight[2] = 0.25           # an unseen row that is not zero stays as it is
+    ref.load_state_dict(zero_unmapped(lm, ref.state_dict()))
+    want = ref.state_dict()
+    old = old_state_of(lm, want, rng, keep_seen=True)
+    got = MG.build_network(lm, ref.cfg.to_dict(), old, tables, None)
+    gsd = got.state_dict()
+    bad = [k for k in want if not torch.equal(gsd[k], want[k])]
+    ok(not bad and set(gsd) == set(want), "migration (bump): the migrated network differs at %s" % bad[:4])
+    ok(got.cards.seen_ids() == seen, "migration (bump): the carried seen mask was not kept")
+    with torch.no_grad():
+        a, b = ref(*x), got(*x)
+    ok(maxdiff(a["logits"], b["logits"]) == 0 and maxdiff(a["value"], b["value"]) == 0,
+       "migration (bump): the migrated network's outputs differ")
+    names = [k for k in old if k != "cards.card_seen"]
+    adam = {"t": 3, "m": [old[k] for k in names], "v": [old[k] * 2 for k in names]}
+    mig = MG.migrate_adam(lm, adam, old, got)
+    params = dict(got.named_parameters())
+    bad = [k for (k, _), m, v in zip(got.named_parameters(), mig["m"], mig["v"])
+           if not (torch.equal(m, params[k].detach()) and torch.equal(v, params[k].detach() * 2))]
+    ok(not bad, "migration (bump): Adam's moments do not follow their parameters at %s" % bad[:4])
+    try:
+        MG.build_network(lm, ref.cfg.to_dict(), old, tables, seen[1:])
+        ok(False, "migration (bump): a --seen set other than the carried mask was not refused")
+    except MG.MigrationError as err:
+        ok("seen mask" in str(err), "migration (bump): the refusal does not name the mask: %s" % err)
+    info("migration: a synthetic earlier registry layout (ids, blocks, slots, ranges and columns permuted, "
+         "reserved columns, enums reordered) carrying its seen mask migrates back exactly")
+
+
+def check_migration(args, tables, model, x):
+    """rmlearn.migrate on a synthetic old layout (the module's mapping by name, independent of any run):
+    a network laid out in it migrates back to the original exactly, but the positions the old layout
+    lacks (zero), with the given seen set (set_seen) and the same outputs; Adam's moments like their
+    parameters; an old name the current layout lacks refused, naming it."""
+    print("migration", flush=True)
+    rng = np.random.default_rng(5)
+    with open(os.path.join(args.tables, "spec.json")) as fp:
+        doc = json.load(fp)
+    old_doc, enums = synthetic_old_layout(doc, rng)
+    lm = MG.LayoutMap(MG.Layout(old_doc, enums), MG.Layout(doc, doc["enums"]))
+    ok(sorted(lm.dropped) == ["token type lists", "value EXPERT_BELIEF of header.knowledge",
+                              "value EXPERT_BELIEF of k_meta.level"], "migration: dropped %s" % lm.dropped)
+    ref = copy.deepcopy(model).cpu().eval()
+    seen = sorted(set(range(0, 900, 3)) | {900, 1023})
+    ref.cards.set_seen(seen)
+    want = zero_unmapped(lm, ref.state_dict())       # the positions the old layout lacks read zero
+    ref.load_state_dict(want)
+    old = old_state_of(lm, ref.state_dict(), rng)
+    got = MG.build_network(lm, ref.cfg.to_dict(), old, tables, seen)
+    gsd = got.state_dict()
+    bad = [k for k in want if not torch.equal(gsd[k], want[k])]
+    ok(not bad and set(gsd) == set(want), "migration: the migrated network differs from the original at %s" % bad[:4])
+    ok(got.cards.seen_ids() == seen, "migration: the seen set is not the one given")
+    with torch.no_grad():
+        a, b = ref(*x), got(*x)
+    ok(maxdiff(a["logits"], b["logits"]) == 0 and maxdiff(a["value"], b["value"]) == 0,
+       "migration: the migrated network's outputs differ")
+    names = list(old)
+    adam = {"t": 7, "m": [old[k] for k in names], "v": [old[k] * 2 for k in names]}
+    mig = MG.migrate_adam(lm, adam, old, got)
+    params = dict(got.named_parameters())
+    bad = [k for (k, _), m, v in zip(got.named_parameters(), mig["m"], mig["v"])
+           if not (torch.equal(m, params[k].detach()) and torch.equal(v, params[k].detach() * 2))]
+    ok(not bad and mig["t"] == 7, "migration: Adam's moments do not follow their parameters at %s" % bad[:4])
+    broken = copy.deepcopy(old_doc)
+    broken["token_types"][0]["numeric"].append({"name": "no_such_slot"})
+    try:
+        MG.LayoutMap(MG.Layout(broken, enums), MG.Layout(doc, doc["enums"]))
+        ok(False, "migration: an old numeric slot the current layout lacks was not refused")
+    except MG.MigrationError as err:
+        ok("no_such_slot" in str(err), "migration: the refusal does not name the slot: %s" % err)
+    info("migration: a synthetic old layout (%d types, every order permuted, the removed inputs) migrates back exactly, "
+         "outputs equal, Adam's moments like their parameters, an unknown name refused" % len(old_doc["token_types"]))
+    check_migration_bump(doc, tables, model, x, rng)
+
+
 def check_server(args, tables, model, decs):
     print("server", flush=True)
     sock = os.path.join(tempfile.mkdtemp(prefix="rmlc-", dir="/tmp"), "s.sock")
@@ -318,13 +735,18 @@ def check_server(args, tables, model, decs):
         except CL.RmipError as e:
             ok(e.code == "spec_hash", "a request of another spec hash refused with %s" % e.code)
         c2.close()
-        base = {"protocol": 1, "client": "check", "spec_hash": tables.hashes["spec_hash"],
+        base = {"protocol": SV.PROTOCOL, "client": "check", "spec_hash": tables.hashes["spec_hash"],
                 "vocab_hash": tables.hashes["vocab_hash"], "text_model": tables.hashes["text_model"],
+                "layout_hash": tables.hashes["layout_hash"], "tables_digest": tables.hashes["tables_digest"],
+                "vocab": tables.hashes["vocab"],
                 "dims": tables.spec.dims(), "shm": "/rmip-none", "request_bytes": 64, "response_bytes": 64,
                 "policies": [0]}
         cases = [("spec_hash", dict(base, spec_hash="0123456789abcdef")),
                  ("vocab_hash", dict(base, vocab_hash="0123456789abcdef")),
-                 ("text_model", dict(base, text_model="x@0")), ("protocol", dict(base, protocol=2)),
+                 ("text_model", dict(base, text_model="x@0")), ("protocol", dict(base, protocol=SV.PROTOCOL + 1)),
+                 ("layout_hash", dict(base, layout_hash="0123456789abcdef")),
+                 ("tables_digest", dict(base, tables_digest="0123456789abcdef")),
+                 ("vocab_hash", dict(base, vocab=base["vocab"] + [[899, "A Card Appended"]])),
                  ("policy", dict(base, policies=[7])), ("shm", base)]
         for code, hello in cases:
             got = CL.hello_only(sock, hello)
@@ -379,7 +801,8 @@ def make_episodes(args):
     if os.path.isdir(out) and any(n.endswith(".rmtraj") for n in os.listdir(out)):
         return out
     eng = os.path.join(args.engine_dir, "robomage")
-    for seed, da, db, cap in ((5, "league/ur_delver", "league/burn", "600"), (6, "league/bug", "league/lands", "400")):
+    for seed, da, db, cap in ((5, "league/ur_tempo", "league/burn", "600"),
+                              (6, "league/bug", "league/lands_top8", "400")):
         argv = [eng, "--agent-a", "explore", "--agent-b", "random", "--bo3", "--game-seed", str(seed), "--deck-a", da,
                 "--deck-b", db, "--teacher-a", "python3 ../python/teacher.py", "--trajectory-out", out,
                 "--trajectory-omniscient", "--max-decisions", cap]
@@ -428,9 +851,7 @@ def check_episode_reader(files):
                 same = same and np.array_equal(ep.mu[ep.menu_off[d]:ep.menu_off[d + 1]], np.array(s.mu, np.float32))
             if s.targets is not None:
                 t = EP.targets([(ep, d)], 1025, 10)
-                same = same and int(t["opp_list"][0]) == s.targets["opp_list"] and \
-                    int(t["opp_archetype"][0]) == s.targets["opp_archetype"] and \
-                    float(t["opp_hand"].sum()) == len(s.targets["opp_hand"]) and \
+                same = same and float(t["opp_hand"].sum()) == len(s.targets["opp_hand"]) and \
                     list(t["own_library"][0][:len(s.targets["own_library"])]) == list(s.targets["own_library"][:10])
             if not same:
                 bad.append((f, d))
@@ -731,6 +1152,9 @@ def check_bc(args, tables, win):
             ok(all(np.isfinite(v) for k, v in m.items() if k.startswith("train_")), "a non-finite BC loss %r" % m)
         first, last = float(np.mean(losses[:5])), float(np.mean(losses[-5:]))
         ok(last < first, "the BC policy loss did not decrease: %.3f -> %.3f" % (first, last))
+        seen = set(model.cards.seen_ids())
+        held = set(EP.read_episode(ep.path).seat_feat.card_ids().tolist())
+        ok(seen and seen <= held, "BC marked cards %s seen; the episode holds %s" % (sorted(seen - held), len(held)))
         e = tr.evaluate("train", 200)
         ok(e.get("eval_decisions", 0) > 0 and 0 <= e["eval_agree_all"] <= 1 and np.isfinite(e["eval_value_mse"]),
            "BC evaluation %r" % e)
@@ -743,8 +1167,9 @@ def check_bc(args, tables, win):
         ok(tr.step == 30, "BC optimizer state restored")
     finally:
         tr.close()
-    info("30 steps on one episode (%d labelled decisions): policy loss %.3f -> %.3f, finite; evaluation, checkpoint "
-         "and optimizer state round trip" % (int((ep.labels >= 0).sum()), first, last))
+    info("30 steps on one episode (%d labelled decisions): policy loss %.3f -> %.3f, finite; %d of the episode's %d "
+         "cards marked seen; evaluation, checkpoint and optimizer state round trip"
+         % (int((ep.labels >= 0).sum()), first, last, len(seen), len(held)))
 
 
 def main():
@@ -772,6 +1197,9 @@ def main():
     model, pol, x = check_model(args, tables, decs)
     check_event_dropout()
     check_exports(args, model, pol, x)
+    check_seen(args, tables, model, x)
+    check_compat(args, tables, model)
+    check_migration(args, tables, model, x)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:
         args.episodes = make_episodes(args)

@@ -2,22 +2,35 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
+#include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/counters.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/entry.h"
+#include "../queries/keywords.h"
+#include "../queries/players.h"
 #include "../queries/types.h"
 #include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 
 namespace effects {
+
+static void change_keywords_until_eot(const Ability &ab, Entity tgt);
+static bool changes_keywords_alone(const AbilityDef &def);
 
 // Bootstrap a Creature (and Damage) component on a permanent that the Animate extension points
 // have turned into a creature (animate_make_creature). The base P/T come from animate_*; the
@@ -87,9 +100,72 @@ void apply_animate_creature_bootstrap(Entity e) {
 // populates them.
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
-    // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
-    Entity tgt = ab.def->defined_self ? ab.source.get() : ab.target.get();
-    if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
+    // ability's own source; Defined$ Remembered (Sneak Attack: the creature it just put onto the
+    // battlefield) every remembered permanent; Defined$ Targeted.<qualifiers> the target if it
+    // matches (Tezzeret's emblem); otherwise the chosen/inherited target (Guide of Souls).
+    const ObjectSpec &spec = ab.def->defined;
+    std::vector<Entity> objects;
+    if (spec.is(ObjectSpec::SELF) || spec.is(ObjectSpec::TARGETED_MATCHING) || spec.is_remembered()) {
+        objects = resolve_objects(spec, ResolveCtx::of(ab));
+    } else {
+        objects.push_back(ab.target.get());
+    }
+    std::vector<ObjectRef> animated;
+    for (Entity tgt : objects) {
+        if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) continue;
+        if (is_battlefield_permanent(tgt)) {
+            animate_permanent(ab, tgt);
+        } else if (global_coordinator.GetComponent<Zone>(tgt).location == Zone::BATTLEFIELD &&
+                   !global_coordinator.entity_has_component<Permanent>(tgt)) {
+            // Put onto the battlefield by this resolution, its Permanent not built yet: the grant
+            // waits on its entry.
+            entry_info(tgt).animates.push_back(ab);
+        } else {
+            continue;
+        }
+        animated.push_back(ObjectRef::of(tgt));
+    }
+    register_at_eot_move(ab, animated);
+    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// RemoveKeywords$ and an AnimateAll's AddKeyword$ / Keywords$ on one permanent.
+static void change_keywords_until_eot(const Ability &ab, Entity tgt) {
+    // Removal direction (CR 613 layer 6): suppress the named keyword(s) until end of turn.
+    auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
+    for (const auto &kw : ab.def->remove_keywords)
+        perm.removed_keywords_eot.insert(kw);
+
+    // Grant direction (until end of turn) — creatures only (keywords live on Creature).
+    if (!ab.def->add_keywords.empty() && global_coordinator.entity_has_component<Creature>(tgt)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+        cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
+        for (const auto &kw : ab.def->add_keywords) {
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
+        }
+    }
+}
+
+// An AnimateAll that names no type and no P/T changes keywords and nothing else, so it has no
+// layer-4 or layer-7 effect to timestamp.
+static bool changes_keywords_alone(const AbilityDef &def) {
+    return def.kind == EffectKind::AnimateAll && def.animate_types.empty() && !def.animate_has_pt;
+}
+
+// See declaration in effects.h.
+void set_pt_from_animate(const Permanent &perm, Creature &cr) {
+    if (!perm.animate_set_pt && !perm.animate_set_pt_eot) return;
+    const bool eot = perm.animate_set_pt_eot && (!perm.animate_set_pt || perm.animate_timestamp_eot > perm.animate_timestamp);
+    cr.has_set_pt = true;
+    cr.set_power = eot ? perm.animate_power_eot : perm.animate_power;
+    cr.set_toughness = eot ? perm.animate_toughness_eot : perm.animate_toughness;
+}
+
+// See declaration in effects.h.
+void animate_permanent(const Ability &ab, Entity tgt) {
+    change_keywords_until_eot(ab, tgt);
+    if (changes_keywords_alone(*ab.def)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
     // Duration (CR 613.7 + 514.2). Three variants:
@@ -136,19 +212,30 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // now (Karn: Targeted$CardManaCost → the target's mana value at resolution). We snapshot at
     // resolution rather than tracking a live characteristic-defining value: mana value is a fixed
     // printed characteristic of a noncreature artifact, so the snapshot equals the CDA reading in
-    // practice and matches how the existing animate effect stores base P/T as plain ints. Only
-    // applied for persistent/until-turn durations (the rest-of-game animate_* fields persist; no
-    // EOT-duration card needs a set P/T, and animate_set_pt is not cleared at cleanup).
-    if (ab.def->animate_has_pt && !eot) {
+    // practice and matches how the existing animate effect stores base P/T as plain ints.
+    if (ab.def->animate_has_pt) {
         int base_p = ab.def->animate_base_power;
         int base_t = ab.def->animate_base_toughness;
         if (!ab.def->animate_power_expr.empty())
             base_p = static_cast<int>(evaluate_amount(ab.def->animate_power_expr, ab.controller, 0, tgt));
         if (!ab.def->animate_toughness_expr.empty())
             base_t = static_cast<int>(evaluate_amount(ab.def->animate_toughness_expr, ab.controller, 0, tgt));
-        perm.animate_set_pt = true;
-        perm.animate_power = base_p;
-        perm.animate_toughness = base_t;
+        if (eot) {
+            perm.animate_set_pt_eot = true;
+            perm.animate_power_eot = base_p;
+            perm.animate_toughness_eot = base_t;
+            coverage_row("animate_eot_base_pt");
+            game_log("%s has base power and toughness %d/%d until end of turn.\n", perm.name.c_str(), base_p, base_t);
+        } else {
+            perm.animate_set_pt = true;
+            perm.animate_power = base_p;
+            perm.animate_toughness = base_t;
+        }
+        if (global_coordinator.entity_has_component<Creature>(tgt)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+            set_pt_from_animate(perm, cr);
+            recompute_pt(cr);
+        }
     }
 
     // Becoming a creature: a card whose Types$ adds Creature to a noncreature permanent (The
@@ -162,6 +249,26 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         if (eot) perm.animate_make_creature_eot = true;
         else perm.animate_make_creature = true;
     }
+
+    // Keywords$ (layer 6): a Duration$ Permanent grant joins the rest-of-game keywords the
+    // layer-6 rebuild merges every pass (Sneak Attack's Haste); an end-of-turn one, the creature's
+    // until-end-of-turn keywords (Shallow Grave's).
+    if (eot && !ab.def->animate_keywords.empty() && global_coordinator.entity_has_component<Creature>(tgt)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+        cr.eot_keywords_timestamp = perm.animate_timestamp_eot;
+        for (const std::string &kw : ab.def->animate_keywords) {
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
+            game_log("%s gains %s until end of turn.\n", perm.name.c_str(), kw.c_str());
+        }
+    }
+    if (permanent_dur)
+        for (const std::string &kw : ab.def->animate_keywords)
+            if (std::find(perm.animate_added_keywords.begin(), perm.animate_added_keywords.end(), kw) ==
+                perm.animate_added_keywords.end()) {
+                perm.animate_added_keywords.push_back(kw);
+                game_log("%s gains %s.\n", perm.name.c_str(), kw.c_str());
+            }
 
     // Record the until-your-next-turn marker so the animating player's untap step reverts exactly
     // this grant (types + creature + base P/T) on their next turn — see revert_until_turn_animates.
@@ -207,7 +314,31 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             game_log("%s gains an activated ability.\n", perm.name.c_str());
         }
     }
-    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// See declaration in effects.h.
+void register_at_eot_move(const Ability &ab, const std::vector<ObjectRef> &objects) {
+    if (ab.def->at_eot == AtEotMove::NONE || objects.empty()) return;
+    const bool exiled = ab.def->at_eot == AtEotMove::EXILE;
+    Ability fire_ab(keyed_ability_def(exiled ? "animate_exile_at_eot" : "animate_sacrifice_at_eot", [exiled] {
+        AbilityDef d;
+        d.ability_type = AbilityDef::TRIGGERED;
+        d.category = "ChangeZone";
+        d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
+        d.origin = Zone::BATTLEFIELD;
+        d.origins = {Zone::BATTLEFIELD};
+        d.destination = exiled ? Zone::EXILE : Zone::GRAVEYARD;
+        return d;
+    }));
+    fire_ab.restore_remembered_exiled_with = objects;  // resolve() seeds the remembered set to them
+    fire_ab.source = ab.source;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(ab.controller);
+    dt.fire_on_turn = cur_game.turn_state.turn;
+    register_delayed_trigger(dt, ab.source);
 }
 
 // Lapse the "until your next turn" Animate (Karn, the Great Creator +1) on permanent `e` if

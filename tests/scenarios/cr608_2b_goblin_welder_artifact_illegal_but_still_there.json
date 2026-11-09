@@ -1,0 +1,45 @@
+{
+  "name": "cr608_2b_goblin_welder_artifact_illegal_but_still_there",
+  "why": "CR 608.2b: an illegal target isn't affected even while it stays where it was. Haywire Mite given shroud by Sylvan Safekeeper in response: it isn't remembered, the Branch finds no pair, nothing is sacrificed and nothing returns.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Goblin Welder"
+  ],
+  "battlefield_b": [
+    "Haywire Mite",
+    "Sylvan Safekeeper",
+    "Forest"
+  ],
+  "graveyard_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Welder",
+    "B:activate:Sylvan Safekeeper",
+    "B:target:Haywire Mite"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Resolving ability \\(category: Branch\\)"
+  ],
+  "expect_not": [
+    "sacrifices Haywire Mite",
+    "Mox Opal is moved to the battlefield"
+  ]
+}

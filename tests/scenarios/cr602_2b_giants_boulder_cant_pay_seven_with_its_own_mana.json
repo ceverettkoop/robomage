@@ -1,0 +1,40 @@
+{
+  "name": "cr602_2b_giants_boulder_cant_pay_seven_with_its_own_mana",
+  "why": "CR 602.2b, 118.3: {T} is part of the cost, so the Boulder can't also tap for one of the {7}: six lands don't activate it",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Giant's Boulder",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Activate Giant's Boulder"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "cr733_1_a_cancelled_face_down_cast_shows_nothing",
+  "why": "CR 733.1, 708.4: a reversed proposal of a face-down cast returns the card to its hand: it never showed on the stack, so the other player holds no identity at any frame and its owner has it back as it was.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "offer_cancel": true,
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "A:desc:Cancel",
+    "A:cast:Aphetto",
+    "A:tap:Island",
+    "A:tap:Island"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A casts Aphetto Alchemist"
+  ],
+  "expect_order": [
+    "Payment cancelled|cancel",
+    "Player A casts Aphetto Alchemist"
+  ],
+  "expect_dump": [
+    "^B .*event CAST_FROM_HIDDEN HAND>STACK card=none face_down=1",
+    "^B .*event ZONE_MOVE STACK>HAND card=none face_down=0",
+    "^A .*pending NONE card=Aphetto Alchemist",
+    "^B .*pending NONE card=none"
+  ],
+  "expect_not": [
+    "revealed as"
+  ]
+}

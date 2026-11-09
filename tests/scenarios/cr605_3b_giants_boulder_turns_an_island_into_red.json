@@ -1,0 +1,38 @@
+{
+  "name": "cr605_3b_giants_boulder_turns_an_island_into_red",
+  "why": "CR 605.3b: {1}, {T}: one mana of any color: an Island and the Boulder pay Lightning Bolt's {R}, and the Boulder stays",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Giant's Boulder",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Player A activated Giant's Boulder for 1\\(R\\)",
+    "^Lightning Bolt deals 3 damage"
+  ],
+  "expect_not": [
+    "sacrifices Giant's Boulder"
+  ]
+}

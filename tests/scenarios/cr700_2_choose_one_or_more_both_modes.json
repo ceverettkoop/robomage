@@ -1,0 +1,67 @@
+{
+  "name": "cr700_2_choose_one_or_more_both_modes",
+  "why": "CR 700.2 / 608.2c: Avengers Disassembled chosen with both modes, the destroy mode picked first: the modes resolve in printed order (3 damage to each creature, then destroy target land and its controller's optional search), and with both modes chosen no further choice is offered (choose one or more, onboarding stage 6)",
+  "hand_a": [
+    "Avengers Disassembled"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Tropical Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Avengers Disassembled",
+    "A:desc:Destroy target land",
+    "A:target:Tropical Island",
+    "A:desc:3 damage",
+    "B:search:Forest"
+  ],
+  "seed": 1,
+  "max_decisions": 8,
+  "expect_menu": [
+    "^Done choosing modes \\(1 chosen\\)$"
+  ],
+  "expect_menu_not": [
+    "^Done choosing modes \\(2 chosen\\)$"
+  ],
+  "expect_order": [
+    "chooses mode \u2014 Destroy target land",
+    "chooses mode \u2014 CARDNAME deals 3 damage",
+    "Player A casts Avengers Disassembled",
+    "Avengers Disassembled deals 3 damage to Grizzly Bears",
+    "Tropical Island is destroyed",
+    "Player B puts Forest to the battlefield"
+  ],
+  "expect_count": {
+    "chooses mode \u2014": 2
+  }
+}

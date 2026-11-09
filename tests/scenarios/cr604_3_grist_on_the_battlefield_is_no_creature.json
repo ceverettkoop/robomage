@@ -1,0 +1,35 @@
+{
+  "name": "cr604_3_grist_on_the_battlefield_is_no_creature",
+  "why": "CR 604.3: 'as long as it isn't on the battlefield': a Grist in play is a planeswalker alone, so Swords to Plowshares can't target it.",
+  "hand_a": [
+    "Swords to Plowshares"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grist the Hunger Tide",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Swords to Plowshares"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "Grist"
+  ]
+}

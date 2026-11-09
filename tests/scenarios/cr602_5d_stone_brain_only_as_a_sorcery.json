@@ -1,0 +1,40 @@
+{
+  "name": "cr602_5d_stone_brain_only_as_a_sorcery",
+  "why": "CR 602.5d: The Stone Brain's ability is sorcery timed: not offered on the opponent's turn",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "The Stone Brain",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate The Stone Brain"
+  ]
+}

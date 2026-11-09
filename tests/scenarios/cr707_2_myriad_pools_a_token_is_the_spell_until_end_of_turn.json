@@ -1,0 +1,48 @@
+{
+  "name": "cr707_2_myriad_pools_a_token_is_the_spell_until_end_of_turn",
+  "why": "CR 707.2, 111.1: a token becomes the copy too, and is itself again at cleanup: the Goblin Shaman token is a Bears with no attack trigger this turn and has it next turn.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Forest",
+    "Fable of the Mirror-Breaker"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Discard no more",
+    "A:cast:Grizzly Bears",
+    "A:target:Goblin Shaman",
+    "A:pass",
+    "B:play:Island",
+    "A:attack:Goblin Shaman",
+    "A:attack:done"
+  ],
+  "max_decisions": 40,
+  "expect_order": [
+    "Goblin Shaman becomes a copy of Grizzly Bears",
+    "Goblin Shaman is no longer a copy|Grizzly Bears is no longer a copy",
+    "Goblin Shaman token triggered"
+  ]
+}

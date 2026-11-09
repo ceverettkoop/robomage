@@ -37,7 +37,7 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
 inline bool keyword_removed_eot(Entity e, const char *kw) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
     const auto &removed = global_coordinator.GetComponent<Permanent>(e).removed_keywords_eot;
-    return removed.find(kw) != removed.end();
+    return !removed.empty() && removed.find(kw) != removed.end();
 }
 
 // True if the permanent `e` is indestructible (CR 702.12b: it can't be destroyed —

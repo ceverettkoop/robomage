@@ -1,0 +1,51 @@
+{
+  "name": "cr702_84a_dragon_engine_unearths_only_as_a_sorcery",
+  "why": "CR 702.84a: \"Activate only as a sorcery\": with the mana up and Lightning Bolt castable the card in the graveyard offers nothing in the upkeep or draw step",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu": [
+    "Cast Lightning Bolt"
+  ],
+  "expect_menu_not": [
+    "Unearth Phyrexian Dragon Engine"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

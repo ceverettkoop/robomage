@@ -1,0 +1,15 @@
+{
+  "name": "cr608_2d_sewer_veillance_cam_enters_taps_target",
+  "why": "CR 608.2d: Sewer-veillance Cam's enter trigger targets a creature, and as it resolves its controller chooses to tap or untap it; the two rows are the choice, and tapping taps",
+  "hand_a": ["Sewer-veillance Cam"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Sewer-veillance Cam", "A:desc:Accept", "A:mode:Tap Grizzly Bears"],
+  "max_decisions": 5,
+  "expect": ["Sewer-veillance Cam enters the battlefield", "Grizzly Bears is tapped"],
+  "expect_menu": ["Tap Grizzly Bears", "Untap Grizzly Bears"],
+  "expect_not": ["Grizzly Bears untaps"]
+}

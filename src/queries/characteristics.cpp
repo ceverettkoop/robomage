@@ -4,19 +4,110 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/creature.h"
+#include "../components/face_down_card.h"
 #include "../components/token.h"
+#include "../coverage.h"
+#include "../svar_eval.h"
 #include "battlefield.h"
 #include "lki.h"
+#include "players.h"
 
 static int token_vocab_idx(Entity e);
 static int last_known_vocab_idx(Entity e);
 static bool named_vocab_idx(Entity e, int *idx);
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs);
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities);
+static std::set<Colors> colors_before_layer5(Entity e);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
 // and counter-modified characteristics), otherwise its last-known information. They live here
 // rather than inline in characteristics.h so the header does not need to depend on game.h (and the
 // cur_game.last_known_info store).
+
+ObjectCharacteristics printed_characteristics(Entity e, const CardData &cd) {
+    const CardData &face = e != 0 ? card_characteristics(e, cd) : cd;
+    ObjectCharacteristics c;
+    c.types = &face.types;
+    c.colors = card_colors(face);
+    c.has_pt = true;
+    c.power = static_cast<int>(face.power);
+    c.toughness = static_cast<int>(face.toughness);
+    c.counted_pt = e != 0 && face.has_counted_pt;
+    if (e != 0 && &face == cd.off_battlefield.get()) coverage_row("off_battlefield_face");
+    return c;
+}
+
+PowerToughness card_power_toughness(Entity e, const CardData &cd) {
+    const CardData &face = card_characteristics(e, cd);
+    PowerToughness pt{static_cast<int>(face.power), static_cast<int>(face.toughness)};
+    if (!face.has_counted_pt) return pt;
+    const Zone::Ownership controller = source_controller(e);
+    for (const StaticAbility &sa : face.static_abilities) {
+        if (!sa.characteristic_defining) continue;
+        if (!sa.set_power_svar.empty()) pt.power = evaluate_svar(sa.set_power_svar, controller, e);
+        if (!sa.set_toughness_svar.empty()) pt.toughness = evaluate_svar(sa.set_toughness_svar, controller, e);
+    }
+    return pt;
+}
+
+ObjectCharacteristics card_object_characteristics(Entity e, const CardData &cd) {
+    ObjectCharacteristics c = printed_characteristics(e, cd);
+    if (e != 0) apply_color_statics(e, c.colors);
+    return c;
+}
+
+ObjectCharacteristics permanent_characteristics(Entity e, const Permanent &perm) {
+    ObjectCharacteristics c;
+    c.types = &perm.types;
+    c.colors = effective_colors(e);
+    if (global_coordinator.entity_has_component<Creature>(e)) {
+        c.has_pt = true;
+        c.power = effective_power(e);
+        c.toughness = effective_toughness(e);
+    }
+    return c;
+}
+
+const std::set<Type> &effective_types(Entity e) {
+    static const std::set<Type> none;
+    if (is_battlefield_permanent(e)) return global_coordinator.GetComponent<Permanent>(e).types;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_characteristics(e, global_coordinator.GetComponent<CardData>(e)).types;
+    if (global_coordinator.entity_has_component<Token>(e)) return global_coordinator.GetComponent<Token>(e).types;
+    return none;
+}
+
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs) {
+    out.insert(out.end(), defs.begin(), defs.end());
+}
+
+static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities) {
+    for (const Ability &ab : abilities) out.push_back(ab.def);
+}
+
+// Face selection happens here (a transformed permanent reads its back face), so a scan never
+// needs a per-ability front-face skip.
+std::vector<const AbilityDef *> object_abilities(Entity e) {
+    std::vector<const AbilityDef *> defs;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (!perm.abilities_removed) {
+            if (global_coordinator.entity_has_component<CardData>(e)) {
+                const CardData &cd = global_coordinator.GetComponent<CardData>(e);
+                append_ability_defs(defs, (perm.transformed && cd.backside) ? cd.backside->abilities : cd.abilities);
+            }
+            if (global_coordinator.entity_has_component<Token>(e))
+                append_ability_defs(defs, global_coordinator.GetComponent<Token>(e).abilities);
+        }
+        append_ability_defs(defs, perm.abilities);
+    } else if (global_coordinator.entity_has_component<CardData>(e)) {
+        append_ability_defs(defs, card_characteristics(e, global_coordinator.GetComponent<CardData>(e)).abilities);
+    } else if (global_coordinator.entity_has_component<Token>(e)) {
+        append_ability_defs(defs, global_coordinator.GetComponent<Token>(e).abilities);
+    }
+    return defs;
+}
 
 const std::vector<Effect::Replacement> &permanent_replacement_effects(Entity e) {
     static const std::vector<Effect::Replacement> none;
@@ -53,10 +144,18 @@ std::set<Colors> card_colors(const CardData &cd) {
 int object_mana_value(Entity e, const CardData &cd) {
     if (e != 0 && global_coordinator.entity_has_component<Spell>(e)) {
         const CardData &face = active_face(e, cd);
-        return card_mana_value(face) + face.x_pip_count * global_coordinator.GetComponent<Spell>(e).x_paid;
+        return card_mana_value(face) + face.x_pip_count * global_coordinator.GetComponent<Spell>(e).chosen.x;
     }
     if (e != 0 && cd.is_split && cd.backside) return card_mana_value(cd) + card_mana_value(*cd.backside);
     return card_mana_value(cd);
+}
+
+int permanent_mana_value(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        const bool transformed = global_coordinator.GetComponent<Permanent>(e).transformed;
+        return card_mana_value(mana_value_face(global_coordinator.GetComponent<CardData>(e), transformed));
+    }
+    return global_coordinator.entity_has_component<Token>(e) ? global_coordinator.GetComponent<Token>(e).mana_value : 0;
 }
 
 int effective_power(Entity e) {
@@ -64,8 +163,15 @@ int effective_power(Entity e) {
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).power);
     if (const LastKnownInfo *lki = lki_for(e)) return lki->power;
     if (global_coordinator.entity_has_component<CardData>(e))
-        return static_cast<int>(global_coordinator.GetComponent<CardData>(e).power);
+        return card_power_toughness(e, global_coordinator.GetComponent<CardData>(e)).power;
     return 0;
+}
+
+int object_power(const ObjectRef &ref) {
+    const Entity live = ref.get();
+    if (live != 0 && is_battlefield_permanent(live)) return effective_power(live);
+    const LastKnownInfo *lki = departed_lki_for(ref.lki_entity());
+    return lki ? lki->power : 0;
 }
 
 int effective_toughness(Entity e) {
@@ -73,31 +179,30 @@ int effective_toughness(Entity e) {
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).toughness);
     if (const LastKnownInfo *lki = lki_for(e)) return lki->toughness;
     if (global_coordinator.entity_has_component<CardData>(e))
-        return static_cast<int>(global_coordinator.GetComponent<CardData>(e).toughness);
+        return card_power_toughness(e, global_coordinator.GetComponent<CardData>(e)).toughness;
     return 0;
 }
 
 std::set<Colors> effective_colors(Entity e) {
-    // Layer-5 (613.1e) global color-changing override (Mycosynth Lattice: every card colorless).
-    // Checked first so it wins over the printed/last-known color in every zone the static reaches.
-    std::set<Colors> override_colors;
-    if (setcolor_override_for(e, override_colors)) return override_colors;
-    // On the battlefield, effective color is the layer-5 (613.1e) result. With no active color-
-    // changing static this reads the printed colors of the ACTIVE face — a transformed permanent
-    // has its back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color
-    // indicator, not its mono-white front; a face-up MDFC land back is colorless, not the front
-    // spell's color). The override above is the single seam a color-changing static plugs into
-    // without touching any consumer.
+    // Layer 5 (613.1e) goes on top of what the object has before it, in every zone a static reaches.
+    std::set<Colors> colors = colors_before_layer5(e);
+    apply_color_statics(e, colors);
+    return colors;
+}
+
+static std::set<Colors> colors_before_layer5(Entity e) {
+    // On the battlefield, the printed colors of the ACTIVE face — a transformed permanent has its
+    // back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color indicator, not
+    // its mono-white front; a face-up MDFC land back is colorless, not the front spell's color).
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<CardData>(e))
         return card_colors(active_face(e, global_coordinator.GetComponent<CardData>(e)));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
-        return card_colors(global_coordinator.GetComponent<CardData>(e));
+        return card_colors(card_characteristics(e, global_coordinator.GetComponent<CardData>(e)));
     // A token (no CardData) is colored by its color indicator (Token::explicit_colors, CR 111.4),
-    // not a mana cost. With no active SetColor override (checked first, above) this is its
-    // effective color — so a colored token reads correctly to the .Red/.Blue filter qualifiers
-    // (e.g. Blue Elemental Blast's "target red permanent" can see a red Warrior token). Filtered
-    // to the five real colors so a stray COLORLESS/GENERIC sentinel never leaks in.
+    // not a mana cost, so a colored token reads correctly to the .Red/.Blue filter qualifiers (e.g.
+    // Blue Elemental Blast's "target red permanent" can see a red Warrior token). Filtered to the
+    // five real colors so a stray COLORLESS/GENERIC sentinel never leaks in.
     if (global_coordinator.entity_has_component<Token>(e)) {
         std::set<Colors> cols;
         const auto &tk = global_coordinator.GetComponent<Token>(e).explicit_colors;
@@ -115,13 +220,27 @@ std::string whole_card_name(const CardData &cd) {
     return cd.is_split && cd.backside ? cd.name + " // " + cd.backside->name : cd.name;
 }
 
+std::vector<std::string> card_names(const CardData &cd) {
+    std::vector<std::string> names = {cd.name};
+    if ((cd.is_split || cd.is_adventure || cd.is_prepare) && cd.backside) names.push_back(cd.backside->name);
+    return names;
+}
+
+std::string permanent_label(Entity e) {
+    const std::string &name = global_coordinator.GetComponent<Permanent>(e).name;
+    return name.empty() ? entity_name(e) : name;
+}
+
 std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<FaceDownCard>(e)) return "Face-down creature";
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        // A copy of a face-down object has no name either (CR 707.2).
+        if (perm.name.empty()) return "Nameless creature";
         return perm.is_token ? perm.name + " token" : perm.name;
     }
     if (global_coordinator.entity_has_component<CardData>(e))
-        return global_coordinator.GetComponent<CardData>(e).name;
+        return active_face(e, global_coordinator.GetComponent<CardData>(e)).name;
     if (global_coordinator.entity_has_component<Token>(e))
         return global_coordinator.GetComponent<Token>(e).name + " token";
     if (global_coordinator.entity_has_component<Ability>(e)) {

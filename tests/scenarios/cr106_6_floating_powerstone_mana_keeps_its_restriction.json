@@ -1,0 +1,16 @@
+{
+  "name": "cr106_6_floating_powerstone_mana_keeps_its_restriction",
+  "why": "CR 106.6: a Powerstone's mana floated at priority still can't be spent to cast a nonartifact spell: with it floating and a Forest, Grizzly Bears is not offered, while the mana pays for Shadowspear",
+  "hand_b": ["Grizzly Bears", "Shadowspear"],
+  "library_b": ["Forest"],
+  "library_a": ["Mountain"],
+  "hand_a": ["Mountain"],
+  "battlefield_a": ["Cityscape Leveler"],
+  "battlefield_b": ["Forest", "Mox Opal"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:attack:Cityscape Leveler", "A:target:Mox Opal", "B:pass", "B:pass", "B:pass", "B:pass", "B:pass", "B:pass", "B:pass", "B:pass", "B:pass", "B:desc:Tap Powerstone", "B:cast:Shadowspear"],
+  "max_decisions": 22,
+  "expect_order": ["Player B draws Forest", "Player B tapped Powerstone", "Player B casts Shadowspear"],
+  "expect_not": ["Player B activated Forest"],
+  "expect_menu_not": ["Cast Grizzly Bears"]
+}

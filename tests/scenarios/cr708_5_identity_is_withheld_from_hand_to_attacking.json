@@ -1,0 +1,56 @@
+{
+  "name": "cr708_5_identity_is_withheld_from_hand_to_attacking",
+  "why": "CR 708.5, 702.37c: from the hand, through the cast and the stack, on the battlefield and attacking, the other player's frames hold no identity of the card: not an object's, a stack row's, an event's, nor one the sidecar deduced.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "A:attack:Aphetto",
+    "A:attack:done"
+  ],
+  "max_decisions": 60,
+  "expect_dump": [
+    "^B .*event CAST_FROM_HIDDEN HAND>STACK card=none face_down=1",
+    "^B .*stack SPELL card=none",
+    "^B .*face_down opp BATTLEFIELD card=none pt=2/2"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen .*|known_hand )Aphetto"
+  ]
+}

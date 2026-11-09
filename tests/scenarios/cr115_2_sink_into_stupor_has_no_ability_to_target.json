@@ -1,0 +1,13 @@
+{
+  "name": "cr115_2_sink_into_stupor_has_no_ability_to_target",
+  "why": "CR 115.2: Card.inZoneStack names a spell, not an ability on the stack. With only A's Bauble ability there, and nothing else of A's to target, Sink into Stupor isn't offered.",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mishra's Bauble"],
+  "hand_b": ["Sink into Stupor"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:activate:Mishra's Bauble", "A:target:Player B"],
+  "max_decisions": 8,
+  "expect_menu_not": ["Cast Sink into Stupor"]
+}

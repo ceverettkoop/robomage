@@ -19,6 +19,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/entry.h"
 #include "../queries/lki.h"
+#include "../queries/overlays.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../queries/types.h"
@@ -35,12 +36,10 @@ extern Game cur_game;
 // Arm (first entry) or re-enter (resume after suspension) the persisted
 // resolution frame for the stack object about to resolve; returns the ability to
 // resolve. Forward-declared per CLAUDE.md; see definitions below.
-static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered);
+static Ability &frame_enter(Entity top_entity, const Ability &ab);
 static void frame_finish();
 
-// First entry: save the incoming priority, count a triggered ability's
-// resolution once (Count$ResolvedThisTurn — guarded by counted_resolution so a
-// resume never recounts), save-and-clear the remembered set (each top-level
+// First entry: save the incoming priority, save-and-clear the remembered set (each top-level
 // resolution gets its own clean Remembered$ scope, CR 608.2 — formerly the
 // RememberedResolutionScope RAII in ability.cpp, moved here so a suspension
 // keeps the mid-resolution accumulations instead of unwinding them), push the
@@ -54,7 +53,7 @@ static void frame_finish();
 // swap-remove would move the resolving component under a reference to it. The
 // levels deque only ever pushes and pops deeper levels, so the ROOT copy stays
 // put until frame_finish.
-static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
+static Ability &frame_enter(Entity top_entity, const Ability &ab) {
     ResolutionFrame &fr = cur_game.resolution;
     if (fr.active) {
         if (fr.stack_entity != top_entity)
@@ -77,14 +76,11 @@ static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_tri
     // stack with it (triggered, CR 107.3m/n), and no mana was spent to cast it.
     if (global_coordinator.entity_has_component<Spell>(top_entity)) {
         const Spell &spell = global_coordinator.GetComponent<Spell>(top_entity);
-        fr.x_paid = spell.x_paid;
-        fr.converge = static_cast<int>(spell.colors_spent.size());
+        fr.x_paid = spell.chosen.x;
+        fr.converge = static_cast<int>(spell.chosen.colors_spent().size());
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
-    }
-    if (count_triggered && ab.def->ability_type == AbilityDef::TRIGGERED) {
-        cur_game.ability_resolution_counts[ab.source]++;
-        fr.counted_resolution = true;
+        fr.sacrificed_mana_value = ab.sacrificed_mana_value;
     }
     FrameLevel root;
     root.kind = FrameLevel::ROOT;
@@ -113,12 +109,29 @@ static void frame_finish() {
     supersede_departed_cards();
 }
 
+ResolveStatus StackManager::resolve_off_stack(const Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Ability &work = frame_enter(0, ab);
+    if (resolve_ability(work, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
+    frame_finish();
+    return ResolveStatus::DONE;
+}
+
+// CR 702.103e: as a bestowed Aura spell begins resolving with an illegal target, it ceases to be
+// bestowed and goes on resolving as the creature spell it is. True if that happened.
+bool StackManager::spell_ceases_to_be_overlaid(Entity spell) {
+    if (!global_coordinator.entity_has_component<Spell>(spell)) return false;
+    CastOption &how = global_coordinator.GetComponent<Spell>(spell).chosen.option;
+    if (!spell_overlay(how.overlay).stays_on_the_permanent || !aura_spell_target_illegal(spell)) return false;
+    how.overlay = SpellOverlay::NONE;
+    entry_info(spell).aura_target = ObjectRef{};
+    return true;
+}
+
 // True if `spell` is an Aura spell whose enchant target (chosen at cast, CR 303.4a) is no longer
 // legal as it resolves (CR 608.3b / 608.2b): the object changed zones (CR 400.7) or no longer
 // matches its enchant ability. An Aura spell with no recorded target is not judged here.
 bool StackManager::aura_spell_target_illegal(Entity spell) {
-    const auto &cd = global_coordinator.GetComponent<CardData>(spell);
-    if (cd.enchant_filter.empty()) return false;
+    if (active_face(spell, global_coordinator.GetComponent<CardData>(spell)).enchant_filter.empty()) return false;
     const EntryInfo *entry = find_entry_info(spell);
     if (!entry || entry->aura_target.empty()) return false;
     return !pending_aura_target_legal(spell, source_controller(spell));
@@ -127,18 +140,24 @@ bool StackManager::aura_spell_target_illegal(Entity spell) {
 void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
     EntryInfo &entry = entry_info(spell_entity);
     // Evoke: its evoke self-sacrifice ETB trigger fires.
-    if (spell.cast_with_evoke) entry.evoked = true;
+    if (spell.chosen.option.cost == CastCost::EVOKE) entry.evoked = true;
+    // Bestowed: the permanent is a bestowed Aura (CR 702.103b).
+    if (spell_overlay(spell.chosen.option.overlay).stays_on_the_permanent) entry.overlay = spell.chosen.option.overlay;
+    // Vibrance's "if {R}{R} was spent to cast it" reads it, and each object's row shows it.
+    entry.mana_paid = spell.chosen.mana_paid;
+    entry.keywords_until_eot = spell.keywords_until_eot;
+    entry.moved = spell.chosen.moved;
     // Offspring: its token-copy ETB trigger fires.
-    if (spell.cast_with_offspring) entry.offspring = true;
+    if (spell.chosen.option.offspring) entry.offspring = true;
     // Escape: Uro's "sacrifice it unless it escaped" reads it.
-    if (spell.cast_with_escape) entry.escaped = true;
+    if (spell.chosen.escape()) entry.escaped = true;
     // Impending (CR 702.175): it enters with time counters, a noncreature until they shed.
-    if (spell.cast_with_impending) entry.impending = true;
+    if (spell.chosen.option.cost == CastCost::IMPENDING) entry.impending = true;
     // Warp: its "exile at the next end step" delayed trigger is registered as it enters.
-    if (spell.cast_with_warp) entry.warp = true;
+    if (spell.chosen.option.cost == CastCost::WARP) entry.warp = true;
     // The X paid for an X-cost permanent, for an "enters with X counters" replacement (Chalice
     // of the Void).
-    if (spell.x_paid > 0) entry.x_paid = spell.x_paid;
+    if (spell.chosen.x > 0) entry.x_paid = spell.chosen.x;
 }
 
 void StackManager::init() {
@@ -191,15 +210,18 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         auto &card_data = global_coordinator.GetComponent<CardData>(top_entity);
         // A permanent spell (CR 110.4a, any permanent card type incl. Battle) of the face that
         // was cast (a modal back face / split half, CR 712.8f, 709.3) enters the battlefield.
-        bool is_permanent = is_permanent_card(active_face(top_entity, card_data));
+        if (spell_ceases_to_be_overlaid(top_entity)) game_log("%s is no longer bestowed.\n", card_data.name.c_str());
+        const CardData &face = active_face(top_entity, card_data);
+        bool is_permanent = is_permanent_card(face);
         if (is_permanent && aura_spell_target_illegal(top_entity)) {
             // CR 608.3b: an Aura spell whose target is illegal doesn't resolve; it is removed
             // from the stack and put into its owner's graveyard.
             game_log("%s doesn't resolve: the object it targets is no longer legal (CR 608.3b)\n",
-                     card_data.name.c_str());
+                     face.name.c_str());
             orderer->remove_from_stack(top_entity, Zone::GRAVEYARD);
         } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
+            const std::string entering = entity_name(top_entity);
             // Carry how it was cast onto its entry before the Spell component (which records
             // it) is removed; apply_permanent_components hands each fact to the Permanent.
             if (global_coordinator.entity_has_component<Spell>(top_entity))
@@ -219,17 +241,17 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = entering_controller;
             // TODO ETB event here
-            game_log("%s enters the battlefield\n", card_data.name.c_str());
+            game_log("%s enters the battlefield\n", entering.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
-            bool was_flashback = spell_cast_with_flashback(top_entity);
+            bool fizzled = false;
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-                Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
-                                          /*count_triggered=*/false);
+                Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
                 // re-enters here as the resume path.
                 if (resolve_ability(ab, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+                fizzled = cur_game.resolution.fizzled;
                 frame_finish();
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
@@ -237,32 +259,37 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // rather than going to any zone. Capture before the Spell component is removed.
             bool was_copy = global_coordinator.entity_has_component<Spell>(top_entity) &&
                             global_coordinator.GetComponent<Spell>(top_entity).is_copy;
+            const Zone::ZoneValue resolves_to =
+                global_coordinator.entity_has_component<Spell>(top_entity)
+                    ? global_coordinator.GetComponent<Spell>(top_entity).resolves_to
+                    : Zone::GRAVEYARD;
+            const SpellExit exit = fizzled ? SpellExit::REMOVED : SpellExit::RESOLVED;
+            const SpellDestination to = spell_destination(top_entity, resolves_to, exit);
+            const Spell cast = global_coordinator.GetComponent<Spell>(top_entity);
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
-                game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
+                game_log("%s (copy) ceases to exist\n", face.name.c_str());
                 obs_object_ceased(top_entity, true);
                 global_coordinator.DestroyEntity(top_entity);
                 return;
             }
-            // Shuffle into library instead of graveyard (e.g. Green Sun's Zenith)
-            if (card_data.shuffle_into_library) {
-                orderer->add_to_zone(false, top_entity, Zone::LIBRARY);
+            orderer->add_to_zone(false, top_entity, to.zone);
+            if (to.shuffled) {
                 orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
-                game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
-            } else if (was_flashback) {
-                orderer->add_to_zone(false, top_entity, Zone::EXILE);
-                game_log("%s is exiled (flashback)\n", card_data.name.c_str());
-            } else {
-                orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
+                game_log("%s is shuffled into its owner's library\n", face.name.c_str());
+            } else if (to.zone == Zone::EXILE) {
+                game_log("%s is exiled%s\n", face.name.c_str(),
+                         to.by_cast ? (" (" + std::string(to.by_cast) + ")").c_str() : "");
             }
+            const SpellOverlayRow &overlay = spell_overlay(cast.chosen.option.overlay);
+            if (exit == SpellExit::RESOLVED && overlay.resolved &&
+                global_coordinator.GetComponent<Zone>(top_entity).location == overlay.resolved_to)
+                overlay.resolved(top_entity, cast.caster);
         }
     }
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-        // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
-        // frame_enter's first-entry block so a resume never recounts.
-        Ability &ability = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
-                                       /*count_triggered=*/true);
+        Ability &ability = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity));
         if (resolve_ability(ability, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
         const Ability resolved = ability;  // frame_finish clears the frame holding it
         frame_finish();

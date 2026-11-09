@@ -1,0 +1,42 @@
+{
+  "name": "cr307_1_unmask_pitch_keeps_sorcery_timing",
+  "why": "CR 307.1, 118.9: an alternative cost doesn't change when a spell can be cast: in the upkeep Unmask's pitch isn't offered while an instant is",
+  "hand_a": [
+    "Unmask",
+    "Duress",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu": [
+    "^Cast Lightning Bolt$"
+  ],
+  "expect_menu_not": [
+    "Cast Unmask"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

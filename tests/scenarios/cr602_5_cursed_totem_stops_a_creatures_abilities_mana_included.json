@@ -1,0 +1,46 @@
+{
+  "name": "cr602_5_cursed_totem_stops_a_creatures_abilities_mana_included",
+  "why": "CR 602.5, 605.1a: Activated abilities of creatures can't be activated, for either player: no Mite activation, no Elves mana for the Bears, and the land creature taps for nothing; an artifact's ability and a card's ability in hand still work",
+  "hand_a": [
+    "Grizzly Bears",
+    "Street Wraith"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Cursed Totem",
+    "Llanowar Elves",
+    "Dryad Arbor",
+    "Forest",
+    "Haywire Mite",
+    "Tormod's Crypt"
+  ],
+  "battlefield_b": [
+    "Haywire Mite",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 7,
+  "expect_menu": [
+    "Activate Tormod's Crypt",
+    "Activate Street Wraith from hand"
+  ],
+  "expect_menu_not": [
+    "Cast Grizzly Bears",
+    "Activate Haywire Mite"
+  ]
+}

@@ -38,8 +38,6 @@ Tag parse_tag(const std::string &tag) {
         t.kind = TagKind::COUNT;
     } else if (tag == "signed") {
         t.kind = TagKind::SIGNED;
-    } else if (tag == "prob") {
-        t.kind = TagKind::PROB;
     } else if (tag == "index") {
         t.kind = TagKind::INDEX;
     } else if (tag == "player-rel") {
@@ -62,8 +60,6 @@ const char *transform_name(Transform t) {
             return "log1p";
         case Transform::SIGNED_LOG1P:
             return "signed_log1p";
-        case Transform::PROB:
-            return "prob";
         case Transform::INDEX:
             return "index_log1p";
         case Transform::NONE_FLAG:
@@ -89,8 +85,6 @@ float cell_value(Transform t, uint32_t arg, const rmstate::Value &v, rmstate::St
             const float m = log1p_of(static_cast<uint64_t>(x < 0 ? -x : x));
             return x < 0 ? -m : m;
         }
-        case Transform::PROB:
-            return static_cast<float>(static_cast<double>(v.bits) / 1e9);
         case Transform::INDEX:
             return rmstate::value_is_all_ones(v, storage) ? 0.0f : log1p_of(v.bits);
         case Transform::NONE_FLAG:
@@ -115,9 +109,6 @@ bool scalar_transform(TagKind kind, Transform *out) {
             return true;
         case TagKind::SIGNED:
             *out = Transform::SIGNED_LOG1P;
-            return true;
-        case TagKind::PROB:
-            *out = Transform::PROB;
             return true;
         case TagKind::INDEX:
             *out = Transform::INDEX;

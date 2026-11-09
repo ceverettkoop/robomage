@@ -1,5 +1,6 @@
 #include "targeting.h"
 
+#include <algorithm>
 #include <cctype>
 #include <set>
 #include <string>
@@ -8,12 +9,15 @@
 #include "classes/game.h"
 #include "components/carddata.h"
 #include "components/creature.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
 #include "ecs/coordinator.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
+#include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/keywords.h"
 #include "queries/players.h"
@@ -21,6 +25,7 @@
 #include "str_util.h"
 #include "svar_eval.h"
 #include "systems/orderer.h"
+#include "target_gate.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -33,12 +38,16 @@ extern Game cur_game;
 // "Spell.Colorless,Triggered" is one such disjunction. Forward-declared per CLAUDE.md.
 static bool stack_spell_alt_matches(const std::string &alt, Entity cand);
 static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
+static bool single_target_alt_matches(const std::string &alt, Entity cand);
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand);
 static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster);
 static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster);
 static Zone::Ownership ability_perspective_player(const Ability &ability);
 static bool targets_stack_objects(const AbilityDef &def);
 static bool targets_graveyard_card(const AbilityDef &def);
+static bool targets_spell_by_zone(const AbilityDef &def);
+static void add_stack_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                              Zone::Ownership priority_player, std::vector<Entity> &out);
 static bool alternative_negates_type(const std::string &alt, const std::string &type);
 static void add_permanent_alternative(const std::string &alt, TargetClasses &out);
 
@@ -58,9 +67,8 @@ static bool stack_spell_alt_matches(const std::string &alt, Entity cand) {
         alt.find("Creature") == std::string::npos;
     if ((non_creature_only || instant_sorcery_only) &&
         global_coordinator.entity_has_component<CardData>(cand)) {
-        auto &cd = global_coordinator.GetComponent<CardData>(cand);
         bool is_creature = false, is_instant = false, is_sorcery = false;
-        for (auto &t : cd.types) {
+        for (auto &t : effective_types(cand)) {
             if (t.name == "Creature") is_creature = true;
             if (t.name == "Instant") is_instant = true;
             if (t.name == "Sorcery") is_sorcery = true;
@@ -93,18 +101,37 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
     return false;
 }
 
+// SpellAbility.singleTarget: a spell or ability with a single target (CR 115.9a): one chosen, however
+// many are legal now.
+static bool single_target_alt_matches(const std::string &, Entity cand) {
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    return chosen_target_count(cand) == 1;
+}
+
+// One kind of stack object TargetType$ names: an alternative containing `name`, the first such row.
+struct StackAlternative {
+    const char *name;
+    bool (*matches)(const std::string &alt, Entity cand);
+};
+static const StackAlternative kStackAlternatives[] = {
+    {"SpellAbility", single_target_alt_matches},
+    {"Activated", stack_ability_alt_matches},
+    {"Triggered", stack_ability_alt_matches},
+    {"Spell", stack_spell_alt_matches},
+};
+
 // TargetType$ is an OR list of stack-object alternatives — split on commas and accept the
 // candidate if ANY alternative matches it (CR 115.1 target restrictions are satisfied by any
 // one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
 // Memory (Spell.Colorless,Triggered) off one matcher.
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand) {
-    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true)) {
-        bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
-                               alt.find("Triggered") != std::string::npos);
-        bool is_spell_alt = (alt.find("Spell") != std::string::npos);
-        if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
-        if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
-    }
+    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true))
+        for (const StackAlternative &row : kStackAlternatives)
+            if (alt.find(row.name) != std::string::npos) {
+                if (row.matches(alt, cand)) return true;
+                break;
+            }
     return false;
 }
 
@@ -155,9 +182,17 @@ static bool targets_stack_objects(const AbilityDef &def) {
 }
 
 // The target is a card in a graveyard: TgtZone$ Graveyard on any effect (Surgical Extraction's
-// SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm).
+// SP$ Pump vehicle), or a ChangeZone out of a graveyard (Life from the Loam, Lorehold Charm) that
+// doesn't target the player whose graveyard it searches (The Stone Brain).
 static bool targets_graveyard_card(const AbilityDef &def) {
-    return def.target_in_graveyard || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD);
+    return def.targets_in(Zone::GRAVEYARD) || (def.kind == EffectKind::ChangeZone && def.origin == Zone::GRAVEYARD &&
+                                          !target_spec_names_players(def.valid_tgts));
+}
+
+// TgtZone$ names the stack with no TargetType$ (Sink into Stupor): ValidTgts$ itself says which
+// spells, written against the card on the stack.
+static bool targets_spell_by_zone(const AbilityDef &def) {
+    return def.targets_in(Zone::STACK) && def.target_type.empty();
 }
 
 // Whether one filter alternative carries a non<type> qualifier (Permanent.nonLand), in either of
@@ -198,7 +233,8 @@ TargetClasses target_classes(const AbilityDef &def) {
     if (vt == "N_A" || vt.empty()) return out;
     if (targets_stack_objects(def)) {
         for (const std::string &alt : split(def.target_type, ',', /*skip_empty=*/true)) {
-            if (alt.find("Activated") != std::string::npos || alt.find("Triggered") != std::string::npos)
+            if (alt.find("Activated") != std::string::npos || alt.find("Triggered") != std::string::npos ||
+                alt.find("SpellAbility") != std::string::npos)
                 out.ability = true;
             if (alt.find("Spell") != std::string::npos) out.spell = true;
         }
@@ -210,6 +246,10 @@ TargetClasses target_classes(const AbilityDef &def) {
     }
     for (const std::string &comma_alt : split(vt, ',', /*skip_empty=*/true))
         for (const std::string &alt : split(comma_alt, ';', /*skip_empty=*/true)) {
+            if (targets_spell_by_zone(def) && filter_names_token(alt, "inZoneStack")) {
+                out.spell = true;
+                continue;
+            }
             if (alt == "Any") out.creature = out.planeswalker = out.battle = true;
             if (target_alternative_names_player(alt))
                 out.player = true;
@@ -241,12 +281,11 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
     // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
     if (cand == ab.source.get()) {
-        for (size_t p = ab.def->valid_tgts.find("Other"); p != std::string::npos;
-             p = ab.def->valid_tgts.find("Other", p + 1)) {
-            bool left_ok = (p > 0) && (ab.def->valid_tgts[p - 1] == '.' || ab.def->valid_tgts[p - 1] == '+');
+        const std::string &tgts = ab.def->valid_tgts.text();
+        for (size_t p = tgts.find("Other"); p != std::string::npos; p = tgts.find("Other", p + 1)) {
+            bool left_ok = (p > 0) && (tgts[p - 1] == '.' || tgts[p - 1] == '+');
             size_t end = p + 5;  // length of "Other"
-            bool right_ok = (end == ab.def->valid_tgts.size()) ||
-                            ab.def->valid_tgts[end] == '.' || ab.def->valid_tgts[end] == '+';
+            bool right_ok = (end == tgts.size()) || tgts[end] == '.' || tgts[end] == '+';
             if (left_ok && right_ok) return false;
         }
     }
@@ -260,7 +299,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // the shared filter evaluator on both the stack-spell and battlefield-permanent paths
     // (CR 115.1: target restrictions are checked when chosen, against the candidate).
 
-    const std::string &vt = ab.def->valid_tgts;
+    const std::string &vt = ab.def->valid_tgts.text();
 
     // Stack-object targets (counterspells, Stifle, Consign to Memory).
     if (targets_stack_objects(*ab.def)) {
@@ -272,14 +311,10 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
         // through the shared comma-OR card filter. A standalone ability entity on the stack (an
         // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
         // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
-        // A static numeric cmc qualifier (Spell Snare: ValidTgts$ Card.cmcEQ2) is deferred by
-        // the filter evaluator to ctx.cmc_bound, so seed it here or the comparator is a no-op
-        // and the counterspell would target any spell.
         MatchCtx spell_ctx{caster, ab.source.lki_entity()};
-        extract_static_cmc_bound(vt, spell_ctx);
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
-            !card_matches_any(cand, vt, spell_ctx))
+            !card_matches_filter(cand, ab.def->valid_tgts, spell_ctx))
             return false;
         return true;
     }
@@ -290,35 +325,18 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
 
-    int cmc_le = -1;
-    {
-        size_t cmc_pos = vt.find("cmcLE");
-        if (cmc_pos != std::string::npos) {
-            std::string bound = vt.substr(cmc_pos + 5);
-            // Trim to the leading token (stop at the next '.'/'+' qualifier).
-            size_t end = bound.find_first_of(".+");
-            if (end != std::string::npos) bound = bound.substr(0, end);
-            if (!bound.empty() && std::isdigit(static_cast<unsigned char>(bound[0])))
-                cmc_le = std::stoi(bound);
-            else
-                // cmcLEX (Kozilek's Command): the bound is the X paid at cast time.
-                cmc_le = current_x_paid();
-        }
-    }
-    // The ValidTgts spec in the shared matcher's grammar: "YouDontCtrl" is Forge's spelling of
-    // OppCtrl (a permanent you don't control), and "Any" as a permanent target is "any creature
-    // or planeswalker" (CR 115.4 / 306.7; players are handled in their own branch below).
+    // The ValidTgts spec in the shared matcher's grammar (players are handled in their own branch
+    // below).
+    const ResolveCtx resolve = ResolveCtx::of(ab);
     MatchCtx ctx;
     ctx.controller = caster;
     ctx.source = ab.source.lki_entity();
-    if (ab.targeted_player != 0) ctx.targeted_player = seat_of_player(ab.targeted_player);
-    // The mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed above into
-    // cmc_le; feed it to the evaluator so the bound is actually enforced.
-    if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
-    std::string spec = (vt == "Any") ? std::string("Creature,Planeswalker") : vt;
-    for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
-         pos = spec.find("YouDontCtrl", pos))
-        spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
+    ctx.resolve = &resolve;
+    // The {X} of its cost, announced before its targets (CR 602.2b), is a cmc<OP>X qualifier's
+    // bound (Lazotep Quarry's cmcEQX). Before the announcement the qualifier passes.
+    if (ab.def->cost.has(CostPart::X_MANA) && (cur_game.pending.activation.active || cur_game.resolution.active))
+        ctx.cmc_bound = ab.x_paid >= 0 ? ab.x_paid : current_x_paid();
+    const FilterSpec spec = target_filter(ab.def->valid_tgts);
 
     // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
     // graveyard→non-battlefield moves (e.g. Life from the Loam: ValidTgts$ Land.YouCtrl,
@@ -333,6 +351,11 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
         return card_matches_filter(cand, owner_relative_filter(spec), ctx);
     }
 
+    // A spell of a zone-named target (CR 115.2): an object elsewhere on the stack is no spell.
+    if (targets_spell_by_zone(*ab.def) && global_coordinator.entity_has_component<Zone>(cand) &&
+        global_coordinator.GetComponent<Zone>(cand).location == Zone::STACK)
+        return global_coordinator.entity_has_component<Spell>(cand) && card_matches_filter(cand, spec, ctx);
+
     // Player target
     if (global_coordinator.entity_has_component<Player>(cand))
         return player_matches_target_spec(vt, cand, caster);
@@ -341,7 +364,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     if (!is_battlefield_permanent(cand)) return false;
 
     // Match the ValidTgts spec against the permanent through the shared filter evaluator
-    // (queries/filters), with the normalized spec and mana-value bound built above.
+    // (queries/filters), with the normalized spec built above.
     if (!permanent_matches_filter(cand, spec, ctx)) return false;
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't
@@ -394,24 +417,56 @@ bool targets_still_legal(const Ability &ab) {
     return is_legal_target(ab, ab.target.get(), ab.controller);
 }
 
+std::vector<const Ability *> announced_instructions(const Ability &ab) {
+    std::vector<const Ability *> out{&ab};
+    for (const Ability *sub : ab.chained_subs()) out.push_back(sub);
+    for (int idx : ab.charm_chosen) {
+        if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
+        const Ability &mode = ab.charm_choices[static_cast<size_t>(idx)];
+        out.push_back(&mode);
+        for (const Ability *sub : mode.chained_subs()) out.push_back(sub);
+    }
+    return out;
+}
+
+std::vector<Ability *> announced_instructions(Ability &ab) {
+    std::vector<Ability *> out;
+    for (const Ability *part : announced_instructions(static_cast<const Ability &>(ab)))
+        out.push_back(const_cast<Ability *>(part));
+    return out;
+}
+
+int chosen_target_count(Entity stack_object) {
+    int chosen = 0;
+    if (global_coordinator.entity_has_component<Ability>(stack_object))
+        for (const Ability *part : announced_instructions(global_coordinator.GetComponent<Ability>(stack_object))) {
+            if (part->def->valid_tgts == "N_A") continue;
+            chosen += part->targets.empty() ? !part->target.empty() : static_cast<int>(part->targets.size());
+        }
+    const EntryInfo *entry = find_entry_info(stack_object);
+    return chosen + (entry && !entry->aura_target.empty() ? 1 : 0);
+}
+
+bool every_target_illegal(const Ability &ab) {
+    bool chosen = false;
+    for (const Ability *part : announced_instructions(ab)) {
+        if (part->def->valid_tgts == "N_A") continue;
+        const bool none_chosen = part->target.empty() && part->targets.empty();
+        if (none_chosen && (part != &ab || part->target_min == 0)) continue;
+        if (targets_still_legal(*part)) return false;
+        chosen = true;
+    }
+    return chosen;
+}
+
 std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
                                         Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets;
     const std::string &vt = ability.def->valid_tgts;
 
     // Stack targets: spells (counterspells) or standalone abilities (Stifle)
-    if (ability.def->target_type == "Spell" ||
-        ability.def->target_type.find("Activated") != std::string::npos ||
-        ability.def->target_type.find("Triggered") != std::string::npos) {
-        for (auto e : orderer->get_stack()) {
-            // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
-            // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
-            // target at resolution, or an activated ability being activated (CR 602.2a).
-            if (e == ability.source.get()) continue;
-            if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
-                continue;
-            if (is_legal_target(ability, e, priority_player)) valid_targets.push_back(e);
-        }
+    if (targets_stack_objects(*ability.def)) {
+        add_stack_targets(ability, orderer, priority_player, valid_targets);
         return valid_targets;
     }
 
@@ -423,7 +478,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     // is_legal_target applies the type/owner/MV filter, so YouOwn effects only keep the
     // caster's own cards. The destination is irrelevant to where the candidate sits, so
     // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
-    // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
+    // A graveyard target zone covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
     if (targets_graveyard_card(*ability.def)) {
         for (int pass = 0; pass < 2; pass++) {
@@ -453,7 +508,21 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
             if (is_legal_target(ability, entity, priority_player)) valid_targets.push_back(entity);
         }
     }
+    if (targets_spell_by_zone(*ability.def)) add_stack_targets(ability, orderer, priority_player, valid_targets);
     return valid_targets;
+}
+
+static void add_stack_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                              Zone::Ownership priority_player, std::vector<Entity> &out) {
+    for (auto e : orderer->get_stack()) {
+        // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
+        // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
+        // target at resolution, or an activated ability being activated (CR 602.2a).
+        if (e == ability.source.get()) continue;
+        if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
+            continue;
+        if (is_legal_target(ability, e, priority_player)) out.push_back(e);
+    }
 }
 
 // Perspective player for an ability's target search. Ownership-restricted targets
@@ -482,7 +551,14 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
     Zone::Ownership perspective = ability_perspective_player(ability);
     // optional targeting always has "legal targets"
     if (effective_target_min(ability, perspective, orderer, /*x_announced=*/false) <= 0) return true;
-    return !build_valid_targets(ability, orderer, perspective).empty();
+    return !target_candidates(ability, orderer, perspective).empty();
+}
+
+std::vector<Entity> target_candidates(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                      Zone::Ownership chooser) {
+    std::vector<Entity> pool = build_valid_targets(ability, orderer, chooser);
+    apply_target_gate(pool, TargetPick{ability, 0, nullptr, orderer, chooser});
+    return pool;
 }
 
 int effective_target_min(const Ability &ab, Zone::Ownership perspective,
@@ -491,6 +567,17 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
     if (!ab.def->target_min_count_expr.empty())
         return static_cast<int>(evaluate_amount(ab.def->target_min_count_expr, perspective, ab.source.lki_entity()));
     return ab.target_min;
+}
+
+bool divides_among_targets(const AbilityDef &def) {
+    const DamageParams *dp = std::get_if<DamageParams>(&def.params);
+    return dp && dp->divided;
+}
+
+int division_total(const Ability &ab, Zone::Ownership controller) {
+    const DamageParams &dp = std::get<DamageParams>(ab.def->params);
+    if (dp.divided_expr.empty()) return dp.divided_total;
+    return static_cast<int>(evaluate_amount(dp.divided_expr, controller, ab.source.lki_entity()));
 }
 
 bool is_modal(const Ability &ab) { return ab.def->kind == EffectKind::Charm; }
@@ -505,14 +592,24 @@ bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> o
     probe.source = modal.source;
     probe.controller = chooser;
     if (effective_target_min(probe, chooser, orderer, x_announced) <= 0) return true;
-    return !build_valid_targets(probe, orderer, chooser).empty();
+    return !target_candidates(probe, orderer, chooser).empty();
+}
+
+int charm_max_picks(const AbilityDef &def) {
+    return def.charm_num < 1 ? 1 : def.charm_num;
+}
+
+int charm_min_picks(const AbilityDef &def) {
+    if (def.charm_min_num < 0) return charm_max_picks(def);
+    return std::max(1, std::min(def.charm_min_num, charm_max_picks(def)));
 }
 
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced) {
-    const int needed = modal.def->charm_num < 1 ? 1 : modal.def->charm_num;
+    // Under CanRepeatModes$ (CR 700.2d) one choosable mode can fill every pick.
+    const int needed = modal.def->charm_repeat_modes ? 1 : charm_min_picks(*modal.def);
     int choosable = 0;
-    for (size_t i = 0; i < modal.charm_choices.size(); i++)
+    for (size_t i = 0; i < modal.charm_printed_count(); i++)
         if (mode_choosable(modal, i, orderer, chooser, x_announced) && ++choosable >= needed)
             return true;
     return false;

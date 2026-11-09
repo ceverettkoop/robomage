@@ -1,0 +1,39 @@
+{
+  "name": "cr118_3_explosives_needs_its_two",
+  "why": "CR 118.3: Engineered Explosives' ability costs {2}: with one land left it isn't offered",
+  "hand_a": [
+    "Engineered Explosives",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Engineered",
+    "A:x:1"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Activate Engineered Explosives"
+  ],
+  "expect": [
+    "Engineered Explosives enters with 1 CHARGE counter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

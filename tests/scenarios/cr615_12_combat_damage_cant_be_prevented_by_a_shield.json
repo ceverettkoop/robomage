@@ -1,0 +1,32 @@
+{
+  "name": "cr615_12_combat_damage_cant_be_prevented_by_a_shield",
+  "why": "CR 615.12: under Frenzied Baloth's 'Combat damage can't be prevented' Maze of Ith's prevention shield applies and prevents nothing, so the Bears deal their damage.",
+  "library_a": [
+    "Forest"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Frenzied Baloth"
+  ],
+  "battlefield_b": [
+    "Maze of Ith"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "B:activate:Maze of Ith",
+    "B:target:Grizzly Bears"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Grizzly Bears deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "combat damage from Grizzly Bears .* is prevented"
+  ]
+}

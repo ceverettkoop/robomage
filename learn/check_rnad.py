@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, on L1's
-replay.TrajectoryBatch;
-docs/rnad_training_plan.md §4 L4). The GPU is hidden from this process.
+"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, on
+replay.TrajectoryBatch). The GPU is hidden from this process.
 
     learn/.venv/bin/python learn/check_rnad.py                      # the self-contained checks
     learn/.venv/bin/python learn/check_rnad.py --tables DIR --episodes DIR [--omni-episodes DIR]
@@ -26,7 +25,7 @@ Checks:
 - **projection**: ``threshold_policy`` / ``discretize_policy`` against the engine's
   ``src/agents/policy_projection.cpp`` (compiled into a small harness with ``g++``) on random and
   known inputs, and against the reference's plain-ceiling rounding;
-- **real data** (with ``--tables`` / ``--episodes``): engine episodes (L1's reader and
+- **real data** (with ``--tables`` / ``--episodes``): engine episodes (the episode reader and
   ``TrajectoryBatch``) through learner steps with the default model on CPU, finite (and the
   omniscient critic with ``--omni-episodes``; with ``--bc-checkpoint`` the B3 seeding from a
   behaviour-cloning checkpoint, then steps).
@@ -513,11 +512,14 @@ def check_projection(work):
 # ── fabricated tables, tokens and games through a real RMNet ─────────────────────────────────
 
 def fake_tables(n_cards=12, seed=0):
-    doc = {"vocab_hash": "00000000000000aa", "F": 2, "C": 2, "K": 1, "Q": 1, "categorical_size": 24,
-           "token_types": [{"name": "player", "id": 0, "numeric": [{"name": "x"}, {"name": "y"}]},
-                           {"name": "menu", "id": 1, "numeric": [{"name": "z"}]}],
-           "relation_types": [["menu", "player", "of"]], "menu": "menu", "library_depth": 2,
-           "metagame": {"meta_list": 3, "meta_archetype": 2}, "card_tables": {"card": {"rows": n_cards + 1}}}
+    doc = {"vocab_hash": "00000000000000aa", "layout_hash": "00000000000000bb", "F": 2, "C": 2, "K": 1, "Q": 1,
+           "G": 3, "categorical_size": 24, "type_capacity": 2, "relation_capacity": 1,
+           "token_types": [{"name": "player", "id": 0, "num_at": 0, "num_capacity": 2,
+                            "numeric": [{"name": "x", "at": 0}, {"name": "y", "at": 1}]},
+                           {"name": "menu", "id": 1, "num_at": 2, "num_capacity": 1,
+                            "numeric": [{"name": "z", "at": 0}]}],
+           "relation_types": [{"id": 0, "table": "menu", "column": "player", "target": "of"}], "menu": "menu",
+           "library_depth": 2, "card_tables": {"card": {"rows": n_cards + 1}}}
     spec = S.Spec(json.dumps(doc).encode())
     rng = np.random.RandomState(seed)
     f32 = lambda a: np.ascontiguousarray(a, np.float32)  # noqa: E731
@@ -599,8 +601,8 @@ def _compact(tokens, prefix):
 
 def make_episode(spec_hash, seats, tokens, mus, chosen, result, sideboarding=None, evals=None, omni_tokens=None,
                  versions=None, has_mu=None, end_reason="win"):
-    """An episodes.Episode (L1's reader) of an episode file written from per-step lists. `evals`: per
-    step a list of (policy id, version, log π over the menu)."""
+    """An episodes.Episode (the episode reader's) of an episode file written from per-step lists.
+    `evals`: per step a list of (policy id, version, log π over the menu)."""
     d = len(seats)
     menus = np.array([len(m) for m in mus], np.int64)
     menu_off = _starts(menus)
@@ -626,11 +628,10 @@ def make_episode(spec_hash, seats, tokens, mus, chosen, result, sideboarding=Non
                        "eval_log_pi": ev_lp})
     if omni_tokens is not None:
         arrays.update(_compact(omni_tokens, "omni_"))
-        arrays.update({"opp_list": np.full(d, -1, np.int32), "opp_archetype": np.full(d, -1, np.int32)})
         for n in ("opp_hand", "own_library", "opp_library"):
             arrays[n] = np.zeros(0, np.int16)
             arrays[n + "_offsets"] = np.zeros(d + 1, np.int64)
-    attrs = {"episode_version": 1, "F": 2, "C": 2, "K": 1, "Q": 1, "menu_type": 1,
+    attrs = {"episode_version": EP.VERSION, "F": 2, "C": 2, "K": 1, "Q": 1, "menu_type": 1,
              "omniscient": int(omni_tokens is not None), "format": "bo1", "game": 0, "engine_seed": 0,
              "rmlog": "fabricated", "result_a": int(result[0]), "result_b": int(result[1]),
              "end_reason": end_reason, "decisions": d}
@@ -1047,6 +1048,66 @@ def check_bookkeeping(tables, work):
     info("the omniscient critic (tanh and linear values) trains on the omniscient inputs; a bf16 autocast step runs")
 
 
+def check_seen_cards(tables):
+    print("seen cards: a step marks its batch's cards in the network and the target, no output moves", flush=True)
+    torch.manual_seed(11)
+    net = tiny_model(tables, seed=5, omniscient_critic=True, critic_layers=1)
+    with torch.no_grad():
+        net.cards.unknown_id.add_(torch.randn_like(net.cards.unknown_id))
+    learner = RL.RNaDLearner(net, RL.RNaDConfig(chunk_len=4, entropy_schedule_sizes=(2,), learning_rate=1e-3))
+    with torch.no_grad():
+        learner.target.cards.unknown_id.add_(torch.randn_like(learner.target.cards.unknown_id))
+    eps = random_episodes(tables, np.random.RandomState(12), 6, omni=True)
+    batch = RP.TrajectoryBatch(eps, chunk_len=4, omniscient=True)
+    want = sorted(set(int(c) for ep in eps for f in (ep.seat_feat, ep.omni_feat) for c in f.card if c >= 0))
+    ok(batch.card_ids(True).tolist() == want and batch.card_ids().tolist() ==
+       sorted(set(int(c) for ep in eps for c in ep.seat_feat.card if c >= 0)), "seen cards: the batch's card ids")
+    x, _ = batch.chunk_inputs(0)
+    xo, _ = batch.chunk_inputs(0, viewer="omni")
+    seat = torch.from_numpy(batch.seat.reshape(-1)[batch.chunk_items(0)[1]])
+
+    def outputs(m):
+        was = m.training
+        m.eval()
+        with torch.no_grad():
+            o = m(*learner._inputs(x), omni=learner._inputs(xo)[:8], seat=seat)
+        m.train(was)
+        return [o["logits"], o["value"], o["critic_value"]]
+    before = [outputs(learner.model), outputs(learner.target)]
+    ok(learner.model.cards.seen_ids() == [] and learner.target.cards.seen_ids() == [], "seen cards: a fresh network "
+       "has seen no card")
+    learner.accumulate_gradients(batch, 0.5)
+    after = [outputs(learner.model), outputs(learner.target)]
+    ok(learner.model.cards.seen_ids() == want and learner.target.cards.seen_ids() == want and
+       learner.regs[0].model.cards.seen_ids() == [], "seen cards: marked %s / %s, regularisation %s, want %s"
+       % (learner.model.cards.seen_ids(), learner.target.cards.seen_ids(), learner.regs[0].model.cards.seen_ids(),
+          want))
+    moved = max(float((a - b).abs().max()) for pa, pb in zip(before, after) for a, b in zip(pa, pb))
+    ok(moved == 0.0, "seen cards: marking moved the outputs by %.3g" % moved)
+    for m in (learner.model, learner.target):
+        ok(torch.equal(m.cards.card_id.weight[want], m.cards.unknown_id.detach().expand(len(want), -1)),
+           "seen cards: a newly seen card's id row is not its network's unknown_id")
+    g_id = learner.model.cards.card_id.weight.grad
+    g_unk = learner.model.cards.unknown_id.grad
+    rows = torch.nonzero(g_id.abs().sum(1) > 0).squeeze(1).tolist() if g_id is not None else []
+    ok(set(rows) <= set(want) and rows and (g_unk is None or not bool(g_unk.any())),
+       "seen cards: gradient rows %s (want within %s), unknown_id gradient %s" % (rows, want, g_unk))
+    for p in learner.params:
+        p.grad = None
+    for _ in range(2):
+        learner.step(batch)
+    ok(learner.reg_updates == 1 and learner.regs[0].model.cards.seen_ids() == want and
+       learner.regs[1].model.cards.seen_ids() == [], "seen cards: the new regularisation policy's mask")
+    buf = io.BytesIO()
+    torch.save(learner.state_dict(), buf)
+    back = RL.RNaDLearner.from_state_dict(torch.load(io.BytesIO(buf.getvalue()), weights_only=False), tables)
+    ok(back.model.cards.seen_ids() == want and back.target.cards.seen_ids() == want and
+       [r.model.cards.seen_ids() for r in back.regs] == [want, []], "seen cards: the learner state's masks")
+    info("cards %s (seat and omniscient) marked in the network and the target, each id row its own unknown_id, no "
+         "output moved; gradient on those id rows only, none on unknown_id; the regularisation policies keep the "
+         "mask they were frozen with; the masks through the learner state" % want)
+
+
 def check_value_diagnostic(tables):
     print("value diagnostic: first-sight and after-update value MSE", flush=True)
     eps = random_episodes(tables, np.random.RandomState(21), 6)
@@ -1151,6 +1212,7 @@ def main():
             check_composition(tables)
         if "bookkeeping" in parts:
             check_bookkeeping(tables, work)
+            check_seen_cards(tables)
             check_value_diagnostic(tables)
         if "games" in parts:
             check_games(tables, args.quick)

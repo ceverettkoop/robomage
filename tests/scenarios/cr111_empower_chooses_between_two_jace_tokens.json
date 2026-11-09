@@ -1,0 +1,81 @@
+{
+  "name": "cr111_empower_chooses_between_two_jace_tokens",
+  "why": "Empower (oracle), CR 306.4: the phased-out token phases in beside the second, no legend rule or uniqueness rule removes either, and the third empower asks which one takes the counters",
+  "hand_a": [
+    "Theorist's Proxy",
+    "Theorist's Proxy",
+    "Theorist's Proxy",
+    "Talon Gates of Madara"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Karn the Great Creator",
+    "Mycosynth Lattice",
+    "It That Heralds the End",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:activate:Karn",
+    "A:target:Jace",
+    "A:play:Talon Gates of Madara",
+    "A:target:Jace",
+    "A:pass",
+    "A:cast:Theorist's Proxy",
+    "B:play:Island",
+    "A:play:Island",
+    "A:#8",
+    "A:top:Island",
+    "A:cast:Theorist's Proxy",
+    "A:pass",
+    "A:pass",
+    "A:desc:loyalty 2"
+  ],
+  "max_decisions": 45,
+  "expect": [
+    "Empower Jace 3: Player A's Jace token now has 5 loyalty"
+  ],
+  "expect_count": {
+    "Token created: Jace": 2,
+    "Empower Jace 3": 3
+  },
+  "expect_menu": [
+    "Put 3 loyalty counters on Jace token \\(loyalty 3\\)",
+    "Put 3 loyalty counters on Jace token \\(loyalty 2\\)"
+  ],
+  "expect_not": [
+    "Jace token dies",
+    "legend rule"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

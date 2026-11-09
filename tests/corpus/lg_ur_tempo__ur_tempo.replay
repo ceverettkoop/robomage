@@ -1,0 +1,1655 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_ur_tempo__ur_tempo.rmlog
+REPLAY MODE: Using embedded decks 'league/ur_tempo' / 'league/ur_tempo' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Ponder
+Player A draws Misty Rainforest
+Player A draws Misty Rainforest
+Player A draws Mishra's Bauble
+Player A draws Volcanic Island
+Player A draws Mishra's Bauble
+Player A draws Dragon's Rage Channeler
+Player B draws Mishra's Bauble
+Player B draws Dragon's Rage Channeler
+Player B draws Misty Rainforest
+Player B draws Wasteland
+Player B draws Brainstorm
+Player B draws Flow State
+Player B draws Force of Will
+Player A hand:
+Ponder
+Mishra's Bauble
+Mishra's Bauble
+Dragon's Rage Channeler
+Volcanic Island
+Misty Rainforest
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Flow State
+Brainstorm
+Force of Will
+Mishra's Bauble
+Dragon's Rage Channeler
+Wasteland
+Misty Rainforest
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Cast Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 4: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 8: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Volcanic Island
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 9: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Dragon's Rage Channeler
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 14: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Volcanic Island
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 15: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 16: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+|   2: Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 17: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Preordain)
+| decision 18: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Flow State
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 19: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Preordain
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mishra's Bauble
+Player B draws Volcanic Island
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Mishra's Bauble)
+Player B casts Mishra's Bauble
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 22: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 23: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 24: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (20 life)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+| decision 25: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 26: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Volcanic Island
+|   1: Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Volcanic Island)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy)
+Volcanic Island is destroyed
+Resolving ability (category: PeekAndReveal)
+Player B looks at top of Player A's library: Cori-Steel Cutter
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Daze
+Player A draws Cori-Steel Cutter
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Cast Mishra's Bauble
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 28: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 29: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thundering Falls)
+Player A shuffles their library
+Player A puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Daze
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Daze on top of library
+|   1: Put Daze into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Daze on top of library)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Preordain
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Daze
+Player B draws Preordain
+| decision 35: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 36: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Preordain
+|   2: Cast Brainstorm
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Preordain)
+Player B activated Volcanic Island for 1(U)
+Player B casts Preordain
+| decision 37: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 38: Player A (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T3 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Scry, amount: 2)
+Player B scries 2.
+Scry: looking at Ponder
+Scry: looking at Brainstorm
+| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Brainstorm on top of library
+|   2: Put Ponder on the bottom of library
+|   3: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Brainstorm on the bottom of library
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Brainstorm on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Daze
+| decision 41: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Preordain
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Preordain)
+Player A activated Thundering Falls for 1(U)
+Player A casts Preordain
+| decision 42: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 43: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Scry, amount: 2)
+Player A scries 2.
+Scry: looking at Brainstorm
+Scry: looking at Ponder
+| decision 44: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Brainstorm on top of library
+|   1: Put Ponder on top of library
+|   2: Put Brainstorm on the bottom of library
+|   3: Put Ponder on the bottom of library
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Brainstorm on top of library)
+| decision 45: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder on the bottom of library
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Ponder on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+| decision 46: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 47: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 48: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Volcanic Island
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Brainstorm)
+Player A activated Volcanic Island for 1(U)
+Player A casts Brainstorm
+| decision 50: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 51: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player A draws Daze
+Player A draws Cori-Steel Cutter
+Player A draws Prismari Charm
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| decision 52: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Prismari Charm
+|   1: Cori-Steel Cutter
+|   2: Cori-Steel Cutter
+|   3: Flow State
+|   4: Daze
+|   5: Daze
+|   6: Daze
+|   7: Dragon's Rage Channeler
+(REPLAY) [T4 | First Main | Player A] Input: 4
+| >> Player A: 4 (Daze)
+Player A puts Daze to top of library
+Player A chooses a card from Player A hand:
+| decision 53: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Prismari Charm
+|   1: Cori-Steel Cutter
+|   2: Cori-Steel Cutter
+|   3: Flow State
+|   4: Daze
+|   5: Daze
+|   6: Dragon's Rage Channeler
+(REPLAY) [T4 | First Main | Player A] Input: 4
+| >> Player A: 4 (Daze)
+Player A puts Daze to top of library
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 54: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+| decision 55: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 56: Player A (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T5 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Brainstorm
+Player B draws Daze
+Player B draws Volcanic Island
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 57: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Daze
+|   5: Force of Will
+|   6: Dragon's Rage Channeler
+|   7: Volcanic Island
+|   8: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 7
+| >> Player B: 7 (Volcanic Island)
+Player B puts Volcanic Island to top of library
+Player B chooses a card from Player B hand:
+| decision 58: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Brainstorm
+|   3: Daze
+|   4: Daze
+|   5: Force of Will
+|   6: Dragon's Rage Channeler
+|   7: Misty Rainforest
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Ponder)
+Player B puts Ponder to top of library
+Player B draws Ponder
+| decision 59: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 60: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 61: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Thundering Falls)
+Player B shuffles their library
+Player B puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ponder
+| decision 62: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ponder on top of library
+|   1: Put Ponder into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ponder on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+| decision 63: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Prismari Charm
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Prismari Charm)
+Choose mode:
+| decision 64: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Surveil 2, then draw a card.
+|   1: CARDNAME deals 1 damage to each of one or two targets.
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Surveil 2, then draw a card.)
+Player A chooses mode — Surveil 2, then draw a card.
+Player A activated Thundering Falls for 1(U)
+Player A activated Volcanic Island for 1(R)
+Player A casts Prismari Charm
+| decision 65: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 66: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+|   3: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player B: Prismari Charm
+Targeting choice 0
+| decision 67: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Return Thundering Falls)
+Player B returns Thundering Falls to hand
+Player B casts Daze targeting Prismari Charm
+| decision 68: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 69: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Daze
+|   1: Prismari Charm
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Prismari Charm)
+Targeting choice 1
+| auto: Player B: Return Volcanic Island
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Prismari Charm
+| decision 70: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T6 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 71: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Daze
+|   1: Daze
+|   2: Prismari Charm
+(REPLAY) [T6 | Upkeep | Player B] Input: 2
+| >> Player B: 2 (Prismari Charm)
+Targeting choice 2
+| decision 72: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Exile Flow State
+|   1: Exile Ponder
+|   2: Exile Brainstorm
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Exile Flow State)
+Player B pays 1 life
+Player B exiles Flow State
+Player B casts Force of Will targeting Prismari Charm
+| decision 73: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T6 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 74: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Force of Will
+|   1: Daze
+|   2: Daze
+|   3: Prismari Charm
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Force of Will)
+Targeting choice 0
+| decision 75: Player A (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T6 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Return Thundering Falls)
+Player A returns Thundering Falls to hand
+Player A casts Daze targeting Force of Will
+Resolving ability (category: Counter)
+Force of Will's controller may pay {1} to save it:
+| auto: Player B: Don't pay (Force of Will is countered)
+Force of Will is countered
+Resolving ability (category: Counter)
+Prismari Charm's controller may pay {1} to save it:
+| auto: Player A: Don't pay (Prismari Charm is countered)
+Prismari Charm is countered
+Counter fizzles
+Player A draws Daze
+| decision 76: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thundering Falls)
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Daze
+| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Daze on top of library
+|   1: Put Daze into graveyard
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Daze on top of library)
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Ponder
+| decision 78: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thundering Falls)
+Player B played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Flow State
+| decision 79: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Flow State on top of library
+|   1: Put Flow State into graveyard
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Flow State on top of library)
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Daze
+| decision 80: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+|   2: Cast Cori-Steel Cutter
+|   3: Cast Flow State
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Cori-Steel Cutter)
+Player A activated Thundering Falls for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+| decision 81: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Cori-Steel Cutter enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+| decision 82: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Thundering Falls for 1(U)
+Player B casts Brainstorm
+| decision 83: Player A (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T9 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Flow State
+Player B draws Wasteland
+Player B draws Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 84: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Ponder
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Wasteland
+|   6: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 5
+| >> Player B: 5 (Wasteland)
+Player B puts Wasteland to top of library
+Player B chooses a card from Player B hand:
+| decision 85: Player B (game 0, turn 9, UPKEEP, Player B active)
+| menu:
+|   0: Flow State
+|   1: Ponder
+|   2: Ponder
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Volcanic Island
+(REPLAY) [T9 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Ponder)
+Player B puts Ponder to top of library
+Player B draws Ponder
+| decision 86: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 87: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Ponder
+|   3: Cast Dragon's Rage Channeler
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Volcanic Island for 1(U)
+Player B casts Ponder
+| decision 88: Player A (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T9 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 89: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Wasteland
+|   1: Dragon's Rage Channeler
+|   2: Force of Will
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dragon's Rage Channeler)
+Choose which card goes 2 from top:
+| decision 90: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Wasteland
+|   1: Force of Will
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Force of Will)
+| decision 91: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Wasteland
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Ponder
+| decision 92: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+|   2: Cast Flow State
+|   3: Cast Ponder
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Cori-Steel Cutter)
+Player A activated Thundering Falls for 1(R)
+Player A activated Volcanic Island for 1(U)
+Player A casts Cori-Steel Cutter
+| decision 93: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Cori-Steel Cutter enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+Player B draws Force of Will
+| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Cast Flow State
+|   3: Cast Ponder
+|   4: Cast Dragon's Rage Channeler
+|   5: Cast Dragon's Rage Channeler
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Flow State)
+Player B activated Thundering Falls for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Flow State
+| decision 95: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 96: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Daze (alternate cost)
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player A: Flow State
+Targeting choice 0
+| decision 97: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Thundering Falls
+|   1: Return Volcanic Island
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Thundering Falls)
+Player A returns Thundering Falls to hand
+Player A casts Daze targeting Flow State
+| decision 98: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| decision 99: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Daze
+|   1: Flow State
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Flow State)
+Targeting choice 1
+| auto: Player A: Return Volcanic Island
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Flow State
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 100: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Cori-Steel Cutter (Token)
+|   1: Cori-Steel Cutter (Token)
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Cori-Steel Cutter (Token))
+Cori-Steel Cutter triggered
+Cori-Steel Cutter triggered
+| decision 101: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 102: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Daze
+|   1: Daze
+|   2: Flow State
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Daze)
+Targeting choice 0
+| auto: Player B: Exile Ponder
+Player B pays 1 life
+Player B exiles Ponder
+Player B casts Force of Will targeting Daze
+Resolving ability (category: Counter)
+Daze is countered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 103: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 104: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Resolving ability (category: Counter)
+Flow State's controller may pay {1} to save it:
+| auto: Player B: Don't pay (Flow State is countered)
+Flow State is countered
+| decision 105: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 106: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 107: Player B (game 0, turn 11, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 108: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 109: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 110: Player B (game 0, turn 11, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 111: Player B (game 0, turn 11, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 13 (Player A) --------
+| decision 112: Player B (game 0, turn 12, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Murktide Regent
+| decision 113: Player B (game 0, turn 12, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T12 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 114: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Thundering Falls
+|   2: Play Volcanic Island
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Thundering Falls)
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+| decision 115: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T12 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 116: Player B (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+|   1: Thundering Falls
+|   2: Wasteland
+|   3: Volcanic Island
+(REPLAY) [T12 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thundering Falls)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Wasteland
+| decision 117: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland into graveyard
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Wasteland on top of library)
+
+--- Declare Attackers (Player A) ---
+| decision 118: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [2/2] -> Player B
+| decision 119: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [2/2] -> Player B
+  [attacking] Monk token [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Monk token -> Player B
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Monk token deals 2 damage to Player B (now at 15 life)
+  Monk token deals 2 damage to Player B (now at 13 life)
+--- End Combat Damage ---
+
+
+-------- TURN 14 (Player B) --------
+Player B draws Dragon's Rage Channeler
+| decision 120: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Thundering Falls for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+| decision 121: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+No creatures eligible to attack.
+
+-------- TURN 15 (Player A) --------
+Player A draws Wasteland
+| decision 122: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Volcanic Island
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Wasteland)
+Player A played Wasteland
+| decision 123: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T14 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 124: Player A (game 0, turn 14, FIRST_MAIN, Player A active)
+| menu:
+|   0: Thundering Falls
+|   1: Volcanic Island
+|   2: Wasteland
+(REPLAY) [T14 | First Main | Player A] Input: 0
+| >> Player A: 0 (Thundering Falls)
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+
+--- Declare Attackers (Player A) ---
+| decision 125: Player A (game 0, turn 14, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T14 | Declare Attackers | Player A] Input: 2
+| >> Player A: 2 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 16 (Player B) --------
+Player B draws Force of Will
+| decision 126: Player B (game 0, turn 15, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+(REPLAY) [T15 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 15 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 12 life)
+--- End Combat Damage ---
+
+
+-------- TURN 17 (Player A) --------
+Player A draws Daze
+| decision 127: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 128: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T16 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 129: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+| decision 130: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+| decision 131: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+| decision 132: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 133: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Lightning Bolt
+|   1: Chain Lightning
+|   2: Cori-Steel Cutter
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Lightning Bolt)
+Choose which card goes 2 from top:
+| decision 134: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Chain Lightning
+|   1: Cori-Steel Cutter
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Chain Lightning)
+| decision 135: Player A (game 0, turn 16, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T16 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+
+--- Declare Attackers (Player A) ---
+| decision 136: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Monk token [3/3]
+|   2: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [3/3])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [3/3] -> Player B
+| decision 137: Player A (game 0, turn 16, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Confirm attackers
+(REPLAY) [T16 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [3/3])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [3/3] -> Player B
+  [attacking] Monk token [3/3] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Monk token -> Player B
+  Monk token -> Player B
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Monk token [3/3]
+  1: Monk token [3/3]
+Your creatures:
+| decision 138: Player B (game 0, turn 16, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Dragon's Rage Channeler [3/3]
+|   1: Confirm blockers
+(REPLAY) [T16 | Declare Blockers | Player B] Input: 1
+| >> Player B: 1 (Confirm blockers)
+
+Blockers declared:
+  (none)
+
+--- Combat Damage ---
+  Monk token deals 3 damage to Player B (now at 10 life)
+  Monk token deals 3 damage to Player B (now at 7 life)
+--- End Combat Damage ---
+
+
+-------- TURN 18 (Player B) --------
+Player B draws Cori-Steel Cutter
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 9 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 6 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 3 life)
+--- End Combat Damage ---
+
+
+-------- TURN 19 (Player A) --------
+Player A draws Chain Lightning
+| decision 139: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Chain Lightning
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T18 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 140: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (7 life)
+|   1: Player A (3 life)
+|   2: Dragon's Rage Channeler
+|   3: Dragon's Rage Channeler
+|   4: Dragon's Rage Channeler
+|   5: Monk token
+|   6: Monk token
+(REPLAY) [T18 | First Main | Player A] Input: 2
+| >> Player A: 2 (Dragon's Rage Channeler)
+Targeting choice 2
+Player A activated Volcanic Island for 1(R)
+Player A casts Chain Lightning targeting Dragon's Rage Channeler
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 141: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+| decision 142: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+| decision 143: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+| decision 144: Player A (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T18 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Dragon's Rage Channeler
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 145: Player B (game 0, turn 18, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Volcanic Island for (U)
+|   1: Tap Volcanic Island for (R)
+|   2: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T18 | First Main | Player B] Input: 2
+| >> Player B: 2 (Don't pay (Chain Lightning is not copied))
+Dragon's Rage Channeler is destroyed (lethal damage)
+
+--- Declare Attackers (Player A) ---
+| decision 146: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Monk token [3/3]
+|   2: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [3/3])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [3/3] -> Player B
+| decision 147: Player A (game 0, turn 18, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [3/3]
+|   1: Confirm attackers
+(REPLAY) [T18 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [3/3])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [3/3] -> Player B
+  [attacking] Monk token [3/3] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Monk token -> Player B
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Monk token deals 3 damage to Player B (now at 4 life)
+  Monk token deals 3 damage to Player B (now at 1 life)
+--- End Combat Damage ---
+
+
+-------- TURN 20 (Player B) --------
+Player B draws Volcanic Island
+| decision 148: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
+| decision 149: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Cori-Steel Cutter
+(REPLAY) [T19 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Cori-Steel Cutter)
+Player B activated Volcanic Island for 1(R)
+Player B activated Volcanic Island for 1(U)
+Player B casts Cori-Steel Cutter
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 150: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler (Surveil)
+|   1: Dragon's Rage Channeler (Surveil)
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler (Surveil))
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+| decision 151: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T19 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player A: Cori-Steel Cutter
+Targeting choice 0
+| auto: Player A: Return Volcanic Island
+Player A returns Volcanic Island to hand
+Player A casts Daze targeting Cori-Steel Cutter
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 152: Player A (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T19 | First Main | Player A] Input: 0
+| >> Player A: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: Counter)
+Cori-Steel Cutter's controller may pay {1} to save it:
+| auto: Player B: Don't pay (Cori-Steel Cutter is countered)
+Cori-Steel Cutter is countered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 153: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Mishra's Bauble
+| decision 154: Player B (game 0, turn 19, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Mishra's Bauble on top of library
+|   1: Put Mishra's Bauble into graveyard
+(REPLAY) [T19 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Mishra's Bauble on top of library)
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A (now at 0 life)
+  Dragon's Rage Channeler deals 3 damage to Player A (now at -3 life)
+--- End Combat Damage ---
+
+
+Player A has -3 life - Player B wins!
+GAME_RESULT: 1 Player B wins

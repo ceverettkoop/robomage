@@ -1,0 +1,40 @@
+{
+  "name": "cr106_6_arena_of_glory_gives_a_creature_spell_haste",
+  "why": "CR 106.6: mana from Arena of Glory's second ability spent on a creature spell gives it haste until end of turn, and the permanent it becomes keeps it (CR 400.7a): it attacks the turn it came",
+  "hand_a": [
+    "Hexing Squelcher",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Arena of Glory"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:pass",
+    "A:pass",
+    "A:desc:Tap and exert Arena",
+    "A:cast:Hexing Squelcher",
+    "A:attack:Hexing Squelcher"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Hexing Squelcher gains Haste until end of turn",
+    "Hexing Squelcher attacking Player B"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

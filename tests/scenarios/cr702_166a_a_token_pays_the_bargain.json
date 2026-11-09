@@ -1,0 +1,48 @@
+{
+  "name": "cr702_166a_a_token_pays_the_bargain",
+  "why": "CR 702.166a: a token that is neither an artifact nor an enchantment may be sacrificed for the bargain: Empty the Warrens' Goblin.",
+  "hand_a": [
+    "Empty the Warrens",
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Empty the Warrens",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Accept",
+    "A:sacrifice:Goblin",
+    "A:search:Lightning Bolt",
+    "A:desc:Do not cast"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Player A sacrifices Goblin \\(Bargain\\)"
+  ]
+}

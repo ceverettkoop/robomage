@@ -1,0 +1,18 @@
+{
+  "name": "cr700_2d_eldrazi_confluence_same_permanent_displaced_twice",
+  "why": "CR 700.2d / 400.7 / 608.2b: exile-and-return chosen twice on the same Grizzly Bears: each instance keeps its own target, so after the first instance returns the Bears as a new object the second instance's target is gone and that instance does nothing, while the spell's other mode (+3/-3 on Air Elemental) still resolves (repeated modes, onboarding stage 6)",
+  "hand_a": ["Eldrazi Confluence"],
+  "battlefield_a": ["Wastes", "Wastes", "Wastes", "Wastes"],
+  "battlefield_b": ["Grizzly Bears", "Air Elemental"],
+  "play": ["A:keep", "B:keep", "A:cast:Eldrazi Confluence",
+           "A:desc:Exile target", "A:target:Grizzly Bears",
+           "A:desc:Exile target", "A:target:Grizzly Bears",
+           "A:desc:+3/-3", "A:target:Air Elemental"],
+  "seed": 1,
+  "max_decisions": 10,
+  "expect_order": ["Player A casts Eldrazi Confluence", "Air Elemental gets \\+3/-3 \\(now 7/1\\)",
+                   "Grizzly Bears is moved to exile", "Grizzly Bears is moved to the battlefield",
+                   "ChangeZone fizzles"],
+  "expect_count": {"chooses mode — Exile target": 2, "Grizzly Bears is moved to exile": 1,
+                   "Grizzly Bears is moved to the battlefield": 1}
+}

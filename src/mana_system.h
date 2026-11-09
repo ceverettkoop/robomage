@@ -10,17 +10,70 @@
 
 #include "classes/action.h"
 #include "classes/colors.h"
+#include "components/activation_rule.h"
+#include "components/filter_spec.h"
+#include "components/mana_unit.h"
+#include "components/tap_to_pay.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 #include "ecs/entity_set.h"
 #include "object_ref.h"
 
+class FrameCtx;
 class Orderer;
 struct Permanent;
 struct Ability;
+struct CostItem;
 struct HybridPip;
 struct CardData;
 struct Player;
+
+// Why mana is being spent, which is what a mana spending restriction reads (CR 106.6).
+enum class ManaPurpose {
+    CAST,      // casting a spell
+    ACTIVATE,  // an activated ability's cost
+    OTHER,     // any other cost: an unless cost, a suspend cost, a companion's {3}
+};
+
+// What a payment pays for: the spell, the source of the ability, or the card a cost concerns, and
+// why. A bare Entity is a cast. Entity 0 with CAST is no particular payment, which only
+// unrestricted and Powerstone mana can serve.
+struct ManaPayee {
+    Entity entity = 0;
+    ManaPurpose purpose = ManaPurpose::CAST;
+    // What the payment leaves in the hand, which no mana ability may exile from there: the cards a
+    // payment in flight has chosen to move, and how many more the cost being offered will take.
+    const std::vector<CostItem> *chosen = nullptr;
+    int hand_reserved = 0;
+    // The face a cast being offered would have on the stack, which `entity`, still a card where it
+    // is, can't say yet. Null once the spell is on the stack, and for anything but a cast.
+    const CardData *face = nullptr;
+    ManaPayee(Entity paid_for = 0, ManaPurpose why = ManaPurpose::CAST) : entity(paid_for), purpose(why) {}
+};
+
+// What a TapToPay kind lets its payer tap, and which pips a tap pays.
+struct TapToPayRule {
+    const char *keyword;  // names it in the payment's rows and the narrative
+    FilterSpec eligible;  // the untapped permanents they control that may be tapped
+    enum Pips {
+        GENERIC,               // one generic pip
+        GENERIC_OR_OWN_COLOR,  // a generic pip, or a colored pip of a color of the permanent tapped
+    } pips;
+    // The player is asked which to tap, before the mana is paid (cost_payment.cpp); otherwise they
+    // are rows of the interactive payment and the auto-payer's last resort.
+    bool asks;
+};
+
+// Does `how` ask its payer which permanents to tap?
+bool tap_to_pay_asks(TapToPay how);
+// The rows of a TapToPay that asks: a permanent it may tap toward `owed` that leaves the rest of it
+// payable, in entity order.
+std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaValue &owed, ManaPayee paid_for,
+                                         TapToPay how, std::shared_ptr<Orderer> orderer);
+// Taps `e`, a row of tap_to_pay_rows, paying a pip of `owed`: the first of them, colored before
+// generic, that leaves the rest payable.
+void tap_to_pay_chosen(Entity e, Zone::Ownership controller, ManaValue &owed, ManaPayee paid_for, TapToPay how,
+                       std::shared_ptr<Orderer> orderer);
 
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
 // without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
@@ -28,14 +81,11 @@ struct Player;
 // "is this a mana ability?" gate (action processor, legal-action enumeration, mana-source
 // collection) classifies ManaReflected consistently and none push it onto the stack.
 bool ability_is_mana(const Ability &ab);
-
-// Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
-// if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities
-// (category "AddMana") are keyed by tap-cost + color, since one permanent can expose several
-// AddMana abilities of different colors; every other activated ability is keyed by its
-// return-to-hand cost (Return<N/Type>). Shared by the spell/ability processor and both mana
-// payers so the (formerly four-times duplicated) match rule lives in one place.
-void increment_activation_count(Permanent &perm, const Ability &ability);
+// Does mana ability `ab` cost what a payment's own steps don't pay: another permanent to sacrifice
+// or return, or energy (CostPath::MANA_ABILITY pays neither)? Such an ability is activated at
+// priority alone, a player's choice (CR 605.3a), through the activation flow, which pays any part
+// and suspends for its pick; its mana then floats. No payer taps it.
+bool mana_cost_paid_at_priority(const Ability &ab);
 
 // Narrative style for the mana-production line each activation path emits. The three
 // call paths historically log slightly different strings (verb, printed amount, symbol
@@ -49,12 +99,12 @@ enum class ManaLogStyle {
 // The production half of a mana-ability activation, assuming ALL costs are already
 // paid: evaluate the produced amount (dynamic amounts included), apply ProduceMana
 // replacement effects, add the mana to `pool`, resolve TapsForMana mana-additional
-// triggers, set the uncounterable flag for adds_no_counter sources, log (commit only),
-// resolve SubAbility$ riders (commit only), and bump the activation counter.
+// triggers, log (commit only), resolve SubAbility$ riders (commit only), and bump the
+// activation counter.
 // Replacements and triggers run in simulate mode (!commit) too, so affordability
 // (can_pay_mana) and the real payment always agree on the mana produced.
 void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, ManaValue& pool,
+                               std::shared_ptr<Orderer> orderer, ManaPool& pool,
                                bool commit, ManaLogStyle log_style);
 
 // Activate one mana source: pay its activation mana cost from the working `pool`,
@@ -70,7 +120,7 @@ void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership
 // auto-payer (commit per simulate/real), the interactive payer, and the pay-unless loop (both
 // always commit, with pool == the player's real mana pool).
 bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership controller,
-                          std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
+                          std::shared_ptr<Orderer> orderer, ManaPool& pool, Player& player,
                           bool commit, ManaLogStyle log_style, int life_reserve = 0);
 
 // ── Mana development summary (ML observation) ───────────────────────────────
@@ -99,23 +149,24 @@ struct ManaPotential {
 // player's permanents are excluded here rather than at the call site.
 ManaPotential mana_potential(Zone::Ownership player, const EntitySet &entities);
 
-// Check if a given mana pool can afford a cost (does not read player state)
-bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);
+// Check if a given mana pool can afford a cost, paying for `paid_for`: a unit its restriction keeps
+// from that counts for nothing (does not read player state)
+bool can_afford_pool(const ManaPool& pool, const std::multiset<Colors>& cost, ManaPayee paid_for);
 
 // Check if player can afford a mana cost
-bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
+bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost, ManaPayee paid_for);
 
 // Check if player can afford a cost considering current pool plus all activatable mana sources
 // exclude_entity: if nonzero, skip this entity when counting available sources (used when
 // the ability being checked will tap the source as part of its own cost)
-// paid_for: if nonzero, only count restricted mana sources (Cavern of Souls) when the
-// spell matches the restriction (creature of chosen type)
+// paid_for: only count restricted mana sources (Cavern of Souls) when this payment matches the
+// restriction (casting a creature spell of the chosen type)
 // NOTE: this is a hypothetical-pool HEURISTIC (flexible-count accounting for multi-color
 // sources), not the simulate-mode payer. can_pay_mana is the exact predicate; this one is
 // kept for the cost-bearing-source gates, where changing it would shift legality menus.
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
                              std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0,
-                             Entity paid_for = 0);
+                             ManaPayee paid_for = {});
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
 // obligations; used for computing max X value. `exclude_entity` drops one permanent from the
@@ -128,14 +179,26 @@ size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
                           std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
 // Spend mana from player's pool (assumes can_afford was checked)
-// paid_for: the entity being paid for (used for diagnostics on insufficient mana)
-void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for);
+// paid_for: what is being paid for
+// spent: when non-null, collects each unit spent
+void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, ManaPayee paid_for,
+                ManaPaid* spent = nullptr);
 
-// Add mana to player's pool
-void add_mana(Zone::Ownership player, Colors mana_color, size_t amount);
+// One mana of `color` as `ab`, activated or resolving from `source`, makes it: the restriction and
+// riders its definition gives it, and in a real payment (commit) where it came from. A chosen type
+// in the restriction is `source`'s now.
+ManaUnit mana_unit_from(const Ability& ab, Colors color, Entity source, bool commit);
+
+// The keywords the mana `spell` was cast with gives it, each once: a unit's rider whose spells it
+// matches (CR 106.6).
+std::vector<std::string> keywords_from_mana(const ManaPaid &paid, Entity spell);
+
+// Add `amount` of `unit` to player's pool
+void add_mana(Zone::Ownership player, const ManaUnit& unit, size_t amount);
 
 // Pay as much of cost as possible from player's pool, return the unpaid remainder
-ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
+ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost, ManaPayee paid_for,
+                      ManaPaid* spent = nullptr);
 
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
@@ -144,12 +207,12 @@ void empty_mana_pool(Zone::Ownership player);
 // the payment activated (CR 733.1) restores the pool, the sources' tapped state and activation
 // counts, and the life a painful source took (Ancient Tomb's damage, a horizon land's PayLife).
 struct ManaPaymentSnapshot {
-    std::multiset<Colors> player_mana;
+    ManaPool player_mana;
     int32_t life_total = 0;
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
-    std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
-    std::vector<ObjectRef> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
+    std::vector<std::pair<Entity, Zone::Ownership>> exerted_state;  // entity, who had exerted it
+    std::vector<std::pair<Entity, std::vector<ActivationCount>>> activation_counts;  // entity, its counts
 };
 
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);
@@ -159,7 +222,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot& snap,
 // The activation mana cost of `ab` AFTER applying its ReduceCost$ (CR 601.2f). When the
 // ability declares a ReduceCost$ (a literal integer or a Count$/SVar expression such as
 // Eiganjo's "Count$Valid Creature.Legendary+YouCtrl"), the resolved amount is subtracted from
-// the GENERIC portion of activation_mana_cost (floored at 0); colored pips are never reduced.
+// the GENERIC portion of its cost's mana (floored at 0); colored pips are never reduced.
 // `controller` is the counting "you" for the dynamic reduction. Returns the unmodified cost
 // when no ReduceCost$ is set. The single source of truth used by BOTH the affordability check
 // and the actual payment so legality and payment can never diverge.
@@ -169,19 +232,20 @@ ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership cont
 // Map a mana color to its ActionCategory (MANA_W, MANA_U, etc.)
 ActionCategory mana_action_category(Colors color);
 
-// Collect legal actions for all activatable mana sources a player controls.
+// Collect legal actions for all activatable mana sources a player controls, and those of the cards
+// in their hand, after the battlefield's.
 // Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
-// Sources with activation_mana_cost are included only if the cost is affordable.
+// Sources with a mana cost of their own are included only if the cost is affordable.
 // at_priority includes instant-speed mana abilities (e.g. Lion's Eye Diamond), which may
 // only be activated when their controller holds priority — never mid-cost-payment.
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0,
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, ManaPayee paid_for = {},
     bool at_priority = false);
 
 // Can the controller pay `cost`? Runs the real machine-mode payment algorithm in a
 // side-effect-free simulate mode, so legality and actual payment can never disagree.
-// has_delve folds in graveyard instant/sorcery exiling; paid_for gates restricted mana
-// (Cavern of Souls) the same way the payer does.
+// has_delve folds in graveyard instant/sorcery exiling; `tap` the permanents a TapToPay lets it tap;
+// paid_for gates restricted mana (Cavern of Souls) the same way the payer does.
 //
 // `exclude_entity` drops one permanent from the source pool. Pass the ability's SOURCE
 // when the ability's own cost taps it ({T} in the cost): that tap is already spoken for,
@@ -196,8 +260,8 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // exactly as the payer does for the payment in flight, so a gate never offers a cost whose mana
 // can only be paid by spending the life the rest of it needs (CR 601.2h, 602.2b).
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
-                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false, Entity exclude_entity = 0, int life_reserve = 0);
+                  ManaPayee paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
+                  TapToPay tap = TapToPay::NONE, Entity exclude_entity = 0, int life_reserve = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
@@ -209,10 +273,10 @@ bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
 // cast-legality gate and the machine/auto payment path so castability and payment agree on the
 // hybrid choice.
 bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
-                         const std::vector<HybridPip>& hybrids, Entity paid_for,
+                         const std::vector<HybridPip>& hybrids, ManaPayee paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
-                         int life_reserve = 0);
+                         TapToPay tap = TapToPay::NONE, std::multiset<Colors>* out_resolved = nullptr,
+                         int life_reserve = 0, Entity exclude_entity = 0);
 
 // Can `caster` pay `base_flat_cost` plus the hybrid pips (CR 107.4e, via resolve_hybrid_cost) and
 // the Phyrexian pips (CR 107.4f) of `cd`, the face being cast? Each Phyrexian pip is paid with its
@@ -220,7 +284,7 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
 // reserved from painful mana sources. The cast-legality gate for every path that pays the card's
 // own mana cost, so a Phyrexian spell is never offered when neither half of a pip can be paid.
 bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
-                        const CardData& cd, Entity paid_for, std::shared_ptr<Orderer> orderer);
+                        const CardData& cd, ManaPayee paid_for, std::shared_ptr<Orderer> orderer);
 
 // A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
 // sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g
@@ -237,31 +301,48 @@ bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& bas
 // sacrifice never charges life for mana the payment did not need.
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
                                     std::shared_ptr<Orderer> orderer,
-                                    const ManaValue& unpaid_cost, Entity paid_for);
+                                    const ManaValue& unpaid_cost, ManaPayee paid_for);
 
-// Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
-// On false, caller must restore from snapshot.
-// If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
-// `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
-// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90).
-bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
-                         Entity paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve = false, bool has_improvise = false,
-                         ManaValue* spent_out = nullptr);
+// Pays `cost` for `paid_for` out of `pool` and returns the portion that could not be paid: a unit
+// whose restriction keeps it from `paid_for` stays in the pool (CR 106.6). `spent` (when non-null)
+// collects each unit erased from `pool` — so a REAL-pool consumer can report the mana it spent.
+// Dry-run callers (can_afford_pool, activation-cost trials) pass nullptr and are unaffected.
+ManaValue pay_from_pool(ManaPool& pool, const ManaValue& cost, ManaPayee paid_for, ManaPaid* spent = nullptr);
+
+// Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
+// payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
+// own life cost, whichever is larger — for the life part of the cost being paid, since a spell or
+// ability whose total cost can't be paid is illegal (CR 601.2h, 602.2b). `life_reserve` is how a
+// legality gate asks "payable along with N life?" before any payment is in flight.
+bool mana_ability_life_payable(const Player& pl, Zone::Ownership seat, const Ability& ab, int life_reserve);
+
+// How paying a cost, or a part of one, stands: all of it paid, the payer declined an optional cost,
+// it can't be paid, or a choice is parked and the caller returns until it is answered.
+enum class PayStatus { PAID, DECLINED, FAILED, SUSPENDED };
+
+// How far an interactive mana payment has got, persisted by the flow paying it: the prompts park
+// between its steps. Value type, so a snapshot of a parked payment covers it.
+struct ManaPaymentRT {
+    bool prompting = false;  // the pool is drained and the source prompts are under way
+    ManaValue remaining;     // what the pool and the sources have not yet paid
+};
+
+// Pay `cost` for `paid_for`: from the pool, then the auto-payer, or under --no-auto-mana by asking
+// `ctx` for one source at a time, which may suspend (re-enter with the same `rt` and `cost`). On
+// FAILED the caller must restore from snapshot.
+// With a `tap`, the permanents it lets the player tap are offered alongside the mana abilities.
+// `spent_out` (when non-null) collects the mana actually removed from the pool to pay this cost: a
+// cast's ChosenCost::mana_paid. It must persist with `rt`.
+PayStatus pay_mana_cost(ManaPaymentRT& rt, Zone::Ownership controller, const ManaValue& cost,
+                        ManaPayee paid_for, FrameCtx& ctx, std::shared_ptr<Orderer> orderer,
+                        TapToPay tap = TapToPay::NONE, ManaPaid* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
 // your graveyard rather than pay that mana"); riders that care about the exiled cards'
-// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
-// source for "what can Delve eat", consumed by the automatic payer and the cast flow's
-// DELVE_COUNT/DELVE_PICK steps (run_cast_flow), which replaced the old blocking
-// prompt_delve_exiles with loop-top pending decisions.
+// types (Murktide Regent's etbCounter) filter what the cost paid themselves. Single
+// source for "what can Delve eat", consumed by the automatic payer and the cost payment's
+// delve steps (cost_payment.cpp).
 bool is_delve_eligible(Entity e, Zone::Ownership controller);
-
-// Pay one generic pip via Delve: exile `e`, record it in cur_game.delve_exiled (for
-// etbCounter counts, e.g. Murktide Regent), and drop one GENERIC from `remaining`.
-// Single source for the delve-exile action used by both payment paths.
-void delve_exile_one(Entity e, Zone::Ownership controller,
-                     std::shared_ptr<Orderer> orderer, ManaValue& remaining);
 
 #endif

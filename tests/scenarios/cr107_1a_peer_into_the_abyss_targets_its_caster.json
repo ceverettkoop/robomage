@@ -1,0 +1,14 @@
+{
+  "name": "cr107_1a_peer_into_the_abyss_targets_its_caster",
+  "why": "CR 107.1a: target player may be Peer into the Abyss's caster, and an even half is exact: an 8-card library draws 4 and 20 life loses 10",
+  "hand_a": ["Peer into the Abyss", "Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "play": ["A:keep", "B:keep", "A:cast:Peer into the Abyss", "A:target:Player A"],
+  "max_decisions": 4,
+  "expect_count": {"Player A draws Swamp": 4},
+  "expect": ["Player A loses 10 life \\(now at 10\\)"],
+  "expect_not": ["Player B (draws|loses)"]
+}

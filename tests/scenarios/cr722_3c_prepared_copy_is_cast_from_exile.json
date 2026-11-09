@@ -1,0 +1,12 @@
+{
+  "name": "cr722_3c_prepared_copy_is_cast_from_exile",
+  "why": "CR 722.3a, c: Carnivorous Cultivator enters prepared, so its controller creates a copy in exile with only the prepare spell's characteristics, and may cast it: Enroot, a sorcery for {G}, searches for a land and puts it into the graveyard. A copy of a card leaves no card behind (CR 704.5e).",
+  "hand_a": ["Carnivorous Cultivator", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "library_a": ["Taiga", "Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Carnivorous Cultivator", "A:desc:Cast Enroot (prepared)", "A:search:Taiga"],
+  "max_decisions": 12,
+  "expect_order": ["Carnivorous Cultivator enters the battlefield", "Carnivorous Cultivator is prepared", "Player A casts Enroot", "Enroot \\(copy\\) ceases to exist"],
+  "expect_menu": ["Cast Enroot \\(prepared\\)"]
+}

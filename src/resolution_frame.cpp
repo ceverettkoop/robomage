@@ -18,15 +18,26 @@ FrameCtx FrameCtx::root() { return FrameCtx(true, 0); }
 
 FrameCtx FrameCtx::blocking() { return FrameCtx(false, 0); }
 
+FrameCtx FrameCtx::flow(PendingQuery::Tag tag, int &resume_choice) {
+    FrameCtx ctx(false, 0);
+    ctx.flow_tag_ = tag;
+    ctx.resume_choice_ = &resume_choice;
+    return ctx;
+}
+
 bool FrameCtx::can_suspend() const {
     // Blocking contexts never suspend. Root contexts can, but only once the
     // main decision loop is running — a resolve reached outside it (pregame
     // SBE on test-harness preplaced permanents) has no loop top to park a
-    // query at, so it blocks inline exactly as before.
-    return root_mode && in_main_loop();
+    // query at, so it blocks inline exactly as before. A flow only runs from
+    // the loop's process_action or its resume dispatch.
+    return resume_choice_ != nullptr || (root_mode && in_main_loop());
 }
 
-bool FrameCtx::resuming() const { return can_suspend() && cur_game.pending.query.active; }
+bool FrameCtx::resuming() const {
+    if (resume_choice_) return *resume_choice_ >= 0;
+    return can_suspend() && cur_game.pending.query.active;
+}
 
 FrameLevel &FrameCtx::current_level() {
     if (!root_mode || !cur_game.resolution.active ||
@@ -35,7 +46,35 @@ FrameLevel &FrameCtx::current_level() {
     return cur_game.resolution.levels[depth_];
 }
 
-int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source) {
+void arm_flow_query(PendingQuery::Tag tag, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                    Entity decision_source, bool cancellable) {
+    PendingQuery &pq = cur_game.pending.query;
+    pq.tag = tag;
+    pq.menu = std::move(menu);
+    if (offer_cast_cancel && cancellable) {
+        LegalAction cancel(PASS_PRIORITY, "Cancel");
+        cancel.category = ActionCategory::PAYING_COSTS;
+        cancel.cancel_proposal = true;
+        pq.menu.push_back(cancel);
+    }
+    pq.chooser_is_a = (chooser == Zone::PLAYER_A);
+    pq.decision_source = decision_source;
+    pq.mid_payment = !cancellable;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+}
+
+int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source, AskKind kind) {
+    if (resume_choice_) {
+        if (*resume_choice_ >= 0) {
+            const int answer = *resume_choice_;
+            *resume_choice_ = -1;
+            return answer;
+        }
+        arm_flow_query(flow_tag_, std::move(menu), chooser, decision_source, kind == AskKind::CHOICE);
+        return -1;
+    }
     if (can_suspend()) {
         PendingQuery &pq = cur_game.pending.query;
         if (pq.active) {

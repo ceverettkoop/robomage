@@ -59,11 +59,10 @@ seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and so
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
 and its driver over that protocol, used for agent games and to record the replay corpus.
 
-The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–5
-done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer, the in-process
-actor and remote batched evaluation; next: `docs/rnad_training_plan.md`). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
-TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
-tip `cf7f97f` is the last commit with both stacks.
+Learned policies are trained by `learn/rmtrain` (R-NaD, `docs/rmtrain.md`) on the featurizer
+(`docs/featurizer.md`) and the continuous actor (`docs/actor.md`); open plans are the `docs/*_plan.md`
+files. The earlier RL stack (PPO/AlphaZero training, the float state vector, the TUI/GUI) is archived on
+branch `archive/rl-stack` (tip `cf7f97f`).
 
 ## Rules Reference (authoritative)
 
@@ -101,6 +100,13 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   `tools/embed/MODEL_PIN` (`robomage --text-table-check`); when rows are stale, fetch the pinned
   model (`tools/embed/fetch_model.py`, network) and regenerate only those rows with `rmembed`
   (`docs/featurizer.md` §5). Part of `all`: a current committed table needs no network or libtorch
+- `make registry` — append to the layout registry `src/featurize/registry.json` every entry the
+  engine's schema and whole-vocab card tables need that it lacks (new enum values, columns, slots,
+  token / relation types, ability keys; never moving one; past a capacity it fails: a layout bump),
+  then rebuild (`docs/featurizer.md` §6.1), and rewrite the card digest `src/featurize/card_digest.json`
+  (per card a hash of its table rows, §6.2). Run it after adding a mechanic, keyword, column or card,
+  or after a change to how a known card parses (the `vocab` tier fails while either file is stale;
+  the digest's diff names the cards whose inputs changed) and commit both
 - `make actor` — `bin/<config>/robomage_nn`: the engine plus the libtorch TUs of `src/actor/`
   (exceptions on, C++20), which add the `nn:<model>` and `nn:remote:<socket>` agents
   (`docs/featurizer.md` §6), and `bin/<config>/rmserve`, the reference inference server
@@ -114,8 +120,8 @@ debug build and `bin/release/robomage_check` the release one; `python/rm_driver.
 `python/record_corpus.py` default to `bin/debug/robomage`; `ROBOMAGE_BUILD=release` moves the
 driver onto `bin/release/robomage`, and `--binary <path>` overrides one invocation of any of them.
 
-**There is no codegen.** `bin/resources/decks/archetypes.json` is read directly (its `_archetypes`
-key is the canonical label list; `src/state_format/metagame.cpp`, the `METAGAME` frame).
+**There is no codegen.** The data files the engine reads (decks, card scripts, the text table) are
+read directly at run time.
 
 ## Long-running commands (Claude)
 
@@ -128,31 +134,39 @@ background** and make the live output inspectable by the user:
 ## Testing guidelines
 
 - **The standard gate is `make check`**: the build, then every tier of the C++ gate
-  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). CI
-  on GitHub runs exactly it on every push, so Claude does not run the full `make check` before
-  committing or pushing unless the user asks; run the tiers a change touches instead (`--tier`,
-  `--scenario`). Tiers, in order (`--tier a,b` runs a subset;
+  `bin/debug/robomage_check` (it runs engine subprocesses in parallel and links no engine TU). When
+  working through a task's stages, Claude runs `make check` locally and has it green before each
+  stage's commit (no training run may be active: the gate builds and runs the debug engine only, but
+  it competes for the CPU). GitHub CI runs exactly the same gate on pushes to `main` and pull
+  requests; it is the fallback only when the user says "commit and push" and `make check` has not
+  been run locally for those changes — then push without running it and let CI check. Tiers, in
+  order (`--tier a,b` runs a subset;
   details, runtimes and reproducing a CI failure in [`docs/ci.md`](docs/ci.md)):
 
   | Tier | Checks |
   |---|---|
-  | `vocab` | `--check-decks`: every top-level / `league/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached) |
+  | `vocab` | `--check-decks`: every top-level / `league/` / `heldout/` deck card loads and is in the vocab; the text tokenizer against `tests/embed/tokens_golden.jsonl` (when the model's vocab is cached); the layout registry `src/featurize/registry.json` current, compiled in and append-only against HEAD (`rmfeat --registry-check`); the card digest `src/featurize/card_digest.json` (every card's table rows as recorded, the table drift report: `rmfeat --digest-check`); the parse report over the vocab (`--parse-report @vocab`) against `tests/parse_report/vocab.json` (`--record` rewrites it); `tools/onboard/onboard.py check` over the candidate decks (a stale status file warns) |
   | `concede` | the `-2` / `-3` concession sentinels over RMSTATE sessions and at parked queries; results and `--replay` |
   | `scenarios` | every rules-regression scenario (`tests/scenarios/*.json`) |
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
-  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files |
+  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); the layout registry's append-only property (a card and a keyword appended, an enum reordered: the same layout and tensors; capacities refused); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files; the open-vocabulary fixtures' gate sources featurized to their recorded inputs (`tests/open_vocab/inputs.json`, `pycheck.py --part open_vocab`) |
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
-  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π) |
-  | `knowledge` | `rmknow --selftest` / `--exactness` / `--belief-exactness`, soundness under `--selfcheck-knowledge`, isolation and truth, archetype inference, belief calibration |
-  | `fuzz` | C++ explore vs explore over league matchups (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings |
+  | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; the checkpoint migration's acceptance (`learn/open_vocab_acceptance.py gate`: S0's fixture checkpoints migrated, against S0's outputs; skipped without the originals under `runs/`); `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π); the recent-event history case (`--feature-history 32`, the reference policy over `rmfeat --history` tables): an `nn:` self-play bo3 match, exact re-featurization of its `--replay` with history tokens, its episodes and a `--replay --trajectory-out` the same, `--selfcheck-featurize` clean over the replay, exports refused across the option (`spec_hash`) |
+  | `knowledge` | `rmknow --selftest` / `--exactness`, soundness under `--selfcheck-knowledge`, isolation and truth |
+  | `fuzz` | C++ explore vs explore over the playable decks' matchups (`league/` and `heldout/`) (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings; then each fixture deck (`decks/tests/mech_*.dk`) against itself under `--coverage`: a key of its `.expect` with no hits is an error (summed counts `ci_out/coverage/<stem>.txt`; `docs/ci.md`) |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
   | `smoke` | scripted hard vs hard through `python/rm_driver.py`, and `python/pycheck.py` (incl. `python/rmtb.py` on C++-written RMTB samples, the sideboard guides and `scripted:hard+sb` bo3 matches at their targets) |
 
 - Non fatal errors are not acceptable
 - Draws are not acceptable, outside of exceedingly rare cases, and require review
+  - Deck onboarding's stage 9 (`onboard.py checks`) fails on any draw in its fuzz campaign;
+    `--reviewed-draw fuzz_<deck>__<opp>_g<i>` names one reviewed as the rules' outcome (CR 104.4a,
+    both players losing at once), which the status file records under `draws_reviewed`.
+    `ROBOMAGE_BUILD=release` runs the stage on `bin/release/robomage` and `bin/release/robomage_check`
+    (its `make check` with `BUILD=RELEASE`).
 - Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 - **Agent games** (the quick check of a new build): `python3 python/rm_driver.py --player-a
   scripted --player-b explore --deck-a league/bug --deck-b league/burn --format bo1 --games N`
@@ -166,7 +180,8 @@ background** and make the live output inspectable by the user:
   `bin/resources/decks/`). Details: [`docs/game_running.md`](docs/game_running.md).
   - **Fuzz campaign** (any draw is a finding): `bin/debug/robomage_check --tier fuzz --matchups
     all --fuzz-games 100 [--mode explore:patient] [--seed N]` (the engine's C++ explore agents;
-    transcripts and draw logs under `ci_out/`)
+    transcripts and draw logs under `ci_out/`); one deck against every playable deck in every leg:
+    `--matchups candidates/<stem>:*` (the onboarding campaign)
   - **Engine throughput:** `bin/release/robomage_check --tier bench`
 
 ### Testing card behavior: the engine's own harness
@@ -176,7 +191,7 @@ The engine itself sculpts and scripts a game. Run it from `bin/` (`cd bin && ./d
 board, pending decision, numbered menu and the choice made, as the CLI renders the deciding seat's
 frame: `| ` lines),
 the test-setup presets and `--play`; `--help` lists every flag (zone presets
-`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
+`--battlefield/face-down/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--game-seed`, `--max-decisions`,
 `--decision-log`, …).
 
 - **Format:** one game by default; `--bo3` plays a match with sideboarding. Cap the run with
@@ -186,7 +201,8 @@ the test-setup presets and `--play`; `--help` lists every flag (zone presets
   raw engine seed instead.
 - **Setting up cards:** `--hand-a/-b` + `--library-a/-b` build a stacked deck (hand first; padded
   to 15 cards with its last card). `--battlefield-a/-b` permanents start in play without summoning
-  sickness. Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
+  sickness. `--face-down-a/-b` cards start there the same way, face down (2/2 with no text, CR
+  708.2a). Otherwise `--deck-a/-b <stem>` (relative to `bin/resources/decks/`; default `delver`).
 - **Shuffling:** libraries shuffle with the seeded RNG unless `--no-shuffle` (deck-file order =
   draw order; first 7 = opening hand). Any `--hand-a/-b` implies `--no-shuffle` for both seats.
 - **No commas in card names.** List flags (`--play`, `--hand-*`, `--library-*`, zone presets)
@@ -214,13 +230,18 @@ reordering; an unmatched or ambiguous spec **fails loudly with the legal menu** 
 | `pass` | pass priority / take the first choice |
 | `keep` / `mulligan` | opening mulligan decision |
 | `cast:<card>` · `play:<card>` / `land:<card>` | cast a spell / play a land |
+| `morph:<card>` | cast it face down |
 | `activate:<card>[@own/opp]` | activate a permanent's ability |
 | `target:<card>[@own/opp]` / `target:<text>` | choose a target (card, or player/mode by description) |
+| `divide:<card>[@own/opp]` / `divide:<text>` | give that target one more point of the divided damage |
 | `attack:<card>` / `attack:done` · `block:<card>` / `block:done` | declare / confirm attackers, blockers |
 | `mana:<w/u/b/r/g/c>` / `tap:<land>` | tap for mana |
 | `search:<card>` / `search:fail` · `top:` · `bottom:` · `dig:<card>` | library search / top / bottom / dig pick |
 | `pay:<text>` · `choice:<text>` · `sb-in:` / `sb-out:<card>` / `sb-done` | optional cost · generic/modal choice · sideboarding |
+| `convoke:<card>` / `convoke:done` · `waterbend:` · `crew:` | tap a permanent toward a cost / tap no more |
+| `turn-up:<card>` | turn a face-down permanent face up (a cloaked morph card's first row of two; `desc:` names the other) |
 | `sacrifice:` `return:` `x:` `discard:` `mode:` `color:` `name:` `exile:` `shuffle:` `companion:` … | the matching choice category, by text / card |
+| `mode:done` | choose no further mode ("choose one or more", `CONFIRM_MODES`) |
 | `concede` / `concede:game` / `concede:match` | the `-2` / `-3` sentinels |
 | `desc:<text>` · `#<n>` or bare integer | any action by description substring · literal index |
 
@@ -272,11 +293,17 @@ asserted event, check it passes (`bin/debug/robomage_check --tier scenarios --sc
 
 **JSON scenarios** (`tests/scenarios/*.json`, run by `robomage_check --tier scenarios --scenario
 <glob>`) capture a reproducible setup: keys `name`, `hand_a/b`, `library_a/b`, `deck_a/b`,
-`battlefield_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
+`battlefield_a/b`, `face_down_a/b`, `graveyard_a/b`, `exile_a/b`, `sideboard_a/b`, `life_a/b`, `play` (spec list)
 or `actions`, `seed` (the `--game-seed`, default 1), `max_decisions` (default 60), `format`,
 `offer_cancel`, `engine_flags`, `variants`, plus the assertions (incl. `expect_count`,
 `expect_unique`, `expect_same` and the knowledge-dump keys `expect_dump*`). Each runs as one engine
 process with `--narrative --trace-decisions`; once its script runs out a seat takes action 0.
+The `expect_dump*` regexes match the seats' knowledge lines (`tools/robomage_check/knowledge_lines.{h,cpp}`:
+each seat STATE frame's facts, one per line, `<A|B> d=<decision> g<game> <t<turn>|sb> <fact>`), among
+them `pt <owner> <zone> <card> <p>/<t>` (a card off the battlefield whose P/T is not 0/0),
+`face_down …`, `reveal <window> <zone> pos=<n> card=<card>`, `permission <player> <kind> card=<card>`,
+`speed <player> v=<n> triggered=<0|1>` (a player who has one) and `pending_cost <part> discard=<n>`
+(a cost being paid).
 ```json
 {"name": "bolt_kills_bear", "why": "CR 120.6: …", "hand_a": ["Mountain", "Lightning Bolt"],
  "battlefield_b": ["Grizzly Bears"],
@@ -304,6 +331,10 @@ Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared 
 (`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the driver and the gate do).
 **Per-object state lives on components; `Game` holds only game-scoped state and cross-object
 registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
+A **designation** (what a player, a permanent or the game is marked with: monarch, the city's
+blessing, speed, day/night, monstrous, prepared, a chosen name/type/color, …) is a row of
+`src/state_format/designations.def`, which declares its field (on `Player`, `Permanent` or `Game`),
+its frame column and the encoder's cell together, so a new one is one row there.
 
 **Components:** `CardData` (printed card: name, types, cost, P/T, ability definitions, statics,
 replacements), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
@@ -382,6 +413,14 @@ warns on a script category with no entry (it would resolve as a no-op). Mana abi
 (`AddMana`) resolve at activation, off the stack.
 Targets are chosen before costs are paid and re-checked at resolution.
 
+**Object references (CR 608.2c).** `Defined$` / `DefinedPlayer$`, and a static's `AffectedDefined$`,
+parse once into an `ObjectSpec` (`src/components/object_spec.h`) on the definition. One table in
+`src/queries/affected.cpp` gives each name its kind, what it resolves to, object or player, and which
+abilities read it; the parser, `--parse-report` and `resolve_objects` / `resolve_players` (over a
+`ResolveCtx`) all read it, so a new name is one row. An effect takes its objects and players from
+the resolvers (or `affected_objects` / `affected_player`), and compares `def->defined` only to pick
+a form of its own behaviour.
+
 **Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's
 characteristics AFTER the resolution that moved it (its own leaves/dies triggers, an ability whose
 source it was resolving later) must use `departed_lki_for` (`src/queries/lki.h`), not
@@ -414,7 +453,8 @@ demand by `load_card` (`src/card_db.cpp`) into the `card_db` map and parsed by
 `Loyalty`, `K:` keywords, `A:` spell/activated abilities (`SP$`/`AB$ <category>`; `Mana` →
 `AddMana`), `T:` triggers, `S:` statics, `R:` replacements, `SVar:` bodies (`DB$` sub-abilities
 chained by `SubAbility$`). Per-ability `Key$ Value` params land in `apply_param_to_ability`
-(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
+(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). Every cost string
+goes through `parse_cost` into `CostParts`, a `CostForm` saying what that path pays of it. `name_to_uid`
 lowercases, maps space/`-`/`/` to `_`, drops other characters, collapses `__`. Basic land types
 get their mana ability from `StateManager::apply_land_abilities`, not the script.
 Decks (`.dk`, `bin/resources/decks/`) are `<quantity> <card name>` lines, then an optional
@@ -435,18 +475,32 @@ the file header holds the bump recipe; `--ref master` previews live Forge).
 - Accented names aren't transliterated for the filename/uid (`name_to_uid` drops non-ASCII) —
   fetch those by ASCII stem by hand. Vocab matching IS accent-insensitive (`ascii_fold_card_name`).
 - `tools/forge_fetch/provision_decks.py` (run by CI and by the SessionStart hook, remote sessions
-  only) fetches every vocab card plus the top-level/`meta/`/`league/` deck cards and their tokens,
+  only) fetches every vocab card plus the top-level/`league/`/`heldout/`/`candidates/` deck cards and their tokens,
   including engine-synthesized ones (Amass → `b_0_0_<subtype>_army`, Investigate →
-  `c_a_clue_draw`, Mobilize → `r_1_1_warrior`). A card that synthesizes a NEW token kind needs its
+  `c_a_clue_draw`, Mobilize → `r_1_1_warrior`, Empower of Jace → `u_empower_jace`,
+  `src/effects/effect_empower.cpp`'s `kEmpowerTokens`). A card that synthesizes a NEW token kind needs its
   stem added to that script's `keyword_tokens`.
 
 ### Adding a New Card
+
+A whole deck goes through the onboarding pipeline (`python3 tools/onboard/onboard.py`,
+`tools/onboard/README.md`): scrape, diff, provision, parse report, capability, the engine work, the
+vocab append below (its stage 7), text rows, checks and fuzz, designation to `league/` or `heldout/`,
+and the baseline (`rmtrain bench --decks`, the current policy's zero-shot benchmark on it). A
+`league/` deck joins a training run with `rmtrain add-decks` (`docs/rmtrain.md` §1.1).
+`robomage --parse-report <card>` (`src/parse_report.h`) lists what the parser does not model in a
+card's script; a new card should report clean before it enters the vocab.
 
 1. Append `{"Card Name", N}` (next free index) to `card_vocab_entries` in `src/card_vocab.h`;
    `N_CARD_TYPES` (`src/card_vocab.h`) must exceed the highest index. Tokens are a separate band
    (`token_vocab_entries`, from index 900).
 2. Provision the script, then `make`. `bin/debug/robomage_check --tier vocab` (the engine's
-   `--check-decks`) lists any deck card that does not load or is missing from the vocab.
+   `--check-decks`) lists any deck card that does not load or is missing from the vocab, and the
+   layout registry's check names any entry the new card needs (a new keyword or effect category):
+   `make registry` appends it (and records the card in the card digest). An appended card moves no
+   existing card's, ability's or slot's position (`docs/featurizer.md` §6.1); a card with more than
+   16 abilities is a layout bump. Checkpoints load across it (`docs/featurizer.md` §6.2); exports are
+   rebuilt (a training run: `rmtrain retable`, `docs/rmtrain.md` §1.1).
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -466,12 +520,12 @@ agent that is not a human seat, the RMSTATE stream (`src/state_format/stream.h`,
 offers. Mana payment is the match-wide **auto-mana** option, on by default for every consumer
 (ordinary mana abilities hidden at priority, costs auto-paid, hybrid pips auto-resolved);
 `--no-auto-mana` (recorded in the RMLOG header) lists every mana ability and pays costs through the
-interactive payment loop (`prompt_mana_payment`):
+interactive payment loop (`pay_mana_cost`, `src/mana_system.h`):
 
 - stdout carries only `RMSTATE <nbytes>\n` + payload records; everything else (narrative under
   `--narrative`, `GAME_RESULT` / `MATCH_RESULT`, diagnostics) goes to stderr.
-- The deciding seat gets, the first time it decides in the match, its `SCHEMA`, `CARDS`,
-  `DECKLISTS` and `METAGAME` frames, then a `STATE` frame (snapshot tables, the events since its
+- The deciding seat gets, the first time it decides in the match, its `SCHEMA`, `CARDS` and
+  `DECKLISTS` frames, then a `STATE` frame (snapshot tables, the events since its
   last frame, the menu, its `k_*` knowledge tables) at each of its decisions.
 - The reply is one integer line: a menu row, `-1` (the last row: an attacker/blocker
   declaration's confirm), `-2` / `-3` (concede). End of input or an unparseable line reads as `-1`.
@@ -482,7 +536,10 @@ interactive payment loop (`prompt_mana_payment`):
 Every menu goes through `InputLogger::get_input`, which leaves out a choice interchangeable with
 an earlier one (two identical cards in the same graveyard, or in the same library when each seat
 sees both or neither right now — `interchangeable_cards`, `src/queries/zones.cpp`); menu row *i*
-is reply *i*.
+is reply *i*. Before the menu and its frames, `get_input` brings the standing looks into line
+(`sync_standing_looks`, `src/queries/visibility.h`): a `MayLookAt$` static's look at the top card
+of a library (Mystic Forge, CR 401.5) is a window on whatever card is on top at that decision, so
+within a resolution it lags (`docs/rules_deviations.md` §2.6a).
 
 **Concession (CR 104.3a):** `-2` (`CONCEDE_GAME`) / `-3` (`CONCEDE_MATCH`) are accepted wherever a
 decision is read (machine, `--replay`, in-process agents, CLI); the pending-decision seat loses via
@@ -492,16 +549,15 @@ the match (even from the sideboard phase, where `-2` is a no-op). Python constan
 
 **Other frame writers:** `--rmstate-dump FILE` (every viewer's frames — A, B, omniscient — at each
 decision, beside any protocol; `--state-dump json` adds `FILE.jsonl`), `--rmstate-read FILE`
-(decode → re-encode byte check), `--cards-frame FILE` (the SCHEMA, whole-vocab CARDS and METAGAME
-frames, the featurizer's card-table source; plays no game), the in-process agents' feed and
+(decode → re-encode byte check), `--cards-frame FILE` (the SCHEMA and whole-vocab CARDS frames,
+the featurizer's card-table source; plays no game), the in-process agents' feed and
 `--trace-decisions`. The format
 is defined once in `src/state_format/schema.cpp`; decoders build themselves from the SCHEMA frame
 (C++ `src/state_format/decode.h`, Python `python/rmstate.py`), so no constant is copied.
 
 **Knowledge sidecar** (`src/knowledge/`, `docs/knowledge_store.md`): one instance per frame writer
-and seat, fed only that seat's frames, appends the `k_*` tables (and at `expert+belief` the
-`b_*` belief tables) to each of the seat's STATE frames; `--knowledge-a/-b off|expert|expert+belief`
-(default `expert`) changes those tables only, never play. Self-checks: `--selfcheck-state` (the
+and seat, fed only that seat's frames, appends the `k_*` tables to each of the seat's STATE
+frames; `--knowledge-a/-b off|expert` (default `expert`) changes those tables only, never play. Self-checks: `--selfcheck-state` (the
 format: roundtrip, leak scramble, complete, permutation, snapshot) and `--selfcheck-knowledge`
 (every `k_*` fact against the true world); both print `ERROR:` lines and a summary on stderr and
 change no other output. `bin/<config>/rmknow` runs the sidecar over a recorded stream.
@@ -518,6 +574,29 @@ sections above are not repeated here.
   concession
 - `src/action_processor.cpp` — executes a chosen action (`process_action`), cast/activation/targeting
   flows, `proc_mandatory_choice`
+- `src/cast_options.{h,cpp}` — how a card may be cast: `kCastSections`, a section per zone and the
+  `Permission` it needs (the hand, a graveyard, exile, the top of a library under
+  `Permission::LIBRARY`), each a table of rows (a way of casting, its `CastCost`, what offers it), and a
+  resolution's casts; `src/components/cast_option.h` (`CastOption`, the face, cost and overlay a
+  menu row casts by), `src/components/chosen_cost.h` (`ChosenCost`, what a cast committed to and
+  paid: on `PendingCast`, then on the `Spell`)
+- `src/cost_payment.{h,cpp}` — every cost is paid by `run_cost_parts`: a payment path is a table of
+  steps, its progress a `CostRun` on `Game`, so a payment parked mid-way is in a snapshot
+- `src/components/activation_rule.h` — an ability's activation restrictions (CR 602.5), `ActivationRule`
+  rows on its definition, every one checked by `activation_source_ready` (`src/queries/activation.h`)
+- `src/target_gate.{h,cpp}` — the constraints across a spell's or ability's targets, a row each,
+  narrowing every target pick (`apply_target_gate`)
+- `src/trigger_modes.{h,cpp}` — the trigger-mode table: per `Mode$` its event, binder, the params it
+  reads, its match and capture; the parser, the trigger scan and `--parse-report` read the same row
+- `src/resolution_memory.{h,cpp}` — the resolution-memory table: an effect reports what it did
+  (`report_object`, `src/components/memory_ops.h`) and the rows its definition's params chose write
+  `cur_game.resolution.memory`
+- `src/components/effect_object.h` — `EffectObject`: what a resolved spell or ability leaves that
+  belongs to no permanent, or an emblem (CR 611.2, 114), on `Game::resolved_effects`
+- `src/components/mana_unit.h` — mana with provenance: `ManaUnit` (one mana's color, source,
+  restriction and rider), `ManaPool`, `ManaPaid` (what a cost spent)
+- `src/components/face_down_card.h` — `FaceDownCard`, the card under a face-down permanent or spell
+  (read through `face_down_card`, `src/queries/face_down.h`)
 - `src/systems/state_manager*.cpp` — SBAs + `determine_legal_actions`, split by concern (`_actions`,
   `_combat`, `_layers` = CR 613 layer driver, `_statics`, `_triggers` = APNAP placement)
 - `src/systems/replacement_effects.{h,cpp}` — CR 614/616 dispatcher; `rules_modifying.{h,cpp}` —
@@ -525,22 +604,34 @@ sections above are not repeated here.
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
 - `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
   candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
-  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator;
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator, its expressions, sets, properties and suffixes one table each
+  (an amount SVar is kept for run time when that table reads it, `svar_expr_recognized`);
   `src/mana_system.cpp` — mana pools, payment and auto-pay
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`,
-  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
-  controller, `Defined$` player), `affected` (the objects / player an effect acts on:
-  targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
-  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
-  exile, `interchangeable_cards`), `lki` (object identity stamp, last-known info), `entry`
+  `source_vocab_idx`), `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher: its qualifier table, and specs compiled once into the
+  `FilterSpec` a definition holds, `src/components/filter_spec.h`), `players` (seats,
+  controller), `affected` (the `Defined$` table, `ResolveCtx`, `resolve_objects` / `resolve_players`,
+  and the objects / player an effect acts on: targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
+  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, `library_top` /
+  `is_library_top`, linked exile, `interchangeable_cards`), `permissions` (the play-permission rows:
+  which `Permission` lets a player play a card from the zone it is in, `play_permissions`,
+  `play_routes`), `copies` (copiable values, CR 707), `face_down` (CR 708: `is_face_down`,
+  `face_down_card`, turning over), `overlays` (`SpellOverlay` rows: what a cast changes on the
+  spell, the face-down face, turn-up costs), `static_conditions` (a static's `Condition$`, one row
+  each), `speed` (CR 702.179), `prepared` (CR 722.3: the prepared copies in exile), `lki` (object identity stamp, last-known info), `entry`
   (`EntryInfo`), `delayed_triggers`, `visibility` (what a viewer sees: `identity_visible`, reveal
   windows, `individually_identifiable`, `canonical_object_order`, and `visible_card_id` /
-  `card_identity`, the state format's one identity read), `pending_cost` (the cost being paid at a
-  decision, `CostPaymentScope`)
+  `card_identity`, the state format's one identity read), `costs` (`can_pay`, the one affordability
+  check over `CostParts`, `src/components/cost_part.h`), `pending_cost` (the cost being paid at a
+  decision, `CostPaymentScope`), `tokens` (the token scripts a card's abilities and keywords make)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a loop-safe snapshot point)
 - `src/classes/match_context.h`, `deck_state.h` — the bo3 state kept across the per-game ECS reset
+- `src/coverage.{h,cpp}` — `--coverage FILE`: hit counts of effects, triggers, replacements, decisions by
+  category, filter and SVar table rows (`row`), cost parts, cast modes and the cast table's offered
+  and cast rows, written at exit (`docs/game_running.md`); kept out of `Game` and
+  the ECS so a snapshot restore cannot rewind them
 - `src/file_util.{h,cpp}` — `make_dirs` (mkdir -p) and `write_file_atomic` (a temporary file renamed
   into place)
 - `src/stable_rng.h` — every gameplay random draw (platform-portable; never `std::shuffle` /
@@ -549,6 +640,8 @@ sections above are not repeated here.
   `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
 - `src/state_format/schema.{h,cpp}` — the RMSTATE format's single definition (std-only): table/column
   definitions, the format's enums, the frame writer (debug-checked rows), SCHEMA frame and hash
+- `src/state_format/designations.def` — the designations, a row each: the field, its `SCHEMA` column
+  and the encoder's cell (the ECS notes above)
 - `src/state_format/enum_names.{h,cpp}` — the engine's enums as SCHEMA string tables, type-mask and
   keyword indices
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
@@ -563,8 +656,6 @@ sections above are not repeated here.
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
-- `src/state_format/metagame.{h,cpp}` — the reference metagame (`bin/resources/decks/archetypes.json`:
-  labels and tagged reference lists) the `METAGAME` frame carries, read once per process
 - `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
   per frame writer (dump, stream, self-check, agent feed) and seat, fed that writer's frames,
   appending `k_*` to each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks
@@ -601,30 +692,40 @@ sections above are not repeated here.
   reader), `rmtb` (RMTB named-array files, `docs/featurizer.md` §4.4), `oracle_text` (text
   normalisation, text / vocab hashes, the model pin, staleness, the inputs file), `wordpiece`
   (the BERT WordPiece tokenizer); the featurizer (`docs/featurizer.md`): `columns` (the tag rules),
-  `card_tables` (the card, ability and part tables from a whole-vocab CARDS frame, their RMTB
-  files and the ability index), `feature_spec` (FEATURE_SPEC: token types, slots, relations,
-  per-table column plans, `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
+  `registry` (+ the committed `registry.json`, compiled in with the assembler's `.incbin`: the layout registry, every
+  slot's, column's, enum value's, type's, relation's and key's permanent position and capacity,
+  `layout_hash`; `docs/featurizer.md` §6.1), `compat` (the model manifest — spec, vocab, layout
+  hashes, the tables' digest, text model, the vocab manifest of `[id, name]` — and `check_compatible`, the one rule with
+  `learn/rmlearn/spec.py`'s: a checkpoint runs on a grown vocab, an export only on its own tables;
+  §6.2), `drift` (per card its table rows' digest, the committed `card_digest.json`, and the exact
+  drift between two tables; §6.2), `card_tables` (the card, ability and part tables from a
+  whole-vocab CARDS frame at the registry's positions, their RMTB files and the ability index: card
+  `c`'s ability `i` at row `c × abilities_per_card + i`, then the key band), `feature_spec`
+  (FEATURE_SPEC: token types, slots, relations, per-table column plans at the registry's positions,
+  `spec_json` / `spec_hash`), `featurizer` (`featurize_seat`, the actor
   entry point, refusing a non-seat frame; `featurize_viewer`, learner-side; the tensors file),
   `targets` (learner targets from the omniscient frame), `frame_stream` (a recorded stream frame by
-  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported),
+  frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported with
+  their `manifest.json` and `registry.json`, `manifest()`),
   `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays), `episode`
   (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`)
-- `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA, whole-vocab CARDS and
-  METAGAME frames for the card tables; plays no game. `load_engine_featurization`: the same
+- `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA and whole-vocab CARDS
+  frames for the card tables; plays no game. `load_engine_featurization`: the same
   records and the text table as the featurizer's inputs in process (`nn:`, `--featurize-seats`)
 - `src/state_format/selfcheck_featurize.{h,cpp}` — `--selfcheck-featurize`: each seat's tensors
   from the actor entry point equal under the scramble and permutation checks' frames, the
   omniscient frame refused; `SELFCHECK-FEATURIZE:` summary
-- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`): every top-level / `league/` deck
-  card loads and is in the vocab; plays no game
+- `src/deck_check.{h,cpp}` — `--check-decks` (`--check-decks-dir`, a directory or one `.dk`): every
+  top-level / `league/` / `heldout/` deck card loads and is in the vocab; plays no game
+- `src/parse_report.{h,cpp}` — `--parse-report <card|@vocab|@file>`: each card's script parsed afresh
+  with the parser's findings (`ParseFinding`, `parse_card_findings` in `src/parse.h`: unhandled
+  categories, unread params, unbound trigger modes, unapplied statics and replacements, unknown
+  keywords and cost tokens, missing SVars and token scripts) plus the filter qualifiers
+  (`filter_unknown_qualifiers`, `queries/filters.h`) and SVar expressions (`svar_expr_recognized`,
+  `svar_eval.h`) nothing reads; one JSON line per card; plays no game
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
-  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
-  METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
-  §10); the shared soundness check `truth.h`; std + `state_format/decode.h`/`schema.h` only;
-  `docs/knowledge_store.md` §9-10)
-- `src/knowledge/belief.{h,cpp}` — the belief layer (level `expert+belief`, `b_list` / `b_archetype`):
-  each reference list's likelihood as the weighted world count of its hypothesis network, the
-  posterior in fixed point (`docs/knowledge_store.md` §10.6)
+  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; the shared soundness check
+  `truth.h`; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
 - `src/agents/` — in-process agents on the decision hook, reading only the seat's decoded frames
   (`agent.h`: the interface, specs `first`/`random`/`actions:`/`play:`/`explore`/`explore:patient`;
   `seat_frames.h`, `decision_view.h`: the decoded stream and decision; `py_random.h`: Python's
@@ -651,7 +752,7 @@ sections above are not repeated here.
 **The actor (`src/actor/`, `make actor`; libtorch, exceptions on)** — `evaluator.{h,cpp}` (the
 `Evaluator` interface: a batch of featurized decisions → per decision each policy's logits, `log π`,
 value and version; the in-process one loads TorchScript or an AOTInductor `.pt2`, checks the
-model's spec / vocab / text-model metadata), `remote_evaluator.{h,cpp}` (torch-free: the inference
+export's model manifest against the featurizer's tables, exactly: `featurize::check_compatible`), `remote_evaluator.{h,cpp}` (torch-free: the inference
 protocol's client behind `nn:remote:`), `nn_agent.{h,cpp}` (the `nn:` agent: options, sampling
 on the shared generator, the behaviour distribution, `dump=` / `evals=` / `stats`, the remote
 options), `robomage_nn.cpp` (the binary's main: registers `nn:`, then `engine_main`).
@@ -662,20 +763,26 @@ handshake JSON, the shared region, request / response layouts.
 **Tools (`tools/`)**
 - `tools/robomage_check/` — `bin/<config>/robomage_check` (part of `make`; `make check` runs it):
   the gate, engine subprocesses only (links the std-only decoder and frame reader, no engine TU);
-  one `tier_*.cpp` per tier group, `scenarios.{h,cpp}` (the scenario keys and runner), `corpus.*`,
+  one `tier_*.cpp` per tier group, `proc.*` (engine subprocesses, started with `posix_spawn`, and the
+  job pool), `scenarios.{h,cpp}` (the scenario keys and runner), `knowledge_lines.*` (the
+  `expect_dump*` lines), `corpus.*`,
   `traj.*` (episode reading and comparisons, the `traj`, `actorloop` and `actor` tiers),
-  `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
+  `featurize_layout.*` (the layout registry's append-only property, `featurize` tier),
+  `registry_check.*` (the registry's and the card digest's checks, `vocab` tier), `coverage_check.*` (the
+  fixture decks' `.expect` keys against their summed `--coverage` counts, `fuzz` tier), `scan.cpp` (error/warning classification); flags `--tier`, `-j`, `--seed`, `--binary`,
   `--out-dir` (default `ci_out/`), `--fuzz-games`, `--smoke-games`, `--matchups`, `--mode`,
   `--scenario GLOB --show output|narrative|dump`, `--record`
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
-  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
-  `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
-  `generative.h`, the belief model played out directly)
+  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world
+  enumerator)
 - `tools/rmfeat/` — `bin/<config>/rmfeat` (part of `make`; std + the decoder + `src/featurize/`, no
   engine TU): `--spec --cards CARDS`, `--export-tables CARDS OUTDIR`, `--featurize DUMP --viewer
   A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,
-  timing); `--tables DIR`, `--text-table FILE`
+  timing); `--registry-update FILE` (`make registry`) and `--registry-check FILE [--base FILE]` (the
+  `vocab` tier); `--digest-update` / `--digest-check FILE` (the card digest), `--table-drift OLD NEW`
+  (two tables directories, `rmtrain retable`), `--compat MODEL NOW [--exact]` (two manifests); `--tables
+  DIR`, `--text-table FILE`, `--registry FILE`
 - `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
   libtorch C++ API and its safetensors reader; writes the oracle-text table
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
@@ -683,20 +790,33 @@ handshake JSON, the shared region, request / response layouts.
   by `make`: the tokenizer golden, the encoder and table checks against transformers)
 - `tools/nn/make_reference_policy.py` — needs torch (+ onnx, onnxscript, onnxruntime), never run by
   `make`: `build` the network contract's reference policy from the exported tables (seeded) as
-  TorchScript, `.pt2` and ONNX with the hashes; `check` the three exports agree on a tensors file
+  TorchScript, `.pt2` and ONNX with the tables' manifest (`--formats`); `check` the three exports agree on a
+  tensors file
 - `tools/rmserve/` — `bin/<config>/rmserve` (`make actor`, libtorch): the reference inference server
   (`--socket PATH --policy ID=MODEL … [--version ID=N] [--max-batch N] [--deadline-us N]
   [--threads N]`): many clients, batches across them, the in-process evaluator per policy,
   `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
-  `.dk` scraper (stdlib only, its own README)
+  `.dk` scraper (stdlib only, its own README; `--manifest` records the scrape)
+- `tools/onboard/` — the deck onboarding pipeline (its README):
+  `onboard.py <stage|all|report|check>` over `bin/resources/decks/candidates/` (scraped decks, every
+  deck's committed `<stem>.status.json`, the generated capability report `REPORT.md`), `league/`
+  (training) and `heldout/` (never trained on); `mechanic_sizes.json` (findings grouped into mechanics,
+  with size estimates)
 
 **Learner (`learn/`, torch, its own venv; `learn/README.md`)**
 - `learn/rmtrain` — the training program (`rmlearn/rmtrain.py`, `rmlearn/orchestrator/`): `start` /
-  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` over a run directory
+  `status` / `tail` / `pause` / `resume` / `stop` / `set` / `eval` / `phase` / `bench` (`--decks
+  league,heldout`: held-out decks too, playing and facing them paired) / `retable` (a stopped run onto
+  the engine's tables after a vocab expansion, `orchestrator/retable.py`) / `add-decks` (a deck into a
+  run's league, live or for its next start, `orchestrator/league.py`; the expansion procedure is
+  `docs/rmtrain.md` §1.1) over a run directory
   (`runs/<name>`), the phases B0–B5, one GPU process (learner + inference server) and the actors
   ([`docs/rmtrain.md`](docs/rmtrain.md)); checks `learn/check_rmtrain.py` (`--smoke`: a tiny run)
+- `learn/rmlearn/migrate.py` — checkpoints of an earlier layout onto the current one, by name (`--run`: a
+  run's `ckpt/`, the originals kept in `ckpt.v1/`; `docs/rmtrain.md` §1.2); `learn/open_vocab_acceptance.py`
+  — its acceptance against S0's fixtures (`full`, the gate's `gate`, `inputs`)
 
 **Python (`python/`, stdlib only)**
 - `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
@@ -731,11 +851,18 @@ handshake JSON, the shared region, request / response layouts.
 - `tests/cli/<name>.json` + `<name>.out` — the `cli` tier's sessions (engine flags and stdin lines)
   and their golden stdout (`robomage_check --tier cli --record` rewrites them)
 - `tests/embed/tokens_golden.jsonl` — the text tokenizer's golden ids (`make_goldens.py tokens`)
+- `tests/parse_report/vocab.json` — the vocab cards' known parse-report findings (`docs/rules_deviations.md`
+  §2.8; `robomage_check --tier vocab --record` rewrites it)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
+- `tests/open_vocab/` — the open-vocabulary refactor's fixtures: the
+  decision sources, every pre-refactor network's outputs on them (`learn/open_vocab_baseline.py`), and
+  `inputs.json`, the decisions' recorded inputs (`learn/open_vocab_acceptance.py inputs`)
 
 **Docs (`docs/`)** — `ci.md` (the gate), `game_running.md` (running games), `state_format.md`
 (RMSTATE), `knowledge_store.md` (the sidecar), `featurizer.md` (the featurizer and the network
 contract), `trajectory_format.md` (trajectory episodes), `actor.md` (the continuous actor, its
 schedule, status and results files), `inference_protocol.md` (remote evaluation),
-`rules_deviations.md`, `engine_fork_plan.md` (the plan), `rnad_training_plan.md` (the training plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.
+`rules_deviations.md`, `sideboard_guides.md` (the league sideboard guides; `python/pycheck.py` parses its
+tables), `rmtrain.md` (the training program), `mtg_comprehensive_rules.md` (the rules reference); plans:
+`league48h_plan.md` (the next training run), `llm_play_plan.md` (deferred).

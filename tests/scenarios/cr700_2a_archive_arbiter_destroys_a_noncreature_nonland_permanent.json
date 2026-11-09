@@ -1,0 +1,56 @@
+{
+  "name": "cr700_2a_archive_arbiter_destroys_a_noncreature_nonland_permanent",
+  "why": "CR 700.2a, 603.3c: Archive Arbiter's enters trigger offers Destroy with the noncreature, nonland permanents as its targets, never a creature or a land",
+  "hand_a": [
+    "Archive Arbiter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes",
+    "Wastes"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Grizzly Bears",
+    "Tormod's Crypt",
+    "Kappa Cannoneer"
+  ],
+  "life_a": 10,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Archive Arbiter",
+    "A:mode:Destroy"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "^Tormod's Crypt is destroyed"
+  ],
+  "expect_not": [
+    "gains 4 life"
+  ],
+  "expect_menu": [
+    "You gain 4 life"
+  ],
+  "expect_menu_not": [
+    "^Grizzly Bears$",
+    "^Kappa Cannoneer$",
+    "^Forest$"
+  ]
+}

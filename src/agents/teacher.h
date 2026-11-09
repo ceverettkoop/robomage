@@ -8,14 +8,14 @@
 
 #include "agent.h"
 
-// ── The teacher channel: a seat's labels from an external agent (training plan T4) ────────────
+// ── The teacher channel: a seat's labels from an external agent ───────────────────────────────
 //
 // Engine side, like agents/trajectory.h. Options (cli_args.cpp; not recorded in the decision log):
 //   --teacher-a <command> / --teacher-b <command>
 //                        start <command> (through /bin/sh -c, in the engine's working directory)
 //                        and stream it that seat's frames: exactly the bytes the --machine
 //                        protocol would send the seat (docs/state_format.md §9), from the match's
-//                        first frame (SCHEMA, CARDS, DECKLISTS, METAGAME the first time the seat
+//                        first frame (SCHEMA, CARDS, DECKLISTS the first time the seat
 //                        decides), a STATE frame at each of its decisions (sideboarding included),
 //                        and its terminal frame at the end of the match. The command answers each
 //                        decision frame with one integer line on its stdout: its label. Its stdin

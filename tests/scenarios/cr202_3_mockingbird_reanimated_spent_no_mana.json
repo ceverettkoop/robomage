@@ -1,0 +1,48 @@
+{
+  "name": "cr202_3_mockingbird_reanimated_spent_no_mana",
+  "why": "CR 202.3, 601.2h: not cast, no mana was spent, so the bound is 0: with Bears on the table nothing is asked and it enters as itself.",
+  "hand_a": [
+    "Reanimate"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "graveyard_a": [
+    "Mockingbird"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Reanimate",
+    "A:target:Mockingbird"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Enter as a copy"
+  ],
+  "expect": [
+    "Reanimate|Mockingbird"
+  ]
+}

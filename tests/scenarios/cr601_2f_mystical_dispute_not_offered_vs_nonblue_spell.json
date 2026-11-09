@@ -1,0 +1,15 @@
+{
+  "name": "cr601_2f_mystical_dispute_not_offered_vs_nonblue_spell",
+  "why": "CR 601.2f: Mystical Dispute costs {2} less only if it targets a blue spell; with Lightning Bolt the only spell to target, its cost stays {2}{U}, so one Island can't pay for it and it is not offered (Brainstorm, castable for {U}, still is) (Mystical Dispute's target-conditioned cost reduction)",
+  "hand_a": ["Lightning Bolt"],
+  "battlefield_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "hand_b": ["Mystical Dispute", "Brainstorm"],
+  "battlefield_b": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B"],
+  "max_decisions": 5,
+  "expect_menu": ["^Cast Brainstorm$"],
+  "expect_menu_not": ["^Cast Mystical Dispute$"],
+  "expect": ["Lightning Bolt deals 3 damage to Player B"]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "cr708_2a_spell_pierce_has_no_target_in_a_face_down_spell",
+  "why": "CR 708.2a, 708.4: a face-down spell is a creature spell, so Spell Pierce has nothing to target.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Spell Pierce",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Face-down creature enters the battlefield"
+  ],
+  "expect_menu_not": [
+    "Cast Spell Pierce"
+  ]
+}

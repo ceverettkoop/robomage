@@ -1,0 +1,40 @@
+{
+  "name": "cr603_5_nihil_spellbomb_pays_row_by_row",
+  "why": "CR 605.3a / 603.5: under --no-auto-mana the {B} of Nihil Spellbomb's trigger is paid through the interactive rows mid-resolution; this parks on a mana row of a triggered ability's cost",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Nihil Spellbomb",
+    "Swamp"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Nihil Spellbomb",
+    "A:target:Player B",
+    "A:choice:Accept: pay",
+    "A:tap:Swamp"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A draws Grizzly Bears"
+  ]
+}

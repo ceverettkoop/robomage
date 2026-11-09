@@ -11,7 +11,7 @@
 
 // ── The remote evaluator: the inference protocol's client (docs/inference_protocol.md) ────────
 //
-// An Evaluator whose evaluations come from an inference server (rmserve, the training plan's GPU
+// An Evaluator whose evaluations come from an inference server (rmserve, or a training run's GPU
 // server) at a Unix socket: connect, a shared region of its own (POSIX shared memory, unlinked once
 // the server has it), the handshake (the featurizer's spec_hash, vocab_hash, text_model and widths,
 // the policies to evaluate), then per evaluate() one request: the batch's unpadded tensors written

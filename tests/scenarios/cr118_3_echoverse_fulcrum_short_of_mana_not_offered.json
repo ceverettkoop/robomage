@@ -1,0 +1,33 @@
+{
+  "name": "cr118_3_echoverse_fulcrum_short_of_mana_not_offered",
+  "why": "CR 118.3: The Echoverse Fulcrum isn't offered with {4} and so can't be exiled",
+  "hand_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "The Echoverse Fulcrum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate The Echoverse Fulcrum"
+  ]
+}

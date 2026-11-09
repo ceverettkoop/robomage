@@ -1,0 +1,52 @@
+{
+  "name": "cr701_17_grindstone_empties_an_even_library",
+  "why": "CR 701.17: every pair shares a color, so Grindstone mills an even library out; the repeat after the last pair mills nothing, which shares nothing, and the process ends",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Grindstone",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Grindstone",
+    "A:target:Player B"
+  ],
+  "max_decisions": 5,
+  "expect_count": {
+    "^Player B mills ": 8
+  }
+}

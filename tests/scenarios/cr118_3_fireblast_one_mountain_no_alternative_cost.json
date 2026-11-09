@@ -1,0 +1,31 @@
+{
+  "name": "cr118_3_fireblast_one_mountain_no_alternative_cost",
+  "why": "CR 118.3, 118.9: one Mountain can't pay a cost of two, so Fireblast's alternative cost isn't offered",
+  "hand_a": [
+    "Fireblast",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Play Mountain"
+  ],
+  "expect_menu_not": [
+    "Cast Fireblast"
+  ]
+}

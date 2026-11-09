@@ -1,0 +1,47 @@
+{
+  "name": "cr106_6_hogaak_refuses_floating_mana",
+  "why": "Hogaak's oracle: 'You can't spend mana to cast this spell': mana already in the pool counts. Five creatures and Lotus Petal delved leave {1} that the floating {G} can't pay.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Lotus Petal"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Island",
+    "A:mana:g"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Lotus Petal"
+  ],
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

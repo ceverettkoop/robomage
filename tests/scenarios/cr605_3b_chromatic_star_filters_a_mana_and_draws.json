@@ -1,0 +1,39 @@
+{
+  "name": "cr605_3b_chromatic_star_filters_a_mana_and_draws",
+  "why": "CR 605.3b, 603.10a: {1}, {T}, sacrifice makes one mana of any color, here red from an Island for Lightning Bolt, and the Star going to the graveyard draws a card",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Chromatic Star",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "^Player A activated Island for 1\\(U\\)",
+    "^Player A sacrifices Chromatic Star",
+    "^Player A activated Chromatic Star for 1\\(R\\)",
+    "^Player A casts Lightning Bolt",
+    "^Player A draws",
+    "^Lightning Bolt deals 3 damage"
+  ]
+}

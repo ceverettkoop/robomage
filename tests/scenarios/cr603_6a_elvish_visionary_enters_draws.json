@@ -1,0 +1,45 @@
+{
+  "name": "cr603_6a_elvish_visionary_enters_draws",
+  "why": "CR 603.6a: Elvish Visionary's enters trigger draws a card when it enters, and only then",
+  "hand_a": [
+    "Elvish Visionary",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Elvish Visionary"
+  ],
+  "max_decisions": 3,
+  "expect_order": [
+    "Elvish Visionary enters the battlefield",
+    "^Player A draws "
+  ],
+  "expect_count": {
+    "^Player A draws ": 1
+  },
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -23,6 +23,9 @@ class Orderer;
 // parked a decision through `ctx.ask` (see resolution_frame.h) and must be
 // re-entered with the latched answer; it propagates as ResolveStatus::SUSPENDED
 // up through resolve_top.
+struct Permanent;
+struct Creature;
+
 namespace effects {
 
 using EffectHandler = HandlerResult (*)(Ability &, std::shared_ptr<Orderer>, FrameCtx &);
@@ -41,6 +44,9 @@ inline constexpr const char *MOBILIZE_TOKEN_SCRIPT = "r_1_1_warrior";
 std::string amass_army_token_script(const std::string &subtype);
 // The creature subtype an Amass definition amasses (its Type$; Orc when unset).
 std::string amass_subtype(const AbilityDef &def);
+// The token an empower of `subtype` makes, empty for no row; and the subtype of an Empower definition.
+std::string empower_token_script(const std::string &subtype);
+std::string empower_subtype(const AbilityDef &def);
 
 // The per-effect handlers, one per src/effects/effect_*.cpp (documented in effect_kinds.def).
 #define EFFECT_KIND(kind, category, handler) \
@@ -49,8 +55,8 @@ std::string amass_subtype(const AbilityDef &def);
 
 // Draw `total` cards for `owner` one at a time, offering the dredge
 // draw-replacement (CR 702.52a) before each draw through `ctx` (suspendable).
-// `done` is the caller's persisted progress counter (a field of its frame rt),
-// so a resume re-enters the parked dredge question mid-batch. Returns false
+// `batch` is the caller's persisted progress (a field of its frame rt), so a resume
+// re-enters the parked dredge question mid-batch. Returns false
 // when a dredge ask suspended (the caller returns SUSPENDED mutating nothing);
 // true when every remaining draw completed (or the game ended mid-batch,
 // mirroring Orderer::draw's per-draw ended bail). Blocking contexts prompt
@@ -58,7 +64,7 @@ std::string amass_subtype(const AbilityDef &def);
 // sylvan_library's draw-2. `decision_source` (the resolving ability's source) is
 // the pending-decision context of each dredge question. Defined in effect_draw.cpp.
 bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                              Zone::Ownership owner, size_t &done, size_t total,
+                              Zone::Ownership owner, DrawBatch &batch, size_t total,
                               Entity decision_source);
 // CR 702.26b/g: phase permanent `e` out directly — it is removed from combat (CR 506.4) and every
 // Aura/Equipment attached to it phases out indirectly with it. `entities` is the iterating
@@ -93,6 +99,9 @@ int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_
 // with no legal object stays where it is (CR 303.4f/g). `fctx` carries that pick (see
 // change_zone_move). Returns the zone the card is in afterwards. Defined in effect_change_zone.cpp.
 Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e);
+// CR 610.3: the second one-shot effect of an "until" exile, `card` back from exile to `to` under
+// its owner's control. It happens within a zone move, so an Aura's choice of what to enchant blocks.
+void return_until_exiled(const std::shared_ptr<Orderer> &orderer, Entity card, Zone::ZoneValue to);
 // ChangeType$ Remembered.sameName / Targeted.sameName mover, shared by change_zone
 // (force_all=false) and change_zone_all (force_all=true).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all);
@@ -113,6 +122,19 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
 // effect_animate.cpp.
 void apply_animate_creature_bootstrap(Entity e);
+// The grants of Animate ability `ab` (types, base P/T, keywords, abilities) on battlefield
+// permanent `e`: DB$ Animate's per-object step, also run for an Animate recorded on a card's
+// entry once its Permanent exists (EntryInfo::animates). Defined in effect_animate.cpp.
+void animate_permanent(const Ability &ab, Entity e);
+// The base P/T an Animate gave `perm` (layer 7b, after a characteristic-defining ability's in 7a),
+// into `cr`'s set slot: the latest of a lasting one and an until-end-of-turn one (CR 613.7b).
+// Defined in effect_animate.cpp.
+void set_pt_from_animate(const Permanent &perm, Creature &cr);
+// AtEOT$ (Sneak Attack): a delayed trigger at the beginning of the next end step, whoever is active
+// (CR 603.7), that moves exactly `objects` still on the battlefield as the objects they were (CR
+// 400.7: one that left and returned is a new object and stays), as `ab`'s definition says. Nothing
+// for a definition with no AtEOT$. Defined in effect_animate.cpp.
+void register_at_eot_move(const Ability &ab, const std::vector<ObjectRef> &objects);
 // Lapse the Duration$ UntilYourNextTurn Animate (Karn, the Great Creator +1) on permanent `e` if
 // `active_player` created it; call from that player's untap step for each permanent. Defined in
 // effect_animate.cpp.
@@ -134,25 +156,30 @@ bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string
 bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_token(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &value);
+// How many pips a Produced$ of one color names ("R": 1, "R R": 2); 0 for any other value.
+size_t produced_pips(const std::string &value);
 bool parse_destroy_all(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_delayed_trigger(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &value);
-bool parse_mill(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_empower(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &value);
 bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value);
 // AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
 bool parse_animate_all(AbilityDef &ab, const std::string &key, const std::string &value);
-// DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
+// DB$ StoreSVar SVar$/Expression$/Type$. See effect_store_svar.cpp.
 bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string &value);
 // DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
 bool parse_set_state(AbilityDef &ab, const std::string &key, const std::string &value);
+// DB$ Repeat MaxRepeat$/RepeatCheckSVar$/RepeatSVarCompare$. See effect_repeat.cpp.
+bool parse_repeat(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_branch(AbilityDef &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

@@ -1,0 +1,13 @@
+{
+  "name": "cr722_5_a_prepare_spell_may_be_named",
+  "why": "CR 722.5, 722.4: a player may choose a preparation card's alternative name, though in every zone the card has only its normal name: naming Enroot discards no Carnivorous Cultivator.",
+  "hand_a": ["Cabal Therapy"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Carnivorous Cultivator", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B", "A:name:Enroot"],
+  "max_decisions": 8,
+  "expect_menu": ["Name card: Carnivorous Cultivator", "Name card: Enroot"],
+  "expect_not": ["Player B discards"]
+}

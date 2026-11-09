@@ -10,6 +10,22 @@
 
 extern Game cur_game;
 
+void set_token_permanent_abilities(Entity tok_entity, const Token &tok, Permanent &perm) {
+    perm.abilities.clear();
+    // The Eldrazi Spawn token's "Sacrifice this creature: Add {C}." mana ability reaches the player
+    // this way.
+    for (const auto &ab : tok.abilities) {
+        if (ab->ability_type != AbilityDef::ACTIVATED && ab->ability_type != AbilityDef::SPELL)
+            continue;
+        Ability copy(ab);
+        copy.source = ObjectRef::of(tok_entity);
+        perm.abilities.push_back(copy);
+    }
+    // The SBE static pass (gather_active_statics) applies them: the Urza's Saga Construct token's
+    // "+1/+1 for each artifact you control" self-buff (Affected$ Card.Self, AddPower$ X).
+    perm.static_abilities = tok.static_abilities;
+}
+
 void bootstrap_token_components(Entity tok_entity, const Token &tok,
                                 Zone::Ownership controller, size_t &timestamp) {
     int etb_counters = 0;  // "enters with" counters (614.1c), added once the components exist
@@ -21,6 +37,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         perm.is_token = true;
         perm.controller = controller;
         perm.has_summoning_sickness = true;
+        perm.prepared = tok.enters_prepared && tok.prepare_spell;
         // The replacement effects that shape how a permanent enters apply to a token as to a
         // card (CR 614.1c-d, 614.12): a token copy of a card has its self-replacements
         // (CR 707.2) — "enters tapped", "enters with counters".
@@ -36,22 +53,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         etb_counter_type = rev.etb_counter_type;
         perm.timestamp_entered_battlefield = timestamp++;
         perm.entered_on_turn = cur_game.turn_state.turn;
-        // Carry the token's intrinsic activated abilities onto the permanent so they are
-        // offered as legal actions (a card's activated abilities are read from
-        // Permanent::abilities, not the source component). The Eldrazi Spawn token's
-        // "Sacrifice this creature: Add {C}." mana ability reaches the player this way.
-        // Triggered abilities stay on Token::abilities (the trigger scan reads them there).
-        for (const auto &ab : tok.abilities) {
-            if (ab->ability_type != AbilityDef::ACTIVATED && ab->ability_type != AbilityDef::SPELL)
-                continue;
-            Ability copy(ab);
-            copy.source = ObjectRef::of(tok_entity);
-            perm.abilities.push_back(copy);
-        }
-        // Carry the token's continuous static abilities onto the permanent so the SBE static
-        // pass (gather_active_statics) applies them — e.g. the Urza's Saga Construct token's
-        // "+1/+1 for each artifact you control" self-buff (Affected$ Card.Self, AddPower$ X).
-        perm.static_abilities = tok.static_abilities;
+        set_token_permanent_abilities(tok_entity, tok, perm);
         global_coordinator.AddComponent(tok_entity, perm);
     }
     // Only creature tokens get Creature/Damage components and P/T. A noncreature token

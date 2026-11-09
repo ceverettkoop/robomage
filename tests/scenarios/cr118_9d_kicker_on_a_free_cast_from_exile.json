@@ -1,0 +1,13 @@
+{
+  "name": "cr118_9d_kicker_on_a_free_cast_from_exile",
+  "why": "CR 118.9d, 601.2b: an additional cost applies to a spell cast for no mana, so Wastescape Battlemage cast free from Dauthi Voidwalker's exile can still be kicked",
+  "hand_a": ["Thoughtseize"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Forest", "Dauthi Voidwalker"],
+  "hand_b": ["Wastescape Battlemage"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "A:cast:Thoughtseize", "A:target:Player B", "A:desc:Wastescape Battlemage", "A:activate:Dauthi Voidwalker", "A:cast:Wastescape Battlemage", "A:desc:Accept: pay kicker"],
+  "max_decisions": 24,
+  "expect_order": ["Player A pays the kicker 1 cost for Wastescape Battlemage", "Player A casts Wastescape Battlemage"]
+}

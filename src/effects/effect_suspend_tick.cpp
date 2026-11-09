@@ -60,10 +60,9 @@ HandlerResult suspend_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
     Entity card = ab.source.get();
     if (rt.stage == ResolutionCastRt::OFFER && (card == 0 || !is_exiled(card))) return HandlerResult::DONE_RUN_SUBS;
-    Game::ImpulseCastPermission grant;
-    grant.resource = Game::ImpulseCastPermission::FREE;
-    if (cast_during_resolution(card, ab.controller, grant, rt, ctx, orderer) ==
-        ResolutionCastStatus::SUSPENDED)
+    ResolutionCastTerms terms;
+    terms.grant.resource = GrantResource::FREE;
+    if (cast_during_resolution(card, ab.controller, terms, rt, ctx, orderer) == ResolutionCastStatus::SUSPENDED)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }

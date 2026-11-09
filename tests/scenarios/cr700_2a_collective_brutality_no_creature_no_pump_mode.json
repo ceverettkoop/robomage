@@ -1,0 +1,36 @@
+{
+  "name": "cr700_2a_collective_brutality_no_creature_no_pump_mode",
+  "why": "CR 700.2a: with no creature on the battlefield the -2/-2 mode has no legal target and isn't offered",
+  "hand_a": [
+    "Collective Brutality"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Collective Brutality"
+  ],
+  "max_decisions": 6,
+  "expect_menu": [
+    "loses 2 life"
+  ],
+  "expect_menu_not": [
+    "gets -2/-2"
+  ]
+}

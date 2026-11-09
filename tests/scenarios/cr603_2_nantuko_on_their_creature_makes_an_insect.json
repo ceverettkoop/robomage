@@ -1,0 +1,13 @@
+{
+  "name": "cr603_2_nantuko_on_their_creature_makes_an_insect",
+  "why": "Springheart Nantuko attached to a creature you don't control: \"attached to a creature you control\" fails, so nothing asks for {1}{G} and you create the Insect.",
+  "hand_a": ["Springheart Nantuko", "Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest", "Forest"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "A:play:Forest"],
+  "max_decisions": 12,
+  "expect": ["Token created: .*Insect"],
+  "expect_menu_not": ["Pay \\{1\\}\\{G\\}"]
+}

@@ -1,0 +1,63 @@
+{
+  "name": "cr702_37c_cast_face_down_from_the_graveyard_under_gaeas_will",
+  "why": "CR 702.37c: from the graveyard too, under Gaea's Will, and the Will's replacement doesn't touch a permanent: it resolves and stays.",
+  "hand_a": [
+    "Gaea's Will"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Aphetto Alchemist"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:discard:Forest",
+    "A:discard:Forest",
+    "A:desc:Cast Gaea's Will without",
+    "A:morph:Aphetto"
+  ],
+  "max_decisions": 34,
+  "expect": [
+    "Player A casts Face-down creature",
+    "Face-down creature enters the battlefield"
+  ],
+  "expect_menu": [
+    "Cast Aphetto Alchemist face down \\(morph, from graveyard\\)"
+  ]
+}

@@ -17,6 +17,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
+#include "../resolution_memory.h"
 #include "../stable_rng.h"
 #include "../state_format/events.h"
 #include "../svar_eval.h"
@@ -123,11 +124,10 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         MatchCtx mctx;
         mctx.controller = dig_owner;
         mctx.source = ab.source.lki_entity();
-        if (!ab.def->change_valid.empty() && ab.def->change_valid.find("cmcLE") != std::string::npos &&
+        if (!ab.def->change_valid.empty() && ab.def->change_valid.text().find("cmcLE") != std::string::npos &&
             !ab.def->dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
                 evaluate_amount(ab.def->dynamic_amount_expr, dig_owner, 0, ab.target.get()));
-            mctx.cmc_op = "LE";
         }
         std::vector<Entity> matching;
         for (auto e : rt.lib)
@@ -272,8 +272,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // RememberChanged$ True (Light Up the Stage): stash the moved (chosen) cards in
     // cur_game.resolution.memory.remembered so a paired DB$ Effect sub-ability can grant a play
     // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
-    if (ab.def->remember_changed)
-        for (Entity chosen : rt.chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
+    for (Entity chosen : rt.chosen) report_object(ab, EffectObjects::MOVED, chosen);
 
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;
@@ -360,7 +359,7 @@ bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value)
     } else if (key == "RestRandomOrder" || key == "RandomOrder") {
         ab.rest_random_order = (value == "True");
         return true;
-    } else if (key == "Reveal") {
+    } else if (key == "Reveal" && ab.category == "Dig") {
         // Reveal$ True — the looked-at cards are shown to all players (Goblin Guide).
         ab.dig_reveal = (value == "True");
         return true;

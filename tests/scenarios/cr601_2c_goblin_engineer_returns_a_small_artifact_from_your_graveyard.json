@@ -1,0 +1,49 @@
+{
+  "name": "cr601_2c_goblin_engineer_returns_a_small_artifact_from_your_graveyard",
+  "why": "CR 601.2c, 602.2b: {R}, {T}, sacrifice an artifact: the target is an artifact card of mana value 3 or less in your own graveyard; the opponent's and a costlier one aren't offered",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Goblin Engineer",
+    "Mountain",
+    "Tormod's Crypt"
+  ],
+  "graveyard_a": [
+    "Chromatic Star",
+    "Archive Arbiter",
+    "Lightning Bolt"
+  ],
+  "graveyard_b": [
+    "Mox Diamond"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Goblin Engineer",
+    "A:target:Chromatic Star"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A sacrifices Tormod's Crypt",
+    "^Chromatic Star is moved to the battlefield"
+  ],
+  "expect_menu_not": [
+    "^Archive Arbiter$",
+    "^Mox Diamond$",
+    "^Lightning Bolt$"
+  ]
+}

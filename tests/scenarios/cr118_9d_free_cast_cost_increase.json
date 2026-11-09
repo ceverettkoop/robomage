@@ -1,0 +1,14 @@
+{
+  "name": "cr118_9d_free_cast_cost_increase",
+  "why": "CR 118.9d / 601.2f: cost increases apply to an alternative cost: under the opponent's Thalia, Guardian of Thraben, Ponder cast without paying its mana cost (Omniscience) still costs {1}, paid with the one Island (free-cast statics, onboarding stage 6)",
+  "hand_a": ["Ponder", "Island"],
+  "battlefield_a": ["Omniscience", "Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Forest"],
+  "battlefield_b": ["Thalia Guardian of Thraben"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Ponder without paying its mana cost"],
+  "seed": 1,
+  "max_decisions": 6,
+  "expect_order": ["Player A casts Ponder without paying its mana cost", "Player A activated Island for 1"]
+}

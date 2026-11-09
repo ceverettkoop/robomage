@@ -1,0 +1,15 @@
+{
+  "name": "cr608_2c_temur_sabertooth_returns_only_one",
+  "why": "CR 608.2c: Temur Sabertooth's \"return another creature\" moves one creature, however many are in play: a numeric ChangeNum$ caps the battlefield multi-select, which must not ask again",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest"],
+  "battlefield_a": ["Temur Sabertooth", "Grizzly Bears", "Birds of Paradise", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:activate:Temur Sabertooth", "A:choice:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect": ["^Player A returns Grizzly Bears$"],
+  "expect_count": {"^Player A returns ": 1},
+  "expect_menu": ["Return Birds of Paradise", "Done \\(return no more\\)"],
+  "expect_menu_not": ["Return Temur Sabertooth"]
+}

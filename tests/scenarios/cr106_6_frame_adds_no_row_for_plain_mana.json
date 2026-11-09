@@ -1,0 +1,35 @@
+{
+  "name": "cr106_6_frame_adds_no_row_for_plain_mana",
+  "why": "CR 106.4: unrestricted mana shows in the player row as it always did, and adds no pool_mana row: Simian Spirit Guide's {R} floating",
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Exile Simian Spirit Guide"
+  ],
+  "max_decisions": 5,
+  "expect_dump": [
+    "^A .* mana self r=1$",
+    "^B .* mana opp r=1$"
+  ],
+  "expect_dump_not": [
+    "mana_unit"
+  ]
+}

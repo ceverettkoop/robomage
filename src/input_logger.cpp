@@ -1,3 +1,4 @@
+#include "coverage.h"
 #include "input_logger.h"
 
 #include <cstdio>
@@ -20,6 +21,7 @@
 #include "error.h"
 #include "game_driver.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
 #include "queries/zones.h"
 #include "state_format/dump.h"
 #include "state_format/selfcheck.h"
@@ -365,13 +367,10 @@ int InputLogger::accept_machine_choice(const std::vector<LegalAction> &actions, 
 static bool interchangeable_choices(const LegalAction &a, const LegalAction &b) {
     return a.type == b.type && a.category == b.category && a.description == b.description &&
            a.option_ordinal == b.option_ordinal && a.target_entity == b.target_entity &&
-           a.use_alt_cost == b.use_alt_cost && a.use_flashback == b.use_flashback &&
-           a.use_offspring == b.use_offspring && a.use_escape == b.use_escape &&
-           a.impulse_cast == b.impulse_cast && a.play_back_face == b.play_back_face &&
-           a.cast_back_face == b.cast_back_face && a.companion_to_hand == b.companion_to_hand &&
-           a.suspend_action == b.suspend_action && a.card_is_public == b.card_is_public &&
-           a.source_entity != b.source_entity &&
-           interchangeable_cards(a.source_entity, b.source_entity);
+           a.option == b.option && a.companion_to_hand == b.companion_to_hand &&
+           a.suspend_action == b.suspend_action && a.turn_face_up == b.turn_face_up &&
+           a.card_is_public == b.card_is_public &&
+           a.source_entity != b.source_entity && interchangeable_cards(a.source_entity, b.source_entity);
 }
 
 // Indices of the menu entries kept when every entry interchangeable with an earlier one is left
@@ -392,6 +391,7 @@ static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction
 }
 
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
+    sync_standing_looks();
     std::vector<size_t> kept = distinct_choice_indices(actions);
     if (kept.size() == actions.size()) return choose(actions);
     std::vector<LegalAction> menu;
@@ -454,6 +454,8 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     // trajectory writer's record (agents/driver.h).
     agents_begin_decision(actions, decisions_read);
     const int choice = read_choice(actions, seat);
+    if (last_reply != CONCEDE_GAME && last_reply != CONCEDE_MATCH)
+        coverage_decision(actions[static_cast<size_t>(choice)].category);
     agents_end_decision(choice, last_reply);
     return choice;
 }

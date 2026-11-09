@@ -1,13 +1,11 @@
-# The inference protocol (RMIP v1, plan step 5d)
+# The inference protocol (RMIP v2)
 
 How an actor (`nn:remote:<endpoint>`, `src/actor/remote_evaluator.h`) asks an inference server for
-the evaluations of featurized decisions. Framework-neutral and versioned: a server is anything that
-speaks it. `rmserve` (`tools/rmserve/`, C++, libtorch, CPU) is the reference server;
-`tools/nn/serve_check.py` is a minimal one in Python (`socket`, `struct`, `json`,
-`multiprocessing.shared_memory`, numpy and torch), and the training plan's GPU server
-(`docs/rnad_training_plan.md` L5) implements the same protocol. The C++ wire code (framing, the
-request and response layouts, the shared region) is `src/inference/protocol.h`, standard library and
-POSIX only.
+the evaluations of featurized decisions. Framework-neutral and versioned. Servers: `rmserve`
+(`tools/rmserve/`, C++, libtorch, CPU; the reference), `tools/nn/serve_check.py` (minimal Python:
+`socket`, `struct`, `json`, `multiprocessing.shared_memory`, numpy, torch) and the learner's GPU
+server `learn/rmlearn/server.py`. The C++ wire code (framing, request and response layouts, the
+shared region) is `src/inference/protocol.h`, standard library and POSIX only.
 
 ## 1. Transport
 
@@ -53,29 +51,34 @@ The client creates the region (`shm_open(name, O_CREAT | O_EXCL | O_RDWR, 0600)`
 
 | Key | Value |
 |---|---|
-| `protocol` | 1 |
+| `protocol` | 2 |
 | `client` | a free-form name for the server's log (`robomage_nn pid 4242 seat A`) |
 | `spec_hash`, `vocab_hash` | the featurizer's `FEATURE_SPEC` hash and the vocab hash, 16 lowercase hex digits each (`docs/featurizer.md` §6) |
 | `text_model` | the text table's encoder (`<repository>@<commit>`) |
+| `layout_hash` | the layout registry's `layout_hash`, 16 lowercase hex digits (`docs/featurizer.md` §6.1) |
+| `tables_digest` | the tables' digest (every card's card, ability and part rows), 16 lowercase hex digits (`docs/featurizer.md` §6.2) |
+| `vocab` | the vocab manifest: an array of `[id, name]`, one per card-table row (`docs/featurizer.md` §6.2) |
 | `dims` | `{"F": …, "C": …, "K": …, "Q": …}`, the spec's widths (§4) |
 | `shm` | the region's POSIX name, starting with `/` |
 | `request_bytes`, `response_bytes` | the two areas' sizes, each a multiple of 8 |
-| `policies` | the policy ids to evaluate on every request, non-empty and distinct; results come back in this order. Policy 0 is the one an actor samples from ("current"); the training plan's regularisation policies are other ids |
+| `policies` | the policy ids to evaluate on every request, non-empty and distinct; results come back in this order. The actor samples from the first |
 
-The server checks that it serves every requested policy and that each one's model has the client's
-`spec_hash`, `vocab_hash` and `text_model` (the model's metadata, `docs/featurizer.md` §6), opens and
-maps the region (its size at least the two areas), and answers `WELCOME`:
+The server checks that it serves every requested policy and that each one's model is an export of
+the client's tables exactly (`docs/featurizer.md` §6.2, `check_compatible` exact: the same
+`layout_hash` and `text_model`, the same vocab manifest — no id the model's lacks, none removed or
+renamed — and the same `spec_hash`, `vocab_hash` and `tables_digest`; the model's metadata, `docs/featurizer.md` §6),
+opens and maps the region (its size at least the two areas), and answers `WELCOME`:
 
 | Key | Value |
 |---|---|
-| `protocol` | 1 |
+| `protocol` | 2 |
 | `server` | a free-form name (`rmserve`) |
 | `max_batch` | the most decisions the server evaluates in one batch (informative) |
 | `policies` | per requested policy, in the client's order, `{"id": …, "version": …}` |
 
-or `ERROR` and closes. On either answer the client unlinks the name (`shm_unlink`): both sides keep
-their mappings, and a client that dies leaks nothing. A server needs nothing but the client's
-`dims` to read requests (it never needs the feature spec document); the spec hash ties the two.
+or `ERROR` and closes. On either answer the client unlinks the name (`shm_unlink`); both sides keep
+their mappings, so a client that dies leaks nothing. A server needs only `dims` to read requests;
+the spec hash ties them to the spec.
 
 ## 4. Requests and responses
 
@@ -89,7 +92,7 @@ area's start (zero padding between).
 | Offset | Type | Field |
 |---|---|---|
 | 0 | 4 bytes | magic `RMRQ` |
-| 4 | u32 | protocol, 1 |
+| 4 | u32 | protocol, 2 |
 | 8 | u64 | `spec_hash` (on every request; the server refuses a mismatch) |
 | 16 | u64 | `seq`: the client's request counter, echoed in `DONE` and the response |
 | 24 | u32 | `D`, decisions (≥ 1) |
@@ -126,7 +129,7 @@ decisions into the network contract's `[B, …]` inputs as it likes (`docs/featu
 | Offset | Type | Field |
 |---|---|---|
 | 0 | 4 bytes | magic `RMRS` |
-| 4 | u32 | protocol, 1 |
+| 4 | u32 | protocol, 2 |
 | 8 | u64 | `spec_hash`, the request's |
 | 16 | u64 | `seq`, the request's |
 | 24 | u32 | `D` |
@@ -140,9 +143,8 @@ decisions into the network contract's `[B, …]` inputs as it likes (`docs/featu
 then per policy, in the same order, each at the next multiple of 8: `value` f32 `[D]`, `logits` f32
 `[ΣA]` and `log_pi` f32 `[ΣA]`, the decisions' menu rows concatenated as in the request. `logits`
 are the policy's over each decision's real menu rows only; `log_pi` is their log-softmax over those
-rows; `value` is the policy's value for the deciding seat. The version is the policy's weights'
-version at the time of this response, so a server may swap weights between requests and every
-response says which it used.
+rows; `value` is the policy's value for the deciding seat. The version is that of the weights used
+for this response (a server may swap weights between requests).
 
 ## 5. Batching
 
@@ -161,7 +163,7 @@ Every refusal is an `ERROR` message, after which the server closes the connectio
 | Code | When |
 |---|---|
 | `protocol` | a malformed message or JSON, an unknown type, an unsupported `protocol` |
-| `spec_hash`, `vocab_hash`, `text_model` | the handshake's value is not a requested policy's model's; `spec_hash` also a request whose header differs from the handshake's |
+| `layout_hash`, `text_model`, `vocab_hash`, `spec_hash`, `tables_digest` | a requested policy's model is not an export of the handshake's tables: the first that differs in that order (`vocab_hash` for the vocab manifest too: an id the client has and the export lacks, or one removed or renamed; the message says to rebuild the export); `spec_hash` also a request whose header differs from the handshake's |
 | `policy` | a requested policy the server does not serve |
 | `shm` | the region cannot be opened or mapped, or is smaller than its areas |
 | `request` | a request that is not the layout above: bad magic, protocol, dims or policies; sizes out of bounds or past the request area; a length that does not match; an `act_tok` or `rel` index outside its decision's tokens |
@@ -174,7 +176,7 @@ exits naming the endpoint, never taking a default action.
 
 ## 7. Implementing a server
 
-In Python (`tools/nn/serve_check.py` is a complete example, about 200 lines):
+In Python (`tools/nn/serve_check.py` is a complete example):
 
 ```python
 hdr = struct.unpack_from("<4sIQQII4IQQ", shm.buf, 0)        # magic … reserved
@@ -186,5 +188,5 @@ n = np.frombuffer(shm.buf, np.int64, D, off); off = align8(off + 8 * D)   # then
 then for each array `np.frombuffer(shm.buf, dtype, count, off)` with `count` from the sizes' sums,
 split per decision with `np.cumsum`, pad, run the model, and write the response with
 `struct.pack_into` and numpy views of the response area. Open the region with
-`multiprocessing.shared_memory.SharedMemory(name.lstrip("/"), track=False)` (Python 3.13; without
+`multiprocessing.shared_memory.SharedMemory(name.lstrip("/"), track=False)` (Python ≥ 3.13; without
 `track=False` the resource tracker unlinks it at exit).

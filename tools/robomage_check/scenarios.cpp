@@ -44,7 +44,7 @@ static std::string command_text(const rmcheck::Options &opt, const std::vector<s
 
 static const std::set<std::string> &harness_keys() {
     static const std::set<std::string> keys = {"name", "hand_a", "hand_b", "library_a", "library_b", "battlefield_a",
-        "battlefield_b", "graveyard_a", "graveyard_b", "exile_a", "exile_b", "sideboard_a", "sideboard_b", "life_a",
+        "battlefield_b", "face_down_a", "face_down_b", "graveyard_a", "graveyard_b", "exile_a", "exile_b", "sideboard_a", "sideboard_b", "life_a",
         "life_b", "play", "actions", "seed", "max_decisions"};
     return keys;
 }
@@ -157,6 +157,11 @@ static std::vector<std::string> engine_args(
                 a.push_back("--" + std::string(zone) + "-" + s);
                 a.push_back(flag_list(*cards, true));
             }
+        }
+        const Json *face_down = scn.get("face_down_" + s);
+        if (face_down && face_down->truthy()) {
+            a.push_back("--face-down-" + s);
+            a.push_back(flag_list(*face_down, true));
         }
         const Json *life = scn.get("life_" + s);
         if (life && !life->is_null()) {
@@ -516,6 +521,10 @@ bool load_scenario(const std::string &path, Scenario *out, std::string *err) {
     const std::string format = scn.has("format") ? scn.get("format")->text() : "bo1";
     if (format != "bo1" && format != "bo3") {
         *err = "format must be bo1 or bo3, got " + quoted(format);
+        return false;
+    }
+    if (scn.has("expect_count") && !scn.get("expect_count")->is_object()) {
+        *err = "expect_count must be {regex: n}";
         return false;
     }
     auto bad = bad_regex.find(path);

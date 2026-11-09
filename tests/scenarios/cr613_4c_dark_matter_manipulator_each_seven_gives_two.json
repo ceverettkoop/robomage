@@ -1,0 +1,13 @@
+{
+  "name": "cr613_4c_dark_matter_manipulator_each_seven_gives_two",
+  "why": "CR 613.4c: Dark Matter Manipulator gets +2/+0 for each whole seven cards in your graveyard: fifteen give +4, so it attacks for 5",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Dark Matter Manipulator"],
+  "graveyard_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "play": ["A:keep", "B:keep", "A:attack:Dark Matter Manipulator"],
+  "max_decisions": 5,
+  "expect": ["Dark Matter Manipulator deals 5 damage to Player B"]
+}

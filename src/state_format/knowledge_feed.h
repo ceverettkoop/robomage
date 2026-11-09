@@ -17,7 +17,7 @@ class Knowledge;
 //
 // Every RMSTATE frame writer (ObsConsumer: --rmstate-dump, the RMSTATE stream,
 // --selfcheck-state, the in-process feed) has a knowledge::Knowledge instance of its own per seat, fed with exactly the
-// frames that writer builds for that seat, in order: the seat's SCHEMA, CARDS, DECKLISTS and METAGAME
+// frames that writer builds for that seat, in order: the seat's SCHEMA, CARDS and DECKLISTS
 // frames, then each of its STATE frames as encoded (its events drained into it), before the k_*
 // tables are appended to it. An instance is a pure function of its seat's frame stream from that
 // writer, so `rmknow --isolation` run on the frames the writer emitted reproduces the appended
@@ -26,10 +26,9 @@ class Knowledge;
 // model follows the seat's events, not the frames they were drained into, so every writer's
 // frame for one seat and decision carries the same k_* tables.
 //
-// Level per seat: --knowledge-a / --knowledge-b off|expert|expert+belief (default expert). At level
-// off the frame carries the k_meta row alone (level off) and the instance reads nothing but the
-// match frames; expert+belief adds the belief layer's b_* tables (knowledge/belief.h) after the
-// k_* tables. The level changes no play: only the frames' k_* and b_* tables.
+// Level per seat: --knowledge-a / --knowledge-b off|expert (default expert). At level off the frame
+// carries the k_meta row alone (level off) and the instance reads nothing but the match frames. The
+// level changes no play: only the frames' k_* tables.
 //
 // Lifetime: the instances live outside Game, for the whole match (match memory persists across
 // the per-game reset; each instance resets its networks itself at game_start), and are made at a
@@ -47,7 +46,7 @@ void knowledge_feed_reset();
 // has no sidecar): what its STATE frames' header.knowledge says.
 rmstate::KnowledgeLevel knowledge_level_of(Zone::Ownership viewer);
 
-// Feeds one of `viewer`'s once-per-match frames (SCHEMA, CARDS, DECKLISTS, METAGAME), as `consumer` writes
+// Feeds one of `viewer`'s once-per-match frames (SCHEMA, CARDS, DECKLISTS), as `consumer` writes
 // it, to that writer's instance for the seat. No-op for the omniscient viewer.
 void knowledge_feed_match_frame(ObsConsumer consumer, Zone::Ownership viewer, const std::string &payload);
 

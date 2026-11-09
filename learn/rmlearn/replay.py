@@ -1,5 +1,4 @@
-"""The learner's RAM replay window over trajectory episodes and its two batch kinds
-(docs/rnad_training_plan.md §4 L1).
+"""The learner's RAM replay window over trajectory episodes and its two batch kinds.
 
     win = ReplayWindow(WindowConfig(dirs=["runs/r1/episodes"], max_decisions=4_000_000))
     win.poll()                                   # ingest the episodes that appeared (or win.start())
@@ -18,8 +17,10 @@ it evicts the oldest episodes while the window holds more than ``max_decisions``
 ``max_bytes`` bytes (at least one stays). An evicted episode's file is deleted only with
 ``delete_evicted``, and only that ``.rmtraj``: decision logs (``.rmlog``) are never touched.
 ``start()`` polls on a background thread every ``poll_interval`` seconds. Episodes of another spec
-than ``spec_hash`` (when set) and episodes with no steps are skipped and counted; a file that does
-not read is counted as an error, never retried.
+than ``spec_hash`` (when set: one hash, or a set — after ``rmtrain retable`` the run's earlier
+tables' specs, whose vocab manifests the current one extends at the same layout, so their stored
+card and ability ids still read right) and episodes with no steps are skipped and counted; a file that
+does not read is counted as an error, never retried.
 
 **The decision-size cap** (``max_decision_tokens``, 0: none): an episode with a decision of more
 seat tokens (menu tokens included) is left out whole, so R-NaD's games stay contiguous; it is
@@ -45,7 +46,7 @@ games for comparing train and held-out metrics.
 **Decision batches** (BC): ``sample_decisions`` draws steps uniformly over the split's labelled
 steps; ``decision_batch`` expands them (``DecisionBatch``).
 
-**Trajectory batches** (R-NaD, L4): ``TrajectoryBatch`` lays G full games out time-major,
+**Trajectory batches** (R-NaD): ``TrajectoryBatch`` lays G full games out time-major,
 ``[T, G]`` with T the longest game rounded up to a multiple of ``chunk_len``, both seats'
 decisions interleaved in decision order (an episode's steps are in that order, the sideboarding
 before the game first); the network inputs come chunk by chunk (``chunk_inputs``), since a whole
@@ -81,13 +82,20 @@ class WindowConfig:
     max_bytes: int = 40 << 30
     delete_evicted: bool = False
     poll_interval: float = 2.0
-    spec_hash: str = None                # skip episodes of another spec (None: take the first's)
+    spec_hash: object = None             # skip episodes of another spec: a hash or a set of them (the run's
+                                         # tables and their lineage, spec.Tables.accepted_spec_hashes; None:
+                                         # take the first's)
     heldout_fraction: float = 0.0
     split_seed: int = 0
     heldout_by: str = "game"             # "game", or "match": a match's games are held out together
     probe_fraction: float = 0.0          # training games also walked by iter_decisions("probe")
     max_decision_tokens: int = 0         # leave out an episode with a decision of more seat tokens (0: none)
     labels: LabelConfig = field(default_factory=LabelConfig)
+
+
+def spec_accepted(ep, spec_hash):
+    """Whether episode `ep` is of `spec_hash` (one hash, or a set / frozenset / list of them)."""
+    return ep.spec_hash == spec_hash if isinstance(spec_hash, str) else ep.spec_hash in spec_hash
 
 
 def step_labels(ep, cfg):
@@ -176,7 +184,7 @@ class ReplayWindow:
             return False
         if self.spec_hash is None:
             self.spec_hash = ep.spec_hash
-        if ep.spec_hash != self.spec_hash:
+        if not spec_accepted(ep, self.spec_hash):
             self.counts["skipped_spec"] += 1
             return False
         ep.max_tokens = int(np.diff(ep.seat_feat.tok_off).max())
@@ -504,6 +512,14 @@ class TrajectoryBatch:
         if not items:
             return None, flat
         return EP.expand(items, viewer, min_dims or {"A": self.A}), flat
+
+    def card_ids(self, omniscient=False):
+        """The distinct card ids the batch's inputs hold (the seat featurizations', and with
+        `omniscient` the omniscient ones'), ascending: what the learner marks seen."""
+        parts = [ep.seat_feat.card_ids() for ep in self.eps]
+        if omniscient:
+            parts += [ep.omni_feat.card_ids() for ep in self.eps if ep.omni_feat is not None]
+        return np.unique(np.concatenate(parts)) if parts else np.zeros(0, np.int64)
 
     def chunk_targets(self, c, n_cards, depth):
         items, _ = self.chunk_items(c)

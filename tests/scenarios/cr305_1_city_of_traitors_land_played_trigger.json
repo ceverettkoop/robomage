@@ -1,0 +1,15 @@
+{
+  "name": "cr305_1_city_of_traitors_land_played_trigger",
+  "why": "CR 305.1 / 305.4 / 603.2: City of Traitors' Mode$ LandPlayed trigger (\"when you play another land\") fires only when its controller PLAYS a land (the special action): a land a fetch land's ability puts onto the battlefield and the opponent's land play do not trigger it; A's next land play does, and City is sacrificed (LAND_PLAYED event, the LandPlayed trigger binding)",
+  "hand_a": ["Mountain", "Mountain"],
+  "battlefield_a": ["City of Traitors", "Polluted Delta"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Island", "Mountain"],
+  "hand_b": ["Forest", "Forest"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:activate:Polluted Delta", "A:search:Island", "B:land:Forest", "A:land:Mountain"],
+  "seed": 1,
+  "max_decisions": 9,
+  "expect_order": ["Player A puts Island to the battlefield", "Player B played Forest", "Player A played Mountain",
+                   "City of Traitors triggered", "Player A sacrifices City of Traitors"],
+  "expect_count": {"City of Traitors triggered": 1}
+}

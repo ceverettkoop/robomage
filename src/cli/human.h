@@ -9,7 +9,7 @@
 
 #include "../agents/agent.h"
 
-// ── A human seat: the C++ CLI (plan step 4b) ─────────────────────────────────────────────────
+// ── A human seat: the C++ CLI ────────────────────────────────────────────────────────────────
 //
 // An in-process agent (agents/agent.h) whose decisions a person makes at the terminal. Like every
 // agent it reads only its seat's decoded frames, the bytes the RMSTATE stream would send the seat

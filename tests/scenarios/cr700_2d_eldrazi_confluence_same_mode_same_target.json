@@ -1,0 +1,17 @@
+{
+  "name": "cr700_2d_eldrazi_confluence_same_mode_same_target",
+  "why": "CR 700.2d: Eldrazi Confluence (CanRepeatModes$ True, CharmNum$ 3) offers a mode already chosen again; the same object may be the target of each instance, so +3/-3 chosen twice on a 4/4 Air Elemental leaves it 10/0 and it dies, which one instance would not do (repeated modes, onboarding stage 6)",
+  "hand_a": ["Eldrazi Confluence"],
+  "battlefield_a": ["Wastes", "Wastes", "Wastes", "Wastes", "Grizzly Bears"],
+  "battlefield_b": ["Air Elemental"],
+  "play": ["A:keep", "B:keep", "A:cast:Eldrazi Confluence",
+           "A:desc:+3/-3", "A:target:Air Elemental",
+           "A:desc:+3/-3", "A:target:Air Elemental",
+           "A:desc:Exile target", "A:target:Grizzly Bears"],
+  "seed": 1,
+  "max_decisions": 10,
+  "expect_count": {"chooses mode — Target creature gets \\+3/-3": 2, "chooses mode — Exile target": 1},
+  "expect_order": ["Player A casts Eldrazi Confluence", "Air Elemental gets \\+3/-3 \\(now 7/1\\)",
+                   "Air Elemental gets \\+3/-3 \\(now 10/0\\)", "Grizzly Bears is moved to exile",
+                   "Grizzly Bears is moved to the battlefield", "Air Elemental dies"]
+}

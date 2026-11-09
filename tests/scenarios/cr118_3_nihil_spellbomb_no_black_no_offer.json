@@ -1,0 +1,38 @@
+{
+  "name": "cr118_3_nihil_spellbomb_no_black_no_offer",
+  "why": "CR 118.3: with no black mana available Nihil Spellbomb's trigger offers nothing",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Nihil Spellbomb",
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Nihil Spellbomb",
+    "A:target:Player B"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "pay \\{B\\}"
+  ],
+  "expect_not": [
+    "Player A draws Grizzly Bears"
+  ]
+}

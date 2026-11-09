@@ -1,7 +1,13 @@
 #ifndef ENTRY_INFO_H
 #define ENTRY_INFO_H
 
+#include <memory>
+#include <vector>
+
 #include "../object_ref.h"
+#include "ability.h"
+#include "carddata.h"
+#include "chosen_cost.h"
 
 // How a card will enter the battlefield: what a cast or an effect records about the card's next
 // battlefield entry before its Permanent exists. These facts shape the entry itself (CR 614.1c-d,
@@ -35,9 +41,17 @@ struct EntryInfo {
     bool escaped = false;    // cast with Escape → Permanent::cast_with_escape (Uro)
     bool impending = false;  // cast for its Impending cost (CR 702.175d) → enters with time counters
     bool warp = false;       // cast for its warp cost → the delayed end-step exile
+    SpellOverlay overlay = SpellOverlay::NONE;  // what its spell keeps as it enters → Permanent::overlay
     // The X its spell was cast with (> 0): an "enters with X counters" replacement (Chalice of
     // the Void) and Permanent::entered_x for its ETB abilities (CR 107.3m). 0 = none.
     int x_paid = 0;
+    // The mana its spell was cast with → Permanent::cast_mana_paid.
+    ManaPaid mana_paid;
+    // What that mana gave the spell until end of turn → Creature::eot_keywords.
+    std::vector<std::string> keywords_until_eot;
+    // What its spell's cost moved (ChosenCost::moved), read as it enters: Murktide Regent's "exiled
+    // with it". An object that wasn't cast has none, whatever an earlier cast of the card paid.
+    std::vector<ChosenCost::Moved> moved;
     bool unearthed = false;  // returned by its unearth ability (CR 702.84)
     // An Equipment a DB$ Attach attached to it before its Permanent existed (reanimate-then-
     // attach, Pre-War Formalwear): the link is made as the Permanent is created.
@@ -47,11 +61,23 @@ struct EntryInfo {
     // that object is a graveyard card (Animate Dead) until its reanimation attaches the Aura.
     // Empty = none chosen.
     ObjectRef aura_target;
+    // DB$ Animate effects that resolved on it after it was put onto the battlefield but before its
+    // Permanent existed (Sneak Attack's haste for the creature it just put there): applied as the
+    // Permanent is created (effects::animate_permanent).
+    std::vector<Ability> animates;
+    // Enters with one counter of this type, put there by the effect that moves it (CR 122.6, Ghost
+    // Vacuum's flying counter). Empty = none.
+    std::string enters_with_counter;
+    // "As this enters" it was offered to enter as a copy (CR 707.5), so the entry doesn't ask again
+    // once it has the copied values, which may say the same.
+    bool copy_chosen = false;
+    // The card it was before it entered as a copy → Permanent::printed_card. Empty otherwise.
+    std::shared_ptr<const CardData> printed_card;
 
     bool consumed() const {
         return !enters_tapped && !enters_transformed && enters_attacking.empty() && !cast &&
-               !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp &&
-               x_paid == 0 && !unearthed && attach_equipment.empty() && aura_target.empty();
+               !cast_from_hand && !evoked && !offspring && !escaped && !impending && !warp && overlay == SpellOverlay::NONE &&
+               x_paid == 0 && mana_paid.empty() && keywords_until_eot.empty() && moved.empty() && !unearthed && attach_equipment.empty() && aura_target.empty() && animates.empty() && !copy_chosen && !printed_card && enters_with_counter.empty();
     }
 };
 

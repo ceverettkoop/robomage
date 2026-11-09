@@ -1,0 +1,8 @@
+# M12 (b1): speed from start your engines!, what raises it, and what max speed gives.
+row:speed_start
+trigger:triggered:IncreaseSpeed
+effect:IncreaseSpeed
+row:max_speed
+# Perilous Snare's exile until it leaves, and its counter on a creature or Vehicle.
+row:until_return
+effect:PutCounter

@@ -1,4 +1,4 @@
-"""Behaviour cloning (docs/rnad_training_plan.md §4 L3, §6 B1): the network imitates the label of
+"""Behaviour cloning (phases B1–B2, docs/rmtrain.md §6): the network imitates the label of
 each step of a replay window (the teacher's, or the reply of a replayed scripted seat).
 
     trainer = BCTrainer(model, window, BCConfig(batch_size=128), device="cuda", categories=cats)
@@ -25,7 +25,7 @@ their keys ``evaltrain_*``: the train / held-out gap).
 - Value: mean squared error of the value head (tanh, the contract's one value) to the deciding
   seat's game result (+1 / -1 / 0), weighted ``value_weight``. A scalar regression rather than a
   win/draw/loss head, so the exported value is what the actor and R-NaD read without a change.
-- Auxiliary: ``model.aux_losses`` (opponent's list and archetype, its hand, both libraries' tops)
+- Auxiliary: ``model.aux_losses`` (the opponent's hand, both libraries' tops)
   on steps of omniscient episodes, weighted ``aux_weight`` each (``aux_head_weights`` overrides
   per head). Id-dropout is the model's own (``ModelConfig.id_dropout``).
 - Event dropout (``event_dropout`` p, a spec with recent-event history only, docs/featurizer.md
@@ -41,8 +41,8 @@ and copying the next batches while the GPU computes).
 **Evaluation** walks the window's held-out games (split by game, ``WindowConfig.heldout_fraction``):
 top-1 agreement with the label overall, per decision group (``mulligan``: a menu with a mulligan or
 keep row; ``sideboarding``; ``in_game``: the rest; with each group's unweighted policy loss) and per
-action category of the label's menu row (the menu token's ``category`` slot, found in the spec by name; names from a cards file's SCHEMA
-when given), the value's MSE and sign agreement on decisive games, and the auxiliary heads'
+action category of the label's menu row (the menu token's ``category`` slot, found in the spec by name;
+the names the spec's ``enums``), the value's MSE and sign agreement on decisive games, and the auxiliary heads'
 top-1 accuracies (the hand's: the top card is in the hand).
 """
 
@@ -50,7 +50,6 @@ import argparse
 import json
 import math
 import os
-import sys
 import time
 from dataclasses import asdict, dataclass, field
 
@@ -62,7 +61,7 @@ from . import model as M
 from . import replay as RP
 
 MULLIGAN_CATEGORIES = ("MULLIGAN", "KEEP_HAND")
-AUX_HEADS = ("list", "archetype", "hand", "own_library", "opp_library")
+AUX_HEADS = ("hand", "own_library", "opp_library")
 
 
 @dataclass
@@ -98,15 +97,16 @@ class BCConfig:
 
 class Categories:
     """The menu token's action-category slot, from the spec: ``slot`` (its column in ``tok_cat``),
-    ``offset`` (its first id, the none) and ``names`` (the enum's names, or None)."""
+    ``offset`` (its first id, the none) and ``names`` (the enum's names in registry order, from the
+    spec unless given)."""
 
     def __init__(self, spec, names=None):
         self.slot = self.offset = None
-        self.names = names
-        t = spec.token_types[spec.menu_type]
-        for j, c in enumerate(t.get("categorical", [])):
+        self.names = names if names is not None else spec.enum_values("action_category")
+        t = spec.type_by_id[spec.menu_type]
+        for c in t.get("categorical", []):
             if c.get("column") == "category":
-                self.slot, self.offset, self.size = j, c["offset"], c["size"]
+                self.slot, self.offset, self.size = c["col"], c["offset"], c["size"]
         self.mulligan_ids = set()
         if names:
             self.mulligan_ids = {names.index(n) for n in MULLIGAN_CATEGORIES if n in names}
@@ -123,21 +123,6 @@ class Categories:
         if v < 0:
             return "none"
         return self.names[v] if self.names and v < len(self.names) else "cat%d" % v
-
-
-def category_names(cards_path):
-    """The action_category enum's names from a cards file's (``--cards-frame``) SCHEMA frame, read
-    with the stdlib decoder in python/ (None when it cannot be read)."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(here)), "python"))
-    try:
-        import rmstate
-        with open(cards_path, "rb") as fp:
-            for payload in rmstate.records(fp):
-                return list(rmstate.Schema.from_frame(payload).enums["action_category"])
-    except (OSError, KeyError, ImportError, ValueError):
-        return None
-    return None
 
 
 def event_dropout(inputs, p, spec):
@@ -259,7 +244,7 @@ class BCTrainer:
         loss = {"policy": weighted_policy_loss(pl, sb, c.sideboard_weight),
                 "value": ((out["value"].float() - b.outcome) ** 2).mean()}
         total = loss["policy"] + c.value_weight * loss["value"]
-        if b.targets is not None and "aux_list" in out:
+        if b.targets is not None and "aux_hand" in out:
             al = M.aux_losses(out, b.targets)
             for k, v in al.items():
                 loss["aux_" + k] = v
@@ -291,6 +276,7 @@ class BCTrainer:
             for g in self.opt.param_groups:
                 g["lr"] = lr
             inputs = event_dropout(b.inputs, self.cfg.event_dropout, self.model.spec)
+            self.model.cards.mark_seen(inputs[3])
             with self._autocast():
                 out = self.model(*inputs)
             loss = self.losses(b, out)
@@ -375,13 +361,8 @@ class BCTrainer:
             dec = b.outcome != 0
             v_sign += int(((val > 0) == (b.outcome > 0))[dec].sum())
             v_dec += int(dec.sum())
-            if b.targets is not None and "aux_list" in out:
+            if b.targets is not None and "aux_hand" in out:
                 t = b.targets
-                for k in ("list", "archetype"):
-                    tg = t["opp_" + k]
-                    ok = tg >= 0
-                    aux_hit[k] += float((out["aux_" + k].argmax(-1) == tg)[ok].sum())
-                    aux_n[k] += float(ok.sum())
                 hand = t["opp_hand"]
                 ok = hand.sum(-1) > 0
                 top = out["aux_hand"].argmax(-1)
@@ -445,7 +426,6 @@ def main():
     ap.add_argument("--tables", required=True, help="rmfeat --export-tables DIR")
     ap.add_argument("--episodes", nargs="+", required=True, help="trajectory directories")
     ap.add_argument("--out", required=True, help="run directory: metrics.jsonl, ckpt/")
-    ap.add_argument("--cards", help="the --cards-frame file (action-category names)")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--minutes", type=float, default=25.0, help="stop after this long")
     ap.add_argument("--steps", type=int, default=0, help="stop after this many steps (0: by time)")
@@ -476,7 +456,8 @@ def main():
         print(json.dumps(m), flush=True)
 
     tables = S.load_tables(a.tables)
-    win = RP.ReplayWindow(RP.WindowConfig(dirs=a.episodes, max_decisions=a.max_decisions, spec_hash=tables.spec.hash,
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=a.episodes, max_decisions=a.max_decisions,
+                                          spec_hash=tables.accepted_spec_hashes(),
                                           heldout_fraction=a.heldout, heldout_by=a.heldout_by,
                                           probe_fraction=a.eval_train,
                                           split_seed=cfg.seed if a.split_seed is None else a.split_seed))
@@ -484,7 +465,7 @@ def main():
     win.poll()
     emit(dict(win.stats(), event="window", seconds=time.time() - t))
     model = M.RMNet(M.ModelConfig(d=a.d, layers=a.layers, heads=a.heads), tables)
-    cats = Categories(tables.spec, category_names(a.cards) if a.cards else None)
+    cats = Categories(tables.spec)
     trainer = BCTrainer(model, win, cfg, a.device, cats)
     emit({"event": "start", "params": model.param_count(), "bc_config": cfg.to_dict(),
           "model_config": model.cfg.to_dict(), "device": a.device})

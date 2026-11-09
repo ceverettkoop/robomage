@@ -9,9 +9,9 @@
 // ── A recorded RMSTATE stream, frame by frame (docs/state_format.md §9), standard library and the decoder only
 //
 // An --rmstate-dump file (every viewer's frames) or a saved --machine stream (one seat's): each
-// record is decoded with its viewer's own SCHEMA frame, the viewer's latest CARDS, DECKLISTS and
-// METAGAME frames are kept, and every STATE frame is handed over as it is read, so a whole match is
-// never held in memory.
+// record is decoded with its viewer's own SCHEMA frame, the viewer's latest CARDS and DECKLISTS
+// frames are kept, and every STATE frame is handed over as it is read, so a whole match is never
+// held in memory.
 
 namespace featurize {
 
@@ -19,7 +19,7 @@ namespace featurize {
 struct ViewerFrames {
         bool have_schema = false;
         rmstate::Schema schema;
-        rmstate::DecodedFrame cards, decklists, metagame;
+        rmstate::DecodedFrame cards, decklists;
 };
 
 // Calls on_state(viewer's frames, frame) for every STATE frame of the stream at `path` (viewer 0 A,
@@ -31,7 +31,7 @@ bool read_stream(const std::string &path,
     std::string *err);
 
 // Reads a file of one viewer's once-per-match frames and no STATE frame (robomage --cards-frame's
-// SCHEMA, CARDS and METAGAME) into `out`. False with `err` on an unreadable file, a decode error, a
+// SCHEMA and CARDS) into `out`. False with `err` on an unreadable file, a decode error, a
 // STATE frame, or frames of more than one viewer or none.
 bool read_match_frames(const std::string &path, ViewerFrames *out, std::string *err);
 // The same from the file's bytes in memory (`records`: the stream records robomage --cards-frame

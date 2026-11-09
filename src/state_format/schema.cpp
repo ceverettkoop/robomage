@@ -19,6 +19,7 @@ static void col_handle(TableDef &t, const std::string &name);
 static void col_card(TableDef &t, const std::string &name);
 static void col_count(TableDef &t, const std::string &name, Storage s);
 static void col_enum(TableDef &t, const std::string &name, Storage s, const std::string &enum_name);
+static void col_designation(TableDef &t, const std::string &name, Storage s, const std::string &tag);
 static void col_ability_params(TableDef &t);
 static std::vector<TableDef> build_table_defs();
 static void define_schema_tables(std::vector<TableDef> &out);
@@ -100,6 +101,14 @@ static void col_count(TableDef &t, const std::string &name, Storage s) {
 
 static void col_enum(TableDef &t, const std::string &name, Storage s, const std::string &enum_name) {
     col(t, name, s, "enum:" + enum_name);
+}
+
+// A designation's column (designations.def).
+static void col_designation(TableDef &t, const std::string &name, Storage s, const std::string &tag) {
+    if (tag == "bool")
+        col_bool(t, name);
+    else
+        col(t, name, s, tag);
 }
 
 // The effect parameters of one ability definition (Appendix A.4, register 41), shared by
@@ -227,22 +236,6 @@ static void define_cards_tables(std::vector<TableDef> &out) {
     col_card(out.back(), "card");
     col_count(out.back(), "main", Storage::U8);
     col_count(out.back(), "side", Storage::U8);
-
-    // The reference metagame (state_format §4): row index = archetype id, list id.
-    add_table(out, TableId::META_ARCHETYPE, "meta_archetype", FrameKind::METAGAME);
-    col_text(out.back(), "name");
-
-    add_table(out, TableId::META_LIST, "meta_list", FrameKind::METAGAME);
-    col_text(out.back(), "name");
-    col(out.back(), "archetype", Storage::U8, "row:meta_archetype");
-    col_count(out.back(), "main", Storage::U16);
-    col_count(out.back(), "side", Storage::U16);
-
-    add_table(out, TableId::META_LIST_CARD, "meta_list_card", FrameKind::METAGAME);
-    col(out.back(), "list", Storage::U16, "row:meta_list");
-    col_card(out.back(), "card");
-    col_count(out.back(), "main", Storage::U8);
-    col_count(out.back(), "side", Storage::U8);
 }
 
 static void define_snapshot_tables(std::vector<TableDef> &out) {
@@ -263,7 +256,8 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_enum(t, "mandatory", Storage::U8, "mandatory_choice");
     col_bool(t, "attackers_declared");
     col_bool(t, "blockers_declared");
-    col_enum(t, "day_night", Storage::U8, "day_night");
+#define DESIGNATION_TURN(type, field, init, column, storage, tag, read) col_designation(t, #column, Storage::storage, tag);
+#include "designations.def"
     col_seat(t, "next_extra_turn");
 
     add_table(out, TableId::PLAYER, "player", FrameKind::STATE);
@@ -275,8 +269,11 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_count(p, "mulligans", Storage::U8);
     col_count(p, "to_bottom", Storage::U8);
     col_bool(p, "passed");
-    col_bool(p, "monarch");
-    col_bool(p, "city_blessing");
+#define DESIGNATION_GAME_PLAYER(type, field, init, column, storage, tag, read) \
+    col_designation(p, #column, Storage::storage, tag);
+#define DESIGNATION_PLAYER(type, field, init, lasts, column, storage, tag, read) \
+    col_designation(p, #column, Storage::storage, tag);
+#include "designations.def"
     col_count(p, "extra_turns", Storage::U8);
     col_count(p, "lands_played", Storage::U8);
     col_count(p, "land_drops_left", Storage::U8);
@@ -332,14 +329,11 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_bool(o, "delayed_subject");
     col_count(o, "activations_turn", Storage::U8);
     col_count(o, "resolutions_turn", Storage::U8);
-    col_card(o, "chosen_name");
-    col_enum(o, "chosen_type", Storage::U16, "subtype");
-    col_count(o, "entered_x", Storage::U16);
-    col_bool(o, "monstrous");
-    col_bool(o, "evoked");
-    col_bool(o, "escaped");
-    col_bool(o, "unearthed");
-    col_bool(o, "cast_from_hand");
+#define DESIGNATION_OBJECT(type, field, init, column, storage, tag, of_card, none, read) \
+    col_designation(o, #column, Storage::storage, tag);
+#define DESIGNATION_OBJECT_COLUMN(column, storage, tag, of_card, none, read) \
+    col_designation(o, #column, Storage::storage, tag);
+#include "designations.def"
 
     add_table(out, TableId::OBJECT_SUBTYPE, "object_subtype", FrameKind::STATE);
     col_handle(out.back(), "obj");
@@ -395,7 +389,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_count(s, "amount", Storage::U16);
     col_count(s, "kicked", Storage::U8);
     col_count(s, "replicate", Storage::U8);
-    col(s, "variant", Storage::U16, "mask:cast_variant");
+    col(s, "variant", Storage::U32, "mask:cast_variant");
     col_bool(s, "copy");
     col_bool(s, "cant_be_countered");
     col_bool(s, "gift_promised");
@@ -414,6 +408,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_handle(out.back(), "target");
     col_seat(out.back(), "target_player");
     col(out.back(), "lki", Storage::U16, "row:lki");
+    col_count(out.back(), "share", Storage::U16);
 
     add_table(out, TableId::DELAYED_TRIGGER, "delayed_trigger", FrameKind::STATE);
     TableDef &d = out.back();
@@ -515,7 +510,7 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_seat(m, "target_player");
     col_abref(m);
     col(m, "ordinal", Storage::I16, "signed");
-    col(m, "variant", Storage::U16, "mask:cast_variant");
+    col(m, "variant", Storage::U32, "mask:cast_variant");
     col_bool(m, "card_public");
     col_text(m, "description");
 
@@ -532,6 +527,20 @@ static void define_snapshot_tables(std::vector<TableDef> &out) {
     col_card(out.back(), "card");
     col_count(out.back(), "main", Storage::U8);
     col_count(out.back(), "side", Storage::U8);
+
+    add_table(out, TableId::POOL_MANA, "pool_mana", FrameKind::STATE);
+    TableDef &pm = out.back();
+    col_seat(pm, "player");
+    col_enum(pm, "color", Storage::U8, "color");
+    col_count(pm, "count", Storage::U16);
+    col_enum(pm, "restriction", Storage::U8, "mana_restriction");
+    col_text(pm, "chosen_type");
+    col_bool(pm, "activated");
+    col_bool(pm, "activated_on_battlefield");
+    col_bool(pm, "cant_be_countered");
+    col_enum(pm, "keyword", Storage::U8, "keyword");
+    col_text(pm, "keyword_valid");
+    col_enum(pm, "keyword_until", Storage::U8, "duration");
 }
 
 static void define_event_tables(std::vector<TableDef> &out) {
@@ -611,37 +620,6 @@ static void define_knowledge_tables(std::vector<TableDef> &out) {
     add_table(out, TableId::K_KNOWN_HAND, "k_known_hand", FrameKind::STATE);
     col_card(out.back(), "card");
     col_count(out.back(), "copies", Storage::U8);
-
-    // Archetype inference (knowledge_store §10): `list` is a METAGAME meta_list row, `archetype` a
-    // meta_archetype row.
-    add_table(out, TableId::K_TEMPLATE, "k_template", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "list", Storage::U16, "index");
-    col_bool(out.back(), "consistent");
-    col_bool(out.back(), "exact");
-    col_bool(out.back(), "registered");
-
-    add_table(out, TableId::K_ARCHETYPE, "k_archetype", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "archetype", Storage::U8, "index");
-    col_bool(out.back(), "possible");
-    col_bool(out.back(), "exact");
-
-    // The belief layer (knowledge_store §10.6; level expert+belief only): `prob` columns are
-    // probabilities in units of 10^-9 (tag prob), summing to 10^9 per player unless no list is
-    // possible; `loglik` the list's log-likelihood in milli-nats (the i32 minimum: excluded), `exact`
-    // whether it is the network's exact weighted count in every game of the match.
-    add_table(out, TableId::B_LIST, "b_list", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "list", Storage::U16, "index");
-    col(out.back(), "prob", Storage::U32, "prob");
-    col(out.back(), "loglik", Storage::I32, "signed");
-    col_bool(out.back(), "exact");
-
-    add_table(out, TableId::B_ARCHETYPE, "b_archetype", FrameKind::STATE);
-    col_seat(out.back(), "player");
-    col(out.back(), "archetype", Storage::U8, "index");
-    col(out.back(), "prob", Storage::U32, "prob");
 }
 
 static void finish_table(TableDef &t) {
@@ -747,6 +725,7 @@ std::vector<EnumTable> format_enums() {
         {"knowledge_level", {RMSTATE_KNOWLEDGE_LEVEL(RMSTATE_ENUM_NAME)}},
         {"pool_kind", {RMSTATE_POOL_KIND(RMSTATE_ENUM_NAME)}},
         {"amount_kind", {RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_NAME)}},
+        {"mana_restriction", {RMSTATE_MANA_RESTRICTION(RMSTATE_ENUM_NAME)}},
         {"target_class", {RMSTATE_TARGET_CLASS(RMSTATE_ENUM_NAME)}},
         {"part_kind", {RMSTATE_PART_KIND(RMSTATE_ENUM_NAME)}},
     };

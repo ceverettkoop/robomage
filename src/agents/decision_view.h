@@ -48,6 +48,9 @@ class DecisionView {
         // source, or an object outside the battlefield, hand, stack, graveyard and exile).
         int menu_controller(size_t i) const;
 
+        // Whether the row casts its card face down.
+        bool casts_face_down(size_t i) const { return (menu_.u(i, m_variant_) & face_down_bit_) != 0; }
+
         // ── objects ──
         // The own hand's card names (face-down cards left out), in object-table order.
         std::vector<std::string> hand() const;
@@ -84,6 +87,7 @@ class DecisionView {
         int z_battlefield_, z_stack_, z_hand_, z_graveyard_, z_exile_;
         int k_triggered_;
         uint64_t back_face_bit_;
+        uint64_t face_down_bit_;
         std::map<uint64_t, size_t> objects_;  // handle -> object row
         std::vector<size_t> stack_by_pos_;    // stack rows, top (pos 0) first
 };

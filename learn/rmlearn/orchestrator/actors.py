@@ -1,6 +1,6 @@
 """The actor pool and the actors' results (docs/rmtrain.md §5; docs/actor.md).
 
-    pool = ActorPool(engine, bin_dir, schedule, out_dir, log_dir, seed, settings, log)
+    pool = ActorPool(engine, bin_dir, schedule, out_dir, log_dir, seed, settings, log, extra_args=[...])
     pool.set_count(26)        # starts / stops actors to reach the count
     pool.tick()               # reaps exits, restarts crashed actors (with a crash-loop back-off)
     pool.stop_all()           # SIGTERM, then SIGKILL after the timeout
@@ -91,7 +91,8 @@ class _Actor:
 class ActorPool:
     """Training actors (or, with `matches`, a fixed batch of evaluation actors that are not restarted)."""
 
-    def __init__(self, engine, bin_dir, schedule, out_dir, log_dir, seed, settings, log, matches=None, prefix="a"):
+    def __init__(self, engine, bin_dir, schedule, out_dir, log_dir, seed, settings, log, matches=None, prefix="a",
+                 extra_args=()):
         self.engine = engine
         self.bin_dir = bin_dir
         self.schedule = schedule
@@ -102,6 +103,7 @@ class ActorPool:
         self.log = log
         self.matches = matches          # {k: matches} for an evaluation batch
         self.prefix = prefix
+        self.extra_args = list(extra_args)  # engine flags of every actor (the run's --feature-history)
         self.actors = {}
         self.count = 0
         os.makedirs(out_dir, exist_ok=True)
@@ -115,6 +117,7 @@ class ActorPool:
                 "--actor-id", str(a.k), "--actor-seed", str(self.seed), "--actor-start", str(start)]
         if self.matches is not None:
             argv += ["--actor-matches", str(self.matches[a.k])]
+        argv += self.extra_args
         if a.log is None:
             a.log = open(os.path.join(self.log_dir, "%s%d.log" % (self.prefix, a.k)), "a", buffering=1)
         a.log.write("=== %s start match %d: %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), start, " ".join(argv)))

@@ -8,7 +8,7 @@
 
 #include "sb_explore.h"
 
-// ── The actor's schedule: matchups, seats, agents, teachers, purposes (training plan T5) ──────
+// ── The actor's schedule: matchups, seats, agents, teachers, purposes ─────────────────────────
 //
 // Standard library and featurize/json.h only. docs/actor.md §2 is the reference. A JSON object:
 //
@@ -36,7 +36,7 @@
 //                          nn:remote:<socket>:policies=0,1,2, ...
 //   teacher_a, teacher_b   a teacher command (agents/teacher.h) or null (none)
 //   teacher_mix            in [0, 1] (default 0): --teacher-mix
-//   knowledge_a, knowledge_b  off | expert | expert+belief
+//   knowledge_a, knowledge_b  off | expert
 //   max_game_decisions     >= 0: the per-game decision cap (--max-game-decisions)
 //   trajectory_seats       A | B | AB (default AB): the recorded sides
 //   trajectory_omniscient  bool
@@ -96,7 +96,7 @@ struct ScheduleEntry {
         std::string agent[2];
         std::string teacher[2];
         double teacher_mix = 0;
-        int knowledge[2] = {1, 1};  // rmstate::KnowledgeLevel values: 0 off, 1 expert, 2 expert+belief
+        int knowledge[2] = {1, 1};  // rmstate::KnowledgeLevel values: 0 off, 1 expert
         int64_t max_game_decisions = -1;
         std::string trajectory_seats = "AB";
         bool trajectory_omniscient = false;

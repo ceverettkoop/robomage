@@ -1,0 +1,66 @@
+{
+  "name": "cr603_2_sand_scout_triggers_once_each_turn",
+  "why": "Sand Scout: \"this ability triggers only once each turn\" (ActivationLimit$ 1), and a land put into your graveyard from anywhere triggers it: A cracks a fetch land for a Sand Warrior, a second makes none that turn, a third on B's turn makes another. B's own land does nothing.",
+  "hand_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Sand Scout",
+    "Polluted Delta",
+    "Polluted Delta",
+    "Polluted Delta"
+  ],
+  "battlefield_b": [
+    "Polluted Delta"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Polluted Delta",
+    "A:search:Island",
+    "A:activate:Polluted Delta",
+    "A:search:Island",
+    "B:activate:Polluted Delta",
+    "B:search:Island",
+    "B:play:Forest",
+    "A:activate:Polluted Delta",
+    "A:search:Island"
+  ],
+  "max_decisions": 34,
+  "expect_count": {
+    "Sand Scout triggered": 2
+  },
+  "expect_order": [
+    "TURN 1",
+    "Sand Scout triggered",
+    "TURN 2",
+    "Sand Scout triggered"
+  ]
+}

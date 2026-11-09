@@ -1,0 +1,65 @@
+{
+  "name": "cr401_look_follows_a_shuffle",
+  "why": "CR 701.20d: a shuffle ends the look at the old top card, and the look is on whatever is on top now. Polluted Delta's search shows A the library; afterwards A knows only the new top.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Polluted Delta"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Tormod's Crypt",
+    "Urza's Bauble",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Polluted Delta",
+    "A:search:Island"
+  ],
+  "max_decisions": 7,
+  "seed": 2,
+  "expect": [
+    "shuffle"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Island"
+  ],
+  "expect_dump_final_not": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Lotus Petal"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "name": "cr707_5_mockingbird_copies_within_the_mana_spent",
+  "why": "CR 707.5, 202.3: Mockingbird, cast for X = 2 ({U} and two), may copy a creature of mana value 3 or less: Air Elemental (5) isn't offered, and it enters as a Bears with flying: the opponent's Bears can't block it next turn.",
+  "hand_a": [
+    "Mockingbird"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Mockingbird",
+    "A:x:2",
+    "A:choice:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Mockingbird enters as a copy of Grizzly Bears"
+  ],
+  "expect_menu": [
+    "Enter as a copy of Grizzly Bears",
+    "Enter as Mockingbird"
+  ],
+  "expect_menu_not": [
+    "Enter as a copy of Air Elemental"
+  ]
+}

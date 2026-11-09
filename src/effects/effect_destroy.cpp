@@ -7,6 +7,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
 #include "../systems/orderer.h"
@@ -49,8 +50,11 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Defined$ Self (The Tabernacle at Pendrell Vale's granted upkeep trigger: "destroy this
     // creature unless you pay {1}"): the effect acts on its own source. Bind it as the target so
     // the shared destroy/unless path below operates on the creature. Idempotent on a suspend/resume.
-    if (ab.def->defined_self && ab.target.empty() && ab.targets.empty())
+    if (ab.def->defined.is(ObjectSpec::SELF) && ab.target.empty() && ab.targets.empty())
         ab.target = ab.source;
+    // Defined$ ChosenCard (Drop of Honey): what its ChooseCard chose, nothing if it chose nothing.
+    if (ab.def->defined.is(ObjectSpec::CHOSEN_CARDS) && ab.targets.empty())
+        for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab))) ab.targets.push_back(ObjectRef::of(e));
 
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
     // color. The spell still resolves (doing nothing) against a wrong-color permanent.
@@ -61,7 +65,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     }
 
     // Conditional destroy (Fatal Push): check target CMC against threshold
-    if (!ab.def->condition_present.empty() && ab.def->condition_present.find("cmcLEX") != std::string::npos) {
+    if (!ab.def->condition_present.empty() && ab.def->condition_present.text().find("cmcLEX") != std::string::npos) {
         // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")
         int threshold = 2;  // default fallback
         if (!ab.def->dynamic_amount_expr.empty()) {
@@ -81,21 +85,18 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Unless-cost (The Tabernacle: "destroy this creature unless you pay {1}", CR 118.5 /
     // 603.2). The payer (UnlessPayer$ You ⇒ the ability's controller = the creature's controller)
     // may pay to prevent the destruction; run_unless_loop returns false when paid (don't destroy)
-    // and true when declined / unaffordable. Handled for the single-target / defined_self form. The
+    // and true when declined / unaffordable. Handled for the single-target / Defined$ Self form. The
     // MANA kind may suspend on a payment decision (checked before the return value); the arm-only
     // announcement is resume-guarded so a resume never re-logs it.
-    if (ab.def->unless_generic_cost > 0) {
+    if (unless_amount(ab.def->unless_cost) > 0) {
         Entity tgt = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
         Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
-        UnlessPayKind kind = ab.def->unless_cost_is_energy   ? UnlessPayKind::ENERGY
-                           : ab.def->unless_cost_is_discard  ? UnlessPayKind::DISCARD
-                           : ab.def->unless_cost_is_life      ? UnlessPayKind::LIFE
-                                                         : UnlessPayKind::MANA;
+        UnlessPayKind kind = unless_pay_kind(ab.def->unless_cost);
         if (!ctx.resuming())
             game_log("%s may pay to prevent %s from being destroyed:\n",
                      player_name(payer).c_str(), entity_name(tgt).c_str());
         bool suspended = false;
-        bool do_destroy = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+        bool do_destroy = run_unless_loop(unless_amount(ab.def->unless_cost), payer, orderer, tgt, ab.source.lki_entity(), ctx,
                                           suspended, UnlessSubject{UnlessEffect::DESTROY, tgt, false}, kind);
         if (suspended) return HandlerResult::SUSPENDED;
         if (!do_destroy) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is destroyed

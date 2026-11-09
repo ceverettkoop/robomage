@@ -1,0 +1,40 @@
+{
+  "name": "cr118_3_bitter_triumph_no_life_leaves_the_discard",
+  "why": "CR 118.3 / 119.4: at 2 life the 3 life can't be paid, so only the discard is offered, taken without a menu of forms",
+  "hand_a": [
+    "Bitter Triumph",
+    "Island",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "life_a": 2,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Bitter Triumph",
+    "A:target:Grizzly Bears",
+    "A:discard:Island"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Pay 3 life"
+  ],
+  "expect": [
+    "Player A discards Island"
+  ]
+}

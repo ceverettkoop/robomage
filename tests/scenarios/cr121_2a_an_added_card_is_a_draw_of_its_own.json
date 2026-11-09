@@ -1,0 +1,63 @@
+{
+  "name": "cr121_2a_an_added_card_is_a_draw_of_its_own",
+  "why": "CR 121.2, 121.2a: Quantum Riddler changes the number of cards before any draw is considered, and each card is then a draw of its own: a dredge replacing the first leaves the second to draw",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Quantum Riddler",
+    "Lion's Eye Diamond"
+  ],
+  "graveyard_a": [
+    "Life from the Loam"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Tap Lion's Eye Diamond for (U)",
+    "A:attack:done",
+    "A:desc:Dredge Life from the Loam"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "dredges Life from the Loam"
+  ],
+  "expect_order": [
+    "dredges Life from the Loam",
+    "^Player A draws Island"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ]
+}

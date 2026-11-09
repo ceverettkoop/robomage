@@ -1,5 +1,5 @@
 """The run's GPU process (docs/rmtrain.md §5): the learner and the inference server in one process,
-the only one of the run that touches the GPU (docs/rnad_training_plan.md §4 L5, §7 decision 3).
+the only one of the run that touches the GPU.
 
     python -m rmlearn.orchestrator.gpu RUN_DIR          # started by the orchestrator, never by hand
 
@@ -179,7 +179,7 @@ class Worker:
         r = self.cfg["replay"]
         return RP.WindowConfig(dirs=list(dirs), max_decisions=r["max_decisions"], max_bytes=int(r["max_gb"] * (1 << 30)),
                                delete_evicted=bool(selfplay and r["delete_evicted_selfplay"]),
-                               poll_interval=r["poll_interval_s"], spec_hash=self.tables.spec.hash,
+                               poll_interval=r["poll_interval_s"], spec_hash=self.tables.accepted_spec_hashes(),
                                heldout_fraction=0.0 if selfplay else r["heldout_fraction"],
                                split_seed=self.cfg["run"]["seed"], max_decision_tokens=r["max_decision_tokens"])
 
@@ -192,13 +192,13 @@ class Worker:
         torch.manual_seed(c["run"]["seed"])
         if resume:
             model = M.load_checkpoint(resume, self.tables)
+            model.cfg.id_dropout = float(c["model"]["id_dropout"])
         else:
             model = M.RMNet(M.ModelConfig.from_dict(c["model"]), self.tables)
         win = RP.ReplayWindow(self._window_cfg(dirs, False), log=lambda m: log("bc window: " + m))
         skipped = restore_recent(win, dirs, win.cfg.max_bytes)
         win.start()
-        names = BC.category_names(self.rd.cards) if os.path.exists(self.rd.cards) else None
-        cats = BC.Categories(self.tables.spec, names)
+        cats = BC.Categories(self.tables.spec)
         trainer = BC.BCTrainer(model, win, BC.BCConfig.from_dict(c["bc"]), device=self.device, categories=cats)
         if resume:
             trainer.restore(resume)
@@ -264,11 +264,13 @@ class Worker:
                                           "finetune_discretization", "stale_reg", "forward_tokens", "attention_budget",
                                           "checkpoint_tokens", "value_after_every")})
             saved_window = data.get("window")
+            learner.model.cfg.id_dropout = float(c["model"]["id_dropout"])
         else:
-            # The run's critic settings: a start_from checkpoint's config would otherwise decide them.
-            critic_cfg = {k: c["model"][k] for k in ("omniscient_critic", "critic_layers")}
+            # The run's critic settings and id-dropout: a start_from checkpoint's config would otherwise
+            # decide them.
+            run_cfg = {k: c["model"][k] for k in ("omniscient_critic", "critic_layers", "id_dropout")}
             learner = RNaDLearner.from_bc_checkpoint(bc_checkpoint, self.tables, self.rnad_config(), device=self.device,
-                                                     model_cfg=critic_cfg)
+                                                     model_cfg=run_cfg)
         self.link = ServerLink(self.server, push_every=int(c["rnad"]["push_every"]))
         learner.add_hook(self.link)
         learner.add_hook(self._on_learner_event)
@@ -331,7 +333,7 @@ class Worker:
             if len(self.pending) < G:
                 return
         eps, self.pending = self.pending, []
-        kept, dropped = trainable_episodes(eps, missing_mu="drop", spec_hash=self.tables.spec.hash)
+        kept, dropped = trainable_episodes(eps, missing_mu="drop", spec_hash=self.tables.accepted_spec_hashes())
         kept, stale = drop_stale(kept, self.learner.learner_steps, int(r.get("max_policy_lag", 0)))
         if stale:
             dropped["policy_lag"] = stale

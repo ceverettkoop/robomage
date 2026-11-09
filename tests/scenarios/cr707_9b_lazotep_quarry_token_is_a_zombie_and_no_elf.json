@@ -1,0 +1,56 @@
+{
+  "name": "cr707_9b_lazotep_quarry_token_is_a_zombie_and_no_elf",
+  "why": "CR 707.9b, 205.1a: 'except it's a 4/4 black Zombie' replaces the creature types: the Elves token is no Elf for Allosaurus Shepherd, and it isn't green.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry",
+    "Allosaurus Shepherd",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Llanowar Elves"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Lazotep Quarry",
+    "A:activate:Allosaurus Shepherd"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Token copy created: 4/4 Llanowar Elves",
+    "Allosaurus Shepherd becomes a Dinosaur"
+  ],
+  "expect_not": [
+    "Llanowar Elves becomes a Dinosaur"
+  ]
+}

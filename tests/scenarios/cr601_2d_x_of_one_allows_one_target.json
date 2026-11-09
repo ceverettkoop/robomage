@@ -1,0 +1,42 @@
+{
+  "name": "cr601_2d_x_of_one_allows_one_target",
+  "why": "CR 601.2d: each target must receive at least one, so X of 1 chooses one target of the two the spell allows: no second pick is asked.",
+  "hand_a": [
+    "Shatterskull Smashing"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Air Elemental",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shatterskull",
+    "A:x:1",
+    "A:target:Air Elemental"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Shatterskull Smashing deals 1 damage to Air Elemental"
+  ],
+  "expect_count": {
+    "Choose target for Shatterskull Smashing": 1
+  }
+}

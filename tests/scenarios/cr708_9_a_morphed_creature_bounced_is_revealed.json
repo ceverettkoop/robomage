@@ -1,0 +1,53 @@
+{
+  "name": "cr708_9_a_morphed_creature_bounced_is_revealed",
+  "why": "CR 708.9: returned to its owner's hand it is revealed, so the other player knows that card of the hand; and it may be cast again either way.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Cyclonic Rift",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "B:pass",
+    "B:cast:Cyclonic Rift",
+    "B:desc:hidden"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "is revealed as Aphetto Alchemist"
+  ],
+  "expect_dump": [
+    "^B .*known_hand Aphetto Alchemist x1"
+  ],
+  "expect_dump_final_not": [
+    "^B .*face_down"
+  ]
+}

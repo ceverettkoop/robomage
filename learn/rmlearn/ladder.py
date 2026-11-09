@@ -1,6 +1,6 @@
-"""The ladder of past fixed points (docs/rnad_training_plan.md B4: "against the previous iterations'
-fixed points"): exported policies kept with ids and versions, the current policy played against
-each (or the last K) through the SPRT runner's actors, every pairing's per-game record kept, and a
+"""The ladder of past fixed points (docs/rmtrain.md §7): exported policies kept with ids and versions, the
+current policy played against each (or the last K) through the SPRT runner's actors, every
+pairing's per-game record kept, and a
 Bradley–Terry rating over all of them.
 
     lad = Ladder("runs/r1/ladder")                                   # ladder.json there

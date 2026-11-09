@@ -5,7 +5,6 @@
 #include "../components/zone.h"
 #include "../ecs/entity.h"
 
-struct Ability;
 
 // ── Seats (two-player game, CR 102.2) ───────────────────────────────────────
 // The engine seats exactly two players, so "the opponent" is always the other seat. These are the
@@ -56,13 +55,5 @@ Zone::Ownership source_controller(Entity source);
 // Permanent.controller (mid-resolution before the SBA strips it), else the controller
 // captured in its last-known info as it left the battlefield. UNKNOWN if never controlled.
 Zone::Ownership last_known_controller(Entity e);
-
-// Resolve the Defined$ player an ability designates, or UNKNOWN when it names none (the
-// caller then falls back to its own chosen target):
-//   Defined$ You                -> the ability's controller (CR 109.5)
-//   Defined$ Player.Opponent    -> that controller's single opponent (2-player; CR 109.5)
-//   Defined$ TargetedController -> the last-known controller of ab.target
-//   Defined$ TriggeredActivator -> the player bound when the trigger fired
-Zone::Ownership resolve_defined_player(const Ability &ab);
 
 #endif /* QUERIES_PLAYERS_H */

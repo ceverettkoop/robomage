@@ -25,12 +25,11 @@ struct Frame {
         const agents::SeatStream &st;
         // STATE frame.
         agents::Table header, turn, player, pcounter, obj, counter, keyword, combat, stack, smode, starget, lki, reveal,
-            pending, cost, pip, menu, match, own_deck, emblem, effect, delayed, permission;
+            pending, cost, pip, menu, match, own_deck, emblem, effect, delayed, permission, pool_mana;
         agents::Table event, event_card, event_player;
-        agents::Table k_meta, k_seen, k_pool, k_pool_card, k_position, k_known_hand, k_template, k_archetype, b_list,
-            b_archetype;
-        // CARDS and METAGAME frames.
-        agents::Table card, card_subtype, meta_archetype, meta_list;
+        agents::Table k_meta, k_seen, k_pool, k_pool_card, k_position, k_known_hand;
+        // CARDS frame.
+        agents::Table card, card_subtype;
         std::map<uint64_t, size_t> by_handle;  // object handle -> object row
         std::map<int, size_t> front, back;     // card id -> its CARDS `card` row, per face
         uint64_t me = 0, opp = 0;              // the viewer's and the opponent's seat values
@@ -61,6 +60,7 @@ Frame::Frame(const agents::DecisionView &view) : v(view), st(view.stream()) {
     own_deck = v.table("own_deck");
     emblem = v.table("emblem");
     effect = v.table("player_effect");
+    pool_mana = v.table("pool_mana");
     delayed = v.table("delayed_trigger");
     permission = v.table("play_permission");
     event = v.table("event");
@@ -72,15 +72,9 @@ Frame::Frame(const agents::DecisionView &view) : v(view), st(view.stream()) {
     k_pool_card = v.table("k_pool_card");
     k_position = v.table("k_position");
     k_known_hand = v.table("k_known_hand");
-    k_template = v.table("k_template");
-    k_archetype = v.table("k_archetype");
-    b_list = v.table("b_list");
-    b_archetype = v.table("b_archetype");
     const rmstate::Schema &schema = st.schema();
     card = agents::Table(st.cards_frame(), schema, "card");
     card_subtype = agents::Table(st.cards_frame(), schema, "card_subtype");
-    meta_archetype = agents::Table(st.metagame_frame(), schema, "meta_archetype");
-    meta_list = agents::Table(st.metagame_frame(), schema, "meta_list");
     const int c_handle = obj.col("handle");
     for (size_t r = 0; r < obj.rows(); ++r) by_handle.emplace(obj.u(r, c_handle), r);
     const int c_card = card.col("card"), c_face = card.col("face");
@@ -131,6 +125,7 @@ static std::string power_toughness(const Frame &f, size_t row);
 static std::vector<std::string> object_status(const Frame &f, size_t row);
 static std::string mask_names(const Frame &f, const char *enum_name, uint64_t mask);
 static std::string mana_pool(const Frame &f, size_t prow);
+static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat);
 static std::vector<std::string> player_lines(const Frame &f, bool sideboarding);
 static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t controller);
 static std::string stack_item(const Frame &f, size_t row);
@@ -156,7 +151,6 @@ static std::string pool_label(const Frame &f, size_t pool, bool owner_name);
 static std::vector<std::string> pool_cards(const Frame &f, size_t pool, bool candidates);
 static std::vector<std::string> known_hand(const Frame &f);
 static std::vector<std::string> known_positions(const Frame &f, uint64_t owner, size_t limit);
-static std::string archetype_summary(const Frame &f, uint64_t seat);
 static std::vector<std::string> library_zone(const Frame &f, uint64_t owner);
 static std::string event_cards(const Frame &f, const std::vector<size_t> &rows, uint64_t *hidden);
 static std::string items_text(const std::vector<std::string> &names, uint64_t hidden, bool article);
@@ -311,9 +305,9 @@ static bool is_creature(const Frame &f, size_t row) {
     return (f.obj.u(row, f.obj.col("types")) & f.creature_bit) != 0;
 }
 
-// "2/2" for a creature whose card the viewer sees, else "".
+// "2/2" for what the viewer sees to be a creature, a face-down one included, else "".
 static std::string power_toughness(const Frame &f, size_t row) {
-    if (f.obj.card(row, f.obj.col("card")) < 0 || !is_creature(f, row)) return "";
+    if (!is_creature(f, row)) return "";
     return std::to_string(f.obj.s(row, f.obj.col("power"))) + "/" +
            std::to_string(f.obj.s(row, f.obj.col("toughness")));
 }
@@ -327,6 +321,8 @@ static std::vector<std::string> object_status(const Frame &f, size_t row) {
     if (o.u(row, o.col("tapped"))) out.push_back("tapped");
     if (o.u(row, o.col("sick"))) out.push_back("summoning sick");
     if (o.u(row, o.col("phased_out"))) out.push_back("phased out");
+    if (o.u(row, o.col("bestowed"))) out.push_back("bestowed");
+    if (o.u(row, o.col("prepared"))) out.push_back("prepared");
     if (o.u(row, o.col("face_down"))) out.push_back("face down");
     if (o.u(row, o.col("attacking"))) {
         std::string a = "attacking";
@@ -360,6 +356,7 @@ static std::vector<std::string> object_status(const Frame &f, size_t row) {
     if (named >= 0) out.push_back("named " + card_name(f, named));
     if (!o.none(row, o.col("chosen_type")))
         out.push_back("chose " + f.st.enum_name("subtype", o.u(row, o.col("chosen_type"))));
+    if (const uint64_t color = o.u(row, o.col("chosen_color"))) out.push_back("chose " + f.st.enum_name("color", color - 1));
     return out;
 }
 
@@ -381,6 +378,28 @@ static std::string mana_pool(const Frame &f, size_t prow) {
         for (uint64_t i = 0; i < n; ++i) out += std::string("{") + static_cast<char>(std::toupper(c[0])) + "}";
     }
     return out;
+}
+
+// What the floating mana of `seat` isn't free to do: one note per row of pool_mana ("{C}{C} only
+// colorless eldrazi or abilities").
+static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat) {
+    const agents::Table &m = f.pool_mana;
+    std::vector<std::string> notes;
+    for (size_t r = 0; r < m.rows(); ++r) {
+        if (m.u(r, m.col("player")) != seat) continue;
+        const std::string pip = std::string("{") + "WUBRGC"[m.u(r, m.col("color"))] + "}";
+        std::string note;
+        for (uint64_t i = 0; i < m.u(r, m.col("count")); ++i) note += pip;
+        const std::string restriction = f.st.enum_name("mana_restriction", m.u(r, m.col("restriction")));
+        if (restriction != "NONE") note += " only " + lower_words(restriction);
+        if (!m.text(r, m.col("chosen_type")).empty()) note += " " + m.text(r, m.col("chosen_type"));
+        if (m.u(r, m.col("activated"))) note += " or abilities";
+        if (m.u(r, m.col("cant_be_countered"))) note += ", can't be countered";
+        if (!m.none(r, m.col("keyword")))
+            note += ", " + m.text(r, m.col("keyword_valid")) + " gains " + f.st.enum_name("keyword", m.u(r, m.col("keyword")));
+        notes.push_back(note);
+    }
+    return notes;
 }
 
 // One line per player (the viewer first): life, zone sizes, pool, counters and designations;
@@ -405,6 +424,7 @@ static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) 
         std::vector<std::string> extra;
         const std::string pool = mana_pool(f, r);
         if (!pool.empty()) extra.push_back("pool " + pool);
+        for (const std::string &note : pool_mana_notes(f, seat)) extra.push_back(note);
         const int c_cp = f.pcounter.col("player");
         for (size_t c = 0; c < f.pcounter.rows(); ++c)
             if (f.pcounter.u(c, c_cp) == seat && f.pcounter.u(c, f.pcounter.col("count")))
@@ -412,6 +432,9 @@ static std::vector<std::string> player_lines(const Frame &f, bool sideboarding) 
                                 std::to_string(f.pcounter.u(c, f.pcounter.col("count"))));
         if (p.u(r, p.col("monarch"))) extra.push_back("monarch");
         if (p.u(r, p.col("city_blessing"))) extra.push_back("city's blessing");
+        if (const uint64_t speed = p.u(r, p.col("speed")))
+            extra.push_back("speed " + std::to_string(speed - 1) +
+                            (p.u(r, p.col("speed_triggered")) ? " (triggered this turn)" : ""));
         if (const uint64_t n = p.u(r, p.col("to_bottom"))) extra.push_back(std::to_string(n) + " to bottom");
         if (const uint64_t n = p.u(r, p.col("extra_turns"))) extra.push_back(plural(n, "extra turn", "extra turns"));
         if (show_wins) extra.push_back("wins " + std::to_string(p.u(r, p.col("match_wins"))));
@@ -475,13 +498,20 @@ static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t contr
     return out;
 }
 
+// The key of the ability a player's speed brings: it has no source to name it by.
+static const char *const kSpeedTriggerKey = "triggered:IncreaseSpeed";
+
 // One stack object: name, kind and controller, X / modes / kicker, targets.
 static std::string stack_item(const Frame &f, size_t row) {
     const agents::Table &s = f.stack;
     const uint64_t h = s.u(row, s.col("handle"));
     const std::optional<std::string> name = f.v.stack_card(row);
     const std::string kind = f.st.enum_name("stack_kind", s.u(row, s.col("kind")));
-    std::string line = name ? *name : std::string("ability");
+    // A spell with no card to show lies face down, and its ", face down" says so below.
+    std::string line = name                                               ? *name
+                       : kind == "SPELL"                                  ? std::string("spell")
+                       : s.text(row, s.col("ab_key")) == kSpeedTriggerKey ? std::string("speed")
+                                                                          : std::string("ability");
     if (kind == "ACTIVATED")
         line += " (activated ability)";
     else if (kind == "TRIGGERED")
@@ -521,6 +551,7 @@ static std::string stack_item(const Frame &f, size_t row) {
             const int cid = has_lki ? f.lki.card(l, f.lki.col("card")) : -1;
             targets.push_back((cid >= 0 ? card_name(f, cid) : std::string("a card")) + " (gone)");
         }
+        if (const uint64_t share = t.u(r, t.col("share"))) targets.back() += " (" + std::to_string(share) + ")";
     }
     if (!extra.empty()) line += ", " + join(extra, ", ");
     if (!targets.empty()) line += "  -> " + join(targets, ", ");
@@ -779,10 +810,13 @@ static std::string category_task(const std::string &category) {
         {"CHOOSE_X", "choose X"},
         {"DISCARD", "choose a card to discard"},
         {"CHOOSE_MODE", "choose a mode"},
+        {"CONFIRM_MODES", "choose a mode"},
         {"CHOOSE_MANA_COLOR", "choose a mana color"},
         {"PAY_UNLESS", "pay or decline"},
         {"NAME_CARD", "name a card"},
         {"CHOOSE_TYPE", "choose a creature type"},
+        {"CHOOSE_COLOR", "choose a color"},
+        {"DIVIDE_DAMAGE", "give a target one more point of the damage"},
         {"KEEP_LEGEND", "choose which legendary permanent to keep"},
         {"ORDER_TRIGGERS", "choose the trigger to put on the stack next"},
         {"CHOOSE_REPLACEMENT", "choose a replacement effect"},
@@ -793,6 +827,7 @@ static std::string category_task(const std::string &category) {
         {"CHOOSE_CARD", "choose a card"},
         {"ASSIGN_DAMAGE", "assign combat damage"},
         {"COMPANION", "put your companion into your hand, or not"},
+        {"TURN_FACE_UP", "act or pass priority"},
         {"EXILE_FROM_YARD", "choose a card to exile from your graveyard"},
     };
     auto it = tasks.find(category);
@@ -827,7 +862,7 @@ std::vector<std::string> pending_lines(const agents::DecisionView &v) {
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
         if (c == "PASS_PRIORITY" || c == "CAST_SPELL" || c == "PLAY_LAND" || c == "ACTIVATE_ABILITY" ||
-            c.rfind("MANA_", 0) == 0)
+            c == "TURN_FACE_UP" || c.rfind("MANA_", 0) == 0)
             priority = priority || c == "PASS_PRIORITY";
         else if (task.empty())
             task = category_task(c);
@@ -1146,50 +1181,6 @@ static std::vector<std::string> known_positions(const Frame &f, uint64_t owner, 
     return out;
 }
 
-// What the archetype tables say about `seat`'s deck: the label when it is deduced, else the
-// possible labels; with beliefs, the likeliest labels. "" when there is nothing.
-static std::string archetype_summary(const Frame &f, uint64_t seat) {
-    const agents::Table &a = f.k_archetype;
-    const agents::Table &m = f.meta_archetype;
-    std::vector<std::string> possible, exact;
-    size_t total = 0;
-    for (size_t r = 0; r < a.rows(); ++r) {
-        if (a.u(r, a.col("player")) != seat) continue;
-        ++total;
-        const uint64_t id = a.u(r, a.col("archetype"));
-        const std::string name =
-            id < m.rows() ? m.text(static_cast<size_t>(id), m.col("name")) : "#" + std::to_string(id);
-        if (a.u(r, a.col("possible"))) possible.push_back(name);
-        if (a.u(r, a.col("exact"))) exact.push_back(name);
-    }
-    if (total == 0) return "";
-    std::string out;
-    if (exact.size() == 1)
-        out = exact[0];
-    else if (possible.empty())
-        out = "matches no reference list";
-    else if (possible.size() < total)
-        out = "one of " + join(possible, ", ");
-    else
-        out = "any";
-    std::vector<std::pair<uint64_t, std::string>> probs;
-    const agents::Table &b = f.b_archetype;
-    for (size_t r = 0; r < b.rows(); ++r) {
-        if (b.u(r, b.col("player")) != seat) continue;
-        const uint64_t id = b.u(r, b.col("archetype")), p = b.u(r, b.col("prob"));
-        if (p == 0) continue;
-        const std::string name =
-            id < m.rows() ? m.text(static_cast<size_t>(id), m.col("name")) : "#" + std::to_string(id);
-        probs.emplace_back(p, name);
-    }
-    std::sort(probs.rbegin(), probs.rend());
-    std::vector<std::string> top;
-    for (size_t i = 0; i < probs.size() && i < 3; ++i)
-        top.push_back(probs[i].second + " " + std::to_string((probs[i].first + 5000000) / 10000000) + "%");
-    if (!top.empty()) out += " (belief: " + join(top, ", ") + ")";
-    return out;
-}
-
 std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool full) {
     const Frame f(v);
     const bool off =
@@ -1206,9 +1197,6 @@ std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool ful
             const std::vector<std::string> pos = known_positions(f, seat, 3);
             if (!pos.empty()) facts.push_back(possessive(f, seat) + " library: " + join(pos, "; "));
         }
-        const std::string arch = archetype_summary(f, f.opp);
-        if (!arch.empty() && arch != "any" && arch != "matches no reference list")
-            facts.push_back(possessive(f, f.opp) + " archetype: " + arch);
         if (facts.empty()) return out;
         out.push_back("You know:");
         for (const std::string &s : facts) out.push_back("  " + s);
@@ -1242,37 +1230,6 @@ std::vector<std::string> knowledge_lines(const agents::DecisionView &v, bool ful
                                                                      : ""));
         if (!seen.empty())
             for (const std::string &l : wrap("  copies seen this game (/match):", seen, "      ")) out.push_back(l);
-        std::vector<std::string> lists;
-        const agents::Table &t = f.k_template;
-        for (size_t r = 0; r < t.rows(); ++r) {
-            if (t.u(r, t.col("player")) != seat || !t.u(r, t.col("consistent"))) continue;
-            const uint64_t id = t.u(r, t.col("list"));
-            std::string name = id < f.meta_list.rows()
-                                   ? f.meta_list.text(static_cast<size_t>(id), f.meta_list.col("name"))
-                                   : "#" + std::to_string(id);
-            if (t.u(r, t.col("registered"))) name += " (registered)";
-            if (!t.u(r, t.col("exact"))) name += " (unproven)";
-            lists.push_back(name);
-        }
-        if (lists.empty()) lists.push_back("none");
-        if (t.rows())
-            for (const std::string &l : wrap("  consistent reference lists:", lists, "      ")) out.push_back(l);
-        const std::string arch = archetype_summary(f, seat);
-        if (!arch.empty()) out.push_back("  archetype: " + arch);
-        std::vector<std::pair<uint64_t, std::string>> probs;
-        const agents::Table &b = f.b_list;
-        for (size_t r = 0; r < b.rows(); ++r) {
-            if (b.u(r, b.col("player")) != seat || b.u(r, b.col("prob")) == 0) continue;
-            const uint64_t id = b.u(r, b.col("list"));
-            probs.emplace_back(b.u(r, b.col("prob")),
-                id < f.meta_list.rows() ? f.meta_list.text(static_cast<size_t>(id), f.meta_list.col("name"))
-                                        : "#" + std::to_string(id));
-        }
-        std::sort(probs.rbegin(), probs.rend());
-        std::vector<std::string> top;
-        for (size_t i = 0; i < probs.size() && i < 5; ++i)
-            top.push_back(probs[i].second + " " + std::to_string((probs[i].first + 5000000) / 10000000) + "%");
-        if (!top.empty()) out.push_back("  belief over lists: " + join(top, ", "));
     }
     return out;
 }
@@ -1489,7 +1446,9 @@ static EventLine event_line(
     }
     // ZONE_MOVE, PLAY_FROM_HIDDEN, DRAW (handled by the caller) and anything new: a move.
     const uint64_t subject = zone >= 0 ? owner : to_owner;
-    const std::string what = possessive(f, subject) + " " + items_text(names, hidden, false);
+    std::string what = possessive(f, subject) + " " + items_text(names, hidden, false);
+    // Nothing else tells a viewer who can't see it that a card from a hidden zone came face down.
+    if (kind == "PLAY_FROM_HIDDEN" && hidden > 0 && zone != f.z_stack) what += ", face down";
     if (zone < 0) return {what + ": created on " + zone_of(f, to_zone, to_owner), false};
     if (to_zone < 0) return {what + ": ceases to exist", false};
     std::string from = zone_word(f, zone);

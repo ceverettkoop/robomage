@@ -1,0 +1,56 @@
+{
+  "name": "cr111_empower_reads_a_jace_token_and_nothing_else",
+  "why": "Empower (oracle): \"a Jace token\": Jace, the Mind Sculptor is no token and a Goblin token no Jace: the Proxy makes the token, and neither takes the counters",
+  "hand_a": [
+    "Empty the Warrens",
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Jace the Mind Sculptor",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Empty the Warrens",
+    "A:pass",
+    "A:pass",
+    "A:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 9,
+  "expect_order": [
+    "Token created: 1/1 Goblin",
+    "Empower Jace 3: Player A's Jace token now has 3 loyalty"
+  ],
+  "expect_count": {
+    "Token created: Jace": 1
+  },
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

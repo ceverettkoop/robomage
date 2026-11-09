@@ -1,0 +1,161 @@
+{
+ "deck": "death_and_taxes",
+ "location": "league",
+ "source": {
+  "archetype_id": 319,
+  "deck_id": 903804,
+  "deck_url": "https://mtgtop8.com/event?d=903804&f=LE",
+  "format": "LE",
+  "meta_share": 3.0,
+  "name": "Death & Taxes",
+  "rank": 11,
+  "scraped": "2026-10-24",
+  "section": "aggro",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [],
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "cc8ce34d61488d8fcef6167411c792f58e40ecb816028387b651133bb6741862",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/death_and_taxes:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_death_and_taxes",
+    "out_dir": "ci_out/onboard_death_and_taxes"
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "engine": "131b1885c66700e598d894253fd3e78f8fc653bb18a7af88797b8117f5609612",
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-11-06T16:10:51"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-06T16:11:03"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 31,
+    "in_vocab": 31,
+    "no_script": [],
+    "not_in_vocab": []
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "scripts": "cc8ce34d61488d8fcef6167411c792f58e40ecb816028387b651133bb6741862",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "31 cards: 31 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "implement": {
+   "detail": {},
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "cc8ce34d61488d8fcef6167411c792f58e40ecb816028387b651133bb6741862",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T13:48:41"
+  },
+  "parse": {
+   "detail": {
+    "cards": {},
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "cc8ce34d61488d8fcef6167411c792f58e40ecb816028387b651133bb6741862",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:48:41"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9",
+    "scripts": "cc8ce34d61488d8fcef6167411c792f58e40ecb816028387b651133bb6741862",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "9101cacf48b7bf57fcf4ff18e09a1c6e0671a5798d56a81f3749ba49f6755bde"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Death & Taxes, 3.0% (aggro), 80 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "233516ab129cc7df2f0163600c9c6c14cff74a57c9c1f78fa2292dd3b0ebf1d2",
+    "vocab": "153f99491fc8bf714864928989ade38e3a446f2f664d1377870143ac4adec27f"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-06T16:03:23"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "6a12d15f8376f69518e138a13dcd16900fc7d7cb8a321bb920f6f0362118b1d9"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-06T16:03:18"
+  }
+ }
+}

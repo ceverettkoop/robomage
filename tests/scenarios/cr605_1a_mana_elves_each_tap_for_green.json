@@ -1,0 +1,53 @@
+{
+  "name": "cr605_1a_mana_elves_each_tap_for_green",
+  "why": "CR 605.1a, 106.1: Elvish Mystic, Fyndhorn Elves and Llanowar Elves each have {T}: Add {G}, so the three and a Forest pay Temur Sabertooth's {2}{G}{G}",
+  "hand_a": [
+    "Temur Sabertooth",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Elvish Mystic",
+    "Fyndhorn Elves",
+    "Llanowar Elves",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Temur Sabertooth",
+    "A:tap:Elvish Mystic",
+    "A:tap:Fyndhorn Elves",
+    "A:tap:Llanowar Elves",
+    "A:tap:Forest"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A activated Elvish Mystic for 1\\(G\\)",
+    "Player A activated Fyndhorn Elves for 1\\(G\\)",
+    "Player A activated Llanowar Elves for 1\\(G\\)",
+    "^Player A casts Temur Sabertooth"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

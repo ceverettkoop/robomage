@@ -1,0 +1,37 @@
+{
+  "name": "cr601_3_grafdiggers_cage_stops_hogaak",
+  "why": "CR 601.3: a cast prohibition applies to the permission: under Grafdigger's Cage Hogaak isn't offered from the graveyard.",
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "graveyard_a": [
+    "Hogaak Arisen Necropolis"
+  ],
+  "battlefield_b": [
+    "Grafdigger's Cage"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Cast Hogaak"
+  ]
+}

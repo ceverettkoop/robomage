@@ -1,0 +1,64 @@
+{
+  "name": "cr613_1f_a_forge_that_lost_its_abilities_gives_no_look",
+  "why": "CR 613.1f: Karn makes the Forge a creature, and Humility takes its abilities: its statics stop, and with them the look and the permission.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge"
+  ],
+  "battlefield_b": [
+    "Humility",
+    "Karn the Great Creator"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:activate:Karn",
+    "B:target:Mystic Forge"
+  ],
+  "max_decisions": 9,
+  "expect_dump": [
+    "^A .*event REVEAL_END LIBRARY> card=Lotus Petal"
+  ],
+  "expect_dump_final_not": [
+    "^A .*reveal "
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include <cstdint>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -12,6 +13,9 @@
 #include "zone.h"
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+
+struct CardData;
+struct Permanent;
 
 // Token entities have Zone + Permanent + Creature + Damage + Token on the battlefield.
 // They have no CardData. When a token leaves the battlefield it is destroyed entirely.
@@ -33,6 +37,7 @@ struct Token {
     // generated while the token is on the battlefield, like a card's. Empty for a scripted token.
     std::vector<Effect::Replacement> replacement_effects;
     std::vector<std::string> keywords; // informational; copied to Creature on creation
+    CostParts ward_cost;  // a copy's ward, as the card it copied has it (CardData::ward_cost)
     uint32_t power = 0;
     uint32_t toughness = 0;
     // Token colors from the token script's Colors: line (Forge). Empty = colorless (CR 105.2c)
@@ -42,6 +47,15 @@ struct Token {
     // Mana value of the mana cost a token copy of a card copied (CR 707.2, 202.3); a scripted
     // token has no mana cost, so 0.
     int mana_value = 0;
+    // The card a token copy copied: the face its characteristics came from. Empty for a scripted
+    // token and a copy of one, which keeps its script's name in `script_name`.
+    std::string copied_card;
+    // The script of the token a token that became a copy copied: its own stays in `script_name`, the
+    // object it physically is.
+    std::string copied_script;
+    // A copy of a preparation card keeps its prepare spell (CR 722.2b) and "enters prepared".
+    std::shared_ptr<const CardData> prepare_spell;
+    bool enters_prepared = false;
 };
 
 // Attach the Permanent + Creature + Damage components a token needs on the battlefield,
@@ -52,5 +66,10 @@ struct Token {
 // repeated SBE passes over an already-bootstrapped token do not advance it.
 void bootstrap_token_components(Entity tok_entity, const Token &tok,
                                 Zone::Ownership controller, size_t &timestamp);
+
+// The token's activated and static abilities onto its Permanent, replacing what it had (a card's
+// are read from Permanent::abilities, not the source component; triggered abilities stay on
+// Token::abilities, where the trigger scan reads them).
+void set_token_permanent_abilities(Entity tok_entity, const Token &tok, Permanent &perm);
 
 #endif /* TOKEN_H */

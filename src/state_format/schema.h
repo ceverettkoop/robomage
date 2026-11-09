@@ -23,7 +23,7 @@
 namespace rmstate {
 
 constexpr uint32_t FRAME_MAGIC = 0x46534D52u;  // "RMSF", little-endian
-constexpr uint16_t FORMAT_VERSION = 1;
+constexpr uint16_t FORMAT_VERSION = 2;
 constexpr size_t FRAME_HEADER_SIZE = 24;
 constexpr size_t TABLE_HEADER_SIZE = 16;
 constexpr size_t ROW_ALIGN = 8;  // each table block's rows are zero-padded to a multiple of this
@@ -37,7 +37,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
 // ── Enums the format adds (Appendix A.7) ──────────────────────────────────────────────────────
 // Each list is an X-macro, so the C++ enum and its SCHEMA string table come from one list.
 
-#define RMSTATE_FRAME_KIND(X) X(SCHEMA) X(CARDS) X(DECKLISTS) X(STATE) X(METAGAME)
+#define RMSTATE_FRAME_KIND(X) X(SCHEMA) X(CARDS) X(DECKLISTS) X(STATE)
 #define RMSTATE_VIEWER(X) X(A) X(B) X(OMNISCIENT)
 #define RMSTATE_STORAGE(X) X(U8) X(U16) X(U32) X(U64) X(I8) X(I16) X(I32) X(I64) X(F32) X(TEXT)
 #define RMSTATE_HAND_SUBSET(X) X(ANY) X(DRAWN_THIS_TURN)
@@ -49,7 +49,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
         X(FACE_DOWN) X(FACE_UP) X(GAME_START) X(GAME_END) X(MATCH_END)
 #define RMSTATE_LIB_ANCHOR(X) X(TOP) X(BOTTOM)
 #define RMSTATE_FACE(X) X(FRONT) X(BACK)
-#define RMSTATE_LAYOUT(X) X(NORMAL) X(TRANSFORM) X(MODAL_DFC) X(SPLIT)
+#define RMSTATE_LAYOUT(X) X(NORMAL) X(TRANSFORM) X(MODAL_DFC) X(SPLIT) X(ADVENTURE) X(PREPARE)
 #define RMSTATE_ABILITY_KIND(X) X(SPELL) X(ACTIVATED) X(TRIGGERED) X(STATIC) X(REPLACEMENT) X(CHAPTER) X(OPENING_HAND)
 #define RMSTATE_TIMING(X) X(ANY) X(SORCERY) X(INSTANT)
 #define RMSTATE_PIP_KIND(X) X(HYBRID) X(TWOBRID) X(PHYREXIAN) X(SNOW)
@@ -57,7 +57,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
 #define RMSTATE_TARGET_KIND(X) X(OBJECT) X(PLAYER)
 #define RMSTATE_ATTACK_TARGET_KIND(X) X(PLAYER) X(PLANESWALKER)
 #define RMSTATE_DELAYED_STATE(X) X(WAITING) X(ON_STACK)
-#define RMSTATE_COST_PART(F) F(MANA) F(ALTERNATIVE) F(ADDITIONAL) F(UNLESS) F(X) F(ACTIVATION)
+#define RMSTATE_COST_PART(F) F(MANA) F(ALTERNATIVE) F(ADDITIONAL) F(UNLESS) F(X) F(ACTIVATION) F(TRIGGER)
 #define RMSTATE_LAYER(X) \
     X(COPY) X(CONTROL) X(TEXT) X(TYPE) X(COLOR) X(ABILITY) X(PT_CDA) X(PT_SET) X(PT_MODIFY) X(PT_COUNTERS) X(PT_SWITCH)
 #define RMSTATE_DURATION(X) X(STATIC) X(END_OF_TURN) X(UNTIL_YOUR_NEXT_TURN) X(UNTIL_HOST_LEAVES) X(PERMANENT)
@@ -65,17 +65,22 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
 #define RMSTATE_PLAYER_EFFECT_KIND(X) \
     X(PROTECTION_FROM_EVERYTHING)     \
     X(CANT_GAIN_LIFE)                 \
-    X(HEXPROOF_FROM) X(SPELLS_CANT_BE_COUNTERED) X(CAST_AS_FLASH) X(SORCERY_SPEED_ONLY) X(FLOATING_TRIGGER)
-#define RMSTATE_PERMISSION_KIND(X) X(FLASHBACK) X(ESCAPE) X(GRAVEYARD_CAST) X(GRAVEYARD_LAND) X(EXILE_GRANT)
+    X(HEXPROOF_FROM) X(SPELLS_CANT_BE_COUNTERED) X(CAST_AS_FLASH) X(SORCERY_SPEED_ONLY) X(FLOATING_TRIGGER) \
+    X(RESOLVED_EFFECT)
+#define RMSTATE_PERMISSION_KIND(X) X(FLASHBACK) X(ESCAPE) X(GRAVEYARD_CAST) X(GRAVEYARD_LAND) X(EXILE_GRANT) X(PREPARED) X(GRAVEYARD_SELF) X(LIBRARY)
 #define RMSTATE_PERMISSION_RESOURCE(X) X(MANA) X(ENERGY) X(LIFE) X(FREE)
 #define RMSTATE_SHIELD_KIND(X) X(COMBAT_DAMAGE)
 #define RMSTATE_CAST_VARIANT(X) \
     X(FLASHBACK)                \
     X(EVOKE)                    \
-    X(ESCAPE) X(OFFSPRING) X(IMPENDING) X(WARP) X(BACK_FACE) X(ALT_COST) X(IMPULSE) X(COMPANION) X(SUSPEND) X(CANCEL)
-#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT) X(EXPERT_BELIEF)
+    X(ESCAPE)                   \
+    X(OFFSPRING)                \
+    X(IMPENDING) X(WARP) X(BACK_FACE) X(ALT_COST) X(IMPULSE) X(COMPANION) X(SUSPEND) X(CANCEL) X(WITHOUT_MANA_COST) X(OVERLOAD) X(FUSED) X(ADVENTURE) X(BESTOW) X(PREPARED) X(GRAVEYARD_REPLACED) X(BARGAINED) X(FACE_DOWN)
+#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT)
 #define RMSTATE_POOL_KIND(X) X(HAND) X(LIBRARY_RANGE) X(SIDEBOARD) X(FACE_DOWN) X(SET_ASIDE)
 #define RMSTATE_AMOUNT_KIND(X) X(NONE) X(FIXED) X(VARIABLE)
+#define RMSTATE_MANA_RESTRICTION(X) \
+    X(NONE) X(CHOSEN_TYPE_CREATURE) X(CREATURE) X(COLORLESS_ELDRAZI) X(NO_NONARTIFACT_SPELLS)
 #define RMSTATE_TARGET_CLASS(X) \
     X(CREATURE)                 \
     X(PLANESWALKER)             \
@@ -162,6 +167,9 @@ enum class KnowledgeLevel : uint8_t {
 enum class PoolKind : uint8_t {
     RMSTATE_POOL_KIND(RMSTATE_ENUM_VALUE)
 };
+enum class ManaRestrictionKind : uint8_t {
+    RMSTATE_MANA_RESTRICTION(RMSTATE_ENUM_VALUE)
+};
 enum class AmountKind : uint8_t {
     RMSTATE_AMOUNT_KIND(RMSTATE_ENUM_VALUE)
 };
@@ -173,9 +181,8 @@ enum class PartKind : uint8_t {
 };
 
 // ── Tables ────────────────────────────────────────────────────────────────────────────────────
-// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 9-14, DECKLISTS 15-16, METAGAME
-// 17-19, STATE snapshot 20-48, events 80-82, knowledge 90-97, belief 98-99. The strings pool (1)
-// belongs to every frame.
+// Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 9-14, DECKLISTS 15-16, STATE
+// snapshot 20-48, events 80-82, knowledge 90-95. The strings pool (1) belongs to every frame.
 enum class TableId : uint16_t {
     STRINGS = 1,
     SCHEMA_TABLE = 2,
@@ -189,9 +196,6 @@ enum class TableId : uint16_t {
     CARD_PIP = 14,
     DECKLIST = 15,
     DECKLIST_CARD = 16,
-    META_ARCHETYPE = 17,
-    META_LIST = 18,
-    META_LIST_CARD = 19,
     HEADER = 20,
     TURN = 21,
     PLAYER = 22,
@@ -221,6 +225,7 @@ enum class TableId : uint16_t {
     MENU = 46,
     MATCH = 47,
     OWN_DECK = 48,
+    POOL_MANA = 49,
     EVENT = 80,
     EVENT_CARD = 81,
     EVENT_PLAYER = 82,
@@ -230,10 +235,6 @@ enum class TableId : uint16_t {
     K_POOL_CARD = 93,
     K_POSITION = 94,
     K_KNOWN_HAND = 95,
-    K_TEMPLATE = 96,
-    K_ARCHETYPE = 97,
-    B_LIST = 98,
-    B_ARCHETYPE = 99,
 };
 
 struct ColumnDef {
@@ -310,9 +311,10 @@ class FrameWriter {
                 Row &i64(int64_t v);
                 Row &f32(float v);
                 Row &text(const std::string &s);
+                // A cell of a column named by its storage: an integer's bits.
+                void put(Storage s, uint64_t bits);
 
             private:
-                void put(Storage s, uint64_t bits);
                 TableBuf *buf_;
                 const TableDef *def_;
                 size_t at_ = 0;  // the row's first byte in buf_->bytes (sized for the whole row)

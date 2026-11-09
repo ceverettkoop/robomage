@@ -5,34 +5,38 @@
 #include <string>
 #include <vector>
 
+#include "components/filter_spec.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
 
 class Orderer;
 class FrameCtx;
+struct Ability;
+struct ResolveCtx;
 
 // What one pick of a search (CR 701.23) looks through and for.
 struct ZoneSearch {
     Zone::Ownership owner = Zone::PLAYER_A;   // whose zones are searched
     std::vector<Zone::ZoneValue> zones;       // searched together (Doomsday: Graveyard,Library)
     // Comma-separated ChangeType$ filter alternatives; empty (or "Card") matches every card.
-    std::string change_type;
+    FilterSpec change_type;
     // Mandatory$: "fail to find" is offered only when nothing matches.
     bool mandatory = false;
     Zone::ZoneValue destination = Zone::HAND;  // where the chosen card is headed (picks the menu kind)
     // Every offered card is public knowledge (a revealed tutor), so observers may show the chosen
     // card's name even into a hidden zone.
     bool reveal = false;
-    // Mana-value bound on the candidates (Aether Vial: MV == its charge counters): cmc_op
-    // ("EQ"/"LE"/...) against cmc_bound; -1 = none.
+    // The value of the SVar a cmc<OP><SVar> qualifier of change_type reads (Aether Vial: its charge
+    // counters); -1 = none.
     int cmc_bound = -1;
-    std::string cmc_op;
-    // The resolving chain's card target, for a ChangeType `targetedBy` alternative (Cloak and
-    // Dagger, Entwined); 0 = none.
-    Entity chain_target = 0;
-    // Leave out the objects this resolution has already remembered (Doomsday choosing its five
-    // cards one at a time).
+    // What a ChangeType `targetedBy` alternative reads its chain's target from (Cloak and Dagger,
+    // Entwined); null = none.
+    const ResolveCtx *resolve = nullptr;
+    // Leave out the objects this resolution has already remembered, and the ones the searching
+    // effect `picking` has moved so far and will remember when it finishes (Doomsday choosing its
+    // five cards one at a time).
     bool exclude_remembered = false;
+    const Ability *picking = nullptr;
 };
 
 // Searches `search.zones` for cards matching the comma-separated change_type string. Presents all

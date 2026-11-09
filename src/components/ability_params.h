@@ -7,6 +7,10 @@
 #include <vector>
 
 #include "../classes/colors.h"
+#include "cast_option.h"
+#include "filter_spec.h"
+#include "object_spec.h"
+#include "zone.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -24,6 +28,7 @@
 // alternatives. Only cleanly-exclusive groups become variant alternatives.
 
 struct PumpParams {
+    Zone::ZoneValue zone = Zone::BATTLEFIELD;  // PumpZone$ — where an object must be to be pumped
     int att = 0;  // NumAtt$ — power modifier (can be negative)
     int def = 0;  // NumDef$ — toughness modifier (can be negative)
     // NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid Eldrazi.YouCtrl):
@@ -55,22 +60,22 @@ struct DamageParams {
     size_t delirium_amount = 0;      // damage dealt when the caster has delirium
     std::string valid_players = "";  // DamageAll's ValidPlayers$: the players also dealt the
                                      // damage (player_matches_target_spec form; empty = none)
+    ObjectSpec source;               // DamageSource$: what deals it; DEFAULT = the ability's source
+    // DividedAsYouChoose$: the total its controller divides among its targets (CR 601.2d), as a
+    // number or an expression read once X is announced.
+    bool divided = false;
+    int divided_total = 0;
+    std::string divided_expr = "";
 };
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
 struct DestroyAllParams {
-    std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
+    FilterSpec filter;  // ValidCards$ — type/CMC filter for what to destroy
     // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
     // cast (the legacy cmcLEX path keys off current_x_paid()). Wrath of the Skies'
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
-    // expression and cmc_op the comparator ("LE"). Empty = no dynamic bound.
+    // expression. Empty = no dynamic bound.
     std::string cmc_expr = "";
-    std::string cmc_op = "";
-    // UnlessCost$ PayEnergy<N> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies):
-    // the controller pays N energy ({E}); with UnlessSwitched the destroy happens ONLY IF the
-    // energy is paid. energy_unless_expr is the runtime Count$ expression for N (Count$ChosenNumber).
-    std::string energy_unless_expr = "";
-    bool energy_unless_switched = false;  // UnlessSwitched$ True — invert to "do only if paid"
 };
 
 // Token creation (e.g. Cori-Steel Cutter). TokenScript$ string parsed at resolve.
@@ -123,7 +128,7 @@ struct CounterParams {
 
 // Discard (e.g. Thoughtseize/Duress/Cabal Therapy).
 struct DiscardParams {
-    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
+    FilterSpec valid;  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
     // Mode$ — "RevealYouChoose" (default): target player reveals hand, the ability's
     // controller picks ONE matching card to discard (Thoughtseize/Duress). Empty is
     // treated as this default. "RevealDiscardAll": target player reveals hand and discards
@@ -136,6 +141,8 @@ struct DiscardParams {
 // Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
+    // RevealDefined$ <objects> (Stronghold Gambit's DBRevealCard): the cards a Reveal reveals.
+    ObjectSpec reveal_defined;
     bool no_reveal = false;  // NoReveal$ True
     // RevealOptional$ True (Delver of Secrets): "You may reveal that card" — the controller
     // chooses whether to reveal the peeked card; without it the card is revealed.
@@ -159,6 +166,35 @@ struct AmassParams {
     std::string subtype = "";  // Type$ — amassed creature subtype, e.g. "Orc"
 };
 
+// Empower (Theorist's Proxy: "empower Jace 3"). The counter count lives in the shared
+// Ability::amount field; the subtype names the token and which of them the counters go on.
+struct EmpowerParams {
+    std::string subtype = "";  // Type$, a row of effect_empower.cpp's kEmpowerTokens
+};
+
+// DB$ Play: a card cast during the resolution (CR 608.2g). The optionality is carried by
+// optional_choice (Optional$ True).
+struct PlayParams {
+    // PlayCost$: what is paid rather than the card's mana cost, and how much: a literal int (as a
+    // string) or "ConvertedManaCost" (the spell's mana value). Amped Raptor pays energy. NORMAL:
+    // the card's own cost (Bilbo). FREE: WithoutManaCost$ True (Beseech the Mirror).
+    GrantResource cost_resource = GrantResource::NORMAL;
+    std::string cost_expr = "";
+    FilterSpec valid_sa;  // ValidSA$: the spells it may be cast as, read as the face it would be
+    bool needs_bargain = false;  // Condition$ Bargain: only if the spell doing this was bargained
+    // ValidZone$ + Valid$: the cards it may cast are those of the zone the filter matches, rather
+    // than Defined$'s.
+    bool from_zone = false;
+    Zone::ZoneValue zone = Zone::GRAVEYARD;
+    FilterSpec valid;
+    // ReplaceGraveyard$ + ReplaceGraveyardValid$: where a spell cast this way goes if it would be put
+    // into a graveyard, and which spells that is. Bilbo: "If an instant or sorcery spell cast this
+    // way would be put into your graveyard, exile it instead."
+    bool replaces_graveyard = false;
+    Zone::ZoneValue graveyard_replaced_by = Zone::EXILE;
+    FilterSpec graveyard_replaced_valid;
+};
+
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
 // beginning of your next upkeep").
 struct DelayedTriggerParams {
@@ -178,6 +214,11 @@ struct DelayedTriggerParams {
     // Targeted, in cur_game.resolution.memory.remembered at registration); Origin$/Destination$ on the
     // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
     bool mode_changes_zone = false;
+    // Mode$ SpellCast (Theorist's Proxy's "the next spell you cast this turn"): fires at the next
+    // spell its controller casts, ValidActivatingPlayer$ You, ValidCard$ Card. Static$ True: it
+    // resolves off the stack as the spell is cast (off_stack).
+    bool mode_spell_cast = false;
+    bool off_stack = false;
     // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —
     // "this turn"); if the watched object has not moved by end of turn the trigger expires unfired.
     bool this_turn = false;

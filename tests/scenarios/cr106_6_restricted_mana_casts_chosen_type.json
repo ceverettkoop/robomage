@@ -1,0 +1,13 @@
+{
+  "name": "cr106_6_restricted_mana_casts_chosen_type",
+  "why": "CR 106.6: Cavern of Souls' restricted mana casts a creature spell of the chosen type (Stoneforge Mystic, a Kor Artificer) and no other (Thalia, a Human Soldier)",
+  "hand_a": ["Cavern of Souls", "Stoneforge Mystic", "Thalia Guardian of Thraben"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_a": ["Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:land:Cavern of Souls", "A:desc:Artificer", "A:cast:Stoneforge Mystic"],
+  "max_decisions": 6,
+  "expect": ["Player A activated Cavern of Souls for 1\\(W\\)", "Player A casts Stoneforge Mystic"],
+  "expect_menu_not": ["Cast Thalia"]
+}

@@ -9,10 +9,9 @@
 
 using rmcheck::Rows;
 
-// One seat's names and reference lists as its CARDS and METAGAME frames gave them so far.
+// One seat's card names as its CARDS frames gave them so far.
 struct SeatNames {
         std::map<int64_t, std::string> cards;
-        std::vector<std::string> lists, labels;
 };
 
 static std::string card_name(const SeatNames &n, const Rows &t, size_t r, int c);
@@ -23,6 +22,12 @@ static std::string libpos(const Rows &t, size_t r, int c_anchor, int c_pos, int 
 static void facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 static void stack_target_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
+static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out);
+static void object_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
+static size_t rows_of_object(const Rows &table, uint64_t handle);
+static void identity_facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out);
 
 static std::string card_of(const SeatNames &n, int64_t cid) {
@@ -54,6 +59,7 @@ static std::string libpos(const Rows &t, size_t r, int c_anchor, int c_pos, int 
 
 static void facts(
     const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    object_facts(f, s, n, out);
     const Rows meta(f, s, "k_meta");
     for (size_t r = 0; r < meta.size(); ++r)
         out->push_back("meta level=" + meta.name(r, meta.col("level")) +
@@ -115,24 +121,124 @@ static void facts(
     for (size_t r = 0; r < kh.size(); ++r)
         out->push_back(
             "known_hand " + card_name(n, kh, r, kh.col("card")) + " x" + std::to_string(kh.u(r, kh.col("copies"))));
-    const Rows tp(f, s, "k_template");
-    for (size_t r = 0; r < tp.size(); ++r) {
-        const uint64_t li = tp.u(r, tp.col("list"));
-        const std::string name = li < n.lists.size() ? n.lists[static_cast<size_t>(li)] : "#" + std::to_string(li);
-        out->push_back("list " + rel_text(tp.u(r, tp.col("player_rel"))) + " " + name + " " +
-                       (tp.u(r, tp.col("consistent")) ? "consistent" : "inconsistent") +
-                       (tp.u(r, tp.col("exact")) ? "" : " unproven") +
-                       (tp.u(r, tp.col("registered")) ? " registered" : ""));
-    }
-    const Rows ar(f, s, "k_archetype");
-    for (size_t r = 0; r < ar.size(); ++r) {
-        const uint64_t ai = ar.u(r, ar.col("archetype"));
-        const std::string label = ai < n.labels.size() ? n.labels[static_cast<size_t>(ai)] : "#" + std::to_string(ai);
-        out->push_back("archetype " + rel_text(ar.u(r, ar.col("player_rel"))) + " " + label + " " +
-                       (ar.u(r, ar.col("possible")) ? "possible" : "impossible") +
-                       (ar.u(r, ar.col("exact")) ? " exact" : ""));
-    }
     stack_target_facts(f, s, n, out);
+    mana_facts(f, s, out);
+    identity_facts(f, s, n, out);
+}
+
+// Where a card column shows an identity outside the object table: a stack row, the pending decision,
+// a menu row (its text too), and each card of the frame's events.
+static void identity_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    const auto shown = [&n](const Rows &t, size_t r, int c) {
+        return t.null(r, c) ? std::string("none") : card_name(n, t, r, c);
+    };
+    const Rows stack(f, s, "stack");
+    for (size_t r = 0; r < stack.size(); ++r)
+        out->push_back("stack " + stack.name(r, stack.col("kind")) + " card=" + shown(stack, r, stack.col("source_card")) +
+                       " variant=" + std::to_string(stack.u(r, stack.col("variant"))));
+    const Rows pending(f, s, "pending");
+    for (size_t r = 0; r < pending.size(); ++r)
+        out->push_back("pending " + pending.name(r, pending.col("tag")) + " card=" + shown(pending, r, pending.col("source_card")));
+    const Rows cost(f, s, "pending_cost");
+    for (size_t r = 0; r < cost.size(); ++r)
+        out->push_back("pending_cost " + cost.name(r, cost.col("part")) +
+                       " discard=" + std::to_string(cost.u(r, cost.col("rem_discard"))));
+    const Rows menu(f, s, "menu");
+    for (size_t r = 0; r < menu.size(); ++r)
+        out->push_back("menu " + menu.name(r, menu.col("category")) + " card=" + shown(menu, r, menu.col("source_card")) +
+                       " text=" + menu.text(r, menu.col("description")));
+    const Rows reveal(f, s, "reveal");
+    for (size_t r = 0; r < reveal.size(); ++r)
+        out->push_back("reveal " + reveal.name(r, reveal.col("window")) + " " + reveal.name(r, reveal.col("zone")) +
+                       " pos=" + std::to_string(reveal.u(r, reveal.col("pos"))) +
+                       " card=" + shown(reveal, r, reveal.col("card")));
+    const Rows objects(f, s, "object");
+    const Rows permissions(f, s, "play_permission");
+    for (size_t r = 0; r < permissions.size(); ++r)
+        for (size_t o = 0; o < objects.size(); ++o)
+            if (objects.u(o, objects.col("handle")) == permissions.u(r, permissions.col("obj")))
+                out->push_back("permission " + rel_text(permissions.u(r, permissions.col("player_rel"))) + " " +
+                               permissions.name(r, permissions.col("kind")) + " card=" + shown(objects, o, objects.col("card")));
+    const Rows events(f, s, "event");
+    const Rows cards(f, s, "event_card");
+    for (size_t r = 0; r < cards.size(); ++r) {
+        const size_t e = static_cast<size_t>(cards.u(r, cards.col("event")));
+        out->push_back("event " + events.name(e, events.col("kind")) + " " + events.name(e, events.col("zone")) + ">" +
+                       events.name(e, events.col("to_zone")) + " card=" + shown(cards, r, cards.col("card")) +
+                       " face_down=" + std::to_string(cards.u(r, cards.col("face_down"))));
+    }
+}
+
+// How many rows of the child table `table` are the object `handle`'s.
+static size_t rows_of_object(const Rows &table, uint64_t handle) {
+    size_t count = 0;
+    for (size_t r = 0; r < table.size(); ++r)
+        if (table.u(r, table.col("obj")) == handle) ++count;
+    return count;
+}
+
+// Each object's zone, owner and colors as this frame shows them, that it attacked this turn, the P/T
+// a card off the battlefield shows (none at 0/0), and a face-down object's card and characteristics
+// as this frame shows them.
+static void object_facts(
+    const rmstate::DecodedFrame &f, const rmstate::Schema &s, const SeatNames &n, std::vector<std::string> *out) {
+    const Rows objects(f, s, "object"), subtypes(f, s, "object_subtype"), keywords(f, s, "object_keyword");
+    const Rows granted(f, s, "object_ability");
+    for (size_t r = 0; r < objects.size(); ++r) {
+        const std::string owner = rel_text(objects.u(r, objects.col("owner_rel")));
+        out->push_back("object " + owner + " " + objects.name(r, objects.col("zone")) +
+                       " colors=" + std::to_string(objects.u(r, objects.col("colors"))));
+        if (objects.u(r, objects.col("attacked")) != 0) out->push_back("attacked " + owner);
+        const std::string zone = objects.name(r, objects.col("zone"));
+        const int64_t power = objects.i(r, objects.col("power")), toughness = objects.i(r, objects.col("toughness"));
+        if (zone != "BATTLEFIELD" && !objects.null(r, objects.col("card")) && (power != 0 || toughness != 0))
+            out->push_back("pt " + owner + " " + zone + " " + card_name(n, objects, r, objects.col("card")) + " " +
+                           std::to_string(power) + "/" + std::to_string(toughness));
+        if (objects.u(r, objects.col("face_down")) == 0) continue;
+        const uint64_t handle = objects.u(r, objects.col("handle"));
+        out->push_back("face_down " + owner + " " + objects.name(r, objects.col("zone")) + " card=" +
+                       (objects.null(r, objects.col("card")) ? "none" : card_name(n, objects, r, objects.col("card"))) +
+                       " pt=" + std::to_string(objects.i(r, objects.col("power"))) + "/" +
+                       std::to_string(objects.i(r, objects.col("toughness"))) +
+                       " types=" + std::to_string(objects.u(r, objects.col("types"))) +
+                       " mv=" + std::to_string(objects.u(r, objects.col("mana_value"))) +
+                       " subtypes=" + std::to_string(rows_of_object(subtypes, handle)) +
+                       " keywords=" + std::to_string(rows_of_object(keywords, handle)) +
+                       " abilities=" + std::to_string(rows_of_object(granted, handle)));
+    }
+    const Rows &abilities = granted;
+    for (size_t r = 0; r < abilities.size(); ++r) {
+        if (abilities.u(r, abilities.col("exhausted")) == 0) continue;
+        for (size_t o = 0; o < objects.size(); ++o)
+            if (objects.u(o, objects.col("handle")) == abilities.u(r, abilities.col("obj")))
+                out->push_back("exhausted " + rel_text(objects.u(o, objects.col("owner_rel"))));
+    }
+}
+
+// A nonempty pool as the player row counts it, each pool_mana row, and a player's speed.
+static void mana_facts(const rmstate::DecodedFrame &f, const rmstate::Schema &s, std::vector<std::string> *out) {
+    const Rows players(f, s, "player");
+    for (size_t r = 0; r < players.size(); ++r) {
+        std::string pool;
+        for (const char *color : {"w", "u", "b", "r", "g", "c"}) {
+            const uint64_t n = players.u(r, players.col((std::string("mana_") + color).c_str()));
+            if (n) pool += std::string(" ") + color + "=" + std::to_string(n);
+        }
+        if (!pool.empty()) out->push_back("mana " + rel_text(players.u(r, players.col("player_rel"))) + pool);
+        if (const uint64_t speed = players.u(r, players.col("speed")))
+            out->push_back("speed " + rel_text(players.u(r, players.col("player_rel"))) + " v=" + std::to_string(speed - 1) +
+                           " triggered=" + std::to_string(players.u(r, players.col("speed_triggered"))));
+    }
+    const Rows pm(f, s, "pool_mana");
+    for (size_t r = 0; r < pm.size(); ++r)
+        out->push_back("mana_unit " + rel_text(pm.u(r, pm.col("player_rel"))) + " " + pm.name(r, pm.col("color")) + " x" +
+                       std::to_string(pm.u(r, pm.col("count"))) + " restriction=" + pm.name(r, pm.col("restriction")) +
+                       (pm.text(r, pm.col("chosen_type")).empty() ? "" : " type=" + pm.text(r, pm.col("chosen_type"))) +
+                       " activated=" + std::to_string(pm.u(r, pm.col("activated"))) +
+                       " on_battlefield=" + std::to_string(pm.u(r, pm.col("activated_on_battlefield"))) +
+                       " cant_be_countered=" + std::to_string(pm.u(r, pm.col("cant_be_countered"))) +
+                       (pm.null(r, pm.col("keyword")) ? "" : " keyword=" + pm.name(r, pm.col("keyword"))));
 }
 
 static void stack_target_facts(
@@ -189,12 +295,6 @@ bool knowledge_frames(const std::vector<std::string> &payloads,
             for (size_t r = 0; r < card.size(); ++r)
                 n.cards.emplace(card.null(r, card.col("card")) ? -1 : static_cast<int64_t>(card.u(r, card.col("card"))),
                     card.text(r, card.col("name")));
-        } else if (kind == KIND_METAGAME) {
-            const Rows lists(f, s, "meta_list"), labels(f, s, "meta_archetype");
-            n.lists.clear();
-            n.labels.clear();
-            for (size_t r = 0; r < lists.size(); ++r) n.lists.push_back(lists.text(r, lists.col("name")));
-            for (size_t r = 0; r < labels.size(); ++r) n.labels.push_back(labels.text(r, labels.col("name")));
         } else if (kind == KIND_STATE) {
             const Rows turn(f, s, "turn");
             const std::string when = header_value(f, s, "sideboarding")

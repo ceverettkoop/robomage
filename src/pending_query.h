@@ -27,10 +27,17 @@ struct PendingQuery {
         ATTACK_TARGET,  // declare-attackers target sub-prompt
         BLOCK_TARGET,   // declare-blockers target sub-prompt
         DAMAGE_ASSIGN,  // combat damage assignment order
-        TRIGGER_PLACE   // trigger ordering / trigger target selection
+        TRIGGER_PLACE,  // trigger ordering / trigger target selection
+        // Paying for a special action (PendingSpecialAction). Its one prompt is a mid-payment
+        // one, so no frame names it and the state format's pending_tag table ends above it.
+        SPECIAL_ACTION
     };
     Tag tag = NONE;
     bool active = false;
+    // A step of paying a chosen cost's mana: a row of the interactive mana payment or a hybrid pip
+    // (AskKind::MID_PAYMENT). It offers no Cancel of its own proposal and the state format
+    // reports no paused flow for it.
+    bool mid_payment = false;
     std::vector<LegalAction> menu;  // the suspended menu, re-emitted verbatim
     bool chooser_is_a = true;       // who answers (priority is persisted here on suspend)
     Entity decision_source = 0;     // pending-decision context for the observation
@@ -43,6 +50,13 @@ struct PendingQuery {
     // exact ambient priority it would have seen inline.
     bool prev_priority = false;
 };
+
+// Park a decision of a flow that keeps its own state (the cast, activation and special-action
+// state machines) for the main loop to emit. `chooser` already holds priority at every such
+// prompt, so the seat is not repointed; the latched answer goes back through the flow's
+// resume_choice. Under --offer-cancel a `cancellable` prompt also offers "Cancel".
+void arm_flow_query(PendingQuery::Tag tag, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                    Entity decision_source, bool cancellable = true);
 
 // ── SBE_LATCHED helpers (latched-answer re-derivation flavor) ───────────────
 //
@@ -62,6 +76,8 @@ enum class SbeSite : uint32_t {
     ETB_CHOOSE_TYPE = 2,   // ETB choose-a-creature-type (context: the entering entity)
     ETB_NAME_CARD = 3,     // ETB name-a-card (context: the entering entity)
     ETB_TAPPED_LIFE = 4,   // "enters tapped unless you pay N life" y/n (context: the entering entity)
+    ETB_CHOOSE_COLOR = 5,  // ETB choose-a-color (context: the entering entity)
+    ETB_COPY = 6,          // enter as a copy of what (context: the entering entity)
 };
 
 uint64_t pq_key(SbeSite site, bool chooser_is_a, uint64_t context, size_t menu_size);

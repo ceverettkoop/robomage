@@ -1,6 +1,8 @@
 #ifndef RULES_MODIFYING_H
 #define RULES_MODIFYING_H
 
+#include <cstddef>
+
 #include "../ecs/entity.h"
 #include "../components/zone.h"
 
@@ -26,6 +28,10 @@ namespace rules_mod {
 // (ValidSA$ Activated.!ManaAbility).
 bool activation_prohibited(Entity source);
 bool mana_activation_prohibited(Entity permanent);
+
+// CantPreventDamage (Frenzied Baloth): is this damage, combat damage or not, unpreventable (CR
+// 615.12)? A prevention effect still applies to it and prevents none of it.
+bool damage_cant_be_prevented(bool is_combat);
 
 // CantBeCast: may `caster` not cast `card` right now? The spell's printed characteristics are
 // read from `card` (its type line short-circuits the nonCreature filter; its mana value and
@@ -59,6 +65,20 @@ bool opponent_sorcery_speed_locked(Zone::Ownership caster);
 // this (the lock is applied after in the gate).
 bool cast_with_flash_active(Zone::Ownership caster, const CardData &card);
 
+// Free-cast statics (Omniscience: "You may cast spells from your hand without paying their mana
+// costs"; Aluren: any player, creature spells with mana value 3 or less, as though they had flash;
+// MayPlay$ True with MayPlayWithoutManaCost$ True): may `caster` cast `card`, from the zone it is
+// in now and as `face` (the card's own CardData, or the back face / second half being cast),
+// without paying its mana cost — the alternative cost of CR 118.9? `with_flash` reports whether
+// such a cast may be made as though the spell had flash (MayPlayWithFlash$; CR 601.3c: the flash
+// comes with that cost only). The statics open no zone: callers ask only where the card may be
+// cast from already (the hand, a graveyard or exile permission).
+struct FreeCastGrant {
+        bool granted = false;
+        bool with_flash = false;
+};
+FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership caster);
+
 // CantAttack (Ensnaring Bridge): may the creature `creature` NOT be declared as an attacker
 // right now (CR 509.1a)? True when any active CantAttack static's ValidCard$ filter matches it.
 // A dynamic power/toughness-vs-X qualifier (Ensnaring Bridge's Creature.powerGTX, "power greater
@@ -68,9 +88,37 @@ bool cast_with_flash_active(Zone::Ownership caster, const CardData &card);
 // prohibited creature is never offered as a legal attacker.
 bool attack_prohibited(Entity creature);
 
+// May `blocker` not be declared as a blocker of `attacker` (CR 509.1b)? Each restriction on one
+// blocker and one attacker is a row of the table in rules_modifying.cpp: the attacker can't be
+// blocked this turn (Kappa Cannoneer), landwalk (702.14c), shadow (702.28b), flying and reach
+// (702.9b, 702.17b), protection (702.16f), and an active CantBlockBy static whose ValidAttacker$
+// matches the attacker and its ValidBlocker$, if any, the blocker: Brazen Borrower, whose "can block
+// only creatures with flying" reads as can't block Creature.withoutFlying.
+bool block_prohibited(Entity blocker, Entity attacker);
+
+// The fewest creatures that may block `attacker` (CR 509.1b; 702.111b, menace: two). A restriction
+// on the whole declaration: no one blocker and attacker can break it, so it is read as the
+// declaration closes.
+size_t minimum_blockers(Entity attacker);
+
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);
 bool may_play_lands_from_graveyard(Zone::Ownership player);
+// Does a static let `player` cast spells from their graveyard (Gaea's Will)?
+bool may_cast_spells_from_graveyard(Zone::Ownership player);
+// Does a permanent's static say so for lands, which lasts past this turn, and not an Effect's alone?
+bool graveyard_land_permission_outlasts_turn(Zone::Ownership player);
+// Does a static let `player` cast `card`, read as the spell `face` would be (CR 601.3e), from the
+// library it is in (Mystic Forge)?
+bool may_cast_from_library(Zone::Ownership player, Entity card, const CardData &face);
+
+// One look a MayLookAt$ static gives right now: `looker` may see `card`, a library's top card.
+struct StandingLook {
+    Entity card = 0;
+    Zone::Ownership looker = Zone::UNKNOWN;
+};
+// Every look the statics give right now, read off each library's live top card, in library order.
+std::vector<StandingLook> standing_looks();
 
 // How many lands `player` may still play this turn (CR 305.2 plus AdjustLandPlays
 // statics), clamped at 0 — `land_play_limit` is the per-turn allowance (1 + bonus),

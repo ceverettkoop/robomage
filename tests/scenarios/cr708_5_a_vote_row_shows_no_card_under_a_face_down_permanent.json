@@ -1,0 +1,46 @@
+{
+  "name": "cr708_5_a_vote_row_shows_no_card_under_a_face_down_permanent",
+  "why": "CR 708.5: a choice among permanents that all can see (Council's Judgment's vote) doesn't show the player choosing the card under another player's face-down permanent.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Plains",
+    "Council's Judgment"
+  ],
+  "library_b": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Plains",
+    "Plains"
+  ],
+  "face_down_a": [
+    "Goblin Guide"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Plains",
+    "B:cast:Council's Judgment"
+  ],
+  "max_decisions": 8,
+  "expect_dump": [
+    "^B .*menu CHOOSE_CARD card=none text=Vote to exile Face-down creature"
+  ],
+  "expect_dump_not": [
+    "^B .*card=Goblin Guide"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears"
+  ]
+}

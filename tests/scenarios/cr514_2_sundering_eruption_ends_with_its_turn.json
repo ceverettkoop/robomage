@@ -1,0 +1,68 @@
+{
+  "name": "cr514_2_sundering_eruption_ends_with_its_turn",
+  "why": "CR 514.2, 611.2a: the effect of Sundering Eruption lasts this turn: on the next, a creature without flying blocks again",
+  "hand_a": [
+    "Sundering Eruption"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Sundering Eruption",
+    "A:target:Forest@opp",
+    "B:search:fail",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "B:attack:done",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "B:block:Grizzly Bears"
+  ],
+  "max_decisions": 24,
+  "expect": [
+    "Grizzly Bears blocking Grizzly Bears"
+  ],
+  "expect_order": [
+    "Grizzly Bears deals 2 damage to Player B",
+    "Grizzly Bears blocking Grizzly Bears"
+  ],
+  "expect_not": [
+    "shuffles"
+  ]
+}

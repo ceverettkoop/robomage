@@ -20,7 +20,10 @@ namespace {
 
 // The batcher's pad multiple (featurize/batch.h): no padded dimension is 0 or 1.
 const size_t PAD_MULTIPLE = 8;
-const char *const META_KEYS[] = {"spec_hash", "vocab_hash", "text_model", "policy_version"};
+const char *const META_KEYS[] = {
+    "spec_hash", "vocab_hash", "text_model", "policy_version", "layout_hash", "tables_digest", "vocab"};
+// The keys an export made before model manifests lacks.
+const char *const OPTIONAL_KEYS[] = {"policy_version", "layout_hash", "tables_digest", "vocab"};
 
 // The in-process evaluator: one TorchScript module or AOTInductor package on the CPU.
 class ModelEvaluator : public actor::Evaluator {
@@ -85,16 +88,23 @@ static torch::Tensor bool_tensor(const std::vector<uint8_t> &v, std::initializer
 
 bool ModelEvaluator::read_metadata(const std::unordered_map<std::string, std::string> &meta, std::string *err) {
     for (const char *key : META_KEYS) {
+        const std::string k = key;
         auto it = meta.find(key);
-        if (it == meta.end() && std::string(key) == "policy_version") continue;
         if (it == meta.end()) {
+            if (std::find(std::begin(OPTIONAL_KEYS), std::end(OPTIONAL_KEYS), k) != std::end(OPTIONAL_KEYS)) continue;
             *err = info_.path + ": the model carries no " + key;
             return false;
         }
-        const std::string k = key;
-        if (k == "spec_hash") info_.spec_hash = it->second;
-        if (k == "vocab_hash") info_.vocab_hash = it->second;
-        if (k == "text_model") info_.text_model = it->second;
+        featurize::Manifest &m = info_.manifest;
+        if (k == "spec_hash") m.spec_hash = it->second;
+        if (k == "vocab_hash") m.vocab_hash = it->second;
+        if (k == "text_model") m.text_model = it->second;
+        if (k == "layout_hash") m.layout_hash = it->second;
+        if (k == "tables_digest") m.tables_digest = it->second;
+        if (k == "vocab" && !featurize::parse_vocab_json(it->second, &m.vocab, err)) {
+            *err = info_.path + ": its vocab metadata: " + *err;
+            return false;
+        }
         if (k == "policy_version") {
             char *end = nullptr;
             info_.policy_version = std::strtoull(it->second.c_str(), &end, 10);
@@ -204,21 +214,10 @@ std::unique_ptr<Evaluator> load_model_evaluator(
 }
 
 bool check_model(const ModelInfo &model, const featurize::Featurization &f, std::string *err) {
-    const std::string spec = featurize::hex16(f.spec.hash), vocab = featurize::hex16(f.spec.vocab_hash);
-    if (model.spec_hash != spec) {
-        *err = model.path + ": the model's spec_hash " + model.spec_hash + " is not the featurizer's " + spec +
-               " (re-export it from the current tables: rmfeat --export-tables)";
-        return false;
-    }
-    if (model.vocab_hash != vocab) {
-        *err = model.path + ": the model's vocab_hash " + model.vocab_hash + " is not the vocab's " + vocab;
-        return false;
-    }
-    if (model.text_model != f.text_model) {
-        *err = model.path + ": the model's text_model " + model.text_model + " is not the text table's " + f.text_model;
-        return false;
-    }
-    return true;
+    const featurize::Refusal r = featurize::check_compatible(model.manifest, f.manifest(), true);
+    if (!r.refused()) return true;
+    *err = model.path + ": " + r.message;
+    return false;
 }
 
 }  // namespace actor

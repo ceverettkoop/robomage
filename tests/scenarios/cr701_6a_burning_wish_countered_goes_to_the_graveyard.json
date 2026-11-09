@@ -1,0 +1,53 @@
+{
+  "name": "cr701_6a_burning_wish_countered_goes_to_the_graveyard",
+  "why": "CR 701.6a, 608.2c: a countered Burning Wish doesn't resolve, so its exile instruction never runs and it goes to the graveyard",
+  "hand_a": [
+    "Burning Wish",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "sideboard_a": [
+    "Reanimate"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Burning Wish",
+    "B:cast:Counterspell",
+    "B:target:Burning Wish@opp"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Burning Wish is countered"
+  ],
+  "expect_not": [
+    "Burning Wish is exiled"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

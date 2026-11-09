@@ -1,0 +1,45 @@
+{
+  "name": "cr702_21a_a_new_target_triggers_ward",
+  "why": "CR 702.21a, 115.7: a permanent that becomes a target by a change becomes the target: B's Bolt changed onto A's Kappa Cannoneer triggers its Ward.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears",
+    "Kappa Cannoneer"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Lightning Bolt",
+    "B:target:Grizzly Bears",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Change the target",
+    "A:target:Kappa Cannoneer"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Lightning Bolt now targets Kappa Cannoneer",
+    "Ward"
+  ]
+}

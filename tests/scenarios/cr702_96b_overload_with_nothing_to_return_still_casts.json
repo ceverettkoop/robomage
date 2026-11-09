@@ -1,0 +1,14 @@
+{
+  "name": "cr702_96b_overload_with_nothing_to_return_still_casts",
+  "why": "CR 702.96b: overload needs no target, so the overloaded spell is cast with no nonland permanent to return and does nothing; the unoverloaded spell has no legal target and isn't offered.",
+  "hand_a": ["Cyclonic Rift"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Cyclonic Rift (overload)"],
+  "max_decisions": 6,
+  "expect_menu_not": ["^Cast Cyclonic Rift$"],
+  "expect": ["Player A casts Cyclonic Rift$"],
+  "expect_not": ["is moved to hand"]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "cr302_6_a_vehicle_made_a_creature_the_turn_it_came_cant_attack",
+  "why": "CR 302.6, 301.7b: Invasion Submersible cast and made a creature this turn has summoning sickness; next turn it attacks as a 3/3",
+  "hand_a": [
+    "Invasion Submersible"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Invasion Submersible",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:done",
+    "A:attack:Invasion Submersible"
+  ],
+  "max_decisions": 14,
+  "expect_order": [
+    "No creatures eligible to attack",
+    "^-------- TURN 3",
+    "Invasion Submersible deals 3 damage to Player B"
+  ]
+}

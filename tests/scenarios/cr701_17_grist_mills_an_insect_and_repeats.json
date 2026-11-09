@@ -1,0 +1,41 @@
+{
+  "name": "cr701_17_grist_mills_an_insect_and_repeats",
+  "why": "CR 701.17, 604.3: Grist's +1: a token, a mill, and if an Insect card was milled a loyalty counter and again. A second Grist milled is an Insect card, and a Swamp after it stops the process: two tokens, and loyalty 3 + 1 + 1.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grist the Hunger Tide",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Repeat"
+  ],
+  "max_decisions": 5,
+  "expect_count": {
+    "Token created: 1/1 Insect": 2,
+    "Put 1 LOYALTY counter": 1
+  },
+  "expect_order": [
+    "Player A mills Grist, the Hunger Tide\\.",
+    "now 5",
+    "Player A mills Swamp\\."
+  ]
+}

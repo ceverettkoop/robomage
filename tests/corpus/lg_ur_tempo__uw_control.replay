@@ -1,0 +1,1381 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_ur_tempo__uw_control.rmlog
+REPLAY MODE: Using embedded decks 'league/ur_tempo' / 'league/uw_control' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Ponder
+Player A draws Misty Rainforest
+Player A draws Misty Rainforest
+Player A draws Mishra's Bauble
+Player A draws Volcanic Island
+Player A draws Mishra's Bauble
+Player A draws Dragon's Rage Channeler
+Player B draws Ponder
+Player B draws Swords to Plowshares
+Player B draws Tune the Narrative
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Force of Will
+Player B draws Flooded Strand
+Player B draws Misty Rainforest
+Player A hand:
+Ponder
+Mishra's Bauble
+Mishra's Bauble
+Dragon's Rage Channeler
+Volcanic Island
+Misty Rainforest
+Misty Rainforest
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Flooded Strand
+Force of Will
+Misty Rainforest
+Ponder
+Swords to Plowshares
+Tamiyo, Inquisitive Student
+Tune the Narrative
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Cast Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 4: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Cast Mishra's Bauble
+|   5: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 8: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: The One Ring
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 9: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Volcanic Island
+|   2: Play Misty Rainforest
+|   3: Play Misty Rainforest
+|   4: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Volcanic Island)
+Player A played Volcanic Island
+| decision 11: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Dragon's Rage Channeler
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Volcanic Island for 1(U)
+Player A casts Ponder
+| decision 12: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 13: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 14: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: The One Ring
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+| decision 15: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 16: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+|   2: Mishra's Bauble
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Mishra's Bauble)
+Choose which card goes 2 from top:
+| decision 17: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Preordain
+|   1: Flow State
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Preordain)
+| decision 18: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T0 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Flow State
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 19: Player A (game 0, turn 1, UPKEEP, Player B active)
+| menu:
+|   0: Delayed trigger
+|   1: Delayed trigger
+(REPLAY) [T1 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Delayed trigger)
+Delayed trigger fires.
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Preordain
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mishra's Bauble
+Player B draws The One Ring
+| decision 20: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Misty Rainforest
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 21: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 22: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Meticulous Archive
+|   3: Mystic Sanctuary
+|   4: Plains
+|   5: Tundra
+(REPLAY) [T1 | First Main | Player B] Input: 2
+| >> Player B: 2 (Meticulous Archive)
+Player B shuffles their library
+Player B puts Meticulous Archive to the battlefield
+Meticulous Archive enters tapped.
+Meticulous Archive triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Tundra
+| decision 23: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Tundra on top of library
+|   1: Put Tundra into graveyard
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Tundra on top of library)
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Player A draws Cori-Steel Cutter
+| decision 24: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Cast Preordain
+|   4: Cast Mishra's Bauble
+|   5: Cast Dragon's Rage Channeler
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Preordain)
+Player A activated Volcanic Island for 1(U)
+Player A casts Preordain
+| decision 25: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Scry, amount: 2)
+Player A scries 2.
+Scry: looking at Prismari Charm
+Scry: looking at Wasteland
+| decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Prismari Charm on top of library
+|   1: Put Wasteland on top of library
+|   2: Put Prismari Charm on the bottom of library
+|   3: Put Wasteland on the bottom of library
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Prismari Charm on top of library)
+| decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Wasteland on top of library
+|   1: Put Wasteland on the bottom of library
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Wasteland on top of library)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Prismari Charm
+| decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Cast Mishra's Bauble
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Mishra's Bauble)
+Player A casts Mishra's Bauble
+| decision 29: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Mishra's Bauble enters the battlefield
+| decision 30: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Misty Rainforest
+|   3: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   2: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+Choose target for Mishra's Bauble:
+| decision 32: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (19 life)
+|   1: Player A (20 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (19 life))
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Thundering Falls
+|   2: Island
+|   3: Volcanic Island
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Thundering Falls)
+Player A shuffles their library
+Player A puts Thundering Falls to the battlefield
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Island
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Put Island on top of library
+|   1: Put Island into graveyard
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Island on top of library)
+Resolving ability (category: PeekAndReveal)
+Player A looks at top of Player B's library: Tundra
+Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: Draw at next Upkeep.
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Delayed trigger fires.
+| decision 36: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Tune the Narrative
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Tune the Narrative)
+Player B activated Meticulous Archive for 1(U)
+Player B casts Tune the Narrative
+| decision 37: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Tundra
+Resolving ability (category: PutCounter, amount: 2)
+Player B gets 2 ENERGY counter(s) (now 2).
+Resolving ability (category: Draw, amount: 1)
+Player A draws Island
+Player B draws Mystic Sanctuary
+| decision 38: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Play Mystic Sanctuary
+|   3: Play Tundra
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Misty Rainforest)
+Player B played Misty Rainforest
+| decision 39: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 40: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Tundra
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Tundra)
+Player B shuffles their library
+Player B puts Tundra to the battlefield
+| decision 41: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Ponder)
+Player B activated Tundra for 1(U)
+Player B casts Ponder
+| decision 42: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RearrangeTopOfLibrary)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 43: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Wasteland)
+Choose which card goes 2 from top:
+| auto: Player B: Brainstorm
+| decision 44: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 45: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Prismari Charm
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Prismari Charm)
+Choose mode:
+| decision 46: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Surveil 2, then draw a card.
+|   1: CARDNAME deals 1 damage to each of one or two targets.
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Surveil 2, then draw a card.)
+Player A chooses mode — Surveil 2, then draw a card.
+Player A activated Thundering Falls for 1(U)
+Player A activated Volcanic Island for 1(R)
+Player A casts Prismari Charm
+| decision 47: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T4 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player B: Prismari Charm
+Targeting choice 0
+| decision 48: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Exile Brainstorm
+|   1: Exile Tamiyo, Inquisitive Student
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Exile Brainstorm)
+Player B pays 1 life
+Player B exiles Brainstorm
+Player B casts Force of Will targeting Prismari Charm
+Resolving ability (category: Counter)
+Prismari Charm is countered
+Player A draws Force of Will
+| decision 49: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Misty Rainforest
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Brainstorm
+| decision 50: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T5 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Meticulous Archive for 1(U)
+Player B casts Brainstorm
+| decision 51: Player A (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Wasteland
+Player B draws The One Ring
+Player B draws Wasteland
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 52: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Mystic Sanctuary
+|   1: Swords to Plowshares
+|   2: Tamiyo, Inquisitive Student
+|   3: The One Ring
+|   4: The One Ring
+|   5: Tundra
+|   6: Wasteland
+|   7: Wasteland
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Mystic Sanctuary)
+Player B puts Mystic Sanctuary to top of library
+Player B chooses a card from Player B hand:
+| decision 53: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Swords to Plowshares
+|   1: Tamiyo, Inquisitive Student
+|   2: The One Ring
+|   3: The One Ring
+|   4: Tundra
+|   5: Wasteland
+|   6: Wasteland
+(REPLAY) [T5 | Draw | Player B] Input: 4
+| >> Player B: 4 (Tundra)
+Player B puts Tundra to top of library
+| decision 54: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Cast Tamiyo, Inquisitive Student
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Tamiyo, Inquisitive Student)
+Player B activated Tundra for 1(U)
+Player B casts Tamiyo, Inquisitive Student
+| decision 55: Player A (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T5 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player A: Tamiyo, Inquisitive Student
+Targeting choice 0
+| auto: Player A: Exile Flow State
+Player A pays 1 life
+Player A exiles Flow State
+Player A casts Force of Will targeting Tamiyo, Inquisitive Student
+Resolving ability (category: Counter)
+Tamiyo, Inquisitive Student is countered
+| decision 56: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 57: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 58: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Thundering Falls
+|   1: Volcanic Island
+|   2: Meticulous Archive
+|   3: Tundra
+|   4: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Thundering Falls)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy)
+Thundering Falls is destroyed
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Bilbo, Thief in the Night
+| decision 59: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+|   2: Cast Cori-Steel Cutter
+|   3: Cast Bilbo, Thief in the Night
+|   4: Cast Dragon's Rage Channeler
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Cori-Steel Cutter)
+Player A activated Volcanic Island for 1(R)
+Player A activated Island for 1(U)
+Player A casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
+| decision 60: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Misty Rainforest
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Misty Rainforest)
+Player A played Misty Rainforest
+| decision 61: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Misty Rainforest (ChangeZone)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Misty Rainforest (ChangeZone))
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 62: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Volcanic Island
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Volcanic Island)
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+| decision 63: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Dragon's Rage Channeler
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Dragon's Rage Channeler)
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+Cori-Steel Cutter triggered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 64: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+
+--- Declare Attackers (Player A) ---
+| decision 65: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Monk token deals 2 damage to Player B (now at 15 life)
+--- End Combat Damage ---
+
+
+-------- TURN 8 (Player B) --------
+| decision 66: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Swords to Plowshares
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Swords to Plowshares)
+Choose target for Swords to Plowshares:
+| decision 67: Player B (game 0, turn 7, UPKEEP, Player B active)
+| menu:
+|   0: Dragon's Rage Channeler
+|   1: Monk token
+(REPLAY) [T7 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Dragon's Rage Channeler)
+Targeting choice 0
+Player B activated Meticulous Archive for 1(W)
+Player B casts Swords to Plowshares targeting Dragon's Rage Channeler
+Resolving ability (category: ChangeZone)
+Dragon's Rage Channeler is moved to exile
+Resolving ability (category: GainLife, amount: 3)
+Player A gains 3 life (now at 20)
+Player B draws Tundra
+| decision 68: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tundra
+|   2: Play Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Tundra)
+Player B played Tundra
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Ponder
+| decision 69: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Ponder
+|   2: Cast Bilbo, Thief in the Night
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Ponder)
+Player A activated Island for 1(U)
+Player A casts Ponder
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: RearrangeTopOfLibrary)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+| decision 70: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Daze
+|   2: Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 2
+| >> Player A: 2 (Wasteland)
+Choose which card goes 2 from top:
+| decision 71: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Murktide Regent
+|   1: Daze
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Daze)
+| decision 72: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't shuffle
+|   1: Shuffle
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Don't shuffle)
+Resolving ability (category: Draw, amount: 1)
+Player A draws Murktide Regent
+| decision 73: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Murktide Regent
+|   2: Cast Bilbo, Thief in the Night
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Murktide Regent)
+Choose a card to exile via Delve (1 of 5):
+| decision 74: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Prismari Charm (Delve)
+|   1: Exile Preordain (Delve)
+|   2: Exile Ponder (Delve)
+|   3: Exile Force of Will (Delve)
+|   4: Exile Mishra's Bauble (Delve)
+|   5: Exile Thundering Falls (Delve)
+|   6: Exile Misty Rainforest (Delve)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Prismari Charm (Delve))
+Choose a card to exile via Delve (2 of 5):
+| decision 75: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Preordain (Delve)
+|   1: Exile Ponder (Delve)
+|   2: Exile Force of Will (Delve)
+|   3: Exile Mishra's Bauble (Delve)
+|   4: Exile Thundering Falls (Delve)
+|   5: Exile Misty Rainforest (Delve)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Preordain (Delve))
+Choose a card to exile via Delve (3 of 5):
+| decision 76: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Ponder (Delve)
+|   1: Exile Force of Will (Delve)
+|   2: Exile Mishra's Bauble (Delve)
+|   3: Exile Thundering Falls (Delve)
+|   4: Exile Misty Rainforest (Delve)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Ponder (Delve))
+Choose a card to exile via Delve (4 of 5):
+| decision 77: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Ponder (Delve)
+|   1: Exile Force of Will (Delve)
+|   2: Exile Mishra's Bauble (Delve)
+|   3: Exile Thundering Falls (Delve)
+|   4: Exile Misty Rainforest (Delve)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Ponder (Delve))
+Choose a card to exile via Delve (5 of 5):
+| decision 78: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Force of Will (Delve)
+|   1: Exile Mishra's Bauble (Delve)
+|   2: Exile Thundering Falls (Delve)
+|   3: Exile Misty Rainforest (Delve)
+(REPLAY) [T8 | First Main | Player A] Input: 0
+| >> Player A: 0 (Exile Force of Will (Delve))
+Player A activated Volcanic Island for 1(U)
+Player A activated Volcanic Island for 1(U)
+Player A exiles Prismari Charm via Delve.
+Player A exiles Preordain via Delve.
+Player A exiles Ponder via Delve.
+Player A exiles Ponder via Delve.
+Player A exiles Force of Will via Delve.
+Player A casts Murktide Regent
+Cori-Steel Cutter triggered
+Resolving ability (category: Token)
+Token created: 1/1 Monk
+Resolving ability (category: Attach)
+| decision 79: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Decline: attach Cori-Steel Cutter to Monk token
+|   1: Accept: attach Cori-Steel Cutter to Monk token
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: attach Cori-Steel Cutter to Monk token)
+Equipment attached.
+Resolving ability (category: Cleanup)
+Monk token gains 1/1 Trample & Haste (always)
+Murktide Regent enters the battlefield
+Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
+
+--- Declare Attackers (Player A) ---
+| decision 80: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [2/2] -> Player B
+| decision 81: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Monk token [2/2] -> Player B
+  [attacking] Monk token [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Monk token -> Player B
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Monk token deals 2 damage to Player B (now at 13 life)
+  Monk token deals 2 damage to Player B (now at 11 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Mystic Sanctuary
+| decision 82: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Mystic Sanctuary
+|   2: Play Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Mystic Sanctuary)
+Player B played Mystic Sanctuary
+Choose target for Mystic Sanctuary:
+| decision 83: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Force of Will
+|   2: Ponder
+|   3: Swords to Plowshares
+|   4: Tune the Narrative
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Force of Will)
+Targeting choice 1
+Mystic Sanctuary triggered
+| decision 84: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Mystic Sanctuary's triggered ability
+|   1: Accept: use Mystic Sanctuary's triggered ability
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Accept: use Mystic Sanctuary's triggered ability)
+Resolving ability (category: ChangeZone)
+Force of Will is moved to top of library
+| decision 85: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast The One Ring
+|   2: Cast The One Ring
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast The One Ring)
+Player B activated Meticulous Archive for 1(U)
+Player B activated Mystic Sanctuary for 1(U)
+Player B activated Tundra for 1(U)
+Player B activated Tundra for 1(U)
+Player B casts The One Ring
+The One Ring enters the battlefield
+The One Ring triggered
+| decision 86: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate The One Ring (PutCounter)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 1).
+Resolving ability (category: Draw, amount: 1)
+Player B draws Force of Will
+Resolving ability (category: Pump)
+Player B gains protection from everything until their next turn.
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Daze
+| decision 87: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Bilbo, Thief in the Night
+|   2: Equip Cori-Steel Cutter
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Bilbo, Thief in the Night)
+Player A activated Island for 1(U)
+Player A activated Volcanic Island for 1(U)
+Player A casts Bilbo, Thief in the Night
+| decision 88: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Bilbo, Thief in the Night enters the battlefield
+
+--- Declare Attackers (Player A) ---
+| decision 89: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Murktide Regent [8/8]
+|   1: Monk token [1/1]
+|   2: Monk token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Murktide Regent [8/8])
+Murktide Regent attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+| decision 90: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [1/1]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [1/1])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+  [attacking] Monk token [1/1] -> Player B
+| decision 91: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+  [attacking] Monk token [1/1] -> Player B
+  [attacking] Monk token [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Murktide Regent -> Player B
+  Monk token -> Player B
+  Monk token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Player B has protection from everything — 8 damage prevented
+  Player B has protection from everything — 1 damage prevented
+  Player B has protection from everything — 2 damage prevented
+--- End Combat Damage ---
+
+
+-------- TURN 12 (Player B) --------
+The One Ring triggered
+| decision 92: Player B (game 0, turn 11, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate The One Ring (PutCounter)
+(REPLAY) [T11 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Activate The One Ring (PutCounter))
+Player B's The One Ring ability is on the stack
+Resolving ability (category: PutCounter, amount: 1)
+Put 1 BURDEN counter(s) on The One Ring (now 2).
+Resolving ability (category: Draw, amount: 2)
+Player B draws Flooded Strand
+Player B draws Murktide Regent
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 9)
+Player B draws Spell Pierce
+| decision 93: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Wasteland
+|   3: Cast Murktide Regent
+|   4: Cast The One Ring
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Murktide Regent)
+Choose how many cards to exile via Delve (3-5):
+| decision 94: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile 3 cards from graveyard (Delve)
+|   1: Exile 4 cards from graveyard (Delve)
+|   2: Exile 5 cards from graveyard (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Exile 5 cards from graveyard (Delve))
+Choose a card to exile via Delve (1 of 5):
+| decision 95: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Brainstorm (Delve)
+|   1: Exile Flooded Strand (Delve)
+|   2: Exile Misty Rainforest (Delve)
+|   3: Exile Ponder (Delve)
+|   4: Exile Swords to Plowshares (Delve)
+|   5: Exile Tamiyo, Inquisitive Student (Delve)
+|   6: Exile Tune the Narrative (Delve)
+|   7: Exile Wasteland (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Brainstorm (Delve))
+Choose a card to exile via Delve (2 of 5):
+| decision 96: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Flooded Strand (Delve)
+|   1: Exile Misty Rainforest (Delve)
+|   2: Exile Ponder (Delve)
+|   3: Exile Swords to Plowshares (Delve)
+|   4: Exile Tamiyo, Inquisitive Student (Delve)
+|   5: Exile Tune the Narrative (Delve)
+|   6: Exile Wasteland (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Flooded Strand (Delve))
+Choose a card to exile via Delve (3 of 5):
+| decision 97: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Misty Rainforest (Delve)
+|   1: Exile Ponder (Delve)
+|   2: Exile Swords to Plowshares (Delve)
+|   3: Exile Tamiyo, Inquisitive Student (Delve)
+|   4: Exile Tune the Narrative (Delve)
+|   5: Exile Wasteland (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Misty Rainforest (Delve))
+Choose a card to exile via Delve (4 of 5):
+| decision 98: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Ponder (Delve)
+|   1: Exile Swords to Plowshares (Delve)
+|   2: Exile Tamiyo, Inquisitive Student (Delve)
+|   3: Exile Tune the Narrative (Delve)
+|   4: Exile Wasteland (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Ponder (Delve))
+Choose a card to exile via Delve (5 of 5):
+| decision 99: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Exile Swords to Plowshares (Delve)
+|   1: Exile Tamiyo, Inquisitive Student (Delve)
+|   2: Exile Tune the Narrative (Delve)
+|   3: Exile Wasteland (Delve)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Exile Swords to Plowshares (Delve))
+Player B activated Mystic Sanctuary for 1(U)
+Player B activated Meticulous Archive for 1(U)
+Player B exiles Brainstorm via Delve.
+Player B exiles Flooded Strand via Delve.
+Player B exiles Misty Rainforest via Delve.
+Player B exiles Ponder via Delve.
+Player B exiles Swords to Plowshares via Delve.
+Player B casts Murktide Regent
+| decision 100: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 101: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+(REPLAY) [T11 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Daze (alternate cost))
+Choose target for Daze:
+| auto: Player A: Murktide Regent
+Targeting choice 0
+| decision 102: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Return Island
+|   1: Return Volcanic Island
+|   2: Return Volcanic Island
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Return Island)
+Player A returns Island to hand
+Player A casts Daze targeting Murktide Regent
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 103: Player A (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T11 | First Main | Player A] Input: 0
+| >> Player A: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+| decision 104: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+|   2: Cast Spell Pierce
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 105: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Daze
+|   1: Murktide Regent
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Daze)
+Targeting choice 0
+| auto: Player B: Exile Spell Pierce
+Player B pays 1 life
+Player B exiles Spell Pierce
+Player B casts Force of Will targeting Daze
+Resolving ability (category: Counter)
+Daze is countered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Murktide Regent enters the battlefield
+Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
+| decision 106: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Flooded Strand
+|   2: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Flooded Strand)
+Player B played Flooded Strand
+| decision 107: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Flooded Strand (ChangeZone)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Flooded Strand (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 108: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Plains
+|   3: Tundra
+(REPLAY) [T11 | First Main | Player B] Input: 3
+| >> Player B: 3 (Tundra)
+Player B shuffles their library
+Player B puts Tundra to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Wasteland
+| decision 109: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Wasteland
+|   3: Equip Cori-Steel Cutter
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Island)
+Player A played Island
+| decision 110: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Equip Cori-Steel Cutter
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 111: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Murktide Regent [8/8]
+|   1: Bilbo, Thief in the Night [2/2]
+|   2: Monk token [1/1]
+|   3: Monk token [2/2]
+|   4: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Murktide Regent [8/8])
+Murktide Regent attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+| decision 112: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Bilbo, Thief in the Night [2/2]
+|   1: Monk token [1/1]
+|   2: Monk token [2/2]
+|   3: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Bilbo, Thief in the Night [2/2])
+Bilbo, Thief in the Night attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+  [attacking] Bilbo, Thief in the Night [2/2] -> Player B
+| decision 113: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [1/1]
+|   1: Monk token [2/2]
+|   2: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [1/1])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+  [attacking] Bilbo, Thief in the Night [2/2] -> Player B
+  [attacking] Monk token [1/1] -> Player B
+| decision 114: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token [2/2]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token [2/2])
+Monk token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Murktide Regent [8/8] -> Player B
+  [attacking] Bilbo, Thief in the Night [2/2] -> Player B
+  [attacking] Monk token [1/1] -> Player B
+  [attacking] Monk token [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Murktide Regent -> Player B
+  Bilbo, Thief in the Night -> Player B
+  Monk token -> Player B
+  Monk token -> Player B
+Bilbo, Thief in the Night triggered
+| decision 115: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Decline: use Bilbo, Thief in the Night's triggered ability
+|   1: Accept: use Bilbo, Thief in the Night's triggered ability
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Accept: use Bilbo, Thief in the Night's triggered ability)
+Resolving ability (category: Play)
+| decision 116: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Do not cast a spell
+|   1: Cast Mishra's Bauble (from graveyard)
+|   2: Cast Mishra's Bauble (from graveyard)
+|   3: Cast Mishra's Bauble (from graveyard)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Cast Mishra's Bauble (from graveyard))
+Player A casts Mishra's Bauble
+Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 117: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Monk token (ProwessBonus)
+|   1: Monk token (ProwessBonus)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Monk token (ProwessBonus))
+Monk token triggered
+Monk token triggered
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Resolving ability (category: ProwessBonus)
+Prowess: creature gets +1/+1 until end of turn.
+Mishra's Bauble enters the battlefield
+| decision 118: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Murktide Regent [8/8]
+  1: Bilbo, Thief in the Night [2/2]
+  2: Monk token [2/2]
+  3: Monk token [3/3]
+Your creatures:
+| decision 119: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Murktide Regent [6/6]
+|   1: Confirm blockers
+(REPLAY) [T12 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Murktide Regent [6/6])
+Select attacker for Murktide Regent to block:
+| decision 120: Player B (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Murktide Regent [8/8]
+|   1: Bilbo, Thief in the Night [2/2]
+|   2: Monk token [2/2]
+|   3: Monk token [3/3]
+(REPLAY) [T12 | Declare Blockers | Player B] Input: 3
+| >> Player B: 3 (Monk token [3/3])
+Murktide Regent blocking Monk token.
+
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Murktide Regent [8/8]
+  1: Bilbo, Thief in the Night [2/2]
+  2: Monk token [2/2]
+  3: Monk token [3/3]
+Your creatures:
+  (assigned) Murktide Regent [6/6] blocking Monk token
+| auto: Player B: Confirm blockers
+
+Blockers declared:
+  Murktide Regent blocking Monk token
+| decision 121: Player A (game 0, turn 12, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Mishra's Bauble (PeekAndReveal)
+(REPLAY) [T12 | Declare Blockers | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+
+--- Combat Damage ---
+  Murktide Regent deals 8 damage to Player B (now at -1 life)
+  Bilbo, Thief in the Night deals 2 damage to Player B (now at -3 life)
+  Monk token deals 2 damage to Player B (now at -5 life)
+  Murktide Regent deals 6 damage to Monk token
+  Monk token deals 3 damage to Murktide Regent
+--- End Combat Damage ---
+
+
+Player B has -5 life - Player A wins!
+GAME_RESULT: 1 Player A wins

@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../error.h"
 #include "../game_driver.h"
 #include "../queries/attachments.h"
@@ -35,7 +37,9 @@
 #include "../queries/counters.h"
 #include "../queries/entry.h"
 #include "../queries/keywords.h"
+#include "../queries/overlays.h"
 #include "../queries/players.h"
+#include "../queries/speed.h"
 #include "../queries/types.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -51,9 +55,14 @@ namespace {
 struct SbaActions {
     std::vector<std::pair<Entity, std::string>> to_graveyard;  // object + narrative line (704.5f-j, m, s)
     std::vector<Entity> unattach;                               // 704.5n / 704.5p
+    std::vector<Entity> ends_overlay;                           // 702.103f: an exception to 704.5m
     std::vector<std::pair<Entity, int>> annihilate;             // 704.5q: permanent + N
+    std::set<Zone::Ownership> start_speed;                      // 702.179a: the players it gives a speed of 1
 
-    bool empty() const { return to_graveyard.empty() && unattach.empty() && annihilate.empty(); }
+    bool empty() const {
+        return to_graveyard.empty() && unattach.empty() && ends_overlay.empty() && annihilate.empty() &&
+               start_speed.empty();
+    }
     // Records `e` as put into its owner's graveyard, once however many actions apply to it.
     void put_into_graveyard(Entity e, const std::string &log_line) {
         for (const auto &entry : to_graveyard)
@@ -291,7 +300,7 @@ static bool aura_attached_illegally(Entity aura, const CardData &cd,
     if (enchanted == 0 || enchanted == aura || !is_battlefield_permanent(enchanted) ||
         global_coordinator.entity_has_component<Creature>(aura))
         return true;
-    return cd.enchant_filter.find("Creature") != std::string::npos &&
+    return cd.enchant_filter.text().find("Creature") != std::string::npos &&
            !global_coordinator.entity_has_component<Creature>(enchanted);
 }
 
@@ -303,6 +312,11 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
                                  ? &global_coordinator.GetComponent<CardData>(entity)
                                  : nullptr;
         const std::string name = entity_name(entity);
+
+        // 702.179a: a player who controls a permanent with start your engines! and has no speed.
+        if (!perm.abilities_removed && permanent_has_keyword(entity, "Start your engines") &&
+            !has_speed(global_coordinator.GetComponent<Player>(get_player_entity(perm.controller))))
+            out.start_speed.insert(perm.controller);
 
         if (global_coordinator.entity_has_component<Creature>(entity)) {
             auto &creature = global_coordinator.GetComponent<Creature>(entity);
@@ -335,10 +349,15 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
         // gone, itself, or the Equipment is a creature without reconfigure, 301.5c), and any
         // other non-Aura permanent attached to something, becomes unattached and stays on the
         // battlefield.
-        if (cd && !cd->enchant_filter.empty()) {
-            if (aura_attached_illegally(entity, *cd, perm))
-                out.put_into_graveyard(
-                    entity, name + " is put into the graveyard (Aura not attached to a legal object)");
+        const CardData *face = cd ? &active_face(entity, *cd) : nullptr;
+        if (face && !face->enchant_filter.empty()) {
+            if (aura_attached_illegally(entity, *face, perm)) {
+                if (spell_overlay(perm.overlay).stays_on_the_permanent)
+                    out.ends_overlay.push_back(entity);
+                else
+                    out.put_into_graveyard(
+                        entity, name + " is put into the graveyard (Aura not attached to a legal object)");
+            }
         } else if (!perm.equipped_to.empty() &&
                    !(cd && cd->is_equipment && perm.equipped_to.get() != 0 &&
                      equipment_can_equip(entity, perm.equipped_to.get()))) {
@@ -354,7 +373,7 @@ static void find_permanent_sbas(Game &game, const EntitySet &entities, SbaAction
         // ("Sacrifice after III/IV") confirms the creature Saga is sacrificed, so they agree.
         // Layer-6 ability removal: a Saga turned into a Mountain (Magus of the Moon,
         // CR 305.7) is no longer a Saga — 714.4 doesn't sacrifice it, even at full lore.
-        if (cd && card_is_saga(*cd) && !perm.abilities_removed &&
+        if (cd && card_is_saga(active_face(entity, *cd)) && !perm.abilities_removed &&
             get_counters(entity, "LORE") >= static_cast<int>(cd->saga_chapters.size()) &&
             perm.saga_chapters_in_flight == 0)
             out.put_into_graveyard(entity, name + " is sacrificed (final chapter completed).");
@@ -435,6 +454,10 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
             if (m == e) return true;
         return false;
     };
+    for (Zone::Ownership who : actions.start_speed) {
+        coverage_row("speed_start");
+        start_speed(who);
+    }
     for (auto [entity, n] : actions.annihilate) {
         if (moving(entity)) continue;
         add_counters(entity, "P1P1", -n);
@@ -446,6 +469,16 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
         if (moving(entity)) continue;
         game_log("%s becomes unattached\n", entity_name(entity).c_str());
         global_coordinator.GetComponent<Permanent>(entity).equipped_to = ObjectRef{};
+    }
+    for (Entity entity : actions.ends_overlay) {
+        if (moving(entity)) continue;
+        // It stays on the battlefield as the card it is (CR 702.103f); the next pass gives it what
+        // that needs, its Creature component among them.
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        game_log("%s is no longer bestowed.\n", perm.name.c_str());
+        perm.equipped_to = ObjectRef{};
+        perm.overlay = SpellOverlay::NONE;
+        perm.types = global_coordinator.GetComponent<CardData>(entity).types;
     }
     for (const auto &[entity, line] : actions.to_graveyard) {
         game_log("%s\n", line.c_str());

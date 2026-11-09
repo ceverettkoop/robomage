@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare candidate text encoders for the oracle-text table (plan step 5c, open decision 7).
+"""Compare candidate text encoders for the oracle-text table.
 
 Needs torch and transformers (NOT stdlib; `make` never runs this). Embeds every vocab text the
 engine would embed and reports, per model:

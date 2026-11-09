@@ -1,0 +1,39 @@
+{
+  "name": "cr118_9d_aluren_free_cast_still_meets_trinisphere",
+  "why": "CR 118.9d, 601.2f: Trinisphere's floor applies to the free cast: Grizzly Bears costs {3}, and one land isn't enough",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Aluren",
+    "Trinisphere",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Grizzly Bears without paying its mana cost"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^Grizzly Bears enters the battlefield"
+  ],
+  "expect_count": {
+    "^Player A activated Forest": 3
+  }
+}

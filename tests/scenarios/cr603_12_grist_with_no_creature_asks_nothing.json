@@ -1,0 +1,38 @@
+{
+  "name": "cr603_12_grist_with_no_creature_asks_nothing",
+  "why": "CR 603.12: with no creature to sacrifice nothing is offered, and nothing triggers.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:ImmediateTrigger"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Don't sacrifice"
+  ],
+  "expect_not": [
+    "Grizzly Bears is destroyed"
+  ]
+}

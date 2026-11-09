@@ -1,0 +1,41 @@
+{
+  "name": "cr115_1_displacer_kitten_up_to_one_may_be_none",
+  "why": "CR 115.1, 601.2c: \"up to one target\": choosing none exiles nothing, and the spell still resolves",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:No target"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Lightning Bolt deals 3 damage to Player B"
+  ],
+  "expect_not": [
+    "is moved to"
+  ]
+}

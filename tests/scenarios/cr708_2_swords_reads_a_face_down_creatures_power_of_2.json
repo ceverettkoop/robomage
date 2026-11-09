@@ -1,0 +1,37 @@
+{
+  "name": "cr708_2_swords_reads_a_face_down_creatures_power_of_2",
+  "why": "CR 708.2a, 608.2h: Swords to Plowshares' life gain reads the power the object last had, a face-down Murktide Regent's 2.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Plains",
+    "Swords to Plowshares"
+  ],
+  "library_b": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "face_down_a": [
+    "Murktide Regent"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Plains",
+    "B:cast:Swords to Plowshares",
+    "B:desc:hidden"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A gains 2 life"
+  ]
+}

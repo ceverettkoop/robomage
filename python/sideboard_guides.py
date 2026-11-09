@@ -3,22 +3,25 @@
 ``docs/sideboard_guides.md`` is the guides' text; ``sideboard_guides.json`` beside this module is
 its machine-readable copy (``pycheck.py``'s ``guides`` part checks that the two agree):
 
-- ``draw_land``: per league deck (its stem under ``bin/resources/decks/league/``) the land it cuts
-  on the draw, null for a deck that cuts none;
+- ``draw_land``: per guided league deck (its stem under ``bin/resources/decks/league/``) the land
+  it cuts on the draw, null for a deck that cuts none. The guided decks are the ten league decks
+  the guides are written for; a deck onboarded into ``league/`` later (``tools/onboard/``) has
+  no entry and no rows, so the tier keeps its maindeck and its opponents keep theirs
+  against it;
 - ``guides``: per (deck, opponent) the ``in`` and ``out`` lists (card name -> copies) and the
   ``draw`` card (the "Draw +1" card coming in for the draw land; null when the deck has no draw
   land);
-- ``holdout``: the (deck, opponent) pairs the tier leaves at Done (the generalisation test,
-  ``docs/rnad_training_plan.md`` §6.2); their rows stay in ``guides``.
+- ``holdout``: the (deck, opponent) pairs the tier leaves at Done (the generalisation test);
+  their rows stay in ``guides``.
 
-Card names are spelled as in the league deck files (``Dead/Gone``, ``Cloak and Dagger,
-Entwined``); ``card_key`` compares names across spellings (a frame's front face name, a doc's
+Card names are spelled as in the league deck files (``Dead/Gone``, ``Jace, Wielder of
+Mysteries``); ``card_key`` compares names across spellings (a frame's front face name, a doc's
 ``Dead // Gone``).
 
 **The tier** (``choose``): at a sideboarding decision the seat identifies its own deck and the
 opponent's by matching the registered lists (the DECKLISTS frame; main and sideboard separately)
 against the league deck files; an unknown deck on either side, a held-out pair or a pair with no
-guide row answers Done. Otherwise the target maindeck for the coming game is the registered main
+guide row (an unguided league deck on either side) answers Done. Otherwise the target maindeck for the coming game is the registered main
 minus *Out* plus *In*, and on the draw (the seat does not play first in the coming game, the
 ``match`` table's ``plays_first``) also minus one draw land plus the *Draw +1* card. The seat moves
 from its current maindeck (the ``own_deck`` table: game 2's boarded deck when game 3's phase

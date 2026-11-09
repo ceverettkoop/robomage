@@ -1,0 +1,479 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_lands_top8__wrb_energy.rmlog
+REPLAY MODE: Using embedded decks 'league/lands_top8' / 'league/wrb_energy' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Life from the Loam
+Player A draws Soul-Guide Lantern
+Player A draws Wasteland
+Player A draws Mox Diamond
+Player A draws Malevolent Rumble
+Player A draws Malevolent Rumble
+Player A draws Life from the Loam
+Player B draws Plateau
+Player B draws Swords to Plowshares
+Player B draws Wasteland
+Player B draws Ocelot Pride
+Player B draws Marsh Flats
+Player B draws Shadowy Backstreet
+Player B draws Marsh Flats
+Player A hand:
+Mox Diamond
+Life from the Loam
+Life from the Loam
+Soul-Guide Lantern
+Malevolent Rumble
+Malevolent Rumble
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Crop Rotation
+Player A draws Dark Depths
+Player A draws Pithing Needle
+Player A draws Forest
+Player A draws Mox Diamond
+Player A draws Exploration
+Player A draws Yavimaya, Cradle of Growth
+Player B hand:
+Marsh Flats
+Marsh Flats
+Ocelot Pride
+Plateau
+Shadowy Backstreet
+Swords to Plowshares
+Wasteland
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Orcish Bowmasters
+Player B draws Marsh Flats
+Player B draws Elegant Parlor
+Player B draws Ajani, Nacatl Pariah
+Player B draws Wasteland
+Player B draws Arid Mesa
+Player B draws Amped Raptor
+Player A hand:
+Pithing Needle
+Mox Diamond
+Exploration
+Forest
+Dark Depths
+Crop Rotation
+Yavimaya, Cradle of Growth
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Pithing Needle
+|   1: Mox Diamond
+|   2: Exploration
+|   3: Forest
+|   4: Dark Depths
+|   5: Crop Rotation
+|   6: Yavimaya, Cradle of Growth
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Player B hand:
+Ajani, Nacatl Pariah
+Amped Raptor
+Arid Mesa
+Elegant Parlor
+Marsh Flats
+Orcish Bowmasters
+Wasteland
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Ajani, Nacatl Pariah
+|   1: Amped Raptor
+|   2: Arid Mesa
+|   3: Elegant Parlor
+|   4: Marsh Flats
+|   5: Orcish Bowmasters
+|   6: Wasteland
+(REPLAY) [T0 | Untap | Player B] Input: 2
+| >> Player B: 2 (Arid Mesa)
+
+-------- TURN 1 (Player A) --------
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Dark Depths
+|   3: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pithing Needle
+|   2: Cast Exploration
+|   3: Cast Crop Rotation
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Exploration)
+Player A activated Forest for 1(G)
+Player A casts Exploration
+Exploration enters the battlefield
+| decision 9: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Wasteland
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Elegant Parlor
+|   2: Play Marsh Flats
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Elegant Parlor)
+Player B played Elegant Parlor
+Elegant Parlor enters tapped.
+Elegant Parlor triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Ocelot Pride
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Ocelot Pride on top of library
+|   1: Put Ocelot Pride into graveyard
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Ocelot Pride on top of library)
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Dark Depths
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Forest)
+Player A activated Forest for 1(G)
+Player A sacrifices Forest
+Player A casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 14: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Karakas
+|   4: Ghost Quarter
+|   5: Dark Depths
+|   6: Talon Gates of Madara
+|   7: Bojuka Bog
+|   8: Blast Zone
+|   9: Urza's Saga
+|   10: Ancient Tomb
+|   11: Yavimaya, Cradle of Growth
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Wasteland
+(REPLAY) [T2 | Upkeep | Player A] Input: 13
+| >> Player A: 13 (Thespian's Stage)
+Player A shuffles their library
+Player A puts Thespian's Stage to the battlefield
+Player A draws Bojuka Bog
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Cast Pithing Needle
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Pithing Needle)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Pithing Needle
+Pithing Needle enters the battlefield
+Choose a card name for Pithing Needle:
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Name card: Ajani, Nacatl Pariah
+|   1: Name card: Amped Raptor
+|   2: Name card: Arid Mesa
+|   3: Name card: Guide of Souls
+|   4: Name card: Leyline of the Void
+|   5: Name card: Marsh Flats
+|   6: Name card: Ocelot Pride
+|   7: Name card: Swords to Plowshares
+|   8: Name card: Thoughtseize
+|   9: Name card: Voice of Victory
+|   10: Name card: Wasteland
+|   11: Name card: Cabal Therapy
+|   12: Name card: Orcish Bowmasters
+|   13: Name card: Containment Priest
+|   14: Name card: Goblin Bombardment
+|   15: Name card: Plateau
+|   16: Name card: Pyroblast
+|   17: Name card: Scrubland
+|   18: Name card: Badlands
+|   19: Name card: Clarion Conqueror
+|   20: Name card: Damping Sphere
+|   21: Name card: Deafening Silence
+|   22: Name card: Disruptor Flute
+|   23: Name card: Elegant Parlor
+|   24: Name card: Hexing Squelcher
+|   25: Name card: Karakas
+|   26: Name card: Null Rod
+|   27: Name card: Plains
+|   28: Name card: Shadowy Backstreet
+|   29: Name card: Silent Clearing
+|   30: Name card: Static Prison
+|   31: Name card: Stony Silence
+|   32: Name card: Wrath of the Skies
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Name card: Ajani, Nacatl Pariah)
+Player A names card: Ajani, Nacatl Pariah
+| decision 17: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Bojuka Bog
+|   2: Play Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Bojuka Bog)
+Player A played Bojuka Bog
+Bojuka Bog enters tapped.
+Choose target for Bojuka Bog:
+| decision 18: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (20 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Bojuka Bog triggered
+Resolving ability (category: ChangeZoneAll)
+Player B moves 0 card(s) to exile
+| decision 19: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Ocelot Pride
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Wasteland
+|   3: Play Wasteland
+|   4: Cast Ocelot Pride
+(REPLAY) [T3 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Ocelot Pride)
+Player B activated Elegant Parlor for 1(W)
+Player B casts Ocelot Pride
+Ocelot Pride enters the battlefield
+| decision 21: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Marsh Flats
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Marsh Flats)
+Player B played Marsh Flats
+| decision 22: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Marsh Flats (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Marsh Flats (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Marsh Flats
+Player B's Marsh Flats ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 23: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Badlands
+|   2: Plains
+|   3: Plateau
+|   4: Scrubland
+|   5: Shadowy Backstreet
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Badlands)
+Player B shuffles their library
+Player B puts Badlands to the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+| decision 24: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 25: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Badlands
+|   1: Elegant Parlor
+|   2: Dark Depths
+|   3: Bojuka Bog
+|   4: Yavimaya, Cradle of Growth
+|   5: Thespian's Stage
+(REPLAY) [T4 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Dark Depths)
+Targeting choice 2
+Player A activated Bojuka Bog for 1(B)
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 26: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+Player A sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+Player A draws Malevolent Rumble
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+| decision 27: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Orcish Bowmasters
+(REPLAY) [T5 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Orcish Bowmasters)
+Player B activated Badlands for 1(B)
+Player B activated Elegant Parlor for 1(R)
+Player B casts Orcish Bowmasters
+Orcish Bowmasters enters the battlefield
+Choose target for Orcish Bowmasters:
+| decision 28: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (19 life)
+|   2: Marit Lage token
+|   3: Ocelot Pride
+|   4: Orcish Bowmasters
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Orcish Bowmasters triggered
+Resolving ability (category: DealDamage, amount: 1)
+Orcish Bowmasters deals 1 damage to Player A (now at 19 life)
+Resolving ability (category: Amass)
+Amass Orc 1: Player B Army is now 1/1.
+Player B draws Goblin Bombardment
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
+| decision 31: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bojuka Bog
+|   1: Yavimaya, Cradle of Growth
+|   2: Badlands
+|   3: Elegant Parlor
+|   4: Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Bojuka Bog)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Bojuka Bog is on the stack
+Resolving ability (category: Destroy)
+Bojuka Bog is destroyed
+
+--- Declare Attackers (Player B) ---
+| decision 32: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Ocelot Pride [1/1]
+|   1: Confirm attackers
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 7 (Player A) --------
+Player A draws Icetill Explorer
+
+--- Declare Attackers (Player A) ---
+| decision 33: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Marit Lage token [20/20] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Marit Lage token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Marit Lage token deals 20 damage to Player B (now at -1 life)
+--- End Combat Damage ---
+
+
+Player B has -1 life - Player A wins!
+GAME_RESULT: 1 Player A wins

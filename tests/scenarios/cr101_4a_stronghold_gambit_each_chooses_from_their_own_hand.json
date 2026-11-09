@@ -1,0 +1,62 @@
+{
+  "name": "cr101_4a_stronghold_gambit_each_chooses_from_their_own_hand",
+  "why": "CR 101.4a: each player chooses a card in their own hand, the active player first: the first row of each player's menu is a card of that player",
+  "hand_a": [
+    "Stronghold Gambit",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Air Elemental",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stronghold Gambit",
+    "A:#0",
+    "B:#0"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A chooses a card",
+    "Player B chooses a card"
+  ],
+  "expect": [
+    "Player A reveals Stronghold|Player A reveals Grizzly Bears",
+    "Player B reveals Air Elemental"
+  ]
+}

@@ -52,7 +52,7 @@ struct ObsEventCard {
         int card = -1;                         // card id when the viewer saw the identity, else -1
         ObsLibPos from;                        // position in a library before the event
         ObsLibPos to;                          // position in a library after it
-        bool face_down = false;                // exiled face down
+        bool face_down = false;                // face down where it is, or where it moved to
         bool token = false;                    // a token or a spell copy
         uint8_t hand_subset = rmstate::NONE8;  // rmstate::HandSubset for a card leaving a hand
         uint32_t draw_seq = 0;                 // reveal_start: seq of the draw that brought it (0 none)
@@ -227,9 +227,10 @@ void obs_note_miracle_draw(Entity card);
 // players): a reveal_start, or a look when `look`, per zone, for every viewer. `position_public`:
 // the windows opened on library positions every player knows (the top N, the whole library);
 // false for a card picked out by identity. `draw_link`: the reveal shows a card as the one just
-// drawn (the miracle reveal).
-void obs_windows_opened(
-    const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public, bool draw_link);
+// drawn (the miracle reveal). `to_others`: with false, a seat outside `audience` hears nothing (a
+// standing look moving on to the next top card).
+void obs_windows_opened(const std::vector<Entity> &cards, Zone::Ownership audience, bool look, bool position_public,
+    bool draw_link, bool to_others);
 // One window that is closing.
 struct ObsClosedWindow {
         Entity card = 0;

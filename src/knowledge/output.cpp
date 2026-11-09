@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "belief.h"
 #include "knowledge.h"
 
 namespace knowledge {
@@ -216,8 +215,6 @@ KRows Knowledge::rows() const {
             out.seen.push_back(r);
         }
     }
-    template_rows(out);
-    belief_rows(out);
     if (!game_active_) return out;
 
     for (int p : order) player_rows(p, out);
@@ -252,7 +249,7 @@ bool Knowledge::table_blocks(std::string *blocks, uint32_t *n) const {
     write_tables(w);
     std::string head;
     if (!rmstate::split_frame_blocks(w.finish(), static_cast<uint16_t>(rmstate::TableId::K_META), &head, blocks, n)
-             .ok())
+            .ok())
         return false;
     // The k_* tables have no text, so the frame they join keeps its own string pool: the rest is
     // that pool alone, holding only the empty string.
@@ -321,22 +318,6 @@ std::string Knowledge::text() const {
                 seen += (seen.empty() ? "" : ", ") + card_word(names_, s.card) + " " + std::to_string(s.game) + "/" +
                         std::to_string(s.match);
         if (!seen.empty()) line += "; seen game/match: " + seen;
-        std::string lists, labels;
-        for (const KTemplateRow &t : r.templates)
-            if (t.player == p && t.consistent)
-                lists += (lists.empty() ? "" : ", ") + metagame_.lists[t.list].name + (t.exact ? "" : "?") +
-                         (t.registered ? " (registered)" : "");
-        for (const KArchetypeRow &a : r.archetypes)
-            if (a.player == p && a.possible)
-                labels +=
-                    (labels.empty() ? "" : ", ") + metagame_.archetypes[a.archetype] + (a.exact ? " (exact)" : "");
-        if (!r.templates.empty()) line += "; lists: " + (lists.empty() ? "none" : lists) + "; archetypes: " + labels;
-        std::string belief;
-        for (const BArchetypeRow &b : r.belief_archetypes)
-            if (b.player == p && b.prob > 0)
-                belief += (belief.empty() ? "" : ", ") + metagame_.archetypes[b.archetype] + " " +
-                          std::to_string(b.prob / (PROB_SCALE / 1000)) + "‰";
-        if (!belief.empty()) line += "; belief: " + belief;
         out += line + "\n";
     }
     return out;

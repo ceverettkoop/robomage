@@ -1,0 +1,2314 @@
+{
+ "format": 1,
+ "plan": "docs/open_vocab_plan.md S0",
+ "generator": "learn/open_vocab_baseline.py generate",
+ "tables": {
+  "spec_hash": "9430d9f42d4559c0",
+  "vocab_hash": "be1266fd27b3ee13",
+  "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "spec_json_sha256": "3f7df55715ea0fd6846cc47eb634297a35d1a59479bf29a2d44ced184566f214",
+  "card_rmtb_sha256": "ba64f5541228519fabf74773b65c83a0fd366db6b65f47061e8bf9fdba1302c3",
+  "ability_rmtb_sha256": "1813cd289f315fdb1d50fe77c0e9f4e9be594f3f4444e4449f10cb09cf64ac94",
+  "part_rmtb_sha256": "d71334d832ebb2c11f5693b8e3d49a099a3a6f8170c7841f1222b8984677b2da",
+  "text_table_sha256": "2a841d497eda23d09e31ee301ce79f58f04a9cc08259e63b862c57b7707e477b"
+ },
+ "torch": "2.10.0+rocm7.0",
+ "numpy": "2.4.2",
+ "threads": 4,
+ "evaluation": {
+  "precision": "fp32",
+  "device": "cpu",
+  "mode": "eval, torch.no_grad (the export's path)",
+  "batching": "decisions stably sorted by token count, batch.forward_groups max_rows 32, batch.pad",
+  "removed_types": [
+   "lists",
+   "b_lists"
+  ],
+  "removed_type_ids": [
+   33,
+   34
+  ],
+  "critic_seat": "the deciding seat (0 = A)"
+ },
+ "decision_set": {
+  "corpus": "every seat decision of sources/corpus/*.rmlog",
+  "selfplay": "200 of the seat decisions of sources/selfplay/*.rmlog (all of them in source then match order, index i * n // 200)",
+  "decisions": 8831,
+  "menu_rows": 30987,
+  "replay": "robomage --replay LOG --machine --rmstate-dump DUMP (cwd bin/); rmfeat --featurize DUMP --viewer A|B|omniscient --cards CARDS --tables TABLES"
+ },
+ "sources": [
+  {
+   "index": 0,
+   "kind": "corpus",
+   "name": "delver_mirror",
+   "log": "sources/corpus/delver_mirror.rmlog",
+   "sha256": "0806e73fb058a6fe5706653b06fc40893e6b451b435fecdcbea4b8568f1ed6f6",
+   "decisions": 89
+  },
+  {
+   "index": 1,
+   "kind": "corpus",
+   "name": "delver_vs_doomsday",
+   "log": "sources/corpus/delver_vs_doomsday.rmlog",
+   "sha256": "fb3d8ad6704c7b4575bb14320b125835f5f56f44e19a196038c0a97d27db98af",
+   "decisions": 169
+  },
+  {
+   "index": 2,
+   "kind": "corpus",
+   "name": "delver_vs_mav",
+   "log": "sources/corpus/delver_vs_mav.rmlog",
+   "sha256": "231dbb53dc9d45feb39a2a297305b642f48cbaf4b34dab408bf550037a31d8d5",
+   "decisions": 161
+  },
+  {
+   "index": 3,
+   "kind": "corpus",
+   "name": "doomsday_mirror",
+   "log": "sources/corpus/doomsday_mirror.rmlog",
+   "sha256": "608d7ba4111d268c0363c58c0f5d37135c5dd1d7c60af82d8bb4319d98483454",
+   "decisions": 238
+  },
+  {
+   "index": 4,
+   "kind": "corpus",
+   "name": "doomsday_vs_delver",
+   "log": "sources/corpus/doomsday_vs_delver.rmlog",
+   "sha256": "00b7b78acfa916c514294b33c8c4da07b2e1baa8882ed6e477e478bc19667ba0",
+   "decisions": 206
+  },
+  {
+   "index": 5,
+   "kind": "corpus",
+   "name": "doomsday_vs_mav",
+   "log": "sources/corpus/doomsday_vs_mav.rmlog",
+   "sha256": "66617d28bd92a7be14a46535d875a378af600d150fd5a4838d8b705e1e05c737",
+   "decisions": 202
+  },
+  {
+   "index": 6,
+   "kind": "corpus",
+   "name": "lg_bug__bug",
+   "log": "sources/corpus/lg_bug__bug.rmlog",
+   "sha256": "1f1132e736630559bb89a1f2b8a4d7d3733540b1d8a41c4714e67a81789e5470",
+   "decisions": 215
+  },
+  {
+   "index": 7,
+   "kind": "corpus",
+   "name": "lg_bug__burn",
+   "log": "sources/corpus/lg_bug__burn.rmlog",
+   "sha256": "bcf16dc3d577b77f6aaabaadaad8ba2e791b7ab84ee50473f0cb41fef7667e7d",
+   "decisions": 37
+  },
+  {
+   "index": 8,
+   "kind": "corpus",
+   "name": "lg_bug__bw_dnt",
+   "log": "sources/corpus/lg_bug__bw_dnt.rmlog",
+   "sha256": "3218daeec08785e7b2a18165267b0fd0a45f301145e651731201f3361cb24f22",
+   "decisions": 149
+  },
+  {
+   "index": 9,
+   "kind": "corpus",
+   "name": "lg_bug__gw_maverick",
+   "log": "sources/corpus/lg_bug__gw_maverick.rmlog",
+   "sha256": "34d8b6ff8d82f542d7fd849804e0250e9d614f8f8429e4dba22f6ced114bc677",
+   "decisions": 123
+  },
+  {
+   "index": 10,
+   "kind": "corpus",
+   "name": "lg_bug__lands",
+   "log": "sources/corpus/lg_bug__lands.rmlog",
+   "sha256": "9fa81fb3162391dfa11479aeee91de4a548407fff0468224438bb757c4d8076e",
+   "decisions": 110
+  },
+  {
+   "index": 11,
+   "kind": "corpus",
+   "name": "lg_bug__reanimator",
+   "log": "sources/corpus/lg_bug__reanimator.rmlog",
+   "sha256": "d2e64fc655cfe7ffd58e39165ce07ba336a62ddf91a2c7ab3eb1efa3ad7b3eaa",
+   "decisions": 69
+  },
+  {
+   "index": 12,
+   "kind": "corpus",
+   "name": "lg_bug__ur_delver",
+   "log": "sources/corpus/lg_bug__ur_delver.rmlog",
+   "sha256": "d289b129d3d334521d05dcf39273782bc8106116a2ff82e519b1280d88f73c96",
+   "decisions": 77
+  },
+  {
+   "index": 13,
+   "kind": "corpus",
+   "name": "lg_bug__uw_control",
+   "log": "sources/corpus/lg_bug__uw_control.rmlog",
+   "sha256": "b1786bcdd64e8345fec6a0474e36ad51d2da2b39d3652310de374186d8f376a0",
+   "decisions": 184
+  },
+  {
+   "index": 14,
+   "kind": "corpus",
+   "name": "lg_bug__wrb_energy",
+   "log": "sources/corpus/lg_bug__wrb_energy.rmlog",
+   "sha256": "cd53312156b27b7b8c76899bae8c070ad7637794e21aee5477329686fee8d5eb",
+   "decisions": 98
+  },
+  {
+   "index": 15,
+   "kind": "corpus",
+   "name": "lg_bug__wubg_doomsday",
+   "log": "sources/corpus/lg_bug__wubg_doomsday.rmlog",
+   "sha256": "10082e79f6121b09791ae574c63a3c9cb09cfdcb667308bccdcc7960a8cf2b4f",
+   "decisions": 47
+  },
+  {
+   "index": 16,
+   "kind": "corpus",
+   "name": "lg_burn__burn",
+   "log": "sources/corpus/lg_burn__burn.rmlog",
+   "sha256": "993074f0325ed8b28a8c697fc28ec1de86764fc6e31d27545b320ca81984f1cc",
+   "decisions": 28
+  },
+  {
+   "index": 17,
+   "kind": "corpus",
+   "name": "lg_burn__bw_dnt",
+   "log": "sources/corpus/lg_burn__bw_dnt.rmlog",
+   "sha256": "b0d991833fbf7fc41205f54cec252a2c1c0718dfd533fa8144c4b44a0eac6048",
+   "decisions": 91
+  },
+  {
+   "index": 18,
+   "kind": "corpus",
+   "name": "lg_burn__gw_maverick",
+   "log": "sources/corpus/lg_burn__gw_maverick.rmlog",
+   "sha256": "e36c2a5042042a8969e047c1b010423c5f0b0c86c3d6b7ae2af81a72da8de86f",
+   "decisions": 81
+  },
+  {
+   "index": 19,
+   "kind": "corpus",
+   "name": "lg_burn__lands",
+   "log": "sources/corpus/lg_burn__lands.rmlog",
+   "sha256": "07aad8ab54435a30dc2c12e3f42854beca3e98ac9f98275502d1023cf5c08a11",
+   "decisions": 38
+  },
+  {
+   "index": 20,
+   "kind": "corpus",
+   "name": "lg_burn__reanimator",
+   "log": "sources/corpus/lg_burn__reanimator.rmlog",
+   "sha256": "6d5c7d938e9dc48a2a776336e0f75e5eeae2e791fa9fc1a0b25ec2f613e7006b",
+   "decisions": 52
+  },
+  {
+   "index": 21,
+   "kind": "corpus",
+   "name": "lg_burn__ur_delver",
+   "log": "sources/corpus/lg_burn__ur_delver.rmlog",
+   "sha256": "8096a3599fb3dc58084b1a75bb3c8dbd98db92bea545655920ee4e63bf972eab",
+   "decisions": 53
+  },
+  {
+   "index": 22,
+   "kind": "corpus",
+   "name": "lg_burn__uw_control",
+   "log": "sources/corpus/lg_burn__uw_control.rmlog",
+   "sha256": "baf8eb26d188f35e76d749dd7d144f67c6951c2fd2ba42e2c60db2feee7c1241",
+   "decisions": 58
+  },
+  {
+   "index": 23,
+   "kind": "corpus",
+   "name": "lg_burn__wrb_energy",
+   "log": "sources/corpus/lg_burn__wrb_energy.rmlog",
+   "sha256": "a6da846fbde9c1584d4b1f549d598d4408482e9b80e27d3a96d671c11764464e",
+   "decisions": 50
+  },
+  {
+   "index": 24,
+   "kind": "corpus",
+   "name": "lg_burn__wubg_doomsday",
+   "log": "sources/corpus/lg_burn__wubg_doomsday.rmlog",
+   "sha256": "02388d1ea0cfc6b434198aaee7eb83b14d888e5d1204c8341a67898f537cb947",
+   "decisions": 61
+  },
+  {
+   "index": 25,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__bw_dnt",
+   "log": "sources/corpus/lg_bw_dnt__bw_dnt.rmlog",
+   "sha256": "7c6e75f9a8d61512f2cadc95f9973eb081002727e81c11601bc781e9fafa404b",
+   "decisions": 208
+  },
+  {
+   "index": 26,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__gw_maverick",
+   "log": "sources/corpus/lg_bw_dnt__gw_maverick.rmlog",
+   "sha256": "2c7daa6339f63b8bb2e9cf96af10939fb812c7460811f7d1e7a6a72cf3bdab0a",
+   "decisions": 108
+  },
+  {
+   "index": 27,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__lands",
+   "log": "sources/corpus/lg_bw_dnt__lands.rmlog",
+   "sha256": "d82c941996a1b79c17e8e59c69b1c930a5feffc1cc7e7b7da9cae7f635c0004d",
+   "decisions": 125
+  },
+  {
+   "index": 28,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__reanimator",
+   "log": "sources/corpus/lg_bw_dnt__reanimator.rmlog",
+   "sha256": "9a7879136462b3213863030bffc44dbcdc29dc9f712fb68c887c743207b5d82d",
+   "decisions": 77
+  },
+  {
+   "index": 29,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__ur_delver",
+   "log": "sources/corpus/lg_bw_dnt__ur_delver.rmlog",
+   "sha256": "ac6d259b138e6c1bec8c4a4a1b425c40a3ca6c4be3e1f3f664f28dd016f4bec5",
+   "decisions": 114
+  },
+  {
+   "index": 30,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__uw_control",
+   "log": "sources/corpus/lg_bw_dnt__uw_control.rmlog",
+   "sha256": "1ba89c48a0be9426b5819c673fbf7a63c166b6437957aa3b87ebeb7dfc5fcbd4",
+   "decisions": 102
+  },
+  {
+   "index": 31,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__wrb_energy",
+   "log": "sources/corpus/lg_bw_dnt__wrb_energy.rmlog",
+   "sha256": "c9fbe88d8d724c2650eed45b3c4dab5c544800735a5cb18a1538c42ef4f7f49c",
+   "decisions": 172
+  },
+  {
+   "index": 32,
+   "kind": "corpus",
+   "name": "lg_bw_dnt__wubg_doomsday",
+   "log": "sources/corpus/lg_bw_dnt__wubg_doomsday.rmlog",
+   "sha256": "3db612057dffe0dfef1c7155057c755db27fd5165c27080b80bc6f515369f2d0",
+   "decisions": 157
+  },
+  {
+   "index": 33,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__gw_maverick",
+   "log": "sources/corpus/lg_gw_maverick__gw_maverick.rmlog",
+   "sha256": "a5afd679eceaef11d12a93f6cfd2ebf53de15216378bae2a2b85084dbe517db1",
+   "decisions": 162
+  },
+  {
+   "index": 34,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__lands",
+   "log": "sources/corpus/lg_gw_maverick__lands.rmlog",
+   "sha256": "c004cda147c0c5fcb3c49c5c014759a428f57a251d27dfca259236921d01150f",
+   "decisions": 97
+  },
+  {
+   "index": 35,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__reanimator",
+   "log": "sources/corpus/lg_gw_maverick__reanimator.rmlog",
+   "sha256": "10e586a05c7a8391ee92f16cf67d4bc93a3929729e61045a0df967b1770e0ebb",
+   "decisions": 145
+  },
+  {
+   "index": 36,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__ur_delver",
+   "log": "sources/corpus/lg_gw_maverick__ur_delver.rmlog",
+   "sha256": "57bbe3c313daf6522691694187c3faa1dafc70b366630528f214e9c3a34a7dba",
+   "decisions": 107
+  },
+  {
+   "index": 37,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__uw_control",
+   "log": "sources/corpus/lg_gw_maverick__uw_control.rmlog",
+   "sha256": "8d728d39e47afc10c6fd1b5d6bf31d8e29ad7f4531e99766ff490f904e2e0d85",
+   "decisions": 228
+  },
+  {
+   "index": 38,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__wrb_energy",
+   "log": "sources/corpus/lg_gw_maverick__wrb_energy.rmlog",
+   "sha256": "2281097f70e3fc5243e43c3eb3762d6e5d5f22e2200096faff5189bde22c8775",
+   "decisions": 129
+  },
+  {
+   "index": 39,
+   "kind": "corpus",
+   "name": "lg_gw_maverick__wubg_doomsday",
+   "log": "sources/corpus/lg_gw_maverick__wubg_doomsday.rmlog",
+   "sha256": "1bf53ffe29258f06f91f2a5a6f02988ef6f8bec1dc14e52587f504f6def76f6d",
+   "decisions": 76
+  },
+  {
+   "index": 40,
+   "kind": "corpus",
+   "name": "lg_lands__lands",
+   "log": "sources/corpus/lg_lands__lands.rmlog",
+   "sha256": "e103d3a5925bbfcebaa607d2534e420c2a4e07b9a125eeca44779294f26aea15",
+   "decisions": 68
+  },
+  {
+   "index": 41,
+   "kind": "corpus",
+   "name": "lg_lands__reanimator",
+   "log": "sources/corpus/lg_lands__reanimator.rmlog",
+   "sha256": "ed4e9e6884a75272a3054f6990ac8255e6ca6eab949c86f1989d3cb54bf0831d",
+   "decisions": 68
+  },
+  {
+   "index": 42,
+   "kind": "corpus",
+   "name": "lg_lands__ur_delver",
+   "log": "sources/corpus/lg_lands__ur_delver.rmlog",
+   "sha256": "60da1f8a367db75102175016dcef2d97b6557356d5e7bed4450e0484b48a792e",
+   "decisions": 73
+  },
+  {
+   "index": 43,
+   "kind": "corpus",
+   "name": "lg_lands__uw_control",
+   "log": "sources/corpus/lg_lands__uw_control.rmlog",
+   "sha256": "6de71b14ca58951a1e75c879e60cf87cd1254f289895e91aa88d4248bd62b708",
+   "decisions": 189
+  },
+  {
+   "index": 44,
+   "kind": "corpus",
+   "name": "lg_lands__wrb_energy",
+   "log": "sources/corpus/lg_lands__wrb_energy.rmlog",
+   "sha256": "1de1c07250be008e1cc695511f8cc878482ff3e008375e7ace80c27761434a11",
+   "decisions": 114
+  },
+  {
+   "index": 45,
+   "kind": "corpus",
+   "name": "lg_lands__wubg_doomsday",
+   "log": "sources/corpus/lg_lands__wubg_doomsday.rmlog",
+   "sha256": "28c18a878e0e1ed3d2bcce063c442192ddb44f6055d720a59f6d424e0a1bbc7c",
+   "decisions": 116
+  },
+  {
+   "index": 46,
+   "kind": "corpus",
+   "name": "lg_reanimator__reanimator",
+   "log": "sources/corpus/lg_reanimator__reanimator.rmlog",
+   "sha256": "04387c0f126141f3e81ae392b731883122de455fa44d1a32532130702bd71651",
+   "decisions": 379
+  },
+  {
+   "index": 47,
+   "kind": "corpus",
+   "name": "lg_reanimator__ur_delver",
+   "log": "sources/corpus/lg_reanimator__ur_delver.rmlog",
+   "sha256": "4b64e8353af1ac88d7ab636ba9f1f6d3b243cfa78cbf2d3ef2d98de4f1a531ae",
+   "decisions": 69
+  },
+  {
+   "index": 48,
+   "kind": "corpus",
+   "name": "lg_reanimator__uw_control",
+   "log": "sources/corpus/lg_reanimator__uw_control.rmlog",
+   "sha256": "447341242124b48c5cf90008f7b9b3c500f5880d900196d543ec5f690986d243",
+   "decisions": 147
+  },
+  {
+   "index": 49,
+   "kind": "corpus",
+   "name": "lg_reanimator__wrb_energy",
+   "log": "sources/corpus/lg_reanimator__wrb_energy.rmlog",
+   "sha256": "55acac4187914319bd6743a0ede6dfda41bb10581fa93c6de2ea14bb6c0bd4d3",
+   "decisions": 68
+  },
+  {
+   "index": 50,
+   "kind": "corpus",
+   "name": "lg_reanimator__wubg_doomsday",
+   "log": "sources/corpus/lg_reanimator__wubg_doomsday.rmlog",
+   "sha256": "19d57d8c232d5352c56f842471ae94a4ad1f2475067c33c096ebc847503e771c",
+   "decisions": 219
+  },
+  {
+   "index": 51,
+   "kind": "corpus",
+   "name": "lg_ur_delver__ur_delver",
+   "log": "sources/corpus/lg_ur_delver__ur_delver.rmlog",
+   "sha256": "fef5209db28005c5dcc7c24515da4ad3647c0f31c026fa3f31302a6c30f4dae9",
+   "decisions": 104
+  },
+  {
+   "index": 52,
+   "kind": "corpus",
+   "name": "lg_ur_delver__uw_control",
+   "log": "sources/corpus/lg_ur_delver__uw_control.rmlog",
+   "sha256": "63bf46d720cafb3de826a9b38200cd1182da9522501f63bcac5ceb2fa1c79bc8",
+   "decisions": 147
+  },
+  {
+   "index": 53,
+   "kind": "corpus",
+   "name": "lg_ur_delver__wrb_energy",
+   "log": "sources/corpus/lg_ur_delver__wrb_energy.rmlog",
+   "sha256": "0dd30f79de4f9af6e82136ce2fae70701305eaee8b5730242bb2a37cc232de02",
+   "decisions": 145
+  },
+  {
+   "index": 54,
+   "kind": "corpus",
+   "name": "lg_ur_delver__wubg_doomsday",
+   "log": "sources/corpus/lg_ur_delver__wubg_doomsday.rmlog",
+   "sha256": "0cb18ae446cd6e9d41b970b5bdbc7f390a301dfa2feb637875ed18f3e7f114b8",
+   "decisions": 63
+  },
+  {
+   "index": 55,
+   "kind": "corpus",
+   "name": "lg_uw_control__uw_control",
+   "log": "sources/corpus/lg_uw_control__uw_control.rmlog",
+   "sha256": "53b4a4157dcc02b0d108b598b1da306f38479e63dec313be36a0684c20382845",
+   "decisions": 549
+  },
+  {
+   "index": 56,
+   "kind": "corpus",
+   "name": "lg_uw_control__wrb_energy",
+   "log": "sources/corpus/lg_uw_control__wrb_energy.rmlog",
+   "sha256": "d266b3fa06452f5f3e632950ede99316b6bc6a2a66d5dd57af6161cd07de8566",
+   "decisions": 138
+  },
+  {
+   "index": 57,
+   "kind": "corpus",
+   "name": "lg_uw_control__wubg_doomsday",
+   "log": "sources/corpus/lg_uw_control__wubg_doomsday.rmlog",
+   "sha256": "d29fe41d61d7e69c54605f3573f1315c6065c69259edf1a30a54a86e6df486fa",
+   "decisions": 70
+  },
+  {
+   "index": 58,
+   "kind": "corpus",
+   "name": "lg_wrb_energy__wrb_energy",
+   "log": "sources/corpus/lg_wrb_energy__wrb_energy.rmlog",
+   "sha256": "1ac7bf81d5f2b2630983fab68d17ae2f71aec8ce9023bb77b9c217b137aaa317",
+   "decisions": 73
+  },
+  {
+   "index": 59,
+   "kind": "corpus",
+   "name": "lg_wrb_energy__wubg_doomsday",
+   "log": "sources/corpus/lg_wrb_energy__wubg_doomsday.rmlog",
+   "sha256": "368b8f682b45531931c32721af59951a82a5ae4d522e1f12a51d0c06b84d3635",
+   "decisions": 79
+  },
+  {
+   "index": 60,
+   "kind": "corpus",
+   "name": "lg_wubg_doomsday__wubg_doomsday",
+   "log": "sources/corpus/lg_wubg_doomsday__wubg_doomsday.rmlog",
+   "sha256": "ff9630481d61d6f89b36f2335edb25cf81d7696bd3c52685ee18430e9074c921",
+   "decisions": 78
+  },
+  {
+   "index": 61,
+   "kind": "corpus",
+   "name": "manual_doomsday_vs_delver",
+   "log": "sources/corpus/manual_doomsday_vs_delver.rmlog",
+   "sha256": "5c9f2cfd993c2917a7e56d520321394019304dde2718be5242bd3661f697e7cf",
+   "decisions": 116
+  },
+  {
+   "index": 62,
+   "kind": "corpus",
+   "name": "manual_mav_mirror",
+   "log": "sources/corpus/manual_mav_mirror.rmlog",
+   "sha256": "e0ac26b8be184424e59645765e4622fbbba4e8baebd88524ca155f41be8e59c4",
+   "decisions": 422
+  },
+  {
+   "index": 63,
+   "kind": "corpus",
+   "name": "mav_mirror",
+   "log": "sources/corpus/mav_mirror.rmlog",
+   "sha256": "6eab136dea973561e91d776ebe8d0653f8660152cbf52e9c088725ec7d592c96",
+   "decisions": 223
+  },
+  {
+   "index": 64,
+   "kind": "corpus",
+   "name": "mav_vs_delver",
+   "log": "sources/corpus/mav_vs_delver.rmlog",
+   "sha256": "6676fdd0569683213852dda3b4f2fbcc3fac8c073b7e6c9d702bc591e579cdaa",
+   "decisions": 91
+  },
+  {
+   "index": 65,
+   "kind": "corpus",
+   "name": "mav_vs_doomsday",
+   "log": "sources/corpus/mav_vs_doomsday.rmlog",
+   "sha256": "3e9a2e9dd1dbdf0ecd72a1d92fd2b0a6ef65c41159de7f112a25c9d5204df7ea",
+   "decisions": 130
+  },
+  {
+   "index": 66,
+   "kind": "selfplay",
+   "name": "a14-m18217",
+   "log": "sources/selfplay/a14-m18217.rmlog",
+   "sha256": "8f0ba4dcfde85fa249a59ff453426af9df3aad7092a4d8ce24e3b54e656e6324",
+   "decisions": 25
+  },
+  {
+   "index": 67,
+   "kind": "selfplay",
+   "name": "a15-m18000",
+   "log": "sources/selfplay/a15-m18000.rmlog",
+   "sha256": "861e082ffb7273ec904a5619c81bb30d08aed407003f4eceb244d76bf8571151",
+   "decisions": 24
+  },
+  {
+   "index": 68,
+   "kind": "selfplay",
+   "name": "a2-m17912",
+   "log": "sources/selfplay/a2-m17912.rmlog",
+   "sha256": "87d7b0b39ae7d943a0026bb94c5bdcf2a5195ff45bf79228df507988636c8f00",
+   "decisions": 17
+  },
+  {
+   "index": 69,
+   "kind": "selfplay",
+   "name": "a3-m18391",
+   "log": "sources/selfplay/a3-m18391.rmlog",
+   "sha256": "d42b7db79f701a5af73eb58aa31cf6282bab07abc14603add06584d47ea4b7fc",
+   "decisions": 51
+  },
+  {
+   "index": 70,
+   "kind": "selfplay",
+   "name": "a9-m18276",
+   "log": "sources/selfplay/a9-m18276.rmlog",
+   "sha256": "3d7fdaebbf7030b4197e93725814afcfca641c7ce848298f462c67d78288bb51",
+   "decisions": 83
+  }
+ ],
+ "critic_fixture": {
+  "path": "runs/open_vocab_s0/ckpt/m11-critic.pt",
+  "source": "runs/league24h-sb/ckpt/fixed/m11.pt",
+  "source_sha256": "3a3f464fc801b70add3fe369aee999374de94b41ee75a8da55f0693b790e02da",
+  "config_override": {
+   "omniscient_critic": true,
+   "critic_layers": 2
+  },
+  "torch_seed": 20261024,
+  "rel_bias_seed": 20261025,
+  "rel_bias_std": 0.1,
+  "how": "torch.manual_seed(torch_seed); rnad_learner._load_with_config(source, tables, config_override); each critic layer's rel_bias.weight = randn(generator seeded rel_bias_seed) * rel_bias_std; model.save_checkpoint"
+ },
+ "best_policy": {
+  "checkpoint": "runs/league24h-sb/ckpt/fixed/m11.pt",
+  "why": "runs/league24h-sb/bench/end/summary.md: m10 and m11 0.499 vs scripted:hard, +0.041 paired over bc-final (final 0.495, +0.037); bench/end-vs-hard_sb: m10 +0.036, m11 +0.034, final +0.037: tied within their SEs; m11 is the latest fixed point and pilotA's warm start; the pilots have no benchmark"
+ },
+ "checkpoints": [
+  {
+   "path": "runs/bc1/bc/ckpt/bc.pt",
+   "sha256": "ce551713e7ccb5745fa4aa64d3ffe31af94f3aa27f9119b261f8e8957122cf37",
+   "bytes": 15909722,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/bc1/v1/bc/ckpt/bc.pt",
+   "sha256": "16d8f70c8bfb493ac7d8d5ecf436041750767ac6ad6b14e2d42a6587eee9e88a",
+   "bytes": 15881306,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "c557af8b9dea864a",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash c557af8b9dea864a is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-b1.pt",
+   "sha256": "c21a8462e7224c14ed23086e1c4268710e4b5e636e92b5505f99fc24c232d526",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-final.pt",
+   "sha256": "a75a1ead53d2fed492520068fae16c977a62dc2caf70db83ac13cc72a6fa8f1c",
+   "bytes": 15915732,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-p25200.pt",
+   "sha256": "a6e338bf2934274390f4cb7fdc1c72e618f278039f7934854eaf1d983372ce1b",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-p36775.pt",
+   "sha256": "378248dfbedf2b1314ec0d930b21416477301c92ba37b2b9e2cd30410bacdc9f",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-p45200.pt",
+   "sha256": "ed9d6f743f658d886a3102d1be2b254e4d767a6dd8fe80350bd0a83edf0970c4",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-r1.pt",
+   "sha256": "3ce1cce7380c3a2f2fb65aee3652f28ec45546fe807aa654f9cae6458cab2eba",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-r2.pt",
+   "sha256": "69cdc1acb2f4c865edd69c0d85c8107fc285308f106761adf7d1af42b0cbaf6f",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/bc-r3.pt",
+   "sha256": "5e2f40a820b1f11c1ebbe8d672283068f8c44e7a102a5c5cd5bdc56e8c14b770",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m1.pt",
+   "sha256": "6e3a04c90ffbd42955e7a0accbfdf017f1ad2f5424dc2b3636125a4c27af1e03",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m2.pt",
+   "sha256": "8589c81dda2d9cde174a6c2bb8a4d7e3378cc3794027fd2a463dae8f20b1ca35",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m3.pt",
+   "sha256": "1e412071be812e660cc446cffe478a30ad0fdf12beaca7370d6aa54864fb32fb",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m4.pt",
+   "sha256": "a96a63910d51edb57cc3fe1ea23447cfbf3ae094540a77e2d7d8112fd485cad1",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m5.pt",
+   "sha256": "3fdfb01b9dfc020a591abb5e9940e64ff6101c008a0b5e0dc89760a65f62ebb0",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m6.pt",
+   "sha256": "93e2c015efd9790cc1953f0ece5d8afa2a811b65854afa56447b378b3bd68448",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/fixed/m7.pt",
+   "sha256": "a7df57f7306cf46d13188fdc86c6f3ff6fdec5c73020cdcf5a5380de9ea58996",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/rnad-final.pt",
+   "sha256": "2f243b0defe063ef6a52ffd9414e9fa998625e5f2be59dd22641b65f15c1c898",
+   "bytes": 98284803,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/rnad-p7067.pt",
+   "sha256": "9c9a3b050faeaa29f3104bd39149a5089566260e8abbcfa3cb9a3047d2631560",
+   "bytes": 98277699,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/rnad-p7222.pt",
+   "sha256": "a87f3d7e04c8bff3c3639ac8303b682c91f825bab8b1e912952510fb48280a98",
+   "bytes": 98276803,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/rnad-p7374.pt",
+   "sha256": "9af7fafd560cea19f0eca9e6f86ea616b1f208731397e80ad173d48821b8f49d",
+   "bytes": 98287107,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league12h/ckpt/rnad-seed.pt",
+   "sha256": "dbee3a7d87bb4c4fa8d0898e2a3267bfcc765907f61a8d50cbcec9124995d9c3",
+   "bytes": 79574170,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-b1.pt",
+   "sha256": "39903bbbf9252e8e1d06dbbb0378792b0886ec4f4f29f50f5356548bcf904268",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "2cde02a38554cddc"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-final.pt",
+   "sha256": "2a61303d90740e507058577360cdf3ac23946663833a2516e09398e1fc0a45c3",
+   "bytes": 15915732,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "b7bf3d37d31c8bfb"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-p32425.pt",
+   "sha256": "b81e4e96de099310495de97386dba25c96353ee5f0ff396bea17dd30f7987a9b",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "94fcbf546fbff979"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-p41150.pt",
+   "sha256": "c80c56876e9abf06cee8ccb57dcf151dc4f47c64569b299f26f3092305185ded",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "02b6f46743452c3f"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-p49900.pt",
+   "sha256": "4b17d132edbd475a3d9389e80be3670eb8e2b5ff3961fedce8ff3c7a1d6fdd94",
+   "bytes": 15915827,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "8374b28da7262a3e"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-r1.pt",
+   "sha256": "9e39e7c8074d1f214203cd65992a8289e4fdabbda65668c4852f8cad3de25faf",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "f0ba5126b07c8d52"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-r2.pt",
+   "sha256": "7031c321ab36809f3d6951f8fdfda5d51ab8aef8236c66ed3f99df4456bde63c",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "dc19096ba6911772"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/bc-r3.pt",
+   "sha256": "3ae960752ad8bb03322e8223b0ff6c6670d90da4316041c9405cfa7247bf99f2",
+   "bytes": 15915447,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "b7d6342365c9ebd2"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m1.pt",
+   "sha256": "6bb8baec9f42fd3f34ce981d18ee921742a8aca4d3739478ecd952a539ed8a8b",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "979eb7940fa838fd"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m10.pt",
+   "sha256": "a5cd8ca403820dd0cc99639636167f3127570b5da8887b4502e47280d0b51213",
+   "bytes": 15909369,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "2b83da88e3421cae"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m11.pt",
+   "sha256": "3a3f464fc801b70add3fe369aee999374de94b41ee75a8da55f0693b790e02da",
+   "bytes": 15909369,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "36dc4f98e6f66424"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m2.pt",
+   "sha256": "cff2dc64069d158299894d3968703c5aaf945875c08e7e24522a2df9703a1e96",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "5dfca6c877c14995"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m3.pt",
+   "sha256": "90b4d11ff0e4b6dddaa018f54ddc9117847ca9cb0c47548a9722f82a11bea790",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "f7d6aa5a27ee6341"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m4.pt",
+   "sha256": "2fe9f4dd083eccc534c14b96452d46f50ba2eb176581635c4fb947f6dc5b57ab",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "3729503062bec12d"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m5.pt",
+   "sha256": "65bed97d0511cfb0d57452922490e0b4a08388d7284ad3b1d2a08d93801963fb",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "053886630f26aaab"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m6.pt",
+   "sha256": "9d24255a44ac1aeaeca51937e44443006ee29cb30b2d376d7021c0c887b3edcd",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "b12d75a267d73dc9"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m7.pt",
+   "sha256": "f44b7ea7fe1f05192ca207b45a8d619e9aa5e0e61dbfaf5d54bcd996fd548d7c",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "cf47ac053210619f"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m8.pt",
+   "sha256": "6cca54992429b7b8096353f34845a4c82ccb2c2c99b09eece755dfd94ce31902",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "c56c4a0d3acea718"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/fixed/m9.pt",
+   "sha256": "e022c3d734dc394bd5cf0a3fa060a7242f4f23316613257830d3dbfae748cb5e",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "212549b6e0821dca"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/rnad-final.pt",
+   "sha256": "4f9ba9005992fa1ac0785c230491acccf528f2da8258721f8049ef76f649e46c",
+   "bytes": 98374275,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "f3210cc1f1bdafa5",
+    "reg0": "36dc4f98e6f66424",
+    "reg1": "2b83da88e3421cae",
+    "target": "067e17b2ff01d9e6"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/rnad-p13941.pt",
+   "sha256": "16a4e8b6c7b60cdf0c5de30455d4e675a3b085e0c3dc69e0403356f4f5767167",
+   "bytes": 98358177,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "fd2c99511e2d36ba",
+    "reg0": "36dc4f98e6f66424",
+    "reg1": "2b83da88e3421cae",
+    "target": "055f159c65d9d90c"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/rnad-p14068.pt",
+   "sha256": "6ca82d4716f17f0687b69c75fe4314cdebe181551d2b682e741b4862b2ca1136",
+   "bytes": 98366177,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "dd98a3c1eb1f917d",
+    "reg0": "36dc4f98e6f66424",
+    "reg1": "2b83da88e3421cae",
+    "target": "a176371e825fe8ce"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/rnad-p14186.pt",
+   "sha256": "0c7aab2071bb80f88b17e57b5247d84859dc04ddd06f3673194c039c6a43b104",
+   "bytes": 98364065,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "8dd0aeacbea51545",
+    "reg0": "36dc4f98e6f66424",
+    "reg1": "2b83da88e3421cae",
+    "target": "751db14206aabf6c"
+   }
+  },
+  {
+   "path": "runs/league24h-sb/ckpt/rnad-seed.pt",
+   "sha256": "e14c3af010c5e26987e3513d8f50c44ac4404bb6638ab94c33c849c76e0fc513",
+   "bytes": 79574234,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "b7bf3d37d31c8bfb",
+    "reg0": "b7bf3d37d31c8bfb",
+    "target": "b7bf3d37d31c8bfb"
+   }
+  },
+  {
+   "path": "runs/open_vocab_s0/ckpt/m11-critic.pt",
+   "sha256": "b1014385e054fc75032347652e07411e97ec47ed2680b4bdff6aaf40ef253daf",
+   "bytes": 22940583,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "98fcde713bb1638e"
+   }
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/fixed/m1.pt",
+   "sha256": "7c7b59d657861366640fd64a65df200720fb206250a40d9572c09dd64e81156c",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/fixed/m2.pt",
+   "sha256": "5e824b7daa3bae1dd42efcb177f7278fd3caad2904a423e96ec3202acdb81e19",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/fixed/m3.pt",
+   "sha256": "88252685a50aee370212fc3e1a0787b1714c03606748433c57e6011245c81f06",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/rnad-final.pt",
+   "sha256": "55ba99ce4da52ce7d3201ef0b6e09ff4102a592ed8498e718f6df7684d51feea",
+   "bytes": 98277443,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/rnad-p1543.pt",
+   "sha256": "b2f12467f11698fc6a64e47d2b7f0fcdef45cd535e0879d4b991dc203eab2dc0",
+   "bytes": 98259779,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/rnad-p1703.pt",
+   "sha256": "19f3bbb666e0eee94f6f8acd973211c4e4e72f3d311c1509a47d1a290d760552",
+   "bytes": 98265475,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/rnad-p1864.pt",
+   "sha256": "d120ba5af891a4ecd7257f7e57c5761d68d59f465234311828fc99ee13a3ff11",
+   "bytes": 98277059,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p1/ckpt/rnad-seed.pt",
+   "sha256": "d83cc49ece28fbfc71212a5fad77ab72f125289876f4cf7fd6ab339e5bcbaf1b",
+   "bytes": 79574170,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/fixed/m1.pt",
+   "sha256": "337c6d20e7ce4e9d8b73d98218456b1c74cdb6cec37a464f24e0eabdc071700a",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/fixed/m2.pt",
+   "sha256": "4ba8f119f4701ae345e5664630c14487521363d74c74784fbe955c25bf046446",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/fixed/m3.pt",
+   "sha256": "5267b2a1e55dfcb25cf5d75ebc8899450c497cae6b4244f2a14e38279dce4aae",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/rnad-final.pt",
+   "sha256": "033f682b6829279f737c5e19ed1a03a7e8ca198c1b571b5a4066005971ace638",
+   "bytes": 98243203,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/rnad-p397.pt",
+   "sha256": "1738075a56b26d4ac3e3870e08d054016dea716e3cfe4547eff2a40d1eb9667e",
+   "bytes": 98242021,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/rnad-p438.pt",
+   "sha256": "653397fe1863c02dcb86354cf4b047fd9e294a2a654d24b49c2dca4aef7a8ac7",
+   "bytes": 98234277,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/rnad-p478.pt",
+   "sha256": "dc03d4ad2fd7c9dfd071972024f3bd1797da06ae6d51da775671c2284f494177",
+   "bytes": 98242789,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilot-p2/ckpt/rnad-seed.pt",
+   "sha256": "7a3735f3c10c92dabe8c10c610155d7e9d2de7574d0e20d1f0c22de884adb8dc",
+   "bytes": 79574170,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/pilotA/ckpt/fixed/m1.pt",
+   "sha256": "483e6e6fd3b9518e46f9a942755bff827c3acf36cb31499c37f63d08d6a8c7ba",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "b2453ac9956a7527"
+   }
+  },
+  {
+   "path": "runs/pilotA/ckpt/rnad-p319.pt",
+   "sha256": "80ee1a334cfa7b28153ccf7b03b2938f3471b12bfd02b1dd57aeef516c60ac32",
+   "bytes": 80664538,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "37cca59b7aa1e327",
+    "reg0": "36dc4f98e6f66424",
+    "target": "a08a998cec8503f3"
+   }
+  },
+  {
+   "path": "runs/pilotA/ckpt/rnad-p481.pt",
+   "sha256": "d4d9f9d73185ff355146c9f6d4ba512497a8745fbf3bd52370c54a30b8d88c4b",
+   "bytes": 81208282,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "e96703c813720356",
+    "reg0": "36dc4f98e6f66424",
+    "target": "4a9b9852f62c1ee4"
+   }
+  },
+  {
+   "path": "runs/pilotA/ckpt/rnad-p562.pt",
+   "sha256": "15b299c825b6036849c097e4b569c5f9494b0de9132a6f19a47806db68366af2",
+   "bytes": 97398885,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "ad80737052c41efb",
+    "reg0": "b2453ac9956a7527",
+    "reg1": "36dc4f98e6f66424",
+    "target": "b986e46c34ccbcb3"
+   }
+  },
+  {
+   "path": "runs/pilotA/ckpt/rnad-seed.pt",
+   "sha256": "784a2ec06985d73d59646c181bbf57ab535f2b0e3611d874a4a6d5f395ad6293",
+   "bytes": 79574234,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9430d9f42d4559c0",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": true,
+   "networks": {
+    "model": "36dc4f98e6f66424",
+    "reg0": "36dc4f98e6f66424",
+    "target": "36dc4f98e6f66424"
+   }
+  },
+  {
+   "path": "runs/val1/ckpt/bc-b1.pt",
+   "sha256": "22f3cca99c0b1edb1536c015df70a2368651b62ac57b7a28dc9972ad8db25de6",
+   "bytes": 15915383,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/bc-final.pt",
+   "sha256": "0e27c48979003cf4bcf1b4d820cb4057d408e6698244cb1abdf52ab43dd481e6",
+   "bytes": 15915668,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/bc-r1.pt",
+   "sha256": "abda9338c0d290a8e034e323c2ea4475030c4eb2bf969098892ef3914365b0a9",
+   "bytes": 15915383,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/bc-r2.pt",
+   "sha256": "cbf3162bfd59ffeb7a2a5b8435a9a132c6d1a499c749a7ed0f39de2f330e1242",
+   "bytes": 15915383,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/fixed/m1.pt",
+   "sha256": "738edf7b199a14b96ed62eee2cb81a6e2dfe3ff7730ba0a1331e19b2e84a5f25",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/fixed/m2.pt",
+   "sha256": "6f5dc046cd9e940e0474243febdeded1adfda4e5487f17d1fb864ff6edef4521",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/fixed/m3.pt",
+   "sha256": "0fc646712c78c335bbca8a01147d4c04322b010c4b3abae554ef9e6f148a531b",
+   "bytes": 15909274,
+   "kind": "save_checkpoint",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/rnad-final.pt",
+   "sha256": "ba144728065b81bbcd9357f8af385b6aeaac2d77a0a14ac84069a82ad5f04eca",
+   "bytes": 96508355,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/rnad-p170.pt",
+   "sha256": "4d0225e8bea27260d3e97173f07e99561695d3a408d0eac7dda232248b3a0d10",
+   "bytes": 96001445,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/rnad-p250.pt",
+   "sha256": "dcb85768e3873de0e7c0808d63dc5c7c63136b1958543f0ceeaf0ec4cd037a87",
+   "bytes": 96224741,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/rnad-p330.pt",
+   "sha256": "1e92bc98fce526e264b17dcbb0589a82630bb213fd42791135f6c0ea4e51d7a5",
+   "bytes": 96437605,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  },
+  {
+   "path": "runs/val1/ckpt/rnad-seed.pt",
+   "sha256": "00ab10460a1d88c2b6a6fabfc7f51a8a707280c327e8006c0ed8c462b049e5c4",
+   "bytes": 79574170,
+   "kind": "learner_state",
+   "hashes": {
+    "spec_hash": "9dd29020dd612c00",
+    "vocab_hash": "be1266fd27b3ee13",
+    "text_model": "BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+   },
+   "runnable": false,
+   "reason": "spec_hash 9dd29020dd612c00 is not the current tables' 9430d9f42d4559c0"
+  }
+ ],
+ "networks": {
+  "02b6f46743452c3f": {
+   "file": "baseline/02b6f46743452c3f.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-p41150.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "2ca83cfe164d141a262a3e23c6158283c91efc37b8b945fcbd7782944ce7bf10"
+  },
+  "053886630f26aaab": {
+   "file": "baseline/053886630f26aaab.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m5.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "4ef8515e22d7fbb7b07adb04b2a0b234f77b93ab4b74432a1a737df83da21bb2"
+  },
+  "055f159c65d9d90c": {
+   "file": "baseline/055f159c65d9d90c.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p13941.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "9e095cbbd9ffdb31302812c349c20d9db81cfc79c9efdd9c88eb3d7add961fc5"
+  },
+  "067e17b2ff01d9e6": {
+   "file": "baseline/067e17b2ff01d9e6.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-final.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "d59009c8513289e0337b8a9c5e88152202e312a07534496a8ceb60a5e0af1cc6"
+  },
+  "212549b6e0821dca": {
+   "file": "baseline/212549b6e0821dca.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m9.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "a3dbef04414990405e2ab1fc97ded09543410fcc1df6c9bef461615664fa66e8"
+  },
+  "2b83da88e3421cae": {
+   "file": "baseline/2b83da88e3421cae.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m10.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "0554eca0cc6ba380746c7f95c3e3f94f4fdd3f8bde20cb7c4c61a648530cda02"
+  },
+  "2cde02a38554cddc": {
+   "file": "baseline/2cde02a38554cddc.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-b1.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "2be936f6c36b2b497367129045590c24af096fb74144079ee8c33eaecc41a5b6"
+  },
+  "36dc4f98e6f66424": {
+   "file": "baseline/36dc4f98e6f66424.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m11.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "348bac96961deb6aaa29ca989cbe794c62bae653abf493ea8ff17cd5a9bfde3b"
+  },
+  "3729503062bec12d": {
+   "file": "baseline/3729503062bec12d.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m4.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "1e68f167e10f3099082a0cefe192484eccc9033428155fcc638995c5a5c234fe"
+  },
+  "37cca59b7aa1e327": {
+   "file": "baseline/37cca59b7aa1e327.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p319.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "5e82959c055ddce3cae0ed372f108f2b902471132f7141cf08319b7b2eaaa173"
+  },
+  "4a9b9852f62c1ee4": {
+   "file": "baseline/4a9b9852f62c1ee4.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p481.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "a8ece903f40a239c760b50953967955490001feb7ecd846ad7b305c17b749819"
+  },
+  "5dfca6c877c14995": {
+   "file": "baseline/5dfca6c877c14995.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m2.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "5091516e94c18183f6cb662f1659241b405fb2cbd55973323602e6ebbf1934f0"
+  },
+  "751db14206aabf6c": {
+   "file": "baseline/751db14206aabf6c.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p14186.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "8aab37ebf430454b904587887bfdf2ac05d02e53e8a5f0b6a8a36d0cebd4eba3"
+  },
+  "8374b28da7262a3e": {
+   "file": "baseline/8374b28da7262a3e.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-p49900.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "b7d32d62d7ad57bbd8116067b88c1ef576313775c8d8d296d41a75db08f523e7"
+  },
+  "8dd0aeacbea51545": {
+   "file": "baseline/8dd0aeacbea51545.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p14186.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "98e44f9460e78d13a1f6414581b7360091f885c4c9eca08cce849147ab49eec9"
+  },
+  "94fcbf546fbff979": {
+   "file": "baseline/94fcbf546fbff979.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-p32425.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "4eb267b08e6ff60747e98122fb1b12c72a44c87a87e49a4b83e8fc7693da75ba"
+  },
+  "979eb7940fa838fd": {
+   "file": "baseline/979eb7940fa838fd.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m1.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "835a078693c97665fa68eec154cd71d5d16fb7454ca7b48b853df0384157b4db"
+  },
+  "98fcde713bb1638e": {
+   "file": "baseline/98fcde713bb1638e.rmtb",
+   "first_seen": "runs/open_vocab_s0/ckpt/m11-critic.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": true,
+    "critic_layers": 2
+   },
+   "critic": true,
+   "sha256": "4ed20d9e69d5e155dccd3a09246f15c2a870560eaf5b94e7226c3c538d4848bc"
+  },
+  "a08a998cec8503f3": {
+   "file": "baseline/a08a998cec8503f3.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p319.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "d0354b19a9a1fe4beeb47beaff93186d3724ff14ab88b520de14d3f221ae3f7e"
+  },
+  "a176371e825fe8ce": {
+   "file": "baseline/a176371e825fe8ce.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p14068.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "cbbf35683b87d1fc7c4090a91aba2f30741e91660b4da661b16c233c811393c7"
+  },
+  "ad80737052c41efb": {
+   "file": "baseline/ad80737052c41efb.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p562.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "9df9472aba520da8a42f948325c10bd396c2fcb0a42cb96be19004a2193bc0a4"
+  },
+  "b12d75a267d73dc9": {
+   "file": "baseline/b12d75a267d73dc9.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m6.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "6b8fc5ca79afad61908f1e6a5db7bd3b55e71dcfb8ca6cd15789f38e827eaf46"
+  },
+  "b2453ac9956a7527": {
+   "file": "baseline/b2453ac9956a7527.rmtb",
+   "first_seen": "runs/pilotA/ckpt/fixed/m1.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "405e06430f2be9e6ac7533ff73601123c084f38d27ef4d131e012934f26f3e6a"
+  },
+  "b7bf3d37d31c8bfb": {
+   "file": "baseline/b7bf3d37d31c8bfb.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-final.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "07512209b1e82db937044d0db955222187764c00187d30d2d5df64951d0e134a"
+  },
+  "b7d6342365c9ebd2": {
+   "file": "baseline/b7d6342365c9ebd2.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-r3.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "095314d7eadc6fcfd37637c9d2126cca32e547a5718fbc8d1efe72934a90fd9d"
+  },
+  "b986e46c34ccbcb3": {
+   "file": "baseline/b986e46c34ccbcb3.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p562.pt:target",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "9dcf14afe96c708153a9facfe06a58c92d6133a4ce8b8cbcdc8fac3660344581"
+  },
+  "c56c4a0d3acea718": {
+   "file": "baseline/c56c4a0d3acea718.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m8.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "b8ee993d5e7c17e4c4ec7c4c7d4ea739dc61fa5f51e82df8a55e66889b7b45b6"
+  },
+  "cf47ac053210619f": {
+   "file": "baseline/cf47ac053210619f.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m7.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "14a2741d48b2380b665b05e076526963e8ca30b9559419c7d1164382cad7ac98"
+  },
+  "dc19096ba6911772": {
+   "file": "baseline/dc19096ba6911772.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-r2.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "1f545e9dee0db354054e10093908d8241c0f060d0c03ff59c94fe99fd0136837"
+  },
+  "dd98a3c1eb1f917d": {
+   "file": "baseline/dd98a3c1eb1f917d.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p14068.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "1c8581b168832c5fdf084e36ec1d3aa2ac98e33513901bd3e592702c4e47134b"
+  },
+  "e96703c813720356": {
+   "file": "baseline/e96703c813720356.rmtb",
+   "first_seen": "runs/pilotA/ckpt/rnad-p481.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "cb39b88d927ce45d5e6a48b81a3cf4580218f4585deb7f65854a032f2f438040"
+  },
+  "f0ba5126b07c8d52": {
+   "file": "baseline/f0ba5126b07c8d52.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/bc-r1.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "98e130e518f16aa7f62d12eb974e502161fed840e50861bf5afac9252d48f8dc"
+  },
+  "f3210cc1f1bdafa5": {
+   "file": "baseline/f3210cc1f1bdafa5.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-final.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "7c1e38532b5446c59f0b27b4ba6348b7905d2edf0190e61cac5260fdf3123a08"
+  },
+  "f7d6aa5a27ee6341": {
+   "file": "baseline/f7d6aa5a27ee6341.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/fixed/m3.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "3652858a7fbcb5c3453a62aa5093b377ad3408f28dee9f2ad99203780097a5d5"
+  },
+  "fd2c99511e2d36ba": {
+   "file": "baseline/fd2c99511e2d36ba.rmtb",
+   "first_seen": "runs/league24h-sb/ckpt/rnad-p13941.pt:model",
+   "config": {
+    "d": 192,
+    "heads": 4,
+    "layers": 4,
+    "ff_mult": 4,
+    "id_dropout": 0.1,
+    "aux_heads": true,
+    "omniscient_critic": false,
+    "critic_layers": 2
+   },
+   "critic": false,
+   "sha256": "e098e995346dfd327978948d9275cb63b094b4335f788bcddf8f15626420c0ea"
+  }
+ }
+}

@@ -23,7 +23,7 @@
 // (ERROR: / FATAL: — a failed --play spec is "FATAL: --play: …" — a crash, "SCRIPT INCOMPLETE")
 // or a nonzero engine exit.
 //
-// Scenario keys beyond the presets (name, hand_a/b, library_a/b, battlefield_a/b, graveyard_a/b,
+// Scenario keys beyond the presets (name, hand_a/b, library_a/b, battlefield_a/b, face_down_a/b, graveyard_a/b,
 // exile_a/b, sideboard_a/b, life_a/b, play or actions, seed, max_decisions):
 //
 //   why            one line: the CR rule and the commit that fixed the behavior (required)

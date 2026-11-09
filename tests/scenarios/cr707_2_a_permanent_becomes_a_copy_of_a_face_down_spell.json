@@ -1,0 +1,41 @@
+{
+  "name": "cr707_2_a_permanent_becomes_a_copy_of_a_face_down_spell",
+  "why": "CR 707.2, 708.4: The Myriad Pools' copy of a spell cast face down is a copy of what it is: the Bears are a nameless 2/2 for the turn, and nothing of the card under the spell comes along.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Myriad Pools",
+    "Island",
+    "Island",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect_dump_not": [
+    "^B .*(card=|seen .*|known_hand )Aphetto"
+  ]
+}

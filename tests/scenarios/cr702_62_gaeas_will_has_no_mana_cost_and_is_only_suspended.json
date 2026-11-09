@@ -1,0 +1,57 @@
+{
+  "name": "cr702_62_gaeas_will_has_no_mana_cost_and_is_only_suspended",
+  "why": "CR 702.62a, 608.2m: suspended with {G}, Gaea's Will is cast for free as its last time counter is removed, and its own replacement applies as it finishes resolving: it is exiled",
+  "hand_a": [
+    "Gaea's Will"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:discard:Forest",
+    "A:discard:Forest",
+    "A:desc:Cast Gaea's Will without"
+  ],
+  "max_decisions": 30,
+  "expect_order": [
+    "suspends Gaea's Will",
+    "Removed a time counter from Gaea's Will \\(0 remaining\\)",
+    "casts Gaea's Will",
+    "Gaea's Will is exiled instead"
+  ]
+}

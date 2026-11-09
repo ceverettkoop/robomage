@@ -9,6 +9,8 @@
 #include "../error.h"
 #include "../object_ref.h"
 #include "../systems/rules_modifying.h"
+#include "characteristics.h"
+#include "permissions.h"
 #include "players.h"
 #include "types.h"
 #include "visibility.h"
@@ -36,6 +38,20 @@ std::vector<Entity> zone_objects(const EntitySet &entities, Zone::ZoneValue zone
     return out;
 }
 
+Entity library_top(Zone::Ownership owner) {
+    for (Entity e : zoned_entities()) {
+        const Zone &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location == Zone::LIBRARY && z.owner == owner && z.distance_from_top == 0) return e;
+    }
+    return 0;
+}
+
+bool is_library_top(Entity card) {
+    if (!global_coordinator.entity_has_component<Zone>(card)) return false;
+    const Zone &z = global_coordinator.GetComponent<Zone>(card);
+    return z.location == Zone::LIBRARY && z.distance_from_top == 0;
+}
+
 int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entity except) {
     std::set<std::string> type_names;
     for (auto entity : entities) {
@@ -44,7 +60,7 @@ int graveyard_card_types(Zone::Ownership owner, const EntitySet &entities, Entit
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
+        for (auto &t : effective_types(entity))
             if (t.kind == TYPE) type_names.insert(t.name);
     }
     return static_cast<int>(type_names.size());
@@ -112,8 +128,8 @@ bool interchangeable_cards(Entity a, Entity b) {
         return false;
     if (za.location == Zone::GRAVEYARD) {
         for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
-            CardPlayPermission pa = card_play_permission(a, player);
-            CardPlayPermission pb = card_play_permission(b, player);
+            PlayPermissions pa = play_permissions(a, player);
+            PlayPermissions pb = play_permissions(b, player);
             if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
                 return false;
         }
@@ -125,45 +141,4 @@ bool interchangeable_cards(Entity a, Entity b) {
         return true;
     }
     return false;
-}
-
-CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
-    CardPlayPermission out;
-    if (!global_coordinator.entity_has_component<Zone>(card)) return out;
-    if (!global_coordinator.entity_has_component<CardData>(card)) return out;
-    const auto &zone = global_coordinator.GetComponent<Zone>(card);
-    const auto &cd = global_coordinator.GetComponent<CardData>(card);
-    // A source that outlives this turn's cleanup clears this; it starts true and is only
-    // reported when some source applies.
-    bool all_expire = true;
-    if (zone.location == Zone::GRAVEYARD) {
-        if (zone.owner != player) return out;
-        bool land = is_land_card(cd);
-        if (cd.has_flashback) { out.sources |= CardPlayPermission::FLASHBACK; all_expire = false; }
-        if (cd.has_escape) { out.sources |= CardPlayPermission::ESCAPE; all_expire = false; }
-        if (!land && cur_game.resolved_effects.may_cast_this_turn.count(card))
-            out.sources |= CardPlayPermission::GRAVEYARD_CAST;
-        if (land && rules_mod::may_play_lands_from_graveyard(player)) {
-            out.sources |= CardPlayPermission::GRAVEYARD_LAND;
-            all_expire = false;
-        }
-    } else if (zone.location == Zone::EXILE) {
-        const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(card);
-        if (grant == nullptr) return out;
-        const Game::ImpulseCastPermission &g = *grant;
-        if (g.caster != player) return out;
-        // A permission for a cast made during a resolution (CR 608.2g) is used only there.
-        if (g.during_resolution) return out;
-        if (is_land_card(cd) && !g.allow_land) return out;
-        out.sources |= CardPlayPermission::EXILE_GRANT;
-        // Mirrors the cleanup expiry in game.cpp: a warp grant lasts while the card stays
-        // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
-        // whose active player is its caster; every other grant lapses at this cleanup.
-        Zone::Ownership active = cur_game.turn_state.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
-        bool expires = !g.warp && (!g.persist_until_end_of_next_turn ||
-                                   (g.caster == active && cur_game.turn_state.turn > g.grant_turn));
-        if (!expires) all_expire = false;
-    }
-    out.expires_this_turn = out.playable() && all_expire;
-    return out;
 }

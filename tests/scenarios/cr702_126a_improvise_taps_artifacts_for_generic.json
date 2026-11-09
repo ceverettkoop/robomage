@@ -1,0 +1,12 @@
+{
+  "name": "cr702_126a_improvise_taps_artifacts_for_generic",
+  "why": "CR 702.126a: each artifact tapped pays for {1} of Kappa Cannoneer's generic mana, after the mana sources (TapToPay's Improvise row)",
+  "hand_a": ["Kappa Cannoneer"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Mishra's Bauble", "Urza's Bauble", "Aether Spellbomb", "Chromatic Star"],
+  "library_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Kappa Cannoneer"],
+  "max_decisions": 8,
+  "expect_count": {"taps .* for Improvise": 4},
+  "expect": ["Player A taps Mishra's Bauble for Improvise", "Player A casts Kappa Cannoneer"]
+}

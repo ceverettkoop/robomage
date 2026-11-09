@@ -1,0 +1,19 @@
+{
+  "name": "cr118_9d_free_cast_pays_kickers",
+  "why": "CR 118.9d / 601.2b: a spell cast without paying its mana cost (Omniscience) still offers its additional costs: Wastescape Battlemage ({1}{C}, unpayable here) cast free with both kickers paid ({G} and {1}{U}), so both kicked cast triggers fire (free-cast statics, onboarding stage 6)",
+  "hand_a": ["Wastescape Battlemage", "Island"],
+  "battlefield_a": ["Omniscience", "Forest", "Island", "Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Forest"],
+  "battlefield_b": ["Lotus Petal", "Grizzly Bears"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Wastescape Battlemage without paying its mana cost",
+           "A:choice:accept", "A:choice:accept", "A:#0", "B:pass", "B:pass"],
+  "seed": 1,
+  "max_decisions": 9,
+  "expect_menu_not": ["^Cast Wastescape Battlemage$"],
+  "expect_order": ["Player A casts Wastescape Battlemage without paying its mana cost",
+                   "Player A pays the kicker 1 cost for Wastescape Battlemage",
+                   "Player A pays the kicker 2 cost for Wastescape Battlemage",
+                   "Grizzly Bears is moved to hand", "Lotus Petal is moved to exile"]
+}

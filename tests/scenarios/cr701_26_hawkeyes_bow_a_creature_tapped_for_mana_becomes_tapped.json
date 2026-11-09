@@ -1,0 +1,47 @@
+{
+  "name": "cr701_26_hawkeyes_bow_a_creature_tapped_for_mana_becomes_tapped",
+  "why": "CR 701.26a, Hawkeye's Bow: any tap counts: Llanowar Elves tapped for mana while a spell is paid for.",
+  "hand_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Hawkeye's Bow",
+    "Llanowar Elves",
+    "Mountain",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Hawkeye's Bow",
+    "A:target:Llanowar Elves",
+    "A:tap:Mountain",
+    "A:pass",
+    "A:cast:Grizzly Bears",
+    "A:tap:Llanowar Elves",
+    "A:tap:Forest",
+    "A:pass"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Llanowar Elves deals 1 damage to Player B"
+  ]
+}

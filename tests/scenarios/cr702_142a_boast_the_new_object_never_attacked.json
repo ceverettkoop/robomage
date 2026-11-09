@@ -1,0 +1,48 @@
+{
+  "name": "cr702_142a_boast_the_new_object_never_attacked",
+  "why": "CR 702.142a, 400.7: a Bombardiers that attacked and was flickered is a new object that didn't attack: back at the end step it offers no boast, so A's windows go unasked and turn 2 comes inside the cap",
+  "hand_a": [
+    "Flickerwisp"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Thought Monitor",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Broadside",
+    "A:attack:done",
+    "A:cast:Flickerwisp"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Broadside Bombardiers -> Player B"
+  ]
+}

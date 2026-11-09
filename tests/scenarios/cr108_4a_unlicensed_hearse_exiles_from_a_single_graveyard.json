@@ -1,0 +1,41 @@
+{
+  "name": "cr108_4a_unlicensed_hearse_exiles_from_a_single_graveyard",
+  "why": "CR 108.4a, TargetsWithSameController$: once a card of B's graveyard is chosen, A's Ponder is no target of the same activation: the second pick has nothing to offer and isn't asked.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse"
+  ],
+  "graveyard_a": [
+    "Ponder"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "graveyard_b": [
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Unlicensed Hearse",
+    "A:target:Lightning Bolt"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Lightning Bolt is moved to exile"
+  ],
+  "expect_count": {
+    "Choose target for Unlicensed Hearse": 1
+  },
+  "expect_not": [
+    "Ponder is moved to exile"
+  ]
+}

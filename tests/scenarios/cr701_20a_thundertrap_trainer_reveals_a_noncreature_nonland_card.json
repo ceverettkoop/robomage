@@ -1,0 +1,53 @@
+{
+  "name": "cr701_20a_thundertrap_trainer_reveals_a_noncreature_nonland_card",
+  "why": "CR 701.20a, 401.4: of the top four only a noncreature, nonland card may be taken; it is revealed, and the rest go to the bottom; no Offspring paid, so no token",
+  "hand_a": [
+    "Thundertrap Trainer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Lightning Bolt",
+    "Grizzly Bears",
+    "Mountain",
+    "Ponder",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Thundertrap Trainer",
+    "A:dig:Lightning Bolt"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Player A reveals Lightning Bolt and puts it into",
+    "^Player A puts 3 card\\(s\\) on the bottom of their library"
+  ],
+  "expect_not": [
+    "Offspring token copy"
+  ],
+  "expect_menu": [
+    "^Ponder$"
+  ],
+  "expect_menu_not": [
+    "^Grizzly Bears$",
+    "^Mountain$"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "cr202_3_powder_keg_destroys_mana_value_equal_to_fuse_counters",
+  "why": "CR 202.3 / 608.2h: Powder Keg with one fuse counter destroys each artifact and creature of mana value 1, either player's, by the counters it had as it was sacrificed; other mana values stay",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Powder Keg", "Flying Men", "Grizzly Bears"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "battlefield_b": ["Aether Vial", "Mox Opal", "Birds of Paradise"],
+  "play": ["A:keep", "B:keep", "A:desc:Accept", "A:activate:Powder Keg"],
+  "max_decisions": 8,
+  "expect": ["Flying Men is destroyed", "Aether Vial is destroyed", "Birds of Paradise is destroyed"],
+  "expect_not": ["Grizzly Bears is destroyed", "Mox Opal is destroyed"]
+}

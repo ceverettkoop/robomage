@@ -1,7 +1,7 @@
 #ifndef ROBOMAGE_CHECK_CLI_H
 #define ROBOMAGE_CHECK_CLI_H
 
-// robomage_check: the engine's test gate in C++ (docs/engine_fork_plan.md step 3a, docs/ci.md).
+// robomage_check: the engine's test gate in C++ (docs/ci.md).
 //
 //   robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR]
 //                  [--fuzz-games N] [--smoke-games N] [--matchups PRESET] [--mode explore|explore:patient]
@@ -11,7 +11,9 @@
 // std-only RMSTATE decoder and the agents' frame reader and Python-compatible generator. Tiers
 // (default: all of them, in this order):
 //
-//   vocab      the engine's --check-decks over the top-level and league/ decks
+//   vocab      the engine's --check-decks over the top-level, league/ and heldout/ decks; the parse
+//              report over the vocab against tests/parse_report/vocab.json (--record rewrites it);
+//              tools/onboard/onboard.py check over the candidates (stale status files warn)
 //   concede    the CR 104.3a concession sentinels (-2 / -3) at bo1 / bo3 decisions over the RMSTATE
 //              stream (answered, and piped unread), results and --replay of the logged decisions
 //   scenarios  every rules-regression scenario (tests/scenarios/*.json)
@@ -21,12 +23,13 @@
 //              its output against <name>.replay byte for byte (--record rewrites the baselines)
 //   state      the state format's self-checks over the replayed corpus, explore fuzz games and the
 //              scenarios; dump re-encoding, decoder refusals, RMSTATE sessions, name-a-card menus
-//   knowledge  rmknow --selftest / --exactness / --belief-exactness; explore games under
-//              --selfcheck-knowledge; RMSTATE sessions against their dumps; rmknow --isolation and
-//              --truth; the belief layer's structure;
-//              archetype inference; the belief calibration report
-//   fuzz       C++ explore vs explore over league matchups (bo1, and bo3 explore:patient matches);
-//              draws are findings
+//   knowledge  rmknow --selftest / --exactness; explore games under --selfcheck-knowledge; RMSTATE
+//              sessions against their dumps; rmknow --isolation and --truth
+//   fuzz       C++ explore vs explore over the playable decks' matchups (league/ and heldout/: bo1,
+//              bo3 explore:patient matches and --no-auto-mana games; --matchups "deck:*" plays one deck
+//              against every playable deck in every leg); draws are findings. Then each fixture deck
+//              (decks/tests/mech_*.dk) against itself under --coverage: a key of its .expect with no
+//              hits is an error (coverage_check.h)
 //   bench      decisions per second of a fixed explore workload
 //   smoke      scripted hard vs hard league games through the Python driver (python/rm_driver.py)
 //              and the kept Python's own checks (python/pycheck.py: the Python decoder against the

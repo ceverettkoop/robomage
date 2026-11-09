@@ -16,6 +16,7 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/prepared_copy.h"
 #include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/zone.h"
@@ -29,12 +30,16 @@
 #include "../queries/characteristics.h"
 #include "../queries/combat.h"
 #include "../queries/delayed_triggers.h"
+#include "../queries/face_down.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
+#include "../queries/overlays.h"
 #include "../queries/pending_cost.h"
+#include "../queries/permissions.h"
 #include "../queries/player_effects.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
+#include "../queries/tokens.h"
 #include "../queries/types.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
@@ -44,7 +49,6 @@
 #include "enum_names.h"
 #include "handles.h"
 #include "knowledge_feed.h"
-#include "metagame.h"
 #include "schema.h"
 #include "stream.h"
 
@@ -118,9 +122,10 @@ static void append_defs(std::vector<CardAbility> &out, const std::vector<const A
     rmstate::AbilityKind kind_override, bool use_override);
 static rmstate::AbilityKind def_kind(const AbilityDef &def);
 static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_object);
+static int copied_card_id(Entity e, const Permanent &perm);
 static const CardData *object_card_data(Entity e);
+static const CardData &object_face(Entity e, const CardData &cd);
 static const CardData *card_definition(int card_id);
-static void collect_token_scripts(const AbilityDef &def, std::set<std::string> &out);
 static void collect_card_tokens(const CardData &cd, std::set<std::string> &out);
 static bool token_script_exists(const std::string &stem);
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer);
@@ -156,12 +161,13 @@ static void write_stack_targets(const Ctx &c, Entity stack_object, uint32_t h, c
 static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stack);
 static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_cards);
 static void write_player_effects(const Ctx &c, Zone::Ownership p);
+static void write_pool_mana(const Ctx &c, Zone::Ownership p);
 static void write_reveals(const Ctx &c);
 static void write_pending(const Ctx &c, Zone::Ownership decider);
 static void write_pending_cost(const Ctx &c);
 static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions);
 static bool description_hides_identity(Zone::Ownership viewer, const LegalAction &la);
-static uint16_t cast_variant_mask(const LegalAction &la);
+static uint32_t cast_variant_mask(const LegalAction &la);
 static void write_match(const Ctx &c);
 static void write_own_deck(const Ctx &c);
 static void write_events(const Ctx &c, const std::vector<ObsEvent> &events);
@@ -228,15 +234,7 @@ static std::string printed_mana_cost(const CardData &cd) {
     for (int i = 0; i < cd.x_pip_count; ++i) out += "{X}";
     const bool other_pips = cd.x_pip_count > 0 || !cd.hybrid_mana.empty() || !cd.phyrexian_mana.empty();
     if (!cd.mana_cost.empty() || (!other_pips && !is_land_card(cd))) out += mana_value_text(cd.mana_cost);
-    for (const HybridPip &pip : cd.hybrid_mana) {
-        out += "{";
-        if (pip.generic_alt > 0) out += std::to_string(pip.generic_alt);
-        for (size_t i = 0; i < pip.colors.size(); ++i) {
-            if (i > 0 || pip.generic_alt > 0) out += "/";
-            out += mana_symbol_str(pip.colors[i]);
-        }
-        out += "}";
-    }
+    for (const HybridPip &pip : cd.hybrid_mana) out += hybrid_pip_text(pip);
     for (Colors c : cd.phyrexian_mana) out += std::string("{") + mana_symbol_str(c) + "/P}";
     return out;
 }
@@ -258,9 +256,16 @@ static std::string cost_text(const std::string &script_line) {
     return script_line.substr(start, end - start);
 }
 
+// The characteristics an object's row shows: a permanent's face, a card's as it is in its zone.
+static const CardData &object_face(Entity e, const CardData &cd) {
+    return global_coordinator.entity_has_component<Permanent>(e) ? active_face(e, cd) : card_characteristics(e, cd);
+}
+
 static rmstate::Layout card_layout(const CardData &cd) {
     if (cd.is_split) return rmstate::Layout::SPLIT;
     if (cd.is_modal_dfc) return rmstate::Layout::MODAL_DFC;
+    if (cd.is_adventure) return rmstate::Layout::ADVENTURE;
+    if (cd.is_prepare) return rmstate::Layout::PREPARE;
     if (cd.backside) return rmstate::Layout::TRANSFORM;
     return rmstate::Layout::NORMAL;
 }
@@ -274,10 +279,7 @@ static rmstate::Timing ability_timing(const AbilityDef &def, const CardData *cd)
         return rmstate::Timing::SORCERY;
     }
     if (def.ability_type == AbilityDef::ACTIVATED) {
-        if (def.sorcery_speed_only || def.is_loyalty_ability || def.keyword_label == "Equip" ||
-            def.keyword_label == "Reconfigure" || def.keyword_label == "Unattach")
-            return rmstate::Timing::SORCERY;
-        return rmstate::Timing::INSTANT;
+        return activates_as_sorcery(def) ? rmstate::Timing::SORCERY : rmstate::Timing::INSTANT;
     }
     return rmstate::Timing::ANY;
 }
@@ -382,8 +384,9 @@ static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_o
     else if (card_id >= TOKEN_VOCAB_BASE && token_object != 0 &&
              global_coordinator.entity_has_component<Token>(token_object))
         list = token_ability_list(global_coordinator.GetComponent<Token>(token_object));
+    const AbilityDef *printed = def->printed_as ? def->printed_as : def;
     for (size_t i = 0; i < list.size(); ++i) {
-        if (list[i].def != def) continue;
+        if (list[i].def != printed) continue;
         r.u16(card_or_none(card_id)).u16(i).text(def->ref_key);
         return;
     }
@@ -395,30 +398,12 @@ static void put_abref(Row &r, const AbilityDef *def, int card_id, Entity token_o
 
 // ── CARDS ─────────────────────────────────────────────────────────────────────────────────────
 
-// The token scripts `def` (and its sub-abilities, modes and granted abilities) can make.
-static void collect_token_scripts(const AbilityDef &def, std::set<std::string> &out) {
-    if (const TokenParams *tp = std::get_if<TokenParams>(&def.params))
-        if (!tp->script.empty()) out.insert(tp->script);
-    if (def.kind == EffectKind::Investigate) out.insert(effects::INVESTIGATE_TOKEN_SCRIPT);
-    if (def.kind == EffectKind::Amass) out.insert(effects::amass_army_token_script(effects::amass_subtype(def)));
-    if (def.kind == EffectKind::Mobilize) out.insert(effects::MOBILIZE_TOKEN_SCRIPT);
-    for (const AbilityDef &sub : def.subabilities) collect_token_scripts(sub, out);
-    for (const AbilityDef &mode : def.charm_choices) collect_token_scripts(mode, out);
-    for (const AbilityDef &trig : def.effect_floating_triggers) collect_token_scripts(trig, out);
-    for (const AbilityDef &granted : def.animate_granted_abilities) collect_token_scripts(granted, out);
-}
-
-// The token scripts a card can make: its abilities' token effects, and the Warrior a mobilize
-// keyword makes (its trigger is built from the keyword during play, not parsed onto the card).
+// The token scripts a card can make: its abilities' token effects (queries/tokens.h), and the
+// Warrior a mobilize keyword makes.
 static void collect_card_tokens(const CardData &cd, std::set<std::string> &out) {
     for (const CardAbility &a : card_ability_list(cd))
-        if (a.def) collect_token_scripts(*a.def, out);
-    const CardData *faces[] = {&cd, cd.backside.get()};
-    for (const CardData *face : faces) {
-        if (!face) continue;
-        for (const std::string &kw : face->keywords)
-            if (kw.rfind("Mobilize", 0) == 0) out.insert(effects::MOBILIZE_TOKEN_SCRIPT);
-    }
+        if (a.def) ability_token_scripts(*a.def, out);
+    keyword_token_scripts(cd, out);
 }
 
 static bool token_script_exists(const std::string &stem) {
@@ -432,11 +417,10 @@ static bool sees_decklist(Zone::Ownership viewer, Zone::Ownership owner) {
     return !closed_decklist || !is_seat(viewer) || viewer == owner;
 }
 
-// The card ids of the cards in the registered lists `viewer` may see and in the reference
-// metagame's lists (physical_card_of: a deck line naming a back face is its card's front-face id),
-// ascending. Under a closed decklist, every vocab card (by its front face), whoever views: the
-// opponent's cards need rows, and listing only the viewer's own would show which cards are the
-// opponent's.
+// The card ids of the cards in the registered lists `viewer` may see (physical_card_of: a deck line
+// naming a back face is its card's front-face id), ascending. Under a closed decklist, every vocab
+// card (by its front face), whoever views: the opponent's cards need rows, and listing only the
+// viewer's own would show which cards are the opponent's.
 static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
     std::set<int> ids;
     if (closed_decklist) {
@@ -450,8 +434,6 @@ static std::vector<int> cards_frame_ids(Zone::Ownership viewer) {
         for (const DecklistEntry &e : deck_state_registered_main(owner)) ids.insert(physical_card_of(e.vocab_idx));
         for (const DecklistEntry &e : deck_state_registered_side(owner)) ids.insert(physical_card_of(e.vocab_idx));
     }
-    for (const ReferenceList &list : reference_metagame().lists)
-        for (const auto &c : list.cards) ids.insert(c.first);
     return std::vector<int>(ids.begin(), ids.end());
 }
 
@@ -514,8 +496,8 @@ static void write_card_abilities(
             if (a.def) {
                 const CardData *face = cd && a.face == rmstate::Face::BACK && cd->backside ? cd->backside.get() : cd;
                 r.u8(static_cast<uint64_t>(a.def->kind)).text(a.def->ref_key).text(cost_text(a.def->script_line));
-                r.u8(a.def->tap_cost ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
-                r.u8(u8_count(a.def->activation_limit)).text(a.def->script_line);
+                r.u8(a.def->cost.taps() ? 1 : 0).u8(static_cast<uint64_t>(ability_timing(*a.def, face)));
+                r.u8(u8_count(activation_turn_limit(*a.def))).text(a.def->script_line);
             } else {
                 const uint32_t line = a.stat ? a.stat->script_line : a.repl->script_line;
                 r.u8(NONE8).text("").text("").u8(0).u8(static_cast<uint64_t>(rmstate::Timing::ANY)).u8(0);
@@ -720,7 +702,9 @@ static void write_turn(const Ctx &c) {
     put_seat(r, priority_seat(), c.self);
     r.u8(priority_window_open() ? 1 : 0).u8(static_cast<uint64_t>(cur_game.pending.choice));
     r.u8(cur_game.combat.attackers_declared ? 1 : 0).u8(cur_game.combat.blockers_declared ? 1 : 0);
-    r.u8(static_cast<uint64_t>(cur_game.day_night));
+#define DESIGNATION_TURN(type, field, init, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#include "designations.def"
     const std::vector<Zone::Ownership> &extra = cur_game.turn_state.extra_turns;
     put_seat(r, extra.empty() ? Zone::UNKNOWN : extra.back(), c.self);
 }
@@ -747,7 +731,11 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
                                   : 0;
         const bool passed = window && (is_a ? cur_game.priority.a_has_passed : cur_game.priority.b_has_passed);
         r.u8(u8_count(mulls)).u8(u8_count(to_bottom)).u8(passed ? 1 : 0);
-        r.u8(cur_game.monarch_entity == pe ? 1 : 0).u8(pl.has_city_blessing ? 1 : 0);
+#define DESIGNATION_GAME_PLAYER(type, field, init, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#define DESIGNATION_PLAYER(type, field, init, lasts, column, storage, tag, read) \
+    r.put(rmstate::Storage::storage, static_cast<uint64_t>(read));
+#include "designations.def"
         const auto &extra = cur_game.turn_state.extra_turns;
         r.u8(u8_count(std::count(extra.begin(), extra.end(), p)));
         r.u8(u8_count(pl.lands_played_this_turn)).u8(u8_count(rules_mod::land_drops_remaining(p)));
@@ -776,8 +764,30 @@ static void write_players(const Ctx &c, const ZoneCounts counts[3]) {
     }
 }
 
-// One object row. The characteristic columns are filled only when the viewer can see the
-// object's identity (a face-down object shows only where it is and its public status).
+// The card a copy effect made permanent `e` a copy of: -1 for no copy, or a copy of a scripted token.
+static int copied_card_id(Entity e, const Permanent &perm) {
+    if (perm.printed_card && global_coordinator.entity_has_component<CardData>(e)) {
+        const CardData *under = face_down_card(e);
+        const CardData &copied = under ? *under : global_coordinator.GetComponent<CardData>(e);
+        return copied.token_script.empty() ? card_name_to_index(copied.name) : token_script_to_index(copied.token_script);
+    }
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        const Token &tok = global_coordinator.GetComponent<Token>(e);
+        if (!tok.copied_script.empty()) return token_script_to_index(tok.copied_script);
+        if (!tok.copied_card.empty()) return card_name_to_index(tok.copied_card);
+    }
+    return -1;
+}
+
+// The chosen creature type's subtype index, none when none was chosen.
+static uint64_t chosen_type_cell(const Permanent &perm) {
+    const int index = perm.chosen_type.empty() ? -1 : subtype_index(perm.chosen_type);
+    return index < 0 ? NONE16 : static_cast<uint64_t>(index);
+}
+
+// One object row. The characteristic columns are filled only when the viewer can see them
+// (characteristics_visible): a face-down exiled card shows only where it is and its public status,
+// a face-down permanent or spell what it is face down, and neither its card or what comes of it.
 // `stack_pos` is a stack object's position from the top (0 = top), else -1.
 static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
@@ -788,8 +798,11 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                              : nullptr;
     const int card = visible_card_id(e, c.viewer);
     const bool visible = identity_visible(e, c.viewer);
-    const bool is_token = (perm && perm->is_token) || global_coordinator.entity_has_component<Token>(e);
-    const CardData *cd = visible ? object_card_data(e) : nullptr;
+    const bool shown = visible || characteristics_visible(e, c.viewer);
+    // A prepared copy (CR 722.3c) is no card, as a token is none.
+    const bool is_token = (perm && perm->is_token) || global_coordinator.entity_has_component<Token>(e) ||
+                          global_coordinator.entity_has_component<PreparedCopy>(e);
+    const CardData *cd = shown ? object_card_data(e) : nullptr;
 
     Row r = c.w.row(TableId::OBJECT);
     r.u32(h).u8(static_cast<uint64_t>(z.location));
@@ -800,12 +813,13 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u16(pos_known
               ? u16_count(static_cast<int64_t>(stack_pos >= 0 ? static_cast<size_t>(stack_pos) : z.distance_from_top))
               : NONE16);
-    r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(z.is_face_down ? 1 : 0);
+    r.u16(card_or_none(card)).u8(is_token ? 1 : 0).u8(is_face_down(e) ? 1 : 0);
     const bool transformed =
-        visible && ((perm && perm->transformed) || (global_coordinator.entity_has_component<Spell>(e) &&
-                                                       global_coordinator.GetComponent<Spell>(e).cast_back_face));
+        visible && ((perm && perm->transformed) || global_coordinator.entity_has_component<PreparedCopy>(e) ||
+                    (global_coordinator.entity_has_component<Spell>(e) &&
+                     global_coordinator.GetComponent<Spell>(e).chosen.back_face()));
     r.u8(transformed ? 1 : 0);
-    r.u16(visible && perm && perm->printed_card && cd ? card_or_none(card_name_to_index(cd->name)) : NONE16);
+    r.u16(visible && perm ? card_or_none(copied_card_id(e, *perm)) : NONE16);
     // The phasing subsystem's flag is read directly: phased-out permanents are included and
     // flagged (state_format.md §6), the one exception to the battlefield accessors' rule.
     r.u8(perm && perm->is_tapped ? 1 : 0)
@@ -817,17 +831,22 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
                             : nullptr;
     r.u16(dmg ? u16_count(static_cast<int64_t>(dmg->damage_counters)) : 0)
         .u8(dmg && dmg->has_deathtouch_damage ? 1 : 0);
-    if (visible) {
+    if (shown) {
         const Token *tok =
             global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
-        const CardData *face = cd ? &active_face(e, *cd) : nullptr;
+        const CardData *face = cd ? &object_face(e, *cd) : nullptr;
         int power = face ? static_cast<int>(face->power) : tok ? static_cast<int>(tok->power) : 0;
         int toughness = face ? static_cast<int>(face->toughness) : tok ? static_cast<int>(tok->toughness) : 0;
         // A battlefield creature's post-layer P/T (a phased-out one's too: effective_power treats
-        // it as gone, CR 702.26b, but it is included and flagged).
+        // it as gone, CR 702.26b, but it is included and flagged). A card elsewhere has what its
+        // characteristic-defining ability counts there (CR 604.3: Nethergoyf in a graveyard).
         if (cr) {
             power = static_cast<int>(cr->power);
             toughness = static_cast<int>(cr->toughness);
+        } else if (!perm && face && face->has_counted_pt) {
+            const PowerToughness pt = card_power_toughness(e, *cd);
+            power = pt.power;
+            toughness = pt.toughness;
         }
         const std::set<Type> empty_types;
         const std::set<Type> &types = perm ? perm->types : face ? face->types : tok ? tok->types : empty_types;
@@ -853,14 +872,14 @@ static void write_object(const Ctx &c, Entity e, uint32_t h, int stack_pos) {
     r.u8(on_bf && is_waiting_delayed_trigger_subject(e) ? 1 : 0);
     r.u8(perm ? u8_count(permanent_activations_this_turn(*perm)) : 0)
         .u8(on_bf ? u8_count(ability_resolutions_this_turn(e)) : 0);
-    const bool named = visible && perm && !perm->chosen_name.empty();
-    r.u16(named ? card_or_none(card_name_to_index(perm->chosen_name)) : NONE16);
-    const int chosen_type = visible && perm && !perm->chosen_type.empty() ? subtype_index(perm->chosen_type) : -1;
-    r.u16(chosen_type < 0 ? NONE16 : static_cast<uint64_t>(chosen_type)).u16(perm ? u16_count(perm->entered_x) : 0);
-    r.u8(perm && perm->is_monstrous ? 1 : 0)
-        .u8(perm && perm->evoked ? 1 : 0)
-        .u8(perm && perm->cast_with_escape ? 1 : 0);
-    r.u8(perm && perm->unearthed ? 1 : 0).u8(perm && perm->cast_from_hand_by_controller ? 1 : 0);
+#define OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read) \
+    r.put(rmstate::Storage::storage, perm && (!(of_card) || visible) ? static_cast<uint64_t>(read) : (none));
+#define DESIGNATION_OBJECT(type, field, init, column, storage, tag, of_card, none, read) \
+    OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read)
+#define DESIGNATION_OBJECT_COLUMN(column, storage, tag, of_card, none, read) \
+    OBJECT_DESIGNATION_CELL(column, storage, of_card, none, read)
+#include "designations.def"
+#undef OBJECT_DESIGNATION_CELL
 }
 
 // The object's child rows: subtypes, keywords, counters, abilities, provenance, links.
@@ -868,16 +887,15 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     const bool on_bf = z.location == Zone::BATTLEFIELD && global_coordinator.entity_has_component<Permanent>(e);
     const Permanent *perm = on_bf ? &global_coordinator.GetComponent<Permanent>(e) : nullptr;
-    const bool visible = identity_visible(e, c.viewer);
     // Counters are public even on a face-down object.
     const CounterMap &counters = perm ? perm->counters : z.counters;
     for (const auto &kv : counters) c.w.row(TableId::OBJECT_COUNTER).u32(h).text(kv.first).u16(u16_count(kv.second));
-    if (!visible) return;
+    if (!characteristics_visible(e, c.viewer)) return;
 
     const CardData *cd = object_card_data(e);
     const Token *tok =
         global_coordinator.entity_has_component<Token>(e) ? &global_coordinator.GetComponent<Token>(e) : nullptr;
-    const CardData *face = cd ? &active_face(e, *cd) : nullptr;
+    const CardData *face = cd ? &object_face(e, *cd) : nullptr;
     const std::set<Type> empty_types;
     const std::set<Type> &types = perm ? perm->types : face ? face->types : tok ? tok->types : empty_types;
     for (int st : subtype_indices(types)) c.w.row(TableId::OBJECT_SUBTYPE).u32(h).u16(static_cast<uint64_t>(st));
@@ -889,13 +907,18 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
         keywords = face->keywords;
     else if (tok)
         keywords = tok->keywords;
+    if (global_coordinator.entity_has_component<Spell>(e)) {
+        const auto &gained = global_coordinator.GetComponent<Spell>(e).keywords_until_eot;
+        keywords.insert(keywords.end(), gained.begin(), gained.end());
+    }
     for (const std::string &kw : keywords) {
         const int k = keyword_index(kw);
         c.w.row(TableId::OBJECT_KEYWORD).u32(h).u8(k < 0 ? NONE8 : static_cast<uint64_t>(k)).text(kw);
     }
 
     if (perm) {
-        const int ab_card = cd ? card_name_to_index(cd->name) : card_identity(e, c.viewer);
+        const int copied = copied_card_id(e, *perm);
+        const int ab_card = cd ? card_name_to_index(cd->name) : copied >= 0 ? copied : card_identity(e, c.viewer);
         std::vector<CardAbility> own = cd    ? card_ability_list(*cd)
                                        : tok ? token_ability_list(*tok)
                                              : std::vector<CardAbility>();
@@ -904,11 +927,20 @@ static void write_object_children(const Ctx &c, Entity e, uint32_t h) {
             for (const CardAbility &a : own) printed = printed || a.def == ab.def;
             Row r = c.w.row(TableId::OBJECT_ABILITY);
             r.u32(h);
-            put_abref(r, ab.def, ab_card, e);
-            const bool exhausted = ab.def->activation_limit > 0 && ab.activations_this_turn >= ab.def->activation_limit;
+            const Entity lent_by = ab.granted_from.get();
+            put_abref(r, ab.def, lent_by != 0 ? visible_card_id(lent_by, c.viewer) : ab_card, e);
             r.u8(printed && ab.granted_by_static == 0 ? 0 : 1)
-                .u8(u8_count(ab.activations_this_turn))
-                .u8(exhausted ? 1 : 0);
+                .u8(u8_count(activations_this_turn(*perm, ab)))
+                .u8(activation_limit_reached(*perm, ab) ? 1 : 0);
+        }
+        // A triggered ability with a limit each turn, once it has triggered.
+        for (const CardAbility &a : own) {
+            const int triggered = a.def ? triggers_this_turn(a.def, e) : 0;
+            if (triggered == 0) continue;
+            Row r = c.w.row(TableId::OBJECT_ABILITY);
+            r.u32(h);
+            put_abref(r, a.def, ab_card, e);
+            r.u8(0).u8(u8_count(triggered)).u8(triggered >= a.def->trigger_turn_limit ? 1 : 0);
         }
         write_provenance(c, e, h);
         for (const ObjectRef &linked : perm->exiled_with) {
@@ -938,7 +970,8 @@ static void write_provenance(const Ctx &c, Entity e, uint32_t h) {
     using rmstate::Duration;
     using rmstate::Layer;
     const Permanent &perm = global_coordinator.GetComponent<Permanent>(e);
-    if (perm.printed_card) put_provenance(c, h, Layer::COPY, Duration::PERMANENT);
+    if (perm.printed_card || perm.copy_eot_token)
+        put_provenance(c, h, Layer::COPY, perm.copy_eot_card || perm.copy_eot_token ? Duration::END_OF_TURN : Duration::PERMANENT);
     if (!perm.animate_added_types.empty() || perm.animate_make_creature)
         put_provenance(
             c, h, Layer::TYPE, perm.animate_until_my_turn ? Duration::UNTIL_YOUR_NEXT_TURN : Duration::PERMANENT);
@@ -951,10 +984,11 @@ static void write_provenance(const Ctx &c, Entity e, uint32_t h) {
     if (perm.animate_set_pt)
         put_provenance(
             c, h, Layer::PT_SET, perm.animate_until_my_turn ? Duration::UNTIL_YOUR_NEXT_TURN : Duration::PERMANENT);
+    if (perm.animate_set_pt_eot) put_provenance(c, h, Layer::PT_SET, Duration::END_OF_TURN);
     if (!global_coordinator.entity_has_component<Creature>(e)) return;
     const Creature &cr = global_coordinator.GetComponent<Creature>(e);
     if (!cr.eot_keywords.empty()) put_provenance(c, h, Layer::ABILITY, Duration::END_OF_TURN);
-    if (cr.has_set_pt) put_provenance(c, h, Layer::PT_SET, Duration::STATIC);
+    if (cr.has_set_pt && !perm.animate_set_pt_eot && !perm.animate_set_pt) put_provenance(c, h, Layer::PT_SET, Duration::STATIC);
     if (cr.static_power_bonus != 0 || cr.static_toughness_bonus != 0)
         put_provenance(c, h, Layer::PT_MODIFY, Duration::STATIC);
     if (cr.eot_power_bonus != 0 || cr.eot_toughness_bonus != 0 || cr.prowess_bonus != 0)
@@ -1009,7 +1043,7 @@ static void write_combat(const Ctx &c, const std::vector<Entity> &battlefield) {
 // characteristics are public (CR 608.2h).
 static int write_lki(const Ctx &c, Entity departed) {
     const LastKnownInfo *lki = departed_lki_for(departed);
-    if (!lki || lki->name.empty()) return -1;
+    if (!lki) return -1;
     const int row = static_cast<int>(c.w.row_count(TableId::LKI));
     const int card =
         lki->is_token ? token_script_to_index(lki->token_script) : physical_card_of(card_name_to_index(lki->name));
@@ -1058,33 +1092,40 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         int x = -1;
         if (sp) {
             const CardData *cd = object_card_data(e);
-            if (cd && active_face(e, *cd).has_x_cost) x = sp->x_paid;
+            if (cd && active_face(e, *cd).has_x_cost) x = sp->chosen.x;
         } else if (ab) {
             x = ab->x_paid;
         }
         r.i16(std::max(-1, std::min(x, 32767))).u16(ab ? u16_count(static_cast<int64_t>(ab->def->amount)) : 0);
-        const int kicked = sp ? static_cast<int>(std::count(sp->kicked.begin(), sp->kicked.end(), true)) : 0;
-        r.u8(u8_count(kicked)).u8(sp ? u8_count(sp->replicate_count) : 0);
+        const int kicked = sp ? static_cast<int>(std::count(sp->chosen.kicked.begin(), sp->chosen.kicked.end(), true)) : 0;
+        r.u8(u8_count(kicked)).u8(sp ? u8_count(sp->chosen.replicate_count) : 0);
         uint32_t variant = 0;
         if (sp) {
             using rmstate::CastVariant;
             auto bit = [&variant](CastVariant v) { variant |= 1u << static_cast<int>(v); };
-            if (sp->cast_with_flashback) bit(CastVariant::FLASHBACK);
-            if (sp->cast_with_evoke) bit(CastVariant::EVOKE);
-            if (sp->cast_with_escape) bit(CastVariant::ESCAPE);
-            if (sp->cast_with_offspring) bit(CastVariant::OFFSPRING);
-            if (sp->cast_with_impending) bit(CastVariant::IMPENDING);
-            if (sp->cast_with_warp) bit(CastVariant::WARP);
-            if (sp->cast_back_face) bit(CastVariant::BACK_FACE);
+            if (sp->chosen.flashback()) bit(CastVariant::FLASHBACK);
+            if (sp->chosen.option.cost == CastCost::EVOKE) bit(CastVariant::EVOKE);
+            if (sp->chosen.escape()) bit(CastVariant::ESCAPE);
+            if (sp->chosen.option.offspring) bit(CastVariant::OFFSPRING);
+            if (sp->chosen.option.cost == CastCost::IMPENDING) bit(CastVariant::IMPENDING);
+            if (sp->chosen.option.cost == CastCost::WARP) bit(CastVariant::WARP);
+            if (sp->chosen.back_face()) bit(CastVariant::BACK_FACE);
+            if (sp->chosen.option.face == CastFace::BOTH) bit(CastVariant::FUSED);
+            variant |= spell_overlay_variant_mask(sp->chosen.option.overlay);
+            if (spell_graveyard_replaced(e)) bit(CastVariant::GRAVEYARD_REPLACED);
+            if (spell_bargained(e)) bit(CastVariant::BARGAINED);
         }
-        r.u16(variant)
+        r.u32(variant)
             .u8(sp && sp->is_copy ? 1 : 0)
             .u8(sp && sp->cant_be_countered ? 1 : 0)
-            .u8(sp && sp->gift_promised ? 1 : 0);
-        r.u8(sp ? u8_count(sp->mana_spent) : 0).u8(sp ? color_mask(sp->colors_spent) : 0);
+            .u8(sp && sp->chosen.gift_promised ? 1 : 0);
+        r.u8(sp ? u8_count(sp->chosen.mana_spent()) : 0).u8(sp ? color_mask(sp->chosen.colors_spent()) : 0);
         r.u32(ab ? ab->delayed_link.seq : 0);
         if (!ab) continue;
-        for (int mode : ab->charm_chosen) c.w.row(TableId::STACK_MODE).u32(h).u8(u8_count(mode));
+        for (int mode : ab->charm_chosen) {
+            const size_t printed = ab->charm_printed_mode(static_cast<size_t>(mode));
+            c.w.row(TableId::STACK_MODE).u32(h).u8(u8_count(static_cast<int64_t>(printed)));
+        }
         write_stack_targets(c, e, h, *ab);
     }
 }
@@ -1103,7 +1144,7 @@ static rmstate::StackKind stack_kind(Entity e, const Spell *sp, const Ability *a
 // ability's, its targeting sub-abilities', then each chosen mode's (CR 601.2c).
 static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t h, const Ability &ab) {
     int order = 0;
-    auto put_target = [&](const ObjectRef &t) {
+    auto put_target = [&](const ObjectRef &t, int share) {
         if (t.lki_entity() == 0) return;
         const Entity live = t.get();
         int lki_row = live == 0 ? write_lki(c, t.lki_entity()) : -1;
@@ -1113,25 +1154,23 @@ static void write_stack_targets(const Ctx &c, Entity /*stack_object*/, uint32_t 
         if (live != 0 && global_coordinator.entity_has_component<Player>(live)) {
             r.u8(static_cast<uint64_t>(rmstate::TargetKind::PLAYER)).u32(0);
             put_seat(r, seat_of_player(live), c.self);
-            r.u16(NONE16);
+            r.u16(NONE16).u16(u16_count(share));
             return;
         }
         r.u8(static_cast<uint64_t>(rmstate::TargetKind::OBJECT)).u32(handle(c, live));
         put_seat(r, Zone::UNKNOWN, c.self);
-        r.u16(lki_row < 0 ? NONE16 : u16_count(lki_row));
+        r.u16(lki_row < 0 ? NONE16 : u16_count(lki_row)).u16(u16_count(share));
     };
-    auto targets_of = [](const Ability &a) {
-        std::vector<ObjectRef> out = a.targets;
-        if (out.empty() && !a.target.empty()) out.push_back(a.target);
-        return out;
+    auto put_targets_of = [&](const Ability &a) {
+        std::vector<ObjectRef> own = a.targets;
+        if (own.empty() && !a.target.empty()) own.push_back(a.target);
+        for (size_t i = 0; i < own.size(); i++) put_target(own[i], i < a.target_shares.size() ? a.target_shares[i] : 0);
     };
-    std::vector<ObjectRef> all = targets_of(ab);
-    for (const Ability &sub : ab.subabilities)
-        for (const ObjectRef &t : targets_of(sub)) all.push_back(t);
+    put_targets_of(ab);
+    for (const Ability *sub : ab.chained_subs()) put_targets_of(*sub);
     for (int idx : ab.charm_chosen)
         if (idx >= 0 && static_cast<size_t>(idx) < ab.charm_choices.size())
-            for (const ObjectRef &t : targets_of(ab.charm_choices[static_cast<size_t>(idx)])) all.push_back(t);
-    for (const ObjectRef &t : all) put_target(t);
+            put_targets_of(ab.charm_choices[static_cast<size_t>(idx)]);
 }
 
 static void write_delayed_triggers(const Ctx &c, const std::vector<Entity> &stack) {
@@ -1187,6 +1226,42 @@ static rmstate::Duration effect_duration(bool until_your_next_turn) {
     return until_your_next_turn ? rmstate::Duration::UNTIL_YOUR_NEXT_TURN : rmstate::Duration::END_OF_TURN;
 }
 
+// The mana of `p`'s pool that isn't plain: one row per color, restriction and rider, in the pool's
+// order. The player row's mana_* columns count all of it, so unrestricted mana adds no row.
+static void write_pool_mana(const Ctx &c, Zone::Ownership p) {
+    static_assert(static_cast<int>(rmstate::ManaRestrictionKind::NO_NONARTIFACT_SPELLS) ==
+                  ManaRestriction::NO_NONARTIFACT_SPELLS);
+    struct Group {
+            const ManaUnit *unit;
+            size_t count;
+    };
+    std::vector<Group> groups;
+    for (const ManaUnit &unit : global_coordinator.GetComponent<Player>(get_player_entity(p)).mana) {
+        if (!unit.restriction && !unit.rider) continue;
+        auto same = std::find_if(groups.begin(), groups.end(), [&unit](const Group &g) {
+            return g.unit->color == unit.color && g.unit->restriction == unit.restriction && g.unit->rider == unit.rider;
+        });
+        if (same != groups.end()) same->count++;
+        else groups.push_back({&unit, 1});
+    }
+    for (const Group &g : groups) {
+        const ManaRestriction *restriction = g.unit->restriction;
+        const ManaRider *rider = g.unit->rider;
+        Row r = c.w.row(TableId::POOL_MANA);
+        put_seat(r, p, c.self);
+        r.u8(static_cast<uint64_t>(g.unit->color)).u16(u16_count(static_cast<int64_t>(g.count)));
+        r.u8(restriction ? static_cast<uint64_t>(restriction->kind) : 0);
+        r.text(restriction ? restriction->chosen_type : "");
+        r.u8(restriction && restriction->allows_activated ? 1 : 0)
+            .u8(restriction && restriction->activated_on_battlefield ? 1 : 0);
+        r.u8(rider && rider->cant_be_countered ? 1 : 0);
+        const bool gives_keyword = rider && !rider->keyword.empty();
+        const int keyword = gives_keyword ? keyword_index(rider->keyword) : -1;
+        r.u8(keyword < 0 ? NONE8 : static_cast<uint64_t>(keyword)).text(gives_keyword ? rider->valid.text() : "");
+        r.u8(gives_keyword ? static_cast<uint64_t>(rmstate::Duration::END_OF_TURN) : NONE8);
+    }
+}
+
 // The effects that apply to a player (player_effects, queries/player_effects.h) with the duration
 // of the resolved effect behind each; one a battlefield static gives has duration STATIC.
 static void write_player_effects(const Ctx &c, Zone::Ownership p) {
@@ -1223,7 +1298,7 @@ static void write_player_effects(const Ctx &c, Zone::Ownership p) {
         if (fx.hexproof_from[i] && !(eot_hexproof & (1u << i))) static_hexproof |= 1u << i;
     if (static_hexproof)
         put(PlayerEffectKind::HEXPROOF_FROM, static_cast<uint8_t>(static_hexproof), Duration::STATIC, -1, "");
-    const bool eot_uncounterable = re.cant_counter_spells_of.count(p) > 0;
+    const bool eot_uncounterable = effect_object_protects_spells_of(p);
     if (eot_uncounterable) put(PlayerEffectKind::SPELLS_CANT_BE_COUNTERED, 0, Duration::END_OF_TURN, -1, "");
     if (fx.spells_cant_be_countered && !eot_uncounterable)
         put(PlayerEffectKind::SPELLS_CANT_BE_COUNTERED, 0, Duration::STATIC, -1, "");
@@ -1235,25 +1310,30 @@ static void write_player_effects(const Ctx &c, Zone::Ownership p) {
         }
     if (fx.may_cast_sorceries_as_flash && !resolved) put(PlayerEffectKind::CAST_AS_FLASH, 0, Duration::STATIC, -1, "");
     if (fx.restricted_to_sorcery_speed) put(PlayerEffectKind::SORCERY_SPEED_ONLY, 0, Duration::STATIC, -1, "");
-    for (const Ability &t : re.floating_triggers)
-        if (t.controller == p)
-            put(PlayerEffectKind::FLOATING_TRIGGER, 0, Duration::END_OF_TURN, t.floating_creator_vocab_idx, "");
+    for (const EffectObject &object : re.effect_objects) {
+        if (object.controller != p || object.is_emblem()) continue;  // an emblem has its own row
+        for (size_t i = 0; i < object.triggers.size(); ++i)
+            put(PlayerEffectKind::FLOATING_TRIGGER, 0, Duration::END_OF_TURN, object.source_vocab_idx, "");
+        if (object.reported_by_card_alone())
+            put(PlayerEffectKind::RESOLVED_EFFECT, 0, Duration::END_OF_TURN, object.source_vocab_idx, "");
+    }
 }
 
 // Emblems, player effects, play permissions and damage shields (register 18).
 static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_cards) {
-    for (const Emblem &em : cur_game.resolved_effects.emblems) {
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects) {
+        if (!object.is_emblem()) continue;
         Row r = c.w.row(TableId::EMBLEM);
-        put_seat(r, em.controller, c.self);
-        r.u16(card_or_none(physical_card_of(em.source_vocab_idx)));
+        put_seat(r, object.controller, c.self);
+        r.u16(card_or_none(physical_card_of(object.source_vocab_idx)));
     }
     write_player_effects(c, c.self);
     write_player_effects(c, opponent_of(c.self));
     for (Entity e : zone_cards) {
         for (Zone::Ownership p : {c.self, opponent_of(c.self)}) {
-            const CardPlayPermission perm = card_play_permission(e, p);
+            const PlayPermissions perm = play_permissions(e, p);
             if (!perm.playable()) continue;
-            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::EXILE_GRANT); ++bit) {
+            for (int bit = 0; bit <= static_cast<int>(rmstate::PermissionKind::LIBRARY); ++bit) {
                 if (!(perm.sources & (1u << bit))) continue;
                 rmstate::PermissionResource resource = rmstate::PermissionResource::MANA;
                 int amount = 0;
@@ -1285,14 +1365,18 @@ static void write_rules_state(const Ctx &c, const std::vector<Entity> &zone_card
             }
         }
     }
-    for (const auto &s : cur_game.resolved_effects.combat_damage_prevention_shields) {
-        const uint32_t h = handle(c, s.creature.get());
-        if (h == 0) continue;
-        c.w.row(TableId::SHIELD)
-            .u8(static_cast<uint64_t>(rmstate::ShieldKind::COMBAT_DAMAGE))
-            .u32(h)
-            .u8(s.prevent_as_source ? 1 : 0)
-            .u8(s.prevent_as_target ? 1 : 0);
+    for (const EffectObject &object : cur_game.resolved_effects.effect_objects) {
+        const bool by = object.prevents_combat_damage_by(), to = object.prevents_combat_damage_to();
+        if (!by && !to) continue;
+        for (const ObjectRef &remembered : object.remembered) {
+            const uint32_t h = handle(c, remembered.get());
+            if (h == 0) continue;
+            c.w.row(TableId::SHIELD)
+                .u8(static_cast<uint64_t>(rmstate::ShieldKind::COMBAT_DAMAGE))
+                .u32(h)
+                .u8(by ? 1 : 0)
+                .u8(to ? 1 : 0);
+        }
     }
 }
 
@@ -1316,7 +1400,7 @@ static void write_pending(const Ctx &c, Zone::Ownership decider) {
         pd.decision_source != 0 ? pd.decision_source : (pd.query.active ? pd.query.decision_source : 0);
     if (!pd.query.active && source == 0) return;
     Row r = c.w.row(TableId::PENDING);
-    r.u8(static_cast<uint64_t>(pd.query.active ? pd.query.tag : PendingQuery::NONE));
+    r.u8(static_cast<uint64_t>(pd.query.active && !pd.query.mid_payment ? pd.query.tag : PendingQuery::NONE));
     put_seat(r, pd.query.active ? (pd.query.chooser_is_a ? Zone::PLAYER_A : Zone::PLAYER_B) : decider, c.self);
     r.u32(handle(c, source)).u16(card_or_none(visible_card_id(source, c.viewer)));
     put_seat(r,
@@ -1366,22 +1450,26 @@ static bool description_hides_identity(Zone::Ownership viewer, const LegalAction
     return false;
 }
 
-static uint16_t cast_variant_mask(const LegalAction &la) {
+static uint32_t cast_variant_mask(const LegalAction &la) {
     using rmstate::CastVariant;
     uint32_t m = 0;
     auto bit = [&m](bool on, CastVariant v) {
         if (on) m |= 1u << static_cast<int>(v);
     };
-    bit(la.use_flashback, CastVariant::FLASHBACK);
-    bit(la.use_escape, CastVariant::ESCAPE);
-    bit(la.use_offspring, CastVariant::OFFSPRING);
-    bit(la.play_back_face || la.cast_back_face, CastVariant::BACK_FACE);
-    bit(la.use_alt_cost, CastVariant::ALT_COST);
-    bit(la.impulse_cast, CastVariant::IMPULSE);
+    const CastOption &how = la.option;
+    bit(how.cost == CastCost::FLASHBACK, CastVariant::FLASHBACK);
+    bit(how.cost == CastCost::ESCAPE, CastVariant::ESCAPE);
+    bit(how.offspring, CastVariant::OFFSPRING);
+    bit(how.face == CastFace::BACK, CastVariant::BACK_FACE);
+    bit(how.face == CastFace::BOTH, CastVariant::FUSED);
+    bit(how.alternative(), CastVariant::ALT_COST);
+    bit(how.permission == Permission::EXILE_GRANT, CastVariant::IMPULSE);
+    bit(how.cost == CastCost::NO_MANA_COST, CastVariant::WITHOUT_MANA_COST);
     bit(la.companion_to_hand, CastVariant::COMPANION);
     bit(la.suspend_action, CastVariant::SUSPEND);
     bit(la.cancel_proposal, CastVariant::CANCEL);
-    return static_cast<uint16_t>(m);
+    m |= spell_overlay_variant_mask(how.overlay);
+    return m;
 }
 
 static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
@@ -1402,7 +1490,7 @@ static void write_menu(const Ctx &c, const std::vector<LegalAction> &actions) {
         const bool has_ability = la.type == ACTIVATE_ABILITY && la.ability.def != blank_ability_def();
         put_abref(r, has_ability ? la.ability.def : nullptr, src_card, src_zoned && handle(c, src) != 0 ? src : 0);
         r.i16(std::max(-32768, std::min(la.option_ordinal, 32767)))
-            .u16(cast_variant_mask(la))
+            .u32(cast_variant_mask(la))
             .u8(la.card_is_public ? 1 : 0);
         r.text(menu_row_description(la, c.viewer));
     }
@@ -1412,7 +1500,8 @@ int menu_row_card(const LegalAction &la, Zone::Ownership viewer) {
     const Entity src = la.source_entity;
     if (src != 0 && global_coordinator.entity_has_component<Player>(src)) return -1;
     if (la.named_card >= 0) return la.named_card;
-    return la.card_is_public ? public_card_id(src) : visible_card_id(src, viewer);
+    // A row every player may read shows no card lying face down (CR 708.5).
+    return la.card_is_public && !face_down_card(src) ? public_card_id(src) : visible_card_id(src, viewer);
 }
 
 std::string menu_row_description(const LegalAction &la, Zone::Ownership viewer) {
@@ -1496,7 +1585,7 @@ std::string encode_cards_frame(Zone::Ownership viewer) {
             if (id < 0 || !token_script_exists(stem)) continue;
             const Token tok = parse_token_script(stem);
             if (tok.name.empty()) continue;
-            for (const AbilityDef *d : tok.abilities) collect_token_scripts(*d, token_scripts);
+            for (const AbilityDef *d : tok.abilities) ability_token_scripts(*d, token_scripts);
             tokens.emplace(id, tok);
         }
     }
@@ -1534,29 +1623,8 @@ std::string encode_decklists_frame(Zone::Ownership viewer) {
     return w.finish();
 }
 
-std::string encode_metagame_frame(Zone::Ownership viewer) {
-    FrameWriter w(FrameKind::METAGAME, frame_viewer(viewer), rmstate_schema_hash());
-    const ReferenceMetagame &m = reference_metagame();
-    for (const std::string &label : m.archetypes) w.row(TableId::META_ARCHETYPE).text(label);
-    for (const ReferenceList &list : m.lists)
-        w.row(TableId::META_LIST)
-            .text(list.name)
-            .u8(static_cast<uint64_t>(list.archetype))
-            .u16(u16_count(list.main))
-            .u16(u16_count(list.side));
-    for (size_t l = 0; l < m.lists.size(); ++l)
-        for (const auto &c : m.lists[l].cards)
-            w.row(TableId::META_LIST_CARD)
-                .u16(l)
-                .u16(card_or_none(c.first))
-                .u8(u8_count(c.second.first))
-                .u8(u8_count(c.second.second));
-    return w.finish();
-}
-
 std::vector<std::string> encode_match_frames(Zone::Ownership viewer) {
-    return {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer),
-        encode_metagame_frame(viewer)};
+    return {encode_schema_frame(viewer), encode_cards_frame(viewer), encode_decklists_frame(viewer)};
 }
 
 std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
@@ -1571,7 +1639,7 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
     std::vector<std::pair<uint32_t, Entity>> objects;
     std::vector<Entity> battlefield;
     std::vector<std::pair<size_t, Entity>> stack;
-    std::vector<Entity> zone_cards;  // graveyard and exile cards (play permissions)
+    std::vector<Entity> zone_cards;  // graveyard, exile and looked-at library cards (play permissions)
     for (Entity e : zoned_entities()) {
         const Zone &z = global_coordinator.GetComponent<Zone>(e);
         ZoneCounts &zc = counts[is_seat(z.owner) ? z.owner : 0];
@@ -1600,7 +1668,8 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
         if (z.location == Zone::BATTLEFIELD && global_coordinator.entity_has_component<Permanent>(e))
             battlefield.push_back(e);
         if (z.location == Zone::STACK) stack.push_back({z.distance_from_top, e});
-        if (z.location == Zone::GRAVEYARD || z.location == Zone::EXILE) zone_cards.push_back(e);
+        if (z.location == Zone::GRAVEYARD || z.location == Zone::EXILE || z.location == Zone::LIBRARY)
+            zone_cards.push_back(e);
     }
     std::sort(objects.begin(), objects.end());
     std::sort(stack.begin(), stack.end());
@@ -1634,6 +1703,8 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
     if (!is_seat(v) || v == decider) write_menu(c, actions);
     write_match(c);
     write_own_deck(c);
+    write_pool_mana(c, c.self);
+    write_pool_mana(c, opponent_of(c.self));
     write_events(c, events);
     return w.finish();
 }

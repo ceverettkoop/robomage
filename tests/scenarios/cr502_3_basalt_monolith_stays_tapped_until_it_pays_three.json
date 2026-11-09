@@ -1,0 +1,55 @@
+{
+  "name": "cr502_3_basalt_monolith_stays_tapped_until_it_pays_three",
+  "why": "CR 502.3, 614.17: tapped for {C}{C}{C}, Basalt Monolith stays tapped through its controller's next untap step, so six mana isn't there for Archive Arbiter; only {3}: Untap brings it back",
+  "hand_a": [
+    "Archive Arbiter"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Basalt Monolith",
+    "Forest",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Tap Basalt Monolith",
+    "A:land:Forest",
+    "A:activate:Basalt Monolith",
+    "A:desc:Tap Forest",
+    "A:desc:Tap Forest",
+    "A:desc:Tap Forest"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "^Basalt Monolith untaps$"
+  ],
+  "expect_count": {
+    "^Player A tapped Basalt Monolith for 3\\(C\\)": 1
+  },
+  "expect_menu_not": [
+    "Cast Archive Arbiter"
+  ]
+}

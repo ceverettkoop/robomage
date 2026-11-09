@@ -1,0 +1,46 @@
+{
+  "name": "cr105_2_the_jace_token_is_blue",
+  "why": "CR 105.2, 111.3, Empower (oracle): \"a blue Jace planeswalker token\": with the blue Proxy sacrificed and only Islands left, a blue object on the battlefield is the token",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:activate:Theorist's Proxy",
+    "A:pass"
+  ],
+  "max_decisions": 7,
+  "expect_dump_final": [
+    "^A .*object self BATTLEFIELD colors=2$"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

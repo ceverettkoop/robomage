@@ -1,0 +1,44 @@
+{
+  "name": "cr601_2d_shatterskull_smashing_divides_x",
+  "why": "CR 601.2d, 107.3: Shatterskull Smashing's total is the X announced before it: 3 divided among two creatures, 2 and 1.",
+  "hand_a": [
+    "Shatterskull Smashing"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Air Elemental",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shatterskull",
+    "A:x:3",
+    "A:target:Air Elemental",
+    "A:target:Grizzly Bears",
+    "A:divide:Air Elemental"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Shatterskull Smashing deals 2 damage to Air Elemental",
+    "Shatterskull Smashing deals 1 damage to Grizzly Bears"
+  ]
+}

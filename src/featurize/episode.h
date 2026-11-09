@@ -33,14 +33,15 @@
 // agent has one (has_mu), the policy version it was sampled from, the teacher's label (-1 none), and
 // optionally every policy's evaluation (value, log π over the menu rows) and the omniscient
 // featurization with the learner targets (targets.h). The header and footer fields are the file's
-// `attrs`: the writer's own (episode_version, F, C, K, Q, menu_type) first, then the caller's.
+// `attrs`: the writer's own (episode_version, layout_hash, F, C, K, Q, menu_type) first, then the
+// caller's.
 //
 // EpisodeWriter builds a file decision by decision; read_episode expands one back into the
 // featurizer's tensors (tok_num from its f16 values). python/rmtraj.py reads the same files.
 
 namespace featurize {
 
-const int EPISODE_VERSION = 1;
+const int EPISODE_VERSION = 3;
 extern const char *const EPISODE_KIND;  // "episode"
 
 // How the game of an episode ended (footer `end_reason`).
@@ -113,7 +114,6 @@ class EpisodeWriter {
         Tokens seat_tokens_, omni_tokens_;
         std::vector<std::vector<PolicyEvalRecord>> policies_;
         size_t max_policies_ = 0;
-        std::vector<int64_t> opp_list_, opp_archetype_;
         std::vector<int64_t> opp_hand_, opp_hand_offsets_{0}, own_library_, own_library_offsets_{0}, opp_library_,
             opp_library_offsets_{0};
 };

@@ -1,0 +1,32 @@
+{
+  "name": "cr107_4e_fiend_artisan_no_black_or_green_not_offered",
+  "why": "CR 107.4e / 118.3: Fiend Artisan's {B/G} can't be paid with Mountains: the ability isn't offered even at X = 0",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Fiend Artisan",
+    "Goblin Guide",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Activate Fiend Artisan"
+  ]
+}

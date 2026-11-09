@@ -1,0 +1,12 @@
+{
+  "name": "cr603_2_nantuko_landfall_declined_makes_an_insect",
+  "why": "Springheart Nantuko: if you didn't create a token this way, create a 1/1 green Insect: declining the {1}{G} makes the Insect and no copy.",
+  "hand_a": ["Springheart Nantuko", "Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest", "Forest", "Grizzly Bears"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "A:play:Forest", "A:desc:Don't pay"],
+  "max_decisions": 12,
+  "expect": ["Token created: .*Insect"],
+  "expect_not": ["Token copy created"]
+}

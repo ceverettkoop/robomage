@@ -14,6 +14,7 @@
 #include "../queries/entry.h"
 #include "../queries/filters.h"
 #include "../queries/visibility.h"
+#include "../resolution_memory.h"
 #include "../stable_rng.h"
 #include "../state_format/events.h"
 #include "../systems/orderer.h"
@@ -41,7 +42,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // RememberFound$ True replaces any previously remembered cards with the found one, so a
     // downstream Defined$ Remembered (DB$ Play) reads exactly this card. Clear up front so a
     // failed dig (library empties) leaves nothing remembered.
-    if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.clear();
+    report_effect(ab, EffectObjects::FOUND);
 
     // Reveal from the top (a stable top-first snapshot — nothing leaves the library until the
     // reveal has resolved) until a card matches. `revealed` holds the non-matching cards passed
@@ -105,7 +106,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             orderer->add_to_zone(false, found, found_dest);
             game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
         }
-        if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(found));
+        report_object(ab, EffectObjects::FOUND, found);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -129,9 +130,6 @@ bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &
         return true;
     } else if (key == "RevealedDestination") {
         ab.dig_until_revealed_dest = zone_from(value);
-        return true;
-    } else if (key == "RememberFound") {
-        ab.dig_until_remember_found = (value == "True");
         return true;
     } else if (key == "Attacking" && ab.category == "DigUntil") {
         ab.dig_until_attacking = (value == "True");

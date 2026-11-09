@@ -1,0 +1,14 @@
+{
+  "name": "cr702_12b_drop_of_honey_indestructible_least_power_saves_the_rest",
+  "why": "CR 702.12b: Drop of Honey looks at every creature for the least power. An animated The One Ring has it and can't be destroyed, so nothing is, and Griselbrand above it is safe; the next creature up does not take its place",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Karn the Great Creator", "The One Ring", "Griselbrand"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Drop of Honey"],
+  "play": ["A:keep", "B:keep", "A:activate:Karn", "A:target:The One Ring", "A:attack:done"],
+  "max_decisions": 22,
+  "expect": ["Drop of Honey triggered", "There is no card to choose"],
+  "expect_not": ["Griselbrand is destroyed", "The One Ring is destroyed"]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "cr702_44a_sunburst_a_counter_for_each_color_spent",
+  "why": "CR 702.44a: Engineered Explosives for X=2 from a Mountain and an Island enters with two charge counters",
+  "hand_a": [
+    "Engineered Explosives",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Engineered",
+    "A:x:2"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Engineered Explosives enters with 2 CHARGE counter"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ]
+}

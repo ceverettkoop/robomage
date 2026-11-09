@@ -1,0 +1,64 @@
+{
+  "name": "cr702_84a_mishras_research_desk_unearthed_goes_to_exile",
+  "why": "CR 702.84a: unearth returns Mishra's Research Desk at sorcery timing; sacrificed for its own cost it would leave the battlefield, so it is exiled, not put into the graveyard, and its unearth is not offered again from the battlefield",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Lightning Bolt",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Goblin Engineer",
+    "Tormod's Crypt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Mishra's Research Desk",
+    "Chromatic Star"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Unearth Mishra",
+    "A:desc:Activate Mishra",
+    "A:choice:Island",
+    "A:activate:Goblin Engineer"
+  ],
+  "max_decisions": 11,
+  "expect": [
+    "is unearthed",
+    "^Player A may play Island from exile",
+    "^Chromatic Star is moved to the battlefield"
+  ],
+  "expect_order": [
+    "is unearthed",
+    "^Player A sacrifices Mishra's Research Desk",
+    "^Player A puts Lightning Bolt into exile"
+  ],
+  "expect_menu": [
+    "Unearth Mishra's Research Desk",
+    "^Chromatic Star$"
+  ],
+  "expect_menu_not": [
+    "Activate Mishra's Research Desk \\(ChangeZone\\)",
+    "^Mishra's Research Desk$"
+  ]
+}

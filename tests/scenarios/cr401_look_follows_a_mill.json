@@ -1,0 +1,65 @@
+{
+  "name": "cr401_look_follows_a_mill",
+  "why": "CR 701.17a, 401.2: milled cards leave the top, and the look is on the card under them.",
+  "hand_a": [
+    "Stitcher's Supplier",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge",
+    "Swamp"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Urza's Bauble",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stitcher's Supplier"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Stitcher's Supplier enters"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Urza's Bauble"
+  ],
+  "expect_dump_final_not": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=(Lotus Petal|Mishra's Bauble|Tormod's Crypt)"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen \\w+ |known_hand |= )Urza's Bauble"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

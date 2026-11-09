@@ -1,0 +1,35 @@
+{
+  "name": "cr732_grist_stops_at_an_empty_library",
+  "why": "CR 732, 701.17b: Repeat has no MaxRepeat$ and needs none: each pass mills a card, so a library of Insect cards ends the process when it runs out, with no card milled and so no Insect.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Grist the Hunger Tide",
+    "Grist the Hunger Tide",
+    "Grist the Hunger Tide"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Repeat"
+  ],
+  "max_decisions": 6,
+  "expect_count": {
+    "Player A mills Grist": 8,
+    "Token created: 1/1 Insect": 9
+  }
+}

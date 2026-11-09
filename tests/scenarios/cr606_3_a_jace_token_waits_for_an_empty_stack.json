@@ -1,0 +1,49 @@
+{
+  "name": "cr606_3_a_jace_token_waits_for_an_empty_stack",
+  "why": "CR 606.3: Player B's Bolt on the stack in Player A's main phase gives Player A no decision: no loyalty row, so the run reaches the Bolt's resolution inside the cap",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy",
+    "A:pass",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Lightning Bolt deals 3 damage to Player A"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

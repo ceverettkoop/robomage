@@ -1,0 +1,29 @@
+{
+  "name": "cr118_3_kicker_not_asked_without_its_mana",
+  "why": "CR 118.3, 601.2b: a kicker that can't be paid on top of the cost isn't asked: Wastescape Battlemage with exactly its own {1}{C}",
+  "hand_a": [
+    "Wastescape Battlemage"
+  ],
+  "library_a": [
+    "Wastes"
+  ],
+  "battlefield_a": [
+    "Wastes",
+    "Wastes"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Wastescape Battlemage"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Wastescape Battlemage"
+  ],
+  "expect_menu_not": [
+    "pay kicker"
+  ]
+}

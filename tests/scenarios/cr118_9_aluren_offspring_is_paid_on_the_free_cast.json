@@ -1,0 +1,40 @@
+{
+  "name": "cr118_9_aluren_offspring_is_paid_on_the_free_cast",
+  "why": "CR 118.9d, 702.175a: an additional cost is still paid on a free cast: Thundertrap Trainer's Offspring {4} under Aluren makes the token",
+  "hand_a": [
+    "Thundertrap Trainer"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Aluren",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Thundertrap Trainer without paying its mana cost (offspring)",
+    "A:desc:offspring: token copy"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "^Offspring token copy created: 1/1 Thundertrap Trainer"
+  ],
+  "expect_count": {
+    "^Player A activated Island": 4
+  }
+}

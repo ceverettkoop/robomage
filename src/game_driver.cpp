@@ -24,8 +24,10 @@
 #include "components/damage.h"
 #include "components/effect.h"
 #include "components/entry_info.h"
+#include "components/face_down_card.h"
 #include "components/permanent.h"
 #include "components/player.h"
+#include "components/prepared_copy.h"
 #include "components/spell.h"
 #include "components/token.h"
 #include "components/zone.h"
@@ -33,6 +35,7 @@
 #include "error.h"
 #include "queries/characteristics.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
 #include "queries/zones.h"
 #include "input_logger.h"
 #include "snapshot.h"
@@ -74,6 +77,10 @@ static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
 static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
+// The test-harness presets set up the position a run starts from: its first game alone.
+static bool presets_apply_to_this_game();
+// The zone presets, placed.
+static void place_zone_presets(EcsSystems &sys, Game::PregameState &pg);
 static std::vector<std::string> padded_library(
     const std::vector<std::string> &hand, const std::vector<std::string> &library);
 static std::string deck_line_name(const std::string &card);
@@ -110,7 +117,7 @@ bool offer_cast_cancel = false;
 // off the priority menu, the greedy payer (auto_pay_mana) pays the part of a cost the pool doesn't
 // cover, and hybrid pips resolve to the first payable assignment. Off, every mana ability is
 // offered at priority and costs are paid through the interactive payment loop
-// (prompt_mana_payment). Recorded in the RMLOG header.
+// (pay_mana_cost). Recorded in the RMLOG header.
 bool auto_mana = true;
 bool narrative_mode = false;
 bool bo3_mode = false;
@@ -145,9 +152,9 @@ bool state_dump_json = false;
 // --rmstate-read FILE: decode, re-encode and compare an RMSTATE stream instead of playing
 // (state_format/recode.h); empty = off.
 std::string rmstate_read_path;
-// --knowledge-a / --knowledge-b off|expert|expert+belief: each seat's knowledge sidecar level (an
-// rmstate::KnowledgeLevel value: 0 off, 1 expert, 2 expert+belief), which only sets the k_* and b_*
-// tables of that seat's RMSTATE frames (state_format/knowledge_feed.h); play is the same.
+// --knowledge-a / --knowledge-b off|expert: each seat's knowledge sidecar level (an
+// rmstate::KnowledgeLevel value: 0 off, 1 expert), which only sets the k_* tables of that seat's
+// RMSTATE frames (state_format/knowledge_feed.h); play is the same.
 int knowledge_level_a = 1;
 int knowledge_level_b = 1;
 // --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);
@@ -161,6 +168,8 @@ int selfcheck_state_sample = 8;
 bool selfcheck_knowledge = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
+std::vector<std::string> face_down_a_cards;
+std::vector<std::string> face_down_b_cards;
 std::vector<std::string> graveyard_a_cards;
 std::vector<std::string> graveyard_b_cards;
 std::vector<std::string> exile_a_cards;
@@ -388,6 +397,8 @@ EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Token>();
     global_coordinator.RegisterComponent<EntryInfo>();
+    global_coordinator.RegisterComponent<PreparedCopy>();
+    global_coordinator.RegisterComponent<FaceDownCard>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();
@@ -442,9 +453,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     cur_game.obs_events = std::move(obs_events);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
-    if (life_a_override >= 0)
+    if (life_a_override >= 0 && presets_apply_to_this_game())
         global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total = life_a_override;
-    if (life_b_override >= 0)
+    if (life_b_override >= 0 && presets_apply_to_this_game())
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
     obs_game_start(player_a_goes_first);
@@ -483,8 +494,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // parked query, a pregame step, a priority window, a prompt below the
         // loop that the unwind carried back here), the game's suspended state is
         // discarded and the loop exits — no parked prompt of the conceded game
-        // is answered or resumed.
-        if (cur_game.ended && concede_unwind_pending()) {
+        // is answered or resumed, but for a mid-payment prompt: the payment it
+        // belongs to runs out on first choices, and what follows it is discarded.
+        if (cur_game.ended && concede_unwind_pending() &&
+            !(cur_game.pending.query.active && cur_game.pending.query.mid_payment)) {
             discard_conceded_game_suspensions();
             break;
         }
@@ -522,7 +535,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 int choice = InputLogger::instance().get_input(pq.menu);
                 snapshot_set_loop_safe(false);
                 // A concession read here: the loop top discards the parked query.
-                if (concede_unwind_pending()) continue;
+                if (concede_unwind_pending() && !pq.mid_payment) continue;
                 pq.answer = choice;
                 pq.answered = true;
             }
@@ -554,6 +567,12 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // ability on the stack) or cancels (payment rewind), fall
                     // through to the normal flow — exactly the next loop
                     // iteration after today's blocking process_action returned.
+                    if (cur_game.pending.query.active) continue;
+                    break;
+                case PendingQuery::SPECIAL_ACTION:
+                    resume_special_action(cur_game, sys.orderer);
+                    // The resume may arm the payment's next prompt; when the payment completes or
+                    // fails, fall through to the normal flow, as for an activation.
                     if (cur_game.pending.query.active) continue;
                     break;
                 case PendingQuery::CAST:
@@ -623,6 +642,13 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // without re-deriving the question at all.
                     break;
                 case PendingQuery::RESOLUTION: {
+                    // What replaced a turn-based draw asked: the draw batch re-enters it.
+                    if (cur_game.pending.draw.active) {
+                        resume_pending_draws(cur_game, sys.orderer);
+                        if (cur_game.pending.query.active) continue;
+                        cur_game.finish_suspended_turn_draw();
+                        break;
+                    }
                     // Suspended again (a follow-up ask armed a new query): loop
                     // back so the pending branch emits it before anything runs.
                     if (reenter_suspended_resolution(sys)) continue;
@@ -721,10 +747,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // the game-end invariant check.
         if (!cur_game.pending.query.active &&
             (cur_game.pending.cast.active || cur_game.pending.activation.active ||
-             cur_game.pending.draw.active)) {
+             cur_game.pending.special_action.active || cur_game.pending.draw.active)) {
             std::string which;
             if (cur_game.pending.cast.active) which += " pending.cast";
             if (cur_game.pending.activation.active) which += " pending.activation";
+            if (cur_game.pending.special_action.active) which += " pending.special_action";
             if (cur_game.pending.draw.active) which += " pending.draw";
             fatal_error("stranded suspended-flow flag at quiescent loop point:" + which +
                         " (turn=" + std::to_string(cur_game.turn_state.turn) +
@@ -749,7 +776,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         if (concede_unwind_pending()) continue;
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
-    // A real game end must never strand a suspended resolution (plan risk R7):
+    // A real game end must never strand a suspended resolution:
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
     // (A concession discards its game's suspended state at the loop top, so it
@@ -763,7 +790,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // resume_pending_draws is on the stack (an ended game mid-batch clears it).
     if (cur_game.resolution.active || cur_game.pending.query.active ||
         cur_game.pending.cast.active || cur_game.pending.activation.active ||
-        cur_game.pending.draw.active ||
+        cur_game.pending.special_action.active || cur_game.pending.draw.active ||
         cur_game.pregame.stage != Game::PregameState::DONE) {
         std::string which;
         if (cur_game.resolution.active) which += " resolution";
@@ -771,6 +798,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             which += " pending.query(tag=" + std::to_string(static_cast<int>(cur_game.pending.query.tag)) + ")";
         if (cur_game.pending.cast.active) which += " pending.cast";
         if (cur_game.pending.activation.active) which += " pending.activation";
+        if (cur_game.pending.special_action.active) which += " pending.special_action";
         if (cur_game.pending.draw.active) which += " pending.draw";
         if (cur_game.pregame.stage != Game::PregameState::DONE) which += " pregame";
         fatal_error("game ended with a suspended resolution/pending query still parked:" + which);
@@ -779,6 +807,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // Leave auto-choice mode behind with the game: the between-games sideboard
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
+    reveal_face_down_objects();
     obs_game_end(cur_game.winner);
     // A single game is a whole match (play_bo3_match reports a bo3 match's end).
     if (match_game_number < 0) {
@@ -1012,12 +1041,48 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
     bool a = owner == Zone::PLAYER_A;
     Deck out = deck;
     for (const auto *zone : {a ? &battlefield_a_cards : &battlefield_b_cards,
+                             a ? &face_down_a_cards : &face_down_b_cards,
                              a ? &graveyard_a_cards : &graveyard_b_cards,
                              a ? &exile_a_cards : &exile_b_cards})
         for (const auto &name : *zone) out.main_deck.push_back({1, name});
     for (const auto &name : a ? sideboard_a_cards : sideboard_b_cards)
         out.sideboard.push_back({1, name});
     return out;
+}
+
+static bool presets_apply_to_this_game() { return match_game_number <= 0; }
+
+static void place_zone_presets(EcsSystems &sys, Game::PregameState &pg) {
+    // place pre-set battlefield permanents
+    if (!battlefield_a_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    if (!battlefield_b_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        const auto &cards = seat == Zone::PLAYER_A ? face_down_a_cards : face_down_b_cards;
+        auto placed = sys.orderer->place_on_battlefield(cards, seat, SpellOverlay::FACE_DOWN);
+        pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+    }
+    // pre-set graveyard cards (test harness): no Permanent/Creature components are
+    // attached, so they are skipped by the summoning-sickness clear below.
+    if (!graveyard_a_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
+    if (!graveyard_b_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
+    // pre-set exile / sideboard ("outside the game") cards so zone-change effects
+    // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
+    if (!exile_a_cards.empty())
+        sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
+    if (!exile_b_cards.empty())
+        sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
+    if (!sideboard_a_cards.empty())
+        sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
+    if (!sideboard_b_cards.empty())
+        sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
 }
 
 // Promptless fiat setup: test-harness presets, companions, and the preplaced-
@@ -1030,31 +1095,7 @@ static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
 static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b) {
     Game::PregameState &pg = cur_game.pregame;
     if (!pg.fiat_placed) {
-        // place pre-set battlefield permanents
-        if (!battlefield_a_cards.empty()) {
-            auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
-            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
-        }
-        if (!battlefield_b_cards.empty()) {
-            auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
-            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
-        }
-        // pre-set graveyard cards (test harness): no Permanent/Creature components are
-        // attached, so they are skipped by the summoning-sickness clear below.
-        if (!graveyard_a_cards.empty())
-            sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
-        if (!graveyard_b_cards.empty())
-            sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
-        // pre-set exile / sideboard ("outside the game") cards so zone-change effects
-        // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
-        if (!exile_a_cards.empty())
-            sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
-        if (!exile_b_cards.empty())
-            sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
-        if (!sideboard_a_cards.empty())
-            sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
-        if (!sideboard_b_cards.empty())
-            sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
+        if (presets_apply_to_this_game()) place_zone_presets(sys, pg);
         // Companion (CR 702.139): instantiate each player's chosen companion as a sideboard
         // entity (if not already one) and record it, gated on the starting deck meeting the
         // companion's restriction.

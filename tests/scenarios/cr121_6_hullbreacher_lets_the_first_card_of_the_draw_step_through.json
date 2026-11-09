@@ -1,0 +1,72 @@
+{
+  "name": "cr121_6_hullbreacher_lets_the_first_card_of_the_draw_step_through",
+  "why": "Hullbreacher: the first card an opponent draws in their draw step is drawn; cards after it in that step are replaced",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "A:attack:done",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "B:cast:Brainstorm"
+  ],
+  "max_decisions": 20,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect_order": [
+    "TURN 2",
+    "^Player B draws",
+    "^Token created"
+  ],
+  "expect_count": {
+    "^Token created": 3,
+    "^Player B draws": 1
+  }
+}

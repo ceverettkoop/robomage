@@ -1,0 +1,12 @@
+{
+  "name": "cr603_7_sneak_attack_haste_and_end_step_sacrifice",
+  "why": "Sneak Attack (ChangeZone RememberChanged$ hand to battlefield, then DB$ Animate Defined$ Remembered | Keywords$ Haste | Duration$ Permanent | AtEOT$ Sacrifice): the creature it puts onto the battlefield gains haste (CR 702.10) and is sacrificed by a delayed trigger at the beginning of the next end step (CR 603.7). Animate read neither Defined$ Remembered, Keywords$ nor AtEOT$ (AtEOT$ was taken by the token parser), so the creature could not attack and stayed (found by the first onboarding's scripted games, show_and_tell); the Animate resolves before the creature's Permanent is built, so the grant waits on its entry",
+  "hand_a": ["Grizzly Bears"],
+  "battlefield_a": ["Sneak Attack", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:activate:Sneak Attack", "A:search:Grizzly Bears"],
+  "seed": 1,
+  "max_decisions": 10,
+  "expect_order": ["Player A puts Grizzly Bears to the battlefield", "Grizzly Bears gains Haste",
+                   "Grizzly Bears attacking Player B", "Grizzly Bears deals 2 damage to Player B",
+                   "Delayed trigger fires", "Grizzly Bears is moved to graveyard", "TURN 2 \\(Player B\\)"]
+}

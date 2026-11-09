@@ -1,0 +1,1177 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_lands_top8__wubg_doomsday.rmlog
+REPLAY MODE: Using embedded decks 'league/lands_top8' / 'league/wubg_doomsday' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Life from the Loam
+Player A draws Soul-Guide Lantern
+Player A draws Wasteland
+Player A draws Mox Diamond
+Player A draws Malevolent Rumble
+Player A draws Malevolent Rumble
+Player A draws Life from the Loam
+Player B draws Ponder
+Player B draws Tamiyo, Inquisitive Student
+Player B draws Veil of Summer
+Player B draws Lotus Petal
+Player B draws Force of Will
+Player B draws Scrubland
+Player B draws Island
+Player A hand:
+Mox Diamond
+Life from the Loam
+Life from the Loam
+Soul-Guide Lantern
+Malevolent Rumble
+Malevolent Rumble
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Crop Rotation
+Player A draws Dark Depths
+Player A draws Pithing Needle
+Player A draws Forest
+Player A draws Mox Diamond
+Player A draws Exploration
+Player A draws Yavimaya, Cradle of Growth
+Player B hand:
+Force of Will
+Island
+Lotus Petal
+Ponder
+Scrubland
+Tamiyo, Inquisitive Student
+Veil of Summer
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Mulligan)
+Player B mulligans.
+Player B draws Polluted Delta
+Player B draws Force of Will
+Player B draws Doomsday
+Player B draws Brainstorm
+Player B draws Underground Sea
+Player B draws Daze
+Player B draws Cavern of Souls
+Player A hand:
+Pithing Needle
+Mox Diamond
+Exploration
+Forest
+Dark Depths
+Crop Rotation
+Yavimaya, Cradle of Growth
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Pithing Needle
+|   1: Mox Diamond
+|   2: Exploration
+|   3: Forest
+|   4: Dark Depths
+|   5: Crop Rotation
+|   6: Yavimaya, Cradle of Growth
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+Player B hand:
+Brainstorm
+Cavern of Souls
+Daze
+Doomsday
+Force of Will
+Polluted Delta
+Underground Sea
+| decision 5: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 6-card hand.
+Player B: Choose card to put on library bottom (1 remaining):
+| decision 6: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Brainstorm
+|   1: Cavern of Souls
+|   2: Daze
+|   3: Doomsday
+|   4: Force of Will
+|   5: Polluted Delta
+|   6: Underground Sea
+(REPLAY) [T0 | Untap | Player B] Input: 1
+| >> Player B: 1 (Cavern of Souls)
+
+-------- TURN 1 (Player A) --------
+| decision 7: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Dark Depths
+|   3: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 8: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pithing Needle
+|   2: Cast Exploration
+|   3: Cast Crop Rotation
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Exploration)
+Player A activated Forest for 1(G)
+Player A casts Exploration
+| decision 9: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Exploration enters the battlefield
+| decision 10: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Veil of Summer
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Underground Sea
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 12: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 13: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Scrubland
+|   3: Tropical Island
+|   4: Tundra
+|   5: Undercity Sewers
+|   6: Underground Sea
+(REPLAY) [T1 | First Main | Player B] Input: 6
+| >> Player B: 6 (Underground Sea)
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+| decision 14: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
+| decision 15: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Dark Ritual
+Player B draws Polluted Delta
+Player B draws Lion's Eye Diamond
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 16: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Daze
+|   2: Doomsday
+|   3: Force of Will
+|   4: Lion's Eye Diamond
+|   5: Polluted Delta
+|   6: Underground Sea
+|   7: Veil of Summer
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Player B puts Dark Ritual to top of library
+Player B chooses a card from Player B hand:
+| decision 17: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Daze
+|   1: Doomsday
+|   2: Force of Will
+|   3: Lion's Eye Diamond
+|   4: Polluted Delta
+|   5: Underground Sea
+|   6: Veil of Summer
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Daze)
+Player B puts Daze to top of library
+| decision 18: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Lion's Eye Diamond
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Lion's Eye Diamond)
+Player B casts Lion's Eye Diamond
+Lion's Eye Diamond enters the battlefield
+| decision 19: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 20: Player B (game 0, turn 1, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 21: Player B (game 0, turn 1, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 22: Player B (game 0, turn 1, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 23: Player B (game 0, turn 1, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 24: Player B (game 0, turn 1, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T1 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 3 (Player A) --------
+| decision 25: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| decision 26: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Sacrifice Forest
+|   1: Sacrifice Dark Depths
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Sacrifice Forest)
+Player A activated Forest for 1(G)
+Player A sacrifices Forest
+Player A casts Crop Rotation
+| decision 27: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 28: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Karakas
+|   4: Ghost Quarter
+|   5: Dark Depths
+|   6: Talon Gates of Madara
+|   7: Bojuka Bog
+|   8: Blast Zone
+|   9: Urza's Saga
+|   10: Ancient Tomb
+|   11: Yavimaya, Cradle of Growth
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Wasteland
+(REPLAY) [T2 | Upkeep | Player A] Input: 13
+| >> Player A: 13 (Thespian's Stage)
+Player A shuffles their library
+Player A puts Thespian's Stage to the battlefield
+| decision 29: Player B (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Boseiju, Who Endures
+| decision 30: Player B (game 0, turn 2, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 31: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Cast Pithing Needle
+(REPLAY) [T2 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Pithing Needle)
+Player A activated Thespian's Stage for 1(C)
+Player A casts Pithing Needle
+| decision 32: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Pithing Needle enters the battlefield
+Choose a card name for Pithing Needle:
+| decision 33: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Name card: Brainstorm
+|   1: Name card: Dark Ritual
+|   2: Name card: Daze
+|   3: Name card: Doomsday
+|   4: Name card: Flooded Strand
+|   5: Name card: Force of Will
+|   6: Name card: Lotus Petal
+|   7: Name card: Ponder
+|   8: Name card: Tamiyo, Inquisitive Student
+|   9: Name card: Carpet of Flowers
+|   10: Name card: Force of Negation
+|   11: Name card: Polluted Delta
+|   12: Name card: Prismatic Ending
+|   13: Name card: Swords to Plowshares
+|   14: Name card: Teferi, Time Raveler
+|   15: Name card: Veil of Summer
+|   16: Name card: Tropical Island
+|   17: Name card: Underground Sea
+|   18: Name card: Cavern of Souls
+|   19: Name card: Consider
+|   20: Name card: Edge of Autumn
+|   21: Name card: Grafdigger's Cage
+|   22: Name card: Island
+|   23: Name card: Jace, Wielder of Mysteries
+|   24: Name card: Lion's Eye Diamond
+|   25: Name card: Plains
+|   26: Name card: Quantum Riddler
+|   27: Name card: Scrubland
+|   28: Name card: Street Wraith
+|   29: Name card: Thassa's Oracle
+|   30: Name card: Tundra
+|   31: Name card: Undercity Sewers
+(REPLAY) [T2 | First Main | Player A] Input: 24
+| >> Player A: 24 (Name card: Lion's Eye Diamond)
+Player A names card: Lion's Eye Diamond
+| decision 34: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Boseiju, Who Endures)
+Player A played Boseiju, Who Endures
+| decision 35: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+| decision 36: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Dark Depths (RemoveCounter))
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A activated Dark Depths for 1(G)
+Player A's Dark Depths ability is on the stack
+| decision 37: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+| decision 38: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 39: Player B (game 0, turn 2, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 40: Player B (game 0, turn 2, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 2, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 42: Player B (game 0, turn 2, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 43: Player B (game 0, turn 2, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T2 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 4 (Player B) --------
+| decision 44: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Veil of Summer
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Cast Veil of Summer)
+Player B activated Underground Sea for 1(G)
+Player B casts Veil of Summer
+| decision 45: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 1)
+Resolving ability (category: Effect)
+Spells Player B controls can't be countered this turn.
+Resolving ability (category: Pump)
+Player B and the permanents they control gain hexproof from the chosen color(s) until end of turn.
+| decision 46: Player B (game 0, turn 3, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Daze
+| decision 47: Player B (game 0, turn 3, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 48: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Underground Sea
+|   3: Tap Lion's Eye Diamond for (W)
+|   4: Tap Lion's Eye Diamond for (U)
+|   5: Tap Lion's Eye Diamond for (B)
+|   6: Tap Lion's Eye Diamond for (R)
+|   7: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 49: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+| decision 50: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 51: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Island
+|   2: Scrubland
+|   3: Tropical Island
+|   4: Tundra
+|   5: Undercity Sewers
+(REPLAY) [T3 | First Main | Player B] Input: 5
+| >> Player B: 5 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+| decision 52: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Doomsday
+| decision 53: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Doomsday on top of library
+|   1: Put Doomsday into graveyard
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Doomsday on top of library)
+| decision 54: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 55: Player B (game 0, turn 3, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 56: Player B (game 0, turn 3, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 57: Player B (game 0, turn 3, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 58: Player B (game 0, turn 3, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 59: Player B (game 0, turn 3, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T3 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 5 (Player A) --------
+| decision 60: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T4 | Upkeep | Player A] Input: 2
+| >> Player A: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 61: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Undercity Sewers
+|   1: Underground Sea
+|   2: Boseiju, Who Endures
+|   3: Dark Depths
+|   4: Yavimaya, Cradle of Growth
+|   5: Thespian's Stage
+(REPLAY) [T4 | Upkeep | Player A] Input: 3
+| >> Player A: 3 (Dark Depths)
+Targeting choice 3
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+| decision 62: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 63: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+| decision 64: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+| decision 65: Player B (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Ghost Quarter
+| decision 66: Player B (game 0, turn 4, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 67: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Ghost Quarter
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Ghost Quarter)
+Player A played Ghost Quarter
+| decision 68: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Ghost Quarter (Destroy)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Ghost Quarter (Destroy))
+Choose target for Ghost Quarter:
+| decision 69: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Undercity Sewers
+|   1: Underground Sea
+|   2: Boseiju, Who Endures
+|   3: Ghost Quarter
+|   4: Yavimaya, Cradle of Growth
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Undercity Sewers)
+Targeting choice 0
+Player A sacrifices Ghost Quarter
+Player A's Ghost Quarter ability targeting Undercity Sewers is on the stack
+| decision 70: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Destroy)
+Undercity Sewers is destroyed
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 71: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Island
+(REPLAY) [T4 | First Main | Player B] Input: 1
+| >> Player B: 1 (Island)
+Player B shuffles their library
+Player B puts Island to the battlefield
+| decision 72: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 73: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 74: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 75: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 76: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 77: Player B (game 0, turn 4, END_STEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T4 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 6 (Player B) --------
+| decision 78: Player B (game 0, turn 5, UPKEEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player B draws Brainstorm
+| decision 79: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Tap Lion's Eye Diamond for (W)
+|   3: Tap Lion's Eye Diamond for (U)
+|   4: Tap Lion's Eye Diamond for (B)
+|   5: Tap Lion's Eye Diamond for (R)
+|   6: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Draw | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+| decision 80: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
+|   3: Tap Lion's Eye Diamond for (W)
+|   4: Tap Lion's Eye Diamond for (U)
+|   5: Tap Lion's Eye Diamond for (B)
+|   6: Tap Lion's Eye Diamond for (R)
+|   7: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: Draw, amount: 3)
+Player B draws Tundra
+Player B draws Dark Ritual
+Player B draws Brainstorm
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
+| decision 81: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Brainstorm
+|   1: Dark Ritual
+|   2: Daze
+|   3: Doomsday
+|   4: Force of Will
+|   5: Tundra
+|   6: Underground Sea
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Brainstorm)
+Player B puts Brainstorm to top of library
+Player B chooses a card from Player B hand:
+| decision 82: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Dark Ritual
+|   1: Daze
+|   2: Doomsday
+|   3: Force of Will
+|   4: Tundra
+|   5: Underground Sea
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Dark Ritual)
+Player B puts Dark Ritual to top of library
+| decision 83: Player B (game 0, turn 5, DRAW, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 84: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Tundra
+|   2: Play Underground Sea
+|   3: Tap Lion's Eye Diamond for (W)
+|   4: Tap Lion's Eye Diamond for (U)
+|   5: Tap Lion's Eye Diamond for (B)
+|   6: Tap Lion's Eye Diamond for (R)
+|   7: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Tundra)
+Player B played Tundra
+| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 86: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 87: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 88: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 89: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 90: Player B (game 0, turn 5, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T5 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 7 (Player A) --------
+| decision 91: Player B (game 0, turn 6, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Dark Depths
+| decision 92: Player B (game 0, turn 6, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 93: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+| decision 94: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Dark Depths (RemoveCounter))
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A activated Dark Depths for 1(G)
+Player A's Dark Depths ability is on the stack
+| decision 95: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: RemoveCounter, amount: 1)
+Removed 1 ICE counter(s) from Dark Depths.
+| decision 96: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 97: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Declare Attackers (Player A) ---
+| decision 98: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T6 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Marit Lage token [20/20] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Marit Lage token -> Player B
+| decision 99: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to block.
+| decision 100: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Tap Lion's Eye Diamond for (W)
+|   2: Tap Lion's Eye Diamond for (U)
+|   3: Tap Lion's Eye Diamond for (B)
+|   4: Tap Lion's Eye Diamond for (R)
+|   5: Tap Lion's Eye Diamond for (G)
+(REPLAY) [T6 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Marit Lage token deals 20 damage to Player B (now at -2 life)
+--- End Combat Damage ---
+
+
+Player B has -2 life - Player A wins!
+GAME_RESULT: 1 Player A wins

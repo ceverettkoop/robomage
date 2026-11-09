@@ -1,0 +1,51 @@
+{
+  "name": "cr708_9_a_face_down_creature_returned_to_hand_is_revealed",
+  "why": "CR 708.9: a face-down permanent that moves to any other zone is revealed to all players, a hidden zone too, so the other player's model knows the card in that hand.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island",
+    "Island",
+    "Cyclonic Rift"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "face_down_a": [
+    "Baleful Strix"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Island",
+    "B:cast:Cyclonic Rift",
+    "B:desc:hidden"
+  ],
+  "max_decisions": 9,
+  "engine_flags": [
+    "--selfcheck-knowledge"
+  ],
+  "expect": [
+    "is revealed as Baleful Strix"
+  ],
+  "expect_dump": [
+    "^B .*known_hand Baleful Strix x1",
+    "^B .*seen opp Baleful Strix game=1"
+  ],
+  "expect_dump_final_not": [
+    "^B .*face_down"
+  ]
+}

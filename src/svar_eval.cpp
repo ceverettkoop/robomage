@@ -1,23 +1,30 @@
 #include "svar_eval.h"
 
+#include <cstring>
+
 #include <algorithm>
 #include <cctype>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "classes/game.h"
 #include "components/carddata.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/types.h"
 #include "components/zone.h"
+#include "coverage.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/counters.h"
+#include "queries/entry.h"
 #include "queries/filters.h"
 #include "queries/lki.h"
 #include "queries/player_resources.h"
@@ -25,31 +32,373 @@
 #include "queries/spells.h"
 #include "queries/types.h"
 #include "queries/zones.h"
+#include "str_util.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+namespace {
+
+// What one evaluation reads an expression against: `controller`'s view, the object it belongs to
+// and its ability's chosen target.
+struct SvarArgs {
+    Zone::Ownership controller;
+    Entity source;
+    Entity target;
+    ObjectRef triggered_card = {};  // what the ability's row captured
+};
+
+struct SvarExpr;
+
+using ValueFn = int (*)(const SvarExpr &x, const SvarArgs &a);
+using ConditionFn = bool (*)(const SvarArgs &a);
+using ObjectsFn = void (*)(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+using PropertyFn = int (*)(Entity e);
+// Reads what follows a row's name into `x`. False: the expression is not this row's form.
+using ReadFn = bool (*)(const std::string &rest, SvarExpr &x);
+using StepFn = int (*)(int value, int n);
+
+// How a set's objects become one number.
+enum class Aggregate : uint8_t {
+    COUNT,                // how many there are
+    FIRST,                // the property of the first; none reads 0
+    SUM,                  // the sum of the property
+    DISTINCT_CARD_TYPES,  // how many card types they have between them (CR 205.2a: kind TYPE only)
+};
+
+// One spelled expression: a value of its own, or a set, a property and an aggregate.
+struct SvarRow {
+    const char *name;
+    bool prefix;            // `name` is how it starts; `read` takes the rest
+    ReadFn read;            // null: there is nothing after the name
+    ValueFn value;          // null: it reads as a set, a property and an aggregate
+    ConditionFn condition;  // what a <high>.<low> row chooses between them by
+    ObjectsFn objects;
+    PropertyFn property;
+    Aggregate aggregate;
+    bool names_filter;      // what `read` takes is a filter over the set (svar_filter_spellings)
+};
+
+// A set a script names before '$', and a property it names after: <Set>$<Property> is a row of
+// neither table, so a new set or property is one row and combines with the others.
+struct NamedSet {
+    const char *name;
+    ObjectsFn objects;
+};
+struct NamedProperty {
+    const char *name;
+    PropertyFn property;
+};
+
+// A trailing /<name>[<N>] step on the rest of the expression.
+struct SuffixRow {
+    const char *name;
+    bool takes_number;  // `name` is followed by N
+    StepFn apply;
+};
+
+// Whose permanents a Count$Valid filter's YouCtrl refers to.
+enum class ControllerRef : uint8_t { YOU, TARGETED_PLAYER, REMEMBERED_PLAYER };
+
+// A base expression, compiled: its row, and what the row read.
+struct SvarExpr {
+    const SvarRow *row = nullptr;
+    ValueFn value = nullptr;
+    ObjectsFn objects = nullptr;
+    PropertyFn property = nullptr;
+    Aggregate aggregate = Aggregate::COUNT;
+    FilterSpec filter;            // what the set's objects must match
+    std::string text;             // a counter type, a card type, a cast-history spec
+    Colors color = NO_COLOR;      // Count$Devotion's
+    Zone::ZoneValue zone = Zone::HAND;
+    ControllerRef controller = ControllerRef::YOU;
+    int high = 0, low = 0;        // a <high>.<low> pair
+    int literal = 0;
+    std::vector<std::string> branches;  // Count$Compare's left side, comparison, then, else
+    bool you_own = false, opp_own = false;  // a graveyard count scoped to one player's
+    bool both_players = false;    // PlayerCount's players: both seats, else the opponent
+    bool lost_life = false;       // PlayerCount's property; else `text` compares spells cast
+    bool highest_valid = false;   // PlayerCount's HighestValid: the most `filter` matches among them
+};
+
+struct SvarStep {
+    const SuffixRow *row;
+    int n;
+};
+
+// An expression, compiled once: its base, then its steps, innermost first.
+struct CompiledSvar {
+    bool recognized = false;
+    std::string base_text;
+    SvarExpr base;
+    std::vector<SvarStep> steps;
+};
+
+}  // namespace
+
 static bool parse_int(const std::string &s, int &out);
 static bool starts_with(const std::string &s, const char *prefix);
-static bool apply_suffix_op(const std::string &expr, Zone::Ownership controller, Entity source,
-                            Entity target, int &out);
-static int evaluate_base(const std::string &expr, Zone::Ownership controller, Entity source,
-                         Entity target);
+static bool ends_with(const std::string &s, const std::string &suffix);
+static const CompiledSvar &compiled_svar(const std::string &expr);
+static CompiledSvar compile_svar(const std::string &expr);
+static bool read_suffix(const std::string &op, SvarStep &step);
+static bool compile_base(const std::string &expr, SvarExpr &x);
+static bool compile_row(const std::string &expr, const SvarRow &row, SvarExpr &x);
+static bool compile_set_property(const std::string &expr, SvarExpr &x);
+static int evaluate(const CompiledSvar &c, const SvarArgs &a);
 static int unrecognized(const std::string &expr);
 static const Player *player_of(Zone::Ownership seat);
-static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
-                                     Zone::Ownership controller);
-static int count_players_with_property(const std::string &expr, Zone::Ownership controller);
-static bool high_low(const std::string &expr, const char *prefix, bool condition, int &out);
-static int card_counters(Entity source, const std::string &expr);
-static int devotion(const std::string &expr, Zone::Ownership controller);
+
+static bool read_no_dollar(const std::string &rest, SvarExpr &x);
+static bool read_devotion_color(const std::string &rest, SvarExpr &x);
+static bool read_high_low(const std::string &rest, SvarExpr &x);
+static bool read_adamant(const std::string &rest, SvarExpr &x);
+static bool read_valid_battlefield(const std::string &rest, SvarExpr &x);
+static bool read_card_types_clause(const std::string &rest, SvarExpr &x);
+static bool read_graveyard_card_types(const std::string &rest, SvarExpr &x);
+static bool read_zone_filter(const std::string &rest, SvarExpr &x, Zone::ZoneValue zone);
+static bool read_valid_hand(const std::string &rest, SvarExpr &x);
+static bool read_valid_graveyard(const std::string &rest, SvarExpr &x);
+static bool read_valid_library(const std::string &rest, SvarExpr &x);
+static bool read_valid_exile(const std::string &rest, SvarExpr &x);
+static bool read_valid_stack(const std::string &rest, SvarExpr &x);
+static bool read_player_count(const std::string &rest, SvarExpr &x);
+static bool read_compare(const std::string &rest, SvarExpr &x);
+
+static int ev_literal(const SvarExpr &x, const SvarArgs &a);
+static int ev_compare(const SvarExpr &x, const SvarArgs &a);
+static int ev_aggregate(const SvarExpr &x, const SvarArgs &a);
+static int ev_high_low(const SvarExpr &x, const SvarArgs &a);
+static int ev_adamant(const SvarExpr &x, const SvarArgs &a);
+static int ev_cast_total_mana(const SvarExpr &x, const SvarArgs &a);
+static int ev_x_paid(const SvarExpr &x, const SvarArgs &a);
+static int ev_converge(const SvarExpr &x, const SvarArgs &a);
+static int ev_chosen_number(const SvarExpr &x, const SvarArgs &a);
+static int ev_sacrificed_mana_value(const SvarExpr &x, const SvarArgs &a);
+static int ev_resolved_this_turn(const SvarExpr &x, const SvarArgs &a);
+static int ev_triggered_card_power(const SvarExpr &x, const SvarArgs &a);
+static int ev_card_counters(const SvarExpr &x, const SvarArgs &a);
+static int ev_devotion(const SvarExpr &x, const SvarArgs &a);
+static int ev_spells_cast_this_turn(const SvarExpr &x, const SvarArgs &a);
+static int ev_players_with_property(const SvarExpr &x, const SvarArgs &a);
+
+static bool cond_revolt(const SvarArgs &a);
+static bool cond_gift_promised(const SvarArgs &a);
+static bool cond_threshold(const SvarArgs &a);
+static bool cond_urza_lands(const SvarArgs &a);
+
+static void set_you(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_your_library(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_your_yard_of_type(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_remembered(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_imprinted(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_target(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_targeted_player(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_targeted_controller(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_exiled_with_card(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_cards_exiled_with(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_battlefield(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_stack_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_zone_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+static void set_graveyard_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out);
+
+static int prop_energy(Entity player);
+static int prop_life_total(Entity player);
+static int cards_in_zone(Entity player, Zone::ZoneValue zone);
+static int prop_cards_in_library(Entity player);
+static int prop_cards_in_hand(Entity player);
+static int prop_cards_in_graveyard(Entity player);
+static int prop_life_gained(Entity player);
+static int prop_spells_cast_this_game(Entity player);
+static int prop_power(Entity e);
+static int prop_mana_value(Entity e);
+static int prop_printed_mana_value(Entity e);
+
+static int step_half_up(int value, int n);
+static int step_twice(int value, int n);
+static int step_plus(int value, int n);
+static int step_times(int value, int n);
+static int step_limit_max(int value, int n);
+static int step_n_minus(int value, int n);
+static int step_divide_down(int value, int n);
+
 static bool urza_lands_assembled(Zone::Ownership controller);
-static int spells_cast_this_turn(const std::string &expr, Zone::Ownership controller);
-static int count_valid(std::string spec, Zone::Ownership controller, Entity source, Entity target);
-static int count_valid_stack(const std::string &spec, Zone::Ownership controller, Entity source);
-static int exiled_with_card_types(Entity source);
-static int graveyard_card_types(const std::string &expr, Zone::Ownership controller);
-static int remembered_mana_value();
+
+static constexpr SvarRow value_row(const char *name, ValueFn value) {
+    return {name, false, nullptr, value, nullptr, nullptr, nullptr, Aggregate::COUNT, false};
+}
+static constexpr SvarRow read_row(const char *name, ReadFn read, ValueFn value) {
+    return {name, true, read, value, nullptr, nullptr, nullptr, Aggregate::COUNT, false};
+}
+// A <name><high>.<low> row: `high` when `condition` holds, else `low`.
+static constexpr SvarRow high_low_row(const char *name, ConditionFn condition) {
+    return {name, true, read_high_low, ev_high_low, condition, nullptr, nullptr, Aggregate::COUNT, false};
+}
+static constexpr SvarRow set_row(const char *name, ObjectsFn objects, PropertyFn property, Aggregate aggregate) {
+    return {name, false, nullptr, nullptr, nullptr, objects, property, aggregate, false};
+}
+static constexpr SvarRow set_read_row(const char *name, ReadFn read, ObjectsFn objects, Aggregate aggregate) {
+    return {name, true, read, nullptr, nullptr, objects, nullptr, aggregate, false};
+}
+// A set named by a filter over a zone.
+static constexpr SvarRow filter_row(const char *name, ReadFn read, ObjectsFn objects, Aggregate aggregate) {
+    return {name, true, read, nullptr, nullptr, objects, nullptr, aggregate, true};
+}
+
+// Every Count$-family expression, in the order an expression is tried against them. The evaluator,
+// --parse-report and the parser's amount SVars read the same rows (svar_expr_recognized), so a new
+// expression is one row here.
+static const SvarRow kSvarRows[] = {
+    // Count$xPaid — the X paid for the X-cost spell or ability in flight or resolving (Green Sun's
+    // Zenith: ChangeType$ Creature.Green+cmcLEX; Kozilek's Command's token count, scry count and
+    // graveyard-exile cap), read through current_x_paid().
+    value_row("Count$xPaid", ev_x_paid),
+    // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
+    // currently resolving (Prismatic Ending: the cmcLEY exile threshold).
+    value_row("Count$Converge", ev_converge),
+    // Count$Adamant_<N>.<Color>.<high>.<low> — <high> if N or more mana of the color was spent to
+    // cast the source, else <low> (Vibrance: "if {R}{R} was spent to cast it").
+    read_row("Count$Adamant_", read_adamant, ev_adamant),
+    // Count$CastTotalManaSpent — the mana spent to cast the source, read as it enters or after
+    // (Mockingbird); 0 for an object that wasn't cast.
+    value_row("Count$CastTotalManaSpent", ev_cast_total_mana),
+    // Count$ChosenNumber — the integer chosen by the DB$ ChooseNumber effect earlier in this
+    // resolution (Wrath of the Skies: the amount of energy to pay), read by a chained sub-ability
+    // (the DestroyAll's cmc bound Y and its PayEnergy<Y> unless-cost).
+    value_row("Count$ChosenNumber", ev_chosen_number),
+    // Sacrificed$CardManaCost — the mana value of what the resolving ability's cost sacrificed, as
+    // it last existed (Broadside Bombardiers).
+    value_row("Sacrificed$CardManaCost", ev_sacrificed_mana_value),
+    // Count$ResolvedThisTurn — the number of times the source's triggered abilities resolved this
+    // turn (Scythecat Cub).
+    value_row("Count$ResolvedThisTurn", ev_resolved_this_turn),
+    // TriggeredCard$CardPower — the power of the object whose event fired the ability, as it last
+    // existed if it has left (Pyrogoyf, CR 608.2h).
+    value_row("TriggeredCard$CardPower", ev_triggered_card_power),
+    // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects,
+    // regardless of type. Triumph of Saint Katherine's recursion gates its shuffle-back on
+    // "RememberedSize GE7" — the self-exiled card plus the six milled cards.
+    set_row("Count$RememberedSize", set_remembered, nullptr, Aggregate::COUNT),
+    set_row("RememberedSize", set_remembered, nullptr, Aggregate::COUNT),
+    // Count$YourCountersEnergy — the controller's current energy ({E}) total (CR 122.1c), stored
+    // as an "ENERGY" counter on the Player (Wrath of the Skies: the cap on the energy you may pay).
+    set_row("Count$YourCountersEnergy", set_you, prop_energy, Aggregate::FIRST),
+    // Count$YourLifeTotal — the controller's life total, never below 0 (Doomsday's half your life).
+    set_row("Count$YourLifeTotal", set_you, prop_life_total, Aggregate::FIRST),
+    // Count$LifeYouGainedThisTurn — Ocelot Pride: "if you gained life this turn".
+    set_row("Count$LifeYouGainedThisTurn", set_you, prop_life_gained, Aggregate::FIRST),
+    // Count$YouCastThisGame — spells the controller has cast this game (Once Upon a Time: "if
+    // this spell is the first spell you've cast this game").
+    set_row("Count$YouCastThisGame", set_you, prop_spells_cast_this_game, Aggregate::FIRST),
+    // Count$InYourLibrary — the number of cards in the controller's library.
+    set_row("Count$InYourLibrary", set_your_library, nullptr, Aggregate::COUNT),
+    read_row("Count$CardCounters.", read_no_dollar, ev_card_counters),
+    read_row("Count$Devotion.", read_devotion_color, ev_devotion),
+    read_row("Count$ThisTurnCast_", read_no_dollar, ev_spells_cast_this_turn),
+    // Count$Revolt.high.low — high if a permanent the controller controlled left the battlefield
+    // this turn (Fatal Push).
+    high_low_row("Count$Revolt.", cond_revolt),
+    // Count$PromisedGift.high.low — Gift (CR 702.176): high if the spell being cast/resolved
+    // promised its gift to an opponent. Into the Flood Maw drives its two ChangeZone abilities'
+    // TargetMin$/TargetMax$ off this (X = .0.1, Y = .1.0): not promised → the creature-bounce
+    // targets 1 and the nonland-bounce targets 0; promised → the reverse. Read from the cast-time
+    // pending flag (the target counts are evaluated as targets are chosen, before the Spell
+    // component exists).
+    high_low_row("Count$PromisedGift.", cond_gift_promised),
+    // Count$Threshold.high.low — Threshold: high if the controller has seven or more cards in their
+    // graveyard (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold, else 3).
+    high_low_row("Count$Threshold.", cond_threshold),
+    // Count$UrzaLands.high.low — high if the controller controls an Urza's Mine, an Urza's
+    // Power-Plant and an Urza's Tower (the Tron lands; Mine/Power Plant: .2.1, Tower: .3.1).
+    high_low_row("Count$UrzaLands.", cond_urza_lands),
+    filter_row("Count$ValidStack ", read_valid_stack, set_stack_cards, Aggregate::COUNT),
+    filter_row("Count$Valid ", read_valid_battlefield, set_battlefield, Aggregate::COUNT),
+    // Count$ValidExile ... $CardTypes — distinct card types among the cards exiled with `source`
+    // (Keen-Eyed Curator's exiled-with pile).
+    filter_row("Count$ValidExile", read_card_types_clause, set_cards_exiled_with, Aggregate::DISTINCT_CARD_TYPES),
+    // Count$ValidExile <filter> — the number of cards in exile matching it (Unlicensed Hearse: the
+    // cards exiled with it).
+    filter_row("Count$ValidExile", read_valid_exile, set_zone_cards, Aggregate::COUNT),
+    // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
+    set_read_row("Count$TypeInYourYard.", read_no_dollar, set_your_yard_of_type, Aggregate::COUNT),
+    set_row("Count$CardTypesInAllGraveyards", set_graveyard_cards, nullptr, Aggregate::DISTINCT_CARD_TYPES),
+    set_read_row("Count$ValidGraveyard Card", read_graveyard_card_types, set_graveyard_cards,
+                 Aggregate::DISTINCT_CARD_TYPES),
+    // Count$ValidHand / ValidGraveyard / ValidLibrary <filter> — the number of cards in hands /
+    // graveyards / libraries matching <filter> (Ensnaring Bridge: "Count$ValidHand Card.YouOwn" =
+    // the cards in your hand; Knight of the Reliquary: "Count$ValidGraveyard Land.YouOwn"; Jace,
+    // Wielder of Mysteries: "Count$ValidLibrary Card.YouOwn"). Matched by the shared filter
+    // matcher against each card, with the whole grammar (comma-OR alternatives,
+    // type/color/token qualifiers, OppOwn) honoured.
+    filter_row("Count$ValidHand", read_valid_hand, set_zone_cards, Aggregate::COUNT),
+    filter_row("Count$ValidGraveyard", read_valid_graveyard, set_zone_cards, Aggregate::COUNT),
+    filter_row("Count$ValidLibrary", read_valid_library, set_zone_cards, Aggregate::COUNT),
+    // PlayerCount<Players>$HasPropertyLostLifeThisTurn / Condition<cmp> SpellsCastThisTurn: how many
+    // of them qualify. PlayerCount<Players>$HighestValid <filter>: the most permanents any of them
+    // has matching it, each as its "you".
+    read_row("PlayerCount", read_player_count, ev_players_with_property),
+    // Count$Compare <value>;<comparison>;<then>;<else>: the parser's form of a Count$Compare whose
+    // sides are SVars, each an expression here (Shatterskull Smashing: X, or twice X from 6).
+    read_row("Count$Compare ", read_compare, ev_compare),
+};
+
+// The sets and properties of <Set>$<Property>, and <Set>$Valid <filter>.
+static const NamedSet kNamedSets[] = {
+    // Targeted$ — the ability's chosen target.
+    {"Targeted", set_target},
+    // TargetedPlayer$ — the player the ability targets, no one if its target is an object (Peer into
+    // the Abyss: half the cards in that player's library, half their life).
+    {"TargetedPlayer", set_targeted_player},
+    // TargetedController$ — the last-known controller of the ability's target object, a card's owner
+    // off the battlefield (Surgical Extraction: the cards in the zones of the target's owner).
+    {"TargetedController", set_targeted_controller},
+    // ExiledWith$ — the card the source Saga exiled face down (The Creation of Avacyn chapter II:
+    // "you lose life equal to its mana value"). Resolved from the source's Permanent::exiled_with;
+    // an absent/gone card contributes 0.
+    {"ExiledWith", set_exiled_with_card},
+    // Remembered$ — the remembered objects. The RememberedLKI$ variant reads the same remembered
+    // entity, but is populated by a RememberLKI$ ChangeZone that snapshots the card as last-known
+    // info once it has left its origin zone (Reanimate: you lose life equal to the reanimated
+    // creature's mana value — CR 608.2h last-known-info, since the card left the graveyard as it
+    // entered play). Both forms resolve identically here because the LKI snapshot is pushed to the
+    // remembered set all the same.
+    {"Remembered", set_remembered},
+    {"RememberedLKI", set_remembered},
+    // Imprinted$ — the objects the resolution imprinted (The Stone Brain: the cards exiled from
+    // the hand).
+    {"Imprinted", set_imprinted},
+};
+
+static const NamedProperty kNamedProperties[] = {
+    // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
+    // included), else its last-known value once it has left (e.g. Swords to Plowshares
+    // reads the power of the creature it just exiled). Single unified accessor.
+    {"CardPower", prop_power},
+    // The object's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
+    // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
+    // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
+    {"CardManaCost", prop_mana_value},
+    {"CardsInLibrary", prop_cards_in_library},
+    {"CardsInHand", prop_cards_in_hand},
+    {"CardsInGraveyard", prop_cards_in_graveyard},
+    {"LifeTotal", prop_life_total},
+};
+
+// /Plus.N adds N (Birthing Ritual: 1 plus the sacrificed creature's mana value), /Times.N
+// multiplies (Price of Progress: twice the nonbasic lands), /Twice doubles (Shatterskull Smashing's
+// twice X), /HalfUp halves rounding up (Doomsday:
+// half your life; Tamiyo: half your library), /LimitMax.N caps at N (Flow State: "an instant card"
+// = at most 1), /DivideEvenlyDown.N divides rounding down (Dark Matter Manipulator: each whole seven
+// cards), /NMinus.N is what is left of N (The Stone Brain: up to four cards across its three zones).
+static const SuffixRow kSuffixRows[] = {
+    {"HalfUp", false, step_half_up},
+    {"Twice", false, step_twice},
+    {"Plus.", true, step_plus},
+    {"Times.", true, step_times},
+    {"LimitMax.", true, step_limit_max},
+    {"NMinus.", true, step_n_minus},
+    {"DivideEvenlyDown.", true, step_divide_down},
+};
 
 // A whole-string integer, optionally negative.
 static bool parse_int(const std::string &s, int &out) {
@@ -63,14 +412,36 @@ static bool parse_int(const std::string &s, int &out) {
 
 static bool starts_with(const std::string &s, const char *prefix) { return s.rfind(prefix, 0) == 0; }
 
+static bool ends_with(const std::string &s, const std::string &suffix) {
+    return s.size() > suffix.size() && s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+SvarOp svar_op_of(const std::string &op2) {
+    if (op2 == "EQ") return SvarOp::EQ;
+    if (op2 == "NE") return SvarOp::NE;
+    if (op2 == "GE") return SvarOp::GE;
+    if (op2 == "LE") return SvarOp::LE;
+    if (op2 == "GT") return SvarOp::GT;
+    if (op2 == "LT") return SvarOp::LT;
+    return SvarOp::UNKNOWN;
+}
+
 bool apply_svar_op(int lhs, const std::string &op2, int rhs) {
-    if (op2 == "EQ") return lhs == rhs;
-    if (op2 == "NE") return lhs != rhs;
-    if (op2 == "GE") return lhs >= rhs;
-    if (op2 == "LE") return lhs <= rhs;
-    if (op2 == "GT") return lhs >  rhs;
-    if (op2 == "LT") return lhs <  rhs;
-    non_fatal_error("unrecognized SVar comparison operator '" + op2 + "'");
+    const SvarOp op = svar_op_of(op2);
+    if (op == SvarOp::UNKNOWN) non_fatal_error("unrecognized SVar comparison operator '" + op2 + "'");
+    return apply_svar_op(lhs, op, rhs);
+}
+
+bool apply_svar_op(int lhs, SvarOp op, int rhs) {
+    switch (op) {
+    case SvarOp::EQ: return lhs == rhs;
+    case SvarOp::NE: return lhs != rhs;
+    case SvarOp::GE: return lhs >= rhs;
+    case SvarOp::LE: return lhs <= rhs;
+    case SvarOp::GT: return lhs >  rhs;
+    case SvarOp::LT: return lhs <  rhs;
+    case SvarOp::UNKNOWN: return false;
+    }
     return false;
 }
 
@@ -83,8 +454,8 @@ bool compare_svar(int value, const std::string &compare) {
     return apply_svar_op(value, compare.substr(0, 2), rhs);
 }
 
-// Per-permanent stored-SVar trigger gate (Carpet of Flowers). Read the latched scratch int off the
-// SOURCE permanent and compare it; absent reads as 0. An empty name = no gate (passes).
+// Per-permanent stored-SVar trigger gate. Read the latched scratch int off the SOURCE permanent
+// and compare it; absent reads as 0. An empty name = no gate (passes).
 bool stored_svar_gate_passes(Entity source, const std::string &name, const std::string &compare) {
     if (name.empty()) return true;
     int val = 0;
@@ -96,10 +467,32 @@ bool stored_svar_gate_passes(Entity source, const std::string &name, const std::
     return compare_svar(val, compare);
 }
 
+int evaluate_svar(const std::string &expr, const ResolveCtx &ctx) {
+    SvarArgs args{ctx.controller, ctx.source.lki_entity(), ctx.ability ? ctx.ability->target.get() : 0};
+    if (ctx.ability) args.triggered_card = ctx.ability->triggered_card;
+    return evaluate(compiled_svar(expr), args);
+}
+
 int evaluate_svar(const std::string &expr, Zone::Ownership controller, Entity source, Entity target) {
-    int value = 0;
-    if (apply_suffix_op(expr, controller, source, target, value)) return value;
-    return evaluate_base(expr, controller, source, target);
+    return evaluate(compiled_svar(expr), SvarArgs{controller, source, target});
+}
+
+bool svar_expr_recognized(const std::string &expr) { return compiled_svar(expr).recognized; }
+
+std::vector<std::string> svar_filter_spellings() {
+    std::vector<std::string> out;
+    for (const SvarRow &row : kSvarRows) {
+        if (!row.names_filter) continue;
+        out.emplace_back(row.name);
+        if (out.back().back() != ' ') out.back() += ' ';
+    }
+    for (const NamedSet &set : kNamedSets) out.push_back(std::string(set.name) + "$Valid ");
+    return out;
+}
+
+size_t evaluate_amount(const std::string &expr, const ResolveCtx &ctx) {
+    const int value = evaluate_svar(expr, ctx);
+    return value > 0 ? static_cast<size_t>(value) : 0;
 }
 
 size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Entity source,
@@ -108,36 +501,110 @@ size_t evaluate_amount(const std::string &expr, Zone::Ownership controller, Enti
     return value > 0 ? static_cast<size_t>(value) : 0;
 }
 
-// A trailing arithmetic step on the rest of the expression: /Plus.N adds N (Birthing Ritual:
-// 1 plus the sacrificed creature's mana value), /Times.N multiplies (Price of Progress: twice
-// the nonbasic lands), /HalfUp halves rounding up (Doomsday: half your life; Tamiyo: half your
-// library), /LimitMax.N caps at N (Flow State: "an instant card" = at most 1). Returns false when
-// the expression ends in no such step.
-static bool apply_suffix_op(const std::string &expr, Zone::Ownership controller, Entity source,
-                            Entity target, int &out) {
-    size_t slash = expr.rfind('/');
-    if (slash == std::string::npos) return false;
-    const std::string base = expr.substr(0, slash);
-    const std::string op = expr.substr(slash + 1);
-    int n = 0;
-    if (op == "HalfUp") {
-        int v = evaluate_svar(base, controller, source, target);
-        out = (v + 1) / 2;
-        return true;
+// The compiled form of `expr`, made the first time it is asked for. Holds nothing bound to a game,
+// so like a const AbilityDef * it outlives snapshot restores and per-game resets.
+static const CompiledSvar &compiled_svar(const std::string &expr) {
+    static std::unordered_map<std::string, CompiledSvar> store;
+    auto it = store.find(expr);
+    if (it != store.end()) return it->second;
+    return store.emplace(expr, compile_svar(expr)).first->second;
+}
+
+// Peels the trailing steps, then reads what is left. A '/' that is no step leaves no reading.
+static CompiledSvar compile_svar(const std::string &expr) {
+    CompiledSvar c;
+    // A Count$Compare's steps belong to its branches, each compiled on its own.
+    if (starts_with(expr, "Count$Compare ")) {
+        c.base_text = expr;
+        c.recognized = compile_base(expr, c.base);
+        return c;
     }
-    if (starts_with(op, "Plus.") && parse_int(op.substr(5), n)) {
-        out = evaluate_svar(base, controller, source, target) + n;
-        return true;
+    std::string base = expr;
+    size_t slash;
+    SvarStep step{nullptr, 0};
+    while ((slash = base.rfind('/')) != std::string::npos && read_suffix(base.substr(slash + 1), step)) {
+        c.steps.insert(c.steps.begin(), step);
+        base.erase(slash);
     }
-    if (starts_with(op, "Times.") && parse_int(op.substr(6), n)) {
-        out = evaluate_svar(base, controller, source, target) * n;
-        return true;
-    }
-    if (starts_with(op, "LimitMax.") && parse_int(op.substr(9), n)) {
-        out = std::min(evaluate_svar(base, controller, source, target), n);
+    c.base_text = base;
+    c.recognized = base.find('/') == std::string::npos && compile_base(base, c.base);
+    return c;
+}
+
+static bool read_suffix(const std::string &op, SvarStep &step) {
+    for (const SuffixRow &row : kSuffixRows) {
+        if (!row.takes_number) {
+            if (op != row.name) continue;
+        } else if (!starts_with(op, row.name) || !parse_int(op.substr(std::strlen(row.name)), step.n)) {
+            continue;
+        }
+        step.row = &row;
         return true;
     }
     return false;
+}
+
+static bool compile_base(const std::string &expr, SvarExpr &x) {
+    // A plain integer literal (e.g. Humility's SetPower$ 1 / SetToughness$ 1) evaluates to itself.
+    if (parse_int(expr, x.literal)) {
+        x.value = ev_literal;
+        return true;
+    }
+    for (const SvarRow &row : kSvarRows)
+        if (compile_row(expr, row, x)) return true;
+    return compile_set_property(expr, x);
+}
+
+static bool compile_row(const std::string &expr, const SvarRow &row, SvarExpr &x) {
+    if (row.prefix ? !starts_with(expr, row.name) : expr != row.name) return false;
+    SvarExpr read;
+    read.row = &row;
+    read.value = row.objects ? ev_aggregate : row.value;
+    read.objects = row.objects;
+    read.property = row.property;
+    read.aggregate = row.aggregate;
+    if (row.read && !row.read(expr.substr(std::strlen(row.name)), read)) return false;
+    x = std::move(read);
+    return true;
+}
+
+// <Set>$<Property>, or <Set>$Valid <comma-OR-filter>: the number of the set's objects matching ANY
+// of the filters (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or
+// land card exiled this way"). These are now in their destination zone (e.g. exile), so match by
+// printed characteristics via the shared card_matches_filter; control qualifiers resolve against
+// the controller.
+static bool compile_set_property(const std::string &expr, SvarExpr &x) {
+    const size_t dollar = expr.find('$');
+    if (dollar == std::string::npos) return false;
+    const std::string name = expr.substr(0, dollar), rest = expr.substr(dollar + 1);
+    for (const NamedSet &set : kNamedSets) {
+        if (name != set.name) continue;
+        x.value = ev_aggregate;
+        x.objects = set.objects;
+        if (starts_with(rest, "Valid ")) {
+            x.aggregate = Aggregate::COUNT;
+            x.filter = rest.substr(std::strlen("Valid "));
+            return rest.find('$') == std::string::npos;
+        }
+        // <Set>$Amount: how many objects the set holds.
+        if (rest == "Amount") {
+            x.aggregate = Aggregate::COUNT;
+            return true;
+        }
+        x.aggregate = Aggregate::FIRST;
+        for (const NamedProperty &property : kNamedProperties) {
+            if (rest != property.name) continue;
+            x.property = property.property;
+            return true;
+        }
+    }
+    return false;
+}
+
+static int evaluate(const CompiledSvar &c, const SvarArgs &a) {
+    int value = c.recognized ? c.base.value(c.base, a) : unrecognized(c.base_text);
+    for (const SvarStep &step : c.steps) value = step.row->apply(value, step.n);
+    return value;
 }
 
 static int unrecognized(const std::string &expr) {
@@ -152,176 +619,170 @@ static const Player *player_of(Zone::Ownership seat) {
                : nullptr;
 }
 
-static int evaluate_base(const std::string &expr, Zone::Ownership controller, Entity source,
-                         Entity target) {
-    // A plain integer literal (e.g. Humility's SetPower$ 1 / SetToughness$ 1) evaluates to itself.
-    int literal = 0;
-    if (parse_int(expr, literal)) return literal;
-
-    // Count$xPaid — the X paid for the X-cost spell or ability in flight or resolving (Green Sun's
-    // Zenith: ChangeType$ Creature.Green+cmcLEX; Kozilek's Command's token count, scry count and
-    // graveyard-exile cap), read through current_x_paid().
-    if (expr == "Count$xPaid") return current_x_paid();
-    // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
-    // currently resolving (Prismatic Ending: the cmcLEY exile threshold).
-    if (expr == "Count$Converge") return current_converge();
-    // Count$ChosenNumber — the integer chosen by the DB$ ChooseNumber effect earlier in this
-    // resolution (Wrath of the Skies: the amount of energy to pay), read by a chained sub-ability
-    // (the DestroyAll's cmc bound Y and its PayEnergy<Y> unless-cost).
-    if (expr == "Count$ChosenNumber") return cur_game.resolution.memory.chosen_number;
-    // Count$ResolvedThisTurn — the number of times the source's triggered abilities resolved this
-    // turn (Scythecat Cub).
-    if (expr == "Count$ResolvedThisTurn") return ability_resolutions_this_turn(source);
-    // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects,
-    // regardless of type. Triumph of Saint Katherine's recursion gates its shuffle-back on
-    // "RememberedSize GE7" — the self-exiled card plus the six milled cards.
-    if (expr == "Count$RememberedSize" || expr == "RememberedSize")
-        return static_cast<int>(cur_game.resolution.memory.remembered.size());
-
-    const Player *you = player_of(controller);
-    // Count$YourCountersEnergy — the controller's current energy ({E}) total (CR 122.1c), stored
-    // as an "ENERGY" counter on the Player (Wrath of the Skies: the cap on the energy you may pay).
-    if (expr == "Count$YourCountersEnergy") return you ? player_energy(*you) : 0;
-    // Count$YourLifeTotal — the controller's life total, never below 0 (Doomsday's half your life).
-    if (expr == "Count$YourLifeTotal") return you ? std::max(0, static_cast<int>(you->life_total)) : 0;
-    // Count$LifeYouGainedThisTurn — Ocelot Pride: "if you gained life this turn".
-    if (expr == "Count$LifeYouGainedThisTurn") return you ? you->life_gained_this_turn : 0;
-    // Count$YouCastThisGame — spells the controller has cast this game (Once Upon a Time: "if
-    // this spell is the first spell you've cast this game").
-    if (expr == "Count$YouCastThisGame") return you ? static_cast<int>(you->spells_cast_this_game) : 0;
-    // Count$InYourLibrary — the number of cards in the controller's library.
-    if (expr == "Count$InYourLibrary")
-        return static_cast<int>(zone_objects(zoned_entities(), Zone::LIBRARY, controller).size());
-
-    if (starts_with(expr, "Count$CardCounters.")) return card_counters(source, expr);
-    if (starts_with(expr, "Count$Devotion.")) return devotion(expr, controller);
-    if (starts_with(expr, "Count$ThisTurnCast_")) return spells_cast_this_turn(expr, controller);
-
-    int high_or_low = 0;
-    // Count$Revolt.high.low — high if a permanent the controller controlled left the battlefield
-    // this turn (Fatal Push).
-    if (high_low(expr, "Count$Revolt.", revolt_this_turn(controller), high_or_low)) return high_or_low;
-    // Count$PromisedGift.high.low — Gift (CR 702.176): high if the spell being cast/resolved
-    // promised its gift to an opponent. Into the Flood Maw drives its two ChangeZone abilities'
-    // TargetMin$/TargetMax$ off this (X = .0.1, Y = .1.0): not promised → the creature-bounce
-    // targets 1 and the nonland-bounce targets 0; promised → the reverse. Read from the cast-time
-    // pending flag (the target counts are evaluated as targets are chosen, before the Spell
-    // component exists).
-    if (high_low(expr, "Count$PromisedGift.", current_gift_promised(), high_or_low)) return high_or_low;
-    // Count$Threshold.high.low — Threshold: high if the controller has seven or more cards in their
-    // graveyard (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold, else 3).
-    if (high_low(expr, "Count$Threshold.",
-                 zone_objects(zoned_entities(), Zone::GRAVEYARD, controller).size() >= 7, high_or_low))
-        return high_or_low;
-    // Count$UrzaLands.high.low — high if the controller controls an Urza's Mine, an Urza's
-    // Power-Plant and an Urza's Tower (the Tron lands; Mine/Power Plant: .2.1, Tower: .3.1).
-    if (high_low(expr, "Count$UrzaLands.", urza_lands_assembled(controller), high_or_low))
-        return high_or_low;
-
-    if (starts_with(expr, "Count$ValidStack "))
-        return count_valid_stack(expr.substr(std::string("Count$ValidStack ").size()), controller, source);
-    if (starts_with(expr, "Count$Valid "))
-        return count_valid(expr.substr(std::string("Count$Valid ").size()), controller, source, target);
-
-    // Count$ValidExile ... $CardTypes — distinct card types among the cards exiled with `source`
-    // (Keen-Eyed Curator's exiled-with pile).
-    if (starts_with(expr, "Count$ValidExile") && expr.find("$CardTypes") != std::string::npos)
-        return exiled_with_card_types(source);
-
-    // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
-    if (starts_with(expr, "Count$TypeInYourYard.")) {
-        std::string type_name = expr.substr(std::string("Count$TypeInYourYard.").size());
-        int count = 0;
-        for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, controller)) {
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
-                if (t.name == type_name) { count++; break; }
-        }
-        return count;
-    }
-
-    if (expr == "Count$CardTypesInAllGraveyards" ||
-        (starts_with(expr, "Count$ValidGraveyard Card") && expr.find("$CardTypes") != std::string::npos))
-        return graveyard_card_types(expr, controller);
-
-    // Count$ValidHand / ValidGraveyard / ValidLibrary <filter> — the number of cards in hands /
-    // graveyards / libraries matching <filter> (Ensnaring Bridge: "Count$ValidHand Card.YouOwn" =
-    // the cards in your hand; Knight of the Reliquary: "Count$ValidGraveyard Land.YouOwn"; Jace,
-    // Wielder of Mysteries: "Count$ValidLibrary Card.YouOwn"). Matched by the shared filter
-    // matcher against each card, with the whole grammar (comma-OR alternatives,
-    // type/color/token qualifiers, OppOwn) honoured.
-    if (starts_with(expr, "Count$ValidHand"))
-        return count_zone_cards_matching(Zone::HAND, expr.substr(std::string("Count$ValidHand").size()),
-                                         controller);
-    if (starts_with(expr, "Count$ValidGraveyard"))
-        return count_zone_cards_matching(
-            Zone::GRAVEYARD, expr.substr(std::string("Count$ValidGraveyard").size()), controller);
-    if (starts_with(expr, "Count$ValidLibrary"))
-        return count_zone_cards_matching(
-            Zone::LIBRARY, expr.substr(std::string("Count$ValidLibrary").size()), controller);
-
-    if (starts_with(expr, "PlayerCount") && expr.find('$') != std::string::npos)
-        return count_players_with_property(expr, controller);
-
-    if (expr == "Targeted$CardPower") {
-        // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
-        // included), else its last-known value once it has left (e.g. Swords to Plowshares
-        // reads the power of the creature it just exiled). Single unified accessor.
-        return std::max(0, effective_power(target));
-    }
-    if (expr == "Targeted$CardManaCost") {
-        // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
-        // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
-        // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
-        if (target == 0 || !global_coordinator.entity_has_component<CardData>(target)) return 0;
-        return std::max(0, object_mana_value(target, global_coordinator.GetComponent<CardData>(target)));
-    }
-    // ExiledWith$CardManaCost — the mana value of the card the source Saga exiled face down (The
-    // Creation of Avacyn chapter II: "you lose life equal to its mana value"). Resolved from the
-    // source's Permanent::exiled_with; an absent/gone card contributes 0.
-    if (expr == "ExiledWith$CardManaCost") {
-        Entity ew = exiled_with_card(source);
-        if (ew == 0 || !global_coordinator.entity_has_component<CardData>(ew)) return 0;
-        return std::max(0, object_mana_value(ew, global_coordinator.GetComponent<CardData>(ew)));
-    }
-    // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
-    // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
-    // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
-    // this way"). These are now in their destination zone (e.g. exile), so match by printed
-    // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
-    if (starts_with(expr, "Remembered$Valid ")) {
-        std::string filters = expr.substr(std::string("Remembered$Valid ").size());
-        MatchCtx mctx;
-        mctx.controller = controller;  // "you" reference for YouCtrl/OppCtrl in any filter
-        int count = 0;
-        for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
-        }
-        return count;
-    }
-    // Remembered$CardManaCost / RememberedLKI$CardManaCost — see remembered_mana_value.
-    if (expr == "Remembered$CardManaCost" || expr == "RememberedLKI$CardManaCost")
-        return remembered_mana_value();
-
-    return unrecognized(expr);
+static bool read_adamant(const std::string &rest, SvarExpr &x) {
+    const std::vector<std::string> parts = split(rest, '.');
+    if (parts.size() != 4 || !parse_int(parts[0], x.literal) || !parse_int(parts[2], x.high) ||
+        !parse_int(parts[3], x.low))
+        return false;
+    x.color = parts[1] == "White"  ? WHITE
+              : parts[1] == "Blue"  ? BLUE
+              : parts[1] == "Black" ? BLACK
+              : parts[1] == "Red"   ? RED
+              : parts[1] == "Green" ? GREEN
+                                    : NO_COLOR;
+    return x.color != NO_COLOR;
 }
 
-// The number of cards in `zone` (either player's) matching a Count$Valid<Zone> filter. A card
-// there is controlled by its owner (CR 108.4a), so YouCtrl/OppCtrl read as YouOwn/OppOwn against
-// `controller`; an empty filter counts every card.
-static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
-                                     Zone::Ownership controller) {
-    if (!spec.empty() && spec[0] == ' ') spec.erase(0, 1);
-    // A $-suffixed aggregate (…$GreatestCardManaCost) is not a count of matching cards.
-    if (spec.find('$') != std::string::npos) return unrecognized(spec);
-    const std::string filter = spec.empty() ? std::string("Card") : owner_relative_filter(spec);
-    MatchCtx ctx;
-    ctx.controller = controller;
-    int count = 0;
-    for (Entity e : zone_objects(zoned_entities(), zone, Zone::UNKNOWN))
-        if (card_matches_filter(e, filter, ctx)) count++;
-    return count;
+// Read off the source, or as it last existed: an evoked creature's trigger resolves after it is gone.
+static int ev_adamant(const SvarExpr &x, const SvarArgs &a) {
+    const ManaPaid *spent = nullptr;
+    if (is_battlefield_permanent(a.source))
+        spent = &global_coordinator.GetComponent<Permanent>(a.source).cast_mana_paid;
+    else if (const LastKnownInfo *lki = departed_lki_for(a.source))
+        spent = &lki->cast_mana_paid;
+    return spent && static_cast<int>(mana_of_color(*spent, x.color)) >= x.literal ? x.high : x.low;
+}
+
+static int ev_cast_total_mana(const SvarExpr &, const SvarArgs &a) {
+    if (const EntryInfo *entry = find_entry_info(a.source)) return static_cast<int>(entry->mana_paid.size());
+    if (is_battlefield_permanent(a.source))
+        return static_cast<int>(global_coordinator.GetComponent<Permanent>(a.source).cast_mana_paid.size());
+    // Entering uncast: what an earlier object made of this card spent is no concern of this one.
+    if (global_coordinator.entity_has_component<Zone>(a.source) &&
+        global_coordinator.GetComponent<Zone>(a.source).location == Zone::BATTLEFIELD)
+        return 0;
+    const LastKnownInfo *lki = departed_lki_for(a.source);
+    return lki ? static_cast<int>(lki->cast_mana_paid.size()) : 0;
+}
+
+static bool read_no_dollar(const std::string &rest, SvarExpr &x) {
+    x.text = rest;
+    return rest.find('$') == std::string::npos;
+}
+
+static bool read_devotion_color(const std::string &rest, SvarExpr &x) {
+    x.color = rest == "Blue"    ? BLUE
+              : rest == "Black" ? BLACK
+              : rest == "Red"   ? RED
+              : rest == "Green" ? GREEN
+              : rest == "White" ? WHITE
+                                : NO_COLOR;
+    return x.color != NO_COLOR;
+}
+
+// "<high>.<low>"; a malformed pair has no reading.
+static bool read_high_low(const std::string &rest, SvarExpr &x) {
+    const size_t dot = rest.find('.');
+    return dot != std::string::npos && parse_int(rest.substr(0, dot), x.high) && parse_int(rest.substr(dot + 1), x.low);
+}
+
+// Count$Valid <filter> — battlefield permanents matching the Forge filter spec, the whole spec
+// (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/colors) through the shared
+// permanent_matches_filter (Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
+// ReduceCost: "Count$Valid Creature.Legendary+YouCtrl"). Forms:
+//   <filter>$CardManaCost — the SUM of the matches' mana values rather than their count (Summon:
+//     Bahamut's Mega Flare: Permanent.YouCtrl+Other$CardManaCost; +Other excludes `source`; a
+//     token contributes 0).
+//   TargetedPlayerCtrl — permanents the PLAYER this ability targets controls (Carpet of Flowers:
+//     Islands the target opponent controls); `target` is that player.
+//   RememberedPlayerCtrl — permanents the remembered player controls (Price of Progress, once
+//     per player by the RepeatEach loop).
+static bool read_valid_battlefield(const std::string &rest, SvarExpr &x) {
+    if (rest.empty()) return false;
+    const std::string mv_suffix = "$CardManaCost";
+    if (ends_with(rest, mv_suffix)) {
+        x.filter = rest.substr(0, rest.size() - mv_suffix.size());
+        x.property = prop_printed_mana_value;
+        x.aggregate = Aggregate::SUM;
+        return true;
+    }
+    if (rest.find('$') != std::string::npos) return false;
+    static const struct {
+        const char *token;
+        ControllerRef ref;
+    } kControllers[] = {{"TargetedPlayerCtrl", ControllerRef::TARGETED_PLAYER},
+                        {"RememberedPlayerCtrl", ControllerRef::REMEMBERED_PLAYER}};
+    for (const auto &who : kControllers) {
+        const size_t pos = rest.find(who.token);
+        if (pos == std::string::npos) continue;
+        std::string spec = rest;
+        spec.replace(pos, std::strlen(who.token), "YouCtrl");
+        x.filter = spec;
+        x.controller = who.ref;
+        return true;
+    }
+    x.filter = rest;
+    return true;
+}
+
+static bool read_card_types_clause(const std::string &rest, SvarExpr &) {
+    return rest.find("$CardTypes") != std::string::npos;
+}
+
+// Count$ValidGraveyard Card$CardTypes — count distinct card types (Creature, Instant, etc.)
+// across both players' graveyards (Barrowgoyf). The Card.YouOwn variant (Nethergoyf) scopes
+// the count to the controller's own graveyard only; we detect the YouOwn/YouCtrl restriction
+// on the Card filter and, when present, skip cards owned by the other player. (CR 205.2 — the
+// distinct card types among the matching cards.)
+static bool read_graveyard_card_types(const std::string &rest, SvarExpr &x) {
+    const size_t types_pos = rest.find("$CardTypes");
+    if (types_pos == std::string::npos) return false;
+    // Restriction lives between "Card" and "$CardTypes" (e.g. ".YouOwn" or
+    // ".YouOwn+Creature"). Ownership (YouOwn/YouCtrl/OppOwn/OppCtrl) scopes the count to one
+    // player's graveyard and is applied here — a graveyard card has no live controller, so the
+    // shared evaluator can't read it. Any OTHER subfilter (type/CMC/color/supertype) in the
+    // Card clause is honored by routing the remaining qualifiers through card_matches_filter on
+    // the card's printed characteristics, instead of being silently ignored.
+    std::string restriction = rest.substr(0, types_pos);
+    x.you_own = restriction.find("YouOwn") != std::string::npos || restriction.find("YouCtrl") != std::string::npos;
+    x.opp_own = restriction.find("OppOwn") != std::string::npos || restriction.find("OppCtrl") != std::string::npos;
+    // Split the restriction into qualifier tokens; keep everything that is not an ownership
+    // token as a real card subfilter.
+    std::string sub;  // '+'-joined remaining qualifiers
+    if (!restriction.empty() && restriction[0] == '.') restriction.erase(0, 1);
+    size_t p = 0;
+    while (p <= restriction.size()) {
+        size_t nx = restriction.find_first_of(".+", p);
+        if (nx == std::string::npos) nx = restriction.size();
+        std::string tok = restriction.substr(p, nx - p);
+        p = nx + 1;
+        if (tok.empty()) continue;
+        if (tok == "YouOwn" || tok == "YouCtrl" || tok == "OppOwn" || tok == "OppCtrl")
+            continue;
+        sub += (sub.empty() ? "" : "+") + tok;
+    }
+    if (!sub.empty()) x.filter = "Card+" + sub;
+    return true;
+}
+
+// A Count$Valid<Zone> filter. A card there is controlled by its owner (CR 108.4a), so
+// YouCtrl/OppCtrl read as YouOwn/OppOwn against `controller`; an empty filter counts every card.
+// A $-suffixed aggregate (…$GreatestCardManaCost) is not a count of matching cards.
+static bool read_zone_filter(const std::string &rest, SvarExpr &x, Zone::ZoneValue zone) {
+    const std::string spec = !rest.empty() && rest[0] == ' ' ? rest.substr(1) : rest;
+    if (spec.find('$') != std::string::npos) return false;
+    x.zone = zone;
+    x.filter = spec.empty() ? FilterSpec("Card") : owner_relative_filter(FilterSpec(spec));
+    return true;
+}
+
+static bool read_compare(const std::string &rest, SvarExpr &x) {
+    x.branches = split(rest, ';');
+    return x.branches.size() == 4;
+}
+
+static bool read_valid_hand(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::HAND); }
+static bool read_valid_exile(const std::string &rest, SvarExpr &x) { return read_zone_filter(rest, x, Zone::EXILE); }
+static bool read_valid_graveyard(const std::string &rest, SvarExpr &x) {
+    return read_zone_filter(rest, x, Zone::GRAVEYARD);
+}
+static bool read_valid_library(const std::string &rest, SvarExpr &x) {
+    return read_zone_filter(rest, x, Zone::LIBRARY);
+}
+
+static bool read_valid_stack(const std::string &rest, SvarExpr &x) {
+    x.filter = rest;
+    return rest.find('$') == std::string::npos;
 }
 
 // PlayerCount<Players>$<Property> — the number of players among <Players> (relative to
@@ -331,62 +792,105 @@ static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
 //     who lost life this turn").
 //   Condition<OP><N> SpellsCastThisTurn — cast <OP> N spells this turn (Mindbreak Trap: "if an
 //     opponent cast three or more spells this turn").
-static int count_players_with_property(const std::string &expr, Zone::Ownership controller) {
-    size_t dollar = expr.find('$');
-    const std::string players = expr.substr(std::string("PlayerCount").size(),
-                                            dollar - std::string("PlayerCount").size());
-    const std::string prop = expr.substr(dollar + 1);
-    std::vector<Zone::Ownership> seats;
-    if (players == "Opponents" || players == "RegisteredOpponents") seats = {opponent_of(controller)};
-    else if (players == "Players") seats = {Zone::PLAYER_A, Zone::PLAYER_B};
-    else return unrecognized(expr);
-    const std::string spells_cond = "Condition";
-    const std::string spells_metric = " SpellsCastThisTurn";
-    bool lost_life = prop == "HasPropertyLostLifeThisTurn";
-    bool spells = starts_with(prop, "Condition") && prop.size() > spells_metric.size() &&
-                  prop.compare(prop.size() - spells_metric.size(), spells_metric.size(), spells_metric) == 0;
-    if (!lost_life && !spells) return unrecognized(expr);
-    const std::string compare =
-        spells ? prop.substr(spells_cond.size(), prop.size() - spells_cond.size() - spells_metric.size())
-               : std::string();
-    int count = 0;
-    for (Zone::Ownership seat : seats) {
-        const Player *pl = player_of(seat);
-        if (!pl) continue;
-        if (lost_life && pl->life_lost_this_turn > 0) count++;
-        if (spells && compare_svar(static_cast<int>(pl->spells_cast_this_turn), compare)) count++;
-    }
-    return count;
-}
-
-// "<prefix><high>.<low>" — `high` when `condition` holds, else `low`. Returns false when `expr`
-// doesn't start with `prefix`; a malformed pair is reported and reads as 0.
-static bool high_low(const std::string &expr, const char *prefix, bool condition, int &out) {
-    if (!starts_with(expr, prefix)) return false;
-    const std::string rest = expr.substr(std::string(prefix).size());
-    size_t dot = rest.find('.');
-    int high = 0, low = 0;
-    if (dot == std::string::npos || !parse_int(rest.substr(0, dot), high) ||
-        !parse_int(rest.substr(dot + 1), low)) {
-        out = unrecognized(expr);
+static bool read_player_count(const std::string &rest, SvarExpr &x) {
+    const size_t dollar = rest.find('$');
+    if (dollar == std::string::npos) return false;
+    const std::string players = rest.substr(0, dollar), prop = rest.substr(dollar + 1);
+    if (players == "Opponents" || players == "RegisteredOpponents") x.both_players = false;
+    else if (players == "Players") x.both_players = true;
+    else return false;
+    static const std::string kHighestValid = "HighestValid ";
+    if (starts_with(prop, kHighestValid.c_str())) {
+        x.highest_valid = true;
+        x.filter = FilterSpec(prop.substr(kHighestValid.size()));
         return true;
     }
-    out = condition ? high : low;
-    return true;
+    x.lost_life = prop == "HasPropertyLostLifeThisTurn";
+    const std::string spells_cond = "Condition", spells_metric = " SpellsCastThisTurn";
+    const bool spells = starts_with(prop, "Condition") && ends_with(prop, spells_metric);
+    if (spells)
+        x.text = prop.substr(spells_cond.size(), prop.size() - spells_cond.size() - spells_metric.size());
+    return x.lost_life || spells;
 }
+
+static int ev_literal(const SvarExpr &x, const SvarArgs &) { return x.literal; }
+
+// The row's set, narrowed by a <Set>$Valid filter, as one number.
+static int ev_aggregate(const SvarExpr &x, const SvarArgs &a) {
+    std::vector<Entity> objects;
+    x.objects(x, a, objects);
+    if (!x.row && !x.filter.empty()) {
+        MatchCtx mctx;
+        mctx.controller = a.controller;  // "you" reference for YouCtrl/OppCtrl in any filter
+        mctx.source = a.source;
+        // Each as it is where it is: a permanent by its live characteristics, a token included.
+        objects.erase(std::remove_if(objects.begin(), objects.end(),
+                                     [&](Entity e) {
+                                         return !object_matches_filter(e, x.filter, mctx);  // ',' = OR over the filters
+                                     }),
+                      objects.end());
+    }
+    switch (x.aggregate) {
+    case Aggregate::COUNT: return static_cast<int>(objects.size());
+    case Aggregate::FIRST: return objects.empty() ? 0 : x.property(objects[0]);
+    case Aggregate::SUM: {
+        int total = 0;
+        for (Entity e : objects) total += x.property(e);
+        return total;
+    }
+    case Aggregate::DISTINCT_CARD_TYPES: {
+        std::set<std::string> type_names;
+        for (Entity e : objects)
+            for (auto &t : effective_types(e))
+                if (t.kind == TYPE) type_names.insert(t.name);
+        return static_cast<int>(type_names.size());
+    }
+    }
+    return 0;
+}
+
+static int ev_high_low(const SvarExpr &x, const SvarArgs &a) { return x.row->condition(a) ? x.high : x.low; }
+
+static int ev_compare(const SvarExpr &x, const SvarArgs &a) {
+    const bool holds = compare_svar(evaluate(compiled_svar(x.branches[0]), a), x.branches[1]);
+    return evaluate(compiled_svar(x.branches[holds ? 2 : 3]), a);
+}
+
+static int ev_x_paid(const SvarExpr &, const SvarArgs &) { return current_x_paid(); }
+static int ev_converge(const SvarExpr &, const SvarArgs &) { return current_converge(); }
+static int ev_chosen_number(const SvarExpr &, const SvarArgs &) { return cur_game.resolution.memory.chosen_number; }
+
+static int ev_sacrificed_mana_value(const SvarExpr &, const SvarArgs &) {
+    coverage_row("Sacrificed$CardManaCost");
+    return cur_game.resolution.sacrificed_mana_value;
+}
+static int ev_resolved_this_turn(const SvarExpr &, const SvarArgs &a) { return ability_resolutions_this_turn(a.source); }
+static int ev_triggered_card_power(const SvarExpr &, const SvarArgs &a) {
+    return std::max(0, object_power(a.triggered_card));
+}
+
+static bool cond_revolt(const SvarArgs &a) {
+    coverage_row("revolt");
+    return revolt_this_turn(a.controller);
+}
+static bool cond_gift_promised(const SvarArgs &) { return current_gift_promised(); }
+static bool cond_threshold(const SvarArgs &a) {
+    return zone_objects(zoned_entities(), Zone::GRAVEYARD, a.controller).size() >= 7;
+}
+static bool cond_urza_lands(const SvarArgs &a) { return urza_lands_assembled(a.controller); }
 
 // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the SOURCE permanent (The One Ring:
 // X = Count$CardCounters.BURDEN; Aether Vial's charge-counter mana-value bound; Blast Zone). Once
 // the source has left the battlefield — Blast Zone is sacrificed as part of its own activation
 // cost before its DestroyAll bound resolves — the count it had as it left (CR 608.2h).
-static int card_counters(Entity source, const std::string &expr) {
-    std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
+static int ev_card_counters(const SvarExpr &x, const SvarArgs &a) {
+    std::string ctype = x.text;
     size_t end = ctype.find_first_of(".+ ");
     if (end != std::string::npos) ctype = ctype.substr(0, end);
-    if (source == 0) return 0;
-    if (global_coordinator.entity_has_component<Permanent>(source))
-        return std::max(0, get_counters(source, ctype));
-    if (const LastKnownInfo *lki = departed_lki_for(source)) {
+    if (a.source == 0) return 0;
+    if (global_coordinator.entity_has_component<Permanent>(a.source))
+        return std::max(0, get_counters(a.source, ctype));
+    if (const LastKnownInfo *lki = departed_lki_for(a.source)) {
         auto ci = lki->counters.find(ctype);
         if (ci != lki->counters.end() && ci->second > 0) return ci->second;
     }
@@ -395,25 +899,17 @@ static int card_counters(Entity source, const std::string &expr) {
 
 // Count$Devotion.<Color> (CR 700.5): each mana symbol of that color in the mana costs of
 // permanents the controller controls, a hybrid or Phyrexian symbol of that color included.
-static int devotion(const std::string &expr, Zone::Ownership controller) {
-    const std::string color = expr.substr(std::string("Count$Devotion.").size());
-    Colors devotion_color = color == "Blue"    ? BLUE
-                            : color == "Black" ? BLACK
-                            : color == "Red"   ? RED
-                            : color == "Green" ? GREEN
-                            : color == "White" ? WHITE
-                                               : NO_COLOR;
-    if (devotion_color == NO_COLOR) return unrecognized(expr);
+static int ev_devotion(const SvarExpr &x, const SvarArgs &a) {
     int count = 0;
-    for (Entity e : battlefield_permanents(zoned_entities(), controller)) {
+    for (Entity e : battlefield_permanents(zoned_entities(), a.controller)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        count += static_cast<int>(cd.mana_cost.count(devotion_color));
+        count += static_cast<int>(cd.mana_cost.count(x.color));
         for (const auto &pip : cd.hybrid_mana)
-            if (std::find(pip.colors.begin(), pip.colors.end(), devotion_color) != pip.colors.end())
+            if (std::find(pip.colors.begin(), pip.colors.end(), x.color) != pip.colors.end())
                 count++;
         count += static_cast<int>(
-            std::count(cd.phyrexian_mana.begin(), cd.phyrexian_mana.end(), devotion_color));
+            std::count(cd.phyrexian_mana.begin(), cd.phyrexian_mana.end(), x.color));
     }
     return count;
 }
@@ -440,17 +936,17 @@ static bool urza_lands_assembled(Zone::Ownership controller) {
 //   color qualifiers — 1 if they cast a spell of any named color (Veil of Summer:
 //     Card.OppCtrl+Blue,Card.OppCtrl+Black), else 0;
 //   a bare Card.<Ctrl> — how many spells.
-static int spells_cast_this_turn(const std::string &expr, Zone::Ownership controller) {
-    const Player *pl = player_of(expr.find("OppCtrl") != std::string::npos ? opponent_of(controller)
-                                                                             : controller);
+static int ev_spells_cast_this_turn(const SvarExpr &x, const SvarArgs &a) {
+    const std::string &spec = x.text;
+    const Player *pl = player_of(spec.find("OppCtrl") != std::string::npos ? opponent_of(a.controller) : a.controller);
     if (!pl) return 0;
-    if (expr.find("Instant") != std::string::npos || expr.find("Sorcery") != std::string::npos)
+    if (spec.find("Instant") != std::string::npos || spec.find("Sorcery") != std::string::npos)
         return static_cast<int>(pl->instant_sorcery_spells_cast_this_turn);
     static const std::pair<const char *, Colors> kColors[] = {
         {"Blue", BLUE}, {"Black", BLACK}, {"Red", RED}, {"Green", GREEN}, {"White", WHITE}};
     bool names_color = false;
     for (const auto &c : kColors) {
-        if (expr.find(c.first) == std::string::npos) continue;
+        if (spec.find(c.first) == std::string::npos) continue;
         names_color = true;
         if (pl->spell_colors_cast_this_turn.count(c.second)) return 1;
     }
@@ -458,51 +954,99 @@ static int spells_cast_this_turn(const std::string &expr, Zone::Ownership contro
     return static_cast<int>(pl->spells_cast_this_turn);
 }
 
-// Count$Valid <filter> — battlefield permanents matching the Forge filter spec, the whole spec
-// (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/colors) through the shared
-// permanent_matches_filter (Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
-// ReduceCost: "Count$Valid Creature.Legendary+YouCtrl"). Forms:
-//   <filter>$CardManaCost — the SUM of the matches' mana values rather than their count (Summon:
-//     Bahamut's Mega Flare: Permanent.YouCtrl+Other$CardManaCost; +Other excludes `source`; a
-//     token contributes 0).
-//   TargetedPlayerCtrl — permanents the PLAYER this ability targets controls (Carpet of Flowers:
-//     Islands the target opponent controls); `target` is that player.
-//   RememberedPlayerCtrl — permanents the remembered player controls (Price of Progress, once
-//     per player by the RepeatEach loop).
-static int count_valid(std::string spec, Zone::Ownership controller, Entity source, Entity target) {
-    if (spec.empty()) return unrecognized("Count$Valid " + spec);
-    const std::string mv_suffix = "$CardManaCost";
-    if (spec.size() > mv_suffix.size() &&
-        spec.compare(spec.size() - mv_suffix.size(), mv_suffix.size(), mv_suffix) == 0) {
-        spec.erase(spec.size() - mv_suffix.size());
-        MatchCtx mctx;
-        mctx.controller = controller;
-        mctx.source = source;
-        int total = 0;
-        for (Entity e : battlefield_permanents(zoned_entities())) {
-            if (!permanent_matches_filter(e, spec, mctx)) continue;
-            if (global_coordinator.entity_has_component<CardData>(e))
-                total += card_mana_value(global_coordinator.GetComponent<CardData>(e));
+static int ev_players_with_property(const SvarExpr &x, const SvarArgs &a) {
+    std::vector<Zone::Ownership> seats;
+    if (x.both_players) seats = {Zone::PLAYER_A, Zone::PLAYER_B};
+    else seats = {opponent_of(a.controller)};
+    int count = 0;
+    for (Zone::Ownership seat : seats) {
+        const Player *pl = player_of(seat);
+        if (!pl) continue;
+        if (x.highest_valid) {
+            // Each player's own "you": Land.YouCtrl counts that player's lands (Sand Scout).
+            coverage_row("highest_valid");
+            count = std::max(count, count_battlefield_matching(x.filter, seat, a.source));
+        } else if (x.lost_life) {
+            if (pl->life_lost_this_turn > 0) count++;
+        } else if (compare_svar(static_cast<int>(pl->spells_cast_this_turn), x.text)) {
+            count++;
         }
-        return total;
     }
-    if (spec.find('$') != std::string::npos) return unrecognized("Count$Valid " + spec);
-    for (const char *who : {"TargetedPlayerCtrl", "RememberedPlayerCtrl"}) {
-        size_t pos = spec.find(who);
-        if (pos == std::string::npos) continue;
-        Zone::Ownership seat;
-        if (std::string(who) == "TargetedPlayerCtrl") {
-            seat = seat_of_player(target);
-            if (seat == Zone::UNKNOWN) return 0;
-        } else {
-            const auto &remembered = cur_game.resolution.memory.remembered;
-            seat = remembered.empty() ? Zone::UNKNOWN : seat_of_player(remembered[0].get());
-            if (seat == Zone::UNKNOWN) seat = controller;
-        }
-        spec.replace(pos, std::string(who).size(), "YouCtrl");
-        return count_battlefield_matching(spec, seat, source);
+    return count;
+}
+
+static void set_you(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (player_of(a.controller)) out.push_back(get_player_entity(a.controller));
+}
+
+static void set_your_library(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    out = zone_objects(zoned_entities(), Zone::LIBRARY, a.controller);
+}
+
+static void set_your_yard_of_type(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
+    for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, a.controller)) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        for (auto &t : effective_types(e))
+            if (t.name == x.text) {
+                out.push_back(e);
+                break;
+            }
     }
-    return count_battlefield_matching(spec, controller, source);
+}
+
+// Every remembered object, in order, as it last existed: Remembered$CardManaCost reads the first
+// (Birthing Ritual: X = 1 plus the sacrificed creature's mana value).
+static void set_remembered(const SvarExpr &, const SvarArgs &, std::vector<Entity> &out) {
+    for (const ObjectRef &r : cur_game.resolution.memory.remembered) out.push_back(r.lki_entity());
+}
+
+static void set_imprinted(const SvarExpr &, const SvarArgs &, std::vector<Entity> &out) {
+    for (const ObjectRef &r : cur_game.resolution.memory.imprinted) out.push_back(r.lki_entity());
+}
+
+static void set_target(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (a.target != 0) out.push_back(a.target);
+}
+
+static void set_targeted_player(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    coverage_row("TargetedPlayer");
+    if (seat_of_player(a.target) != Zone::UNKNOWN) out.push_back(a.target);
+}
+
+static void set_targeted_controller(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (a.target == 0 || seat_of_player(a.target) != Zone::UNKNOWN) return;
+    const Zone::Ownership seat = last_known_controller(a.target);
+    if (seat != Zone::UNKNOWN) out.push_back(get_player_entity(seat));
+}
+
+static void set_exiled_with_card(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (Entity e = exiled_with_card(a.source)) out.push_back(e);
+}
+
+// The cards still exiled with `source` (Keen-Eyed Curator). exiled_with is append-only, so an entry
+// counts only while it is still the object that was exiled, in exile: a card that has since left
+// exile is a new object and no longer "exiled with" the source.
+static void set_cards_exiled_with(const SvarExpr &, const SvarArgs &a, std::vector<Entity> &out) {
+    if (a.source == 0 || !global_coordinator.entity_has_component<Permanent>(a.source)) return;
+    for (Entity ex_e : live_entities(global_coordinator.GetComponent<Permanent>(a.source).exiled_with)) {
+        if (global_coordinator.GetComponent<Zone>(ex_e).location != Zone::EXILE) continue;
+        if (global_coordinator.entity_has_component<CardData>(ex_e)) out.push_back(ex_e);
+    }
+}
+
+static void set_battlefield(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
+    Zone::Ownership seat = a.controller;
+    if (x.controller == ControllerRef::TARGETED_PLAYER) {
+        seat = seat_of_player(a.target);
+        if (seat == Zone::UNKNOWN) return;
+    } else if (x.controller == ControllerRef::REMEMBERED_PLAYER) {
+        const auto &remembered = cur_game.resolution.memory.remembered;
+        seat = remembered.empty() ? Zone::UNKNOWN : seat_of_player(remembered[0].get());
+        if (seat == Zone::UNKNOWN) seat = a.controller;
+    }
+    const MatchCtx mctx{seat, a.source};
+    for (Entity e : zoned_entities())
+        if (is_battlefield_permanent(e) && permanent_matches_filter(e, x.filter, mctx)) out.push_back(e);
 }
 
 // Count$ValidStack <filter> — number of stack objects matching a card filter (Mindbreak Trap:
@@ -512,108 +1056,83 @@ static int count_valid(std::string spec, Zone::Ownership controller, Entity sour
 // entities (no CardData) are not cards and don't count. The evaluating ability's own source is
 // excluded — a spell can never target itself, so counting it would only inflate the cap past the
 // real candidate pool.
-static int count_valid_stack(const std::string &spec, Zone::Ownership controller, Entity source) {
-    int count = 0;
+static void set_stack_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
     for (Entity e : zone_objects(zoned_entities(), Zone::STACK, Zone::UNKNOWN)) {
-        if (e == source) continue;
+        if (e == a.source) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (card_matches_any(e, spec, MatchCtx{controller, source})) count++;
+        if (card_matches_filter(e, x.filter, MatchCtx{a.controller, a.source})) out.push_back(e);
     }
-    return count;
 }
 
-// Distinct card types (CR 205.2a — kind TYPE only, so Plains / Legendary are excluded) among the
-// cards still exiled with `source` (Keen-Eyed Curator). exiled_with is append-only, so an entry
-// counts only while it is still the object that was exiled, in exile: a card that has since left
-// exile is a new object and no longer "exiled with" the source.
-static int exiled_with_card_types(Entity source) {
-    if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return 0;
-    std::set<std::string> type_names;
-    for (Entity ex_e : live_entities(global_coordinator.GetComponent<Permanent>(source).exiled_with)) {
-        if (global_coordinator.GetComponent<Zone>(ex_e).location != Zone::EXILE) continue;
-        if (!global_coordinator.entity_has_component<CardData>(ex_e)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(ex_e).types)
-            if (t.kind == TYPE) type_names.insert(t.name);
-    }
-    return static_cast<int>(type_names.size());
+// The cards in `x.zone` (either player's) matching its filter.
+static void set_zone_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
+    MatchCtx ctx;
+    ctx.controller = a.controller;
+    ctx.source = a.source;
+    for (Entity e : zone_objects(zoned_entities(), x.zone, Zone::UNKNOWN))
+        if (card_matches_filter(e, x.filter, ctx)) out.push_back(e);
 }
 
-// Count$ValidGraveyard Card$CardTypes — count distinct card types (Creature, Instant, etc.)
-// across both players' graveyards (Barrowgoyf). The Card.YouOwn variant (Nethergoyf) scopes
-// the count to the controller's own graveyard only; we detect the YouOwn/YouCtrl restriction
-// on the Card filter and, when present, skip cards owned by the other player. (CR 205.2 — the
-// distinct card types among the matching cards.)
-static int graveyard_card_types(const std::string &expr, Zone::Ownership controller) {
-    std::string restriction;
-    if (expr != "Count$CardTypesInAllGraveyards") {
-        // Restriction lives between "Card" and "$CardTypes" (e.g. ".YouOwn" or
-        // ".YouOwn+Creature"). Ownership (YouOwn/YouCtrl/OppOwn/OppCtrl) scopes the count to one
-        // player's graveyard and is applied here — a graveyard card has no live controller, so the
-        // shared evaluator can't read it. Any OTHER subfilter (type/CMC/color/supertype) in the
-        // Card clause is honored by routing the remaining qualifiers through card_matches_filter on
-        // the card's printed characteristics, instead of being silently ignored.
-        size_t card_pos = expr.find("Card");
-        size_t types_pos = expr.find("$CardTypes");
-        restriction = expr.substr(card_pos + 4, types_pos - (card_pos + 4));
-    }
-    bool you_own = restriction.find("YouOwn") != std::string::npos ||
-                   restriction.find("YouCtrl") != std::string::npos;
-    bool opp_own = restriction.find("OppOwn") != std::string::npos ||
-                   restriction.find("OppCtrl") != std::string::npos;
-    // Split the restriction into qualifier tokens; keep everything that is not an ownership
-    // token as a real card subfilter, and pull a numeric mana-value bound into the MatchCtx
-    // (the evaluator defers cmcLE<n>/cmcGE<n>/… to ctx.cmc_bound).
-    std::string sub;  // '+'-joined remaining qualifiers
+static void set_graveyard_cards(const SvarExpr &x, const SvarArgs &a, std::vector<Entity> &out) {
     MatchCtx sub_ctx;
-    sub_ctx.controller = controller;
-    {
-        std::string r = restriction;
-        if (!r.empty() && r[0] == '.') r.erase(0, 1);
-        size_t p = 0;
-        while (p <= r.size()) {
-            size_t nx = r.find_first_of(".+", p);
-            if (nx == std::string::npos) nx = r.size();
-            std::string tok = r.substr(p, nx - p);
-            p = nx + 1;
-            if (tok.empty()) continue;
-            if (tok == "YouOwn" || tok == "YouCtrl" || tok == "OppOwn" || tok == "OppCtrl")
-                continue;
-            // cmc<OP><n> (e.g. cmcLE3): a numeric mana-value bound goes in the MatchCtx. A
-            // non-numeric form like cmcLEX falls through and is handled inline by the evaluator.
-            if (tok.rfind("cmc", 0) == 0 && tok.size() >= 6 &&
-                std::isdigit(static_cast<unsigned char>(tok[5]))) {
-                sub_ctx.cmc_op = tok.substr(3, 2);
-                sub_ctx.cmc_bound = std::stoi(tok.substr(5));
-                continue;
-            }
-            sub += (sub.empty() ? "" : "+") + tok;
-        }
-    }
-    std::string sub_spec = (sub.empty() && sub_ctx.cmc_bound < 0) ? "" : ("Card+" + sub);
-    std::set<std::string> type_names;
+    sub_ctx.controller = a.controller;
     for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, Zone::UNKNOWN)) {
         const Zone &z = global_coordinator.GetComponent<Zone>(e);
-        if (you_own && z.owner != controller) continue;
-        if (opp_own && z.owner == controller) continue;
+        if (x.you_own && z.owner != a.controller) continue;
+        if (x.opp_own && z.owner == a.controller) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (!sub_spec.empty() && !card_matches_filter(e, sub_spec, sub_ctx)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
-            if (t.kind == TYPE) type_names.insert(t.name);
+        if (!x.filter.empty() && !card_matches_filter(e, x.filter, sub_ctx)) continue;
+        out.push_back(e);
     }
-    return static_cast<int>(type_names.size());
 }
 
-// Remembered$CardManaCost — mana value of the first remembered card (Birthing Ritual: X = 1 plus
-// the sacrificed creature's mana value). The RememberedLKI$ variant reads the same remembered
-// entity, but is populated by a RememberLKI$ ChangeZone that snapshots the card as last-known
-// info once it has left its origin zone (Reanimate: you lose life equal to the reanimated
-// creature's mana value — CR 608.2h last-known-info, since the card left the graveyard as it
-// entered play). Both forms resolve identically here because the LKI snapshot is pushed to the
-// remembered set all the same.
-static int remembered_mana_value() {
-    const auto &remembered = cur_game.resolution.memory.remembered;
-    if (remembered.empty()) return 0;
-    Entity r = remembered[0].lki_entity();
-    if (!global_coordinator.entity_has_component<CardData>(r)) return 0;
-    return std::max(0, object_mana_value(r, global_coordinator.GetComponent<CardData>(r)));
+static int prop_energy(Entity player) { return player_energy(global_coordinator.GetComponent<Player>(player)); }
+
+// An object has no life total or library: Targeted$ may name either.
+static int prop_life_total(Entity player) {
+    if (seat_of_player(player) == Zone::UNKNOWN) return 0;
+    return std::max(0, static_cast<int>(global_coordinator.GetComponent<Player>(player).life_total));
+}
+
+// How many cards are in `zone` of the player `player`; an object has none.
+static int cards_in_zone(Entity player, Zone::ZoneValue zone) {
+    const Zone::Ownership seat = seat_of_player(player);
+    if (seat == Zone::UNKNOWN) return 0;
+    return static_cast<int>(zone_objects(zoned_entities(), zone, seat).size());
+}
+
+static int prop_cards_in_library(Entity player) { return cards_in_zone(player, Zone::LIBRARY); }
+
+static int prop_cards_in_hand(Entity player) { return cards_in_zone(player, Zone::HAND); }
+
+static int prop_cards_in_graveyard(Entity player) { return cards_in_zone(player, Zone::GRAVEYARD); }
+
+static int prop_life_gained(Entity player) { return global_coordinator.GetComponent<Player>(player).life_gained_this_turn; }
+
+static int prop_spells_cast_this_game(Entity player) {
+    return static_cast<int>(global_coordinator.GetComponent<Player>(player).spells_cast_this_game);
+}
+
+static int prop_power(Entity e) { return std::max(0, effective_power(e)); }
+
+static int prop_mana_value(Entity e) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return 0;
+    return std::max(0, object_mana_value(e, global_coordinator.GetComponent<CardData>(e)));
+}
+
+// A token contributes 0.
+static int prop_printed_mana_value(Entity e) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return 0;
+    return card_mana_value(global_coordinator.GetComponent<CardData>(e));
+}
+
+static int step_half_up(int value, int) { return (value + 1) / 2; }
+static int step_twice(int value, int) { return value * 2; }
+static int step_plus(int value, int n) { return value + n; }
+static int step_times(int value, int n) { return value * n; }
+static int step_limit_max(int value, int n) { return std::min(value, n); }
+static int step_n_minus(int value, int n) { return n - value; }
+static int step_divide_down(int value, int n) {
+    coverage_row("DivideEvenlyDown");
+    return n > 0 ? value / n : 0;
 }

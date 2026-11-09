@@ -1,0 +1,14 @@
+{
+  "name": "cr702_103e_bestow_with_an_illegal_target_resolves_as_a_creature",
+  "why": "CR 702.103e, 608.3b: as a bestowed Aura spell begins resolving with an illegal target it stops being bestowed and resolves as a creature spell, where any other Aura goes to the graveyard. Lightning Bolt kills the target in response.",
+  "hand_a": ["Springheart Nantuko"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "B:cast:Lightning Bolt", "B:target:Grizzly Bears"],
+  "max_decisions": 12,
+  "expect_order": ["Grizzly Bears is destroyed", "Springheart Nantuko enters the battlefield"],
+  "expect_not": ["doesn't resolve", "is attached to"]
+}

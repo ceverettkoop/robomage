@@ -1,0 +1,13 @@
+{
+  "name": "cr702_103f_a_fallen_nantuko_can_be_targeted_as_a_creature",
+  "why": "CR 702.103b: while bestowed it is no creature, so Swords to Plowshares can't target it; once it has fallen off it is a 1/1 creature and can.",
+  "hand_a": ["Springheart Nantuko"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt", "Swords to Plowshares"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Plains"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "B:pass", "B:cast:Lightning Bolt", "B:target:Grizzly Bears", "B:pass", "B:cast:Swords to Plowshares", "B:target:Springheart Nantuko"],
+  "max_decisions": 18,
+  "expect": ["Player B casts Swords to Plowshares targeting Springheart Nantuko", "Springheart Nantuko is moved to exile"]
+}

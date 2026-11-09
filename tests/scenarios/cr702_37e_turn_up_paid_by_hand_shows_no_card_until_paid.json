@@ -1,0 +1,55 @@
+{
+  "name": "cr702_37e_turn_up_paid_by_hand_shows_no_card_until_paid",
+  "why": "CR 702.37e, 116.2b: with auto-mana off the morph cost is paid as a special action's is, source by source, parked at a decision; the card shows to the other player only once it is turned up.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:turn-up:Aphetto",
+    "A:tap:Island"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "turns Aphetto Alchemist face up"
+  ],
+  "expect_dump": [
+    "^A d=4 .*menu PAYING_COSTS",
+    "^B d=5 .*event FACE_UP .*card=Aphetto Alchemist"
+  ],
+  "expect_dump_not": [
+    "^B d=[1-4] .*card=Aphetto"
+  ]
+}

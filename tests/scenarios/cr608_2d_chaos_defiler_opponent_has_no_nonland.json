@@ -1,0 +1,55 @@
+{
+  "name": "cr608_2d_chaos_defiler_opponent_has_no_nonland",
+  "why": "CR 608.2d: with no nonland permanent to choose nothing is chosen, and the random pick, the destroy and the cleanup do nothing, the lands included",
+  "hand_a": [
+    "Chaos Defiler"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chaos Defiler"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "Chaos Defiler enters the battlefield",
+    "There is no card to choose"
+  ],
+  "expect_not": [
+    "is destroyed"
+  ]
+}

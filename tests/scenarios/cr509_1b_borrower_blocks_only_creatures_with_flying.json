@@ -1,0 +1,13 @@
+{
+  "name": "cr509_1b_borrower_blocks_only_creatures_with_flying",
+  "why": "CR 509.1b: Brazen Borrower's static CantBlockBy (ValidAttacker$ Creature.withoutFlying, ValidBlocker$ Creature.Self) keeps it from blocking Grizzly Bears, and only itself: another creature of B's blocks.",
+  "hand_a": ["Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Grizzly Bears"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Brazen Borrower", "Scryb Ranger"],
+  "play": ["A:keep", "B:keep", "A:attack:Grizzly Bears", "A:attack:done"],
+  "max_decisions": 5,
+  "expect_menu": ["Scryb Ranger"],
+  "expect_menu_not": ["^Brazen Borrower \\[3/1\\]"]
+}

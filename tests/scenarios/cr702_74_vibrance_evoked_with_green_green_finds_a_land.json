@@ -1,0 +1,37 @@
+{
+  "name": "cr702_74_vibrance_evoked_with_green_green_finds_a_land",
+  "why": "CR 702.74 / 603.4: Vibrance for its evoke cost with {G}{G}: its green trigger searches for a land card and gains 2 life; no damage",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)",
+    "A:desc:Vibrance (ChangeZone",
+    "A:search:Forest"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A reveals Forest and puts it to hand",
+    "Player A gains 2 life|gains 2 life"
+  ],
+  "expect_not": [
+    "deals 3 damage"
+  ]
+}

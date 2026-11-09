@@ -1,0 +1,47 @@
+{
+  "name": "cr702_166_bargained_casts_the_exiled_card_free",
+  "why": "Beseech the Mirror bargained: the sacrifice is an additional cost (CR 702.166a), and the found card, mana value 4 or less, may be cast without paying its mana cost as the spell resolves (CR 608.2g). Cast, it isn't put into the hand.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mishra's Bauble"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Accept",
+    "A:search:Lightning Bolt",
+    "A:desc:without paying its mana cost",
+    "A:target:Player B"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Player A sacrifices Mishra's Bauble \\(Bargain\\)",
+    "Player A casts Beseech the Mirror",
+    "Player A casts Lightning Bolt without paying its mana cost",
+    "Lightning Bolt deals 3 damage to Player B"
+  ]
+}

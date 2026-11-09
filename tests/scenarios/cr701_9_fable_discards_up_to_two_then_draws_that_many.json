@@ -1,0 +1,41 @@
+{
+  "name": "cr701_9_fable_discards_up_to_two_then_draws_that_many",
+  "why": "CR 701.9, 608.2c: 'you may discard up to two cards. If you do, draw that many': Optional$ True ends the discarding at any pick, and RememberDiscarded$ counts what went: one discarded, one drawn.",
+  "hand_a": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Fable of the Mirror-Breaker"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Island",
+    "A:desc:Discard no more"
+  ],
+  "max_decisions": 6,
+  "expect_count": {
+    "Player A discards": 1,
+    "Player A draws Mountain": 1
+  }
+}

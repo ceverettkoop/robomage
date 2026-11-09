@@ -32,6 +32,16 @@ class EventManager {
             result.swap(mPendingEvents);
             return result;
         }
+        // Drops the latest pending `id` event whose `param` is `value`: what it reported was reversed.
+        template <typename T>
+        void drop_last_pending(EventId id, ParamId param, const T &value) {
+            for (auto it = mPendingEvents.end(); it != mPendingEvents.begin();) {
+                --it;
+                if (it->GetType() != id || !it->HasParam(param) || it->template GetParam<T>(param) != value) continue;
+                mPendingEvents.erase(it);
+                return;
+            }
+        }
         // Snapshot/restore only the in-flight pending events (see snapshot.h);
         // listeners are per-game constants wired at init and must NOT be touched.
         std::vector<Event> snapshot_pending() const { return mPendingEvents; }

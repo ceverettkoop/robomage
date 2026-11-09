@@ -1,0 +1,32 @@
+{
+  "name": "cr118_3_deep_analysis_flashback_needs_its_life",
+  "why": "CR 118.3, 702.34a: Deep Analysis's flashback costs 3 life, so at 2 life it isn't offered",
+  "life_a": 2,
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Deep Analysis"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Play Island"
+  ],
+  "expect_menu_not": [
+    "Cast Deep Analysis"
+  ]
+}

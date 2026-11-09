@@ -1,0 +1,75 @@
+{
+  "name": "cr602_5b_quirion_ranger_untaps_once_each_turn",
+  "why": "CR 602.5b, 118.3, 205.3: Quirion Ranger returns a Forest you control, by subtype, to untap a creature, once each turn: a tapped Llanowar Elves makes {G} twice, a Mountain or an opponent's Forest pays nothing, and the second activation waits for the next turn",
+  "hand_a": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Quirion Ranger",
+    "Llanowar Elves",
+    "Forest",
+    "Taiga",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Mountain",
+    "A:tap:Llanowar Elves",
+    "A:activate:Quirion Ranger",
+    "A:target:Llanowar Elves",
+    "A:return:Taiga",
+    "A:tap:Llanowar Elves",
+    "A:cast:Grizzly Bears",
+    "A:attack:done",
+    "A:activate:Quirion Ranger",
+    "A:target:Quirion Ranger",
+    "A:return:Forest"
+  ],
+  "max_decisions": 33,
+  "expect_count": {
+    "Player A tapped Llanowar Elves for 1\\(G\\)": 2,
+    "^Player A's Quirion Ranger ability ": 2
+  },
+  "expect_order": [
+    "^Player A returns Taiga to hand",
+    "Llanowar Elves untaps",
+    "^Player A casts Grizzly Bears",
+    "^-------- TURN 2",
+    "^Player A returns Forest to hand"
+  ],
+  "expect_menu": [
+    "Return Taiga to hand",
+    "Return Forest to hand"
+  ],
+  "expect_menu_not": [
+    "Return Mountain to hand"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

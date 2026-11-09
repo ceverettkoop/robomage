@@ -1,0 +1,58 @@
+{
+  "name": "cr702_40a_tendrils_of_agony_copies_drain_their_own_targets",
+  "why": "CR 702.40a, 707.10c: Tendrils of Agony copies for each spell cast before it; each copy drains 2 with its own new target, and each gains its controller 2",
+  "hand_a": [
+    "Tendrils of Agony",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Tendrils of Agony",
+    "A:target:Player B",
+    "A:target:Player A",
+    "A:target:Player B"
+  ],
+  "max_decisions": 10,
+  "expect_count": {
+    "^Player A copies Tendrils of Agony": 2,
+    "^Player A loses 2 life": 1,
+    "^Player B loses 2 life": 2,
+    "^Player A gains 2 life": 3
+  },
+  "expect": [
+    "Player B loses 2 life \\(now at 10\\)"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

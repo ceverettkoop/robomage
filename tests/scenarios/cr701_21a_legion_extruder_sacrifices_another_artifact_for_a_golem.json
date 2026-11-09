@@ -1,0 +1,44 @@
+{
+  "name": "cr701_21a_legion_extruder_sacrifices_another_artifact_for_a_golem",
+  "why": "CR 701.21a, 111.1: {2}, {T}, sacrifice another artifact makes a 3/3 Golem; the Extruder isn't its own fodder",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Legion Extruder",
+    "Mountain",
+    "Mountain",
+    "Tormod's Crypt",
+    "Lotus Petal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Legion Extruder",
+    "A:sacrifice:Tormod's Crypt"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A sacrifices Tormod's Crypt",
+    "^Token created: 3/3 Golem"
+  ],
+  "expect_menu": [
+    "Sacrifice Lotus Petal"
+  ],
+  "expect_menu_not": [
+    "Sacrifice Legion Extruder"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "cr101_2_frenzied_baloth_protects_creature_spells",
+  "why": "CR 101.2: 'Creature spells you control can't be countered' (ValidSA$ Spell.Creature+YouCtrl): Grizzly Bears cast beside Frenzied Baloth resolves through Counterspell, and a noncreature spell, as the variant shows, doesn't.",
+  "hand_a": ["Grizzly Bears"],
+  "library_a": ["Forest", "Forest"],
+  "battlefield_a": ["Forest", "Forest", "Frenzied Baloth"],
+  "hand_b": ["Counterspell"],
+  "library_b": ["Island", "Island"],
+  "battlefield_b": ["Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Grizzly Bears", "B:cast:Counterspell", "B:target:Grizzly Bears"],
+  "max_decisions": 12,
+  "expect": ["Grizzly Bears enters"],
+  "expect_not": ["Grizzly Bears is countered"]
+}

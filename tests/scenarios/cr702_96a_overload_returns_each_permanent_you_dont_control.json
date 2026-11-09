@@ -1,0 +1,14 @@
+{
+  "name": "cr702_96a_overload_returns_each_permanent_you_dont_control",
+  "why": "CR 702.96a: paying Cyclonic Rift's overload cost changes \"target\" to \"each\": every nonland permanent you don't control returns to its owner's hand, with no target chosen; lands and your own permanents stay.",
+  "hand_a": ["Cyclonic Rift"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Air Elemental"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Forest", "Grizzly Bears", "Chalice of the Void"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Cyclonic Rift (overload)"],
+  "max_decisions": 6,
+  "expect_menu": ["Cast Cyclonic Rift \\(overload\\)"],
+  "expect": ["Player A casts Cyclonic Rift$", "Grizzly Bears is moved to hand", "Chalice of the Void is moved to hand"],
+  "expect_not": ["Forest is moved", "Air Elemental is moved", "Island is moved"]
+}

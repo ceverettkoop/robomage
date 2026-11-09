@@ -1,0 +1,4 @@
+{"name": "empower",
+ "why": "Empower (oracle), CR 306.5c: hotseat, Player A's Theorist's Proxy: the Jace token on both boards with its loyalty and token tag, its card text from the token band, its two loyalty rows, [-3] gone at loyalty 2 the next turn",
+ "args": ["--game-seed", "1", "--hand-a", "Theorists Proxy,Island,Island,Island,Island,Island,Island", "--library-a", "Island,Island", "--battlefield-a", "Island,Island", "--hand-b", "Island,Island,Island,Island,Island,Island,Island", "--library-b", "Island,Island", "--max-decisions", "17"],
+ "input": ["0", "0", "1", "card 12", "7", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]}

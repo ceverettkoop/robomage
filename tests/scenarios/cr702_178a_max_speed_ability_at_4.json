@@ -1,0 +1,56 @@
+{
+  "name": "cr702_178a_max_speed_ability_at_4",
+  "why": "CR 702.178a: at speed 4 Snare has its ability: {T}, a +1/+1 counter on a creature A controls",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:activate:Perilous Snare"
+  ],
+  "max_decisions": 24,
+  "expect_order": [
+    "Player A's speed is 4",
+    "Put 1 \\+1/\\+1 counter\\(s\\) on creature \\(now 3/3\\)"
+  ],
+  "expect_menu": [
+    "Activate Perilous Snare"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

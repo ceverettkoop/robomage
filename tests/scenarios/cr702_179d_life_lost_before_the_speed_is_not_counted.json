@@ -1,0 +1,55 @@
+{
+  "name": "cr702_179d_life_lost_before_the_speed_is_not_counted",
+  "why": "CR 702.179d: the ability comes with the speed: B lost life earlier in A's turn, then Snare gives A speed 1 and it doesn't trigger",
+  "hand_a": [
+    "Perilous Snare",
+    "Lightning Bolt"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Perilous Snare",
+    "A:target:Grizzly Bears@opp"
+  ],
+  "max_decisions": 16,
+  "expect": [
+    "Player A's speed is 1"
+  ],
+  "expect_not": [
+    "their speed triggers"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

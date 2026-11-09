@@ -1,0 +1,43 @@
+{
+  "name": "cr400_7_displacer_kitten_returns_a_new_object",
+  "why": "CR 400.7, 302.6: the blinked Elvish Visionary comes back a new object: its enters trigger draws and it can't attack this turn",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Elvish Visionary",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:Elvish Visionary",
+    "A:attack:Displacer Kitten"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "^Elvish Visionary is moved to exile",
+    "^Elvish Visionary is moved to the battlefield",
+    "^Player A draws",
+    "^Lightning Bolt deals 3 damage"
+  ],
+  "expect_menu_not": [
+    "^Elvish Visionary \\["
+  ]
+}

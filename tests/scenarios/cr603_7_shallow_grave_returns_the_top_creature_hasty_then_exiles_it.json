@@ -1,0 +1,46 @@
+{
+  "name": "cr603_7_shallow_grave_returns_the_top_creature_hasty_then_exiles_it",
+  "why": "CR 603.7, 702.10: the top creature card of your graveyard returns with haste until end of turn (it attacks at once); a delayed trigger exiles it at the next end step.",
+  "hand_a": [
+    "Shallow Grave"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Mountain",
+    "Grizzly Bears",
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shallow Grave",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Grizzly Bears deals 2 damage to Player B"
+  ],
+  "expect_not": [
+    "Air Elemental to the battlefield",
+    "Mountain to the battlefield"
+  ],
+  "expect_order": [
+    "Player A puts Grizzly Bears to the battlefield",
+    "Grizzly Bears gains Haste until end of turn",
+    "Grizzly Bears attacking Player B",
+    "Delayed trigger fires",
+    "Grizzly Bears is moved to exile"
+  ]
+}

@@ -1,0 +1,270 @@
+{
+ "deck": "show_and_tell",
+ "location": "heldout",
+ "source": {
+  "archetype_id": 33,
+  "deck_id": 904052,
+  "deck_url": "https://mtgtop8.com/event?d=904052&f=LE",
+  "format": "LE",
+  "meta_share": 5.0,
+  "name": "Show and Tell",
+  "rank": 7,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "baseline": {
+   "detail": {
+    "bench": {
+     "matches": 480,
+     "policies": {
+      "final": {
+       "all": {
+        "decisive": 1156,
+        "win_rate": 0.4922145328719723,
+        "wins": 569
+       },
+       "faces": {
+        "decisive": 570,
+        "win_rate": 0.6403508771929824,
+        "wins": 365
+       },
+       "plays": {
+        "decisive": 586,
+        "win_rate": 0.34812286689419797,
+        "wins": 204
+       }
+      }
+     },
+     "summary": "runs/ov-verify/bench/onboard-show_and_tell/summary.json"
+    },
+    "bench_exit": 0,
+    "scripted_hard": {
+     "league/bug": {
+      "d": 0,
+      "exit": 0,
+      "l": 4,
+      "w": 6
+     },
+     "league/burn": {
+      "d": 0,
+      "exit": 0,
+      "l": 3,
+      "w": 7
+     },
+     "league/bw_dnt": {
+      "d": 0,
+      "exit": 0,
+      "l": 0,
+      "w": 10
+     },
+     "league/eldrazi_aggro": {
+      "d": 0,
+      "exit": 0,
+      "l": 0,
+      "w": 10
+     },
+     "league/gw_maverick": {
+      "d": 0,
+      "exit": 0,
+      "l": 4,
+      "w": 6
+     },
+     "league/lands": {
+      "d": 0,
+      "exit": 0,
+      "l": 4,
+      "w": 6
+     },
+     "league/reanimator": {
+      "d": 1,
+      "exit": 0,
+      "l": 4,
+      "w": 5
+     },
+     "league/ur_delver": {
+      "d": 0,
+      "exit": 0,
+      "l": 2,
+      "w": 8
+     },
+     "league/uw_control": {
+      "d": 0,
+      "exit": 0,
+      "l": 6,
+      "w": 4
+     },
+     "league/wrb_energy": {
+      "d": 0,
+      "exit": 0,
+      "l": 2,
+      "w": 8
+     },
+     "league/wubg_doomsday": {
+      "d": 0,
+      "exit": 0,
+      "l": 8,
+      "w": 2
+     }
+    }
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "scripted:hard 72/110 with the deck; zero-shot final plays 0.348 (586 games), faces 0.640 (570 games)",
+   "time": "2026-10-25T03:23:51"
+  },
+  "capability": {
+   "detail": {
+    "clean": [],
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T13:48:42"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/show_and_tell:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_show_and_tell",
+    "out_dir": "ci_out/onboard_show_and_tell"
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "b3ee78afa21c5354d7ca82d4b058bf7bb72a841340bcb69494e7a88b643b315b",
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean",
+   "time": "2026-10-25T02:12:18"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "heldout"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to heldout/",
+   "time": "2026-10-25T02:29:58"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 33,
+    "in_vocab": 33,
+    "no_script": [],
+    "not_in_vocab": []
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "33 cards: 33 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:42"
+  },
+  "implement": {
+   "detail": {},
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T13:48:42"
+  },
+  "parse": {
+   "detail": {
+    "cards": {},
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "engine": "37669b68a5abf2dab670b6d235c8480dd88f5a7d8faa3ec744f003132014404e",
+    "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T13:48:42"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96",
+    "scripts": "8ba721a18b52d7ddd42f7494fdf67829b12ea1f10b93186cf8fb4a59465bcf0f",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:48:42"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Show and Tell, 5.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4f7ad4c8557b41ac62233510a0840123c5eb3197177ee8b50beb7f146fc42038",
+    "vocab": "303f5749c09bcc12c0f506e9a6c9166a758caa6b49940614bac464fd5dd25f05"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-10-25T01:08:04"
+  },
+  "vocab": {
+   "detail": {
+    "added": {
+     "Avengers Disassembled": 358,
+     "Blood Moon": 359,
+     "Brotherhood's End": 360,
+     "City of Traitors": 361,
+     "Omniscience": 362,
+     "Sneak Attack": 363,
+     "Stock Up": 364
+    },
+    "make_registry": 0,
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "9943ddcd2c6bb4c0da7d4e5a96f4ed3a252b5f83313d05625c89f858f822ae96"
+   },
+   "result": "ok",
+   "summary": "7 entries and 0 token(s) appended",
+   "time": "2026-10-25T01:07:16"
+  }
+ }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "cr606_3_cauldron_creature_has_grists_loyalty_abilities",
+  "why": "CR 604.3, 606.3, 613.1f: Grist in exile is a creature card, so the Cauldron's counter comes and its loyalty abilities go on the creature, which can pay +1 by putting a loyalty counter on itself and can't pay -2. It activates one once a turn at sorcery timing.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears"
+  ],
+  "graveyard_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Grist",
+    "A:desc:Repeat"
+  ],
+  "max_decisions": 9,
+  "expect_menu": [
+    "Activate Grizzly Bears \\[\\+1\\] \\(Repeat\\)"
+  ],
+  "expect_menu_not": [
+    "Activate Grizzly Bears \\[-2\\]"
+  ],
+  "expect": [
+    "Token created: 1/1 Insect"
+  ]
+}

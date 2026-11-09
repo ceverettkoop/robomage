@@ -16,8 +16,10 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
 #include "../queries/players.h"
 #include "../queries/visibility.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 #include "../transform.h"
 
@@ -61,13 +63,13 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         Zone::Ownership owner = ab.controller;
         int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
         std::vector<Entity> top = orderer->get_library_top(owner, static_cast<size_t>(n));
-        cur_game.resolution.memory.imprinted.clear();
+        report_effect(ab, EffectObjects::REVEALED_TOP);
         if (top.empty()) {
             game_log("%s's library is empty — nothing to reveal.\n", player_name(owner).c_str());
         } else {
             reveal_cards(top);
             for (auto e : top) {
-                cur_game.resolution.memory.imprinted.push_back(ObjectRef::of(e));
+                report_object(ab, EffectObjects::REVEALED_TOP, e);
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log("%s reveals %s from the top of their library\n",
@@ -122,7 +124,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // Shown to all players (CR 701.20a).
         reveal_card(top_card);
         bool is_instant_or_sorcery = false;
-        for (auto &t : top_cd.types) {
+        for (auto &t : effective_types(top_card)) {
             if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
                 is_instant_or_sorcery = true;
                 break;

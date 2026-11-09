@@ -4,6 +4,11 @@
 #include "damage.h"
 
 // See declaration in combat.h.
+bool attacked_this_turn(const Permanent &perm) {
+    return perm.attacked_on_turn == static_cast<long>(cur_game.turn_state.turn);
+}
+
+// See declaration in combat.h.
 bool is_unblocked_attacker(Entity e) {
     if (!cur_game.combat.blockers_declared || cur_game.turn_state.step < DECLARE_BLOCKERS ||
         cur_game.turn_state.step > END_OF_COMBAT)

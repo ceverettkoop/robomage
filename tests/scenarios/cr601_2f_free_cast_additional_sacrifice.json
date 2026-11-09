@@ -1,0 +1,49 @@
+{
+  "name": "cr601_2f_free_cast_additional_sacrifice",
+  "why": "CR 118.9d / 601.2f: a spell cast without paying its mana cost (Omniscience) still pays its additional costs: Natural Order is cast free with no land, its 'sacrifice a green creature' paid with Grizzly Bears, and finds Craterhoof Behemoth (free-cast statics, onboarding stage 6)",
+  "hand_a": [
+    "Natural Order",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Omniscience",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Air Elemental",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Craterhoof Behemoth"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Natural Order without paying its mana cost",
+    "A:search:Craterhoof Behemoth"
+  ],
+  "seed": 1,
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A casts Natural Order without paying its mana cost",
+    "Player A sacrifices Grizzly Bears",
+    "Player A casts Natural Order",
+    "Player A puts Craterhoof Behemoth to the battlefield"
+  ]
+}

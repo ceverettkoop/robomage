@@ -1,0 +1,65 @@
+{
+  "name": "cr603_3d_tezzeret_emblem_with_no_artifact_does_nothing",
+  "why": "CR 603.3d: Tezzeret's emblem's trigger with no artifact to target is removed from the stack",
+  "hand_a": [
+    "Lotus Petal",
+    "Lotus Petal",
+    "Lotus Petal"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Tezzeret Cruel Captain",
+    "Grizzly Bears"
+  ],
+  "battlefield_b": [
+    "Mox Amber"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:desc:[-7]",
+    "A:pass",
+    "A:#5",
+    "A:#5",
+    "A:#5",
+    "A:attack:done"
+  ],
+  "max_decisions": 20,
+  "expect": [
+    "gets an emblem"
+  ],
+  "expect_not": [
+    "Put 3 P1P1"
+  ],
+  "expect_count": {
+    "^Player A sacrifices Lotus Petal": 3
+  }
+}

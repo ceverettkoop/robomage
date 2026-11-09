@@ -1,0 +1,14 @@
+{
+  "name": "cr202_3a_powder_keg_with_no_counters_destroys_mana_value_zero",
+  "why": "CR 202.3a: Powder Keg with no fuse counters destroys each artifact and creature of mana value 0, here a Mox and a card with no mana cost that is a creature; a land that is neither stays",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Powder Keg", "Flying Men", "Swamp"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "battlefield_b": ["Mox Opal", "Dryad Arbor", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Decline", "A:activate:Powder Keg"],
+  "max_decisions": 6,
+  "expect": ["Mox Opal is destroyed", "Dryad Arbor is destroyed"],
+  "expect_not": ["Flying Men is destroyed", "Grizzly Bears is destroyed", "Swamp is destroyed"]
+}

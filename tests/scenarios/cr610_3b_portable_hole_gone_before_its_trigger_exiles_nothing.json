@@ -1,0 +1,44 @@
+{
+  "name": "cr610_3b_portable_hole_gone_before_its_trigger_exiles_nothing",
+  "why": "CR 610.3b: Portable Hole destroyed with its trigger on the stack: the specified event already occurred, so the target isn't exiled",
+  "hand_a": [
+    "Portable Hole"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Plains"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Portable Hole",
+    "B:pass",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Portable Hole"
+  ],
+  "max_decisions": 11,
+  "expect": [
+    "nothing is exiled \\(CR 610.3\\)"
+  ],
+  "expect_not": [
+    "^Grizzly Bears is moved"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "cr601_2f_bilbo_reduces_hogaak_from_the_graveyard",
+  "why": "Bilbo's reduction applies to Hogaak cast from the graveyard: {4}{B/G}{B/G}, so six creatures pay it.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "graveyard_a": [
+    "Hogaak Arisen Necropolis"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Hogaak",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A casts Hogaak, Arisen Necropolis"
+  ],
+  "expect_count": {
+    "Player A taps Grizzly Bears for Convoke": 5
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "cr702_103b_bestow_is_an_aura_while_cast",
+  "why": "CR 702.103a, b: Springheart Nantuko cast for its bestow cost is an Aura spell with enchant creature: its target is chosen as it is cast, it enters attached, and the enchanted creature gets +1/+1. It is no creature, so Swords to Plowshares has only the creature to target.",
+  "hand_a": ["Springheart Nantuko"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Grizzly Bears"],
+  "hand_b": ["Swords to Plowshares"],
+  "library_b": ["Plains"],
+  "battlefield_b": ["Plains"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "B:pass", "B:cast:Swords to Plowshares"],
+  "max_decisions": 10,
+  "expect_menu": ["Cast Springheart Nantuko$", "Cast Springheart Nantuko \\(bestow\\)"],
+  "expect_menu_not": ["^Springheart Nantuko$"],
+  "expect": ["Player A casts Springheart Nantuko enchanting Grizzly Bears", "Springheart Nantuko is attached to Grizzly Bears", "Grizzly Bears gains 1/1"]
+}

@@ -13,6 +13,7 @@
 #include "../queries/players.h"
 #include "../systems/orderer.h"
 #include "../queries/affected.h"
+#include "../resolution_memory.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -26,17 +27,9 @@ HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     Zone::Ownership mill_owner = affected_player(ab);
     size_t mill_count = ab.def->amount_from_damage ? ab.trigger_damage_amount : ((ab.def->amount > 0) ? ab.def->amount : 1);
     std::vector<Entity> milled = orderer->mill(mill_owner, mill_count);
-    if (ab.def->remember_milled) {
-        cur_game.resolution.memory.remembered.clear();
-        for (auto e : milled) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(e));
-    }
+    report_effect(ab, EffectObjects::MILLED);
+    for (auto e : milled) report_object(ab, EffectObjects::MILLED, e);
     return HandlerResult::DONE_RUN_SUBS;
-}
-
-bool parse_mill(AbilityDef &ab, const std::string &key, const std::string &value) {
-    if (key != "RememberMilled") return false;
-    ab.remember_milled = (value == "True");
-    return true;
 }
 
 }  // namespace effects

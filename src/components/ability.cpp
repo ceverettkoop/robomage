@@ -1,5 +1,6 @@
 #include "ability.h"
 
+#include <algorithm>
 #include <deque>
 #include <map>
 #include <string>
@@ -8,14 +9,24 @@
 #include <vector>
 
 #include "../ecs/coordinator.h"
+#include "../resolution_memory.h"
 #include "player.h"
 
 extern Coordinator global_coordinator;
 
 // The process-wide definition store behind intern_ability_def (see ability.h).
 static std::deque<AbilityDef> &ability_def_store();
-// Bind `d`'s EffectKind from its category, and those of the definitions nested in it.
+// Bind `d`'s EffectKind from its category, with the memory rows that kind makes, and those of the
+// definitions nested in it.
 static void bind_effect_kinds(AbilityDef &d);
+// The named state `def` needs to be activated; null when it needs none.
+static const ActivationCondition *activation_condition_of(const AbilityDef &def);
+
+static const ActivationCondition *activation_condition_of(const AbilityDef &def) {
+    for (const ActivationRule &rule : def.activation_rules)
+        if (rule.kind == ActivationRule::CONDITION) return rule.condition;
+    return nullptr;
+}
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const AbilityDef *other) const {
@@ -27,11 +38,12 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     // distinct abilities (Urza's Workshop: plain "{T}: Add {C}" vs the Metalcraft
     // "{T}: Add {C} for each Urza's land"). Likewise two mana abilities that produce
     // different dynamic amounts are distinct. Without these the second is wrongly deduped.
-    if (other->activation_condition != def->activation_condition) return false;
+    if (activation_condition_of(*other) != activation_condition_of(*def)) return false;
     if (other->dynamic_amount_expr != def->dynamic_amount_expr) return false;
-    if (other->tap_cost != def->tap_cost) return false;
-    if (other->activation_mana_cost != def->activation_mana_cost) return false;
-    if (other->sac_self != def->sac_self) return false;
+    if (other->trigger_mode != def->trigger_mode) return false;
+    if (other->cost.taps() != def->cost.taps()) return false;
+    if (other->cost.mana() != def->cost.mana()) return false;
+    if (other->cost.self(CostPart::SACRIFICE) != def->cost.self(CostPart::SACRIFICE)) return false;
     if (other->change_type != def->change_type) return false;
     if (other->origin != def->origin) return false;
     if (other->origin_any != def->origin_any) return false;
@@ -39,9 +51,10 @@ bool Ability::identical_activated_ability(const AbilityDef *other) const {
     if (other->color != def->color) return false;
     if (other->mana_choices != def->mana_choices) return false;
     if (other->reflected_mana_filter != def->reflected_mana_filter) return false;
-    if (other->restrict_to_chosen_type_creature != def->restrict_to_chosen_type_creature) return false;
-    if (other->restrict_to_creature != def->restrict_to_creature) return false;
-    if (other->adds_no_counter != def->adds_no_counter) return false;
+    if (other->reflected_mana_objects != def->reflected_mana_objects) return false;
+    if (other->mana_restriction != def->mana_restriction) return false;
+    if (other->mana_rider != def->mana_rider) return false;
+    if (other->defined != def->defined) return false;
     return true;
 }
 
@@ -64,6 +77,7 @@ static std::deque<AbilityDef> &ability_def_store() {
 // (normalize_category), and every engine-built category is one of effect_kinds.def's.
 static void bind_effect_kinds(AbilityDef &d) {
     effect_kind_from_category(d.category, d.kind);
+    bind_memory_ops(d);
     for (auto *nested : {&d.subabilities, &d.charm_choices, &d.effect_floating_triggers,
                          &d.animate_granted_abilities})
         for (AbilityDef &n : *nested) bind_effect_kinds(n);
@@ -129,6 +143,33 @@ const AbilityDef *draw_one_trigger_def() {
 const AbilityDef *blank_ability_def() {
     static const AbilityDef *blank = intern_ability_def(AbilityDef{});
     return blank;
+}
+
+size_t Ability::charm_printed_count() const {
+    return std::min(def->charm_choices.size(), charm_choices.size());
+}
+
+size_t Ability::charm_printed_mode(size_t instance) const {
+    const size_t printed = charm_printed_count();
+    if (instance < printed || instance >= charm_choices.size()) return instance;
+    for (size_t k = 0; k < printed; k++)
+        if (charm_choices[k].def == charm_choices[instance].def) return k;
+    return instance;
+}
+
+std::vector<Ability *> Ability::chained_subs() {
+    std::vector<Ability *> out;
+    for (Ability &sub : subabilities) {
+        if (sub.def->from_delayed_execute) continue;
+        out.push_back(&sub);
+        for (Ability *deeper : sub.chained_subs()) out.push_back(deeper);
+    }
+    return out;
+}
+
+std::vector<const Ability *> Ability::chained_subs() const {
+    const std::vector<Ability *> subs = const_cast<Ability *>(this)->chained_subs();
+    return std::vector<const Ability *>(subs.begin(), subs.end());
 }
 
 Entity Ability::player_target_for_subs() const {

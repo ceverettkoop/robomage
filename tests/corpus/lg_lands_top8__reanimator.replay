@@ -1,0 +1,648 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_lands_top8__reanimator.rmlog
+REPLAY MODE: Using embedded decks 'league/lands_top8' / 'league/reanimator' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Life from the Loam
+Player A draws Soul-Guide Lantern
+Player A draws Wasteland
+Player A draws Mox Diamond
+Player A draws Malevolent Rumble
+Player A draws Malevolent Rumble
+Player A draws Life from the Loam
+Player B draws Polluted Delta
+Player B draws Reanimate
+Player B draws Underground Sea
+Player B draws Lotus Petal
+Player B draws Force of Will
+Player B draws Ponder
+Player B draws Island
+Player A hand:
+Mox Diamond
+Life from the Loam
+Life from the Loam
+Soul-Guide Lantern
+Malevolent Rumble
+Malevolent Rumble
+Wasteland
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mulligan)
+Player A mulligans.
+Player A draws Crop Rotation
+Player A draws Dark Depths
+Player A draws Pithing Needle
+Player A draws Forest
+Player A draws Mox Diamond
+Player A draws Exploration
+Player A draws Yavimaya, Cradle of Growth
+Player B hand:
+Force of Will
+Island
+Lotus Petal
+Polluted Delta
+Ponder
+Reanimate
+Underground Sea
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+Player A hand:
+Pithing Needle
+Mox Diamond
+Exploration
+Forest
+Dark Depths
+Crop Rotation
+Yavimaya, Cradle of Growth
+| decision 3: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 6-card hand.
+Player A: Choose card to put on library bottom (1 remaining):
+| decision 4: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Pithing Needle
+|   1: Mox Diamond
+|   2: Exploration
+|   3: Forest
+|   4: Dark Depths
+|   5: Crop Rotation
+|   6: Yavimaya, Cradle of Growth
+(REPLAY) [T0 | Untap | Player A] Input: 1
+| >> Player A: 1 (Mox Diamond)
+
+-------- TURN 1 (Player A) --------
+| decision 5: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest
+|   2: Play Dark Depths
+|   3: Play Yavimaya, Cradle of Growth
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Forest)
+Player A played Forest
+| decision 6: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Pithing Needle
+|   2: Cast Exploration
+|   3: Cast Crop Rotation
+(REPLAY) [T0 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Exploration)
+Player A activated Forest for 1(G)
+Player A casts Exploration
+| decision 7: Player B (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T0 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| auto: Player B: Exploration
+Targeting choice 0
+| auto: Player B: Exile Ponder
+Player B pays 1 life
+Player B exiles Ponder
+Player B casts Force of Will targeting Exploration
+Resolving ability (category: Counter)
+Exploration is countered
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Flow State
+| decision 8: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Polluted Delta
+|   3: Play Underground Sea
+|   4: Cast Lotus Petal
+(REPLAY) [T1 | First Main | Player B] Input: 4
+| >> Player B: 4 (Cast Lotus Petal)
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+| decision 9: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Island
+|   2: Play Polluted Delta
+|   3: Play Underground Sea
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Island)
+Player B played Island
+| decision 10: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Flow State
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Flow State)
+Player B activated Island for 1(U)
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(W)
+Player B casts Flow State
+Resolving ability (category: Dig)
+Player B looks at the top 3 card(s) of their library.
+| decision 11: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Reanimate
+|   1: Scalding Tarn
+|   2: Atraxa, Grand Unifier
+(REPLAY) [T1 | First Main | Player B] Input: 1
+| >> Player B: 1 (Scalding Tarn)
+Player B puts Scalding Tarn into hand.
+Player B puts 2 card(s) on the bottom of their library.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+| decision 12: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Crop Rotation
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Crop Rotation)
+| auto: Player A: Sacrifice Forest
+Player A activated Forest for 1(G)
+Player A sacrifices Forest
+Player A casts Crop Rotation
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 13: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Maze of Ith
+|   2: Boseiju, Who Endures
+|   3: Karakas
+|   4: Ghost Quarter
+|   5: Dark Depths
+|   6: Talon Gates of Madara
+|   7: Bojuka Bog
+|   8: Blast Zone
+|   9: Urza's Saga
+|   10: Ancient Tomb
+|   11: Yavimaya, Cradle of Growth
+|   12: The Tabernacle at Pendrell Vale
+|   13: Thespian's Stage
+|   14: Wasteland
+(REPLAY) [T2 | Upkeep | Player A] Input: 9
+| >> Player A: 9 (Urza's Saga)
+Player A shuffles their library
+Player A puts Urza's Saga to the battlefield
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Player A draws Thespian's Stage
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 14: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play Thespian's Stage
+|   4: Cast Pithing Needle
+(REPLAY) [T2 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Pithing Needle)
+Player A activated Urza's Saga for 1(C)
+Player A casts Pithing Needle
+Pithing Needle enters the battlefield
+Choose a card name for Pithing Needle:
+| decision 15: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Name card: Atraxa, Grand Unifier
+|   1: Name card: Brainstorm
+|   2: Name card: Force of Will
+|   3: Name card: Lotus Petal
+|   4: Name card: Polluted Delta
+|   5: Name card: Reanimate
+|   6: Name card: Show and Tell
+|   7: Name card: Thoughtseize
+|   8: Name card: Underground Sea
+|   9: Name card: Animate Dead
+|   10: Name card: Careful Study
+|   11: Name card: Flow State
+|   12: Name card: Otherworldly Gaze
+|   13: Name card: Ponder
+|   14: Name card: Archon of Cruelty
+|   15: Name card: Consign to Memory
+|   16: Name card: Echoing Truth
+|   17: Name card: Fatal Push
+|   18: Name card: Force of Negation
+|   19: Name card: The Creation of Avacyn
+|   20: Name card: Undercity Sewers
+|   21: Name card: Bloodstained Mire
+|   22: Name card: Dark Ritual
+|   23: Name card: Flooded Strand
+|   24: Name card: Flusterstorm
+|   25: Name card: Griselbrand
+|   26: Name card: Island
+|   27: Name card: Marsh Flats
+|   28: Name card: Raph & Mikey, Troublemakers
+|   29: Name card: Scalding Tarn
+|   30: Name card: Swamp
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Name card: Atraxa, Grand Unifier)
+Player A names card: Atraxa, Grand Unifier
+| decision 16: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play Thespian's Stage
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Thoughtseize
+| decision 17: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Polluted Delta
+|   2: Play Scalding Tarn
+|   3: Play Underground Sea
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Polluted Delta)
+Player B played Polluted Delta
+| decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Polluted Delta (ChangeZone)
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Polluted Delta (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 19: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Swamp
+|   2: Undercity Sewers
+|   3: Underground Sea
+(REPLAY) [T3 | First Main | Player B] Input: 2
+| >> Player B: 2 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Thoughtseize
+| decision 20: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Thoughtseize on top of library
+|   1: Put Thoughtseize into graveyard
+(REPLAY) [T3 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Thoughtseize on top of library)
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Player A draws Boseiju, Who Endures
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 21: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Soul-Guide Lantern
+|   3: Expedition Map
+|   4: Skateboard
+(REPLAY) [T4 | First Main | Player A] Input: 2
+| >> Player A: 2 (Soul-Guide Lantern)
+Player A shuffles their library
+Player A puts Soul-Guide Lantern to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+Choose target for Soul-Guide Lantern:
+| decision 22: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Flow State
+|   1: Force of Will
+|   2: Lotus Petal
+|   3: Polluted Delta
+|   4: Exploration
+|   5: Forest
+|   6: Crop Rotation
+|   7: Urza's Saga
+(REPLAY) [T4 | First Main | Player A] Input: 0
+| >> Player A: 0 (Flow State)
+Targeting choice 0
+Soul-Guide Lantern triggered
+| decision 23: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Soul-Guide Lantern (ChangeZoneAll)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Soul-Guide Lantern (ChangeZoneAll))
+Player A sacrifices Soul-Guide Lantern
+Player A's Soul-Guide Lantern ability is on the stack
+Resolving ability (category: ChangeZoneAll)
+Player A moves 0 card(s) to exile
+Player B moves Flow State to exile
+Player B moves Force of Will to exile
+Player B moves Lotus Petal to exile
+Player B moves Polluted Delta to exile
+Player B moves 4 card(s) to exile
+ChangeZone fizzles
+| decision 24: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play Thespian's Stage
+(REPLAY) [T4 | First Main | Player A] Input: 3
+| >> Player A: 3 (Play Thespian's Stage)
+Player A played Thespian's Stage
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Thoughtseize
+| decision 25: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Underground Sea
+|   3: Cast Thoughtseize
+|   4: Cast Thoughtseize
+(REPLAY) [T5 | First Main | Player B] Input: 3
+| >> Player B: 3 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 26: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (18 life)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Undercity Sewers for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Boseiju, Who Endures
+  Yavimaya, Cradle of Growth
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 16)
+| decision 27: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Scalding Tarn
+|   2: Play Underground Sea
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Scalding Tarn)
+Player B played Scalding Tarn
+| decision 28: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Scalding Tarn (ChangeZone)
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
+Player B pays 1 life
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 29: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Undercity Sewers
+|   2: Underground Sea
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Undercity Sewers)
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Player B surveils 1.
+Surveil: looking at Force of Will
+| decision 30: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Force of Will on top of library
+|   1: Put Force of Will into graveyard
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Put Force of Will on top of library)
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Dark Depths
+| decision 31: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Dark Depths
+|   3: Play Yavimaya, Cradle of Growth
+(REPLAY) [T6 | First Main | Player A] Input: 2
+| >> Player A: 2 (Play Dark Depths)
+Player A played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 32: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T6 | First Main | Player A] Input: 0
+| >> Player A: 0 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Force of Will
+| decision 33: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+|   2: Cast Thoughtseize
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Thoughtseize)
+Choose target for Thoughtseize:
+| decision 34: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Player A (20 life)
+|   1: Player B (15 life)
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Player A (20 life))
+Targeting choice 0
+Player B activated Undercity Sewers for 1(B)
+Player B casts Thoughtseize targeting Player A
+Resolving ability (category: Discard)
+Player A reveals their hand:
+  Boseiju, Who Endures
+  Yavimaya, Cradle of Growth
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player B loses 2 life (now at 13)
+| decision 35: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Underground Sea
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Underground Sea)
+Player B played Underground Sea
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Player A draws Wasteland
+| decision 36: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Boseiju, Who Endures
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play Wasteland
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Boseiju, Who Endures)
+Player A played Boseiju, Who Endures
+No creatures eligible to attack.
+
+-------- TURN 10 (Player B) --------
+Player B draws Raph & Mikey, Troublemakers
+No creatures eligible to attack.
+
+-------- TURN 11 (Player A) --------
+Player A draws Wasteland
+| decision 37: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Yavimaya, Cradle of Growth)
+Player A played Yavimaya, Cradle of Growth
+| decision 38: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Dark Depths (RemoveCounter)
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Activate Thespian's Stage (Clone))
+Choose target for Thespian's Stage:
+| decision 39: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Island
+|   1: Undercity Sewers
+|   2: Undercity Sewers
+|   3: Underground Sea
+|   4: Boseiju, Who Endures
+|   5: Dark Depths
+|   6: Yavimaya, Cradle of Growth
+|   7: Thespian's Stage
+(REPLAY) [T10 | First Main | Player A] Input: 5
+| >> Player A: 5 (Dark Depths)
+Targeting choice 5
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+Resolving ability (category: Clone)
+Thespian's Stage becomes a copy of Dark Depths.
+Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+| decision 40: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Keep Dark Depths
+|   1: Keep Dark Depths
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Keep Dark Depths)
+Dark Depths is put into the graveyard (legend rule)
+Dark Depths triggered
+Player A sacrifices Dark Depths.
+Resolving ability (category: Token)
+Token created: 20/20 Marit Lage
+No creatures eligible to attack.
+
+-------- TURN 12 (Player B) --------
+Player B draws Animate Dead
+No creatures eligible to attack.
+
+-------- TURN 13 (Player A) --------
+Player A draws Life from the Loam
+| decision 41: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+|   3: Cast Life from the Loam
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Cast Life from the Loam)
+Choose target for Life from the Loam:
+| decision 42: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Forest
+|   2: Dark Depths
+|   3: Urza's Saga
+|   4: Thespian's Stage
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Urza's Saga)
+Targeting choice 4
+Choose target for Life from the Loam:
+| decision 43: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Done selecting targets
+|   1: Forest
+|   2: Dark Depths
+|   3: Thespian's Stage
+(REPLAY) [T12 | First Main | Player A] Input: 0
+| >> Player A: 0 (Done selecting targets)
+Targeting choice 0
+Player A activated Yavimaya, Cradle of Growth for 1(G)
+Player A activated Boseiju, Who Endures for 1(G)
+Player A casts Life from the Loam targeting Urza's Saga
+Resolving ability (category: ChangeZone)
+Urza's Saga is moved to hand
+| decision 44: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Urza's Saga)
+Player A played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+
+--- Declare Attackers (Player A) ---
+| decision 45: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Marit Lage token [20/20]
+|   1: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Marit Lage token [20/20])
+Marit Lage token attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Marit Lage token [20/20] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Marit Lage token -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Marit Lage token deals 20 damage to Player B (now at -7 life)
+--- End Combat Damage ---
+
+
+Player B has -7 life - Player A wins!
+GAME_RESULT: 1 Player A wins

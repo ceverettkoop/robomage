@@ -1,95 +1,129 @@
 # robomage
 
-A Magic: The Gathering rules engine in C++17 (an Entity Component System over Forge card
-scripts), for two-player games. Games are deterministic given a seed, every decision is a choice
-from a finite menu and is logged as an integer, and a decision log replays the game exactly.
+A Magic: The Gathering rules engine in C++17 for two-player games. It is an Entity Component System
+built over Forge card scripts. Games are deterministic given a seed. Every decision is a choice from a
+finite menu and is logged as an integer, so a decision log replays its game exactly.
 
 Agents drive the engine three ways:
 
-- **in-process agents** (`--agent-a/-b`: `first`, `random`, `explore`, `explore:patient`,
-  `actions:…`, `play:…`) and the semantic `--play` script used for sculpted tests;
-- the **terminal prompt**: a human deciding at the terminal (`--player A|B` picks whose hidden
-  information is shown);
-- the **machine protocol** (`--machine`): **RMSTATE**, an exhaustive binary game state sent to the
-  deciding seat with everything hidden from it withheld, answered with one integer per decision.
-  Each seat's frames carry the **knowledge sidecar**'s tables: what that seat can remember and
-  soundly deduce from its own frames (perfect recall, exact inference).
+- **In-process agents** (`--agent-a/-b`): `first`, `random`, `explore`, `explore:patient`,
+  `actions:…` and `play:…`. There is also the semantic `--play` script for sculpted tests. In the
+  `robomage_nn` build there are also `nn:<model>` and `nn:remote:<socket>`, a learned policy
+  evaluated in process or by an inference server.
+- **The C++ CLI**: a human at the terminal. `--player A|B` picks a human seat against an agent, and a
+  plain run is hotseat. It renders only that seat's view of the game.
+- **The machine protocol** (`--machine`): **RMSTATE**, an exhaustive binary game state sent to the
+  deciding seat with everything hidden from it withheld. The seat answers with one integer per
+  decision. Each seat's frames carry the **knowledge sidecar**'s tables: what that seat can remember
+  and soundly deduce from its own frames (perfect recall, exact inference).
 
-The rule-based **scripted agent** (Python, standard library only) plays over that protocol; it is
-the realistic opponent, and its games are the replay corpus the test gate checks byte for byte.
+The rule-based **scripted agent** (Python, standard library only) plays over that protocol. It is the
+realistic opponent and the training teacher, and its games make up the replay corpus that the test
+gate checks byte for byte.
 
-The decks under `bin/resources/decks/` (top-level and `league/`) are fully implemented. Cards
-outside `src/card_vocab.h` are considered unimplemented; rules fidelity is not guaranteed for
-them. `todo.md` lists open engine correctness items, `docs/rules_deviations.md` the known
-deviations from the Comprehensive Rules.
+On top of the engine sit a **featurizer** (C++), which turns a seat's frames into a network's input
+tensors, and the **continuous actor**, which plays match after match and writes trajectory episodes.
+The **R-NaD learner** (`learn/`, PyTorch) trains a policy from those episodes.
 
-The reinforcement-learning stack this engine was first built for (PPO / AlphaZero training, the
-float observation vector, the libtorch self-play actor, the TUI and GUI) has been archived: it
-lives on branch `archive/rl-stack` (tag `rl-stack-final`, if created; commit `cf7f97f` is the last
-one with both stacks). `docs/engine_fork_plan.md` is the plan this repo follows from here (a single
-decision schedule and a C++ CLI on the state decoder, then a C++ featurizer and in-process actor
-for learned models).
+**Decks.** The playable decks are under `bin/resources/decks/`:
+
+- the top-level decks;
+- `league/`: the 26 training decks;
+- `heldout/`: four decks never trained on.
+
+Every card in them is implemented. `candidates/` holds onboarding status files, and `tests/` holds
+the mechanic fixture decks. Cards outside `src/card_vocab.h` are considered unimplemented, and rules
+fidelity is not guaranteed for them. `todo.md` lists open engine correctness items, and
+`docs/rules_deviations.md` lists the known deviations from the Comprehensive Rules (checked in at
+`docs/mtg_comprehensive_rules.txt`).
+
+The earlier reinforcement-learning stack (PPO and AlphaZero training, a float observation vector, a
+TUI and a GUI) is archived on branch `archive/rl-stack`.
 
 ## Prereqs
 
-- A C++17 compiler and GNU make (tested on Linux and macOS; the engine is C++17 + the standard
-  library).
-- `python3` (3.10+, standard library only; CI uses 3.12) for card-script provisioning, the agent
-  driver, the corpus recorder and the gate's `smoke` tier. No venv, no packages.
+- A C++17 compiler and GNU make (tested on Linux and macOS). The engine needs only the standard
+  library.
+- `python3` (3.10+, standard library only) for card-script provisioning, the agent driver, the
+  scripted agent, the corpus recorder and the gate's `smoke` tier. It needs no venv and no packages.
+- Optional, for learned policies and training:
+  - libtorch, from a torch importable by `python3` or from `LIBTORCH_DIR=…`, for `make actor`;
+  - the learner's own venv: `python3 -m venv learn/.venv && learn/.venv/bin/pip install -r
+    learn/requirements.txt` (torch, numpy and onnx; the pinned torch is a ROCm build).
 
 ## Building
 
-Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts/` (Forge
-format, not tracked in git, pinned to a Forge commit in `tools/forge_fetch/FORGE_PIN`). Fetch them
-first:
+Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts/`. They are in
+Forge format, not tracked in git, and pinned to a Forge commit in `tools/forge_fetch/FORGE_PIN`.
+Fetch them first:
 
 ```bash
-python3 tools/forge_fetch/provision_decks.py   # every vocab card + the league/meta/top-level deck cards + their tokens
-make                  # debug build   -> bin/debug/{robomage,rmknow,robomage_check}
-make BUILD=RELEASE    # optimized     -> bin/release/{robomage,rmknow,robomage_check}
+python3 tools/forge_fetch/provision_decks.py   # every vocab card + the top-level/league/heldout/candidates deck cards + their tokens
+make                  # debug build   -> bin/debug/{robomage,rmknow,rmfeat,robomage_check}
+make BUILD=RELEASE    # optimized     -> bin/release/…
 make check            # the test gate (below)
 ```
 
 Each configuration has its own `bin/<config>/` and `obj/<config>/` tree, so switching needs no
-`make clean`. `bin/<config>/rmknow` runs the knowledge sidecar over a recorded RMSTATE stream.
-`make actor` compiles the libtorch TorchScript evaluator kept for the future in-process actor (no
-binary yet; needs a torch importable by `python3` or `LIBTORCH_DIR=…`).
+`make clean`. The four binaries:
+
+- `robomage`: the engine.
+- `rmknow`: runs the knowledge sidecar over a recorded RMSTATE stream.
+- `rmfeat`: runs the featurizer over a recorded stream (the feature spec, card tables, tensors and
+  learner targets).
+- `robomage_check`: the test gate.
+
+Other targets:
+
+- `make actor`: `robomage_nn` (the engine plus the libtorch `nn:` agents) and `rmserve` (the
+  reference inference server).
+- `make pgo`: a profile-guided release engine.
+- `make registry`: after adding a card, keyword or mechanic, appends to the featurizer's layout
+  registry and card digest.
+- `make regen`: re-records the replay corpus after an intentional behaviour change.
+
+`CLAUDE.md` lists them all.
 
 ## Running games
 
-The engine must be run from `bin/` (it finds `resources/` relative to the working directory).
-`./debug/robomage --help` lists every flag.
+The engine must be run from `bin/`, because it finds `resources/` relative to the working
+directory. `./debug/robomage --help` lists every flag.
 
 ```bash
 cd bin
-./debug/robomage --deck-a delver --deck-b mav                    # interactive: you decide for both seats
+./debug/robomage --player A --agent-b explore --deck-a league/burn --deck-b league/bug   # you (A) vs an agent
+./debug/robomage --deck-a delver --deck-b mav                                           # hotseat
 ./debug/robomage --deck-a league/bug --deck-b league/burn \
-  --agent-a explore --agent-b explore --game-seed 5 --decision-log /tmp/g5.rmlog    # an explore game, logged
-./debug/robomage --replay /tmp/g5.rmlog --machine --narrative     # replay it
+  --agent-a explore --agent-b explore --game-seed 5 --decision-log /tmp/g5.rmlog        # an explore game, logged
+./debug/robomage --replay /tmp/g5.rmlog --machine --narrative                           # replay it
 ```
 
-At the terminal prompt a number selects a choice (every choice is logged); `--player A|B` shows
-hidden information from that seat's view only. Deck names are paths under
-`bin/resources/decks/` without `.dk` (`delver`, `league/ur_delver`). A human seat against an
-agent is plan step 4b's C++ CLI: today a `--player` seat under `--machine` (which any
-`--agent-a/-b` implies) is prompted without its menu being printed.
+At the CLI, a number picks a menu row. `board`, `zone`, `card`, `know`, `log`, `z` (auto-pass),
+`concede` and `help` inspect the game. Deck names are paths under `bin/resources/decks/` without
+`.dk` (`delver`, `league/ur_tempo`). `--bo3` plays a match with sideboarding.
 
-**Agent games with the scripted agent** go through the stdlib-only driver, from the repo root:
+**Agent games with the scripted agent** go through the stdlib-only driver, run from the repo root:
 
 ```bash
 python3 python/rm_driver.py --player-a scripted --player-b explore \
   --deck-a league/bug --deck-b league/burn --format bo1 --games 10
-python3 python/rm_driver.py --player-a scripted --player-b scripted \
-  --deck-a league/ur_delver --deck-b league/gw_maverick --verbose --out match.txt   # a bo3 match, full transcript
+python3 python/rm_driver.py --player-a scripted:hard+sb --player-b scripted:hard+sb \
+  --deck-a league/ur_tempo --deck-b league/eldrazi_aggro --verbose --out match.txt   # a bo3 match, full transcript
 ```
 
-Agents: `scripted` (hard), `scripted:easy` / `greedy`, `scripted:random`, `explore`,
-`explore:patient`, `first`, `actions:<i,i,…>`. `--help` lists the flags;
-[`docs/game_running.md`](docs/game_running.md) covers the driver, the in-process agents, `--play`
-scripts and decision logs.
+The driver's agents:
 
-**Sculpted positions** (testing a card or a rule): the engine's test-setup presets and `--play`
-specs, e.g.
+- `scripted` (the hard tier);
+- `scripted:hard+sb`, which sideboards per the league guides in `docs/sideboard_guides.md`;
+- `scripted:easy`, `greedy` and `scripted:random`;
+- `explore` and `explore:patient`;
+- `first` and `actions:<i,i,…>`.
+
+`--help` lists the flags. [`docs/game_running.md`](docs/game_running.md) covers the driver, the
+in-process agents, `--play` scripts and decision logs.
+
+**Sculpted positions** (for testing a card or a rule) use the engine's test-setup presets and
+`--play` specs, for example:
 
 ```bash
 cd bin
@@ -100,25 +134,57 @@ cd bin
 
 ## The state format and the knowledge sidecar
 
-- [`docs/state_format.md`](docs/state_format.md) — RMSTATE: visibility, handles, the snapshot
-  tables, observation events, the encoding, the `--machine` protocol, the self-checks, and its
-  decision register. The format describes itself in a SCHEMA frame; the decoders (C++
-  `src/state_format/decode.h`, Python `python/rmstate.py`) are built from it.
-- [`docs/knowledge_store.md`](docs/knowledge_store.md) — the knowledge sidecar
-  (`src/knowledge/`): levels `off` / `expert` / `expert+belief`, the model, the update rules, the
-  `k_*` / `b_*` tables, the verification.
+- [`docs/state_format.md`](docs/state_format.md): RMSTATE. Covers visibility, handles, the snapshot
+  tables, observation events, the encoding, the `--machine` protocol and the self-checks. The format
+  describes itself in a SCHEMA frame, and the decoders (C++ `src/state_format/decode.h`, Python
+  `python/rmstate.py`) are built from it.
+- [`docs/knowledge_store.md`](docs/knowledge_store.md): the knowledge sidecar (`src/knowledge/`).
+  Covers the levels `off` and `expert`, the model, the update rules, the `k_*` tables and the
+  verification.
 
-`--rmstate-dump FILE` writes every viewer's frames beside any game (`--state-dump json` adds a
-JSON line per frame); `python3 python/rmstate.py dump FILE` prints them.
+`--rmstate-dump FILE` writes every viewer's frames beside any game, and `--state-dump json` adds a
+JSON line per frame. `python3 python/rmstate.py dump FILE` prints them.
+
+## Learned policies and training
+
+- [`docs/featurizer.md`](docs/featurizer.md): the featurizer (`src/featurize/`, `rmfeat`). Covers
+  the feature spec, the card, ability and text tables, the network contract, and the layout registry
+  that lets checkpoints load across vocab growth.
+- [`docs/trajectory_format.md`](docs/trajectory_format.md): the episodes `--trajectory-out` writes.
+- [`docs/actor.md`](docs/actor.md): the continuous actor (`--actor`), its schedule, and its status
+  and results files.
+- [`docs/inference_protocol.md`](docs/inference_protocol.md): remote evaluation (`nn:remote:`,
+  `rmserve`, the learner's server).
+- [`docs/rmtrain.md`](docs/rmtrain.md) and [`learn/README.md`](learn/README.md): `learn/rmtrain`,
+  the R-NaD training program. It covers runs under `runs/<name>`, the phases B0–B5, evaluation, the
+  end-of-run benchmark, and adding decks to a run.
+
+New decks enter through the onboarding pipeline (`tools/onboard/`, its README): scrape, parse
+report, engine work, vocab, fuzz, then designation to `league/` or `heldout/`.
 
 ## The test gate
 
-`make check` builds and runs every tier of `bin/debug/robomage_check`: deck/vocab check,
-concessions, the rules-regression scenarios (`tests/scenarios/`), the byte-identical replay corpus
-(`tests/corpus/`), the state format's and the knowledge sidecar's self-checks, an explore fuzz, a
-throughput bench and scripted-agent smoke games (about 5 minutes on 4 cores). CI runs exactly
-it; a nightly workflow runs a deep fuzz over every league matchup. After an intentional behavior
-change, `make regen` re-records the corpus. Details: [`docs/ci.md`](docs/ci.md).
+`make check` builds, then runs every tier of `bin/debug/robomage_check`:
 
-Developer notes (architecture, conventions, how to test card behavior, the key-file index):
+- the vocab, layout-registry and parse-report checks;
+- concessions;
+- the rules-regression scenarios (`tests/scenarios/`);
+- the CLI's golden transcripts (`tests/cli/`);
+- the byte-identical replay corpus (`tests/corpus/`);
+- the state format's self-checks;
+- the featurizer;
+- the trajectory writer and teacher channel;
+- the continuous actor;
+- the knowledge sidecar;
+- an explore fuzz over the playable decks, plus the mechanic fixtures' coverage;
+- a throughput bench;
+- scripted-agent smoke games.
+
+It takes about 6 minutes on 4 cores, and CI runs exactly it. A nightly workflow runs a deep fuzz.
+
+The `actor` tier (`nn:` play, exports, `rmserve`, the checkpoint migration's acceptance) is opt-in.
+It needs `make actor` and `$ROBOMAGE_TORCH_PYTHON`; otherwise it is skipped. Details are in
+[`docs/ci.md`](docs/ci.md).
+
+Developer notes (architecture, conventions, how to test card behaviour, the key-file index) are in
 [`CLAUDE.md`](CLAUDE.md).

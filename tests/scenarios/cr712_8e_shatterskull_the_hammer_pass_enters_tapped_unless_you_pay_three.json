@@ -1,0 +1,29 @@
+{
+  "name": "cr712_8e_shatterskull_the_hammer_pass_enters_tapped_unless_you_pay_three",
+  "why": "CR 712.8e, 614.12: the back face plays as a land: declined it enters tapped; it taps for red.",
+  "hand_a": [
+    "Shatterskull Smashing"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:play:Shatterskull the Hammer Pass",
+    "A:choice:Decline"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Shatterskull, the Hammer Pass enters tapped"
+  ]
+}

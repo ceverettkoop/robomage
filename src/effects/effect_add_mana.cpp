@@ -1,5 +1,6 @@
 #include "effects.h"
 
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -8,6 +9,7 @@
 #include "../cli_output.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../queries/affected.h"
 #include "../svar_eval.h"
 
 extern Game cur_game;
@@ -46,12 +48,52 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         mana_color = ab.def->mana_choices[static_cast<size_t>(choice)];
     }
-    ::add_mana(mana_controller, mana_color, mana_amount);
+    ::add_mana(mana_controller, mana_unit_from(ab, mana_color, ab.source.lki_entity(), /*commit=*/true), mana_amount);
     game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(), mana_amount, mana_symbol(mana_color).c_str());
     return HandlerResult::DONE_RUN_SUBS;
 }
 
+size_t produced_pips(const std::string &value) {
+    size_t pips = 0;
+    for (size_t i = 0; i < value.size(); i += 2) {
+        if (value[i] != value[0] || !std::strchr("WUBRGC", value[i])) return 0;
+        if (i + 1 < value.size() && value[i + 1] != ' ') return 0;
+        pips++;
+    }
+    return pips;
+}
+
+// `ab`'s rider with `set` applied: a mana ability's rider params come one at a time.
+template <class Set>
+static void edit_rider(AbilityDef &ab, Set set) {
+    ManaRider rider = ab.mana_rider ? *ab.mana_rider : ManaRider();
+    set(rider);
+    ab.mana_rider = intern_mana_rider(rider);
+}
+
+// The params of what the mana does to what it is spent on: false for what no reader honours.
+static bool read_rider_param(AbilityDef &ab, const std::string &key, const std::string &value) {
+    if (key == "AddsNoCounter") {
+        if (value == "True") edit_rider(ab, [](ManaRider &r) { r.cant_be_countered = true; });
+        return true;
+    }
+    if (key == "AddsKeywords") {
+        edit_rider(ab, [&value](ManaRider &r) { r.keyword = value; });
+        return value.find(" & ") == std::string::npos;
+    }
+    if (key == "AddsKeywordsValid") {
+        edit_rider(ab, [&value](ManaRider &r) { r.valid = value; });
+        return true;
+    }
+    if (key == "AddsKeywordsUntil") {
+        edit_rider(ab, [](ManaRider &r) { r.until = ManaRider::END_OF_TURN; });
+        return value == "UntilEOT";
+    }
+    return false;
+}
+
 bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &value) {
+    if (key.rfind("Adds", 0) == 0) return read_rider_param(ab, key, value);
     // AB$ ManaReflected (Mox Amber): a mana ability that produces "one mana of any color among"
     // the permanents its Valid$ filter matches (CR 605). Valid$ holds the (controller-scoped)
     // permanent filter whose colors are reflected; ColorOrType$ Color / ReflectProperty$ Is are
@@ -59,7 +101,13 @@ bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &v
     // are validated and consumed here rather than warned as unrecognized.
     if (ab.category == "ManaReflected") {
         if (key == "Valid") {
-            ab.reflected_mana_filter = value;
+            static const std::string kDefined = "Defined.";
+            if (value.rfind(kDefined, 0) == 0) {
+                ab.reflected_mana_objects = parse_object_spec(value.substr(kDefined.size()));
+                if (ab.reflected_mana_objects.is(ObjectSpec::UNREAD)) return false;
+            } else {
+                ab.reflected_mana_filter = value;
+            }
             // ManaReflected adds exactly one mana of the chosen color ("Add one mana of any
             // color among …"); set the amount here so the off-stack mana add and its narrative
             // produce 1, not the default 0.
@@ -109,7 +157,7 @@ bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &v
             else if (c == 'G') { ab.color = GREEN;     break; }
             else if (c == 'C') { ab.color = COLORLESS; break; }
         }
-        ab.amount = default_amount;
+        ab.amount = produced_pips(value) > 1 ? produced_pips(value) : default_amount;
     }
     return true;
 }

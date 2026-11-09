@@ -1,0 +1,47 @@
+{
+  "name": "cr614_12_watery_grave_pays_two_life_enters_untapped",
+  "why": "CR 614.12, 305.7: as Watery Grave enters its controller may pay 2 life; paid, it enters untapped and taps for {U} or {B}, found by its subtype",
+  "hand_a": [
+    "Polluted Delta",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Watery Grave",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Polluted Delta",
+    "A:activate:Polluted Delta",
+    "A:search:Watery Grave",
+    "A:choice:Accept"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "^Player A pays 2 life\\."
+  ],
+  "expect_menu": [
+    "Tap Watery Grave for \\(U\\)",
+    "Tap Watery Grave for \\(B\\)"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "cr101_2_frenzied_baloth_leaves_other_spells_counterable",
+  "why": "CR 101.2: Frenzied Baloth keeps only creature spells its controller controls from being countered: its controller's Lightning Bolt and the opponent's creature spell are countered as ever.",
+  "hand_a": ["Lightning Bolt", "Counterspell"],
+  "library_a": ["Island", "Island"],
+  "battlefield_a": ["Island", "Island", "Mountain", "Frenzied Baloth"],
+  "hand_b": ["Counterspell", "Grizzly Bears"],
+  "library_b": ["Island", "Island", "Island"],
+  "battlefield_b": ["Island", "Island", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Player B", "B:cast:Counterspell", "B:target:Lightning Bolt"],
+  "max_decisions": 12,
+  "expect": ["Lightning Bolt is countered"]
+}

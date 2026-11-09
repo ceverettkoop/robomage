@@ -1,0 +1,41 @@
+{
+  "name": "cr118_3_formidable_speaker_no_card_no_offer",
+  "why": "CR 118.3: with no card in hand Formidable Speaker's trigger offers nothing: the discard can't be paid, and there is no search. Lion's Eye Diamond empties the hand",
+  "hand_a": [
+    "Formidable Speaker",
+    "Lion's Eye Diamond",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lion's Eye Diamond",
+    "A:cast:Formidable Speaker",
+    "A:mana:r"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Formidable Speaker",
+    "Formidable Speaker"
+  ],
+  "expect_menu_not": [
+    "Accept: discard a card"
+  ],
+  "expect_not": [
+    "Searching"
+  ]
+}

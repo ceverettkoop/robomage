@@ -1,0 +1,13 @@
+{
+  "name": "cr608_2b_fused_spell_resolves_with_one_target_left",
+  "why": "CR 608.2b: a spell doesn't resolve only when all its targets are illegal. Mishra's Bauble sacrificed in response leaves Wear's target illegal, and the fused spell still resolves: Tear destroys the enchantment. A spell with its own first target illegal and a chained instruction's target legal (Wear // Tear; Cloak and Dagger, Entwined's trigger).",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Plains"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Mishra's Bauble", "Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Wear // Tear (fused)", "A:target:Mishra's Bauble", "A:target:Sylvan Library", "B:activate:Mishra's Bauble", "B:target:Player A"],
+  "max_decisions": 12,
+  "expect_order": ["Player A casts Wear // Tear", "Sylvan Library is destroyed"],
+  "expect_not": ["Mishra's Bauble is destroyed", "fizzles"]
+}

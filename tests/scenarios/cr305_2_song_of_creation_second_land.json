@@ -1,0 +1,38 @@
+{
+  "name": "cr305_2_song_of_creation_second_land",
+  "why": "CR 305.2: Song of Creation's static gives its controller a second land play: two lands go down in one turn, and a third is not offered",
+  "hand_a": [
+    "Island",
+    "Forest",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Song of Creation"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:play:Island",
+    "A:play:Forest"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "Player A played Island",
+    "Player A played Forest"
+  ],
+  "expect_not": [
+    "Player A played Mountain"
+  ],
+  "expect_menu": [
+    "Forest"
+  ]
+}

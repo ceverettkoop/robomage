@@ -1,0 +1,48 @@
+{
+  "name": "cr605_3a_nurturing_peatland_mana_costs_a_life",
+  "why": "CR 605.3a, 118.3: Nurturing Peatland's mana ability pays 1 life as part of its cost and gives {B} or {G}",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Nurturing Peatland"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:mana:g"
+  ],
+  "max_decisions": 3,
+  "expect_order": [
+    "^Player A pays 1 life",
+    "^Player A tapped Nurturing Peatland for 1\\(G\\)"
+  ],
+  "expect_menu": [
+    "Tap Nurturing Peatland for \\(B\\)",
+    "Tap Nurturing Peatland for \\(G\\)"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

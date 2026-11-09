@@ -1,0 +1,40 @@
+{
+  "name": "cr702_37e_a_permanent_with_no_morph_cost_stays_face_down",
+  "why": "CR 702.37e: a face-down permanent that wouldn't have a morph cost if it were face up can't be turned up this way.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Grizzly Bears"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "face up"
+  ]
+}

@@ -1,0 +1,10 @@
+# M6 (b): mana with provenance.
+# A mana ability from the hand, spent by the auto-payer (Simian Spirit Guide).
+cost:MANA.hand
+cost:EXILE_FROM_HAND.self
+# Sunburst read from the entry's mana list (Engineered Explosives), its counters a replacement.
+row:sunburst
+replacement:ETB_COUNTERS
+# Exert as a cost part and a keyword rider reaching a spell (Arena of Glory).
+cost:EXERT
+row:mana_rider_keyword

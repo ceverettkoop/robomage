@@ -1,0 +1,58 @@
+{
+  "name": "cr702_84a_dragon_engine_unearthed_gains_haste_and_is_exiled_at_the_end_step",
+  "why": "CR 702.84a, 702.4b: returned at sorcery timing it attacks that turn, deals its double strike, and the end step's trigger exiles it",
+  "hand_a": [
+    "Island"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Phyrexian Dragon Engine",
+    "A:desc:Decline",
+    "A:attack:Phyrexian Dragon Engine",
+    "A:attack:done"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Phyrexian Dragon Engine is unearthed",
+    "Phyrexian Dragon Engine deals 2 damage to Player B",
+    "Phyrexian Dragon Engine deals 2 damage to Player B",
+    "Phyrexian Dragon Engine is moved to exile"
+  ],
+  "expect_not": [
+    "TURN 2.*\n.*Phyrexian Dragon Engine attacking"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

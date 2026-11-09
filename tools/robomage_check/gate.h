@@ -54,11 +54,16 @@ class Report {
         std::vector<std::pair<std::string, std::string>> errors_, warnings_;
 };
 
-// The league roster: the stems of decks/league/*.dk, sorted.
-std::vector<std::string> league_decks(const Options &opt);
-// A matchup preset (mirrors | ring | mirrors+ring | all | "a:b,c:d") as (deck_a, deck_b) specs
-// relative to decks/ ("league/<stem>").
+// The playable decks, as specs relative to decks/: decks/league/*.dk then decks/heldout/*.dk, each
+// directory sorted ("league/bug", ..., "heldout/<stem>"). A deck onboarded into either directory
+// (tools/onboard/onboard.py designate) joins every preset below, so the fuzz and smoke tiers play it.
+std::vector<std::string> playable_decks(const Options &opt);
+// A matchup preset (mirrors | ring | mirrors+ring | all, over the playable decks) or an explicit
+// list "a:b,c:d" ("a" alone is a mirror; "a:*" is a against every playable deck) as (deck_a, deck_b)
+// specs relative to decks/ ("league/<stem>", "candidates/<stem>").
 std::vector<std::pair<std::string, std::string>> matchups(const Options &opt, const std::string &preset);
+// True when `preset` is an explicit list rather than one of the named presets.
+bool matchups_explicit(const std::string &preset);
 // The bare deck stem of a spec ("league/bug" → "bug").
 std::string deck_stem(const std::string &spec);
 

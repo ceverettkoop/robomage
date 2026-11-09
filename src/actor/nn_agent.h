@@ -11,7 +11,7 @@
 #include "../featurize/setup.h"
 #include "evaluator.h"
 
-// ── The nn: agent: featurize the seat's frame, evaluate, choose a menu row (plan step 5d) ─────
+// ── The nn: agent: featurize the seat's frame, evaluate, choose a menu row ──────────────────
 //
 // docs/featurizer.md §6. Specs (agents/agent.h; registered by the actor binary,
 // bin/<config>/robomage_nn, with register_nn_agent):
@@ -19,8 +19,8 @@
 //   nn:<model>[:<key>=<value>…]            evaluate in process
 //   nn:remote:<endpoint>[:<key>=<value>…]  evaluate on an inference server at the Unix socket
 //                                          <endpoint> (remote_evaluator.h,
-//                                          docs/inference_protocol.md: rmserve, the training
-//                                          plan's GPU server)
+//                                          docs/inference_protocol.md: rmserve, or a
+//                                          training run's GPU server)
 //
 //   <model>      a TorchScript (.ts.pt) or AOTInductor (.pt2) export of the network contract
 //                (evaluator.h), relative to the engine's working directory (bin/)

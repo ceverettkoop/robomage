@@ -1,0 +1,48 @@
+{
+  "name": "cr708_2a_a_face_down_strix_is_a_2_2_with_no_abilities",
+  "why": "CR 708.2a, 708.3, 708.5: Baleful Strix face down is a 2/2 with no flying, no deathtouch and no draw as it enters. Its controller sees the card; the other player sees the object, its 2/2 and nothing of the card.",
+  "hand_a": [
+    "Mountain",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "face_down_a": [
+    "Baleful Strix"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Baleful Strix"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Face-down creature deals 2 damage to Player B \\(now at 18 life\\)"
+  ],
+  "expect_not": [
+    "Baleful Strix"
+  ],
+  "expect_dump": [
+    "^A .*face_down self BATTLEFIELD card=Baleful Strix pt=2/2 types=[0-9]+ mv=0 subtypes=0 keywords=0 abilities=0$",
+    "^B .*face_down opp BATTLEFIELD card=none pt=2/2 types=[0-9]+ mv=0 subtypes=0 keywords=0 abilities=0$",
+    "^B .*pool opp face_down size=1"
+  ],
+  "expect_dump_not": [
+    "^B .*face_down .*card=[^n]",
+    "^B .*seen opp Baleful Strix"
+  ]
+}

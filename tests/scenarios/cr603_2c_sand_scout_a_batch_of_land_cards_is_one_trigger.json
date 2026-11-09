@@ -1,0 +1,39 @@
+{
+  "name": "cr603_2c_sand_scout_a_batch_of_land_cards_is_one_trigger",
+  "why": "CR 603.2c, Mode$ ChangesZoneAll: \"one or more land cards\" is one trigger for a batch, and from the library as from anywhere: Stitcher's Supplier mills three lands for one Sand Warrior. Only A's cards count, a Grizzly Bears among them doesn't matter.",
+  "hand_a": [
+    "Stitcher's Supplier",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Grizzly Bears",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Sand Scout",
+    "Swamp"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stitcher's Supplier"
+  ],
+  "max_decisions": 8,
+  "expect_count": {
+    "Sand Scout triggered": 1
+  }
+}

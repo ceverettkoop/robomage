@@ -26,16 +26,20 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../coverage.h"
 #include "../game_driver.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/copies.h"
 #include "../queries/counters.h"
 #include "../queries/delayed_triggers.h"
 #include "../queries/entry.h"
 #include "../queries/filters.h"
 #include "../queries/keywords.h"
 #include "../queries/players.h"
+#include "../queries/prepared.h"
 #include "../queries/types.h"
+#include "../queries/static_conditions.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -48,19 +52,34 @@
 #include "replacement_effects.h"
 #include "continuous_effects.h"
 #include "../effects/effects.h"
+#include "../queries/activation.h"
+#include "../queries/affected.h"
 #include "orderer.h"
 #include "../state_format/events.h"
 
 // Forward declaration (defined below): is this Affected$ a general permanent filter
-// (anthem-style class) vs the single-target EquippedBy / Self / no-filter forms? Shared by
+// (anthem-style class) vs the single-target Self / no-filter forms? Shared by
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
+// Does cost static `sa`, controlled by `controller`, apply to a spell `caster` casts (Activator$)?
+static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership controller, Zone::Ownership caster);
 static bool affected_is_general_filter(const std::string &aff);
+static bool static_is_general(const StaticAbility &sa);
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities);
-static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const std::string &aff, const EntitySet &entities);
+static std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
+static bool static_defined_covers(const ActiveStatic &as, Entity e);
+static bool object_in_affected_zone(const StaticAbility &sa, Entity e);
+static MatchCtx static_match_ctx(const ActiveStatic &as);
+static bool printed_object_matches(const ActiveStatic &as, Entity e);
+static std::string strip_named_card_qualifier(const std::string &filter);
+static std::set<Colors> added_colors(const ActiveStatic &as);
+static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for);
+static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked);
+static void choose_copy_on_entry(Entity entity, const CardData &card, const EntitySet &entities, bool *parked);
+static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
+static void keep_spell_keywords(Creature &creature, const std::vector<std::string> &keywords);
 static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm);
 static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm);
 static void enter_attacking_if_recorded(Entity entity);
@@ -74,8 +93,6 @@ struct TypeEffect {
     const std::vector<Type> *animate_types = nullptr;
     bool animate_creature = false;
 };
-static std::vector<Type> parse_self_added_types(const std::string &spec);
-static std::vector<Type> types_added_by_static(const StaticAbility &sa);
 static bool is_type_changing_static(const StaticAbility &sa);
 static std::set<Type> copiable_type_line(Entity e, const Permanent &perm);
 static size_t static_timestamp(const ActiveStatic &a);
@@ -85,9 +102,15 @@ static void apply_type_effect(const TypeEffect &te, const EntitySet &entities);
 static void collect_animate_type_effects(Entity entity, const Permanent &perm,
                                          std::vector<TypeEffect> &out);
 static void sync_self_animate_creature(const ActiveStatic &a);
-static bool affected_is_attached_target(const std::string &aff);
+static bool affected_is_attached_target(const StaticAbility &sa);
 static void remerge_animate_granted_abilities(Entity entity);
 static const char *zone_display_name(Zone::ZoneValue loc);
+template <typename Fn>
+static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Fn &&fn);
+static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target);
+
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities);
+static void grant_ability(Entity e, Ability copy);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -109,7 +132,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
         AbilityDef d;
         d.ability_type = AbilityDef::TRIGGERED;
         d.category = "ChangeZone";
-        d.defined_remembered = true;
+        d.defined = ObjectSpec(ObjectSpec::REMEMBERED);
         d.origin = Zone::BATTLEFIELD;
         d.destination = Zone::EXILE;
         return d;
@@ -159,9 +182,9 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
 // scoped via Zone::owner here and stripped before the type/characteristic match), mirroring
 // evaluate_present_condition's owner handling. `controller` is the static source's controller
 // (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
-static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
+static bool static_present_condition_met(const FilterSpec &spec, const std::string &zone_str,
     const std::string &compare_in, Zone::Ownership controller, Entity source, const EntitySet &entities) {
-    if (filter.empty()) return true;
+    if (spec.empty()) return true;
     std::string compare = compare_in.empty() ? "GE1" : compare_in;
 
     // Default zone is the battlefield (Forge convention when PresentZone$ is omitted).
@@ -183,13 +206,14 @@ static bool static_present_condition_met(const std::string &filter, const std::s
         // against a permanent's live controller/owner, so the original filter is passed through
         // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
         // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
-        count = count_battlefield_matching(filter, controller, source);
+        count = count_battlefield_matching(spec, controller, source);
     } else {
         // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
         // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
         // card_matches_filter has no owner/controller token, so split those off and check them
         // against Zone::owner here, passing only the characteristic portion to the matcher.
         bool you = false, opp = false;
+        const std::string &filter = spec.text();
         std::string type_filter;
         {
             bool first = true;
@@ -210,21 +234,34 @@ static bool static_present_condition_met(const std::string &filter, const std::s
         Zone::Ownership owner_req = you ? controller
                                  : opp ? opponent_of(controller)
                                        : Zone::UNKNOWN;
+        const FilterSpec characteristics(type_filter);
         for (auto e : entities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             const auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != zone) continue;
             if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (!card_matches_filter(e, type_filter, ctx)) continue;
+            if (!card_matches_filter(e, characteristics, ctx)) continue;
             count++;
         }
     }
     return compare_svar(count, compare);
 }
 
+static bool cost_static_reaches(const StaticAbility &sa, Zone::Ownership controller, Zone::Ownership caster) {
+    switch (sa.cost_activator) {
+        case StaticAbility::CostActivator::CONTROLLER:
+            return caster == controller;
+        case StaticAbility::CostActivator::NOT_ACTIVE:
+            return caster != active_seat();
+        case StaticAbility::CostActivator::ANYONE:
+            break;
+    }
+    return true;
+}
+
 int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
-    bool is_creature = is_creature_card(card_data);
+    bool is_creature = is_creature_card(off_battlefield_face(card_data));
     // Caster's spells already cast this turn — the "other spells" the relative surcharge counts
     // (Damping Sphere). Evaluated once; 0 when the caster is unknown or has no Player component.
     int spells_cast_this_turn = 0;
@@ -238,6 +275,7 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa()->category != "RaiseCost") continue;
+        if (!cost_static_reaches(*as.sa(), as.controller, caster)) continue;
         if (as.sa()->raise_cost_filter == "nonCreature" && is_creature) continue;
         if (as.sa()->match_named_card) {
             if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
@@ -254,32 +292,87 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
 
 // Number of artifacts `caster` controls on the battlefield (Affinity count, CR 702.41).
 static int artifacts_controlled_by(Zone::Ownership caster) {
-    return count_battlefield_matching("Artifact.YouCtrl", caster, 0);
+    static const FilterSpec artifacts_you_control("Artifact.YouCtrl");
+    return count_battlefield_matching(artifacts_you_control, caster, 0);
+}
+
+// Call fn(static, its controller) for each ReduceCost static that reduces the cost of casting
+// `card_data` for player `caster`, its ValidTarget$ condition aside: the active battlefield statics
+// whose Activator$ and ValidCard$ admit the spell (Eye of Ugin; an Activator$ You static only
+// reduces spells cast by its own controller), and the card's own Card.Self statics (Mystical
+// Dispute), controlled by its caster. `from` is the zone the spell is cast from.
+template <typename Fn>
+static void for_each_cost_reduction(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from, Fn &&fn) {
+    MatchCtx cast_ctx;
+    cast_ctx.cast_from = from;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
+        const StaticAbility &sa = *as.sa();
+        if (sa.category != "ReduceCost" || sa.reduce_cost_self) continue;
+        if (!cost_static_reaches(sa, as.controller, caster)) continue;
+        // An empty filter means the reduction applies to every spell (no characteristic gate).
+        if (!sa.reduce_cost_filter.empty()) {
+            if (!card_matches_filter(off_battlefield_face(card_data), sa.reduce_cost_filter, cast_ctx)) continue;
+        }
+        fn(sa, as.controller);
+    }
+    for (const StaticAbility &sa : card_data.static_abilities)
+        if (sa.self_reduction_functions()) fn(sa, caster);
+}
+
+// Does `target` satisfy ReduceCost static `sa`'s ValidTarget$ filter, read from the static's
+// controller (`controller`) for YouCtrl / OppCtrl?
+static bool reduction_target_matches(const StaticAbility &sa, Zone::Ownership controller, Entity target) {
+    if (target == 0) return false;
+    MatchCtx ctx;
+    ctx.controller = controller;
+    return object_matches_filter(target, sa.reduce_cost_valid_target, ctx);
 }
 
 // Total generic mana that active ReduceCost statics remove from the cost of casting
 // `card_data` for player `caster` (the mirror of active_raise_cost_for). Each ReduceCost
-// static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f); an
-// Activator$ You static only reduces spells cast by its own controller. The caller clamps
+// static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f). A static
+// with a ValidTarget$ condition is left to target_cost_reduction_for. The caller clamps
 // the generic portion at zero and never reduces colored pips.
-int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from) {
     int total = 0;
-    for (const auto &as : g_active_statics) {
-        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa()->category != "ReduceCost") continue;
-        if (as.sa()->reduce_cost_you_only && as.controller != caster) continue;
-        // An empty filter means the reduction applies to every spell (no characteristic gate).
-        if (!as.sa()->reduce_cost_filter.empty()) {
-            // Seed any static mana-value qualifier (It That Heralds the End's cmcGE7) into the
-            // MatchCtx — the evaluator defers cmc comparators to ctx.cmc_bound, so without this
-            // the bound is silently ignored and every colorless spell would be reduced.
-            MatchCtx ctx;
-            extract_static_cmc_bound(as.sa()->reduce_cost_filter, ctx);
-            if (!card_matches_filter(card_data, as.sa()->reduce_cost_filter, ctx)) continue;
-        }
-        total += as.sa()->reduce_cost;
-    }
+    for_each_cost_reduction(card_data, caster, from, [&total](const StaticAbility &sa, Zone::Ownership) {
+        if (sa.reduce_cost_valid_target.empty()) total += sa.reduce_cost;
+    });
     return total;
+}
+
+int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster, const std::vector<Entity> &targets) {
+    int total = 0;
+    // The one static with a ValidTarget$ doesn't ask where its spell is cast from.
+    for_each_cost_reduction(card_data, caster, Zone::HAND, [&](const StaticAbility &sa, Zone::Ownership controller) {
+        if (sa.reduce_cost_valid_target.empty()) return;
+        for (Entity t : targets)
+            if (reduction_target_matches(sa, controller, t)) {
+                total += sa.reduce_cost;
+                return;
+            }
+    });
+    return total;
+}
+
+bool has_target_cost_reduction(const CardData &card_data, Zone::Ownership caster) {
+    bool any = false;
+    for_each_cost_reduction(card_data, caster, Zone::HAND, [&any](const StaticAbility &sa, Zone::Ownership) {
+        if (!sa.reduce_cost_valid_target.empty()) any = true;
+    });
+    return any;
+}
+
+void reduce_generic_cost(ManaValue &cost, int amount, const CardData &card_data) {
+    if (amount <= 0) return;
+    while (amount-- > 0) {
+        auto it = cost.find(GENERIC);
+        if (it == cost.end()) break;
+        cost.erase(it);
+    }
+    const int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
 }
 
 int active_cost_floor_for(const CardData &card_data) {
@@ -290,9 +383,7 @@ int active_cost_floor_for(const CardData &card_data) {
         if (as.sa()->category != "SetCost" || !as.sa()->set_cost_raise_to) continue;
         // An empty filter means the floor applies to every spell (Trinisphere: ValidCard$ Card).
         if (!as.sa()->set_cost_filter.empty()) {
-            MatchCtx ctx;
-            extract_static_cmc_bound(as.sa()->set_cost_filter, ctx);
-            if (!card_matches_filter(card_data, as.sa()->set_cost_filter, ctx)) continue;
+            if (!card_matches_filter(off_battlefield_face(card_data), as.sa()->set_cost_filter, MatchCtx{})) continue;
         }
         floor = std::max(floor, as.sa()->set_cost_min);
     }
@@ -301,11 +392,9 @@ int active_cost_floor_for(const CardData &card_data) {
 
 StaticAbility *ActiveStatic::sa() const {
     static StaticAbility inert;
-    if (emblem >= 0) {
-        if (static_cast<size_t>(emblem) < cur_game.resolved_effects.emblems.size()) {
-            auto &list = cur_game.resolved_effects.emblems[static_cast<size_t>(emblem)].statics;
-            if (index < list.size()) return &list[index];
-        }
+    if (effect_object >= 0) {
+        if (EffectObject *object = cur_game.resolved_effects.find(effect_object))
+            if (index < object->statics.size()) return &object->statics[index];
     } else if (is_battlefield_permanent(entity)) {
         auto &list = global_coordinator.GetComponent<Permanent>(entity).static_abilities;
         if (index < list.size()) return &list[index];
@@ -315,38 +404,6 @@ StaticAbility *ActiveStatic::sa() const {
     // writes its bookkeeping fields (applied) never leaks state into the next stale entry.
     inert = StaticAbility{};
     return &inert;
-}
-
-// Resolve the battlefield permanents a continuous static's Affected$ filter designates
-// (declared in state_manager.h). The EquippedBy / Self forms target a single creature that
-// the layer appliers resolve directly (equipped_to / the source), so this returns empty for
-// them and for an empty filter; every other Affected$ value (e.g. "Creature.Colorless+
-// Other+YouCtrl") is a permanent filter matched through permanent_matches_filter with the
-// static's controller as the YouCtrl reference and the source permanent as the .Other
-// self-exclusion seam. A static numeric mana-value qualifier (cmcGE7) in the filter is seeded
-// into the MatchCtx so the comparator is honoured rather than silently passing.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities) {
-    return permanents_matching_static_filter(as, as.sa()->affected, entities);
-}
-
-// The battlefield permanents a general Affected$-style `aff` filter of static `as` designates,
-// evaluated with the static's controller and source (the shared body of
-// affected_permanents_for_static, also used with a qualifier-stripped filter by
-// ability_grant_targets).
-static std::vector<Entity> permanents_matching_static_filter(
-    const ActiveStatic &as, const std::string &aff, const EntitySet &entities) {
-    std::vector<Entity> out;
-    // EquippedBy / Self / no-filter forms are single-target (the layer appliers resolve them
-    // directly); only a general permanent filter fans out here. Shared predicate so this and
-    // the layer-6/7 appliers agree on which statics are general.
-    if (!affected_is_general_filter(aff)) return out;
-    MatchCtx ctx;
-    ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
-    ctx.source = as.entity;           // .Other self-exclusion
-    extract_static_cmc_bound(aff, ctx);
-    for (auto e : entities)
-        if (permanent_matches_filter(e, aff, ctx)) out.push_back(e);
-    return out;
 }
 
 // Parse a SetColor$ spec into a color set (CR 105.2/202.2). "Colorless" — or an empty/unrecognized
@@ -370,9 +427,10 @@ static std::set<Colors> parse_setcolor_spec(const std::string &spec) {
     return out;
 }
 
-// Does a SetColor$ static's AffectedZone$ reach a card currently in `zone`? "All" = every zone;
-// empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone list.
-static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
+// Does a continuous static's AffectedZone$ `az` reach a card currently in `zone`? "All" = every
+// zone; empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone
+// list. `has_zone` false (an object with no Zone) matches "All" only.
+static bool affected_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
     if (az == "All") return true;
     if (az.empty()) return has_zone && zone == Zone::BATTLEFIELD;  // Forge default for a continuous static
     if (!has_zone) return false;
@@ -396,8 +454,8 @@ static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, b
 // Non-recursive test of a SetColor$ static's Affected$ filter against a battlefield TOKEN
 // permanent (CR 111.1: a token is not a card, so it has no CardData and the card_matches_filter
 // path can't read it). permanent_matches_filter WOULD read it, but it reads effective_colors,
-// which is exactly the caller of setcolor_override_for — so using it here would recurse
-// (effective_colors → setcolor_override_for → permanent_matches_filter → effective_colors). So a
+// which is exactly the caller of apply_color_statics — so using it here would recurse
+// (effective_colors → apply_color_statics → permanent_matches_filter → effective_colors). So a
 // token is matched WITHOUT consulting its color:
 //   • head "Card" / "Permanent" matches any battlefield permanent; a type name matches if the
 //     token carries that type/subtype (Permanent::types).
@@ -446,54 +504,69 @@ static bool setcolor_filter_matches_token(const std::string &aff, const Permanen
     return true;
 }
 
-// Layer-5 (CR 613.1e / 612) global color-changing override — see queries/characteristics.h. Scans the active-
-// statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
-// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
-// the match is done against the card's PRINTED characteristics (card_matches_filter) so this never
-// recurses back into effective_colors; a battlefield TOKEN permanent (no CardData) is matched by
-// setcolor_filter_matches_token, a deliberately color-free type/controller test, for the same
-// recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
-bool setcolor_override_for(Entity e, std::set<Colors> &out) {
-    if (g_active_statics.empty()) return false;
-    bool has_card = global_coordinator.entity_has_component<CardData>(e);
-    bool is_token_perm = !has_card &&
-                         global_coordinator.entity_has_component<Token>(e) &&
-                         is_battlefield_permanent(e);
-    if (!has_card && !is_token_perm) return false;
-    Zone::ZoneValue zone = Zone::LIBRARY;
-    bool has_zone = global_coordinator.entity_has_component<Zone>(e);
-    if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
-    for (const auto &as : g_active_statics) {
-        if (as.suppressed || !as.condition_met) continue;
-        if (as.sa()->category != "Continuous" || as.sa()->set_color.empty()) continue;
-        if (!setcolor_zone_matches(as.sa()->affected_zone, zone, has_zone)) continue;
-        if (has_card) {
-            MatchCtx ctx;
-            ctx.controller = as.controller;
-            ctx.source = as.entity;
-            extract_static_cmc_bound(as.sa()->affected, ctx);
-            if (!card_matches_filter(e, as.sa()->affected, ctx)) continue;
-        } else {
-            // Battlefield token permanent: recursion-safe type/controller filter match.
-            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (!setcolor_filter_matches_token(as.sa()->affected, perm, as.controller)) continue;
-        }
-        out = parse_setcolor_spec(as.sa()->set_color);
-        return true;
-    }
-    return false;
+// The colors static `sa` of `as` adds: its AddColor$ list, or the color its source chose (none until
+// it has chosen).
+static std::set<Colors> added_colors(const ActiveStatic &as) {
+    const StaticAbility &sa = *as.sa();
+    if (sa.add_color != "ChosenColor") return parse_setcolor_spec(sa.add_color);
+    if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
+    const Colors chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_color;
+    return chosen == NO_COLOR ? std::set<Colors>{} : std::set<Colors>{chosen};
 }
 
-bool any_mana_as_any_color_active() {
+// Layer 5 (CR 613.1e) — see queries/characteristics.h. A static reaches `e` through its AffectedZone$
+// and Affected$; for a real card the match is against its PRINTED characteristics
+// (card_matches_printed) so this never recurses back into effective_colors or the filter's card view,
+// and a battlefield TOKEN permanent (no CardData) is matched by setcolor_filter_matches_token, a
+// deliberately color-free type/controller test, for the same recursion-safety reason. The effects
+// apply in timestamp order (CR 613.7), so a color added after a set stays and one added before is
+// overwritten.
+bool apply_color_statics(Entity e, std::set<Colors> &colors) {
+    if (g_active_statics.empty()) return false;
+    if (!global_coordinator.entity_has_component<CardData>(e) &&
+        !(global_coordinator.entity_has_component<Token>(e) && is_battlefield_permanent(e)))
+        return false;
+    std::vector<const ActiveStatic *> effects;
+    for (const auto &as : g_active_statics) {
+        const StaticAbility &sa = *as.sa();
+        if ((sa.set_color.empty() && sa.add_color.empty()) || as.suppressed || !as.condition_met) continue;
+        if (sa.category != "Continuous") continue;
+        if (static_reaches(as, e, StaticRead::PRINTED)) effects.push_back(&as);
+    }
+    std::stable_sort(effects.begin(), effects.end(), [](const ActiveStatic *x, const ActiveStatic *y) {
+        return static_timestamp(*x) < static_timestamp(*y);
+    });
+    for (const ActiveStatic *as : effects) {
+        if (!as->sa()->set_color.empty()) colors = parse_setcolor_spec(as->sa()->set_color);
+        const std::set<Colors> added = added_colors(*as);
+        if (!added.empty()) coverage_row("add_color");
+        colors.insert(added.begin(), added.end());
+    }
+    return !effects.empty();
+}
+
+// Does ManaConvert static `as` reach a payment for `paid_for`? An activation is paid by the controller
+// of what it is activated from (CR 602.2), so that is who ValidPlayer$ You asks about.
+static bool mana_convert_reaches(const ActiveStatic &as, ManaPayee paid_for) {
+    const StaticAbility &sa = *as.sa();
+    if (sa.mana_convert_activated && paid_for.purpose != ManaPurpose::ACTIVATE) return false;
+    if (sa.mana_convert_you && source_controller(paid_for.entity) != as.controller) return false;
+    if (sa.mana_convert_card.empty()) return true;
+    if (!object_matches_filter(paid_for.entity, sa.mana_convert_card, static_match_ctx(as))) return false;
+    coverage_row("mana_convert_scoped");
+    return true;
+}
+
+bool any_mana_as_any_color_active(const ManaPayee &paid_for) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed || !as.condition_met) continue;
         if (as.sa()->category != "ManaConvert") continue;
-        if (as.sa()->mana_conversion == "AnyType->AnyColor") return true;
+        if (as.sa()->mana_conversion == "AnyType->AnyColor" && mana_convert_reaches(as, paid_for)) return true;
     }
     return false;
 }
 
-ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from) {
     ManaValue cost = card_data.mana_cost;
     int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
@@ -501,7 +574,7 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     // static. Applied after additions (CR 601.2f); only generic pips removed (never a colored
     // pip — CR 118.7), never below 0. Caster-gated for Activator$ You statics.
     if (caster != Zone::UNKNOWN) {
-        int reduce_total = active_reduce_cost_for(card_data, caster);
+        int reduce_total = active_reduce_cost_for(card_data, caster, from);
         while (reduce_total-- > 0) {
             auto it = cost.find(GENERIC);
             if (it == cost.end()) break;
@@ -528,8 +601,8 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     return cost;
 }
 
-ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
-                                Zone::Ownership caster) {
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana, Zone::Ownership caster,
+                                Zone::ZoneValue from, int hybrid_pips) {
     // The alternative cost SUBSTITUTES for the printed mana cost (CR 601.2b); cost increases
     // and the SetCost floor then apply ON TOP (CR 601.2f) — the same ordering as
     // effective_base_cost, just against the substituted mana instead of the printed cost.
@@ -541,10 +614,14 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
     // via the shared active_raise_cost_for; the per-spell surcharge needs the casting player.
     int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // Cost reductions apply to an alternative cost as to any other (CR 118.9d): only generic pips,
+    // after the increases (Bilbo: a flashback costs {1} less).
+    for (int reduce = active_reduce_cost_for(card_data, caster, from); reduce > 0 && cost.count(GENERIC) > 0; reduce--)
+        cost.erase(cost.find(GENERIC));
     // SetCost floor (Trinisphere): applied LAST — after the increase (601.2f). Colored pips stay;
     // only generic is added to raise a sub-floor total.
     int floor = active_cost_floor_for(card_data);
-    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
+    while (static_cast<int>(cost.size()) + hybrid_pips < floor) cost.insert(GENERIC);
     return cost;
 }
 
@@ -557,41 +634,152 @@ static void regrant_later_keywords(
     Entity entity, const Permanent &perm, Creature &cr, size_t removal_ts, const EntitySet &entities);
 
 // Is this Affected$ filter a *general* permanent filter (an anthem-style class like
-// "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
-// no-filter forms? The general forms are resolved through affected_permanents_for_static
+// "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target Self / no-filter
+// forms? The general forms are resolved through affected_permanents_for_static
 // (which buffs/grants to every matching permanent); the single-target forms keep the source/
 // equipped-creature path. Shared by the layer-6 keyword-grant pass and the layer-7 P/T pass so
 // both agree on which statics fan out across the affected set (CR 613 layers 6 / 7c).
-// An attached-permanent static buffs the single object it is attached to: equipment uses the
-// "EquippedBy" filter and Auras use "EnchantedBy" (CR 303). Both resolve to the source
-// permanent's equipped_to link (auras reuse the same attachment field), so the layer appliers
-// treat them identically — single-target, not a general fan-out filter.
-static bool affected_is_attached_target(const std::string &aff) {
-    return aff.find("EquippedBy") != std::string::npos ||
-           aff.find("EnchantedBy") != std::string::npos;
+static bool affected_is_general_filter(const std::string &aff) {
+    return !aff.empty() && aff.find("Self") == std::string::npos;
 }
 
-static bool affected_is_general_filter(const std::string &aff) {
-    return !aff.empty() &&
-           !affected_is_attached_target(aff) &&
-           aff.find("Self") == std::string::npos;
+// A static fans out over its filter only when it names no one object.
+static bool static_is_general(const StaticAbility &sa) {
+    return sa.affected_defined.is(ObjectSpec::DEFAULT) && affected_is_general_filter(sa.affected);
+}
+
+// An attached-permanent static buffs the single object it is attached to: AffectedDefined$
+// Equipped for equipment and Enchanted for Auras (CR 303), both over the source permanent's
+// equipped_to link (auras reuse the same attachment field), so the layer appliers treat them
+// identically — single-target, not a general fan-out filter.
+static bool affected_is_attached_target(const StaticAbility &sa) {
+    return sa.affected_defined.is(ObjectSpec::EQUIPPED) || sa.affected_defined.is(ObjectSpec::ENCHANTED);
+}
+
+// Strip the ".NamedCard" qualifier from an Affected$ filter, returning the remaining filter
+// (e.g. "Land.NamedCard" -> "Land", "Land.NamedCard+YouCtrl" -> "Land.YouCtrl"). The NamedCard
+// match is handled out-of-band against the source permanent's chosen_name (mirroring
+// active_raise_cost_for), because the shared qualifier evaluator has no NamedCard token.
+static std::string strip_named_card_qualifier(const std::string &filter) {
+    // The head (before the first '.'/'+') is always kept; each subsequent '.'/'+' token is
+    // kept with its preceding separator unless it is the NamedCard qualifier being dropped.
+    size_t head_end = filter.find_first_of(".+");
+    std::string out = filter.substr(0, head_end);
+    size_t p = head_end;
+    while (p != std::string::npos && p < filter.size()) {
+        char sep = filter[p];                       // the '.' or '+' separator
+        size_t nx = filter.find_first_of(".+", p + 1);
+        size_t tok_end = (nx == std::string::npos) ? filter.size() : nx;
+        std::string tok = filter.substr(p + 1, tok_end - (p + 1));
+        if (tok != "NamedCard") out += sep + tok;
+        p = nx;
+    }
+    return out;
+}
+
+// Does static `as` reach `e` by its AffectedDefined$? True for a static naming none, whose
+// Affected$ alone decides; else only for the one object it names (Affected$ may restrict it
+// further).
+static bool static_defined_covers(const ActiveStatic &as, Entity e) {
+    const ObjectSpec &spec = as.sa()->affected_defined;
+    if (spec.is(ObjectSpec::DEFAULT)) return true;
+    const std::vector<Entity> objects = resolve_objects(spec, ResolveCtx::of_static(as.controller, as.entity));
+    return std::find(objects.begin(), objects.end(), e) != objects.end();
+}
+
+// Is `e` in a zone static `sa` reaches? Those AffectedZone$ names, less those ExcludeZone$ names; an
+// ExcludeZone$ alone reaches every other zone. An object with no Zone is in none.
+static bool object_in_affected_zone(const StaticAbility &sa, Entity e) {
+    const bool has_zone = global_coordinator.entity_has_component<Zone>(e);
+    const Zone::ZoneValue zone = has_zone ? global_coordinator.GetComponent<Zone>(e).location : Zone::LIBRARY;
+    if (sa.exclude_zone.empty()) return affected_zone_matches(sa.affected_zone, zone, has_zone);
+    if (has_zone && affected_zone_matches(sa.exclude_zone, zone, has_zone)) return false;
+    return affected_zone_matches(sa.affected_zone.empty() ? "All" : sa.affected_zone, zone, has_zone);
+}
+
+// The filter context of static `as`: its controller the YouCtrl/OppCtrl reference (CR 109.5), its
+// source the .Other self-exclusion.
+static MatchCtx static_match_ctx(const ActiveStatic &as) {
+    MatchCtx ctx;
+    ctx.controller = as.controller;
+    ctx.source = as.entity;
+    return ctx;
+}
+
+// `e` against `as`'s Affected$ by printed characteristics: a card through card_matches_printed, so
+// the read never recurses into effective_colors, a battlefield token through the color-free test.
+static bool printed_object_matches(const ActiveStatic &as, Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return card_matches_printed(e, as.sa()->affected, static_match_ctx(as));
+    return setcolor_filter_matches_token(as.sa()->affected, global_coordinator.GetComponent<Permanent>(e),
+                                         as.controller);
+}
+
+// See declaration in state_manager.h.
+bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read) {
+    const StaticAbility &sa = *as.sa();
+    if (!object_in_affected_zone(sa, e)) return false;
+    if (!static_defined_covers(as, e)) return false;
+    if (sa.affected.empty()) return true;
+    switch (read) {
+        case StaticRead::LIVE: return permanent_matches_filter(e, sa.affected, static_match_ctx(as));
+        case StaticRead::CARD: return card_matches_filter(e, sa.affected, static_match_ctx(as));
+        case StaticRead::PRINTED: return printed_object_matches(as, e);
+    }
+    return false;
+}
+
+// See declaration in state_manager.h.
+bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face, Zone::ZoneValue zone) {
+    const StaticAbility &sa = *as.sa();
+    if (!affected_zone_matches(sa.affected_zone, zone, /*has_zone=*/true)) return false;
+    if (!static_defined_covers(as, e)) return false;
+    return sa.affected.empty() || card_matches_filter(face, sa.affected, static_match_ctx(as));
+}
+
+// See declaration in state_manager.h.
+bool static_reaches_as(const ActiveStatic &as, Entity e, const CardData &face) {
+    const StaticAbility &sa = *as.sa();
+    if (!object_in_affected_zone(sa, e) || !static_defined_covers(as, e)) return false;
+    return sa.affected.empty() || card_as_face_matches_filter(e, face, sa.affected, static_match_ctx(as));
+}
+
+// The battlefield permanents a general Affected$ filter designates: read live, with the static's
+// controller and source, so the whole filter grammar applies. A NamedCard qualifier is read beside
+// the filter, against the source permanent's chosen_name (mirroring active_raise_cost_for), because
+// the shared qualifier evaluator has no NamedCard token; a source with no chosen name yet (ETB name
+// choice not made) designates nothing.
+static std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities) {
+    std::vector<Entity> out;
+    if (as.sa()->affected.text().find("NamedCard") == std::string::npos) {
+        for (auto e : entities)
+            if (is_battlefield_permanent(e) && static_reaches(as, e, StaticRead::LIVE)) out.push_back(e);
+        return out;
+    }
+    if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return out;
+    const std::string &chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_name;
+    if (chosen.empty()) return out;
+    const FilterSpec base_filter(strip_named_card_qualifier(as.sa()->affected));
+    const MatchCtx ctx = static_match_ctx(as);
+    for (auto e : entities)
+        if (permanent_matches_filter(e, base_filter, ctx) && global_coordinator.GetComponent<Permanent>(e).name == chosen)
+            out.push_back(e);
+    return out;
 }
 
 // The objects a continuous static affects (CR 613.1 / 611.3a), for every layer that applies it:
 // a general Affected$ filter's matching permanents (affected_permanents_for_static), the
-// permanent an EquippedBy/EnchantedBy static's source is attached to, or else (Self / no
-// Affected$) the source itself.
+// permanent its AffectedDefined$ names as what its source is attached to, or else (Self / no
+// Affected$) the source itself; each only in a zone the static reaches.
 static std::vector<Entity> static_targets(const ActiveStatic &a, const EntitySet &entities) {
-    const std::string &aff = a.sa()->affected;
-    if (affected_is_general_filter(aff)) return affected_permanents_for_static(a, entities);
-    Entity target = a.entity;
-    if (affected_is_attached_target(aff)) {
-        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) return {};
-        target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to.get();
-        if (target == 0 || !is_battlefield_permanent(target)) return {};
-    }
-    if (target == 0) return {};
-    return {target};
+    const StaticAbility &sa = *a.sa();
+    if (static_is_general(sa)) return affected_permanents_for_static(a, entities);
+    std::vector<Entity> objects = resolve_objects(sa.affected_defined, ResolveCtx::of_static(a.controller, a.entity));
+    if (affected_is_attached_target(sa) && !objects.empty() && !is_battlefield_permanent(objects.front())) return {};
+    objects.erase(std::remove_if(objects.begin(), objects.end(),
+                                 [&sa](Entity e) { return !object_in_affected_zone(sa, e); }),
+                  objects.end());
+    return objects;
 }
 
 // Lands whose subtype was set to a basic land type this SBE pass (Blood Moon / Magus of
@@ -634,6 +822,16 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
+// What the spell gained until end of turn, on the creature it became (CR 400.7a).
+static void keep_spell_keywords(Creature &creature, const std::vector<std::string> &keywords) {
+    if (keywords.empty()) return;
+    creature.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
+    for (const std::string &keyword : keywords) {
+        add_keyword_instance(creature.eot_keywords, keyword);
+        add_keyword_instance(creature.keywords, keyword);
+    }
+}
+
 // Hand the facts recorded about a card's battlefield entry (EntryInfo) to the Permanent `perm`
 // being built for it, and narrate how it enters. Each fact is consumed, so a later entry of the
 // same card starts with none of them; the entry's attachments are made by attach_on_entry.
@@ -645,6 +843,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
         if (entry->cast) perm.entered_by_cast = true;
         // The X its spell was cast with, for its ETB triggered abilities (CR 107.3m).
         if (entry->x_paid > 0) perm.entered_x = entry->x_paid;
+        perm.cast_mana_paid = entry->mana_paid;
         // Cast from its controller's own hand (Amped Raptor's Card.wasCastFromYourHandByYou
         // gate). Any other entry (reanimation, tokens, ChangeZone, impulse cast from exile)
         // leaves it false.
@@ -657,8 +856,19 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
             if (!card_data.is_modal_dfc)
                 game_log("%s enters transformed.\n", perm.name.c_str());
         }
+        if (!entry->enters_with_counter.empty()) {
+            perm.counters[entry->enters_with_counter]++;
+            game_log("%s enters with a %s counter.\n", perm.name.c_str(), entry->enters_with_counter.c_str());
+            entry->enters_with_counter.clear();
+        }
+        // It entered as a copy (CR 707.5).
+        perm.printed_card = entry->printed_card;
+        entry->printed_card.reset();
+        entry->copy_chosen = false;
         entry->cast = false;
         entry->x_paid = 0;
+        entry->mana_paid.clear();
+        entry->moved.clear();
         entry->cast_from_hand = false;
         entry->enters_transformed = false;
     }
@@ -670,6 +880,10 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
     if (entry->escaped) perm.cast_with_escape = true;
     // Cast with its Offspring additional cost: its offspring token-copy ETB trigger fires.
     if (entry->offspring) perm.entered_with_offspring = true;
+    // What its spell kept (bestowed, CR 702.103b).
+    perm.overlay = entry->overlay;
+    // A bestowed Aura is a creature card: what it falls off into has been here since it entered.
+    if (perm.overlay != SpellOverlay::NONE) perm.has_summoning_sickness = true;
     // Cast for its Impending alternate cost (CR 702.175d): the permanent enters with N time
     // counters. Set them on the Permanent being built (before it is added) so this same pass's
     // creature-suppression check already sees them and strips the Creature component — it
@@ -687,6 +901,7 @@ static void enter_as_recorded(Entity entity, const CardData &card_data, Permanen
     // grants the recast-from-exile permission (no haste, no leaves→exile redirect).
     if (entry->warp) mark_warp_permanent(entity, perm);
     entry->evoked = false;
+    entry->overlay = SpellOverlay::NONE;
     entry->escaped = false;
     entry->offspring = false;
     entry->impending = false;
@@ -709,7 +924,7 @@ static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm) {
     }
     // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it was cast
     // targeting (EntryInfo::aura_target). Reuse the equipped_to attachment link so the aura's
-    // static buffs (Affected$ Creature.EnchantedBy) and the aura state-based check find the
+    // static buffs (AffectedDefined$ Enchanted) and the aura state-based check find the
     // enchanted object.
     if (!entry.aura_target.empty()) {
         Entity enchanted = entry.aura_target.get();
@@ -743,6 +958,86 @@ static void enter_attacking_if_recorded(Entity entity) {
     drop_entry_info_if_consumed(entity);
 }
 
+// "As this permanent enters, choose a color" (CR 614.12a), once: the latched-answer site (tag
+// SBE_LATCHED) of the choose-type site in apply_permanent_components, whose re-derivation contract it
+// shares. `*parked`: the choice is parked and the pass returns.
+static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked) {
+    if (perm.chosen_color != NO_COLOR) return;
+    static const struct {
+        Colors color;
+        const char *name;
+    } kColors[] = {{WHITE, "White"}, {BLUE, "Blue"}, {BLACK, "Black"}, {RED, "Red"}, {GREEN, "Green"}};
+    std::vector<LegalAction> menu;
+    for (const auto &c : kColors) {
+        LegalAction la(PASS_PRIORITY, std::string("Choose color: ") + c.name);
+        la.category = ActionCategory::CHOOSE_COLOR;
+        la.option_ordinal = static_cast<int>(menu.size());
+        menu.push_back(la);
+    }
+    const uint64_t key = pq_key(SbeSite::ETB_CHOOSE_COLOR, perm.controller == Zone::PLAYER_A, entity, menu.size());
+    int choice = -1;
+    if (!pq_take_latched(key, &choice)) {
+        game_log("Choose a color for %s:\n", perm.name.c_str());
+        if (in_main_loop()) {
+            pq_arm_sbe(key, std::move(menu), perm.controller, /*decision_source=*/entity);
+            *parked = true;
+            return;
+        }
+        // Blocking fallback for an SBE call outside the main loop (defensive, as at the other sites).
+        const bool prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = (perm.controller == Zone::PLAYER_A);
+        choice = InputLogger::instance().get_input(menu);
+        cur_game.priority.player_a_has_priority = prev_priority;
+    }
+    perm.chosen_color = kColors[static_cast<size_t>(choice)].color;
+    game_log("%s chose color: %s\n", player_name(perm.controller).c_str(), kColors[static_cast<size_t>(choice)].name);
+}
+
+// "You may have this enter as a copy of ..." (CR 707.5, 614.12a), before its Permanent exists, so
+// the Permanent is built from what it copied: the latched-answer site of the tapped-unless-life
+// prompt, whose re-derivation contract it shares. Nothing is asked with nothing to copy.
+// `*parked`: the choice is parked and the pass returns.
+static void choose_copy_on_entry(Entity entity, const CardData &card, const EntitySet &entities, bool *parked) {
+    const AbilityDef &copy = *card.enters_as_copy;
+    const Zone::Ownership chooser = global_coordinator.GetComponent<Zone>(entity).controller;
+    MatchCtx ctx{chooser, entity};
+    if (!copy.clone_cmc_expr.empty()) ctx.cmc_bound = evaluate_svar(copy.clone_cmc_expr, chooser, entity);
+    std::vector<Entity> originals;
+    for (Entity e : entities)
+        if (is_battlefield_permanent(e) && permanent_matches_filter(e, copy.choose_card_filter, ctx)) originals.push_back(e);
+    entry_info(entity).copy_chosen = true;
+    if (originals.empty()) return;
+    std::vector<LegalAction> menu;
+    for (Entity e : originals) {
+        LegalAction la(PASS_PRIORITY, e, "Enter as a copy of " + entity_name(e));
+        la.category = ActionCategory::CHOOSE_CARD;
+        menu.push_back(la);
+    }
+    if (card.enters_as_copy_optional) {
+        LegalAction la(PASS_PRIORITY, entity, "Enter as " + card.name);
+        la.category = ActionCategory::CHOOSE_CARD;
+        menu.push_back(la);
+    }
+    const uint64_t key = pq_key(SbeSite::ETB_COPY, chooser == Zone::PLAYER_A, entity, menu.size());
+    int choice = -1;
+    if (!pq_take_latched(key, &choice)) {
+        game_log("Choose what %s enters as:\n", card.name.c_str());
+        if (in_main_loop()) {
+            entry_info(entity).copy_chosen = false;
+            pq_arm_sbe(key, std::move(menu), chooser, /*decision_source=*/entity);
+            *parked = true;
+            return;
+        }
+        // Blocking fallback for an SBE call outside the main loop (defensive, as at the other sites).
+        const bool prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
+        choice = InputLogger::instance().get_input(menu);
+        cur_game.priority.player_a_has_priority = prev_priority;
+    }
+    if (static_cast<size_t>(choice) < originals.size())
+        enter_as_copy(entity, originals[static_cast<size_t>(choice)], copy.copy_overlay);
+}
+
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
 void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -774,6 +1069,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+            // As a copy (CR 707.5): chosen before anything below reads what it enters as.
+            if (card_data.enters_as_copy && !global_coordinator.entity_has_component<Permanent>(entity)) {
+                const EntryInfo *chosen = find_entry_info(entity);
+                if (!chosen || !chosen->copy_chosen) {
+                    bool parked = false;
+                    choose_copy_on_entry(entity, card_data, mEntities, &parked);
+                    if (parked) return;
+                }
+            }
             // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
             // double-faced card, it enters transformed." Mark a daybound DFC entering while
             // it's night so it is built from its back (night) face below, through the same
@@ -800,13 +1104,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (reconfigured_attached) is_creature = false;
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
+            std::vector<std::string> entry_keywords;  // what its spell gained until end of turn
+            std::vector<Ability> entry_animates;      // Animate effects that resolved on it before its Permanent existed
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
                 perm.name = face->name;
                 perm.types = face->types;
                 perm.controller = zone.controller;
-                perm.has_summoning_sickness = is_creature;
+                perm.has_summoning_sickness = true;
                 perm.is_tapped = false;
                 // Replacement effects at the point the permanent enters (rule 614): "enters
                 // tapped" (a self-replacement, or a fetch's "onto the battlefield tapped") and
@@ -844,7 +1150,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm.entered_on_turn = game.turn_state.turn;
                 // Attachments chosen before it entered (EntryInfo): an Equipment a DB$ Attach
                 // attached to it, an Aura's enchant object.
-                if (EntryInfo *entry = find_entry_info(entity)) attach_on_entry(entity, *entry, perm);
+                if (EntryInfo *entry = find_entry_info(entity)) {
+                    attach_on_entry(entity, *entry, perm);
+                    entry_animates.swap(entry->animates);
+                    entry_keywords.swap(entry->keywords_until_eot);
+                }
                 drop_entry_info_if_consumed(entity);
                 global_coordinator.AddComponent(entity, perm);
                 game.entering_together.insert(entity);
@@ -866,8 +1176,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // flag the fresh Permanent: a Saga entering under Magus of the Moon enters as a
                 // Mountain — no lore counter, no chapter I (the flag-based gates in saga.cpp cover
                 // later turns).
-                if (card_is_saga(card_data) && !entering_object_loses_abilities(entity))
+                if (card_is_saga(*face) && !entering_object_loses_abilities(entity))
                     saga_add_lore_counters(entity, 1);
+                // "This creature enters prepared" (CR 722.3a), a replacement of the card's own.
+                if (card_data.is_prepare && face->enters_prepared && !entering_object_loses_abilities(entity))
+                    global_coordinator.GetComponent<Permanent>(entity).prepared = true;
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
@@ -909,6 +1222,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 creature.base_toughness = static_cast<int>(face->toughness);
                 creature.keywords = face->keywords;
                 recompute_pt(creature);
+                keep_spell_keywords(creature, entry_keywords);
                 global_coordinator.AddComponent(entity, creature);
                 // damage component
                 Damage damage;
@@ -928,6 +1242,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
+            // Animate effects that resolved on it before its Permanent existed (EntryInfo), once it
+            // has the Creature an end-of-turn keyword lands on.
+            for (const Ability &a : entry_animates) effects::animate_permanent(a, entity);
             // Impending (CR 702.175d-e): a permanent that entered for its impending cost ISN'T a
             // creature while it still has time counters (it is on the battlefield only as its other
             // types). The same Creature/Damage strip the reconfigure suppression uses applies here,
@@ -1003,7 +1320,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
                         auto &z2 = global_coordinator.GetComponent<Zone>(e2);
                         if (z2.owner != perm_ref.controller) continue;
-                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
+                        const CardData &cd2 = off_battlefield_face(global_coordinator.GetComponent<CardData>(e2));
                         if (!is_creature_card(cd2)) continue;
                         for (auto &t : cd2.types) {
                             if (t.kind != SUBTYPE) continue;
@@ -1068,6 +1385,13 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 }
             }
 
+            // ETBReplacement: choose a color (Painter's Servant).
+            if (card_data.has_etb_choose_color) {
+                bool parked = false;
+                choose_color_on_entry(entity, global_coordinator.GetComponent<Permanent>(entity), &parked);
+                if (parked) return;
+            }
+
             // ETBReplacement: choose a card name (Disruptor Flute). Candidates are the
             // distinct vocab cards in the opponent's deck; the chosen name keys this
             // permanent's Card.NamedCard RaiseCost / CantBeActivated statics.
@@ -1080,7 +1404,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     // helper also used by Cabal Therapy's SP$ NameCard.
                     std::vector<std::string> names;
                     std::vector<LegalAction> name_choices =
-                        build_name_card_choices(mEntities, opp, /*valid_filter=*/"", names);
+                        build_name_card_choices(mEntities, opp, /*valid_filter=*/FilterSpec(), names);
                     if (!name_choices.empty()) {
                         // Latched-answer site (tag SBE_LATCHED), same re-derivation
                         // contract as the choose-type site above: the resumed
@@ -1130,12 +1454,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
     // die (CR 704.5d); that death was already logged and its dies-triggers queued by the mover
     // that put it there, so here we only note that it ceases to exist. Done after iteration to
     // avoid invalidating iterators.
+    sync_prepared_copies(mEntities, orderer);
     for (auto e : tokens_to_destroy) {
         const char *tok_name = global_coordinator.entity_has_component<Token>(e)
             ? global_coordinator.GetComponent<Token>(e).name.c_str() : "Token";
         Zone::ZoneValue dest = global_coordinator.GetComponent<Zone>(e).location;
         game_log("%s (token) is put into %s and ceases to exist.\n",
                  tok_name, zone_display_name(dest));
+        // A library's cards keep the depths 0..n-1 (Terminus puts a token there among cards).
+        if (dest == Zone::LIBRARY) orderer->close_zone_gap(e);
         obs_object_ceased(e, false);
         global_coordinator.DestroyEntity(e);
     }
@@ -1196,7 +1523,7 @@ void StateManager::apply_land_abilities(Entity entity) {
                 d.category = "AddMana";
                 d.color = required_color;
                 d.amount = 1;
-                d.tap_cost = true;
+                d.cost.add(CostPart::of(CostPart::TAP));
                 d.subtype_derived = true;
                 return d;
             }));
@@ -1291,39 +1618,6 @@ static const AbilityDef *keyword_triggered_ability(const std::string &keyword) {
 // set to a Mountain keeps the Creature type the earthbend gave it). Regenerates subtype-derived
 // mana abilities after types are final.
 
-// Parse a " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") into Type objects,
-// classifying each token as TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is
-// (all_types / all_subtypes / all_supertypes). Used by every layer-4 static applier.
-static std::vector<Type> parse_self_added_types(const std::string &spec) {
-    std::vector<Type> out;
-    size_t p = 0;
-    while (p < spec.size()) {
-        size_t sep = spec.find(" & ", p);
-        if (sep == std::string::npos) sep = spec.size();
-        std::string name = spec.substr(p, sep - p);
-        if (!name.empty()) {
-            Type t;
-            t.name = name;
-            if      (all_subtypes.find(name) != all_subtypes.end())   t.kind = SUBTYPE;
-            else if (all_types.find(name) != all_types.end())         t.kind = TYPE;
-            else if (all_supertypes.find(name) != all_supertypes.end()) t.kind = SUPERTYPE;
-            else t.kind = SUBTYPE;
-            out.push_back(t);
-        }
-        p = (sep < spec.size()) ? sep + 3 : sep;
-    }
-    return out;
-}
-
-// The types a layer-4 static adds: its AddType$ list, or every nonbasic land type for the
-// "is every nonbasic land type" CDA (Planar Nexus: AddType$ AllNonBasicLandType, CR 205.3i).
-static std::vector<Type> types_added_by_static(const StaticAbility &sa) {
-    if (sa.add_type != "AllNonBasicLandType") return parse_self_added_types(sa.add_type);
-    std::vector<Type> out;
-    for (const std::string &t : nonbasic_land_types()) out.push_back({SUBTYPE, t});
-    return out;
-}
-
 // Is this a layer-4 (type-changing) continuous static?
 static bool is_type_changing_static(const StaticAbility &sa) {
     return sa.category == "Continuous" && !sa.add_type.empty();
@@ -1341,9 +1635,9 @@ static std::set<Type> copiable_type_line(Entity e, const Permanent &perm) {
 }
 
 // Timestamp of a static ability's continuous effect (CR 613.7a): its source permanent's; an
-// emblem's statics (no permanent) sort first.
+// effect object's statics (no permanent) sort first.
 static size_t static_timestamp(const ActiveStatic &a) {
-    if (a.emblem < 0 && global_coordinator.entity_has_component<Permanent>(a.entity))
+    if (a.effect_object < 0 && global_coordinator.entity_has_component<Permanent>(a.entity))
         return global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield;
     return 0;
 }
@@ -1354,10 +1648,7 @@ static bool land_type_setter_affects(const ActiveStatic &a, Entity e) {
     if (!is_battlefield_permanent(e)) return false;
     const auto &perm = global_coordinator.GetComponent<Permanent>(e);
     if (!permanent_has_type(perm, "Land") || has_basic_supertype(perm.types)) return false;
-    MatchCtx ctx;
-    ctx.controller = a.controller;
-    ctx.source = a.entity;
-    return permanent_matches_filter(e, a.sa()->affected, ctx);
+    return static_reaches(a, e, StaticRead::LIVE);
 }
 
 // CR 305.7: setting a land's subtype replaces all its land types (and only those — card types
@@ -1443,10 +1734,10 @@ static void collect_animate_type_effects(Entity entity, const Permanent &perm,
 // P/T and keyword this same pass), and strip them when it is no longer a creature by any effect.
 static void sync_self_animate_creature(const ActiveStatic &a) {
     const StaticAbility &sa = *a.sa();
-    if (!is_type_changing_static(sa) || affected_is_general_filter(sa.affected)) return;
-    if (affected_is_attached_target(sa.affected) || sa.characteristic_defining) return;
+    if (!is_type_changing_static(sa) || static_is_general(sa)) return;
+    if (affected_is_attached_target(sa) || sa.characteristic_defining) return;
     bool adds_creature = false;
-    for (const auto &t : parse_self_added_types(sa.add_type))
+    for (const auto &t : parse_added_types(sa.add_type))
         if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
     if (!adds_creature || !is_battlefield_permanent(a.entity)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
@@ -1546,7 +1837,7 @@ void StateManager::apply_type_changing_effects() {
         if (s.suppressed || !s.condition_met) continue;
         if (!is_type_changing_static(*s.sa()) || !s.sa()->remove_land_types) continue;
         for (auto &a : g_active_statics)
-            if (!a.suppressed && a.emblem < 0 && land_type_setter_affects(s, a.entity))
+            if (!a.suppressed && a.effect_object < 0 && land_type_setter_affects(s, a.entity))
                 a.suppressed = true;
     }
 
@@ -1601,6 +1892,7 @@ void StateManager::gather_active_statics(Game &game) {
             cr.has_set_pt = false;
             cr.set_power = 0;
             cr.set_toughness = 0;
+            effects::set_pt_from_animate(perm, cr);
             // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
             // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
             // Humility) are not sticky — mirrors the static_*_bonus rebuild above. The base
@@ -1647,39 +1939,29 @@ void StateManager::gather_active_statics(Game &game) {
             g_active_statics.push_back({entity, -1, i, perm.controller, false, false});
     }
 
-    // Emblems (CR 114): zoneless, unremovable continuous-effect sources owned by a player. Their
-    // statics are gathered with entity 0 (no Permanent) and the emblem owner as controller, so the
-    // layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through the same
-    // path as a battlefield anthem.
-    for (size_t e = 0; e < game.resolved_effects.emblems.size(); e++)
-        for (size_t i = 0; i < game.resolved_effects.emblems[e].statics.size(); i++)
-            g_active_statics.push_back(
-                {0, static_cast<int>(e), i, game.resolved_effects.emblems[e].controller, false, false});
+    // Effect objects: zoneless, unremovable continuous-effect sources owned by a player (CR 114,
+    // 611.2). Their statics are gathered with entity 0 (no Permanent) and the object's controller,
+    // so the layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through
+    // the same path as a battlefield anthem.
+    for (const EffectObject &object : game.resolved_effects.effect_objects)
+        for (size_t i = 0; i < object.statics.size(); i++)
+            g_active_statics.push_back({0, object.id, i, object.controller, false, false});
 
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
-    bool need_delirium_a = false, need_delirium_b = false;
+    StaticConditionAnswers conditions;
+    game.may_look_statics = false;
     for (auto &a : g_active_statics) {
-        if (a.sa()->condition == "Delirium") {
-            if (a.controller == Zone::PLAYER_A) need_delirium_a = true;
-            else                                need_delirium_b = true;
-        }
-    }
-    bool delirium_a = need_delirium_a ? check_delirium(Zone::PLAYER_A, mEntities) : false;
-    bool delirium_b = need_delirium_b ? check_delirium(Zone::PLAYER_B, mEntities) : false;
-
-    for (auto &a : g_active_statics) {
+        game.may_look_statics = game.may_look_statics || a.sa()->may_look_at;
+        const StaticConditionRow *condition =
+            a.sa()->condition.empty() ? nullptr : static_condition_row(a.sa()->condition);
         if (a.sa()->condition.empty() && a.sa()->check_svar_expr.empty()) {
             // No Condition$/CheckSVar$ — provisionally true (a present-only IsPresent$ static
             // lands here and is gated by the present-count AND below); an unconditional static
             // stays true.
             a.condition_met = true;
-        } else if (a.sa()->condition == "Delirium") {
-            a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
-        } else if (a.sa()->condition == "PlayerTurn") {
-            // Active during the source controller's own turn (Voice of Victory).
-            bool a_turn = cur_game.turn_state.player_a_turn;
-            a.condition_met = (a.controller == Zone::PLAYER_A) ? a_turn : !a_turn;
+        } else if (condition) {
+            a.condition_met = conditions.met(*condition, a.controller, mEntities);
         } else if (!a.sa()->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.
@@ -1734,7 +2016,7 @@ void StateManager::apply_layer6_ability_effects() {
         // to that same affected set (CR 613 layers 6 / 7c — "other creatures you control get
         // +1/+1 and have trample" must give BOTH to all matching creatures). A general-filter
         // static with no keyword has nothing to do in layer 6, so skip it (layer 7 buffs P/T).
-        if (affected_is_general_filter(a.sa()->affected)) {
+        if (static_is_general(*a.sa())) {
             if (a.sa()->add_keyword.empty()) continue;
             // Keywords are rebuilt from each creature's printed base every SBE pass
             // (gather_active_statics, rule 611.3a), so re-granting here each pass cannot stack.
@@ -1804,53 +2086,6 @@ void StateManager::apply_layer6_ability_effects() {
     }
 }
 
-// Strip the ".NamedCard" qualifier from an Affected$ filter, returning the remaining filter
-// (e.g. "Land.NamedCard" -> "Land", "Land.NamedCard+YouCtrl" -> "Land.YouCtrl"). The NamedCard
-// match is handled out-of-band against the source permanent's chosen_name (mirroring
-// active_raise_cost_for), because the shared qualifier evaluator has no NamedCard token.
-static std::string strip_named_card_qualifier(const std::string &filter) {
-    // The head (before the first '.'/'+') is always kept; each subsequent '.'/'+' token is
-    // kept with its preceding separator unless it is the NamedCard qualifier being dropped.
-    size_t head_end = filter.find_first_of(".+");
-    std::string out = filter.substr(0, head_end);
-    size_t p = head_end;
-    while (p != std::string::npos && p < filter.size()) {
-        char sep = filter[p];                       // the '.' or '+' separator
-        size_t nx = filter.find_first_of(".+", p + 1);
-        size_t tok_end = (nx == std::string::npos) ? filter.size() : nx;
-        std::string tok = filter.substr(p + 1, tok_end - (p + 1));
-        if (tok != "NamedCard") out += sep + tok;
-        p = nx;
-    }
-    return out;
-}
-
-// Resolve the permanents an AddAbility$ static affects. Reuses affected_permanents_for_static
-// for the general Affected$ filter grammar, then — if the filter carried a NamedCard qualifier
-// — keeps only permanents whose name equals the source permanent's chosen_name (the same
-// per-source named-card state that match_named_card statics read). A source with no chosen
-// name yet (ETB name choice not made) grants nothing.
-static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const EntitySet &entities) {
-    bool named = as.sa()->affected.find("NamedCard") != std::string::npos;
-    std::string base_filter = named ? strip_named_card_qualifier(as.sa()->affected) : as.sa()->affected;
-    std::string chosen;
-    if (named) {
-        if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
-        chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_name;
-        if (chosen.empty()) return {};
-    }
-    // Evaluate the NamedCard-stripped filter through the shared resolver so the rest of the
-    // grammar (subtypes, YouCtrl, …) is matched normally.
-    std::vector<Entity> candidates = permanents_matching_static_filter(as, base_filter, entities);
-    if (!named) return candidates;
-    std::vector<Entity> out;
-    for (Entity e : candidates) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (global_coordinator.GetComponent<Permanent>(e).name == chosen) out.push_back(e);
-    }
-    return out;
-}
-
 // Layer 6 (rule 613.1f): AddAbility$ continuous ability grants. A "Continuous" static with a
 // non-empty add_ability body (Petrified Hamlet's "Lands with the chosen name have '{T}: Add
 // {C}.'") attaches that activated ability to every permanent its Affected$ filter designates,
@@ -1861,32 +2096,45 @@ static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const E
 // granting source enter/leave, and de-dupes per source static (one copy per recipient). It
 // runs unconditionally (even with no statics) so a grant left by a source that just left the
 // battlefield is cleaned up.
-// Per-pass runtime state of one static-granted ability, snapshotted before the grant is
-// stripped so it can be carried onto the freshly re-parsed copy in the same pass. Keyed by
-// (recipient permanent, granting static, ability identity) — mirroring restore_mana_state's
-// (entity, ability-identity) keying for normal mana abilities — so the ActivationLimit$
-// counter (Ability::activations_this_turn) survives the rebuild instead of resetting to 0
-// every continuous-effects pass. Without this a granted limited-activation ability could be
-// activated more than its ActivationLimit$ allows (CR 602.5). The ability is held by value so
-// identical_activated_ability can match it against the rebuilt copy regardless of vector index.
-struct GrantedAbilityRuntime {
-    Entity recipient = 0;
-    Entity granted_by_static = 0;
-    Ability ability;  // the pre-strip granted instance (carries activations_this_turn)
-};
+// Put `copy`, granted by a static, on permanent `e`, unless it has one the same.
+static void grant_ability(Entity e, Ability copy) {
+    auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
+    copy.source = ObjectRef::of(e);
+    // De-dupe: skip if an identical ability (granted or intrinsic) already exists on the recipient,
+    // so a land that already has "{T}: Add {C}" isn't given a duplicate.
+    for (auto &existing : abilities)
+        if (existing.identical_activated_ability(copy.def)) return;
+    abilities.push_back(copy);
+}
+
+// Every permanent static `a` affects gets the activated abilities of the cards it names: those that
+// function on the battlefield, as a permanent has them (object_abilities).
+static void grant_abilities_of(const ActiveStatic &a, const EntitySet &entities) {
+    const StaticAbility &sa = *a.sa();
+    const std::vector<Entity> targets = static_targets(a, entities);
+    if (targets.empty()) return;
+    const MatchCtx ctx = static_match_ctx(a);
+    for (Entity card : entities) {
+        if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        if (global_coordinator.GetComponent<Zone>(card).location != sa.gains_abilities_zone) continue;
+        if (!object_matches_filter(card, sa.gains_abilities_of, ctx)) continue;
+        for (const AbilityDef *def : object_abilities(card)) {
+            if (def->ability_type != AbilityDef::ACTIVATED || def->activation_zone != -1) continue;
+            coverage_row("gains_abilities_of");
+            Ability granted(def);
+            granted.granted_by_static = a.entity;
+            granted.granted_from = ObjectRef::of(card);
+            for (Entity e : targets) grant_ability(e, granted);
+        }
+    }
+}
 
 void StateManager::apply_layer6_ability_grants() {
-    // Phase 1: remove all previously static-granted abilities from every battlefield permanent,
-    // snapshotting their per-pass runtime counters first so Phase 2's rebuild doesn't clobber them.
-    std::vector<GrantedAbilityRuntime> saved_runtime;
+    // Phase 1: remove all previously static-granted abilities from every battlefield permanent.
+    // What they were activated stays on the Permanent, keyed to the grant (ActivationCount).
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-        for (auto &ab : abilities) {
-            if (ab.granted_by_static == 0) continue;
-            if (ab.activations_this_turn == 0) continue;  // nothing to preserve
-            saved_runtime.push_back({entity, ab.granted_by_static, ab});
-        }
         abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                        [](const Ability &ab) { return ab.granted_by_static != 0; }),
                         abilities.end());
@@ -1899,7 +2147,7 @@ void StateManager::apply_layer6_ability_grants() {
         if (a.sa()->add_ability.empty()) continue;
         if (!a.condition_met) continue;
 
-        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        std::vector<Entity> targets = static_targets(a, mEntities);
         if (targets.empty()) continue;
 
         // Materialize the granted ability once from the stored body (full Forge ability
@@ -1908,29 +2156,13 @@ void StateManager::apply_layer6_ability_grants() {
         if (granted.def->category.empty()) continue;  // unparsable body — grant nothing
         granted.granted_by_static = a.entity;
 
-        for (Entity e : targets) {
-            auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
-            Ability copy = granted;
-            copy.source = ObjectRef::of(e);
-            // Carry over this pass's runtime counter from the pre-strip instance of the same
-            // grant on the same recipient, so ActivationLimit$ is enforced across the whole turn
-            // even though continuous effects rebuild the ability every pass (CR 602.5).
-            for (auto &saved : saved_runtime) {
-                if (saved.recipient != e) continue;
-                if (saved.granted_by_static != a.entity) continue;
-                if (!saved.ability.identical_activated_ability(copy.def)) continue;
-                copy.activations_this_turn = saved.ability.activations_this_turn;
-                break;
-            }
-            // De-dupe: skip if an identical ability (granted or intrinsic) already exists on
-            // the recipient, so a land that already has "{T}: Add {C}" isn't given a duplicate.
-            bool dup = false;
-            for (auto &existing : abilities) {
-                if (existing.identical_activated_ability(copy.def)) { dup = true; break; }
-            }
-            if (dup) continue;
-            abilities.push_back(copy);
-        }
+        for (Entity e : targets) grant_ability(e, granted);
+    }
+
+    // Phase 2b: GainsAbilitiesOf$ (Agatha's Soul Cauldron).
+    for (auto &a : g_active_statics) {
+        if (a.suppressed || !a.condition_met || a.sa()->category != "Continuous") continue;
+        if (!a.sa()->gains_abilities_of.empty()) grant_abilities_of(a, mEntities);
     }
 
     // Phase 3: re-grant from each active AddTrigger$ static whose condition is met (The Tabernacle
@@ -1947,7 +2179,7 @@ void StateManager::apply_layer6_ability_grants() {
         if (a.sa()->add_trigger.empty()) continue;
         if (!a.condition_met) continue;
 
-        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        std::vector<Entity> targets = static_targets(a, mEntities);
         if (targets.empty()) continue;
 
         // Materialize the granted trigger once (full trigger grammar + its Execute$ SVar), then
@@ -2005,12 +2237,7 @@ void StateManager::apply_layer6_ability_grants() {
 // shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
 // grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
-    const std::string &aff = r.sa()->affected;
-    if (aff.empty()) return true;
-    MatchCtx ctx;
-    ctx.controller = r.controller;
-    ctx.source = r.entity;
-    return permanent_matches_filter(entity, aff, ctx);
+    return static_reaches(r, entity, StaticRead::LIVE);
 }
 
 // CR 614.12: judged on the characteristics a card entering the battlefield would have there,
@@ -2027,15 +2254,11 @@ bool entering_object_loses_abilities(Entity entity) {
     const CardData &face = entering_face(entity, global_coordinator.GetComponent<CardData>(entity));
     const bool nonbasic_land = is_land_card(face) && !has_basic_supertype(face.types);
     for (const auto &a : g_active_statics) {
-        if (a.suppressed || !a.condition_met || (a.emblem < 0 && a.entity == entity)) continue;
+        if (a.suppressed || !a.condition_met || (a.effect_object < 0 && a.entity == entity)) continue;
         const StaticAbility &sa = *a.sa();
         if (sa.category != "Continuous") continue;
         if (!sa.remove_all_abilities && !(sa.remove_land_types && nonbasic_land)) continue;
-        if (sa.affected.empty()) return true;
-        MatchCtx ctx;
-        ctx.controller = a.controller;
-        ctx.source = a.entity;
-        if (card_matches_filter(face, sa.affected, ctx)) return true;
+        if (static_reaches_face(a, entity, face, Zone::BATTLEFIELD)) return true;
     }
     return false;
 }
@@ -2241,6 +2464,7 @@ void StateManager::apply_layer7_pt_effects() {
               (!a.sa()->set_power_svar.empty() || !a.sa()->set_toughness_svar.empty())))
             continue;
         if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+        if (!object_in_affected_zone(*a.sa(), a.entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
         cr.base_power = !a.sa()->set_power_svar.empty()
             ? evaluate_svar(a.sa()->set_power_svar, a.controller, a.entity) : 0;
@@ -2283,6 +2507,7 @@ void StateManager::apply_layer7_pt_effects() {
                 // values (already the creature's base) stand.
                 const auto &perm = global_coordinator.GetComponent<Permanent>(entity);
                 if (perm.animate_set_pt && perm.animate_timestamp > winner_ts) continue;
+                if (perm.animate_set_pt_eot && perm.animate_timestamp_eot > winner_ts) continue;
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
                 cr.set_power = !winner->sa()->set_power_svar.empty()
@@ -2318,8 +2543,8 @@ void StateManager::apply_layer7_pt_effects() {
         // Resolve the affected creature set. A general Affected$ filter (anthem:
         // "Creature.Colorless+Other+YouCtrl" on It That Heralds the End) buffs every matching
         // battlefield permanent — go through the shared resolver, which honours +Other (skip
-        // self) and YouCtrl (controller scope). The EquippedBy / Self / no-Affected$ forms keep
-        // the original single-target behaviour (source, or the equipped creature).
+        // self) and YouCtrl (controller scope). The AffectedDefined$ / Self / no-Affected$ forms keep
+        // the single-target behaviour (source, or the equipped creature).
         std::vector<Entity> targets = static_targets(a, mEntities);
 
         for (Entity target_entity : targets) {

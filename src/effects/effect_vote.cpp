@@ -8,11 +8,13 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
+#include "../resolution_memory.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -44,10 +46,8 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
     // OppCtrl, exactly as is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
     // matches the opponent's nonland permanents. The controller is the "you" reference.
-    std::string spec = ab.def->vote_card_filter.empty() ? std::string("Permanent.nonLand") : ab.def->vote_card_filter;
-    for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
-         pos = spec.find("YouDontCtrl", pos))
-        spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
+    const FilterSpec spec =
+        ab.def->vote_card_filter.empty() ? FilterSpec("Permanent.nonLand") : target_filter(ab.def->vote_card_filter);
 
     MatchCtx ctx;
     ctx.controller = ab.controller;
@@ -61,7 +61,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     // Clear any remembered entities so only the voted-for permanent is fed to the
     // Defined$ Remembered DBExile sub-ability.
-    cur_game.resolution.memory.remembered.clear();
+    report_effect(ab, EffectObjects::VOTED);
 
     if (candidates.empty()) {
         game_log("Will of the Council: no eligible permanent to vote for; nothing is exiled.\n");
@@ -74,8 +74,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     // the pre-ask log is arm-only.
     std::vector<LegalAction> picks;
     for (auto e : candidates) {
-        const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
-        LegalAction la(PASS_PRIORITY, e, "Vote to exile " + nm);
+        LegalAction la(PASS_PRIORITY, e, "Vote to exile " + permanent_label(e));
         la.category = ActionCategory::CHOOSE_CARD;
         la.card_is_public = true;
         picks.push_back(la);
@@ -87,9 +86,8 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
-    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
-    game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
-             global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
+    report_object(ab, EffectObjects::VOTED, chosen);
+    game_log("%s votes for %s.\n", player_name(ab.controller).c_str(), permanent_label(chosen).c_str());
     return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
 }
 

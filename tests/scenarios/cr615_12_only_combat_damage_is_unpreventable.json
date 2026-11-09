@@ -1,0 +1,55 @@
+{
+  "name": "cr615_12_only_combat_damage_is_unpreventable",
+  "why": "CR 615.12, 702.16e: Frenzied Baloth's static names combat damage alone. The One Ring's protection from everything doesn't stop its attack, and still stops Fiery Confluence's two damage.",
+  "hand_a": [
+    "The One Ring"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Fiery Confluence"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Frenzied Baloth"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:The One Ring",
+    "B:attack:Frenzied Baloth",
+    "B:attack:done",
+    "B:cast:Fiery Confluence",
+    "B:mode:2 damage",
+    "B:mode:2 damage",
+    "B:mode:2 damage"
+  ],
+  "max_decisions": 40,
+  "expect": [
+    "Frenzied Baloth deals 3 damage to Player A",
+    "Player A has protection from everything \u2014 2 damage prevented"
+  ]
+}

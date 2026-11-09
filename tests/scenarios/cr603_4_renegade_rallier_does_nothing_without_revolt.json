@@ -1,0 +1,44 @@
+{
+  "name": "cr603_4_renegade_rallier_does_nothing_without_revolt",
+  "why": "CR 603.4, Renegade Rallier: with no permanent of A's gone this turn the ability doesn't trigger, though B's has: revolt is the controller's (Lightning Bolt on B's Goblin Guide).",
+  "hand_a": [
+    "Renegade Rallier",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Plains",
+    "Savannah",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Goblin Guide"
+  ],
+  "graveyard_a": [
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Goblin Guide",
+    "A:cast:Renegade Rallier"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Goblin Guide is destroyed",
+    "Renegade Rallier enters the battlefield"
+  ],
+  "expect_not": [
+    "Renegade Rallier triggered"
+  ]
+}

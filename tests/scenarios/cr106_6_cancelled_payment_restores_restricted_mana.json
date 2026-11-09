@@ -1,0 +1,14 @@
+{
+  "name": "cr106_6_cancelled_payment_restores_restricted_mana",
+  "why": "CR 733.1, 106.6: a cancelled payment gives the mana it spent back as it was: Eldrazi Temple's floating {C}, drained toward Wastescape Battlemage, returns still restricted, so Lightning Strike stays unoffered",
+  "hand_a": ["Reality Smasher", "Mountain", "Lightning Strike", "Wastescape Battlemage"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Eldrazi Temple", "Eldrazi Temple", "Eldrazi Temple"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:cast:Reality Smasher", "A:#1", "A:#1", "A:#1", "A:land:Mountain", "A:cast:Wastescape Battlemage", "A:desc:Cancel casting"],
+  "max_decisions": 11,
+  "expect": ["Player A casts Reality Smasher", "Payment cancelled"],
+  "expect_menu_not": ["Cast Lightning Strike"]
+}

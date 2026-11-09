@@ -1,0 +1,40 @@
+{
+  "name": "cr608_2g_bilbo_casts_a_spell_from_the_graveyard",
+  "why": "CR 608.2g, 601.3: Bilbo's attack trigger casts an instant from its controller's graveyard as it resolves, for the spell's mana cost, on the stack above the trigger; as an instant it would be put into the graveyard, it is exiled instead.",
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Lightning Bolt (from graveyard)",
+    "A:target:Player B"
+  ],
+  "max_decisions": 16,
+  "expect_order": [
+    "Bilbo, Thief in the Night triggered",
+    "Player A casts Lightning Bolt",
+    "Lightning Bolt deals 3 damage to Player B",
+    "Lightning Bolt is exiled"
+  ],
+  "expect_not": [
+    "Lightning Bolt is put into"
+  ]
+}

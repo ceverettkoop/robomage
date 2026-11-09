@@ -1,0 +1,32 @@
+{
+  "name": "cr107_4e_vibrance_full_cost_hides_a_color_it_cant_pay",
+  "why": "CR 107.4e / 118.3: under auto-mana a hybrid pip's color is offered only if the rest of the cost can then be paid: with one Mountain and one Forest the second pip is forced",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)",
+    "A:pay:{R}"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Vibrance"
+  ]
+}

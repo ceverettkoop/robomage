@@ -1,0 +1,35 @@
+{
+  "name": "cr601_2_simian_spirit_guide_casts_as_a_creature",
+  "why": "CR 601.2: Simian Spirit Guide in hand is still cast for {2}{R}, entering as a 2/2",
+  "hand_a": [
+    "Simian Spirit Guide",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Simian Spirit Guide"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Simian Spirit Guide"
+  ],
+  "expect_not": [
+    "Player A exiles Simian Spirit Guide"
+  ]
+}

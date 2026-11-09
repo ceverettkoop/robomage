@@ -3,6 +3,7 @@
 
     learn/.venv/bin/python learn/check_rmtrain.py                 # CPU only, no engine: RMTRAIN-CHECK: ok
     learn/.venv/bin/python learn/check_rmtrain.py --smoke [--run DIR] [--keep]   # the end-to-end tiny run (GPU)
+    learn/.venv/bin/python learn/check_rmtrain.py --smoke --feature-history 32 [--start-from CKPT]  # with history
 
 **CPU checks** (the GPU hidden; no engine): the config (defaults valid, the defaults' TOML parsing back
 to the defaults, files and ``--set`` overrides, refusals naming the key, live parameters); the
@@ -25,10 +26,11 @@ evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideb
 structured sideboard exploration (``p_explore``'s schedule, the coverage counts from results lines, the
 weights, the self-play schedule's ``sb_explore`` and no other schedule's, the orchestrator's snapshot
 cadence, metrics, status and state; the engine's own schedule check when a built engine knows the key),
-and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
+and the evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
-ladder record and ratings), and the end-of-run benchmark (its policy set, summary, sideboarding report
-and ``--opponent``).
+ladder record and ratings), the end-of-run benchmark (its policy set, summary, sideboarding report
+and ``--opponent``), and ``run.feature_history`` (not live, fixed at creation, its flags, the start
+check against the tables' history, the actors' argv, the benchmark's default).
 
 **The smoke** (``--smoke``; needs ``bin/release/robomage_nn`` and ``rmfeat``, the learner's venv and
 the GPU): a tiny run (3 actors, a d 64 / 2-layer model, B0 a few thousand decisions, B1 a few
@@ -37,8 +39,10 @@ hundred BC steps ended by ``phase next``, one short DAgger round, R-NaD with Δm
 ``kill -9``'ed in B4 and the run resumed from its checkpoint (by systemd's restart, else by
 ``start``; same phase, learner step not behind the checkpoint), then ``stop`` and ``start`` again,
 then run to its end (B5, done); per-iteration SPRT evaluations and one exploiter (``rmtrain eval
---evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``. Prints
-per-phase timings and ``RMTRAIN-SMOKE: ok``.
+--evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``.
+``--feature-history N`` runs it with ``run.feature_history`` N (its episodes carry history tokens),
+then a short run with it from a checkpoint without history (``--start-from``, else a d 64 network
+built here). Prints per-phase timings and ``RMTRAIN-SMOKE: ok``.
 """
 
 import os
@@ -701,7 +705,7 @@ def check_schedules(tmp):
 
 
 def check_sideboarding_warm_start(tmp):
-    """The sideboarding warm start (docs/rnad_training_plan.md §6.2): actors.teacher_tier is the
+    """The sideboarding warm start (docs/rmtrain.md §3): actors.teacher_tier is the
     teacher of B0's scripted seats and DAgger's labels while every evaluation opponent stays
     scripted:hard; bc.sideboard_weight weights the policy loss (1: the plain mean); rnad.reg_eps_sideboarding
     at 0 or 0.01 validates and smooths finitely."""
@@ -797,7 +801,7 @@ def check_sideboarding_warm_start(tmp):
 
 
 def check_t8(tmp):
-    """The T8 evaluators: sprt (groups, the test stopping an evaluation), exploiter (its spec and the
+    """The evaluators (docs/rmtrain.md §7): sprt (groups, the test stopping an evaluation), exploiter (its spec and the
     GPU process's config), the request split, the ladder record and ratings."""
     from rmlearn import exploiter as X
     from rmlearn.orchestrator.orchestrator import Orchestrator
@@ -1123,7 +1127,7 @@ def check_eval_options_and_findings(tmp):
     # Training actors' draws.
     with open(os.path.join(run.actors, "a3.results.jsonl"), "w") as fp:
         fp.write(json.dumps({"actor": 3, "match": 126, "game": 2, "entry": "sp-a-b", "schedule": "b4",
-                             "deck_a": "league/ur_delver", "deck_b": "league/burn", "result_a": 0, "result_b": 0,
+                             "deck_a": "league/ur_tempo", "deck_b": "league/burn", "result_a": 0, "result_b": 0,
                              "end_reason": "draw", "decisions": 64,
                              "rmlog": os.path.join(run.path, "rmlog", "selfplay", "a3-m126.rmlog")}) + "\n")
         fp.write(json.dumps({"actor": 3, "match": 127, "game": 1, "schedule": "b4", "result_a": 1, "result_b": -1,
@@ -1135,7 +1139,7 @@ def check_eval_options_and_findings(tmp):
     o.write_status()
     text = format_status(o.status_cache)
     check("findings: 2 draws" in text and "rmlog/selfplay/a3-m126.rmlog" in text and
-          "actors/a3.results.jsonl" in text and "ur_delver vs burn" in text,
+          "actors/a3.results.jsonl" in text and "ur_tempo vs burn" in text,
           "the status's findings line names each draw's results file and decision log")
     check("FAIL" not in text and not any("ERROR" in m for m in logs), "a draw is not an error")
     o.metrics.close()
@@ -1355,7 +1359,7 @@ memory_max = "24G"
 gpu_lock_wait = true
 restart_delay_s = 5
 [league]
-decks = ["ur_delver", "burn", "bw_dnt"]
+decks = ["ur_tempo", "burn", "death_and_taxes"]
 max_game_decisions = 3000
 [actors]
 count = 3
@@ -1403,7 +1407,7 @@ p_end = 0.1
 hold_frac = 0.5
 rewrite_every_s = 5
 [eval]
-pairs = [["ur_delver", "burn"]]
+pairs = [["ur_tempo", "burn"]]
 matches = 2
 ladder = 2
 ladder_matches = 2
@@ -1444,9 +1448,13 @@ def smoke(args):
     mode = args.policy_eval or C.defaults()["actors"]["policy_eval"]
     local = mode == "local"
     sets = ["--set", "actors.policy_eval=" + mode, "--set", "eval.policy_eval=" + mode]
+    history = args.feature_history
+    if history:
+        sets += ["--set", "run.feature_history=%d" % history]
     r = sh([rmtrain, "start", run.path, "--config", cfgp] + sets)
-    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s%s)" % (
-        env_note, ", local actors and evaluations" if local else ""))
+    check(r.returncode == 0 and "started as" in r.stdout, "start detaches (%s%s%s)" % (
+        env_note, ", local actors and evaluations" if local else "",
+        ", recent-event history %d" % history if history else ""))
     print(r.stdout.strip(), flush=True)
     daemon = RD.read_json(os.path.join(run.path, "daemon.json")) or {}
 
@@ -1488,6 +1496,8 @@ def smoke(args):
     check(sh([rmtrain, "tail", run.path, "metrics", "-n", "3", "--no-follow"]).returncode == 0, "tail metrics")
     check("rnad.eta = 0.18" in sh([rmtrain, "set", run.path, "rnad.eta", "0.18"]).stdout, "set rnad.eta")
     check(sh([rmtrain, "set", run.path, "model.d", "32"], check_ok=False).returncode != 0, "set refuses model.d")
+    check(sh([rmtrain, "set", run.path, "run.feature_history", str(history + 8)], check_ok=False).returncode != 0,
+          "set refuses run.feature_history")
     check(sh([rmtrain, "phase", run.path, "hold"]).returncode == 0, "phase hold")
     check("[hold" in sh([rmtrain, "phase", run.path, "status"]).stdout, "phase status shows the hold")
     check(sh([rmtrain, "pause", run.path]).returncode == 0, "pause")
@@ -1510,6 +1520,16 @@ def smoke(args):
     s = wait(lambda s: (s.get("progress") or {}).get("iterations", 0) >= 2 and (s.get("checkpoint") or {}).get(
         "kind") == "rnad" and (s["checkpoint"].get("learner_steps") or 0) >= 60, "two R-NaD iterations", 1200)
     ck_steps = s["checkpoint"]["learner_steps"]
+    # The expansion procedure, live (docs/rmtrain.md §1.1): a league deck whose cards the tables hold.
+    r = sh([rmtrain, "add-decks", run.path, "lands_top8"])
+    check(r.returncode == 0 and "set live" in r.stdout, "add-decks on the running run")
+    check(sh([rmtrain, "add-decks", run.path, "heldout/bant_control"], check_ok=False).returncode != 0,
+          "add-decks refuses a held-out deck")
+    end = time.time() + 60
+    while time.time() < end and "league/lands_top8" not in open(run.schedule).read():
+        time.sleep(1)
+    check("league/lands_top8" in open(run.schedule).read(), "the live league change rewrote the schedule")
+    ck_steps = (status().get("checkpoint") or {}).get("learner_steps") or ck_steps
     # kill -9 everything, then resume.
     t_kill = time.time()
     killed = kill9(run, daemon)
@@ -1542,6 +1562,16 @@ def smoke(args):
     check(r.returncode == 0 and "stopped" in r.stdout and not CT.alive(run.control_sock), "stop")
     ck = (RD.read_json(run.state) or {}).get("checkpoint") or {}
     check(ck.get("kind") == "rnad" and ck.get("learner_steps", 0) >= steps, "stop checkpoints the learner")
+    # The expansion procedure on the stopped run: retable (nothing to do: no vocab change), add-decks
+    # into config.json, then start.
+    r = sh([rmtrain, "retable", run.path])
+    check(r.returncode == 0 and "nothing to do" in r.stdout, "retable of the stopped run (no vocab change)")
+    r = sh([rmtrain, "add-decks", run.path, "eldrazi_aggro"])
+    check(r.returncode == 0 and "written" in r.stdout and "eldrazi_aggro" in RD.read_json(run.config)["league"]["decks"],
+          "add-decks on the stopped run")
+    r = sh([rmtrain, "start", run.path, "--set", "run.feature_history=%d" % (history + 8)], check_ok=False)
+    check(r.returncode != 0 and "fixed when a run is created" in r.stderr and
+          RD.read_json(run.config)["run"]["feature_history"] == history, "a resume refuses to change run.feature_history")
     r = sh([rmtrain, "start", run.path])
     check(r.returncode == 0 and "resuming" in r.stdout, "start resumes the stopped run")
     s = wait(lambda s: s.get("running") and (s.get("gpu") or {}).get("learner_steps") is not None, "the resume", 300)
@@ -1583,15 +1613,184 @@ def smoke(args):
           "the resumes' restore lines (%s)" % [(m["learner_steps"], m["previous_learner_steps"]) for m in rest])
     check(any(m["event"] == "fatal" for m in mets) is False, "no fatal event")
     smoke_sideboarding_checks(run, mets)
+    smoke_expansion_checks(run)
+    smoke_history_checks(run, history, mets)
     exports = os.listdir(run.exports)
     check(any(f.endswith(".pt2") for f in exports), "exports written (%s)" % sorted(exports)[:6])
     if local:
         smoke_local_checks(run, mets, evs)
     print("smoke: phase start times (s): %s; total %.1f s" % (json.dumps({k: round(v, 1) for k, v in
                                                                         phase_at.items()}), total))
+    if history:
+        smoke_start_from(args, rmtrain, run, history)
     if not args.keep and not FAILURES:
         stop_unit(run)
         shutil.rmtree(run.path)
+
+
+def history_tokens(run, dirs):
+    """(episodes, of the tables' spec, with history tokens, steps) over the .rmtraj files under `dirs`."""
+    from rmlearn import episodes as EP
+    from rmlearn import spec as S
+    spec = S.load_spec(os.path.join(run.tables, "spec.json"))
+    hist = {spec.type_ids[spec.history[k]] for k in ("event_type", "card_type")} if spec.history else set()
+    n = same = with_hist = steps = 0
+    for d in dirs:
+        for path in glob.glob(os.path.join(d, "**", "*.rmtraj"), recursive=True):
+            ep = EP.read_episode(path)
+            n += 1
+            same += ep.spec_hash == spec.hash
+            steps += len(ep)
+            with_hist += bool(hist) and bool(np.isin(ep.seat_feat.tok_type, list(hist)).any())
+    return n, same, with_hist, steps
+
+
+def smoke_history_checks(run, history, mets):
+    """run.feature_history: the run's tables of the spec with (or without) the history types, every episode
+    left (B0's corpus, DAgger's, self-play's) of that spec and, with history, holding history tokens; the
+    learner stepped on them."""
+    from rmlearn import spec as S
+    spec = S.load_spec(os.path.join(run.tables, "spec.json"))
+    check(((spec.history or {}).get("events") or 0) == history, "the run's tables are of history %d (%s)"
+          % (history, spec.history))
+    n, same, with_hist, steps = history_tokens(run, [run.episodes])
+    check(n > 0 and same == n, "every episode is of the tables' spec (%d of %d)" % (same, n))
+    if history:
+        check(with_hist == n, "every episode carries history tokens (%d of %d, %d steps)" % (with_hist, n, steps))
+    check(any(m["event"] == "rnad_step" for m in mets) and any(m["event"] == "bc_eval" for m in mets),
+          "BC and R-NaD stepped on them")
+    print("smoke: history %d: %d episodes (%d steps) of spec %s, %d with history tokens" % (history, n, steps,
+                                                                                          spec.hash, with_hist))
+
+
+START_FROM_CONFIG = """
+[run]
+seed = 6
+memory_max = "24G"
+gpu_lock_wait = true
+restart_on_failure = false
+[league]
+decks = ["ur_tempo", "burn", "death_and_taxes"]
+max_game_decisions = 3000
+[actors]
+count = 3
+local_count = 0
+[model]
+d = 64
+heads = 2
+layers = 2
+[rnad]
+games_per_step = 2
+chunk_len = 16
+entropy_schedule_sizes = [20]
+push_every = 10
+report_every = 5
+[b4]
+max_learner_steps = 30
+[b5]
+max_learner_steps = 40
+[eval]
+pairs = [["ur_tempo", "burn"]]
+matches = 2
+actors = 2
+opponents = ["scripted"]
+every_minutes = 0
+evaluators = ["fixed"]
+[checkpoint]
+every_minutes = 0.5
+"""
+
+
+def smoke_start_from(args, rmtrain, base, history):
+    """A checkpoint trained without history (``--start-from``, else a
+    d 64 network built here over the run's tables exported without history) starts a run with
+    run.feature_history: it loads (the same layout_hash; spec.check_compatible compares no spec hash for a
+    checkpoint), an export of it is refused across the option (exact: the spec hash), and the run reaches B4
+    and steps on history episodes."""
+    import torch
+    from rmlearn import model as M
+    from rmlearn import spec as S
+    run = RD.RunDir(base.path + "-from")
+    if os.path.exists(run.path):
+        stop_unit(run)
+        shutil.rmtree(run.path)
+    work = tempfile.mkdtemp(prefix="rmtrain-from-")
+    off = os.path.join(work, "tables-off")
+    os.makedirs(off)
+    bin_dir = os.path.join(REPO_ROOT, "bin")
+    r = subprocess.run([os.path.join(bin_dir, "release", "rmfeat"), "--export-tables", base.cards, off], cwd=bin_dir,
+                       capture_output=True, text=True, timeout=300)
+    if not check(r.returncode == 0, "the run's tables exported without history (%s)" % r.stderr.strip()):
+        return
+    on = S.load_tables(base.tables)
+    ck = args.start_from
+    if not ck:
+        torch.manual_seed(3)
+        ck = os.path.join(work, "off.pt")
+        M.save_checkpoint(M.RMNet(M.ModelConfig(d=64, heads=2, layers=2), S.load_tables(off)), ck)
+    hashes = torch.load(ck, map_location="cpu", weights_only=True)["hashes"]
+    check(S.load_spec(os.path.join(off, "spec.json")).hash != on.spec.hash and
+          hashes.get("layout_hash") == on.hashes["layout_hash"], "the checkpoint's spec is not the history tables', "
+          "its layout is")
+    check(S.check_compatible(hashes, on.hashes) is None, "the checkpoint is compatible with the history tables")
+    r = S.check_compatible(hashes, on.hashes, exact=True)
+    check(r is not None and r[0] == "spec_hash", "an export of it is refused on the history tables (%s)" % (r,))
+    r = sh([rmtrain, "start", run.path, "--config", _write(os.path.join(work, "from.toml"), START_FROM_CONFIG),
+            "--set", "run.start_from=" + ck, "--set", "run.feature_history=%d" % history])
+    check(r.returncode == 0 and "started as" in r.stdout, "a run with history starts from the checkpoint %s" % ck)
+    end = time.time() + 900
+    s = {}
+    while time.time() < end:
+        try:
+            s = CT.request(run.control_sock, {"cmd": "status"}, 15)
+        except (ConnectionError, ValueError):
+            s = RD.read_json(run.status) or {}
+        if s.get("phase") == "B4" and (s.get("progress") or {}).get("learner_steps", 0) >= 20:
+            break
+        if not CT.alive(run.control_sock) and s.get("phase") not in (None, "B0", "B3"):
+            break
+        time.sleep(2)
+    check(s.get("phase") == "B4" and (s.get("progress") or {}).get("learner_steps", 0) >= 20,
+          "the run from the checkpoint reached B4 and stepped (%s, %s)" % (s.get("phase"), s.get("progress")))
+    r = sh([rmtrain, "stop", run.path], timeout=900)
+    check(r.returncode == 0 and "stopped" in r.stdout, "stop of the run from the checkpoint")
+    mets = RD.read_jsonl(run.metrics)
+    tr = [(m["from"], m["to"]) for m in mets if m["event"] == "transition"]
+    check(("B0", "B3") in tr and ("B3", "B4") in tr and not any(m["event"] == "fatal" for m in mets),
+          "B0 -> B3 (run.start_from) -> B4, no fatal (%s)" % tr)
+    n, same, with_hist, steps = history_tokens(run, [run.episodes])
+    check(n > 0 and same == n and with_hist == n, "its self-play episodes are of the history spec, with history "
+          "tokens (%d, %d, %d of %d)" % (same, with_hist, steps, n))
+    print("smoke: start_from %s (history off) into a run with history %d: B4 at step %s, %d episodes" % (
+        ck, history, (s.get("progress") or {}).get("learner_steps"), n), flush=True)
+    shutil.rmtree(work, ignore_errors=True)
+    if not args.keep and not FAILURES:
+        stop_unit(run)
+        shutil.rmtree(run.path)
+
+
+def _write(path, text):
+    with open(path, "w") as fp:
+        fp.write(text)
+    return path
+
+
+def smoke_expansion_checks(run):
+    """The decks added live (lands_top8) and to the stopped run (eldrazi_aggro) were played in self-play, and
+    the final learner's networks marked the added deck's cards seen (the first batches holding them)."""
+    import torch
+    results = []
+    for path in glob.glob(os.path.join(run.actors, "a*.results.jsonl")):
+        results += RD.read_jsonl(path)
+    sp = [r for r in results if r.get("schedule") in ("b4", "b5")]
+    for deck in ("league/lands_top8", "league/eldrazi_aggro"):
+        check(any(deck in (r.get("deck_a"), r.get("deck_b")) for r in sp), "self-play played the added %s" % deck)
+    vocab = {name: i for i, name in RD.read_json(os.path.join(run.tables, "manifest.json"))["vocab"]}
+    ids = [vocab[n] for n in ("Eldrazi Confluence", "Secluded Courtyard") if n in vocab]
+    data = torch.load(os.path.join(run.ckpt, "rnad-final.pt"), map_location="cpu", weights_only=True)["learner"]
+    seen = [data[k]["cards.card_seen"] for k in ("model", "target")]
+    check(len(ids) == 2 and all(bool(m[i]) for m in seen for i in ids),
+          "the added deck's cards are seen by the learner and its target (ids %s)" % ids)
 
 
 def stop_unit(run):
@@ -1701,6 +1900,145 @@ def check_eval_scoring(tmp):
               "summarize scores side a from side_a_seat (%s: %s)" % (opp, s[opp]["all"]))
 
 
+def check_retable(tmp):
+    """The tables' start check (orchestrator/retable.py check_start): a run whose cards frame is not the
+    engine's, or whose tables predate manifests, is stopped naming `rmtrain retable`; the exports a
+    retable rebuilds (latest per name, their checkpoint present) and removes (evaluations', live);
+    the replay window accepting the tables' lineage (spec.Tables.accepted_spec_hashes)."""
+    import check_rnad as CR
+    from rmlearn import replay as RP
+    from rmlearn import spec as S
+    from rmlearn.orchestrator import retable as RTB
+    run, cfg = fake_run(tmp, "retable")
+    eng = os.path.join(tmp, "retable_engine.sh")
+    frame = os.path.join(tmp, "retable_frame.bin")
+    with open(eng, "w") as fp:
+        fp.write("#!/bin/sh\n[ \"$1\" = --cards-frame ] && cp %s \"$2\"\n" % frame)
+    os.chmod(eng, 0o755)
+    with open(frame, "wb") as fp:
+        fp.write(b"cards v1")
+    with open(run.cards, "wb") as fp:
+        fp.write(b"cards v1")
+    os.makedirs(run.tables, exist_ok=True)
+    why = RTB.check_start(run, cfg, eng, tmp)
+    check("before model manifests" in why and "rmtrain retable" in why, "tables without a manifest: %r" % why)
+    RD.write_json(os.path.join(run.tables, "manifest.json"),
+                  {"spec_hash": "a" * 16, "vocab_hash": "b" * 16, "text_model": "m@0", "layout_hash": "c" * 16,
+                   "vocab": [[0, "Mountain"]]})
+    check(RTB.check_start(run, cfg, eng, tmp) == "", "the engine's cards frame is the run's: %r"
+          % RTB.check_start(run, cfg, eng, tmp))
+    summary = RTB.tables_summary(run.tables)
+    check(summary == {"spec_hash": "a" * 16, "vocab_hash": "b" * 16, "layout_hash": "c" * 16, "tables_digest": None,
+                      "text_model": "m@0", "cards": 1}, "tables_summary: %s" % summary)
+    check(not RTB.same_tables(summary, dict(summary, cards=2)) and RTB.same_tables(summary, dict(summary)),
+          "same_tables: a card appended (the spec and vocab hashes as they were) is other tables")
+    with open(frame, "wb") as fp:
+        fp.write(b"cards v2: a card appended")
+    why = RTB.check_start(run, cfg, eng, tmp)
+    check("is not the run's" in why and "rmtrain retable %s" % run.path in why, "a stale run is stopped: %r" % why)
+    check(RTB.check_start(run, dict(cfg, run=dict(cfg["run"], tables="/elsewhere")), eng, tmp) == "",
+          "run.tables (the user's tables) is not checked")
+    ck = os.path.join(run.ckpt, "m1.pt")
+    open(ck, "w").close()
+    state = {"exports": [{"name": "m1", "checkpoint": ck, "version": 3, "prefix": os.path.join(run.exports, "m1")},
+                         {"name": "m1", "checkpoint": ck, "version": 5, "prefix": os.path.join(run.exports, "m1")},
+                         {"name": "gone", "checkpoint": os.path.join(run.ckpt, "gone.pt"), "version": 1,
+                          "prefix": os.path.join(run.exports, "gone")}]}
+    got = RTB.latest_exports(state)
+    check([(e["name"], e["version"]) for e in got] == [("m1", 5)], "latest_exports: %s" % got)
+    for d in ("eval", "live"):
+        os.makedirs(os.path.join(run.exports, d), exist_ok=True)
+        open(os.path.join(run.exports, d, "x.ts.pt"), "w").close()
+    open(os.path.join(run.exports, "m1.ts.pt"), "w").close()
+    stale = sorted(os.path.relpath(p, run.exports) for p in RTB.stale_exports(run))
+    check(stale == ["eval/x.ts.pt", "live/x.ts.pt"], "stale_exports: %s" % stale)
+    # The window: episodes of the tables' lineage are kept, of other specs skipped.
+    tables = CR.fake_tables()
+    t2 = S.Tables(tables.spec, tables.card, tables.text, tables.ability, tables.part, tables.part_ability,
+                  tables.hashes, lineage=[{"spec_hash": "0123456789abcdef"}])
+    check(t2.accepted_spec_hashes() == {tables.spec.hash, "0123456789abcdef"}, "accepted_spec_hashes")
+    rng = np.random.RandomState(1)
+    win = RP.ReplayWindow(RP.WindowConfig(dirs=[], spec_hash=t2.accepted_spec_hashes()))
+    for h in (tables.spec.hash, "0123456789abcdef", "fedcba9876543210"):
+        win.add(CR.make_episode(h, [0, 1], [CR.step_tokens(2, 3, rng) for _ in range(2)], [[1 / 3.0] * 3] * 2, [0, 1],
+                                (1, -1)))
+    check(win.counts["ingested"] == 2 and win.counts["skipped_spec"] == 1,
+          "the window keeps the lineage's episodes: %s" % dict(win.counts))
+    print("  retable: the start check (no manifest, a stale cards frame: retable; current; run.tables), the "
+          "exports rebuilt and removed, the window keeping the lineage's episodes", flush=True)
+
+
+def check_feature_history(tmp):
+    """run.feature_history (docs/featurizer.md §3.7): off by default, not live, fixed at creation (a
+    resume refusing a change, another key still set), carried to the tables export (rmfeat --history),
+    every actor's argv (--feature-history) and rmtrain bench's default; the start check stopping a run
+    whose tables are of another history (its own tables and run.tables)."""
+    from rmlearn import benchmark as BM
+    from rmlearn.orchestrator import retable as RTB
+    d = C.defaults()
+    check(d["run"]["feature_history"] == 0 and C.engine_feature_args(d) == [] and C.rmfeat_feature_args(d) == [],
+          "run.feature_history is off by default (no engine or rmfeat flag)")
+    on = C.resolve(None, ["run.feature_history=32"])
+    check(C.engine_feature_args(on) == ["--feature-history", "32"] and C.rmfeat_feature_args(on) == ["--history", "32"],
+          "run.feature_history 32: --feature-history 32 for the engines, --history 32 for the tables")
+    check(raises(lambda: C.resolve(None, ["run.feature_history=-1"]), "run.feature_history"), "a negative cap refused")
+    check("run.feature_history" not in C.LIVE and raises(lambda: C.parse_live("run.feature_history", "32"),
+                                                         "not settable"), "set refuses run.feature_history")
+    check(C.fixed_changes(d, on) == [("run.feature_history", 0, 32)] and C.fixed_changes(on, on) == [],
+          "fixed_changes names the changed fixed key")
+    run, cfg = fake_run(tmp, "history")
+    args = types.SimpleNamespace(config=None, set=["run.feature_history=32"])
+    try:
+        RT.prepare(run, args)
+        refused = False
+    except SystemExit:
+        refused = True
+    check(refused and RD.read_json(run.config)["run"]["feature_history"] == 0,
+          "a resume refuses to change run.feature_history (config.json unchanged)")
+    cfg2, _ = RT.prepare(run, types.SimpleNamespace(config=None, set=["actors.count=2", "run.feature_history=0"]))
+    check(cfg2["actors"]["count"] == 2, "a resume sets other keys (the fixed one at its value)")
+    # The tables' history against the run's.
+    os.makedirs(run.tables, exist_ok=True)
+    with open(os.path.join(run.tables, "spec.json"), "w") as fp:
+        fp.write('{"history":{"events":32,"cards_per_event":8}}\n')
+    check(RTB.tables_history(run.tables) == 32, "tables_history reads spec.json's history")
+    why = RTB.check_start(run, cfg, "/bin/false", tmp)
+    check("recent-event history 32" in why and "run.feature_history is 0" in why,
+          "the start check stops a run whose tables are of another history: %r" % why)
+    other = os.path.join(tmp, "history_tables")
+    os.makedirs(other)
+    with open(os.path.join(other, "spec.json"), "w") as fp:
+        fp.write('{"vocab_hash":"x"}\n')
+    why = RTB.check_start(run, dict(on, run=dict(on["run"], tables=other)), "/bin/false", tmp)
+    check("recent-event history off" in why and "run.feature_history is 32" in why,
+          "the start check stops a run whose run.tables are of another history: %r" % why)
+    check(RTB.check_start(run, dict(cfg, run=dict(cfg["run"], tables=other)), "/bin/false", tmp) == "",
+          "run.tables of the run's history pass")
+    # Every actor of the pool gets the flags.
+    eng = os.path.join(tmp, "history_engine.sh")
+    argv_file = os.path.join(tmp, "history_argv.txt")
+    with open(eng, "w") as fp:
+        fp.write("#!/bin/sh\necho \"$@\" > %s\n" % argv_file)
+    os.chmod(eng, 0o755)
+    pdir = os.path.join(tmp, "history_pool")
+    pool = A.ActorPool(eng, tmp, os.path.join(tmp, "sched.json"), pdir, os.path.join(pdir, "logs"), 1, on["actors"],
+                       lambda m: None, matches={0: 1}, extra_args=C.engine_feature_args(on))
+    pool.set_count(1)
+    end = time.time() + 10
+    while time.time() < end and not os.path.exists(argv_file):
+        time.sleep(0.05)
+    pool.stop_all(timeout=5)
+    got = open(argv_file).read().split() if os.path.exists(argv_file) else []
+    check(got[-2:] == ["--feature-history", "32"] and "--actor" in got, "an actor's argv carries the run's "
+          "--feature-history (%s)" % got)
+    check(BM.run_feature_history(run) == 0, "rmtrain bench's history: the run's (0)")
+    RD.write_json(run.config, dict(cfg, run=dict(cfg["run"], feature_history=32)))
+    check(BM.run_feature_history(run) == 32, "rmtrain bench's history: the run's (32)")
+    print("  feature history: the key off by default, not live, fixed at creation (resume refused), the engines' "
+          "and rmfeat's flags, the start check against the tables' history, the actors' argv, bench's default",
+          flush=True)
+
+
 def check_benchmark(tmp):
     """The end-of-run benchmark's policy set and summary: the default policies from a run's exports,
     per-deck win rates playing and facing a deck, the difference from the baseline, the tables."""
@@ -1759,22 +2097,218 @@ def check_benchmark(tmp):
           "summarize paired: %s" % json.dumps(sp["policies"]["final"].get("delta_all")))
     md = BM.format_summary(s, "t")
     check("| final | 4 | 0.750 |" in md and "+0.500 ±" in md and "## Matchups: final" in md
-          and "| burn | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
+          and "| burn | - | - | - | - | - | - | - | - | 0.75 | - | - |" in md, "benchmark tables:\n" + md)
     # run_benchmark: each policy played with the match count asked for, the summary paired by match.
     calls = []
 
     def fake_play(lab, path, opts, out_dir, matches, *a, **k):
         calls.append((lab, matches))
         return reps["bc-final" if lab == "bc-final" else "final"]
-    play, recs = BM.play_policy, BM.match_records
+    play, recs, stale = BM.play_policy, BM.match_records, BM.export_stale
     BM.play_policy = fake_play
     BM.match_records = lambda d: mb if d.endswith("bc-final") else mo
+    BM.export_stale = lambda run, path: None
     try:
         sr = BM.run_benchmark(run, ["bc-final", "final"], label="t", matches=7, actors=2, log=lambda m: None)
     finally:
         BM.play_policy, BM.match_records = play, recs
+    # export_missing: an existing export of other tables is rebuilt from its checkpoint (here none:
+    # not current); a current one is kept.
+    logged = []
+    BM.export_stale = lambda run, path: "of other tables"
+    try:
+        rebuilt = BM.export_missing(run, os.path.join(run.exports, "m2.ts.pt"), log=logged.append)
+    finally:
+        BM.export_stale = stale
+    check(not rebuilt and any("rebuilding" in m and "of other tables" in m for m in logged),
+          "export_missing rebuilds an export of other tables: %s" % logged)
+    check(BM.export_stale(run, os.path.join(run.exports, "m2.ts.pt")) is not None,
+          "an export the run's tables cannot vouch for (no manifest.json) is stale")
     check(calls == [("bc-final", 7), ("final", 7)] and sr["matches"] == 7 and sr["policies"]["final"].get("paired")
           and os.path.exists(os.path.join(run.path, "bench", "t", "summary.md")), "run_benchmark: %s %s" % (calls, sr.get("matches")))
+
+
+def _fake_decks(root, league=(), heldout=()):
+    """A fake bin directory's resources/decks/league/ and heldout/ deck files (one card each)."""
+    for sub, names in (("league", league), ("heldout", heldout)):
+        d = os.path.join(root, "resources", "decks", sub)
+        os.makedirs(d, exist_ok=True)
+        for n in names:
+            with open(os.path.join(d, n + ".dk"), "w") as fp:
+                fp.write("4 Card %s\nSIDEBOARD:\n1 Side %s\n" % (n, n))
+    return root
+
+
+def check_benchmark_decks(tmp):
+    """``rmtrain bench --decks`` (docs/rmtrain.md §7.1): the deck sets (league/ with the eleven first, heldout/,
+    single stems), --focus, the default unchanged, a report over other pairs not reused, the summary's
+    per-deck facing deltas and deck groups (paired), the tables."""
+    from rmlearn import benchmark as BM
+    from rmlearn import matches as MT
+    from rmlearn.corpus import LEAGUE
+    bin_dir = _fake_decks(os.path.join(tmp, "bench-decks-bin"), league=list(LEAGUE) + ["boros_aggro"],
+                          heldout=["bant_control", "show_and_tell"])
+    check(MT.resolve_decks(None, bin_dir) == list(LEAGUE) and MT.resolve_decks("", bin_dir) == list(LEAGUE),
+          "--decks: the default is the eleven league decks")
+    ld = MT.resolve_decks("league,heldout", bin_dir)
+    check(ld == list(LEAGUE) + ["boros_aggro", "heldout/bant_control", "heldout/show_and_tell"],
+          "--decks league,heldout: %s" % ld)
+    check(MT.resolve_decks("heldout/bant_control,league/burn,burn,boros_aggro", bin_dir)
+          == ["heldout/bant_control", "burn", "boros_aggro"], "--decks: single stems, each once")
+    check(raises(lambda: MT.resolve_decks("heldout/nope,burn", bin_dir), "no deck heldout/nope")
+          and raises(lambda: MT.resolve_decks("burn", bin_dir), "two decks"), "--decks: refusals")
+    check(len(MT.deck_pairs(ld)) == 91 and MT.deck_pairs(MT.resolve_decks(None, bin_dir)) == MT.league_pairs(),
+          "--decks: every pair of the listed decks (91 for 14), the league's 55 by default")
+    fp = MT.deck_pairs(ld, ["heldout/bant_control"])
+    check(len(fp) == 13 and all("heldout/bant_control" in p for p in fp)
+          and raises(lambda: MT.deck_pairs(ld, ["heldout/x"]), "--focus"), "--focus: the pairs holding the deck")
+    sched = MT.eval_schedule("/x/p.ts.pt", "scripted", tmp, pairs=fp)
+    check(len(sched["entries"]) == 26 and {e["deck_a"] for e in sched["entries"]} >= {"heldout/bant_control", "league/burn"},
+          "--focus: both orders, the held-out deck by its directory")
+    # A report played over other pairs is not reused.
+    out = os.path.join(tmp, "bench-decks-run", "p")
+    os.makedirs(out)
+    MT.write_json(os.path.join(out, "report.json"), {"policy": {"opponent": "scripted:hard"}})
+    check(BM.play_policy("p", "/x", "argmax", out, 4, 1, 1, log=lambda m: None)["policy"]["opponent"]
+          == "scripted:hard", "a report without pairs is the league pairs' (reused)")
+    try:
+        BM.play_policy("p", "/x", "argmax", out, 4, 1, 1, log=lambda m: None, pairs=fp)
+        check(False, "a report over other pairs is refused")
+    except SystemExit as err:
+        check("other deck pairs" in str(err), "a report over other pairs is refused: %s" % err)
+
+    # The summary: the policy plays a held-out deck, faces one, and plays among league decks. Paired:
+    # `other` flips two matches (one playing bant_control, one facing it).
+    def line(k, deck, opp, res):
+        return {"actor": 0, "match": k, "game": 1, "entry": "x", "side_a_seat": "A", "deck_a": MT.deck_stem(deck),
+                "deck_b": MT.deck_stem(opp), "result_a": res, "result_b": -res, "end_reason": "win", "first": "A",
+                "decisions": 10}
+    games = [("heldout/bant_control", "burn"), ("heldout/bant_control", "burn"), ("burn", "heldout/bant_control"),
+             ("burn", "heldout/bant_control"), ("burn", "bug"), ("bug", "burn"), ("boros_aggro", "bug"),
+             ("bug", "boros_aggro")]
+    rb = [line(k, d, o, -1 if k % 2 else 1) for k, (d, o) in enumerate(games)]
+    ro = [line(k, d, o, (1 if k in (1, 3) else -1 if k % 2 else 1)) for k, (d, o) in enumerate(games)]
+    for x in ro:
+        if x["match"] in (1, 3):
+            x["decisions"] = 11
+    reps = {"base": MT.report([MT.game_record(x) for x in rb]), "new": MT.report([MT.game_record(x) for x in ro])}
+    recs = {}
+    for lab, lines in (("base", rb), ("new", ro)):
+        recs[lab] = {}
+        for x in lines:
+            r = MT.game_record(x)
+            recs[lab][r["key"]] = {"wins": int(r["result"] > 0), "decisive": 1, "deck": r["deck"], "opp_deck": r["opp_deck"],
+                                   "decisions": [x["decisions"]]}
+    decks = ["bug", "burn", "boros_aggro", "heldout/bant_control"]
+    sm = BM.summarize(reps, matches=recs, decks=decks)
+    n = sm["policies"]["new"]
+    check(sm["decks"] == decks and set(sm["groups"]) == {"league", "league:original", "heldout"}
+          and sm["groups"]["league:original"] == ["bug", "burn"], "groups: %s" % sm["groups"])
+    check(abs(n["delta_plays"]["heldout/bant_control"]["delta"] - 0.5) < 1e-9
+          and abs(n["delta_plays"]["burn"]["delta"] - 1 / 3) < 1e-9, "paired deltas playing a deck")
+    check(abs(n["delta_faces"]["heldout/bant_control"]["delta"] - 0.5) < 1e-9
+          and abs(n["delta_faces"]["burn"]["delta"] - 1 / 3) < 1e-9 and abs(n["delta_faces"]["bug"]["delta"]) < 1e-9,
+          "facing deltas per deck: %s" % json.dumps(n["delta_faces"])[:400])
+    g = n["delta_groups"]
+    check(abs(g["plays:heldout"]["delta"] - 0.5) < 1e-9 and abs(g["faces:heldout"]["delta"] - 0.5) < 1e-9
+          and abs(g["within:league:original"]["delta"]) < 1e-9 and "within:heldout" not in g
+          and n["groups"]["plays:heldout"]["decisive"] == 2 and n["groups"]["within:league"]["decisive"] == 4,
+          "group deltas: %s" % json.dumps(g)[:600])
+    md = BM.format_summary(sm, "t")
+    check("## Deck groups" in md and "| plays:heldout |" in md and "## Difference from base, facing each deck" in md
+          and "| heldout/bant_control | +0.500 ±" in md and "| deck | bug | burn | boros_ | bant_c |" in md,
+          "the --decks tables:\n" + md)
+    one = BM.summarize(reps, matches=recs)
+    check(one["decks"][:11] == list(LEAGUE) and one["decks"][11:] == ["boros_aggro", "heldout/bant_control"]
+          and set(one["groups"]) == {"league", "league:original", "heldout"}, "the default decks: the league and any played")
+    check(BM.deck_groups(list(LEAGUE)) == {}, "no groups over the league decks alone")
+
+
+def check_league_expansion(tmp):
+    """The expansion procedure (docs/rmtrain.md §1.1): league.decks / league.pairs
+    live and validated together (a held-out deck, a deck in no pair, a pair outside the decks refused),
+    ``plan_add``'s new pairs at the mean weight, the orchestrator's set of both keys rewriting the
+    self-play schedule with the new deck's entries and re-reading the coverage cells, ``check_deck``
+    against a fake engine, and ``rmtrain add-decks`` on a stopped run (config.json, a metrics line)."""
+    from rmlearn.orchestrator import league as LG
+    check({"league.decks", "league.pairs"} <= C.LIVE and not ({"league.decks", "league.pairs"} & C.GPU_LIVE),
+          "league.decks and league.pairs are live (the orchestrator's)")
+    base = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]"])
+    check(raises(lambda: C.set_key(base, "league.decks", ["a", "heldout/h"]), "held out"),
+          "a held-out deck in league.decks is refused")
+    wp = C.resolve(None, ["league.decks=[\"a\", \"b\", \"c\"]",
+                          "league.pairs=[[\"a\", \"b\", 2], [\"a\", \"c\", 1], [\"b\", \"c\", 0.5]]"])
+    check(raises(lambda: C.set_key(wp, "league.decks", ["a", "b", "c", "d"]), "in no league.pairs entry", "add-decks")
+          and raises(lambda: C.set_key(wp, "league.pairs", wp["league"]["pairs"] + [["a", "d", 1]]), "not in league.decks"),
+          "league.decks and league.pairs must name the same decks")
+    ch, w, out = LG.plan_add(base, ["league/d"])
+    check(ch == {"league.decks": ["a", "b", "c", "d"]} and w == 1.0 and out["league"]["pairs"] == []
+          and len(SCH.league_pairs(out)) == 6, "plan_add on a uniform league: the deck alone, every pair at 1")
+    ch, w, out = LG.plan_add(wp, ["d", "e"])
+    newp = [p for p in out["league"]["pairs"] if "d" in p[:2] or "e" in p[:2]]
+    check(abs(w - 3.5 / 3) < 1e-9 and list(ch) == ["league.pairs", "league.decks"] and len(newp) == 7
+          and all(abs(p[2] - w) < 1e-9 for p in newp) and out["league"]["pairs"][:3] == [["a", "b", 2.0], ["a", "c", 1.0],
+                                                                                       ["b", "c", 0.5]],
+          "plan_add with explicit pairs: the new pairs at the mean weight, the old ones kept: %s" % out["league"]["pairs"])
+    ch, w, out = LG.plan_add(base, ["d"], weight=2)
+    check(w == 2 and sorted(map(tuple, out["league"]["pairs"])) == sorted(
+        [("a", "b", 1.0), ("a", "c", 1.0), ("b", "c", 1.0), ("a", "d", 2.0), ("b", "d", 2.0), ("c", "d", 2.0)]),
+        "plan_add --weight on a uniform league writes the pairs out")
+    check(raises(lambda: LG.plan_add(base, ["a"]), "already") and raises(lambda: LG.plan_add(base, ["heldout/x"]), "held out")
+          and raises(lambda: LG.plan_add(base, ["d"], weight=0), "weight"), "plan_add refusals")
+
+    # The orchestrator: both keys set together, the schedule and the coverage cells follow.
+    o, run, logs = _b4_orchestrator(tmp, "lg-orch")
+    _fake_decks(o.bin_dir, league=["a", "b", "c"])
+    o.sb_summary()
+    check(o.sb_decks[0] == ["league/a", "league/b"], "coverage cells of the league's decks")
+    ch, w, _ = LG.plan_add(o.cfg, ["c"], weight=3)
+    r = o.command({"cmd": "set", "changes": ch})
+    sched, _ = o.wanted()
+    ids = sorted(e["id"] for e in sched["entries"])
+    check(r["changes"]["league.decks"] == ["a", "b", "c"] and ids == ["sp-a-b", "sp-a-c", "sp-b-c"]
+          and [e["weight"] for e in sched["entries"] if e["id"] == "sp-a-c"] == [3.0]
+          and RD.read_json(run.config)["league"]["decks"] == ["a", "b", "c"],
+          "a live league change: the self-play schedule's entries and config.json (%s)" % ids)
+    o.sb_summary()
+    check(o.sb_decks[0] == ["league/a", "league/b", "league/c"], "the coverage cells re-read after a league change")
+    check(sum(1 for m in RD.read_jsonl(run.metrics) if m["event"] == "set" and m["key"].startswith("league.")) == 2,
+          "a set metrics line per key")
+    try:
+        o.command({"cmd": "set", "changes": {"league.decks": ["a", "b", "c", "z"]}})
+        check(False, "an unpaired deck set live is refused")
+    except ValueError as err:
+        check("no league.pairs entry" in str(err) and RD.read_json(run.config)["league"]["decks"] == ["a", "b", "c"],
+              "an unpaired deck set live is refused, the config unchanged")
+
+    # check_deck against a fake engine: a deck with a card it lacks is refused.
+    fb = _fake_decks(os.path.join(tmp, "lg-bin"), league=["a", "b", "new", "bad"])
+    with open(os.path.join(fb, "resources", "decks", "league", "bad.dk"), "w") as f:
+        f.write("4 Unknown Card\n")
+    os.makedirs(os.path.join(fb, "release"))
+    eng = os.path.join(fb, "release", "robomage_nn")
+    with open(eng, "w") as f:
+        f.write("#!/bin/sh\nif grep -q Unknown \"resources/decks/$3\"; then echo 'check-decks: MISSING Unknown Card'; "
+                "exit 1; fi\necho 'check-decks: 1 deck(s), 0 missing'\n")
+    os.chmod(eng, 0o755)
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\"]", "run.bin_dir=" + fb])
+    check(LG.check_deck(cfg, "new") == "" and "MISSING Unknown Card" in LG.check_deck(cfg, "bad")
+          and "no deck" in LG.check_deck(cfg, "nope"), "check_deck: %r" % LG.check_deck(cfg, "bad"))
+    # rmtrain add-decks on a stopped run: config.json written, a metrics line, then start reads it.
+    srun = RD.RunDir(os.path.join(tmp, "lg-stopped"))
+    srun.make()
+    RD.write_json(srun.config, cfg)
+    RD.write_json(srun.state, {"phase": "B4", "stage": "selfplay", "rnad": {"learner_steps": 7}})
+    rc = RT.main(["add-decks", srun.path, "new"])
+    m = [x for x in RD.read_jsonl(srun.metrics) if x["event"] == "add_decks"]
+    check(rc == 0 and RD.read_json(srun.config)["league"]["decks"] == ["a", "b", "new"] and m and m[0]["decks"] == ["new"]
+          and m[0]["step"] == 7, "rmtrain add-decks on a stopped run")
+    try:
+        RT.main(["add-decks", srun.path, "bad"])
+        check(False, "add-decks refuses a deck the engine does not load")
+    except SystemExit as err:
+        check(err.code == 1 and RD.read_json(srun.config)["league"]["decks"] == ["a", "b", "new"],
+              "add-decks refuses a deck the engine does not load")
 
 
 def _bench_line(match, game, seat_a, deck_a, deck_b, result_a, sb=None, first=None, end="win"):
@@ -1832,9 +2366,9 @@ def check_benchmark_sideboarding(tmp):
         _bench_line(5, 1, "A", "burn", "bug", -1, first="A"),
         _bench_line(5, 2, "A", "burn", "bug", 1, first="A",
                     sb={"A": seat(True, 2, ["Dead", "Dead"], ["Mountain", "Mountain"]), "B": seat(False, 0)}),
-        # 6: bug vs bw_dnt on the play, the guide's board, cutting the frames' "Lórien Revealed".
-        _bench_line(6, 1, "A", "bug", "bw_dnt", -1, first="A"),
-        _bench_line(6, 2, "A", "bug", "bw_dnt", 1, first="A",
+        # 6: bug vs death_and_taxes on the play, the guide's board, cutting the frames' "Lórien Revealed".
+        _bench_line(6, 1, "A", "bug", "death_and_taxes", -1, first="A"),
+        _bench_line(6, 2, "A", "bug", "death_and_taxes", 1, first="A",
                     sb={"A": seat(False, 3, ["Pernicious Deed", "Pernicious Deed", "Toxic Deluge"],
                                   ["Thoughtseize", "Thoughtseize", "Lórien Revealed"]), "B": seat(False, 0)}),
     ]
@@ -1871,7 +2405,7 @@ def check_benchmark_sideboarding(tmp):
           "sb_report per deck: %s" % json.dumps(rep["by_deck"])[:800])
     opp = SB.report(lines, "b")
     check(opp["all"]["phases"] == 7 and opp["all"]["hist"][:2] == [6, 1] and opp["by_deck"]["uw_control"]["in"]
-          == [["Containment Priest", 1]] and "bw_dnt" in opp["by_deck"], "sb_report opponent: %s" % json.dumps(opp)[:600])
+          == [["Containment Priest", 1]] and "death_and_taxes" in opp["by_deck"], "sb_report opponent: %s" % json.dumps(opp)[:600])
     # The summary: the section with the policy's row and, against hard+sb, the opponent's.
     reps = {"p": MT.report([MT.game_record(x) for x in lines])}
     s = BM.summarize(reps, sideboards={"p": {"policy": rep, "opponent": opp}})
@@ -1914,13 +2448,14 @@ def check_benchmark_sideboarding(tmp):
         return reps["p"]
     export = os.path.join(run.exports, "p.ts.pt")
     open(export, "w").close()
-    play = BM.play_policy
+    play, stale = BM.play_policy, BM.export_stale
     BM.play_policy = fake_play
+    BM.export_stale = lambda run, path: None
     try:
         sr = BM.run_benchmark(run, [export], label="t", matches=2, actors=1, log=lambda m: None,
                               opponent="scripted:hard+sb")
     finally:
-        BM.play_policy = play
+        BM.play_policy, BM.export_stale = play, stale
     root = os.path.join(run.path, "bench", "t-vs-hard_sb")
     check(calls and calls[0][1] == "scripted:hard+sb" and calls[0][2].startswith(root)
           and sr["opponent"] == "scripted:hard+sb" and sr["dir"] == "t-vs-hard_sb"
@@ -2166,6 +2701,11 @@ def main():
     ap.add_argument("--smoke", action="store_true", help="the end-to-end tiny run (GPU, engine)")
     ap.add_argument("--run", help="--smoke: the run directory (default runs/smoke-rmtrain)")
     ap.add_argument("--keep", action="store_true", help="--smoke: keep the run directory")
+    ap.add_argument("--feature-history", type=int, default=0, metavar="N",
+                    help="--smoke: the run with run.feature_history N (its episodes and learner on the recent-event "
+                    "history tokens), then a short run with it started from a checkpoint without history")
+    ap.add_argument("--start-from", help="--smoke --feature-history: that short run's checkpoint (default: a d 64 "
+                    "network built over the run's tables exported without history)")
     ap.add_argument("--policy-eval", choices=("remote", "local"),
                     help="--smoke: the actors' and evaluations' policy_eval (actors.policy_eval, eval.policy_eval; "
                     "default: the config's default)")
@@ -2189,6 +2729,10 @@ def main():
             check_eval_options_and_findings(tmp)
             check_eval_scoring(tmp)
             check_benchmark(tmp)
+            check_benchmark_decks(tmp)
+            check_league_expansion(tmp)
+            check_retable(tmp)
+            check_feature_history(tmp)
             check_benchmark_sideboarding(tmp)
             check_local(tmp)
             check_sb_explore(tmp)

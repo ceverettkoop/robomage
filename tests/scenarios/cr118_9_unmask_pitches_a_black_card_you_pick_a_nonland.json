@@ -1,0 +1,51 @@
+{
+  "name": "cr118_9_unmask_pitches_a_black_card_you_pick_a_nonland",
+  "why": "CR 118.9, 701.9c: Unmask may be cast by exiling another black card from hand instead of its mana cost; the target reveals, and the caster chooses a nonland card to discard",
+  "hand_a": [
+    "Unmask",
+    "Duress",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Unmask (alternate cost)",
+    "A:target:Player B",
+    "A:discard:Grizzly Bears"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "^Player A exiles Duress",
+    "^Player A casts Unmask targeting Player B",
+    "^Player B reveals their hand:",
+    "^Player B discards Grizzly Bears"
+  ],
+  "expect_menu": [
+    "^Lightning Bolt$",
+    "^Grizzly Bears$"
+  ],
+  "expect_menu_not": [
+    "^Forest$"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

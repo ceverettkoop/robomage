@@ -1,0 +1,41 @@
+{
+  "name": "cr701_9_fable_discards_two_and_draws_two",
+  "why": "CR 701.9, 608.2c: two discarded, two drawn; the discarding ends at its count without a further ask.",
+  "hand_a": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Fable of the Mirror-Breaker"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Island",
+    "A:desc:Island"
+  ],
+  "max_decisions": 6,
+  "expect_count": {
+    "Player A discards": 2,
+    "Player A draws Mountain": 2
+  }
+}

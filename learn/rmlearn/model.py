@@ -1,4 +1,4 @@
-"""The learner's network (docs/rnad_training_plan.md §4 L2) on the step-5 network contract.
+"""The learner's network on the network contract (docs/featurizer.md §6).
 
     cfg = ModelConfig(d=256, layers=4)
     model = RMNet(cfg, tables)                     # tables: spec.load_tables(...)
@@ -10,13 +10,16 @@
 ``tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok, act_mask``.
 
 **Architecture.** A token is the sum of
-- its numeric slots through one linear map over the spec's (token type, slot) pairs (each type's
-  slots scattered into their own columns, so the map is per type without a per-token weight gather);
+- its numeric slots through one linear map over the spec's ``G`` columns (each type's slots scattered
+  into its own block of the layout registry, so the map is per type without a per-token weight
+  gather);
 - its type's embedding and the sum of its categorical slots' embeddings (one table over the global
   categorical id space, id 0 the pad);
 - per card slot the card's row (frozen card-table and text-table rows projected, plus a learned
   card-id embedding; during training the id part is replaced, with probability ``id_dropout`` per
-  slot, by a learned unknown-card vector) plus a per-slot vector;
+  slot, by a learned unknown-card vector; a card no training batch has held, ``card_seen``, reads
+  that vector in place of its id row everywhere, so an unseen card plays the path id-dropout
+  trains) plus a per-slot vector;
 - per ability slot the ability row (frozen ability-table row projected, its parts' projections
   averaged in) plus a per-slot vector.
 An entity transformer (pre-LayerNorm, ``layers`` blocks) whose attention adds, per head and layer,
@@ -27,16 +30,17 @@ tokens (an MLP of the row's token, ``g`` and their product; padded rows -1e9) an
 (an MLP of ``g``, tanh).
 
 **Auxiliary heads** (training only, never exported) predict the learner targets from ``g``: the
-opponent's registered list and archetype (``METAGAME`` rows), its hand as a distribution over card
-ids and each seat's library tops (``library_depth`` positions) as card ids. The card-id heads score
-the same card rows the tokens read (a dot product), so they shape the card representation.
+opponent's hand as a distribution over card ids and each seat's library tops (``library_depth``
+positions) as card ids. The card-id heads score
+the same card rows the tokens read (a dot product), so they shape the card representation (all but
+the unknown-card vector, which they read detached).
 
 **Omniscient critic** (``omniscient_critic``; the plan's open issue 1): a second encoder of the
 same design over the omniscient featurization of the same decision, with the deciding seat's
 embedding added to every token (the omniscient frame is A-relative), and its own value head
 (``critic_value``). It shares the card and ability rows with the policy.
 
-**Cost on the GPU** (the RX 6700 XT, rocBLAS; profiled, docs/rnad_training_plan.md §4 L4): a token's
+**Cost on the GPU** (the RX 6700 XT, rocBLAS; profiled): a token's
 card, ability and slot parts are one ``embedding_bag`` over a per-batch table (``token_table``: per
 card slot every card's row plus the slot's vector; under id-dropout a second copy with the
 unknown-card vector), its categorical and type parts another (bag gradients rather than one sorted
@@ -48,8 +52,8 @@ linear maps (``Linear``) compute their weight gradient in the orientation rocBLA
 width-1 maps are products and sums. All of it is the same function as the plain formulation.
 
 Export-friendly: no control flow that depends on the data; gathers, scatter-adds and masks only.
-``InferencePolicy`` holds the card and ability rows folded into buffers (constants of the weights)
-and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInductor ``.pt2``.
+``InferencePolicy`` holds the card and ability rows folded into a buffer (constants of the weights;
+each row once, the slot vectors added at lookup) and the four metadata strings; ``export.py`` writes it as TorchScript and AOTInductor ``.pt2``.
 """
 
 import copy
@@ -61,6 +65,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as Fn
 
+from . import spec as S
+
 NEG = -1e9
 
 
@@ -71,6 +77,7 @@ class ModelConfig:
     layers: int = 4
     ff_mult: int = 4          # feed-forward width = ff_mult * d
     id_dropout: float = 0.1   # probability a card slot's id embedding is replaced by the unknown-card vector
+    #                           (the path unseen cards read; docs/rmtrain.md §1.1, a training lever)
     aux_heads: bool = True    # hidden-information heads (training only)
     omniscient_critic: bool = False
     critic_layers: int = 2    # the omniscient critic's encoder depth
@@ -195,11 +202,8 @@ class TokenEmbed(nn.Module):
 
     def __init__(self, spec, d: int):
         super().__init__()
-        counts = spec.numeric_counts()
-        offsets = [0]
-        for c in counts[:-1]:
-            offsets.append(offsets[-1] + c)
-        self.G = sum(counts)
+        offsets, counts = spec.numeric_layout()
+        self.G = int(spec.G)
         self.F = spec.F
         self.cat_size = int(spec.categorical_size)
         self.register_buffer("num_offset", torch.tensor(offsets, dtype=torch.int64), persistent=False)
@@ -330,7 +334,18 @@ def gather_tokens(card_idx, tok_card, tok_ability, table, card_rows: int, n_abil
 # ── the learner's model ──────────────────────────────────────────────────────────────────────
 
 class CardRows(nn.Module):
-    """The frozen card / text / ability / part tables and their learned projections."""
+    """The frozen card / text / ability / part tables and their learned projections.
+
+    **Seen cards** (docs/rmtrain.md §1.1). ``card_seen`` [n_cards] (bool, saved in the
+    state_dict) marks the card ids some training batch has held (``mark_seen``, called by the
+    training loops on each batch before its forward). A seen card's id part is its ``card_id`` row;
+    an unseen card's is ``unknown_id``, the vector id-dropout trains, in the training rows, the aux
+    heads' rows and the exports' folded rows alike. A card's first marking copies ``unknown_id`` into
+    its id row, so it goes on from the path it played unseen; until then its row is zero (never
+    read). A state_dict without ``card_seen`` (a network made before the mask) is refused: such a
+    network read every id row as a card's, and its rows do not tell which cards it trained on (the aux
+    heads' softmax moved all of them), so neither "all seen" nor "none seen" is its function;
+    ``set_seen`` (the migration, docs/rmtrain.md §1.2) or ``load_checkpoint(seen=...)`` states its seen set."""
 
     def __init__(self, tables, d: int):
         super().__init__()
@@ -350,8 +365,9 @@ class CardRows(nn.Module):
         self.card_proj = nn.Linear(t.card.shape[1], d)
         self.text_proj = nn.Linear(t.text.shape[1], d)
         self.card_id = nn.Embedding(self.n_cards, d)
-        nn.init.normal_(self.card_id.weight, std=0.1)
+        nn.init.zeros_(self.card_id.weight)
         self.unknown_id = nn.Parameter(torch.zeros(d))
+        self.register_buffer("card_seen", torch.zeros(self.n_cards, dtype=torch.bool))
         self.ability_proj = nn.Linear(t.ability.shape[1], d)
         self.part_proj = nn.Linear(t.part.shape[1], d)
         self.card_slot = nn.Parameter(torch.randn(max(t.spec.K, 1), d) * 0.1)
@@ -361,12 +377,61 @@ class CardRows(nn.Module):
         """[n_cards, d]: the tables' projection per card id (the none row 0), no id embedding."""
         return (self.card_proj(self.card_table) + self.text_proj(self.text_table)) * self.card_real
 
-    def card_id_rows(self):
-        return self.card_id.weight * self.card_real
+    def card_id_rows(self, train_unknown: bool = True):
+        """[n_cards, d]: per card id its id part — its ``card_id`` row when seen, else ``unknown_id``
+        (detached unless `train_unknown`) — the none row 0. (A blend by a fresh float copy of the mask,
+        not a ``where`` on the buffer, so marking after a forward never invalidates that forward's
+        backward.)"""
+        seen = self.card_seen.unsqueeze(1).to(self.card_id.weight.dtype)
+        unknown = self.unknown_id if train_unknown else self.unknown_id.detach()
+        return (self.card_id.weight * seen + unknown * (1.0 - seen)) * self.card_real
 
-    def card_rows(self):
-        """[n_cards, d]: the full per-card row (features + id embedding), the none row 0."""
-        return self.card_feature_rows() + self.card_id_rows()
+    def card_rows(self, train_unknown: bool = True):
+        """[n_cards, d]: the full per-card row (features + id part, ``card_id_rows``), the none row 0."""
+        return self.card_feature_rows() + self.card_id_rows(train_unknown)
+
+    @torch.no_grad()
+    def mark_seen(self, card_ids):
+        """Marks every card id in `card_ids` (a tensor or array of any shape; negative entries, the
+        absent slots, skipped) seen. A newly seen card's id row is set to ``unknown_id``, so its row is
+        unchanged at the marking and trains from there. No host synchronisation."""
+        ids = torch.as_tensor(card_ids, device=self.card_seen.device).reshape(-1).long()
+        ids = torch.where(ids >= 0, ids, torch.full_like(ids, self.n_cards - 1))
+        hit = torch.zeros_like(self.card_seen).index_fill_(0, ids, True)
+        hit[-1] = False                                         # the none row is never a card
+        w = self.card_id.weight
+        new = (hit & ~self.card_seen).unsqueeze(1)
+        w.copy_(torch.where(new, self.unknown_id.to(w.dtype).expand_as(w), w))
+        self.card_seen.logical_or_(hit)
+
+    @torch.no_grad()
+    def set_seen(self, card_ids):
+        """Sets the seen mask to exactly the ids in `card_ids` (any iterable or array of ids) and zeroes
+        every other card's id row (never read; a later first marking sets it). For a network trained
+        before the mask existed: the ids its training actually saw (the migration, docs/rmtrain.md §1.2)."""
+        ids = torch.as_tensor(list(card_ids) if not torch.is_tensor(card_ids) else card_ids,
+                              dtype=torch.int64).reshape(-1)
+        if ids.numel() and (int(ids.min()) < 0 or int(ids.max()) >= self.n_cards - 1):
+            raise ValueError("set_seen: card ids lie in [0, %d)" % (self.n_cards - 1))
+        mask = torch.zeros(self.n_cards, dtype=torch.bool)
+        mask[ids] = True
+        self.card_seen.copy_(mask.to(self.card_seen.device))
+        w = self.card_id.weight
+        w.mul_(self.card_seen.unsqueeze(1).to(w.dtype))
+
+    def seen_ids(self):
+        """The seen card ids, ascending (a list)."""
+        return torch.nonzero(self.card_seen).squeeze(1).cpu().tolist()
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,
+                              error_msgs):
+        if prefix + "card_seen" not in state_dict:
+            error_msgs.append("%scard_seen is missing: the network predates the seen-card mask "
+                              "(docs/open_vocab_plan.md S4), and its card_id rows do not tell which cards it saw; "
+                              "migrate it (S5) or state the ids its training saw (load_checkpoint(seen=...), "
+                              "CardRows.set_seen)" % prefix)
+        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,
+                                      error_msgs)
 
     def ability_rows(self):
         """[n_abilities + 1, d]: per ability row its projection plus its parts' mean; a zero row last."""
@@ -378,9 +443,10 @@ class CardRows(nn.Module):
         return torch.cat([rows, torch.zeros(1, d, dtype=rows.dtype, device=rows.device)], 0)
 
     def token_table(self, dropout_rows: bool = False):
-        """[rows, d] f32, ``gather_tokens``' table: per card slot the card rows plus the slot's vector
-        (with `dropout_rows` followed by the same with the unknown-card vector in place of the id
-        embedding), per ability slot the ability rows plus the slot's vector, and a zero row."""
+        """[rows, d] f32, ``gather_tokens``' table: per card slot the card rows (``card_rows``: an
+        unseen card's with the unknown-card vector) plus the slot's vector (with `dropout_rows` followed
+        by the same with the unknown-card vector in place of every id part), per ability slot the
+        ability rows plus the slot's vector, and a zero row."""
         feat = self.card_feature_rows().float()
         cards = feat + self.card_id_rows()
         if dropout_rows:
@@ -439,19 +505,17 @@ class RMNet(nn.Module):
         self.pointer = PointerHead(d)
         self.value = ValueHead(d)
         if cfg.aux_heads:
-            self.aux_list = nn.Linear(d, spec.n_lists)
-            self.aux_archetype = nn.Linear(d, spec.n_archetypes)
             self.aux_hand = nn.Linear(d, d)
             self.aux_library = nn.Linear(d, 2 * spec.library_depth * d)
         self.critic = Critic(spec, cfg) if cfg.omniscient_critic else None
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok, act_mask,
                 omni=None, seat=None, aux=True):
-        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads (and `aux`) `aux_list`,
-        `aux_archetype`, `aux_hand` [B, n_cards], `aux_own_library`, `aux_opp_library`
-        [B, depth, n_cards] (logits; the none row NEG); with the critic and `omni` (the omniscient
-        featurization's ten inputs) and `seat` [B] (0 = A), `critic_value` [B]. ``aux=False`` skips
-        the aux heads (R-NaD reads none of them)."""
+        """A dict: `logits` [B, A], `value` [B], `summary` [B, d]; with aux heads (and `aux`)
+        `aux_hand` [B, n_cards], `aux_own_library`, `aux_opp_library` [B, depth, n_cards] (logits;
+        the none row NEG); with the critic and `omni` (the omniscient featurization's ten inputs)
+        and `seat` [B] (0 = A), `critic_value` [B]. ``aux=False`` skips the aux heads (R-NaD reads
+        none of them)."""
         extra = self.cards.gather(tok_card, tok_ability, self.cfg.id_dropout)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
@@ -465,15 +529,17 @@ class RMNet(nn.Module):
         return out
 
     def aux(self, g):
-        rows = self.cards.card_rows()                               # [n_cards, d]
+        # Every id is a candidate, so the unseen ones' rows (unknown_id each) would train the unknown-card
+        # vector toward "unlikely" from hundreds of unseen and empty ids: it enters detached here, and
+        # only the tokens' path (id-dropout) shapes it.
+        rows = self.cards.card_rows(train_unknown=False)            # [n_cards, d]
         none = torch.zeros(rows.shape[0], dtype=torch.float32, device=g.device)   # f32: -1e9 is -inf in f16
         none[-1] = NEG
         b, d = g.shape
         depth = self.spec.library_depth
         lib = self.aux_library(g).view(b, 2, depth, d)
         lib_logits = torch.matmul(lib, rows.t()) / math.sqrt(d) + none
-        return {"aux_list": self.aux_list(g), "aux_archetype": self.aux_archetype(g),
-                "aux_hand": torch.matmul(self.aux_hand(g), rows.t()) / math.sqrt(d) + none,
+        return {"aux_hand": torch.matmul(self.aux_hand(g), rows.t()) / math.sqrt(d) + none,
                 "aux_own_library": lib_logits[:, 0], "aux_opp_library": lib_logits[:, 1]}
 
     def inference_module(self, version=0):
@@ -486,13 +552,9 @@ class RMNet(nn.Module):
 
 def aux_losses(out, targets):
     """Per auxiliary head its mean loss over the decisions that have a target (`targets` from
-    batch.Targets.batch, on the outputs' device): cross-entropy for the list, archetype and each
-    library position (-1 skipped), the hand as a distribution over card ids (empty hands skipped)."""
+    batch.Targets.batch, on the outputs' device): cross-entropy for each library position (-1
+    skipped), the hand as a distribution over card ids (empty hands skipped)."""
     losses = {}
-    losses["list"] = Fn.cross_entropy(out["aux_list"], targets["opp_list"], ignore_index=-1) \
-        if (targets["opp_list"] >= 0).any() else out["aux_list"].sum() * 0
-    losses["archetype"] = Fn.cross_entropy(out["aux_archetype"], targets["opp_archetype"], ignore_index=-1) \
-        if (targets["opp_archetype"] >= 0).any() else out["aux_archetype"].sum() * 0
     hand = targets["opp_hand"]
     n = hand.sum(-1)
     lp = Fn.log_softmax(out["aux_hand"].float(), -1)
@@ -513,7 +575,7 @@ def masked_log_softmax(logits, act_mask):
 
 
 def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboarding=None):
-    """log of (1 - ε)·π + ε·uniform-over-legal (R-NaD's smoothed π_0,reg, plan B3), -inf at padded
+    """log of (1 - ε)·π + ε·uniform-over-legal (R-NaD's smoothed π_0,reg, phase B3), -inf at padded
     rows. `eps` a float or a [B] tensor; with `sideboarding` [B] (bool) and `eps_sideboarding`, the
     sideboarding decisions take that ε instead. An ε of 0 gives the raw log π; the padded rows are
     taken out before the mix, so its gradient stays finite there too."""
@@ -533,14 +595,26 @@ def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboardi
 
 class InferencePolicy(nn.Module):
     """forward(ten contract inputs) -> (logits [B, A], value [B]); the card and ability rows folded
-    into buffers. Carries spec_hash, vocab_hash, text_model and policy_version as string attributes
-    (what export.py writes into each format's metadata)."""
+    into one buffer (``folded_rows``). Carries spec_hash, vocab_hash, text_model, layout_hash, vocab
+    (the vocab manifest's JSON text) and policy_version as string attributes (what export.py writes
+    into each format's metadata; also tables_digest): the model manifest of the tables it was folded from, which an
+    export must match exactly (spec.check_compatible, exact).
+
+    ``folded_rows`` holds each card's row once, each distinct ability row once (every ability
+    address no ability has — no features, no parts — shares one row: they project alike) and the
+    per-slot vectors, not a copy of the rows per slot as the training model's ``token_table``: a
+    token's card slot k adds its card's row and slot vector k, an ability slot its row (through
+    ``ability_index``) and its slot vector, as one bag (``gather_folded``). The same function as the
+    training model's, the sums in another order."""
 
     def __init__(self, model, version=0):
         super().__init__()
         self.spec_hash = str(model.hashes["spec_hash"])
         self.vocab_hash = str(model.hashes["vocab_hash"])
         self.text_model = str(model.hashes["text_model"])
+        self.layout_hash = str(model.hashes.get("layout_hash", ""))
+        self.tables_digest = str(model.hashes.get("tables_digest", ""))
+        self.vocab = S.vocab_text(model.hashes.get("vocab", []))
         self.policy_version = str(int(version))
         self.F, self.C, self.K, self.Q = int(model.spec.F), int(model.spec.C), int(model.spec.K), int(model.spec.Q)
         src = model
@@ -552,21 +626,66 @@ class InferencePolicy(nn.Module):
         with torch.no_grad():
             was = cards.training
             cards.eval()
-            token_table = cards.token_table().detach().float().cpu().clone()
+            folded, ability_index = _fold_rows(cards)
             cards.train(was)
-        self.register_buffer("token_table", token_table)
+        self.register_buffer("folded_rows", folded)
+        self.register_buffer("ability_index", ability_index)
         self.n_cards = int(cards.n_cards)
         self.n_abilities = int(cards.n_abilities)
+        self.slot_at = int(folded.shape[0] - 1 - self.K - self.Q)
         self.none_card = int(cards.n_cards - 1)
         self.none_ability = int(cards.n_abilities)
         self.eval()
 
     def forward(self, tok_type, tok_num, tok_cat, tok_card, tok_ability, tok_mask, rel, rel_mask, act_tok,
                 act_mask):
-        extra = gather_tokens(tok_card, tok_card, tok_ability, self.token_table, self.n_cards, self.n_abilities)
+        extra = gather_folded(tok_card, tok_ability, self.folded_rows, self.ability_index, self.slot_at, self.K)
         x = self.encoder(tok_type, tok_num, tok_cat, tok_mask, rel, rel_mask, extra)
         g = self.summary(x, tok_mask)
         return self.pointer(x, g, act_tok, act_mask), self.value(g)
+
+
+def _fold_rows(cards):
+    """(``folded_rows`` [n_cards + distinct ability rows + K + Q + 1, d] f32 on the CPU: the card
+    rows (``card_rows``: an unseen card's features plus ``unknown_id``), the distinct ability rows,
+    the card slots' and the ability slots' vectors, a zero row; ``ability_index`` [n_abilities] i64: per ability row its row in ``folded_rows``)."""
+    card_rows = cards.card_rows().detach().float().cpu()
+    ability_rows = cards.ability_rows()[:-1].detach().float().cpu()
+    has_parts = torch.zeros(cards.n_abilities, dtype=torch.bool)
+    has_parts[cards.part_ability.cpu()] = True
+    used = (cards.ability_table.cpu() != 0).any(1) | has_parts
+    keep = torch.nonzero(used).squeeze(1)
+    empty = torch.nonzero(~used).squeeze(1)
+    if empty.numel():
+        keep = torch.cat([keep, empty[:1]])
+    position = torch.full((cards.n_abilities,), keep.numel() - 1, dtype=torch.int64)
+    position[keep] = torch.arange(keep.numel(), dtype=torch.int64)
+    d = card_rows.shape[1]
+    folded = torch.cat([card_rows, ability_rows[keep], cards.card_slot.detach().float().cpu(),
+                        cards.ability_slot.detach().float().cpu(), torch.zeros(1, d)], 0).clone()
+    return folded, position + card_rows.shape[0]
+
+
+def gather_folded(tok_card, tok_ability, table, ability_index, slot_at: int, n_card_slots: int):
+    """[B, N, d]: ``gather_tokens``' sums over ``InferencePolicy.folded_rows``: per present card slot
+    k the card's row and the slot vector at `slot_at` + k, per present ability slot q the ability's
+    row (`ability_index`) and the slot vector at `slot_at` + `n_card_slots` + q; a -1 slot adds
+    nothing (the zero row last is the bag's padding)."""
+    b, n, k = tok_card.shape
+    q = tok_ability.shape[2]
+    pad = table.shape[0] - 1
+    card_slot = torch.arange(k, dtype=tok_card.dtype, device=tok_card.device) + slot_at
+    ability_slot = torch.arange(q, dtype=tok_ability.dtype, device=tok_ability.device) + slot_at + n_card_slots
+    c_on, a_on = tok_card >= 0, tok_ability >= 0
+    padded = torch.full_like(tok_card, pad)
+    cards = torch.stack([torch.where(c_on, tok_card, padded),
+                         torch.where(c_on, card_slot.expand(b, n, k), padded)], 3).view(b, n, 2 * k)
+    padded = torch.full_like(tok_ability, pad)
+    rows = ability_index[tok_ability.clamp(min=0)]
+    abilities = torch.stack([torch.where(a_on, rows, padded),
+                             torch.where(a_on, ability_slot.expand(b, n, q), padded)], 3).view(b, n, 2 * q)
+    idx = torch.cat([cards, abilities], 2)
+    return Fn.embedding_bag(idx.view(b * n, -1), table, mode="sum", padding_idx=pad).view(b, n, -1)
 
 
 def save_checkpoint(model, path, extra=None):
@@ -581,13 +700,22 @@ def save_checkpoint(model, path, extra=None):
     os.replace(tmp, path)
 
 
-def load_checkpoint(path, tables):
-    """The RMNet a save_checkpoint file holds, built over `tables` (whose hashes must be the model's)."""
+def load_checkpoint(path, tables, seen=None):
+    """The RMNet a save_checkpoint file holds, built over `tables` (the checkpoint's manifest must be
+    compatible with theirs, spec.check_compatible: the vocab may have grown). The model carries the
+    tables' manifest from then on. A file without ``cards.card_seen`` (made before the seen-card mask)
+    is refused unless `seen` gives the card ids its training saw (``CardRows.set_seen``); `seen` is
+    refused for a file that has the mask."""
     data = torch.load(path, map_location="cpu", weights_only=True)
-    for k in ("spec_hash", "vocab_hash", "text_model"):
-        if data["hashes"].get(k) != tables.hashes[k]:
-            raise ValueError("%s: the checkpoint's %s %s is not the tables' %s"
-                             % (path, k, data["hashes"].get(k), tables.hashes[k]))
+    S.require_compatible(data["hashes"], tables, path)
     model = RMNet(ModelConfig.from_dict(data["config"]), tables)
-    model.load_state_dict(data["state_dict"])
+    sd = data["state_dict"]
+    if seen is not None:
+        if "cards.card_seen" in sd:
+            raise ValueError("%s carries its seen-card mask; seen= is for a checkpoint without one" % path)
+        sd = dict(sd)
+        sd["cards.card_seen"] = model.cards.card_seen
+    model.load_state_dict(sd)
+    if seen is not None:
+        model.cards.set_seen(seen)
     return model

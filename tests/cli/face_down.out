@@ -1,0 +1,264 @@
+robomage 0.3
+Decision log: face_down.rmlog
+
+======== Player A to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Aphetto Alchemist, Island, Island, Island, Island, Island, Island
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Aphetto Alchemist  #1  {1}{U}  Creature - Human Wizard
+  Island             #2          Basic Land - Island
+  Island             #3          Basic Land - Island
+  Island             #4          Basic Land - Island
+  Island             #5          Basic Land - Island
+  Island             #6          Basic Land - Island
+  Island             #7          Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+======== Player B to decide ========
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand)
+  T1: Player B draws 7 cards (opening hand): Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Game 1, opening hand (Player A plays first)
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  (no permanents)
+Player B's battlefield:
+  (no permanents)
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x6
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player B [0-1, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A's Island: created on the battlefield (x4)
+  T1: Player B's Mountain: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 7   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  Island x4  #8 #9 #10 #11
+Player B's battlefield:
+  Mountain  #12
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x6
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Draw: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A's Island: created on the battlefield (x4)
+  T1: Player B's Mountain: created on the battlefield
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Mountain  #12
+Player A's battlefield:
+  Island x4  #8 #9 #10 #11
+Your hand (7):
+  Aphetto Alchemist  #1  {1}{U}  Creature - Human Wizard
+  Island             #2          Basic Land - Island
+  Island             #3          Basic Land - Island
+  Island             #4          Basic Land - Island
+  Island             #5          Basic Land - Island
+  Island             #6          Basic Land - Island
+  Island             #7          Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Cast Aphetto Alchemist
+  8: Cast Aphetto Alchemist face down (morph)
+Player A [0-8, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A casts a card from hand
+Game 1, turn 1, First main: Player A's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 6   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  Island x3  #8 #9 #10  tapped
+  Island     #11
+Player B's battlefield:
+  Mountain  #12
+Stack (top first):
+  1. spell #13 (Player A), face down
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x5
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Player A casts Aphetto Alchemist (face down) from hand
+  T1: Player A puts Aphetto Alchemist (face down) onto the battlefield from stack
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Mountain  #12
+Player A's battlefield:
+  Aphetto Alchemist  2/2  #14        summoning sick, face down
+  Island x3               #8 #9 #10  tapped
+  Island                  #11
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+  7: Turn Aphetto Alchemist face up ({U})
+Player A [0-7, help]> 
+======== Player A to decide ========
+Since your last decision:
+  T1: Aphetto Alchemist is turned face up
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Mountain  #12
+Player A's battlefield:
+  Aphetto Alchemist  1/2  #14            summoning sick
+  Island x4               #8 #9 #10 #11  tapped
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Mountain x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Island
+  2: Play Island
+  3: Play Island
+  4: Play Island
+  5: Play Island
+  6: Play Island
+Player A [0-6, help]> 
+======== Player B to decide ========
+Since your last decision:
+  T1: Player A's card: stack -> battlefield
+  T1: Aphetto Alchemist is turned face up
+Game 1, turn 1, First main: Player A's turn; Player B has priority
+  Player B (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player A        life 20   hand 6   library 8   graveyard 0   exile 0
+Player A's battlefield:
+  Aphetto Alchemist  1/2  #14            summoning sick
+  Island x4               #8 #9 #10 #11  tapped
+Player B's battlefield:
+  Mountain  #12
+Your hand (7):
+  Lightning Bolt  #1  {R}  Instant
+  Mountain        #2       Basic Land - Mountain
+  Mountain        #3       Basic Land - Mountain
+  Mountain        #4       Basic Land - Mountain
+  Mountain        #5       Basic Land - Mountain
+  Mountain        #6       Basic Land - Mountain
+  Mountain        #7       Basic Land - Mountain
+Player B's graveyard: (empty)
+Player A's graveyard: (empty)
+You know:
+  Player A's hand holds Island x6
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player B's library: top: Mountain; 2nd from the top: Mountain; 3rd from the top: Mountain; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+======== Player B to decide ========
+Game 1, turn 1, Begin combat: Player A's turn; Player B has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Lightning Bolt
+Player B [0-1, help]> 
+Input closed; quitting.

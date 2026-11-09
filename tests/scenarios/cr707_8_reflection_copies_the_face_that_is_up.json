@@ -1,0 +1,53 @@
+{
+  "name": "cr707_8_reflection_copies_the_face_that_is_up",
+  "why": "CR 707.8: a token copy of a transformed Reflection of Kiki-Jiki is a Reflection, with its activated ability and haste, so it copies a creature at once; both tokens go at the end step.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Reflection of Kiki-Jiki",
+    "Reflection of Kiki-Jiki",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Reflection of Kiki-Jiki",
+    "A:target:Reflection of Kiki-Jiki",
+    "A:activate:Reflection of Kiki-Jiki",
+    "A:target:Grizzly Bears",
+    "A:pass",
+    "A:pass",
+    "A:activate:Reflection of Kiki-Jiki",
+    "A:target:Grizzly Bears",
+    "A:pass"
+  ],
+  "max_decisions": 14,
+  "expect_order": [
+    "Token copy created: 2/2 Grizzly Bears",
+    "Token copy created: 2/2 Reflection of Kiki-Jiki",
+    "Token copy created: 2/2 Grizzly Bears"
+  ]
+}

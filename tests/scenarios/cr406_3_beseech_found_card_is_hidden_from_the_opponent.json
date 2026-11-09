@@ -1,0 +1,46 @@
+{
+  "name": "cr406_3_beseech_found_card_is_hidden_from_the_opponent",
+  "why": "CR 406.3, 701.23: Beseech the Mirror exiles the found card face down and returns it to the hand unrevealed: the searcher knows it, the opponent's frames never do.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Air Elemental",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:search:Air Elemental"
+  ],
+  "max_decisions": 6,
+  "expect_dump_final": [
+    "^A d=\\d+ \\S+ \\S+ seen self Air Elemental"
+  ],
+  "expect_dump_final_not": [
+    "^B d=\\d+ \\S+ \\S+ known_hand Air Elemental"
+  ],
+  "expect_dump_not": [
+    "^B .*Air Elemental 1-"
+  ]
+}

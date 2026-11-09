@@ -15,7 +15,7 @@
 // own copy of the event queues (ObsConsumer::SELFCHECK) and checks:
 //
 //   roundtrip    decode → re-encode is byte-identical (state_format/decode.h), for every frame
-//                and, once per match, each viewer's SCHEMA, CARDS, DECKLISTS and METAGAME frames;
+//                and, once per match, each viewer's SCHEMA, CARDS and DECKLISTS frames;
 //   scramble     each seat's frame is encoded again with every card hidden from that seat given
 //                another identity (ScrambledIdentities): the bytes must be the same. Every event
 //                is checked the same way as it is built (state_format/events.cpp);
@@ -31,7 +31,7 @@
 //   permutation  for each seat, everything hidden from it is physically permuted (the
 //                opponent's hand, library and sideboard cards dealt among those zones' slots;
 //                the seat's own library reordered; the identities of all cards hidden from the
-//                seat, face-down exiled cards included, swapped among cards of the same owner),
+//                seat, face-down objects included, swapped among cards of the same owner),
 //                keeping every live reveal window fixed; the seat's frame is encoded in that
 //                world and must be the same bytes. Then everything is put back exactly;
 //   snapshot     the game is saved (snapshot.h) at a loop-safe decision, play goes on for at

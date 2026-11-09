@@ -9,15 +9,16 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "game_driver.h"
+#include "queries/characteristics.h"
 #include "queries/filters.h"
 
 extern Coordinator global_coordinator;
 
 static std::vector<LegalAction> vocab_name_card_choices(
-    const std::string &valid_filter, std::vector<std::string> &out_names);
+    const FilterSpec &valid_filter, std::vector<std::string> &out_names);
 
 std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone::Ownership owner,
-    const std::string &valid_filter, std::vector<std::string> &out_names, NameCardScope scope) {
+    const FilterSpec &valid_filter, std::vector<std::string> &out_names, NameCardScope scope) {
     // A closed decklist hides the opponent's list, so the candidates cannot come from the decks
     // (docs/state_format.md register 11a).
     if (closed_decklist) return vocab_name_card_choices(valid_filter, out_names);
@@ -42,11 +43,13 @@ std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone
         // Apply the ability's ValidCards$ filter against the candidate's printed
         // characteristics via the unified matcher, so every filter token (Card.nonLand,
         // Land, …) works uniformly. Empty filter = no restriction.
-        if (!valid_filter.empty() && !card_matches_any(e, valid_filter)) continue;
-        bool found = false;
-        for (size_t i = 0; i < names.size(); i++)
-            if (names[i] == cd.name) { copies[i]++; found = true; break; }
-        if (!found) { names.push_back(cd.name); reps.push_back(e); copies.push_back(1); }
+        if (!valid_filter.empty() && !card_matches_filter(e, valid_filter)) continue;
+        for (const std::string &name : card_names(cd)) {
+            bool found = false;
+            for (size_t i = 0; i < names.size(); i++)
+                if (names[i] == name) { copies[i]++; found = true; break; }
+            if (!found) { names.push_back(name); reps.push_back(e); copies.push_back(1); }
+        }
     }
 
     // Order by copies desc, then name asc (deterministic for replay).
@@ -75,13 +78,13 @@ std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone
 // cards no deck holds create no entity and touch no game state; no object stands for a
 // candidate, so each choice carries its card as `named_card`.
 static std::vector<LegalAction> vocab_name_card_choices(
-    const std::string &valid_filter, std::vector<std::string> &out_names) {
+    const FilterSpec &valid_filter, std::vector<std::string> &out_names) {
     std::vector<std::pair<std::string, int>> cards;
     for (int i = 0; i < CARD_VOCAB_SIZE; i++) {
         const CardData *cd = vocab_front_card_data(i);
         if (cd == nullptr) continue;
-        if (!valid_filter.empty() && !card_matches_any(*cd, valid_filter)) continue;
-        cards.push_back({cd->name, card_vocab_entries[i].index});
+        if (!valid_filter.empty() && !card_matches_filter(off_battlefield_face(*cd), valid_filter)) continue;
+        for (const std::string &name : card_names(*cd)) cards.push_back({name, card_vocab_entries[i].index});
     }
     std::sort(cards.begin(), cards.end());
     std::vector<LegalAction> name_choices;

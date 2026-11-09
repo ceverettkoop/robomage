@@ -6,8 +6,10 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/affected.h"
 #include "../queries/battlefield.h"
 #include "../queries/filters.h"
 #include "../systems/orderer.h"
@@ -27,8 +29,8 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // trigger): sacrifice exactly the remembered object(s) — the creature the aura animated,
     // restored into cur_game.resolution.memory.remembered before this ability resolves (CR 603.7a) — rather
     // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
-    if (ab.def->defined_remembered) {
-        for (Entity e : live_entities(cur_game.resolution.memory.remembered))
+    if (ab.def->defined.is_remembered()) {
+        for (Entity e : resolve_objects(ab.def->defined, ResolveCtx::of(ab)))
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)
@@ -37,7 +39,7 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     }
 
     for (auto e : to_sac) {
-        const std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+        const std::string nm = permanent_label(e);
         const Zone::Ownership owner = global_coordinator.GetComponent<Permanent>(e).controller;
         orderer->add_to_zone(false, e, Zone::GRAVEYARD);
         game_log("%s sacrifices %s.\n", player_name(owner).c_str(), nm.c_str());

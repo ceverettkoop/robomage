@@ -1,0 +1,14 @@
+{
+  "name": "cr305_1_city_of_traitors_second_city_triggers_first",
+  "why": "CR 305.1 / 603.2: playing a second City of Traitors is playing ANOTHER land for the City already in play, which is sacrificed; the played City's own trigger (ValidCard$ Land.Other+YouCtrl) does not fire on itself, so exactly one trigger and one sacrifice (LAND_PLAYED event, the LandPlayed trigger binding)",
+  "hand_a": ["City of Traitors"],
+  "battlefield_a": ["City of Traitors"],
+  "library_a": ["Mountain"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:land:City of Traitors"],
+  "seed": 1,
+  "max_decisions": 6,
+  "expect_order": ["Player A played City of Traitors", "City of Traitors triggered", "Player A sacrifices City of Traitors"],
+  "expect_count": {"City of Traitors triggered": 1, "sacrifices City of Traitors": 1}
+}

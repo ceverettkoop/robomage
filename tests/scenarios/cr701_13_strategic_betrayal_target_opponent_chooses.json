@@ -1,0 +1,18 @@
+{
+  "name": "cr701_13_strategic_betrayal_target_opponent_chooses",
+  "why": "CR 608.2d / 701.13a: Strategic Betrayal's target opponent chooses which creature they control is exiled, from their creatures only, and exiles their graveyard; the other creature and the caster's graveyard stay",
+  "hand_a": ["Strategic Betrayal"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp", "Soul Warden"],
+  "graveyard_a": ["Mox Opal"],
+  "hand_b": ["Swamp"],
+  "library_b": ["Swamp"],
+  "battlefield_b": ["Grizzly Bears", "Flying Men"],
+  "graveyard_b": ["Lightning Bolt", "Aether Vial"],
+  "play": ["A:keep", "B:keep", "A:cast:Strategic Betrayal", "B:desc:Choose Flying Men"],
+  "max_decisions": 5,
+  "expect": ["Player B chooses Flying Men", "moves Flying Men to exile", "moves Lightning Bolt to exile", "moves Aether Vial to exile"],
+  "expect_menu": ["Choose Grizzly Bears", "Choose Flying Men"],
+  "expect_menu_not": ["Choose Soul Warden"],
+  "expect_not": ["moves Grizzly Bears", "moves Soul Warden", "moves Mox Opal"]
+}

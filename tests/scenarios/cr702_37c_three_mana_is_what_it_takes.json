@@ -1,0 +1,49 @@
+{
+  "name": "cr702_37c_three_mana_is_what_it_takes",
+  "why": "CR 702.37c: with two lands the face-down cast isn't offered; the card's own {1}{U} is.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Aphetto"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Aphetto Alchemist",
+    "Aphetto Alchemist enters the battlefield"
+  ],
+  "expect_menu_not": [
+    "face down"
+  ],
+  "expect_dump": [
+    "^B .*stack SPELL card=Aphetto Alchemist"
+  ]
+}

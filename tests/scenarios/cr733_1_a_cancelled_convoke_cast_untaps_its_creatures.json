@@ -1,0 +1,51 @@
+{
+  "name": "cr733_1_a_cancelled_convoke_cast_untaps_its_creatures",
+  "why": "CR 733.1: a reversed cast leaves no trace: the creatures tapped for Convoke are untapped again.",
+  "hand_a": [
+    "Hogaak Arisen Necropolis",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "offer_cancel": true,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Hogaak",
+    "A:convoke:Grizzly Bears",
+    "A:desc:Cancel",
+    "A:cast:Hogaak",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears",
+    "A:convoke:Grizzly Bears"
+  ],
+  "max_decisions": 20,
+  "expect_count": {
+    "Player A casts Hogaak": 1,
+    "Casting cancelled": 1
+  }
+}

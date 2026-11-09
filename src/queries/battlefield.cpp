@@ -7,9 +7,27 @@
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/player.h"
+#include "../ecs/events.h"
 #include "characteristics.h"
 #include "filters.h"
+#include "players.h"
 #include "zones.h"
+
+bool tap_permanent(Entity e) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (perm.is_tapped) return false;
+    perm.is_tapped = true;
+    Event ev(Events::BECAME_TAPPED);
+    ev.SetParam(Params::ENTITY, e);
+    ev.SetParam(Params::PLAYER, get_player_entity(perm.controller));
+    global_coordinator.SendEvent(ev);
+    return true;
+}
+
+void reverse_tap(Entity e) {
+    global_coordinator.GetComponent<Permanent>(e).is_tapped = false;
+    global_coordinator.drop_last_pending_event(Events::BECAME_TAPPED, Params::ENTITY, e);
+}
 
 bool ability_source_on_battlefield(const Ability &ab) {
     const Entity self = ab.source.get();
@@ -20,7 +38,7 @@ bool entered_battlefield_this_turn(long entered_on_turn) {
     return entered_on_turn == static_cast<long>(cur_game.turn_state.turn);
 }
 
-int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+int count_battlefield_matching(const FilterSpec &filter_spec, Zone::Ownership controller,
                                Entity source) {
     MatchCtx mctx;
     mctx.controller = controller;  // the "you" reference for YouCtrl/OppCtrl in the spec
@@ -33,7 +51,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 }
 
 std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity) {
+    Zone::Ownership player, const FilterSpec &spec, const EntitySet &entities, Entity exclude_entity) {
     std::vector<Entity> out;
     MatchCtx ctx;
     ctx.controller = player;
@@ -59,6 +77,8 @@ void strip_permanent_components(Entity entity, const EntitySet &entities) {
             auto &attached = global_coordinator.GetComponent<Permanent>(e);
             if (attached.equipped_to.lki_entity() != entity) continue;
             attached.equipped_to = ObjectRef{};
+            if (const auto lki = cur_game.last_known_info.find(entity); lki != cur_game.last_known_info.end())
+                lki->second.attached.push_back(ObjectRef::of(e));
             const bool is_aura = global_coordinator.entity_has_component<CardData>(e) &&
                                  !global_coordinator.GetComponent<CardData>(e).enchant_filter.empty();
             if (!is_aura) game_log("%s becomes unattached\n", entity_name(e).c_str());

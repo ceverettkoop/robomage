@@ -1,0 +1,14 @@
+{
+  "name": "cr107_3b_x_is_0_on_a_free_cast_from_exile",
+  "why": "CR 107.3b, 118.9: an {X} in the mana cost is not announced when the mana cost isn't paid, and Phyrexian pips aren't owed: Dismember cast free from exile asks for neither",
+  "hand_a": ["Thoughtseize"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Dauthi Voidwalker"],
+  "hand_b": ["Dismember"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Thoughtseize", "A:target:Player B", "A:desc:Dismember", "A:activate:Dauthi Voidwalker", "A:cast:Dismember", "A:target:Grizzly Bears"],
+  "max_decisions": 24,
+  "expect": ["Player A casts Dismember targeting Grizzly Bears"],
+  "expect_menu_not": ["Pay 2 life"]
+}

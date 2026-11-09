@@ -1,0 +1,14 @@
+{
+  "name": "cr107_4e_hybrid_pips_asked_one_at_a_time",
+  "why": "CR 107.4e: with auto-mana off each hybrid pip of Yorion's {3}{W/U}{W/U} is one choice made while the cost is built, parked for the loop top like any other, and the mana follows what was chosen",
+  "hand_a": ["Yorion Sky Nomad"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": ["Island", "Island", "Island", "Plains", "Plains"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:cast:Yorion", "desc:Pay {W}", "desc:Pay {U}", "tap:Island", "tap:Island", "tap:Island", "tap:Plains"],
+  "max_decisions": 12,
+  "expect_menu": ["Pay \\{W\\}", "Pay \\{U\\}"],
+  "expect": ["Player A casts Yorion, Sky Nomad"]
+}

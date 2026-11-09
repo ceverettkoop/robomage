@@ -1,0 +1,55 @@
+{
+  "name": "cr111_10_a_treasure_from_hullbreacher_pays_for_a_spell",
+  "why": "CR 111.10a: the Treasure Hullbreacher makes is an artifact with \"{T}, Sacrifice this token: Add one mana of any color\"",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:done",
+    "B:cast:Brainstorm",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 18,
+  "expect": [
+    "casts Lightning Bolt"
+  ],
+  "expect_count": {
+    "sacrifices Treasure": 1
+  }
+}

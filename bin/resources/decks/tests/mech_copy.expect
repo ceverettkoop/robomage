@@ -1,0 +1,17 @@
+# M8 (b2): copies and end-of-turn animation.
+# An until-end-of-turn base P/T (Allosaurus Shepherd).
+row:animate_eot_base_pt
+# The top creature of a graveyard (Shallow Grave), exiled at the next end step.
+row:TopGraveyardCreature
+# A copy's added keyword, its end-step sacrifice, the discard that may stop (Fable of the Mirror-Breaker).
+row:copy_add_keywords
+effect:CopyPermanent
+trigger:Delayed
+category:DISCARD
+# A token copy with its types set, a mana ability's sacrifice (Lazotep Quarry).
+row:copy_set_creature_types
+row:cmc_bound_x_target
+row:mana_sacrifice_at_priority
+# Entering as a copy (Mockingbird).
+row:enters_as_copy
+category:CHOOSE_CARD

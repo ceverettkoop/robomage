@@ -1,0 +1,164 @@
+{
+ "deck": "hogaak",
+ "location": "league",
+ "source": {
+  "archetype_id": 851,
+  "deck_id": 904240,
+  "deck_url": "https://mtgtop8.com/event?d=904240&f=LE",
+  "format": "LE",
+  "meta_share": 2.0,
+  "name": "Hogaak",
+  "rank": 18,
+  "scraped": "2026-10-24",
+  "section": "combo",
+  "site": "mtgtop8",
+  "url": "https://mtgtop8.com/format?f=LE&meta=39",
+  "window": "Last 2 Months"
+ },
+ "stages": {
+  "capability": {
+   "detail": {
+    "clean": [],
+    "mechanics": {},
+    "needs": {},
+    "new_cards": [],
+    "size_points": 0
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s): 0 clean, 0 need 0 mechanic(s) (0 points)",
+   "time": "2026-11-07T15:35:30"
+  },
+  "checks": {
+   "detail": {
+    "draws": [],
+    "draws_reviewed": [
+     "fuzz_hogaak__reanimator_g90_draw_20261107_153743.txt"
+    ],
+    "fuzz": 0,
+    "fuzz_cmd": "--tier fuzz --matchups candidates/hogaak:* --fuzz-games 100 --manual-mana-games 10 --out-dir /home/sean/development/robomage/ci_out/onboard_hogaak",
+    "out_dir": "ci_out/onboard_hogaak"
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make check and 100 fuzz games per matchup clean, 1 reviewed draw(s)",
+   "time": "2026-11-07T15:37:45"
+  },
+  "designate": {
+   "detail": {
+    "from": "candidates",
+    "to": "league"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "moved to league/",
+   "time": "2026-11-07T15:37:45"
+  },
+  "diff": {
+   "detail": {
+    "distinct": 28,
+    "in_vocab": 28,
+    "no_script": [],
+    "not_in_vocab": []
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "28 cards: 28 in vocab, 0 new (0 without a script)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "implement": {
+   "detail": {},
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
+    "sizes": "1c6a2ea2b9afba17ba95775a87385d1d36dc3f5bc78c29b8c2f43d26c6ebaeb4",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "every new card parses clean",
+   "time": "2026-11-07T15:35:30"
+  },
+  "parse": {
+   "detail": {
+    "cards": {},
+    "no_script": []
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "engine": "f27216ea90e30b0f04afa4ac084826ec2728ab3c6d22b7636f959266401ebaa9",
+    "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
+    "tokens": "d76645021d7a67be2cbb9c3d76742b932ec8227c4417082617738f4325243c0b",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 new card(s), 0 with findings (0 findings), 0 without a script",
+   "time": "2026-11-07T15:35:30"
+  },
+  "provision": {
+   "detail": {
+    "fetched": [],
+    "on_forge_master": [],
+    "tokens": [],
+    "tokens_fetched": [],
+    "tokens_missing": [],
+    "unobtainable": []
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e",
+    "scripts": "c7698b204f2488791f08581ee93277985318a275731b1c89f1a6f035b5b4ca37",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "0 fetched, 0 not at the Forge pin (0 on master), 0 token(s) (0 fetched, 0 missing)",
+   "time": "2026-11-07T13:48:41"
+  },
+  "scrape": {
+   "detail": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e"
+   },
+   "inputs": {},
+   "result": "ok",
+   "summary": "Hogaak, 2.0% (combo), 60 main + 15 side",
+   "time": "2026-10-24T21:08:34"
+  },
+  "text": {
+   "detail": {},
+   "inputs": {
+    "text_table": "4a69a0b64a933245fb2debf6ba672ffb3df620ca65a12a0de4caec55ffda4ea0",
+    "vocab": "55bfeea727fb789a2a98deac845bfff5ca1e5e69bef426e81181b703e040f438"
+   },
+   "result": "ok",
+   "summary": "make text-table exited 0",
+   "time": "2026-11-07T15:28:18"
+  },
+  "vocab": {
+   "detail": {
+    "added": {},
+    "tokens": {}
+   },
+   "inputs": {
+    "deck": "3276988eeed775fd9a64edaf6d7a1cd0c725ca30be274951320977735cd9e84e"
+   },
+   "result": "ok",
+   "summary": "0 entries and 0 token(s) appended",
+   "time": "2026-11-07T15:23:08"
+  }
+ }
+}

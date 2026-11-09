@@ -1,0 +1,47 @@
+{
+  "name": "cr702_8a_theorists_proxy_has_flash",
+  "why": "CR 702.8a: on the opponent's turn, with the Proxy's trigger resolving there",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Island",
+    "A:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 30,
+  "expect_order": [
+    "TURN 2 \\(Player B\\)",
+    "Player A casts Theorist's Proxy",
+    "Empower Jace 3: Player A's Jace token now has 3 loyalty",
+    "TURN 3 \\(Player A\\)"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

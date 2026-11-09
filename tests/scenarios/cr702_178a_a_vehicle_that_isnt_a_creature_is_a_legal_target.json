@@ -1,0 +1,64 @@
+{
+  "name": "cr702_178a_a_vehicle_that_isnt_a_creature_is_a_legal_target",
+  "why": "CR 702.178a, 301.7: 'creature or Vehicle you control': an uncrewed Unlicensed Hearse is no creature and takes the counter; a Vehicle of B's is no target",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears",
+    "Unlicensed Hearse"
+  ],
+  "battlefield_b": [
+    "The Fantasticar"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:activate:Perilous Snare",
+    "A:target:Unlicensed Hearse"
+  ],
+  "max_decisions": 64,
+  "expect_order": [
+    "Player A's speed is 4",
+    "Put 1 P1P1 counter\\(s\\) on Unlicensed Hearse \\(now 1\\)"
+  ],
+  "expect_menu": [
+    "^Unlicensed Hearse"
+  ],
+  "expect_menu_not": [
+    "^The Fantasticar"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

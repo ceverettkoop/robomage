@@ -1,0 +1,45 @@
+{
+  "name": "cr708_4_veil_of_summer_sees_blue_in_the_card_cast_face_up",
+  "why": "CR 708.4's other half: the same line with the card cast for its mana cost, a blue spell, and Veil of Summer draws.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Veil of Summer",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Aphetto",
+    "B:cast:Veil of Summer"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Player B casts Veil of Summer",
+    "Player B draws"
+  ]
+}

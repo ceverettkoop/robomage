@@ -1,0 +1,39 @@
+{
+  "name": "cr604_3_grist_is_a_creature_spell",
+  "why": "CR 604.3, 601.3: on the stack Grist is a creature spell: Thalia's tax on noncreature spells doesn't touch it, so three lands cast it, and Spell Pierce, 'target noncreature spell', can't target it.",
+  "hand_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Swamp",
+    "Forest"
+  ],
+  "hand_b": [
+    "Spell Pierce"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Thalia Guardian of Thraben"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grist"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Cast Grist"
+  ],
+  "expect_menu_not": [
+    "Cast Spell Pierce"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "cr608_2h_hawkeyes_bow_a_departed_creature_still_deals_the_damage",
+  "why": "CR 608.2h, Hawkeye's Bow: DamageSource$ TriggeredCardLKICopy: the creature exiled in response still deals the 1 damage as it last existed, so its lifelink gains its controller a life (CR 120.3f), which damage from the Bow would not.",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Swords to Plowshares",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Hawkeye's Bow",
+    "Triumph of Saint Katherine",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Plains"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Hawkeye's Bow",
+    "A:attack:Triumph of Saint Katherine",
+    "A:attack:done",
+    "B:cast:Swords to Plowshares",
+    "B:target:Triumph of Saint Katherine"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "Swords to Plowshares",
+    "Triumph of Saint Katherine deals 1 damage to Player B \\(now at 19 life\\)",
+    "gains 1 life \\(lifelink\\)"
+  ]
+}

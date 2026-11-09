@@ -1,0 +1,12 @@
+{
+  "name": "cr603_2_nantuko_landfall_pays_for_a_copy_of_the_creature",
+  "why": "Springheart Nantuko, attached to a creature you control: you may pay {1}{G} as the landfall trigger resolves. Paid, you create a token that's a copy of that creature, and no Insect (UnlessSwitched$, UnlessResolveSubs$ WhenNotPaid).",
+  "hand_a": ["Springheart Nantuko", "Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest", "Forest", "Grizzly Bears"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Springheart Nantuko (bestow)", "A:target:Grizzly Bears", "A:play:Forest", "A:tap:Forest", "A:tap:Forest"],
+  "max_decisions": 12,
+  "expect": ["Token copy created: 2/2 Grizzly Bears"],
+  "expect_not": ["Insect"]
+}

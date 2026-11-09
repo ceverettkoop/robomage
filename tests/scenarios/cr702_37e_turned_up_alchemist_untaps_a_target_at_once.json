@@ -1,0 +1,46 @@
+{
+  "name": "cr702_37e_turned_up_alchemist_untaps_a_target_at_once",
+  "why": "CR 708.8: a turned-up creature has its abilities at once: Aphetto Alchemist, here since before the turn, taps to untap the Bears that attacked, with the Bears' attack still on.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:turn-up:Aphetto",
+    "A:activate:Aphetto",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect_order": [
+    "turns Aphetto Alchemist face up",
+    "Player A's Aphetto Alchemist ability targeting Grizzly Bears",
+    "Grizzly Bears untaps"
+  ]
+}

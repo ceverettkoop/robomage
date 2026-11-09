@@ -1,0 +1,52 @@
+{
+  "name": "cr105_2b_grindstone_multicolored_card_shares_a_color",
+  "why": "CR 105.2b: a multicolored card shares a color with a card of either of its colors: black-green Abrupt Decay with green Grizzly Bears repeats, and the next pair of Swords to Plowshares and Grizzly Bears stops it",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Grindstone",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Abrupt Decay",
+    "Grizzly Bears",
+    "Swords to Plowshares",
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Grindstone",
+    "A:target:Player B"
+  ],
+  "max_decisions": 5,
+  "expect_count": {
+    "^Player B mills ": 4
+  }
+}

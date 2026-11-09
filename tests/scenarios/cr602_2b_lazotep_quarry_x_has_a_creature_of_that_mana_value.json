@@ -1,0 +1,62 @@
+{
+  "name": "cr602_2b_lazotep_quarry_x_has_a_creature_of_that_mana_value",
+  "why": "CR 602.2b, 115.1: X is announced before the target: only an X with a creature card of that mana value in your graveyard is offered, and only those cards are targets.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Air Elemental",
+    "Grizzly Bears",
+    "Llanowar Elves",
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Thalia Guardian of Thraben"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Lazotep Quarry",
+    "A:x:2"
+  ],
+  "max_decisions": 8,
+  "expect_menu": [
+    "X = 1",
+    "X = 2"
+  ],
+  "expect_menu_not": [
+    "X = 0",
+    "X = 3"
+  ],
+  "expect": [
+    "Token copy created: 4/4 Grizzly Bears",
+    "Grizzly Bears is moved to exile"
+  ]
+}

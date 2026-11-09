@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "cast_options.h"
 #include "classes/action.h"
 #include "classes/game.h"
 #include "components/ability.h"
@@ -26,22 +27,28 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 // ability, and no player receives priority after it is cast. Suspendable: the offer is asked
 // through `ctx`, and a cast prompt parks as a CAST query that the main loop resumes before
 // re-entering the resolution — the calling handler returns SUSPENDED on SUSPENDED and calls this
-// again with the same `rt` when re-entered (`castable` is read only before the offer is answered).
+// again with the same `rt` when re-entered (`offers` is read only before the offer is answered).
 // CAST when the spell was cast, DECLINED when it wasn't (declined, not castable, or the cast was
 // cancelled). Used by suspend's last time counter (CR 702.62a), a miracle trigger (CR 702.94a)
 // and DB$ Play (Amped Raptor).
 enum class ResolutionCastStatus { CAST, DECLINED, SUSPENDED };
-ResolutionCastStatus cast_during_resolution(const LegalAction& cast, Zone::Ownership caster,
-                                            bool castable, const std::string& accept_label,
+// One cast on offer: the row it is made from, and what the menu calls it.
+struct ResolutionCastOffer {
+        LegalAction cast;
+        std::string label;
+};
+ResolutionCastStatus cast_during_resolution(const std::vector<ResolutionCastOffer>& offers,
+                                            const std::string& decline_label, Zone::Ownership caster,
                                             ResolutionCastRt& rt, FrameCtx& ctx,
                                             std::shared_ptr<Orderer> orderer);
-// The exile form: `caster` may cast the exiled `card` for the cost `grant` puts in place of its
-// mana cost (FREE = "without paying its mana cost"), checked by exile_grant_castable. The grant
-// is a Game::resolved_effects.impulse_cast_permission that lasts only while the offer and the cast are open.
-ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
-                                            Game::ImpulseCastPermission grant,
+// The one-card form: `caster` may cast `card` from the zone it is in, on `terms`.
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster, const ResolutionCastTerms& terms,
                                             ResolutionCastRt& rt, FrameCtx& ctx,
                                             std::shared_ptr<Orderer> orderer);
+// The casts of `card` on `terms`, as offers (resolution_cast_rows).
+std::vector<ResolutionCastOffer> resolution_cast_offers(Entity card, Zone::Ownership caster,
+                                                        const ResolutionCastTerms& terms,
+                                                        std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
 // tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
@@ -67,6 +74,12 @@ void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 // answer; CR 733.1), or complete it (mana produced off-stack, or the ability
 // becomes activated + game.take_action()).
 void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
+
+// Loop-top dispatcher entry for a parked prompt of a special action's mana payment (PendingQuery
+// tag SPECIAL_ACTION): consumes the latched answer and re-enters the payment. The resume may arm
+// its next prompt (the caller must loop back to the pending-query branch while pending.query.active),
+// fail it, or complete the action.
+void resume_special_action(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
@@ -102,6 +115,15 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller);
 bool spell_has_castable_targets(const Ability& primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift);
 
+// The most generic mana a ValidTarget$-conditioned cost reduction (target_cost_reduction_for;
+// Mystical Dispute: {2} less if it targets a blue spell) takes off casting `face` from
+// `card_entity` for `caster`, over each single legal target of its spell ability, its targeting
+// sub-abilities and modes, and an Aura's enchant target: the cheapest the cast can be, read by the
+// cast-legality gates, whose target picks the cast then limits to payable ones. 0 without such a
+// reduction.
+int best_target_cost_reduction(
+    const CardData &face, Entity card_entity, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+
 // Stamp the real casting source/controller onto a spell-ability TEMPLATE (from CardData::abilities,
 // whose source is 0) and its targeting sub-abilities, returning the stamped copy for the
 // cast-legality target probe. Cast-time source-dependent target restrictions — protection from the
@@ -119,15 +141,25 @@ Ability cast_gate_probe(const Ability& tmpl, Entity card_entity, Zone::Ownership
 // Caller must ensure has_legal_targets() is true before calling.
 void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
+// One target pick through `asker` (the shared machine's single-decision step), from `valid_targets`.
+// Returns the chosen index, or a negative value when the ask parked a pending
+// query (the caller suspends; a resumed re-entry rebuilds the identical menu
+// and the asker consumes the latched answer). The pending-decision context is
+// the asking source, exactly the PendingDecisionScope the blocking path held.
+int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done,
+                         TargetAsker &asker);
+
 // Suspension-aware form of select_target (the shared target sub-machine; see
 // TargetSelectRT / TargetAsker in resolution_frame.h). One call per resume:
 // stamps the dynamic min/max bounds once (rt.active), then asks one pick at a
 // time through `asker`; SUSPENDED means an ask parked a pending query — the
 // caller returns without further mutation and re-enters with the SAME rt when
 // the answer is latched. select_target is this machine run with a blocking
-// asker; the caller must have seated priority at the choosing player.
-TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
-                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
+// asker; the caller must have seated priority at the choosing player. `gate`,
+// when set, leaves out of each pick's pool the candidates it refuses (all of
+// them kept when it refuses every one).
+TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
+    std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player, const TargetPickGate *gate = nullptr);
 
 // General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
 // Creates `count` independent copies of the spell entity `original` on top of the stack,

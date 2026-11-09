@@ -1,0 +1,55 @@
+{
+  "name": "cr120_3c_galvanic_discharge_can_target_a_planeswalker",
+  "why": "CR 120.3c: a planeswalker is a legal target of Galvanic Discharge, offered beside the creature, and the damage it pays for removes that many loyalty counters; a player is no target",
+  "hand_a": [
+    "Galvanic Discharge"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Karn the Great Creator",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Galvanic Discharge",
+    "A:target:Karn",
+    "A:x:3"
+  ],
+  "max_decisions": 5,
+  "expect": [
+    "Player A pays 3 energy",
+    "Galvanic Discharge deals 3 damage to Karn"
+  ],
+  "expect_menu": [
+    "Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "Player B$"
+  ]
+}

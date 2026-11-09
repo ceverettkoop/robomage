@@ -1,0 +1,14 @@
+{
+  "name": "cr608_2b_adventure_with_an_illegal_target_goes_to_the_graveyard",
+  "why": "CR 608.2b, 715.3d: an Adventure whose only target went illegal doesn't resolve, so nothing replaces its move to the graveyard. Mishra's Bauble sacrificed in response leaves Petty Theft with no legal target.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "A:cast:Petty Theft", "A:target:Mishra's Bauble", "B:activate:Mishra's Bauble", "B:target:Player A"],
+  "max_decisions": 14,
+  "expect": ["ChangeZone fizzles"],
+  "expect_not": ["is exiled"],
+  "expect_menu_not": ["from exile"]
+}

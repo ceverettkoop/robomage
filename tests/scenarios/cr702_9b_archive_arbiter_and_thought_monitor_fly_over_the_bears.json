@@ -1,0 +1,40 @@
+{
+  "name": "cr702_9b_archive_arbiter_and_thought_monitor_fly_over_the_bears",
+  "why": "CR 702.9b: a creature without flying or reach can't block Archive Arbiter or Thought Monitor",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Archive Arbiter",
+    "Thought Monitor"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Archive Arbiter",
+    "A:attack:Thought Monitor",
+    "A:attack:done"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "No creatures eligible to block",
+    "Archive Arbiter deals 4 damage to Player B",
+    "Thought Monitor deals 2 damage to Player B"
+  ]
+}

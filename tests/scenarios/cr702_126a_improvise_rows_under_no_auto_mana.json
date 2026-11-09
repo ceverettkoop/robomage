@@ -1,0 +1,15 @@
+{
+  "name": "cr702_126a_improvise_rows_under_no_auto_mana",
+  "why": "CR 702.126a, 601.2g-h: an interactive payment lists the eligible artifacts beside the mana sources, and a tap pays a pip with the payment parked at each row",
+  "engine_flags": ["--no-auto-mana"],
+  "hand_a": ["Metallic Rebuke"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Mishra's Bauble", "Urza's Bauble"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:pass", "B:tap:Mountain", "B:cast:Lightning Bolt", "B:target:Player A", "A:desc:Cast Metallic Rebuke", "A:target:Lightning Bolt", "A:desc:Tap Mishra's Bauble (Improvise)", "A:desc:Tap Urza's Bauble (Improvise)", "A:tap:Island"],
+  "max_decisions": 14,
+  "expect_menu": ["Tap Mishra's Bauble \\(Improvise\\)", "Tap Urza's Bauble \\(Improvise\\)"],
+  "expect": ["Player A taps Mishra's Bauble for Improvise", "Player A taps Urza's Bauble for Improvise", "Player A casts Metallic Rebuke targeting Lightning Bolt"]
+}

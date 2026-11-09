@@ -66,6 +66,12 @@ inline bool type_set_has(const std::set<Type> &types, const std::string &type_na
 }
 inline bool is_planeswalker(const std::set<Type> &types) { return type_set_has(types, "Planeswalker"); }
 
+// Does the type list hold a permanent card type (CR 110.4a)? A permanent spell's (The Myriad Pools).
+inline bool is_permanent_type_line(const std::set<Type> &types) {
+    return type_set_has(types, "Artifact") || type_set_has(types, "Battle") || type_set_has(types, "Creature") ||
+           type_set_has(types, "Enchantment") || type_set_has(types, "Land") || type_set_has(types, "Planeswalker");
+}
+
 // True if the type list carries the "Legendary" supertype (drives the legend rule, 704.5j).
 inline bool has_legendary_supertype(const std::set<Type> &types) {
     for (const auto &t : types)
@@ -90,6 +96,18 @@ inline bool is_basic_land_subtype(const std::string &name) {
 
 // The nonbasic land types: every land type of CR 205.3i other than the five basic ones.
 const std::vector<std::string> &nonbasic_land_types();
+
+// Is subtype `name` a creature type: none of the artifact, enchantment or land types (CR 205.3g-i)?
+bool is_creature_subtype(const std::string &name);
+
+// A " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") as Type objects, each token
+// classified TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is (all_types /
+// all_subtypes / all_supertypes).
+std::vector<Type> parse_added_types(const std::string &spec);
+
+// The types a layer-4 static adds: its AddType$ list, or every nonbasic land type for the "is every
+// nonbasic land type" CDA (Planar Nexus: AddType$ AllNonBasicLandType, CR 205.3i).
+std::vector<Type> types_added_by_static(const StaticAbility &sa);
 
 // True for a land type (CR 205.3i), basic or nonbasic, including the engine's Wastes marker.
 bool is_land_subtype(const std::string &name);

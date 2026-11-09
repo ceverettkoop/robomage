@@ -11,7 +11,9 @@
 #include "classes/action.h"
 #include "components/ability.h"
 #include "components/zone.h"
+#include "cost_payment.h"
 #include "ecs/entity.h"
+#include "pending_query.h"
 
 class Orderer;
 
@@ -73,16 +75,28 @@ struct RearrangeRt {
     size_t pick = 0;              // next slot pick
     bool placed = false;          // forced last card already placed (exactly once)
 };
+// A draw event's cards, one at a time through their replacement effects, so that a question about
+// one of them can suspend mid-event. `remaining` is read as the event starts, an additive
+// replacement's extra cards included (replacement::draw_count_bonus). While `body` is set, the
+// ReplaceWith$ that replaces the current card is under way, resolving as a frame level so that it
+// can ask (replacement::draw_body).
+struct DrawBatch {
+    bool started = false;
+    size_t remaining = 0;
+    const AbilityDef *body = nullptr;
+    ObjectRef body_source;
+    Zone::Ownership body_controller = Zone::UNKNOWN;
+};
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
-    size_t draws_done = 0;        // draw-2 progress (a dredge question may suspend mid-batch)
+    DrawBatch draws;              // the draw-2 (a dredge question may suspend mid-batch)
     std::vector<Entity> drawn_in_hand;  // choose-from candidates
     std::vector<Entity> chosen;         // the (up to) 2 chosen cards
     size_t to_choose = 0;         // how many to choose (resolved once)
     size_t pick = 0;              // next choose-a-card pick
     size_t resolved = 0;          // next pay-4-life-or-top decision
 };
-// run_discard_unless (Reality Smasher's "unless they discard a card"): the
+// An unless-cost's discard (Reality Smasher's "unless they discard a card"): the
 // yes/no answer and the count of discards already made. The per-discard menu is
 // intentionally rebuilt from the LIVE hand each ask — the hand only shrinks by
 // the discards themselves between asks. Shares the level's rt slot with the
@@ -103,7 +117,7 @@ struct DiscardRt {
 };
 // change_zone's search loop (fetch lands, Doomsday's 5-pick multi-zone tutor):
 // the outer pick count + the resolved dynamic bounds, computed once — earlier
-// picks mutate the counted state (cards moved, remembered grown), so a resume
+// picks mutate the counted state (cards moved), so a resume
 // must not re-evaluate them — plus the pre-repoint priority seat to restore in
 // the epilogue. The search menus themselves rebuild purely from the live zones
 // (the searchable pool IS the parked menu, so the menu pins cover it).
@@ -117,15 +131,15 @@ struct ChangeZoneSearchRt {
 // ── Batch 7: live-menu loops (Shape C) ──────────────────────────────────────
 // change_zone's Defined$ Remembered bounded/optional selection (Cloak and
 // Dagger's DBChangeZone: "you may exile up to one of the remembered
-// candidates"): the candidate pool — and hence the menu — is rebuilt from the
-// remembered set's CURRENT zones at every arm and every consume (a card
-// already exiled left the eligible zones), so only the count of picks already
-// made persists; it caps the remaining picks after a resume. The other two
-// Shape C loops (change_zone's Yorion battlefield multi-select and
-// run_unless_loop's MANA kind) persist nothing at all: their loops carry no
-// counter — every pass is fully re-derived from live components (battlefield
-// contents / floated mana), so a resume just rebuilds the identical menu.
-struct ChangeZoneRememberedRt {
+// candidates") and its battlefield multi-select (Yorion, Temur Sabertooth): the
+// candidate pool — and hence the menu — is rebuilt from the remembered set's
+// or the battlefield's CURRENT contents at every arm and every consume (a card
+// already moved left the eligible zones), so only the count of picks already
+// made persists; it caps the remaining picks after a resume. The other Shape C
+// loop (the MANA kind of an unless-cost offer) persists nothing at all: it carries no
+// counter — every pass is fully re-derived from floated mana, so a resume just
+// rebuilds the identical menu.
+struct ChangeZonePicksRt {
     int picked = 0;               // picks completed so far (bounds the cap)
 };
 // ── Shared target-selection sub-machine (Batch 5) ───────────────────────────
@@ -146,6 +160,17 @@ struct TargetSelectRT {
     int picked = 0;          // multi-target picks completed so far
 };
 
+// What a caller asks of the legal target candidates of the pick in flight, read by target_gate.h's
+// rows. `cost_payable`: false when choosing the candidate would leave the object's cost unpayable
+// (a cost reduced only for some targets, CR 601.2f); a pick whose every candidate it refuses offers
+// them all.
+struct TargetPickGate {
+    std::function<bool(Entity candidate)> cost_payable;
+    // A target being changed (CR 115.7a): the new one must be another, and not the object changing.
+    Entity changing_from = 0;
+    Entity changing_object = 0;
+};
+
 // The persisted progress of announcing a stack object's modes and targets (run_announce,
 // announce.h; CR 601.2b/c, 602.2b, 603.3c/d): the stage, the completed mode picks, and the
 // in-flight target pick. Embedded BY VALUE in the cast, activation and trigger-placement state
@@ -159,6 +184,8 @@ struct AnnounceRT {
     size_t sub_idx = 0;           // next chained sub-ability to target (SUBS)
     bool pick_in_flight = false;  // the current target choice passed its legality check and is being picked
     TargetSelectRT tsel;          // the in-flight target pick
+    bool dividing = false;        // that pick is done and its division is being announced (CR 601.2d)
+    int divide_left = 0;          // the points still to place, past the one each target holds
 };
 
 // ── Batch 8: container effects (nested resolves as persisted FrameLevels) ───
@@ -173,12 +200,23 @@ struct CharmRt {
     int announced_idx = 0;
 };
 struct RepeatRt {
-    bool init = false;            // saved_remembered captured
-    bool player_setup = false;    // current player's remembered-set swap done
+    bool player_setup = false;    // current player remembered
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
     int sub_idx = 0;              // next RepeatSubAbility for the current player/type
     int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
-    std::vector<ObjectRef> saved_remembered;  // outer remembered set to restore at completion
+};
+// DB$ Repeat: the iteration under way, the body's next sub-ability, and the bound read as it
+// started, so a resume inside an iteration re-derives the same child.
+struct RepeatLoopRt {
+    bool init = false;            // max_iterations read
+    int max_iterations = 0;
+    int iteration = 0;
+    int sub_idx = 0;
+};
+// DB$ Branch: the side its condition picked, read once.
+struct BranchRt {
+    bool init = false;
+    int side = -1;                // index into subabilities; -1: it names no such side
 };
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
@@ -212,16 +250,17 @@ struct CopySpellRT {
                                   // becomes-target) fire once every copy is made (CR 603.3b)
 };
 // ── Batch 14: resolution-time draws (effects::draw) ─────────────────────────
-// The drawing player, the resolved draw count (a dynamic NumCards$ is
+// The drawing players, the resolved draw count (a dynamic NumCards$ is
 // evaluated ONCE — never re-evaluated after dredge mills mutate the counted
-// state), and completed draws, so a resume re-enters the parked dredge
-// question mid-batch. Holds no entities — the parked dredge menu's graveyard
-// cards are covered by the generic menu pins.
+// state), and the player and completed draws under way, so a resume re-enters
+// the parked dredge question mid-batch. Holds no entities — the parked dredge
+// menu's graveyard cards are covered by the generic menu pins.
 struct DrawRt {
     bool init = false;
-    Zone::Ownership owner = Zone::PLAYER_A;
+    std::vector<Zone::Ownership> owners;
+    size_t owner_idx = 0;
     size_t total = 0;
-    size_t done = 0;
+    DrawBatch batch;              // the current owner's draws
 };
 // change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
 // artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each
@@ -242,12 +281,13 @@ struct ResolutionCastRt {
     enum Stage { OFFER, CASTING, DONE };
     Stage stage = OFFER;
     bool prev_priority = false;   // priority.player_a_has_priority to restore once the cast completes
+    Entity card = 0;              // the card being cast: on the stack once it is
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
-                                   ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
+                                   ChangeZonePicksRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
-                                   ResolutionCastRt>;
+                                   ResolutionCastRt, RepeatLoopRt, CostRun, BranchRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating
@@ -316,7 +356,7 @@ struct TriggerPlacementRT {
 // resolve_child's push of the child level, and deque push_back/pop_back never
 // invalidate references to other elements.
 struct FrameLevel {
-    enum ChildKind { ROOT, SUB, GIFT, CHARM_MODE, REPEAT_SUB, IMMEDIATE };
+    enum ChildKind { ROOT, SUB, GIFT, CHARM_MODE, REPEAT_SUB, IMMEDIATE, REPLACEMENT };
     ChildKind kind = ROOT;
     int child_index = 0;   // index into the parent's child list (subabilities, charm modes, ...)
     int iter_index = 0;    // iteration counter for repeated children (repeat_each, gift loop)
@@ -337,8 +377,9 @@ struct ResolutionMemory {
     // RememberTargets$, RememberSacrificed$, ...: Doomsday's pile, an Attach's creature).
     std::vector<ObjectRef> remembered;
     // Cards "imprinted" (recorded) by a DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand
-    // Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter
-    // (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$.
+    // Unifier: the top-N revealed cards) or a move's Imprint$ True (The Stone Brain: the cards
+    // exiled from a hand); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard
+    // / ChangeZoneAll) or Imprinted$Amount, and cleared by Cleanup ClearImprinted$.
     // Distinct from `remembered` (which holds the chosen cards taken to hand).
     std::vector<ObjectRef> imprinted;
     // Cards chosen by a ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's
@@ -365,13 +406,15 @@ struct ResolutionFrame {
     bool active = false;
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
-    bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
-    // The resolving object's own X (CR 107.3a: the spell's Spell::x_paid, an ability's
+    // The resolving object's own X (CR 107.3a: the spell's ChosenCost::x, an ability's
     // Ability::x_paid) and, for a spell, its Converge count (CR 702.90: distinct colors of mana
     // spent to cast it); captured once as it starts resolving, read by Count$xPaid / cmcLEX /
     // Count$Converge through current_x_paid() / current_converge().
     int x_paid = 0;
     int converge = 0;
+    int sacrificed_mana_value = 0;  // Ability::sacrificed_mana_value
+    // CR 608.2b: every target of the stack object was illegal, so it didn't resolve.
+    bool fizzled = false;
     ResolutionMemory memory;
     std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
@@ -379,17 +422,29 @@ struct ResolutionFrame {
     std::deque<FrameLevel> levels;
 };
 
+// What a decision asked through a flow context is. MID_PAYMENT: a step of paying a chosen cost's
+// mana, whose menu carries any cancelling of its own (PendingQuery::mid_payment).
+enum class AskKind { CHOICE, MID_PAYMENT };
+
 // Handler-facing context threaded through resolve()/effect handlers. root()
 // binds to cur_game.resolution and may suspend (per-site opt-in, later
 // batches); blocking() reproduces today's inline get_input for every
 // non-stack caller (sub-ability recursion, triggers resolved off-stack, ...).
+// flow() serves a state machine that keeps its own progress on Game (the cast,
+// activation and special-action flows): an ask parks with the flow's tag and its
+// answer comes back through `resume_choice`, the latched answer the flow was
+// re-entered with, so rt() and resolve_child have no level to bind to there.
 // Converted and unconverted sites coexist: an unconverted prompt under a
 // converted frame just blocks mid-iteration exactly like today.
 class FrameCtx {
     public:
         static FrameCtx root();
         static FrameCtx blocking();
+        static FrameCtx flow(PendingQuery::Tag tag, int &resume_choice);
         bool is_root() const { return root_mode; }
+        // The resolving stack object's own level (the ROOT at depth 0), not a sub-ability, gift
+        // or other child level beneath it.
+        bool is_stack_object() const { return root_mode && depth_ == 0; }
         bool can_suspend() const;
         // True when re-entering suspended code with a latched answer pending —
         // the next ask() reached will consume it. Pre-ask side effects
@@ -401,7 +456,8 @@ class FrameCtx {
         // suspend path parks the query and returns -1 (the caller returns
         // SUSPENDED mutating nothing — check decision_suspended() to tell a
         // suspension apart from a CLI flag value).
-        int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source);
+        int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source,
+                AskKind kind = AskKind::CHOICE);
         // THIS ctx's level of the persisted frame (levels[depth] — the ROOT at
         // depth 0, a resolve_child copy at depth > 0). The phase-tagged
         // resolve() persists its resume point (phase/next_sub) here. Only
@@ -439,6 +495,8 @@ class FrameCtx {
         FrameLevel &current_level();  // fatal_error outside an armed root frame
         bool root_mode = false;
         size_t depth_ = 0;  // which FrameLevel this ctx binds to (root() = 0)
+        PendingQuery::Tag flow_tag_ = PendingQuery::NONE;  // flow(): the tag its asks park with
+        int *resume_choice_ = nullptr;                     // flow(): the latched answer; < 0 for none
 };
 
 // TargetAsker with the RESOLUTION family tag (Batch 8): the suspendable form

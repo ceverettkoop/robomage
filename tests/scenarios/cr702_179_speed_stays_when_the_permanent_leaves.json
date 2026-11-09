@@ -1,0 +1,53 @@
+{
+  "name": "cr702_179_speed_stays_when_the_permanent_leaves",
+  "why": "CR 702.179b: speed is the player's and stays: A's Snare is destroyed, and A's speed goes on to rise with no permanent bringing it",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Perilous Snare",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Perilous Snare is destroyed",
+    "their speed triggers",
+    "Player A's speed is 2"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 
-#include "../classes/deck_state.h"
 #include "../classes/game.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
@@ -16,6 +15,7 @@
 #include "../knowledge/k_rows.h"
 #include "../knowledge/knowledge.h"
 #include "../knowledge/truth.h"
+#include "../queries/face_down.h"
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "decode.h"
@@ -44,7 +44,6 @@ static bool have_saved_state = false;
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail);
 static bool is_card_unit(Entity e);
 static bool build_truth(Zone::Ownership viewer, knowledge::Truth *out);
-static knowledge::Decklists registered_lists();
 static void check_seat(Zone::Ownership viewer, const std::string &frame);
 
 static void report(const char *check, Zone::Ownership viewer, const std::string &detail) {
@@ -98,7 +97,7 @@ static bool build_truth(Zone::Ownership viewer, knowledge::Truth *out) {
             default:
                 break;
         }
-        if (z.is_face_down) {
+        if (is_face_down(e)) {
             const uint32_t h = handle_of(viewer, e);
             if (h != 0) out->face_down[h] = card;
         }
@@ -109,22 +108,6 @@ static bool build_truth(Zone::Ownership viewer, knowledge::Truth *out) {
             out->library[p].push_back(kv.second);
         }
     return true;
-}
-
-// Both players' registered lists with their deck names, as an omniscient DECKLISTS frame has them
-// (physical card ids).
-static knowledge::Decklists registered_lists() {
-    knowledge::Decklists lists;
-    for (int p = 0; p < 2; ++p) {
-        const Zone::Ownership owner = p == 0 ? Zone::PLAYER_A : Zone::PLAYER_B;
-        lists.present[p] = true;
-        lists.name[p] = p == 0 ? deck_a_name : deck_b_name;
-        for (const DecklistEntry &e : deck_state_registered_main(owner))
-            lists.cards.push_back({p, physical_card_of(e.vocab_idx), e.count, 0});
-        for (const DecklistEntry &e : deck_state_registered_side(owner))
-            lists.cards.push_back({p, physical_card_of(e.vocab_idx), 0, e.count});
-    }
-    return lists;
 }
 
 // One seat's frame: its k_* tables read back and checked against the truth.
@@ -147,9 +130,6 @@ static void check_seat(Zone::Ownership viewer, const std::string &frame) {
         report("soundness", viewer, "a library's positions are not 0..n-1");
         return;
     }
-    const bool visible[2] = {
-        !closed_decklist || viewer == Zone::PLAYER_A, !closed_decklist || viewer == Zone::PLAYER_B};
-    knowledge::set_truth_lists(know->metagame(), registered_lists(), visible, &truth);
     const knowledge::Universe *const universe[2] = {&know->player(0).full.universe, &know->player(1).full.universe};
     knowledge::TruthCheck check;
     knowledge::check_truth(rows, truth, viewer == Zone::PLAYER_A ? 0 : 1, universe, &check);

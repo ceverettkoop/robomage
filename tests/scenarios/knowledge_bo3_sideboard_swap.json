@@ -2,7 +2,7 @@
   "name": "knowledge_bo3_sideboard_swap",
   "why": "docs/knowledge_store.md \u00a73.2 roots / \u00a74.2 sideboarding, \u00a77 sharpness: in game 1 A knows B's sideboard is exactly B's registered 15; B concedes and boards in four Leyline of the Void for the Chain Lightnings, which A does not see, so in game 2 any of B's registered 75 may be in its sideboard (each card 0 to its copies); B then begins game 2 with Leyline of the Void on the battlefield, which proves a swap: at most three Leylines are left in B's sideboard (CR 100.4a, 113.6b; step 1 T12 sharpness)",
   "format": "bo3",
-  "deck_a": "league/ur_delver",
+  "deck_a": "league/ur_tempo",
   "deck_b": "league/burn",
   "play": [
     "A:keep",

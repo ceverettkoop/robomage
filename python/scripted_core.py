@@ -142,8 +142,10 @@ _CAT_YESNO = "OPTIONAL_YESNO"
 _CAT_SYLVAN = "SYLVAN_CHOICE"
 _CAT_CHOOSE_CARD = "CHOOSE_CARD"
 _CAT_COMPANION = "COMPANION"
+_CAT_TURN_UP = "TURN_FACE_UP"
 _CAT_SHUFFLE_NO = "DONT_SHUFFLE"
 _CAT_KEEP_HAND = "KEEP_HAND"
+_CAT_DIVIDE = "DIVIDE_DAMAGE"
 
 # ActionRefZone names (the zone an action's object or player is in, viewer-relative).
 _REF_NONE = "NONE"
@@ -354,6 +356,15 @@ _MYCOSYNTH_LATTICE = "Mycosynth Lattice"
 # once the set is assembled. Planar Nexus is deliberately excluded — it only
 # ever makes a single mana of any type, so untapping it gains nothing.
 _CANDELABRA = "Candelabra of Tawnos"
+_APHETTO_ALCHEMIST = "Aphetto Alchemist"
+_CRYPTIC_COAT = "Cryptic Coat"
+_COAT_RETURN_AND_RECAST_MANA = 5   # {1}{U} to return it, {2}{U} to cast it again
+_COAT_MIN_LIBRARY = 10             # each cast takes a card off the library for good
+_CLOAK_POWER = 2                   # what a cloak is already, with ward {2} besides
+_MYSTIC_FORGE = "Mystic Forge"
+_FORGE_ENOUGH_MANA = 5             # a land on top adds nothing past this
+_FORGE_MIN_LIFE = 8                # each exile costs a life
+_FORGE_MIN_LIBRARY = 10            # and a card off the library for good
 _MULTI_MANA_LANDS = frozenset({"Ancient Tomb", "Urza's Workshop"}) | _TRON_LAND_SET
 
 # Reanimator deck cards. Reanimate and Animate Dead are the "put a creature card
@@ -384,7 +395,7 @@ _SAC_LAST_LANDS = frozenset({_DARK_DEPTHS, _THESPIANS_STAGE, _URZAS_SAGA, _TABER
 def _deck_named(deck, key):
     """True if `key` occurs anywhere in the deck name (e.g. 'league/car_doomsday').
 
-    The uniform way archetype-specific behavior is keyed: doomsday (combo) and tron
+    The uniform way deck-specific behavior is keyed: doomsday (combo) and tron
     (big-mana ramp) decks are recognised this way."""
     return deck is not None and key in deck.lower()
 
@@ -468,6 +479,39 @@ def _gy_has_any(v, cards: frozenset) -> bool:
     """True if EITHER graveyard holds a card in ``cards``. Both sides matter to the
     caller (Reanimate can take a creature from any graveyard)."""
     return not cards.isdisjoint(v.graveyard_cards)
+
+
+def _untap_worthy(v) -> set:
+    """Our tapped creatures Aphetto Alchemist's ability is worth activating on. Not an Alchemist:
+    one untaps itself, and two each other, for nothing and without end."""
+    return {p.card for p in v.my_perms
+            if p.tapped and p.creature and p.card is not None and p.card != _APHETTO_ALCHEMIST}
+
+
+def _worth_turning_up(v, i) -> bool:
+    """Whether the turn-up row `i` is worth taking with spare mana. A morph only gains by it. A
+    cloak gives up its ward {2}, so only for more power than the 2 it has."""
+    card = v.card(i)
+    cloaked = any(p.card == card and "Ward" in p.keywords for p in v.my_perms)
+    return not cloaked or v.cards.power(card) > _CLOAK_POWER
+
+
+def _coat_return_worthwhile(v) -> bool:
+    """Cryptic Coat's {1}{U}: returning it is another 2/2 for the {2}{U} of casting it again, so
+    only in our own main phase with the mana for both, and a library that can spare the card."""
+    return (v.is_active and v.in_main and v.stack_empty
+            and _count_untapped_mana_sources(v) >= _COAT_RETURN_AND_RECAST_MANA
+            and v.library >= _COAT_MIN_LIBRARY)
+
+
+def _forge_exile_worthwhile(v) -> bool:
+    """Mystic Forge's {T}, Pay 1 life: a land we don't need traded for the card under it, which may
+    be one we can cast from there. Only in our own main phase, on a top card the look has shown."""
+    top = v.known_top(1)[0]
+    return (v.is_active and v.in_main and v.stack_empty
+            and top is not None and v.cards.is_land(top)
+            and _count_untapped_mana_sources(v) >= _FORGE_ENOUGH_MANA
+            and v.life >= _FORGE_MIN_LIFE and v.library >= _FORGE_MIN_LIBRARY)
 
 
 def _tapped_multi_mana_lands(v) -> int:
@@ -1289,6 +1333,18 @@ def _keep_legend_choice(v) -> int | None:
     return best_i
 
 
+def _divide_damage_choice(v) -> int:
+    """One more point of divided damage: to the target that needs the fewest to die, by what it
+    holds so far (each row's ordinal), else the first."""
+    best_i, best_need = 0, None
+    for i in range(v.n):
+        p = v.ref_perm(i)
+        need = (p.toughness if p is not None else 0) - v.ordinal(i)
+        if need > 0 and (best_need is None or need < best_need):
+            best_i, best_need = i, need
+    return best_i
+
+
 # ── Menu-shape helpers shared by the GREEDY and HEURISTIC tiers ─────────────
 # Mana-ability offers inside an optional-payment menu (tap a source toward an
 # "unless" cost) carry the MANA_<color> categories.
@@ -1405,7 +1461,7 @@ def _is_miracle_reveal(v) -> bool:
 # not the game, because eligibility can change in ways a fail can't tell
 # (Aether Vial's search keys on its charge-counter count: a fail at 0 counters
 # says nothing about next turn's 1). After _FRUITLESS_ACTIVATION_LIMIT failed
-# tries the card is dropped for the game: hard-scripted bw_dnt once activated
+# tries the card is dropped for the game: a hard-scripted Vial deck once activated
 # Vial into a guaranteed fail-to-find every turn (~60 activations) to the
 # decision cap — the one non-decisive game of a 441-game fuzz campaign — so
 # retries must be bounded.
@@ -1502,6 +1558,13 @@ def _greedy_action(v,
     for i, c in enumerate(cats):
         if c == _CAT_CONF_ATK:
             return i
+
+    # 4a. Aphetto Alchemist untaps what is ours and worth it (see the activation rule).
+    if v.pending == _APHETTO_ALCHEMIST:
+        worthy = _untap_worthy(v)
+        for i, c in enumerate(cats):
+            if c == _CAT_TARGET and v.ctrl(i) == 1 and v.card(i) in worthy:
+                return i
 
     # 4. Select target — prefer non-self-controlled targets (ctrl 0 = an
     #    opponent's permanent/spell, -1 = a player target, also non-self).
@@ -1629,6 +1692,12 @@ def _greedy_action(v,
             return 1 if _resolution_cast_ok(v, card) else 0
         if _is_miracle_reveal(v):
             return 1
+    # A resolution's offer of several casts (DB$ Play): its faces, or the cards of a zone.
+    if v.n > 2 and all(c == _CAT_YESNO for c in v.cats):
+        for i in range(1, v.n):
+            if _resolution_cast_ok(v, v.card(i)):
+                return i
+        return 0
 
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
@@ -1838,6 +1907,8 @@ def _greedy_action(v,
                               # fizzles when its graveyard target is already exiled)
                 if card == _CANDELABRA and _tapped_multi_mana_lands(v) == 0:
                     continue  # nothing worth untapping — don't tap Candelabra for X=0
+                if card == _APHETTO_ALCHEMIST and not _untap_worthy(v):
+                    continue  # likewise: it would only ever untap itself
                 if hold_activations and card in hold_activations:
                     continue  # caller-computed hold (e.g. Thespian's Stage with
                               # no Dark Depths to copy — see _heuristic_action)
@@ -2331,6 +2402,7 @@ _OWN_BENEFIT_TARGETS = frozenset({
     "Scythecat Cub",            # +1/+1 counter on a creature we control
     "Pre-War Formalwear",       # reanimates a creature card, then attaches
     "Mystic Sanctuary",         # an instant / sorcery back on top
+    "Perilous Snare",           # max speed's +1/+1 counter on a creature or Vehicle we control
 })
 
 
@@ -2380,6 +2452,9 @@ _WITCH_ENCHANTER = "Witch Enchanter"   # its land face pays 3 life
 _GRISELBRAND = "Griselbrand"
 _GRISELBRAND_DRAW = 7
 _GRISELBRAND_MIN_LIFE = 15
+# Basalt Monolith's abilities in script order: {T}: Add {C}{C}{C}, then {3}: Untap.
+_BASALT_MONOLITH = "Basalt Monolith"
+_BASALT_MONOLITH_UNTAP_ORD = 1
 # Blast Zone's abilities in script order: mana, charge (X), destroy.
 _BLAST_ZONE_CHARGE_ORD = 1
 _BLAST_ZONE_DESTROY_ORD = 2
@@ -2455,8 +2530,10 @@ def _activation_holds(v) -> set[int]:
     activation sacrifices a creature for 1 damage), Blast Zone off its plan
     (_blast_zone_plan: charge only toward the target mana value, destroy only
     at it), Dauthi Voidwalker's sacrifice without an exiled void card
-    worth more than the 3/2 itself, and Griselbrand's pay-7-life draw 7
-    unless the life and the library can both afford it."""
+    worth more than the 3/2 itself, Griselbrand's pay-7-life draw 7
+    unless the life and the library can both afford it, and Basalt Monolith's
+    {3}: Untap (three mana for the three it makes again: paid with its own,
+    it untaps itself for nothing and without end)."""
     holds = _equip_holds(v)
     plan = None
     for i in range(v.n):
@@ -2469,6 +2546,15 @@ def _activation_holds(v) -> set[int]:
                 holds.add(i)
         elif card == _GOBLIN_BOMBARDMENT:
             if v.opp_life > len(_creatures(v.my_perms)):
+                holds.add(i)
+        elif card == _CRYPTIC_COAT:
+            if not _coat_return_worthwhile(v):
+                holds.add(i)
+        elif card == _MYSTIC_FORGE:
+            if not _forge_exile_worthwhile(v):
+                holds.add(i)
+        elif card == _BASALT_MONOLITH:
+            if v.ordinal(i) == _BASALT_MONOLITH_UNTAP_ORD:
                 holds.add(i)
         elif card == _BLAST_ZONE:
             plan = plan or _blast_zone_plan(v) or (0, -1)
@@ -2997,6 +3083,9 @@ class ScriptedCore:
             if pick is not None:
                 return pick
 
+        if any(c == _CAT_DIVIDE for c in cats):
+            return _divide_damage_choice(v)
+
         # ── Reanimation / lands-combo interceptions ─────────────────────────
         # All card / pending-source gated (no deck-name gate needed): each
         # rule can only fire on a menu that names its specific card, so no
@@ -3323,11 +3412,12 @@ class ScriptedCore:
                                 hold_idxs=hold_idxs,
                                 doomsday=dd)
         # With nothing better to do in our own main phase, put the companion
-        # into hand (it is cast like any other card afterwards).
+        # into hand (it is cast like any other card afterwards), and turn up what
+        # the mana left over can pay for, its abilities being of use from now on.
         if (cats[choice] == _CAT_PASS and v.stack_empty
                 and v.is_active and v.in_main):
             for i, c in enumerate(cats):
-                if c == _CAT_COMPANION:
+                if c == _CAT_COMPANION or (c == _CAT_TURN_UP and _worth_turning_up(v, i)):
                     return i
         return choice
 

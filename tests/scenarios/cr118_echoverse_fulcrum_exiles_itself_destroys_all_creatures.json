@@ -1,0 +1,43 @@
+{
+  "name": "cr118_echoverse_fulcrum_exiles_itself_destroys_all_creatures",
+  "why": "CR 118 / 602.2b: The Echoverse Fulcrum: {5}, {T}, Exile it: destroy all creatures, each player's, as a sorcery: the source exiles itself as a cost",
+  "hand_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "The Echoverse Fulcrum",
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:The Echoverse Fulcrum"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A exiles The Echoverse Fulcrum",
+    "Player A's The Echoverse Fulcrum ability is on the stack"
+  ],
+  "expect_count": {
+    "Grizzly Bears is destroyed|Destroyed Grizzly Bears|Grizzly Bears.*destroy": 2
+  }
+}

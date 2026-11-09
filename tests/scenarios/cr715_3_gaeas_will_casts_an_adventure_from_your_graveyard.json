@@ -1,0 +1,67 @@
+{
+  "name": "cr715_3_gaeas_will_casts_an_adventure_from_your_graveyard",
+  "why": "CR 709.3, 715.3: a permission to cast spells from your graveyard covers the card, so an adventurer may be cast as its Adventure",
+  "hand_a": [
+    "Gaea's Will"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Brazen Borrower"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Suspend",
+    "A:discard:Forest",
+    "A:discard:Forest",
+    "A:desc:Cast Gaea's Will without",
+    "A:desc:Petty Theft (from graveyard)",
+    "A:target:Grizzly Bears@opp"
+  ],
+  "max_decisions": 34,
+  "expect": [
+    "casts Petty Theft"
+  ],
+  "expect_menu": [
+    "Cast Brazen Borrower \\(from graveyard\\)"
+  ]
+}

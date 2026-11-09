@@ -1,0 +1,37 @@
+{
+  "name": "cr118_3_uro_escape_needs_five_other_cards",
+  "why": "CR 118.3, 702.138a: four other graveyard cards can't pay Uro's escape cost of five",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Island",
+    "Island"
+  ],
+  "graveyard_a": [
+    "Uro Titan of Nature's Wrath",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 5,
+  "expect_menu": [
+    "Play Forest"
+  ],
+  "expect_menu_not": [
+    "Cast Uro"
+  ]
+}

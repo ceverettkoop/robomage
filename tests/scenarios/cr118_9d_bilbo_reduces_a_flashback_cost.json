@@ -1,0 +1,12 @@
+{
+  "name": "cr118_9d_bilbo_reduces_a_flashback_cost",
+  "why": "CR 118.9d: cost reductions apply to an alternative cost: Faithless Looting's flashback {2}{R} costs {1}{R} under Bilbo, payable by two Mountains.",
+  "battlefield_a": ["Bilbo Thief in the Night", "Mountain", "Mountain"],
+  "graveyard_a": ["Faithless Looting"],
+  "library_a": ["Island", "Island", "Island"],
+  "library_b": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Faithless Looting"],
+  "max_decisions": 6,
+  "expect": ["Player A casts Faithless Looting"],
+  "expect_menu": ["Cast Faithless Looting \\(flashback\\)"]
+}

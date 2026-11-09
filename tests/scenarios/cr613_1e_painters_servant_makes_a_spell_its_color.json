@@ -1,0 +1,39 @@
+{
+  "name": "cr613_1e_painters_servant_makes_a_spell_its_color",
+  "why": "CR 613.1e, 105.3: Painter's Servant makes every spell the chosen color in addition to its other colors, so Blue Elemental Blast's 'target red spell' finds Grizzly Bears on the stack. AddColor$ ChosenColor, AffectedZone$ All.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Painter's Servant"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Red",
+    "A:cast:Grizzly Bears",
+    "B:cast:Blue Elemental Blast",
+    "B:mode:Counter target red spell",
+    "B:target:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Grizzly Bears is countered"
+  ]
+}

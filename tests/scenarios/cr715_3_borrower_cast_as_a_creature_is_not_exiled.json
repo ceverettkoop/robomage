@@ -1,0 +1,13 @@
+{
+  "name": "cr715_3_borrower_cast_as_a_creature_is_not_exiled",
+  "why": "CR 715.3: cast normally, an adventurer card is a creature spell with flash; countered it goes to the graveyard, and the Adventure's exile has nothing to do with it.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Brazen Borrower"],
+  "max_decisions": 6,
+  "expect": ["Player A casts Brazen Borrower", "Brazen Borrower enters the battlefield"],
+  "expect_not": ["is exiled"]
+}

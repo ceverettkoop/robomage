@@ -1,0 +1,10 @@
+# M12 (b2): an empower making its token and adding to one, and the token's two abilities.
+effect:Empower
+row:empower_existing
+effect:Surveil
+# The next spell can't be countered (Theorist's Proxy).
+effect:DelayedTrigger
+effect:Effect
+# Unearth, and the whole hand on a trigger (Phyrexian Dragon Engine).
+cost:DISCARD.hand
+category:OPTIONAL_YESNO

@@ -1,0 +1,14 @@
+{
+  "name": "cr603_4_carpet_of_flowers_once_per_turn",
+  "why": "CR 603.4: Carpet of Flowers' 'if you haven't added mana with this ability this turn' (the trigger's ResolvedLimit$ 1) is an intervening if: once it has added mana in the first main phase it doesn't trigger in the second, and it triggers again the next turn (Carpet of Flowers' ResolvedLimit$)",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "hand_b": ["Island"],
+  "library_b": ["Island"],
+  "battlefield_a": ["Carpet of Flowers"],
+  "battlefield_b": ["Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:choice:Accept", "A:desc:Add 2{G}", "A:choice:Accept", "A:desc:Add 2{G}"],
+  "max_decisions": 14,
+  "expect_order": ["TURN 1 \\(Player A\\)", "Carpet of Flowers triggered", "Player A adds 2\\{G\\}", "No creatures eligible to attack", "TURN 2 \\(Player B\\)", "TURN 3 \\(Player A\\)", "Carpet of Flowers triggered", "Player A adds 2\\{G\\}", "No creatures eligible to attack", "TURN 4 \\(Player B\\)"],
+  "expect_count": {"Carpet of Flowers triggered": 2, "Player A adds 2\\{G\\}": 2}
+}

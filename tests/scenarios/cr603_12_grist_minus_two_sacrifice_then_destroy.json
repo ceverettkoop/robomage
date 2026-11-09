@@ -1,0 +1,42 @@
+{
+  "name": "cr603_12_grist_minus_two_sacrifice_then_destroy",
+  "why": "CR 603.12: 'You may sacrifice a creature. When you do, destroy target creature or planeswalker.': the sacrifice is offered as the ability resolves, and the reflexive trigger chooses its target after it: an opposing Bears goes.",
+  "hand_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Grist the Hunger Tide",
+    "Scryb Ranger"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:ImmediateTrigger",
+    "A:sacrifice:Scryb Ranger"
+  ],
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A sacrifices Scryb Ranger",
+    "Grist, the Hunger Tide reflexive trigger",
+    "Grizzly Bears is destroyed"
+  ],
+  "expect_menu": [
+    "Don't sacrifice"
+  ]
+}

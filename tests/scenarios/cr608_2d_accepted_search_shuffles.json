@@ -1,0 +1,14 @@
+{
+  "name": "cr608_2d_accepted_search_shuffles",
+  "why": "CR 701.23: a player who takes Ghost Quarter's search shuffles after it, unlike one who declines it",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island"],
+  "hand_b": ["Island"],
+  "library_b": ["Forest", "Plains"],
+  "battlefield_a": ["Ghost Quarter"],
+  "battlefield_b": ["Wasteland"],
+  "play": ["A:keep", "B:keep", "A:activate:Ghost Quarter", "A:target:Wasteland", "B:search:Plains"],
+  "max_decisions": 8,
+  "expect": ["Wasteland is destroyed", "Player B shuffles their library"],
+  "expect_not": ["Player B fails to find"]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "cr601_2c_goblin_welder_needs_a_pair",
+  "why": "CR 601.2c, 602.2b: an artifact on A's side and an artifact card in B's graveyard are one of each, not a pair: no legal choice for the second target, so the ability isn't offered.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Goblin Welder",
+    "Mishra's Bauble"
+  ],
+  "graveyard_b": [
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect_menu_not": [
+    "Activate Goblin Welder"
+  ]
+}

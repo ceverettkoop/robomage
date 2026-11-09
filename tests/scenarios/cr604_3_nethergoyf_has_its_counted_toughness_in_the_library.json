@@ -1,0 +1,46 @@
+{
+  "name": "cr604_3_nethergoyf_has_its_counted_toughness_in_the_library",
+  "why": "CR 604.3: a characteristic-defining ability functions in every zone, and Nethergoyf's counts the card types in its owner's graveyard wherever it is: with three of them it is 3/4 in the library, so Recruiter of the Guard's 'toughness 2 or less' doesn't find it. Its printed toughness is 1.",
+  "hand_a": [
+    "Recruiter of the Guard",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Nethergoyf",
+    "Delver of Secrets",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "graveyard_a": [
+    "Lightning Bolt",
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Recruiter of the Guard",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 6,
+  "expect_menu": [
+    "Delver of Secrets"
+  ],
+  "expect_menu_not": [
+    "Nethergoyf"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "cr121_6_a_dredged_first_draw_leaves_hullbreacher_the_next",
+  "why": "Hullbreacher, CR 702.52: a dredge replacing the turn's draw draws no card, so the next card drawn in that step is the first: drawn, and only the two after it replaced",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "graveyard_b": [
+    "Life from the Loam"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "A:attack:done",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "B:desc:Dredge Life from the Loam",
+    "B:cast:Brainstorm"
+  ],
+  "max_decisions": 22,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect_order": [
+    "dredges Life from the Loam",
+    "^Player B draws",
+    "^Token created"
+  ],
+  "expect_count": {
+    "^Token created": 2,
+    "^Player B draws": 1
+  }
+}

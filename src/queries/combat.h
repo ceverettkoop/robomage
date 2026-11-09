@@ -26,6 +26,11 @@ inline bool is_blocking_creature(Entity e) {
            global_coordinator.GetComponent<Creature>(e).is_blocking;
 }
 
+// Was this permanent declared as an attacker this turn (CR 508.1k)? It stays so once it is removed
+// from combat. One put onto the battlefield attacking is attacking but never attacked (CR 508.4).
+// Defined in combat.cpp (needs cur_game).
+bool attacked_this_turn(const Permanent &perm);
+
 // True if `e` is an unblocked attacking creature (CR 509.1h): an attacking creature that no
 // creature blocked, from the moment blockers are declared until it is removed from combat or
 // combat ends. Before blockers are declared an attacker is neither blocked nor unblocked. A

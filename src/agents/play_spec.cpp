@@ -129,9 +129,10 @@ static bool parse_literal(const std::string &raw, int *out) {
 // Verb -> the action categories it may resolve to (action_spec._VERB_CATS).
 static const std::map<std::string, std::set<std::string>> &verb_cats() {
     static const std::set<std::string> other = {"OTHER_CHOICE", "SACRIFICE_PERMANENT", "RETURN_PERMANENT", "CHOOSE_X",
-        "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "KEEP_LEGEND",
+        "DISCARD", "CHOOSE_MODE", "CHOOSE_MANA_COLOR", "PAY_UNLESS", "NAME_CARD", "CHOOSE_TYPE", "CHOOSE_COLOR",
+        "KEEP_LEGEND",
         "ORDER_TRIGGERS", "CHOOSE_REPLACEMENT", "ATTACK_TARGET", "BLOCK_TARGET", "OPTIONAL_YESNO", "SYLVAN_CHOICE",
-        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD"};
+        "CHOOSE_CARD", "DONT_SHUFFLE", "KEEP_HAND", "EXILE_FROM_YARD", "CONFIRM_MODES", "DIVIDE_DAMAGE"};
     static const std::set<std::string> mana = {"MANA_W", "MANA_U", "MANA_B", "MANA_R", "MANA_G", "MANA_C"};
     // tap:<card> also picks a source in the mana payment loop (--no-auto-mana), whose rows are
     // PAYING_COSTS.
@@ -140,10 +141,12 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
     static const std::map<std::string, std::set<std::string>> table = {
         {"pass", {"PASS_PRIORITY"}},
         {"cast", {"CAST_SPELL"}},
+        {"morph", {"CAST_SPELL"}},
         {"play", {"PLAY_LAND"}},
         {"land", {"PLAY_LAND"}},
         {"activate", {"ACTIVATE_ABILITY"}},
         {"target", {"SELECT_TARGET"}},
+        {"divide", {"DIVIDE_DAMAGE"}},
         {"attack", {"SELECT_ATTACKER", "CONFIRM_ATTACKERS"}},
         {"block", {"SELECT_BLOCKER", "CONFIRM_BLOCKERS"}},
         {"mana", mana},
@@ -155,6 +158,9 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"mulligan", {"MULLIGAN"}},
         {"keep", {"KEEP_HAND"}},
         {"pay", {"PAYING_COSTS"}},
+        {"convoke", {"PAYING_COSTS"}},
+        {"waterbend", {"PAYING_COSTS"}},
+        {"crew", {"PAYING_COSTS"}},
         {"choice", other},
         {"shuffle", {"SHUFFLE"}},
         {"noshuffle", {"DONT_SHUFFLE"}},
@@ -162,12 +168,13 @@ static const std::map<std::string, std::set<std::string>> &verb_cats() {
         {"sb-out", {"SIDEBOARD_OUT"}},
         {"sb-done", {"SIDEBOARD_DONE"}},
         {"companion", {"COMPANION"}},
+        {"turn-up", {"TURN_FACE_UP"}},
         {"sacrifice", {"SACRIFICE_PERMANENT"}},
         {"return", {"RETURN_PERMANENT"}},
         {"x", {"CHOOSE_X"}},
         {"discard", {"DISCARD"}},
-        {"mode", {"CHOOSE_MODE"}},
-        {"color", {"CHOOSE_MANA_COLOR"}},
+        {"mode", {"CHOOSE_MODE", "CONFIRM_MODES"}},
+        {"color", {"CHOOSE_MANA_COLOR", "CHOOSE_COLOR"}},
         {"name", {"NAME_CARD"}},
         {"exile", {"EXILE_FROM_YARD"}},
         {"desc", {}},
@@ -233,7 +240,9 @@ static bool parse_spec(const std::string &token, Intent *out, std::string *err) 
         out->sentinel = s->second;
     } else if (verb == "mulligan" || verb == "keep") {
         out->keyword = verb;
-    } else if ((verb == "attack" || verb == "block") && (low == "done" || low == "confirm" || low.empty())) {
+    } else if ((verb == "attack" || verb == "block" || verb == "mode" || verb == "convoke" || verb == "waterbend" ||
+                verb == "crew") &&
+               (low == "done" || low == "confirm" || low.empty())) {
         out->keyword = "done";
     } else if (verb == "search" && (low == "fail" || low == "none" || low.empty())) {
         out->keyword = "fail";
@@ -261,12 +270,26 @@ static bool matches(const Intent &intent, const MenuAction &a, bool exact) {
     if (!intent.cats.empty() && !intent.cats.count(a.category)) return false;
     if (!intent.side.empty() && intent.side != controller_word(a.controller)) return false;
     if (!intent.color.empty() && a.category != intent.color) return false;
-    if (intent.keyword == "done") return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS";
+    if (intent.verb == "morph" ? !a.face_down : intent.verb == "cast" && a.face_down) return false;
+    if (intent.keyword == "done")
+        return a.category == "CONFIRM_ATTACKERS" || a.category == "CONFIRM_BLOCKERS" || a.category == "CONFIRM_MODES" ||
+               (a.category == "PAYING_COSTS" && !a.card.has_value());
     if (intent.keyword == "fail") return !a.card.has_value();
     if (intent.keyword == "keep" || intent.keyword == "mulligan")
         return norm(a.description).find(intent.keyword) != std::string::npos;
     if (intent.verb == "desc" && intent.card && !intent.card->empty())
         return norm(a.description).find(*intent.card) != std::string::npos;
+    // Modes ground to one card, so a mode is named by its text.
+    if (intent.verb == "mode" && intent.card && !intent.card->empty()) {
+        const std::string text = norm(a.description);
+        return exact ? text == *intent.card : text.find(*intent.card) != std::string::npos;
+    }
+    // A name is its row's text: a split card's two names ground to one card (CR 709.4a).
+    if (intent.verb == "name" && intent.card && !intent.card->empty()) {
+        const std::string text = norm(a.description);
+        const std::string name = text.substr(text.find(':') == std::string::npos ? 0 : text.find(':') + 2);
+        return exact ? name == *intent.card : name.find(*intent.card) != std::string::npos;
+    }
     if (intent.card && !intent.card->empty()) return card_matches(*intent.card, a, exact);
     return true;
 }
@@ -281,6 +304,7 @@ std::vector<MenuAction> resolver_menu(const DecisionView &v) {
         if (cid >= 0) a.card = ascii_fold_card_name(v.cards().face_name(cid));
         a.controller = v.menu_controller(i);
         a.description = v.description(i);
+        a.face_down = v.casts_face_down(i);
     }
     return out;
 }

@@ -14,12 +14,10 @@ namespace effects {
 //
 // Latch a named integer onto the SOURCE permanent's per-permanent scratch store
 // (Permanent::stored_svars), where a CheckSVar$ <name> | SVarCompare$ ... trigger gate reads it
-// back (see Ability::stored_svar_gate_name and stored_svar_gate_passes). Carpet of Flowers uses
-// CarpetX as a once-per-turn latch: its CheckPlus sub-ability stores 1 after the mana is added,
-// the Static$ True cleanup reset stores 0 to re-arm next turn, and the gate (EQ0) blocks the
-// second main-phase fire after the first one used it.
+// back (see Ability::stored_svar_gate_name and stored_svar_gate_passes) — e.g. a once-per-turn
+// latch: the gated (EQ0) trigger's effect stores 1, and a Static$ True reset stores 0 to re-arm it.
 //
-// No-op when the source is not a battlefield permanent — e.g. the ChangesZone Battlefield→Any
+// No-op when the source is not a battlefield permanent — e.g. a ChangesZone Battlefield→Any
 // reset, whose Permanent has already been destroyed by the time it would resolve (the store
 // resets naturally because a fresh Permanent on re-entry starts with an empty stored_svars map).
 HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, FrameCtx &ctx) {
@@ -40,7 +38,7 @@ bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string 
     }
     if (key == "Expression") {
         // The value to latch. Forge only ever stores a plain integer literal here for the
-        // scratch-int idiom (Carpet of Flowers: Expression$ 0 / 1). Parse it by hand — exceptions
+        // scratch-int idiom (Expression$ 0 / 1). Parse it by hand — exceptions
         // are disabled, so std::stoi on a non-numeric value would terminate. A non-integer
         // expression leaves the default 0.
         int sign = 1;

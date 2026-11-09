@@ -10,18 +10,21 @@
 #include "../ecs/entity.h"
 #include "../object_ref.h"
 #include "counter_map.h"
+#include "mana_unit.h"
 
 struct Player {
     int32_t life_total = 20;
     int32_t life_gained_this_turn = 0;  // total life gained this turn (any source); reset each turn (Ocelot Pride end-step check)
     int32_t life_lost_this_turn = 0;    // total life lost this turn (damage + lose-life effects); reset each turn (Spectacle "if an opponent lost life this turn", CR 702.107a)
-    bool has_city_blessing = false;     // 702.131c: city's blessing designation, kept for the rest of the game once obtained
+    // Their designations (designations.def).
+#define DESIGNATION_PLAYER(type, field, init, ...) type field = init;
+#include "../state_format/designations.def"
     // 122.1: every kind of counter a player can have, keyed by counter type. Poison lives
     // here under "POISON" (replacing the old dedicated poison_counters field); energy ({E})
     // lives under "ENERGY" (CR 122.1c). Mutate via the get/add helpers below so all counter
     // kinds share one store. An entry is absent (not 0) when the player has none of that type.
     CounterMap counters;
-    std::multiset<Colors> mana;
+    ManaPool mana;
     uint8_t lands_played_this_turn = 0;
     size_t spells_cast_this_turn = 0;
     size_t spells_cast_this_game = 0;
@@ -37,6 +40,9 @@ struct Player {
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
     // Revolt: a permanent this player controlled left the battlefield this turn.
     bool permanent_left_battlefield_this_turn = false;
+    // life_lost_this_turn as the last trigger scan read it: what is above this is life lost since,
+    // whichever way it was lost (collect_speed_triggers). A payment rolled back never reaches a scan.
+    int32_t life_lost_seen = 0;
     // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
     // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes
     // first (so e.g. Jace, Wielder of Mysteries' -8 "then if your library is empty, you win" can
@@ -62,6 +68,7 @@ struct Player {
     void reset_turn_counters() {
         life_gained_this_turn = 0;
         life_lost_this_turn = 0;
+        life_lost_seen = 0;
         lands_played_this_turn = 0;
         spells_cast_this_turn = 0;
         noncreature_spells_cast_this_turn = 0;
@@ -70,6 +77,12 @@ struct Player {
         cards_drawn_this_turn.clear();
         cards_drawn_this_draw_step = 0;
         permanent_left_battlefield_this_turn = false;
+#define DESIGNATION_RESET_GAME(field, init)
+#define DESIGNATION_RESET_TURN(field, init) field = init;
+#define DESIGNATION_PLAYER(type, field, init, lasts, ...) DESIGNATION_RESET_##lasts(field, init)
+#include "../state_format/designations.def"
+#undef DESIGNATION_RESET_GAME
+#undef DESIGNATION_RESET_TURN
     }
 
     // Number of counters of `type` on this player (0 if none). Single read path for the

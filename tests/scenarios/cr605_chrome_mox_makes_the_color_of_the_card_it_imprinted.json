@@ -1,0 +1,43 @@
+{
+  "name": "cr605_chrome_mox_makes_the_color_of_the_card_it_imprinted",
+  "why": "Chrome Mox: imprint on the source, past the resolution: the exiled Lightning Bolt makes the Mox's {T} add {R}, which casts the other Bolt. Of the hand it offers the nonartifact, nonland cards: Grizzly Bears, not Mishra's Bauble or a Mountain.",
+  "hand_a": [
+    "Chrome Mox",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Grizzly Bears",
+    "Mishra's Bauble",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Chrome Mox",
+    "A:desc:Accept",
+    "A:desc:Lightning Bolt",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A activated Chrome Mox for 1\\(R\\)",
+    "Lightning Bolt deals 3 damage to Player B"
+  ],
+  "expect_menu_not": [
+    "^Mishra's Bauble$",
+    "^Mountain$"
+  ],
+  "expect_menu": [
+    "^Grizzly Bears$"
+  ]
+}

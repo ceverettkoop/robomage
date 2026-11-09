@@ -5,6 +5,8 @@
 
 #include "../card_vocab.h"
 #include "../featurize/featurizer.h"
+#include "../featurize/history.h"
+#include "cards_file.h"
 #include "decode.h"
 #include "schema.h"
 #include "selfcheck.h"
@@ -17,10 +19,12 @@ struct SeatInputs {
         rmstate::Schema schema;
         featurize::CardTables tables;
         featurize::FeatureSpec spec;
+        featurize::EventHistory history;  // under --feature-history: the seat's frames so far
 };
 
 struct Counts {
         size_t decisions = 0, compared = 0, refused = 0, errors = 0;
+        size_t history = 0;  // history tokens in the compared tensors (--feature-history)
 };
 
 }  // namespace
@@ -33,6 +37,7 @@ static Counts counts;
 static int seat_index(Zone::Ownership viewer);
 static void fail(const char *check, Zone::Ownership viewer, const std::string &detail);
 static bool seat_tensors(const SeatInputs &in, const std::string &payload, featurize::Tensors *out, std::string *err);
+static size_t history_tokens(const featurize::FeatureSpec &spec, const featurize::Tensors &t);
 static std::string first_difference(
     const featurize::FeatureSpec &spec, const featurize::Tensors &a, const featurize::Tensors &b);
 
@@ -53,7 +58,15 @@ static bool seat_tensors(const SeatInputs &in, const std::string &payload, featu
         *err = "the frame does not decode: " + res.message;
         return false;
     }
-    return featurize::featurize_seat(in.spec, in.tables, frame, out, err);
+    return featurize::featurize_seat(in.spec, in.tables, frame, &in.history, out, err);
+}
+
+// The tensors' history tokens (0 for a spec without history).
+static size_t history_tokens(const featurize::FeatureSpec &spec, const featurize::Tensors &t) {
+    if (!spec.history.on()) return 0;
+    size_t n = 0;
+    for (const int64_t ty : t.tok_type) n += ty == spec.history.event_type || ty == spec.history.card_type;
+    return n;
 }
 
 // The first tensor whose bytes differ.
@@ -71,15 +84,12 @@ void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<
     if (!selfcheck_featurize || s < 0 || payloads.empty()) return;
     SeatInputs &in = seats[s];
     in = SeatInputs();
-    rmstate::DecodedFrame cards, metagame;
+    rmstate::DecodedFrame cards;
     rmstate::DecodeResult res = rmstate::decode_schema_frame(payloads[0], &in.schema);
     for (size_t i = 1; i < payloads.size() && res.ok(); ++i) {
         rmstate::DecodedFrame f;
         res = rmstate::decode_frame(payloads[i], in.schema, &f);
-        if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS))
-            cards = std::move(f);
-        else if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::METAGAME))
-            metagame = std::move(f);
+        if (f.header.kind == static_cast<uint8_t>(rmstate::FrameKind::CARDS)) cards = std::move(f);
     }
     std::string err;
     if (!res.ok()) {
@@ -87,11 +97,23 @@ void selfcheck_featurize_match_frames(Zone::Ownership viewer, const std::vector<
         return;
     }
     if (!featurize::build_card_tables(in.schema, cards, static_cast<uint64_t>(N_CARD_TYPES) + 1, 0, &in.tables, &err) ||
-        !featurize::build_spec(in.schema, metagame, in.tables, featurize::FeatureOptions(), &in.spec, &err)) {
+        !featurize::build_spec(in.schema, in.tables, engine_feature_options(), &in.spec, &err)) {
         fail("inputs", viewer, err);
         return;
     }
     in.ready = true;
+}
+
+void selfcheck_featurize_seat_frame(Zone::Ownership viewer, const std::string &frame) {
+    const int s = seat_index(viewer);
+    if (!selfcheck_featurize || s < 0 || !seats[s].ready || !seats[s].spec.history.on()) return;
+    rmstate::DecodedFrame f;
+    const rmstate::DecodeResult res = rmstate::decode_frame(frame, seats[s].schema, &f);
+    if (!res.ok()) {
+        fail("history", viewer, "the frame does not decode: " + res.message);
+        return;
+    }
+    seats[s].history.observe(seats[s].spec, f);
 }
 
 void selfcheck_featurize_compare(
@@ -114,6 +136,7 @@ void selfcheck_featurize_compare(
         return;
     }
     ++counts.compared;
+    counts.history += history_tokens(in.spec, a);
     const std::string diff = first_difference(in.spec, a, b);
     if (!diff.empty()) fail(check, viewer, "the tensors differ: " + diff);
 }
@@ -143,8 +166,10 @@ void selfcheck_featurize_omniscient(const std::string &frame) {
 void selfcheck_featurize_match_over() {
     if (!selfcheck_featurize) return;
     std::fflush(stdout);
-    std::fprintf(stderr, "SELFCHECK-FEATURIZE: decisions=%zu compared=%zu refused=%zu errors=%zu\n", counts.decisions,
-        counts.compared, counts.refused, counts.errors);
+    const std::string history =
+        seats[0].spec.history.on() ? " history_tokens=" + std::to_string(counts.history) : std::string();
+    std::fprintf(stderr, "SELFCHECK-FEATURIZE: decisions=%zu compared=%zu refused=%zu%s errors=%zu\n", counts.decisions,
+        counts.compared, counts.refused, history.c_str(), counts.errors);
     std::fflush(stderr);
     counts = Counts();
     seats[0] = SeatInputs();

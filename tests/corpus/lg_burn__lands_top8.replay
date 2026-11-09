@@ -1,0 +1,609 @@
+robomage 0.3
+REPLAY MODE: Using seed 1187322509 from lg_burn__lands_top8.rmlog
+REPLAY MODE: Using embedded decks 'league/burn' / 'league/lands_top8' (command-line deck args ignored)
+Using seed: 1187322509
+
+-------- PREGAME --------
+Player A draws Fiery Islet
+Player A draws Rift Bolt
+Player A draws Rift Bolt
+Player A draws Mountain
+Player A draws Price of Progress
+Player A draws Mountain
+Player A draws Mountain
+Player B draws Malevolent Rumble
+Player B draws Urza's Saga
+Player B draws Wasteland
+Player B draws Dark Depths
+Player B draws Sphere of Resistance
+Player B draws Talon Gates of Madara
+Player B draws Sphere of Resistance
+Player A hand:
+Fiery Islet
+Mountain
+Mountain
+Mountain
+Price of Progress
+Rift Bolt
+Rift Bolt
+| decision 1: Player A (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player A] Input: 0
+| >> Player A: 0 (Keep)
+Player A keeps a 7-card hand.
+Player B hand:
+Sphere of Resistance
+Sphere of Resistance
+Dark Depths
+Malevolent Rumble
+Talon Gates of Madara
+Urza's Saga
+Wasteland
+| decision 2: Player B (game 0, turn 0, UNTAP, Player A active)
+| menu:
+|   0: Keep
+|   1: Mulligan
+(REPLAY) [T0 | Untap | Player B] Input: 0
+| >> Player B: 0 (Keep)
+Player B keeps a 7-card hand.
+
+-------- TURN 1 (Player A) --------
+| decision 3: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Fiery Islet
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Play Mountain
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Fiery Islet)
+Player A played Fiery Islet
+| decision 4: Player A (game 0, turn 0, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Suspend Rift Bolt
+|   2: Suspend Rift Bolt
+(REPLAY) [T0 | First Main | Player A] Input: 1
+| >> Player A: 1 (Suspend Rift Bolt)
+Player A pays 1 life
+Player A activated Fiery Islet for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+No creatures eligible to attack.
+
+-------- TURN 2 (Player B) --------
+Player B draws Exploration
+| decision 5: Player B (game 0, turn 1, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+(REPLAY) [T1 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+No creatures eligible to attack.
+
+-------- TURN 3 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+Resolving ability (category: SuspendCast)
+| decision 6: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T2 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 7: Player A (game 0, turn 2, UPKEEP, Player A active)
+| menu:
+|   0: Player B (20 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (20 life))
+Targeting choice 0
+Player A casts Rift Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Rift Bolt deals 3 damage to Player B (now at 17 life)
+Player A draws Chain Lightning
+| decision 8: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+|   4: Cast Chain Lightning
+|   5: Suspend Rift Bolt
+(REPLAY) [T2 | First Main | Player A] Input: 4
+| >> Player A: 4 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 9: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (17 life)
+|   1: Player A (19 life)
+(REPLAY) [T2 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (17 life))
+Targeting choice 0
+Player A pays 1 life
+Player A activated Fiery Islet for 1(R)
+Player A casts Chain Lightning targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at 14 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 10: Player B (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Urza's Saga for (C)
+|   1: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T2 | First Main | Player B] Input: 1
+| >> Player B: 1 (Don't pay (Chain Lightning is not copied))
+| decision 11: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+|   3: Play Mountain
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 12: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Suspend Rift Bolt
+(REPLAY) [T2 | First Main | Player A] Input: 1
+| >> Player A: 1 (Suspend Rift Bolt)
+Player A activated Mountain for 1(R)
+Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+No creatures eligible to attack.
+
+-------- TURN 4 (Player B) --------
+Player B draws Urza's Saga
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 13: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Urza's Saga
+|   4: Play Wasteland
+(REPLAY) [T3 | First Main | Player B] Input: 3
+| >> Player B: 3 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 14: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Sphere of Resistance
+|   2: Cast Sphere of Resistance
+(REPLAY) [T3 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Sphere of Resistance)
+Player B activated Urza's Saga for 1(C)
+Player B activated Urza's Saga for 1(C)
+Player B casts Sphere of Resistance
+Sphere of Resistance enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 5 (Player A) --------
+Rift Bolt triggers: remove a time counter (suspend).
+| decision 15: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Fiery Islet (Draw)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: SuspendTick)
+Removed a time counter from Rift Bolt (0 remaining).
+Rift Bolt triggers: the last time counter was removed (suspend).
+| decision 16: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Fiery Islet (Draw)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+Resolving ability (category: SuspendCast)
+| decision 17: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Do not cast Rift Bolt
+|   1: Cast Rift Bolt without paying its mana cost
+(REPLAY) [T4 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Rift Bolt without paying its mana cost)
+Player A casts Rift Bolt without paying its mana cost
+Choose target for Rift Bolt:
+| decision 18: Player A (game 0, turn 4, UPKEEP, Player A active)
+| menu:
+|   0: Player B (14 life)
+|   1: Player A (18 life)
+(REPLAY) [T4 | Upkeep | Player A] Input: 0
+| >> Player A: 0 (Player B (14 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A casts Rift Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Rift Bolt deals 3 damage to Player B (now at 11 life)
+Player A draws Exquisite Firecraft
+| decision 19: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 20: Player A (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Fiery Islet (Draw)
+(REPLAY) [T4 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Fiery Islet (Draw))
+Player A activated Mountain for 1(R)
+Player A sacrifices Fiery Islet
+Player A's Fiery Islet ability is on the stack
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mountain
+No creatures eligible to attack.
+
+-------- TURN 6 (Player B) --------
+Player B draws Wasteland
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga gets 1 lore counter (now 2).
+Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+| decision 21: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Urza's Saga (chapter 3)
+|   1: Urza's Saga (chapter 2)
+(REPLAY) [T5 | First Main | Player B] Input: 0
+| >> Player B: 0 (Urza's Saga (chapter 3))
+Urza's Saga chapter 3 triggers.
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 22: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Pithing Needle
+|   2: Mox Diamond
+|   3: Soul-Guide Lantern
+|   4: Expedition Map
+|   5: Skateboard
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Pithing Needle)
+Player B shuffles their library
+Player B puts Pithing Needle to the battlefield
+Choose a card name for Pithing Needle:
+| decision 23: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Name card: Mountain
+|   1: Name card: Chain Lightning
+|   2: Name card: Eidolon of the Great Revel
+|   3: Name card: Goblin Guide
+|   4: Name card: Lava Spike
+|   5: Name card: Leyline of the Void
+|   6: Name card: Lightning Bolt
+|   7: Name card: Monastery Swiftspear
+|   8: Name card: Price of Progress
+|   9: Name card: Smash to Smithereens
+|   10: Name card: Fireblast
+|   11: Name card: Rift Bolt
+|   12: Name card: Roiling Vortex
+|   13: Name card: Searing Blood
+|   14: Name card: Skewer the Critics
+|   15: Name card: Dead
+|   16: Name card: Exquisite Firecraft
+|   17: Name card: Gone
+|   18: Name card: Fiery Islet
+|   19: Name card: Light Up the Stage
+(REPLAY) [T5 | First Main | Player B] Input: 2
+| >> Player B: 2 (Name card: Eidolon of the Great Revel)
+Player B names card: Eidolon of the Great Revel
+Urza's Saga is sacrificed (final chapter completed).
+| decision 24: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Dark Depths
+|   2: Play Talon Gates of Madara
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T5 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Dark Depths)
+Player B played Dark Depths
+Dark Depths enters with 10 ICE counter(s).
+No creatures eligible to attack.
+
+-------- TURN 7 (Player A) --------
+Player A draws Eidolon of the Great Revel
+| decision 25: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Play Mountain
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+| decision 26: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Eidolon of the Great Revel
+|   2: Cast Price of Progress
+(REPLAY) [T6 | First Main | Player A] Input: 1
+| >> Player A: 1 (Cast Eidolon of the Great Revel)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Eidolon of the Great Revel
+Eidolon of the Great Revel enters the battlefield
+No creatures eligible to attack.
+
+-------- TURN 8 (Player B) --------
+Player B draws Yavimaya, Cradle of Growth
+Urza's Saga gets 1 lore counter (now 3).
+Urza's Saga chapter 3 triggers.
+Resolving ability (category: ChangeZone)
+Searching Player B's library:
+| decision 27: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Mox Diamond
+|   2: Soul-Guide Lantern
+|   3: Expedition Map
+|   4: Skateboard
+(REPLAY) [T7 | First Main | Player B] Input: 2
+| >> Player B: 2 (Soul-Guide Lantern)
+Player B shuffles their library
+Player B puts Soul-Guide Lantern to the battlefield
+Urza's Saga is sacrificed (final chapter completed).
+Choose target for Soul-Guide Lantern:
+| decision 28: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Chain Lightning
+|   1: Fiery Islet
+|   2: Rift Bolt
+|   3: Urza's Saga
+(REPLAY) [T7 | First Main | Player B] Input: 0
+| >> Player B: 0 (Chain Lightning)
+Targeting choice 0
+Soul-Guide Lantern triggered
+| decision 29: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Soul-Guide Lantern (ChangeZoneAll)
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Soul-Guide Lantern (ChangeZoneAll))
+Player B sacrifices Soul-Guide Lantern
+Player B's Soul-Guide Lantern ability is on the stack
+Resolving ability (category: ChangeZoneAll)
+Player A moves Chain Lightning to exile
+Player A moves Fiery Islet to exile
+Player A moves Rift Bolt to exile
+Player A moves Rift Bolt to exile
+Player A moves 4 card(s) to exile
+Player B moves 0 card(s) to exile
+ChangeZone fizzles
+| decision 30: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Talon Gates of Madara
+|   2: Play Yavimaya, Cradle of Growth
+|   3: Play Wasteland
+|   4: Play Wasteland
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Talon Gates of Madara)
+Player B played Talon Gates of Madara
+Choose target for Talon Gates of Madara:
+| decision 31: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: No target
+|   1: Eidolon of the Great Revel
+(REPLAY) [T7 | First Main | Player B] Input: 1
+| >> Player B: 1 (Eidolon of the Great Revel)
+Targeting choice 1
+Talon Gates of Madara triggered
+Resolving ability (category: Phases)
+Eidolon of the Great Revel phases out
+No creatures eligible to attack.
+
+-------- TURN 9 (Player A) --------
+Eidolon of the Great Revel phases in
+| decision 32: Player A (game 0, turn 8, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Cast Price of Progress
+(REPLAY) [T8 | Upkeep | Player A] Input: 1
+| >> Player A: 1 (Cast Price of Progress)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Price of Progress
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player A (now at 16 life)
+Resolving ability (category: RepeatEach)
+Resolving ability (category: DealDamage, amount: 0)
+Resolving ability (category: DealDamage, amount: 4)
+Price of Progress deals 4 damage to Player B (now at 7 life)
+Player A draws Chain Lightning
+| decision 33: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+(REPLAY) [T8 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Mountain)
+Player A played Mountain
+
+--- Declare Attackers (Player A) ---
+| decision 34: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Eidolon of the Great Revel [2/2]
+|   1: Confirm attackers
+(REPLAY) [T8 | Declare Attackers | Player A] Input: 0
+| >> Player A: 0 (Eidolon of the Great Revel [2/2])
+Eidolon of the Great Revel attacking Player B.
+
+--- Declare Attackers (Player A) ---
+  [attacking] Eidolon of the Great Revel [2/2] -> Player B
+| auto: Player A: Confirm attackers
+
+Attackers declared:
+  Eidolon of the Great Revel -> Player B
+No creatures eligible to block.
+
+--- Combat Damage ---
+  Eidolon of the Great Revel deals 2 damage to Player B (now at 5 life)
+--- End Combat Damage ---
+
+
+-------- TURN 10 (Player B) --------
+Player B draws Sphere of Resistance
+| decision 35: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Yavimaya, Cradle of Growth
+|   2: Play Wasteland
+|   3: Play Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Yavimaya, Cradle of Growth)
+Player B played Yavimaya, Cradle of Growth
+| decision 36: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Exploration
+|   2: Cast Sphere of Resistance
+|   3: Cast Sphere of Resistance
+|   4: Cast Malevolent Rumble
+|   5: Activate Dark Depths (RemoveCounter)
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Exploration)
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B activated Dark Depths for 1(G)
+Player B casts Exploration
+Eidolon of the Great Revel triggered
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player B (now at 3 life)
+Exploration enters the battlefield
+| decision 37: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Wasteland
+|   2: Play Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 38: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 39: Player B (game 0, turn 9, BEGIN_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Begin Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+No creatures eligible to attack.
+| decision 40: Player B (game 0, turn 9, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 41: Player B (game 0, turn 9, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 42: Player B (game 0, turn 9, SECOND_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | Second Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 43: Player B (game 0, turn 9, END_STEP, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T9 | End Step | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 11 (Player A) --------
+| decision 44: Player B (game 0, turn 10, UPKEEP, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Upkeep | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Player A draws Mountain
+| decision 45: Player B (game 0, turn 10, DRAW, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | Draw | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 46: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Mountain
+|   2: Cast Chain Lightning
+|   3: Cast Exquisite Firecraft
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Chain Lightning)
+Choose target for Chain Lightning:
+| decision 47: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Player B (3 life)
+|   1: Player A (16 life)
+|   2: Eidolon of the Great Revel
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (Player B (3 life))
+Targeting choice 0
+Player A activated Mountain for 1(R)
+Player A activated Mountain for 1(R)
+Player A casts Chain Lightning targeting Player B
+Eidolon of the Great Revel triggered
+| decision 48: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 2)
+Eidolon of the Great Revel deals 2 damage to Player A (now at 14 life)
+| decision 49: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T10 | First Main | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+Resolving ability (category: DealDamage, amount: 3)
+Chain Lightning deals 3 damage to Player B (now at 0 life)
+Resolving ability (category: CopySpellAbility)
+Player B may pay to copy Chain Lightning:
+| decision 50: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Tap Talon Gates of Madara for (C)
+|   1: Tap Talon Gates of Madara for (G)
+|   2: Tap Wasteland for (C)
+|   3: Tap Wasteland for (G)
+|   4: Don't pay (Chain Lightning is not copied)
+(REPLAY) [T10 | First Main | Player B] Input: 4
+| >> Player B: 4 (Don't pay (Chain Lightning is not copied))
+
+Player B has 0 life - Player A wins!
+GAME_RESULT: 1 Player A wins

@@ -61,7 +61,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // continuous Card.NamedCard static, so it is recorded on the source permanent's
     // chosen_name (the same per-source state match_named_card statics read) rather than the
     // transient global cur_game.resolution.memory.named_card (which is cleared after the ability resolves).
-    bool defines_self_owner = ab.def->defined_you && subject == 0;
+    bool defines_self_owner = ab.def->defined.is(ObjectSpec::YOU) && subject == 0;
     bool only_lands = (ab.def->valid_cards_filter == "Land");
     if (defines_self_owner) {
         Zone::Ownership chooser = ab.controller;

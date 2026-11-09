@@ -10,6 +10,7 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/zone.h"
+#include "../coverage.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../mana_system.h"
@@ -18,14 +19,20 @@
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 #include "../queries/affected.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 
 namespace effects {
 
+static Entity damage_source_of(const Ability &ab);
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
+static void deal_divided_damage(Ability &ab);
 
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // Galvanic Discharge: "you may pay any amount of {E}", the amount chosen by its ChooseNumber,
+    // pays for the damage.
+    if (!ab.def->unless_energy_expr.empty() && !pay_switched_energy(ab)) return HandlerResult::DONE_RUN_SUBS;
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.def->amount;
     // Dynamic damage (e.g. Ajani's "damage equal to the number of creatures you control",
@@ -35,7 +42,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
         // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
         // control) can exclude the source itself via the +Other qualifier.
-        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
+        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab));
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
     if (dp && dp->is_delirium_scale) {
@@ -48,14 +55,14 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // may have already moved the permanent this same resolution, so the controller is read via
     // last-known information (CR 608.2g/h) — Zone.controller, else the live Permanent.controller,
     // else the controller captured as it left the battlefield. All three are centralized in
-    // resolve_defined_player; each resolves to one player we damage.
+    // resolve_players; each resolves to one player we damage.
     // TriggeredActivator (Eidolon of the Great Revel: "deals 2 damage to that player" — the
-    // player who cast the spell) also routes through resolve_defined_player, which binds the
-    // player captured at trigger-fire time. Without this it would fall to the targeted path
-    // with an unset target and trip the "should have fizzled" guard.
+    // player who cast the spell) also routes through resolve_players, which reads the player
+    // captured at trigger-fire time. Without this it would fall to the targeted path with an
+    // unset target and trip the "should have fizzled" guard.
     if (names_defined_player(ab)) {
-        Zone::Ownership who = resolve_defined_player(ab);
-        if (who != Zone::UNKNOWN) ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
+        for (Zone::Ownership who : resolve_players(ab.def->defined, ResolveCtx::of(ab)))
+            ::deal_damage(damage_source_of(ab), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;
     }
     // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
@@ -64,12 +71,34 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // ab.targets empty and uses ab.target. Each target is checked independently at resolution, so
     // one target having become illegal (gone from the battlefield, protection) skips only that
     // target without aborting the rest (CR 608.2c).
-    if (!ab.targets.empty()) {
+    if (!ab.target_shares.empty()) {
+        deal_divided_damage(ab);
+    } else if (!ab.targets.empty()) {
         for (Entity tgt : live_entities(ab.targets)) deal_damage_to_target(ab, tgt, dmg);
     } else {
         deal_damage_to_target(ab, ab.target.get(), dmg);
     }
     return HandlerResult::DONE_RUN_SUBS;
+}
+
+// Each target its announced share (CR 601.2d); a share of a target pruned at resolution is gone.
+static void deal_divided_damage(Ability &ab) {
+    const std::vector<ObjectRef> one{ab.target};
+    const std::vector<ObjectRef> &targets = ab.targets.empty() ? one : ab.targets;
+    for (size_t i = 0; i < targets.size() && i < ab.target_shares.size(); i++)
+        deal_damage_to_target(ab, targets[i].get(), static_cast<size_t>(ab.target_shares[i]));
+}
+
+// What deals the damage: the ability's source, or DamageSource$ TriggeredCard(LKICopy)'s object, as it
+// last existed if it has left (CR 608.2h).
+static Entity damage_source_of(const Ability &ab) {
+    const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
+    if (dp && dp->source.is(ObjectSpec::TRIGGERED_CARD))
+        if (Entity e = ab.triggered_card.lki_entity()) {
+            coverage_row("damage_source_triggered");
+            return e;
+        }
+    return ab.source.lki_entity();
 }
 
 // Deal `dmg` to a single already-chosen target — a player, a planeswalker, or a creature — the
@@ -79,7 +108,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg) {
     if (tgt == 0) return;  // the object is gone (CR 400.7): nothing is dealt damage
     if (can_be_dealt_damage(tgt)) {
-        ::deal_damage(ab.source.lki_entity(), tgt, dmg, false);
+        ::deal_damage(damage_source_of(ab), tgt, dmg, false);
         return;
     }
 #ifndef NDEBUG
@@ -95,6 +124,21 @@ bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string
     if (key == "ValidPlayers" && ab.category == "DamageAll") {
         // DamageAll's players (Pyroclasm-style "each creature and each player").
         effect_params<DamageParams>(ab).valid_players = value;
+        return true;
+    }
+    if (key == "DamageSource") {
+        const ObjectSpec source = parse_object_spec(value);
+        if (!source.is(ObjectSpec::TRIGGERED_CARD)) return false;
+        effect_params<DamageParams>(ab).source = source;
+        return true;
+    }
+    if (key == "DividedAsYouChoose") {
+        DamageParams &dp = effect_params<DamageParams>(ab);
+        dp.divided = true;
+        if (std::isdigit(static_cast<unsigned char>(value[0])))
+            dp.divided_total = std::stoi(value);
+        else
+            dp.divided_expr = value;  // an SVar, resolved with the ability's others
         return true;
     }
     if (key != "NumDmg") return false;

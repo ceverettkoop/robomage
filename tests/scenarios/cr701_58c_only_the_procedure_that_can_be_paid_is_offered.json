@@ -1,0 +1,63 @@
+{
+  "name": "cr701_58c_only_the_procedure_that_can_be_paid_is_offered",
+  "why": "CR 701.58c: with one Island left the morph cost {U} can be paid and the mana cost {1}{U} can't: one row, the one that can be taken.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Aphetto Alchemist",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat"
+  ],
+  "max_decisions": 7,
+  "expect_menu": [
+    "Turn Aphetto Alchemist face up \\(\\{U\\}\\)"
+  ],
+  "expect_menu_not": [
+    "face up \\(\\{1\\}\\{U\\}\\)"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

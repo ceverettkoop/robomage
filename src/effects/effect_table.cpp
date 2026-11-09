@@ -29,16 +29,18 @@ bool apply_parse_hook(AbilityDef &ab, const std::string &key, const std::string 
         || parse_dig(ab, key, value)
         || parse_delayed_trigger(ab, key, value)
         || parse_discard(ab, key, value)
-        || parse_mill(ab, key, value)
         || parse_peek_and_reveal(ab, key, value)
         || parse_reveal(ab, key, value)
         || parse_amass(ab, key, value)
+        || parse_empower(ab, key, value)
         || parse_choose_number(ab, key, value)
         || parse_dig_until(ab, key, value)
         || parse_play(ab, key, value)
         || parse_animate_all(ab, key, value)
         || parse_store_svar(ab, key, value)
-        || parse_set_state(ab, key, value);
+        || parse_set_state(ab, key, value)
+        || parse_repeat(ab, key, value)
+        || parse_branch(ab, key, value);
 }
 
 }  // namespace effects

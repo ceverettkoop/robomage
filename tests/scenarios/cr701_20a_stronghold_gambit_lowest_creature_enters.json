@@ -1,0 +1,62 @@
+{
+  "name": "cr701_20a_stronghold_gambit_lowest_creature_enters",
+  "why": "CR 701.20a / 202.3: each player reveals their chosen card, and of the creature cards revealed only the one with the lowest mana value enters; the other stays in its owner's hand",
+  "hand_a": [
+    "Stronghold Gambit",
+    "Grizzly Bears",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Air Elemental",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Stronghold Gambit",
+    "A:choice:Grizzly Bears",
+    "B:choice:Air Elemental"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "Player A reveals Grizzly Bears",
+    "Player B reveals Air Elemental",
+    "Player [AB] moves Grizzly Bears to the battlefield"
+  ],
+  "expect_not": [
+    "Player [AB] moves Air Elemental to the battlefield"
+  ]
+}

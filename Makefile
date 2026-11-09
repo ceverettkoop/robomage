@@ -105,6 +105,14 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
+# src/featurize/registry.cpp compiles src/featurize/registry.json in (the assembler's .incbin, which
+# the compiler's dependency files do not list): its object depends on the file.
+REGISTRY := src/featurize/registry.json
+REGISTRY_CARDS := .cache/registry/cards.rmst
+CARD_DIGEST := src/featurize/card_digest.json
+$(ODIR)/featurize/registry.o: $(REGISTRY)
+$(ODIR)/featurize/registry.o: CXXFLAGS += -DRM_REGISTRY_JSON='"$(abspath $(REGISTRY))"'
+
 .DEFAULT_GOAL := all
 
 # text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
@@ -150,7 +158,7 @@ refetch:
 	$(MAKE) check
 
 # ── make actor — bin/<config>/robomage_nn, the engine with the nn: agent, and bin/<config>/rmserve,
-# the reference inference server (plan step 5d), NOT in the default build ──
+# the reference inference server, NOT in the default build ──
 # src/actor/ (the evaluators and the nn: agent, docs/featurizer.md §6) is compiled with exceptions ON
 # and C++20 (libtorch 2.10+ headers require it) against libtorch, and linked with every engine
 # object but main.o and with src/inference/ (the protocol, docs/inference_protocol.md):
@@ -213,7 +221,7 @@ rmserve: $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmserve $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ) $(ACTOR_LDFLAGS)
 
-# ── bin/<config>/rmembed — the oracle-text table's generator (plan step 5c, docs/featurizer.md §5) ──
+# ── bin/<config>/rmembed — the oracle-text table's generator (docs/featurizer.md §5) ──
 # tools/rmembed/ (the BERT encoder in the libtorch C++ API and its safetensors reader), compiled like
 # the actor TUs (exceptions on, torch includes), linked with src/featurize/ (std only: RMTB, the
 # WordPiece tokenizer, the text-table inputs; the featurizer beside them needs the decoder) and the
@@ -265,6 +273,22 @@ text-table: program
 	step="the check after regeneration"; \
 	($(TEXT_TABLE_CHECK)) || { $(TEXT_TABLE_FAIL); }
 
+# The layout registry (docs/featurizer.md §6.1): appends to src/featurize/registry.json every entry
+# the engine's schema and whole-vocab card tables need that it lacks (new enum values, columns,
+# slots, token and relation types, ability keys; never moving one; past a capacity it fails), then
+# rebuilds so the binaries compile the new file in. Run it after a change that adds a mechanic,
+# keyword or column; the gate's vocab tier fails while the file is stale. Commit the file. It also
+# rewrites the card digest (src/featurize/card_digest.json, docs/featurizer.md §6.2: per card a hash
+# of its table rows), which the vocab tier checks too: a known card whose inputs changed (an engine
+# parsing change) or a card appended is recorded on purpose, the digest's diff naming the cards.
+
+registry: program rmfeat
+	@mkdir -p $(dir $(REGISTRY_CARDS))
+	cd bin && ./$(CONFIG)/$(BINNAME) --cards-frame ../$(REGISTRY_CARDS)
+	$(BINDIR)/rmfeat --registry-update $(REGISTRY) --cards $(REGISTRY_CARDS) --text-table $(TEXT_TABLE)
+	$(MAKE) --no-print-directory all
+	$(BINDIR)/rmfeat --digest-update $(CARD_DIGEST) --cards $(REGISTRY_CARDS) --text-table $(TEXT_TABLE)
+
 # ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
 # tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
 # objects it may see: the RMSTATE decoder and schema and src/knowledge/ (step-1 handoff §3). Part
@@ -295,7 +319,7 @@ rmfeat: $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmfeat $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
+# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
 # the std-only RMSTATE decoder and schema, the agents' std-only frame reader, Python-compatible
 # generator and policy projection, src/featurize/ (std only: the JSON reader, RMTB, the WordPiece
@@ -312,7 +336,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table rmknow rmfeat robomage_check pgo
+.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -326,7 +350,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 # vs explore, bo3, three league pairings, knowledge expert, the featurizer on: the actor loop's
 # stages), then rebuilds obj/pgo from scratch with the profile (obj/pgo-profile). Only the engine
 # binary; `make check` does not run it (docs/ci.md, bench).
-PGO_GAMES := league/ur_delver:league/gw_maverick league/bug:league/burn league/reanimator:league/uw_control
+PGO_GAMES := league/ur_tempo:league/eldrazi_aggro league/bug:league/burn league/reanimator:league/uw_control
 pgo:
 	rm -rf obj/pgo $(PGO_PROFILE)
 	$(MAKE) --no-print-directory BUILD=PGO PGO=gen program

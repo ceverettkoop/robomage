@@ -117,6 +117,10 @@ static const char *action_category_name(ActionCategory v) {
         C(DONT_SHUFFLE)
         C(KEEP_HAND)
         C(EXILE_FROM_YARD)
+        C(CONFIRM_MODES)
+        C(CHOOSE_COLOR)
+        C(DIVIDE_DAMAGE)
+        C(TURN_FACE_UP)
     }
 #undef C
     return nullptr;
@@ -214,6 +218,8 @@ static const char *pending_tag_name(PendingQuery::Tag v) {
         C(BLOCK_TARGET)
         C(DAMAGE_ASSIGN)
         C(TRIGGER_PLACE)
+        case PendingQuery::SPECIAL_ACTION:
+            break;  // never in a frame: a mid-payment prompt reports no paused flow
     }
 #undef C
     return nullptr;
@@ -226,6 +232,7 @@ static const char *window_kind_name(Game::RevealWindow::Kind v) {
         C(LOOK)
         C(FACE_DOWN_LOOK)
         C(CONTINUOUS_REVEAL)
+        C(STANDING_LOOK)
     }
 #undef C
     return nullptr;
@@ -297,7 +304,7 @@ static rmstate::EnumTable string_set_table(const char *name, const std::set<std:
 // The evergreen keywords the keyword table always names, in this order after the parser's.
 static constexpr const char *EVERGREEN_KEYWORDS[] = {"Flying", "Reach", "First Strike", "Double Strike", "Deathtouch",
     "Lifelink", "Trample", "Vigilance", "Menace", "Haste", "Defender", "Indestructible", "Hexproof", "Shroud", "Ward",
-    "Flash"};
+    "Flash", kCantBlockKeyword};
 
 // The parser's keyword table (parse.cpp's kKeywordTable), then the evergreen keywords
 // (EVERGREEN_KEYWORDS) that the table has no entry for.
@@ -325,7 +332,7 @@ std::vector<rmstate::EnumTable> engine_enums() {
     out.push_back(enum_table("day_night", Game::DN_NEITHER, Game::DN_NIGHT, day_night_name));
     out.push_back(enum_table("pending_tag", PendingQuery::NONE, PendingQuery::TRIGGER_PLACE, pending_tag_name));
     out.push_back(
-        enum_table("window_kind", Game::RevealWindow::REVEAL, Game::RevealWindow::CONTINUOUS_REVEAL, window_kind_name));
+        enum_table("window_kind", Game::RevealWindow::REVEAL, Game::RevealWindow::STANDING_LOOK, window_kind_name));
     out.push_back(
         enum_table("window_end", Game::RevealWindow::RESOLUTION, Game::RevealWindow::LEAVES_ZONE, window_end_name));
     out.push_back(enum_table(

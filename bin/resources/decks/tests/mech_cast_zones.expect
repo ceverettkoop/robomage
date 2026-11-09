@@ -1,0 +1,15 @@
+# M7 (c): casting from other zones.
+# DB$ Play from the graveyard: the card (Bilbo) and an Adventure. A split half's row is rarer than
+# 16 games reach; --fuzz-games 100 and its scenario show it.
+cast_row:graveyard_resolution
+cast_row:graveyard_resolution_adventure
+# What cast it sends it elsewhere if it would go to a graveyard.
+row:graveyard_replaced
+# DB$ Play from exile, without paying the mana cost (Beseech the Mirror).
+cast_row:exile_resolution
+# Bargain (Beseech the Mirror).
+cast:bargained
+# A card's own permission (Hogaak), Convoke's choice and its Delve.
+cast_row:graveyard_self
+cost:MANA.tap_chosen
+cost:EXILE_FROM_GRAVEYARD.delve

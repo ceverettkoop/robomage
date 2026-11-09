@@ -84,8 +84,8 @@ EFFECT_KIND(SacrificeTokens, "SacrificeTokens", sacrifice_tokens)
 // Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile each
 // entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
 EFFECT_KIND(ExileTokens, "ExileTokens", exile_tokens)
-// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
-// player, with cur_game.resolution.memory.remembered set to that player's entity each iteration.
+// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per player it
+// names, with that player's entity remembered for the iteration.
 EFFECT_KIND(RepeatEach, "RepeatEach", repeat_each)
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
 // graveyard card in cur_game.resolved_effects.may_cast_this_turn so the casting path offers it this turn.
@@ -128,7 +128,7 @@ EFFECT_KIND(Earthbend, "Earthbend", earthbend)
 // handler covers a tap that reaches the stack. See effect_tap.cpp.
 EFFECT_KIND(Tap, "Tap", tap)
 // DB$ RevealHand (Thought-Knot Seer): the targeted player (ValidTgts$ Opponent) reveals their
-// hand to all players (CR 701.16) — logged and recorded in the belief state. General over
+// hand to all players (CR 701.16) — logged and shown to every viewer (a reveal window). General over
 // Duress/Thoughtseize-style "target player reveals their hand". See effect_reveal_hand.cpp.
 EFFECT_KIND(RevealHand, "RevealHand", reveal_hand)
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
@@ -149,10 +149,10 @@ EFFECT_KIND(Storm, "Storm", storm)
 // cur_game.turn_state.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
 // an extra turn" effect. See effect_add_turn.cpp.
 EFFECT_KIND(AddTurn, "AddTurn", add_turn)
-// DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's
+// DB$ StoreSVar: latch ab.stored_svar_set_value into the SOURCE permanent's
 // Permanent::stored_svars[ab.stored_svar_set_name] — the per-permanent named-integer scratch store
 // read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
-// the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
+// a leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
 EFFECT_KIND(StoreSVar, "StoreSVar", store_svar)
 // DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect, the target-or-its-
 // controller may pay an UnlessCost$ ({R}{R}) to copy the parent spell and choose new targets for
@@ -166,9 +166,8 @@ EFFECT_KIND(CopySpellAbility, "CopySpellAbility", copy_spell_ability)
 // effect_suspend_tick.cpp.
 EFFECT_KIND(SuspendTick, "SuspendTick", suspend_tick)
 // DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
-// turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).
-// Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
-// effect_set_state.cpp.
+// turn the Defined$ card face up (CR 708.3 / 711.8); TurnFaceDown and Transform are its other
+// Mode$ values. See effect_set_state.cpp.
 EFFECT_KIND(SetState, "SetState", set_state)
 // WarpExile (a 2025 keyword; not in the checked-in CR snapshot): the delayed end-step triggered
 // ability set up for a warp-cast permanent (mark_warp_permanent). Exiles ab.source (if it is still
@@ -198,6 +197,30 @@ EFFECT_KIND(SuspendCast, "SuspendCast", suspend_cast)
 // Valid$ filter matches, computed as mana sources are enumerated; like every mana ability it
 // makes its mana as it is activated (CR 605.3a), in mana_system.
 EFFECT_KIND_ELSEWHERE(ManaReflected, "ManaReflected")
+
+// "Tap or untap target permanent": its controller chooses which, as it resolves (CR 608.2d).
+EFFECT_KIND(TapOrUntap, "TapOrUntap", tap_or_untap)
+
+// "Then shuffle": a player shuffles their library as an instruction of its own.
+EFFECT_KIND(Shuffle, "Shuffle", shuffle)
+
+// "Repeat this process": resolve the RepeatSubAbility until its check fails.
+EFFECT_KIND(Repeat, "Repeat", repeat)
+
+// "If <condition>, this, else that": resolve TrueSubAbility$ or FalseSubAbility$ (Goblin Welder).
+EFFECT_KIND(Branch, "Branch", branch)
+
+// "Change the target of target spell or ability" (CR 115.7a): pick another for it as this resolves.
+EFFECT_KIND(ChangeTargets, "ChangeTargets", change_targets)
+
+// "Cloak the top card of your library" (CR 701.58): put it onto the battlefield face down.
+EFFECT_KIND(Cloak, "Cloak", cloak)
+
+// The ability a player's speed brings (CR 702.179d), engine-built: no script names it.
+EFFECT_KIND(IncreaseSpeed, "IncreaseSpeed", increase_speed)
+
+// "Empower Jace 3" (oracle; docs/rules_deviations.md): loyalty counters on a token of that subtype.
+EFFECT_KIND(Empower, "Empower", empower)
 
 #undef EFFECT_KIND
 #undef EFFECT_KIND_ELSEWHERE

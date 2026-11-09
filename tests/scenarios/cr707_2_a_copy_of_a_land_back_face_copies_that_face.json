@@ -1,0 +1,8 @@
+{"name": "cr707_2_a_copy_of_a_land_back_face_copies_that_face",
+ "why": "CR 707.2, 712.8d: a copy of a modal double-faced permanent takes the face that is up. Thespian's Stage copying Witch-Blessed Meadow became Witch Enchanter, the front (f9e641cd, copied_card; found by a frozen self-play log).",
+ "hand_a": ["Witch Enchanter"],
+ "battlefield_a": ["Thespian's Stage", "Savannah", "Savannah"],
+ "play": ["A:keep", "B:keep", "A:land:Witch-Blessed Meadow", "A:desc:Decline", "A:activate:Thespian's Stage", "A:target:Witch-Blessed Meadow"],
+ "seed": 1, "max_decisions": 40,
+ "expect": ["Thespian's Stage becomes a copy of Witch-Blessed Meadow"],
+ "expect_not": ["becomes a copy of Witch Enchanter"]}

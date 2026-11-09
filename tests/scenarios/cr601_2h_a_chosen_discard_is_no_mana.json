@@ -1,0 +1,38 @@
+{
+  "name": "cr601_2h_a_chosen_discard_is_no_mana",
+  "why": "CR 118.3, 733.1: a Simian Spirit Guide chosen as Bitter Triumph's discard can't also be exiled for its mana: with one Swamp the payment can't be made, the cast is reversed and the card stays in the hand",
+  "hand_a": [
+    "Bitter Triumph",
+    "Simian Spirit Guide",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "life_a": 2,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Bitter Triumph",
+    "A:target:Grizzly Bears@opp",
+    "A:discard:Simian Spirit Guide"
+  ],
+  "max_decisions": 7,
+  "expect_not": [
+    "Player A exiles Simian Spirit Guide",
+    "Player A casts Bitter Triumph",
+    "Player A discards Simian Spirit Guide"
+  ]
+}

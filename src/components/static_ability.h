@@ -2,6 +2,9 @@
 #define STATIC_ABILITY_H
 #include <cstdint>
 #include <string>
+#include "filter_spec.h"
+#include "object_spec.h"
+#include "zone.h"
 
 struct StaticAbility {
     std::string category  = "";  // "Continuous", "MustAttack"
@@ -32,15 +35,25 @@ struct StaticAbility {
     std::string add_trigger = "";
     std::string add_trigger_svar_name = "";
     std::string add_trigger_svar = "";
-    std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
+    // GainsAbilitiesOf$ <filter> (Agatha's Soul Cauldron): every permanent Affected$ designates has
+    // the activated abilities of the cards matching it in the GainsAbilitiesOfZones$ zones, layer 6
+    // (CR 613.1f). Each ability is the definition the card's script gave it, with that script's SVars.
+    FilterSpec gains_abilities_of;
+    Zone::ZoneValue gains_abilities_zone = Zone::BATTLEFIELD;
+    FilterSpec affected;        // Affected$: the filter over what this static affects
+    // AffectedDefined$: the one object this static affects (Self, or what its source is attached
+    // to), which `affected` restricts further ("Card" when the script gives no Affected$).
+    // ObjectSpec::DEFAULT when the static names none: `affected` alone decides.
+    ObjectSpec affected_defined;
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
     int counter_count = 0;            // literal count (etbCounter:M1M1:6 → 6); 0 when dynamic
     bool counter_count_from_delve = false;  // counter count = delve exiles matching the filter below
     // Count$ValidExile printed-characteristics filter for the delve counter count (Murktide
     // Regent: "Instant,Sorcery" — the ExiledWithSource qualifier is stripped at parse time,
-    // it being implied by membership in cur_game.delve_exiled). Empty = count every exile.
-    std::string counter_count_delve_filter = "";
+    // it being implied by the card's cost having exiled it). Empty = count every exile.
+    FilterSpec counter_count_delve_filter;
+    bool counter_count_from_sunburst = false;  // counter count = colors of mana spent to cast it (CR 702.44a)
     bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
@@ -54,10 +67,35 @@ struct StaticAbility {
     // ReduceCost fields (category = "ReduceCost"): the mirror of RaiseCost — a continuous
     // static that reduces the generic portion of matching spells' cost by reduce_cost
     // (CR 118.7 / 601.2f). reduce_cost_filter is the ValidCard$ spec (e.g. "Eldrazi.Colorless").
-    // reduce_cost_you_only gates the reduction to the source's controller (Activator$ You).
+    // cost_activator (below) gates it to some casters.
     int reduce_cost = 0;
-    std::string reduce_cost_filter = "";
-    bool reduce_cost_you_only = false;
+    FilterSpec reduce_cost_filter;
+    // Activator$ on a RaiseCost or ReduceCost: whose spells the static applies to.
+    enum class CostActivator : uint8_t {
+        ANYONE,      // Player
+        CONTROLLER,  // You (Eye of Ugin)
+        NOT_ACTIVE,  // Player.!Active (Defense Grid: "except during its controller's turn")
+    };
+    CostActivator cost_activator = CostActivator::ANYONE;
+    // ValidCard$ Card.Self (Mystical Dispute: "This spell costs {2} less to cast if ..."): the
+    // static reduces only its own card's cost, as that card is cast. It functions on the stack
+    // (CR 113.6d) — read off the card's CardData by the cost computation, never gathered from
+    // the battlefield.
+    bool reduce_cost_self = false;
+    // ValidTarget$ <filter> (Mystical Dispute: Spell.Blue): the reduction applies only to a spell
+    // that targets an object matching the filter, so it is known once the targets are chosen
+    // (CR 601.2c before 601.2f). Empty = no target condition.
+    FilterSpec reduce_cost_valid_target;
+    // EffectZone$ (the zones the static functions from, CR 113.6b): "All" or a zone list; empty =
+    // the battlefield (Forge's default).
+    std::string effect_zone = "";
+    // Does this Card.Self ReduceCost static function as its card is cast? It functions on the
+    // stack (CR 113.6d), so from an EffectZone$ of All or one naming the stack, and when it names
+    // none.
+    bool self_reduction_functions() const {
+        return category == "ReduceCost" && reduce_cost_self &&
+               (effect_zone.empty() || effect_zone == "All" || effect_zone.find("Stack") != std::string::npos);
+    }
     // SetCost / cost-floor fields (category = "SetCost"; Trinisphere): a continuous static that
     // sets a MINIMUM total mana value on matching spells (RaiseTo$ True). When a spell's
     // effective total mana value — after every other increase/reduction is applied (CR 601.2f) —
@@ -68,7 +106,7 @@ struct StaticAbility {
     // one implemented) from a hypothetical "set the cost to exactly N" form.
     int set_cost_min = 0;
     bool set_cost_raise_to = false;
-    std::string set_cost_filter = "";
+    FilterSpec set_cost_filter;
     // CantAttack fields (category = "CantAttack"; Ensnaring Bridge): a continuous combat
     // restriction — creatures matching cant_attack_filter can't be declared as attackers
     // (CR 509.1a). cant_attack_filter is the ValidCard$ spec (e.g. "Creature.powerGTX"); it is
@@ -78,16 +116,64 @@ struct StaticAbility {
     // (Ensnaring Bridge: "Count$ValidHand Card.YouOwn"), evaluated against the static SOURCE's
     // controller at declare-attackers time ("your hand" = the source controller's hand, applied to
     // every creature). Empty x_svar = the filter has no dynamic X.
-    std::string cant_attack_filter = "";
+    FilterSpec cant_attack_filter;
     std::string cant_attack_x_svar = "";
+    // AddHiddenKeyword$ CARDNAME can't block.: what it reaches can't be declared as a blocker.
+    bool cant_block = false;
+    // CantBlockBy fields (category = "CantBlockBy"; Brazen Borrower): a combat restriction, CR
+    // 509.1b: a creature matching cant_block_blocker (ValidBlocker$; empty: any creature) can't be
+    // declared as a blocker of an attacker matching cant_block_attacker (ValidAttacker$).
+    FilterSpec cant_block_attacker;
+    FilterSpec cant_block_blocker;
+    // CantPreventDamage (Frenzied Baloth, CR 615.12): IsCombat$ True says only combat damage can't be
+    // prevented; with none, no damage can.
+    bool cant_prevent_combat_only = false;
     // CantBeActivated fields (category = "CantBeActivated"):
-    std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
+    FilterSpec cant_activate_card_filter;  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):
     // when true the static applies only to cards whose name equals the source permanent's chosen_name.
     bool match_named_card = false;
     // Icetill Explorer statics (category = "Continuous"):
     int adjust_land_plays = 0;            // AdjustLandPlays$ N — additional land plays per turn
-    bool may_play_from_graveyard = false; // MayPlay$ True with AffectedZone$ Graveyard
+    // MayPlay$ True over Land cards with AffectedZone$ Graveyard ("you may play lands from your
+    // graveyard": Icetill Explorer, Mole Man, Crucible of Worlds).
+    bool may_play_from_graveyard = false;
+    // MayPlay$ True over every card of yours with AffectedZone$ Graveyard (Gaea's Will): spells too.
+    bool may_cast_from_graveyard = false;
+    // MayPlay$ True over Card.Self with AffectedZone$ and EffectZone$ Graveyard (Hogaak: "You may cast
+    // CARDNAME from your graveyard"): read off the card itself as a Permission.
+    bool may_cast_self_from_graveyard = false;
+    // MayPlay$ True over the top card of a library (Mystic Forge: "You may cast artifact spells and
+    // colorless spells from the top of your library"): the cards Affected$ designates, read as the
+    // spell each would be, may be cast from there by the static's controller, their owner.
+    bool may_play_from_library = false;
+    // MayLookAt$ You over the top card of a library (Mystic Forge: "You may look at the top card of
+    // your library any time"): the static's controller sees what Affected$ designates for as long
+    // as the static applies (visibility.h: sync_standing_looks). A card in a library has no
+    // controller, so `affected` says "you own".
+    bool may_look_at = false;
+    // S:Mode$ ManaRestriction (Hogaak: "You can't spend mana to cast this spell"): the objects whose
+    // mana may be spent to cast the spell that has it, ValidSource$; with InvertValidSource$, those
+    // whose mana may not. EffectZone$ All: it functions as the spell is cast (CR 113.6d).
+    FilterSpec mana_valid_source;
+    bool mana_invert_valid_source = false;
+    // MayPlay$ True with MayPlayWithoutManaCost$ True (Omniscience: "You may cast spells from your
+    // hand without paying their mana costs"; Aluren): the cards Affected$ designates in its
+    // AffectedZone$ zones may be cast for the alternative cost "without paying its mana cost"
+    // (CR 118.9) by the players may_play_player names; with MayPlayWithFlash$ True that cast may
+    // be made as though the spell had flash (CR 601.3c). The static grants no permission to cast
+    // from a zone other than the hand, so it applies only to a card in one of those zones some
+    // other rule or effect lets the player cast (MayPlayDontGrantZonePermissions$ True says so;
+    // parse_one_static_ability reports a free-cast static over another zone without it).
+    // Read by rules_mod::free_cast_grant.
+    enum class MayPlayPlayer : uint8_t {
+        YOU,
+        OPPONENT,
+        ANY
+    };
+    bool may_play_without_mana_cost = false;
+    bool may_play_with_flash = false;
+    MayPlayPlayer may_play_player = MayPlayPlayer::YOU;  // MayPlayPlayer$ (default the controller)
     // SVar-based condition (Keen-Eyed Curator)
     std::string check_svar_expr = "";   // resolved CheckSVar$ expression (e.g. "Count$ValidExile Card.ExiledWithSource$CardTypes")
     std::string svar_compare = "";      // SVarCompare$ value (e.g. "GE4")
@@ -99,12 +185,12 @@ struct StaticAbility {
     // satisfies present_compare. Re-evaluated every SBA pass so the static turns on/off as the
     // zone count changes. present_zone defaults to "Battlefield" (Forge convention) when the
     // script omits PresentZone$. present_compare defaults to "GE1" when omitted.
-    std::string present_filter  = "";   // IsPresent$ filter (e.g. "Land.YouOwn")
+    FilterSpec present_filter;   // IsPresent$ filter (e.g. "Land.YouOwn")
     std::string present_zone    = "";   // PresentZone$ (Battlefield/Graveyard/Hand/Exile/Library)
     std::string present_compare = "";   // PresentCompare$ (e.g. "GE3", "EQ0", "LT2")
 
     // CantBeCast fields (category = "CantBeCast"):
-    std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
+    FilterSpec cant_cast_filter;      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
     bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
                                             // (Voice of Victory: "your opponents can't cast spells
@@ -138,14 +224,24 @@ struct StaticAbility {
     // Red/Green list. affected_zone is AffectedZone$ ("All" = every zone; otherwise a specific
     // zone). General: Mycosynth Lattice ("All cards ... are colorless", Affected$ Card |
     // SetColor$ Colorless | AffectedZone$ All) is the global-colorless case; an explicit color
-    // list reuses the same field. Consumed by setcolor_override_for (state_manager_statics.cpp).
+    // list reuses the same field. AddColor$ adds to what the object has instead: a color list, or
+    // ChosenColor, the color the source chose (Painter's Servant). Consumed by apply_color_statics
+    // (state_manager_statics.cpp).
     std::string set_color = "";             // SetColor$ Colorless | White | "White Blue" | ...
+    std::string add_color = "";             // AddColor$ ChosenColor | White | ...
     std::string affected_zone = "";         // AffectedZone$ All | Battlefield | Graveyard | ...
+    std::string exclude_zone = "";          // ExcludeZone$: zones taken out of what the static reaches
 
     // Mana-spending conversion (category = "ManaConvert"; CR 609.4 / 106.6). ManaConversion$
     // AnyType->AnyColor (Mycosynth Lattice's "Players may spend mana as though it were mana of
     // any color.") lets any mana pay any colored pip. Consumed by any_mana_as_any_color_active.
     std::string mana_conversion = "";       // ManaConversion$ AnyType->AnyColor
+    // Who and what a conversion reaches (Agatha's Soul Cauldron: "to activate abilities of creatures
+    // you control"): ValidPlayer$ You, the payer is the static's controller; ValidCard$, the object
+    // paid for; ValidSA$ Activated, what is paid for is an activation. With none, every payment.
+    bool mana_convert_you = false;
+    FilterSpec mana_convert_card;
+    bool mana_convert_activated = false;
 
     // Self card-type animate static (Kaito, Bane of Nightmares' "During your turn ... he's a 3/4
     // Ninja creature with hexproof that's still a planeswalker"). When Affected$ references the

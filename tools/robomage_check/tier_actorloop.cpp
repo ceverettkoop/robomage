@@ -399,8 +399,8 @@ static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep) {
         "\"entries\": [\n"
         " {\"id\": \"bo1_sides\", \"format\": \"bo1\", \"swap\": \"sides\", \"deck_a\": \"league/burn\", "
         "\"deck_b\": \"league/bug\", \"agent_a\": \"random\", \"agent_b\": \"explore\"},\n"
-        " {\"id\": \"bo3_decks\", \"format\": \"bo3\", \"swap\": \"decks\", \"deck_a\": \"league/ur_delver\", "
-        "\"deck_b\": \"league/lands\", \"agent_a\": \"explore\", \"agent_b\": \"random\", \"knowledge_b\": "
+        " {\"id\": \"bo3_decks\", \"format\": \"bo3\", \"swap\": \"decks\", \"deck_a\": \"league/ur_tempo\", "
+        "\"deck_b\": \"league/lands_top8\", \"agent_a\": \"explore\", \"agent_b\": \"random\", \"knowledge_b\": "
         "\"off\"}]}\n";
     write_schedule(a.schedule, "{\"version\": \"main\", " + entry_list);
     write_schedule(b.schedule,
@@ -423,7 +423,7 @@ static void part_main(const rmcheck::Options &opt, rmcheck::Report &rep) {
         swapped += sw;
         const bool sides = jstr(l, "entry") == "bo1_sides";
         const std::string want_a =
-            sides ? (sw ? "league/bug" : "league/burn") : (sw ? "league/lands" : "league/ur_delver");
+            sides ? (sw ? "league/bug" : "league/burn") : (sw ? "league/lands_top8" : "league/ur_tempo");
         const std::string want_agent = sides ? (sw ? "explore" : "random") : "explore";
         if (jstr(l, "deck_a") != want_a || jstr(l, "agent_a") != want_agent)
             fails.push_back("match " + std::to_string(jint(l, "match")) + ": seat A has the wrong deck or agent");
@@ -469,7 +469,7 @@ static void part_cap(const rmcheck::Options &opt, rmcheck::Report &rep) {
     a.schedule = rmcheck::path_join(a.dir, "schedule.json");
     a.out = rmcheck::path_join(a.dir, "run");
     write_schedule(a.schedule,
-        "{\"entries\": [{\"id\": \"capped\", \"deck_a\": \"league/gw_maverick\", \"deck_b\": \"league/uw_control\", "
+        "{\"entries\": [{\"id\": \"capped\", \"deck_a\": \"league/eldrazi_aggro\", \"deck_b\": \"league/uw_control\", "
         "\"agent_a\": \"random\", \"agent_b\": \"explore\", \"max_game_decisions\": 25}]}\n");
     run_actor(opt, &a, 3, opt.seed + 910);
     if (!read_outputs(&a, &fails)) return report(rep, "cap", fails);
@@ -575,7 +575,8 @@ static void part_change_stop(const rmcheck::Options &opt, rmcheck::Report &rep) 
         if (!rewrote && rmcheck::starts_with(line, "GAME_RESULT:")) {
             rewrote = write_schedule(a.schedule,
                 "{\"version\": \"new\", \"entries\": [{\"id\": \"new\", \"format\": \"bo3\", \"deck_a\": "
-                "\"league/lands\", \"deck_b\": \"league/bug\", \"agent_a\": \"explore\", \"agent_b\": \"random\"}]}\n");
+                "\"league/lands_top8\", \"deck_b\": \"league/bug\", \"agent_a\": \"explore\", \"agent_b\": "
+                "\"random\"}]}\n");
             if (!rewrote) fails.push_back("cannot rewrite the schedule");
         }
         if (rmcheck::starts_with(line, "ACTOR-MATCH:")) in_new = rmcheck::contains(line, "entry=new");
@@ -1004,7 +1005,7 @@ static void check_sb_statistics(const std::vector<Json> &lines, std::vector<std:
 // on both seats, a bo3 entry swapping decks, p 1 (knowledge off): six matches recorded, each
 // match's sideboarding steps against its replay's dump (check_sb_steps: μ = q, the results lines'
 // sb), its decision log replayed alone to the same episodes, a rerun of its first three matches
-// writing the same logs and results; then three more actors' 11 matches each without episodes:
+// writing the same logs and results; then three more actors' 22 matches each without episodes:
 // the swap counts and card frequencies over every phase (check_sb_statistics).
 static void part_sb_explore(const rmcheck::Options &opt, rmcheck::Report &rep) {
     std::vector<std::string> fails;
@@ -1012,7 +1013,7 @@ static void part_sb_explore(const rmcheck::Options &opt, rmcheck::Report &rep) {
     rmcheck::remove_tree(base);
     rmcheck::make_dirs(base);
     const std::string entry = "\"format\": \"bo3\", \"swap\": \"decks\", \"deck_a\": \"" + std::string(SB_DECK) +
-                              "\", \"deck_b\": \"league/ur_delver\", \"agent_a\": \"explore\", \"agent_b\": "
+                              "\", \"deck_b\": \"league/ur_tempo\", \"agent_a\": \"explore\", \"agent_b\": "
                               "\"explore\", \"knowledge_a\": \"off\", \"knowledge_b\": \"off\", \"sb_explore\": " +
                               sb_explore_json(1, true);
     std::vector<ActorRun> runs(5);
@@ -1027,7 +1028,7 @@ static void part_sb_explore(const rmcheck::Options &opt, rmcheck::Report &rep) {
     write_schedule(runs[2].schedule,
         "{\"version\": \"sb\", \"entries\": [{\"id\": \"sb\", \"trajectory_dir\": null, " + entry + "}]}\n");
     const long seed = opt.seed + 940;
-    const long matches[] = {6, 3, 11, 11, 11};
+    const long matches[] = {6, 3, 22, 22, 22};
     rmcheck::parallel_for(runs.size(), opt.jobs, [&](size_t i) { run_actor(opt, &runs[i], matches[i], seed); });
     for (ActorRun &r : runs)
         if (!read_outputs(&r, &fails)) return report(rep, "sb_explore", fails);
@@ -1124,7 +1125,7 @@ static void part_sb_schedule_errors(const rmcheck::Options &opt, rmcheck::Report
 
 namespace rmcheck {
 
-// The actor tier's continuous smoke run (plan T8; actor.h).
+// The actor tier's continuous smoke run (actor.h).
 void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &setup) {
     const char *part = "actor smoke";
     if (opt.python.empty()) {
@@ -1142,7 +1143,7 @@ void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &setup)
     const std::string teacher = "'" + opt.python + "' '" + path_join(opt.repo, "python/teacher.py") + "' --seed 11";
     ::write_schedule(a.schedule,
         "{\"version\": \"smoke\", \"entries\": [{\"id\": \"nn_taught\", \"format\": \"bo3\", \"swap\": "
-        "\"sides\", \"deck_a\": \"league/burn\", \"deck_b\": \"league/ur_delver\", \"agent_a\": " +
+        "\"sides\", \"deck_a\": \"league/burn\", \"deck_b\": \"league/ur_tempo\", \"agent_a\": " +
             featurize::json_quote("nn:" + setup.ts()) + ", \"agent_b\": " +
             featurize::json_quote("nn:" + setup.ts() + ":thresh=0.03:disc=16") + ", \"teacher_a\": " +
             featurize::json_quote(teacher) + ", \"teacher_mix\": 0.5}]}\n");
@@ -1190,7 +1191,7 @@ void actor_sb_explore_check(const Options &opt, Report &rep, const ActorSetup &s
     ::write_schedule(a.schedule,
         "{\"version\": \"sb\", \"entries\": [{\"id\": \"self\", \"format\": \"bo3\", \"swap\": \"decks\", "
         "\"deck_a\": \"" +
-            std::string(SB_DECK) + "\", \"deck_b\": \"league/ur_delver\", \"agent_a\": " + nn + ", \"agent_b\": " + nn +
+            std::string(SB_DECK) + "\", \"deck_b\": \"league/ur_tempo\", \"agent_a\": " + nn + ", \"agent_b\": " + nn +
             ", \"knowledge_a\": \"off\", \"knowledge_b\": \"off\", \"sb_explore\": " + sb_explore_json(0.5, false) +
             "}]}\n");
     ::run_actor(opt, &a, 3, opt.seed + 960);

@@ -8,6 +8,8 @@
 const CardData &entering_face(Entity e, const CardData &cd) {
     const EntryInfo *entry = find_entry_info(e);
     if (cd.backside && entry && entry->enters_transformed) return *cd.backside;
+    if (entry)
+        if (const CardData *overlaid = overlay_face(cd, entry->overlay)) return *overlaid;
     return active_face(e, cd);
 }
 

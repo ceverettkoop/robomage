@@ -1,0 +1,59 @@
+{
+  "name": "cr603_4_renegade_rallier_returns_a_cheap_permanent_with_revolt",
+  "why": "CR 603.4, Renegade Rallier: Revolt$ True is an intervening-if on the player flag; a permanent A controlled left (a sacrificed Polluted Delta), so the Rallier returns target permanent card with mana value 2 or less from A's graveyard. A land has mana value 0; Murktide Regent is too dear and Goblin Guide is B's.",
+  "hand_a": [
+    "Renegade Rallier",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Forest",
+    "Island",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Plains",
+    "Savannah",
+    "Polluted Delta"
+  ],
+  "graveyard_a": [
+    "Grizzly Bears",
+    "Forest",
+    "Murktide Regent"
+  ],
+  "graveyard_b": [
+    "Goblin Guide"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Polluted Delta",
+    "A:search:Island",
+    "A:cast:Renegade Rallier",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Renegade Rallier triggered",
+    "Grizzly Bears is moved to the battlefield"
+  ],
+  "expect_menu": [
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "expect_menu_not": [
+    "Murktide Regent",
+    "Goblin Guide"
+  ]
+}

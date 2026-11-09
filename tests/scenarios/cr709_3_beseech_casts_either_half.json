@@ -1,0 +1,47 @@
+{
+  "name": "cr709_3_beseech_casts_either_half",
+  "why": "CR 709.3: Beseech the Mirror's found split card may be cast as either half, each read at its own mana value.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Wear/Tear",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mishra's Bauble"
+  ],
+  "battlefield_b": [
+    "Sylvan Library"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Accept",
+    "A:search:Wear",
+    "A:desc:Cast Tear"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Player A casts Tear without paying its mana cost",
+    "Sylvan Library is destroyed"
+  ]
+}

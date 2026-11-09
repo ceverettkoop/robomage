@@ -1,0 +1,41 @@
+{
+  "name": "cr611_2b_mishras_research_desk_plays_a_land_on_its_land_drop",
+  "why": "CR 305.1, 611.2b: \"play\" covers a land: the chosen exiled land is played as the turn's land drop, not cast",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Island",
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mishra's Research Desk",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Mishra",
+    "A:choice:Island",
+    "A:desc:Play Island (from exile)"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "^Player A played Island"
+  ]
+}

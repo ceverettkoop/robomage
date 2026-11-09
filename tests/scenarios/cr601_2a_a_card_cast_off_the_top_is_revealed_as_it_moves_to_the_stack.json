@@ -1,0 +1,68 @@
+{
+  "name": "cr601_2a_a_card_cast_off_the_top_is_revealed_as_it_moves_to_the_stack",
+  "why": "CR 601.2a, 400.2: the cast moves the card to the stack, a public zone, so both seats see it; the look moves on to the next card, which only A sees.",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mystic Forge"
+  ],
+  "library_a": [
+    "Lotus Petal",
+    "Mishra's Bauble",
+    "Tormod's Crypt",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Player A casts Lotus Petal"
+  ],
+  "expect_dump": [
+    "^B .*event CAST_FROM_HIDDEN LIBRARY>STACK card=Lotus Petal",
+    "^A .*event CAST_FROM_HIDDEN LIBRARY>STACK card=Lotus Petal",
+    "^A .*menu CAST_SPELL card=Lotus Petal text=Cast Lotus Petal \\(from library\\)"
+  ],
+  "expect_dump_final": [
+    "^A .*reveal STANDING_LOOK LIBRARY pos=0 card=Mishra's Bauble"
+  ],
+  "expect_dump_not": [
+    "^B .*(card=|seen \\w+ |known_hand |= )Mishra's Bauble",
+    "^B .*menu CAST_SPELL"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

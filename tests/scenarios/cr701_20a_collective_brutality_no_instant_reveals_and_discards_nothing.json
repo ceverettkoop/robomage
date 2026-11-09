@@ -1,0 +1,39 @@
+{
+  "name": "cr701_20a_collective_brutality_no_instant_reveals_and_discards_nothing",
+  "why": "CR 701.20a, 608.2c: the hand is revealed whatever it holds; with no instant or sorcery in it no card is chosen and nothing is discarded",
+  "hand_a": [
+    "Collective Brutality",
+    "Ponder"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Collective Brutality",
+    "A:mode:reveals their hand",
+    "A:mode:done"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Player B reveals their hand"
+  ],
+  "expect_not": [
+    "^Player B discards"
+  ]
+}

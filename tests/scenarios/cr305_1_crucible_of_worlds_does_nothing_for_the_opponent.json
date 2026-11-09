@@ -1,0 +1,41 @@
+{
+  "name": "cr305_1_crucible_of_worlds_does_nothing_for_the_opponent",
+  "why": "CR 305.1, 109.5: \"you\": the opponent of Crucible's controller gets no land play from their graveyard",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt"
+  ],
+  "hand_b": [
+    "Grizzly Bears"
+  ],
+  "library_b": [
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears",
+    "Grizzly Bears"
+  ],
+  "battlefield_a": [
+    "Crucible of Worlds"
+  ],
+  "graveyard_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 14,
+  "expect_menu_not": [
+    "\\(from graveyard\\)"
+  ]
+}

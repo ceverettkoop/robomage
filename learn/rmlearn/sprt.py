@@ -1,4 +1,4 @@
-"""The SPRT match runner (docs/rnad_training_plan.md T8, B1/B4's "an SPRT against scripted:hard"):
+"""The SPRT match runner (docs/rmtrain.md §7):
 a policy against an opponent over the league matchups, bo3 with ``swap: sides``, through N engine
 actors, with a sequential probability ratio test on the **per-game** win rate that stops the actors
 as soon as it decides.
@@ -78,6 +78,7 @@ class SPRTConfig:
     poll_s: float = 0.5
     engine: str = None              # robomage_nn (default bin/release/robomage_nn)
     bin_dir: str = BIN_DIR
+    feature_history: int = 0        # the engine's --feature-history (the exports' spec: docs/featurizer.md §3.7)
 
     def to_dict(self):
         d = asdict(self)
@@ -146,7 +147,8 @@ def run_sprt(policy, opponent, cfg=None, out_dir="sprt", log=print, on_game=None
                              teacher_seed=cfg.seed)
     policy_spec = sched["entries"][0]["agent_a"]
     opponent_spec = sched["entries"][0]["agent_b"]
-    pool = MT.ActorPool(sched, out_dir, cfg.actors, cfg.engine, cfg.bin_dir, cfg.seed)
+    extra = ["--feature-history", str(cfg.feature_history)] if cfg.feature_history > 0 else []
+    pool = MT.ActorPool(sched, out_dir, cfg.actors, cfg.engine, cfg.bin_dir, cfg.seed, extra_args=extra)
     test = SPRT(cfg.p0, cfg.p1, cfg.alpha, cfg.beta, cfg.min_games)
     records = []
     reason = None
@@ -229,6 +231,7 @@ def add_common_args(ap):
     ap.add_argument("--max-game-decisions", type=int, default=5000)
     ap.add_argument("--timeout", type=float, default=0.0, help="wall-clock cap, seconds")
     ap.add_argument("--engine", help="robomage_nn (default bin/release/robomage_nn)")
+    ap.add_argument("--feature-history", type=int, default=0, help="the exports' recent-event history cap")
 
 
 def config_from_args(a, **extra):
@@ -239,7 +242,7 @@ def config_from_args(a, **extra):
     return SPRTConfig(actors=a.actors, pairs=MT.parse_pairs(a.pairs), weights=weights, format=a.format,
                       policy_options=a.policy_options, opponent_options=a.opponent_options, seed=a.seed,
                       knowledge=a.knowledge, max_game_decisions=a.max_game_decisions, timeout_s=a.timeout,
-                      engine=a.engine, **extra)
+                      engine=a.engine, feature_history=a.feature_history, **extra)
 
 
 def main(argv=None):

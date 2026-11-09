@@ -1,0 +1,32 @@
+{
+  "name": "cr615_12_combat_damage_goes_through_protection",
+  "why": "CR 702.16e, 615.12: protection prevents damage from a source of its quality, and that prevention is one 'can't be prevented' stops. Scryb Ranger's protection from blue lets it block Brazen Borrower, and under Frenzied Baloth it takes the damage.",
+  "library_a": [
+    "Island"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Brazen Borrower",
+    "Frenzied Baloth"
+  ],
+  "battlefield_b": [
+    "Scryb Ranger"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Brazen Borrower",
+    "A:attack:done",
+    "B:block:Scryb Ranger",
+    "B:block:done"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Brazen Borrower deals 3 damage to Scryb Ranger"
+  ],
+  "expect_not": [
+    "has protection from .* damage prevented"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "name": "cr602_5b_wirewood_symbiote_returns_an_elf_once",
+  "why": "CR 602.5b, 118.3, 205.3: Wirewood Symbiote returns an Elf you control, read by creature type, to untap a creature, once each turn; it is an Insect, so it can't return itself, nor a Bear",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Wirewood Symbiote",
+    "Llanowar Elves",
+    "Quirion Ranger",
+    "Grizzly Bears",
+    "Forest"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Mountain",
+    "A:tap:Llanowar Elves",
+    "A:activate:Wirewood Symbiote",
+    "A:target:Llanowar Elves",
+    "A:return:Quirion Ranger",
+    "A:attack:done",
+    "A:activate:Wirewood Symbiote",
+    "A:target:Grizzly Bears",
+    "A:return:Llanowar Elves"
+  ],
+  "max_decisions": 19,
+  "expect_order": [
+    "^Player A returns Quirion Ranger to hand",
+    "Llanowar Elves untaps",
+    "^-------- TURN 2",
+    "^Player A returns Llanowar Elves to hand"
+  ],
+  "expect_menu": [
+    "Return Llanowar Elves to hand",
+    "Return Quirion Ranger to hand"
+  ],
+  "expect_menu_not": [
+    "Return Wirewood Symbiote to hand",
+    "Return Grizzly Bears to hand"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

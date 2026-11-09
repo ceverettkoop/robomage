@@ -1,0 +1,72 @@
+{
+  "name": "cr708_9_a_cloak_bounced_is_revealed",
+  "why": "CR 708.9: returned to its owner's hand it is revealed: the other seat's frames name it on that move, and the card is in the hand it left to.",
+  "hand_a": [
+    "Cryptic Coat",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Cyclonic Rift",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Grizzly Bears",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat",
+    "B:pass",
+    "B:pass",
+    "B:cast:Cyclonic Rift",
+    "B:desc:hidden",
+    "B:desc:Tap Island",
+    "B:desc:Tap Island"
+  ],
+  "max_decisions": 18,
+  "expect": [
+    "is revealed as Grizzly Bears"
+  ],
+  "expect_dump": [
+    "^B .*event ZONE_MOVE BATTLEFIELD>HAND card=Grizzly Bears face_down=0"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

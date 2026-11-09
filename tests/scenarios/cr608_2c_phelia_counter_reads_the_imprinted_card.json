@@ -1,0 +1,34 @@
+{
+  "name": "cr608_2c_phelia_counter_reads_the_imprinted_card",
+  "why": "ConditionDefined$ Imprinted: Phelia's counter reads the card its delayed trigger just imprinted: returned under her controller's control, she gets a +1/+1 counter.",
+  "battlefield_a": [
+    "Phelia Exuberant Shepherd",
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Phelia",
+    "A:attack:done",
+    "A:target:Grizzly Bears",
+    "A:attack:Phelia",
+    "A:attack:done"
+  ],
+  "max_decisions": 20,
+  "expect": [
+    "Grizzly Bears is moved to the battlefield",
+    "\\[attacking\\] Phelia, Exuberant Shepherd \\[3/3\\]"
+  ]
+}

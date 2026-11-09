@@ -12,6 +12,7 @@ static const char *unless_effect_participle(UnlessEffect effect) {
         case UnlessEffect::DESTROY:   return "destroyed";
         case UnlessEffect::SACRIFICE: return "sacrificed";
         case UnlessEffect::COPY:      return "copied";
+        case UnlessEffect::REFLEXIVE: return "triggered";
     }
     return "affected";
 }
@@ -40,6 +41,8 @@ std::string unless_cost_text(UnlessPayKind kind, size_t cost, const ManaValue *c
             return std::to_string(cost) + " life";
         case UnlessPayKind::DISCARD:
             return std::to_string(cost) + (cost == 1 ? " card" : " cards");
+        case UnlessPayKind::SACRIFICE:
+            return std::to_string(cost) + (cost == 1 ? " permanent" : " permanents");
         case UnlessPayKind::ENERGY: {
             std::string out;
             for (size_t i = 0; i < cost; i++) out += "{E}";
@@ -63,7 +66,9 @@ LegalAction unless_pay_action(const UnlessSubject &subject, UnlessPayKind kind, 
 }
 
 LegalAction unless_decline_action(const UnlessSubject &subject, UnlessPayKind kind) {
-    const char *verb = (kind == UnlessPayKind::DISCARD) ? "Don't discard (" : "Don't pay (";
+    const char *verb = kind == UnlessPayKind::DISCARD     ? "Don't discard ("
+                       : kind == UnlessPayKind::SACRIFICE ? "Don't sacrifice ("
+                                                          : "Don't pay (";
     LegalAction decline(PASS_PRIORITY, verb + unless_outcome_text(subject, /*paid=*/false) + ")");
     decline.category = ActionCategory::PAY_UNLESS;
     decline.option_ordinal = 0;  // 0 = don't pay

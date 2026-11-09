@@ -12,6 +12,8 @@
 #include "../classes/game.h"
 #include "../classes/action.h"
 #include "../cli_output.h"
+#include "../coverage.h"
+#include "../effects/effects.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -19,7 +21,10 @@
 #include "../components/permanent.h"
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
+#include "../queries/copies.h"
 #include "../queries/entry.h"
+#include "../queries/face_down.h"
+#include "../queries/overlays.h"
 #include "../queries/keywords.h"
 #include "../queries/lki.h"
 #include "../queries/players.h"
@@ -42,7 +47,6 @@
 #include "../components/types.h"
 
 // --- file-local helpers (forward declarations) ---
-static void restore_printed_card(Entity target);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -94,8 +98,32 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     obs_object_created(target);
 }
 
+void Orderer::place_created_in_exile(Entity target, Zone::Ownership owner) {
+    Zone z(Zone::EXILE, owner, owner);
+    z.distance_from_top = 0;
+    for (auto &&card : mEntities) {
+        auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+        if (cmp_zone.location == Zone::EXILE && cmp_zone.owner == owner) cmp_zone.distance_from_top++;
+    }
+    global_coordinator.AddComponent(target, z);
+    obs_object_created(target);
+}
+
+void Orderer::remove_created_object(Entity target) {
+    obs_object_ceased(target, true);
+    close_zone_gap(target);
+    global_coordinator.DestroyEntity(target);
+}
+
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination, bool exile_face_down) {
     move_object(on_bottom, target, destination, exile_face_down, MoveOptions{});
+}
+
+bool Orderer::put_onto_battlefield_face_down(Entity card, SpellOverlay how) {
+    MoveOptions opts;
+    opts.face_down = how;
+    move_object(false, card, Zone::BATTLEFIELD, false, opts);
+    return global_coordinator.GetComponent<Zone>(card).location == Zone::BATTLEFIELD;
 }
 
 void Orderer::move_object(
@@ -104,6 +132,8 @@ void Orderer::move_object(
     bool destination_occupied = false;  // the owner's destination zone holds another card (bottom placement)
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
     bool with_void_counter = false;
+    const ObjectRef moved = ObjectRef::of(target);
+    if (opts.face_down != SpellOverlay::NONE) enter_face_down(target, opts.face_down);
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
     // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
@@ -120,6 +150,7 @@ void Orderer::move_object(
             // 614.13 — the move is prevented; the card remains in its origin zone, and an entry
             // onto the battlefield it was headed for doesn't happen.
             if (destination == Zone::BATTLEFIELD) drop_entry_info(target);
+            if (opts.face_down != SpellOverlay::NONE) take_card_back(target);
             return;
         }
         destination = rev.destination;
@@ -210,12 +241,14 @@ void Orderer::move_object(
             const auto &p = global_coordinator.GetComponent<Permanent>(target);
             lki.entered_by_cast = p.entered_by_cast;
             lki.evoked = p.evoked;
+            lki.cast_mana_paid = p.cast_mana_paid;
             lki.entered_with_offspring = p.entered_with_offspring;
             lki.transformed = p.transformed;
             // Layer-6 ability removal (Humility, CR 613.1f): a permanent whose abilities were
             // removed has no triggered abilities, so its own leaves/dies look-back trigger
             // (CR 603.10) must not fire — capture the flag before Permanent is stripped.
-            lki.abilities_removed = p.abilities_removed;
+            // A face-down permanent has none either (CR 708.2).
+            lki.abilities_removed = p.abilities_removed || is_face_down(target);
             lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
         // Snapshot the typed counters (CR 608.2h): an ability that counts counters on its own
@@ -230,12 +263,10 @@ void Orderer::move_object(
             lki.power = static_cast<int>(cr.power);
             lki.toughness = static_cast<int>(cr.toughness);
         }
-        // Colors of the ACTIVE face (CR 712.8e): a transformed permanent's last-known colors
-        // are its back face's (Ajani, Nacatl Avenger died red-white, not mono-white).
-        // Captured here while the Permanent component is still intact, like everything above.
-        if (global_coordinator.entity_has_component<CardData>(target))
-            lki.colors = card_colors(
-                active_face(target, global_coordinator.GetComponent<CardData>(target)));
+        // Its colors as it last existed (CR 608.2h), layer 5 included: those of the ACTIVE face
+        // (CR 712.8e: Ajani, Nacatl Avenger died red-white, not mono-white). Captured here while the
+        // Permanent component is still intact, like everything above.
+        if (global_coordinator.entity_has_component<CardData>(target)) lki.colors = effective_colors(target);
 
         // CR 400.7: a copy effect (Thespian's Stage's in-place Clone) ends as the permanent
         // leaves the battlefield — the card arrives in its new zone as its printed self. Done
@@ -246,9 +277,11 @@ void Orderer::move_object(
                 global_coordinator.entity_has_component<CardData>(target))
                 lki.copied_card = std::make_shared<const CardData>(
                     global_coordinator.GetComponent<CardData>(target));
-            restore_printed_card(target);
+            reveal_as_it_leaves(target);
+            end_copy_effect(target);
         }
     }
+    if (destination != Zone::BATTLEFIELD) reveal_as_it_leaves(target);
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
@@ -319,8 +352,9 @@ void Orderer::move_object(
     }
 
     // A face-down exiled card that moves anywhere is no longer that hidden object
-    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
-    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
+    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down), and a
+    // face-down spell that resolves stays face down (CR 708.4).
+    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down) || face_down_card(target);
     if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
     // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it.
@@ -344,6 +378,27 @@ void Orderer::move_object(
     obs_info.opening = opts.opening_draw;
     obs_info.on_bottom = on_bottom;
     obs_end_move(obs_move, target, handle_move.after_handle, obs_info);
+    if (origin == Zone::BATTLEFIELD && destination != Zone::BATTLEFIELD) end_until_exiles(moved);
+}
+
+// See declaration in orderer.h.
+void Orderer::end_until_exiles(const ObjectRef &host) {
+    std::vector<DelayedTrigger> ended;
+    auto &waiting = cur_game.delayed_triggers;
+    for (auto it = waiting.begin(); it != waiting.end();) {
+        if (it->one_shot_return && it->watched == host) {
+            ended.push_back(std::move(*it));
+            it = waiting.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    for (const DelayedTrigger &wait : ended) {
+        const Entity card = wait.ability.restore_remembered_exiled_with.front().get();
+        if (card == 0 || global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
+        coverage_row("until_return");
+        effects::return_until_exiled(shared_from_this(), card, wait.ability.def->destination);
+    }
 }
 
 // See declaration in orderer.h.
@@ -375,7 +430,9 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
     bool is_copy = global_coordinator.entity_has_component<Spell>(target) &&
                    global_coordinator.GetComponent<Spell>(target).is_copy;
     bool is_card = global_coordinator.entity_has_component<CardData>(target) && !is_copy;
-    if (spell_cast_with_flashback(target)) destination = Zone::EXILE;
+    const SpellDestination to = spell_destination(target, destination, SpellExit::REMOVED);
+    destination = to.zone;
+    if (to.graveyard_replaced) game_log("%s is exiled (%s)\n", entity_name(target).c_str(), to.by_cast);
     if (global_coordinator.entity_has_component<Ability>(target)) {
         decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(target));
         global_coordinator.RemoveComponent<Ability>(target);
@@ -395,13 +452,12 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
 }
 
 // See declaration in orderer.h.
-Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
+Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster, SpellOverlay overlay) {
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const Zone origin = z;
-    // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
-    // library.
+    // Every cast-offering path casts from a hand, graveyard, exile or the top of a library.
     if (origin.location != Zone::HAND && origin.location != Zone::GRAVEYARD &&
-        origin.location != Zone::EXILE)
+        origin.location != Zone::EXILE && origin.location != Zone::LIBRARY)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
                     std::to_string(static_cast<int>(origin.location)));
     const ObsMoveCapture obs_move = obs_begin_move(card);
@@ -422,6 +478,8 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, origin_gen);
     z.is_face_down = false;
+    // CR 708.4: turned face down before it is put onto the stack, so nothing sees the card go there.
+    if (spell_overlay(overlay).face_down) enter_face_down(card, overlay);
     handles_end_move(handle_move, card);
     obs_end_move(obs_move, card, handle_move.after_handle, ObsMoveInfo{});
     return origin;
@@ -449,8 +507,9 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     const ObsMoveCapture obs_move = obs_begin_move(card);
     HandleMove handle_move = handles_begin_move(card);
     close_zone_gap(card);
-    // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
-    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
+    // Reopen the card's old slot in its ordered zone (each is per-owner).
+    if (origin.location == Zone::LIBRARY) coverage_row("cast_rewound_to_library");
+    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE || origin.location == Zone::LIBRARY) {
         for (auto &&e : mEntities) {
             if (e == card) continue;
             auto &cz = global_coordinator.GetComponent<Zone>(e);
@@ -460,6 +519,8 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     }
     auto &z = global_coordinator.GetComponent<Zone>(card);
     const uint64_t stack_gen = z.obj_gen;
+    // A spell cast face down never showed its card: it returns as what it was where it was.
+    if (face_down_card(card)) take_card_back(card);
     z = origin;
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.
@@ -531,22 +592,6 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 
 extern bool no_shuffle;
 
-// Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed
-// CardData back on the card and its printed name/types on the (about-to-be-stripped) Permanent,
-// so every reader between now and the state-based strip sees the card itself. No-op for a
-// permanent that is not a copy.
-static void restore_printed_card(Entity target) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(target);
-    if (!perm.printed_card) return;
-    if (global_coordinator.entity_has_component<CardData>(target))
-        global_coordinator.GetComponent<CardData>(target) = *perm.printed_card;
-    perm.name = perm.printed_card->name;
-    perm.types = perm.printed_card->types;
-    perm.abilities.clear();
-    perm.static_abilities.clear();
-    perm.printed_card.reset();
-}
-
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
     Zone::Ownership owner = Zone::PLAYER_A;
     auto target_deck = deck_a;
@@ -592,7 +637,7 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             auto &z = coordinator.GetComponent<Zone>(e);
             if (z.owner != player_owner) continue;
             if (!coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = coordinator.GetComponent<CardData>(e);
+            const CardData &cd = off_battlefield_face(coordinator.GetComponent<CardData>(e));
             bool is_creature = false;
             for (auto &t : cd.types)
                 if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
@@ -637,42 +682,12 @@ void Orderer::draw_hands() {
 void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
     for (size_t i = 0; i < ct; i++) {
         if (cur_game.ended) return;
-        draw_one(player, fire_draw_event);
-    }
-}
-
-void Orderer::perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event) {
-    int draw_bonus = replacement::draw_count_bonus(player);
-    perform_draw(player, fire_draw_event);
-    for (int i = 0; i < draw_bonus && !cur_game.ended; i++)
         perform_draw(player, fire_draw_event);
-}
-
-// actual effect here; replacement (dredge) handled here, triggers handled by callers
-void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
-    // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
-    // with a dredge from their graveyard. If they do, no card is drawn.
-    {
-        Entity player_entity = get_player_entity(player);
-        ReplacementEvent rev;
-        rev.type = ReplacementEvent::DRAW_CARD;
-        rev.entity = player_entity;
-        rev.affected_player = player;
-        replacement::dispatch(rev);
-        if (rev.draw_replaced) {
-            // The draw was replaced by a dredge, so no card is drawn — the additive bonus, which
-            // modifies the *draw*, does not apply. (No vocab card combines dredge with an additive
-            // draw replacement, so their 616.1 co-application order is not modeled.)
-            apply_dredge(player, rev.dredge_source, rev.dredge_mill);
-            return;
-        }
     }
-    // The non-dredge case draws the base card plus any additive-draw-replacement bonus
-    // through the shared helper (CR 614.1/614.5, Quantum Riddler).
-    perform_draw_with_bonus(player, fire_draw_event);
 }
 
 void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {
+    coverage_replacement("DREDGE");
     // Mill N, then return the dredge card from graveyard to hand. The dredge card is
     // in the graveyard (not the library), so milling never touches it.
     std::string dname = global_coordinator.GetComponent<CardData>(source).name;
@@ -701,20 +716,6 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // The game is already decided (e.g. a "wins the game" effect earlier in this same
         // resolution): a further failed draw changes nothing — first game-ending event wins.
         if (cur_game.ended) return;
-        // Draw-from-empty-library replacement (CR 104.3a/121.4): if the drawing player controls a
-        // live DRAW_EMPTY_WIN replacement (Jace, Wielder of Mysteries: "if you would draw a card
-        // while your library has no cards in it, you win the game instead"), they WIN instead of
-        // decking out. Scan the drawing player's battlefield permanents for the replacement.
-        for (auto e : mEntities) {
-            if (!is_battlefield_permanent(e, player)) continue;
-            bool has_win = false;
-            for (const auto &r : permanent_replacement_effects(e))
-                if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
-            if (!has_win) continue;
-            cur_game.end_game(player, global_coordinator.GetComponent<Permanent>(e).name);
-            return;
-        }
-
         // Attempted to draw from an empty library. CR 120.3 / 704.5c: the loss is NOT immediate —
         // record the attempt and let the resolving effect finish (a "then if your library is empty,
         // you win" sub-ability like Jace, Wielder of Mysteries' -8 decides the game first); the
@@ -839,7 +840,7 @@ std::vector<Entity> Orderer::get_stack() {
 
 
 std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string> &card_names,
-                                                   Zone::Ownership owner) {
+                                                   Zone::Ownership owner, SpellOverlay how) {
     Coordinator &coordinator = Coordinator::global();
     std::vector<Entity> placed;
 
@@ -854,6 +855,7 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         // from it when its Permanent is created, like any entry transformed).
         if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
             entry_info(card_id).enters_transformed = true;
+        if (how != SpellOverlay::NONE) enter_face_down(card_id, how);
         obs_object_created(card_id);
 
         placed.push_back(card_id);
@@ -876,7 +878,10 @@ std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_
         Entity card_id = coordinator.CreateEntity();
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
-        coordinator.AddComponent(card_id, Zone(zone, owner, owner));
+        Zone placed_zone(zone, owner, owner);
+        // A graveyard and exile are piles: the list reads from the top down.
+        if (zone == Zone::GRAVEYARD || zone == Zone::EXILE) placed_zone.distance_from_top = placed.size();
+        coordinator.AddComponent(card_id, placed_zone);
         obs_object_created(card_id);
         placed.push_back(card_id);
     }

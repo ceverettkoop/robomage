@@ -1,0 +1,35 @@
+{
+  "name": "cr701_9_song_of_creation_discards_hand_at_your_end_step",
+  "why": "CR 701.9a / 513.1: at the beginning of its controller's end step Song of Creation discards that player's whole hand, with no reveal and no choice, before the cleanup step could ask for a discard",
+  "hand_a": [
+    "Island",
+    "Grizzly Bears",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Song of Creation"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 4,
+  "expect": [
+    "Player A discards Island",
+    "Player A discards Grizzly Bears",
+    "Player A discards Lightning Bolt"
+  ],
+  "expect_not": [
+    "reveals their hand",
+    "chooses a card to discard"
+  ]
+}

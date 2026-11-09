@@ -1,0 +1,71 @@
+{
+  "name": "cr702_177a_exhaust_count_outlasts_humility",
+  "why": "CR 702.177a, 602.5b: Invasion Submersible, exhausted and a creature, loses the ability under a Humility, across an untap step, and has it back when Humility goes; the count stayed with the object, so its row reads exhausted",
+  "hand_a": [
+    "Humility",
+    "Force of Vigor"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:done",
+    "A:cast:Humility",
+    "A:pass",
+    "A:attack:done",
+    "A:pass",
+    "A:pass",
+    "A:pass",
+    "A:pass",
+    "A:cast:Force of Vigor",
+    "A:target:Humility@own",
+    "A:desc:Done selecting"
+  ],
+  "max_decisions": 22,
+  "expect": [
+    "Humility is destroyed"
+  ],
+  "expect_count": {
+    "Player A's Invasion Submersible ability ": 1
+  },
+  "expect_dump_final": [
+    "^A .*exhausted self"
+  ]
+}

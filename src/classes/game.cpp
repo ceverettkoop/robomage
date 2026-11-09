@@ -16,7 +16,9 @@
 #include "../error.h"
 #include "../queries/activation.h"
 #include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
 #include "../queries/combat.h"
+#include "../queries/copies.h"
 #include "../queries/counters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
@@ -34,21 +36,47 @@ bool Game::ready_to_resolve() {
     return priority.a_has_passed && priority.b_has_passed;
 }
 
+void Game::ResolvedEffects::add(EffectObject object) {
+    object.id = next_effect_object_id++;
+    effect_objects.push_back(std::move(object));
+}
+
+EffectObject *Game::ResolvedEffects::find(int id) {
+    for (EffectObject &object : effect_objects)
+        if (object.id == id) return &object;
+    return nullptr;
+}
+
+void Game::ResolvedEffects::end(EffectObject::Duration duration, Zone::Ownership controller) {
+    effect_objects.erase(std::remove_if(effect_objects.begin(), effect_objects.end(),
+                                        [&](const EffectObject &object) {
+                                            return object.duration == duration &&
+                                                   (controller == Zone::UNKNOWN || object.controller == controller);
+                                        }),
+                         effect_objects.end());
+}
+
 bool Game::combat_damage_prevented(Entity source, Entity target) const {
-    for (const auto &shield : resolved_effects.combat_damage_prevention_shields) {
-        const Entity creature = shield.creature.get();
-        if (creature == 0) continue;
-        if (shield.prevent_as_source && creature == source) return true;
-        if (shield.prevent_as_target && creature == target) return true;
+    for (const EffectObject &object : resolved_effects.effect_objects) {
+        const bool by = object.prevents_combat_damage_by(), to = object.prevents_combat_damage_to();
+        if (!by && !to) continue;
+        for (const ObjectRef &remembered : object.remembered) {
+            const Entity creature = remembered.get();
+            if (creature == 0) continue;
+            if (by && creature == source) return true;
+            if (to && creature == target) return true;
+        }
     }
     return false;
 }
 
 bool Game::combat_damage_shielded(Entity creature) const {
     if (creature == 0) return false;
-    for (const auto &shield : resolved_effects.combat_damage_prevention_shields)
-        if (shield.creature.get() == creature && (shield.prevent_as_source || shield.prevent_as_target))
-            return true;
+    for (const EffectObject &object : resolved_effects.effect_objects) {
+        if (!object.prevents_combat_damage_by() && !object.prevents_combat_damage_to()) continue;
+        for (const ObjectRef &remembered : object.remembered)
+            if (remembered.get() == creature) return true;
+    }
     return false;
 }
 
@@ -161,6 +189,15 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
         if (global_coordinator.entity_has_component<Permanent>(entity)) {
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             perm.removed_keywords_eot.clear();
+            end_copy_until_eot(entity);
+            if (perm.animate_set_pt_eot) {
+                perm.animate_set_pt_eot = false;
+                if (global_coordinator.entity_has_component<Creature>(entity)) {
+                    auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                    cr.has_set_pt = false;
+                    recompute_pt(cr);
+                }
+            }
             // "Until end of turn" Animate (CR 514.2) lapses now: erase the
             // EOT-added types, and if this EOT animate is what made a noncreature
             // permanent a creature (a crewed-by-trigger Vehicle like The
@@ -191,16 +228,11 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
 
     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
     resolved_effects.may_cast_this_turn.clear();
-    // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
-    // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
-    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
-    // survives cleanup — it is removed at its controller's next untap step instead.
-    {
-        auto &floating = resolved_effects.floating_triggers;
-        floating.erase(std::remove_if(floating.begin(), floating.end(),
-                                      [](const Ability &ft) { return !ft.def->duration_until_your_next_turn; }),
-                       floating.end());
-    }
+    // "This turn" effect objects (Forth Eorlingas!'s become-monarch trigger, CR 603.7e; Veil of
+    // Summer's can't-be-countered; Maze of Ith's prevention, CR 615) last only their turn of
+    // creation (514.2). A Duration$ UntilYourNextTurn one (Tamiyo, Seasoned Scholar's +2) survives
+    // cleanup: it ends at its controller's next untap step instead.
+    resolved_effects.end(EffectObject::Duration::END_OF_TURN);
     // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
     // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
     // "until the end of your next turn") survives this cleanup and is removed at the
@@ -211,19 +243,14 @@ void Game::end_cleanup_effects(const EntitySet &entities) {
     // long as the card remains in exile; it is never expired by the per-turn cleanup.
     resolved_effects.impulse_cast_permission.purge_stale();
     resolved_effects.impulse_cast_permission.erase_if([&](Entity, const ImpulseCastPermission &g) {
-        if (g.warp) return false;
+        if (g.lasts_while_exiled()) return false;
         return !g.persist_until_end_of_next_turn ||
                (g.caster == active_player && turn_state.turn > g.grant_turn);
     });
-    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
-    // "Spells you control can't be countered this turn" + "hexproof from blue and
-    // from black until end of turn") lapse at cleanup (CR 514.2).
-    resolved_effects.cant_counter_spells_of.clear();
     // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
     resolved_effects.cant_gain_life_this_turn.clear();
-    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
-    // lapse at cleanup (514.2).
-    resolved_effects.combat_damage_prevention_shields.clear();
+    // Veil of Summer's "hexproof from blue and from black until end of turn" lapses at
+    // cleanup (514.2).
     resolved_effects.hexproof_from_colors_this_turn.clear();
     // An "until end of turn" player protection-from-everything grant lapses at
     // cleanup; an "until your next turn" grant persists (reverted at that player's
@@ -342,18 +369,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return p.until_your_next_turn && p.controller == active_player;
                                        }),
                         resolved_effects.cast_with_flash_permissions.end());
-                    // Lapse any "until your next turn" floating triggered ability this player
-                    // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
-                    // — its duration ends as the controller's next turn begins (CR 611.2).
-                    {
-                        auto &floating = resolved_effects.floating_triggers;
-                        floating.erase(std::remove_if(floating.begin(), floating.end(),
-                                                      [active_player](const Ability &ft) {
-                                                          return ft.def->duration_until_your_next_turn &&
-                                                                 ft.controller == active_player;
-                                                      }),
-                                       floating.end());
-                    }
+                    // Lapse any "until your next turn" effect object this player created (Tamiyo,
+                    // Seasoned Scholar's +2 "until your next turn, whenever ...") — its duration
+                    // ends as the controller's next turn begins (CR 611.2).
+                    resolved_effects.end(EffectObject::Duration::UNTIL_YOUR_NEXT_TURN, active_player);
                     // Phase in phased-out permanents controlled by active player (CR 702.26a).
                     // An Aura or Equipment that phased out indirectly phases in only along with
                     // the permanent it is attached to (CR 702.26g), inside effects::phase_in.
@@ -384,6 +403,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
                         reset_permanent_activations_this_turn(permanent);
+                        // Exert (CR 701.43a) ends with the untap step of the player who exerted it.
+                        const bool exerted = permanent.exerted_by == active_player;
+                        if (exerted) permanent.exerted_by = Zone::UNKNOWN;
                         if (permanent.controller == active_player) {
                             // Untap-prevention (Choke; rule 614.1d) is a replacement effect:
                             // dispatch an UNTAP event and skip untapping if it is replaced.
@@ -396,13 +418,15 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // become untapped, instead remove a stun counter from it." A tapped
                             // permanent with one or more STUN counters stays tapped and sheds one
                             // counter rather than untapping; otherwise it untaps normally.
-                            if (!rev.skip_untap) {
+                            if (exerted) {
+                                game_log("%s doesn't untap: it was exerted.\n", permanent_label(entity).c_str());
+                            } else if (!rev.skip_untap) {
                                 // Counter type is stored verbatim from the script's CounterType$
-                                // (Forge writes "Stun", CR 122.1d), so match that exact key.
-                                if (permanent.is_tapped && get_counters(entity, "Stun") > 0) {
-                                    add_counters(entity, "Stun", -1);
+                                // (Forge writes "STUN", CR 122.1d), so match that exact key.
+                                if (permanent.is_tapped && get_counters(entity, "STUN") > 0) {
+                                    add_counters(entity, "STUN", -1);
                                     game_log("%s has a stun counter removed instead of untapping.\n",
-                                             permanent.name.c_str());
+                                             permanent_label(entity).c_str());
                                 } else {
                                     permanent.is_tapped = false;
                                 }
@@ -435,7 +459,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // 702.52a) parks as a loop-top decision instead of blocking.
                     pending.draw.active = true;
                     pending.draw.player = active_player;
-                    pending.draw.remaining = 1;
                     resume_pending_draws(*this, orderer);
                     // A dredge question parked the draw: return with the pass
                     // flags left true and the post-switch epilogue below DEFERRED
@@ -601,6 +624,8 @@ void Game::reset_turn_counters(Entity active_player_entity) {
     global_coordinator.GetComponent<Player>(player_a_entity).reset_turn_counters();
     global_coordinator.GetComponent<Player>(player_b_entity).reset_turn_counters();
     ability_resolution_counts.clear();
+    limited_resolution_counts.clear();
+    limited_trigger_counts.clear();
     // Miracle (CR 702.94) is a "first card drawn this turn" concept — the reveal opportunity
     // lapses at end of turn, so a never-answered pending reveal decision (e.g. the game ended
     // first) lapses each cleanup.
@@ -626,11 +651,22 @@ void Game::finish_suspended_turn_draw() {
 
 void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
     Game::PendingDrawRT &pd = game.pending.draw;
+    if (!pd.batch.started) {
+        pd.batch.started = true;
+        pd.batch.remaining = 1 + static_cast<size_t>(replacement::draw_count_bonus(pd.player));
+    }
     while (pd.active) {
-        // A latched TURN_DRAW answer from the previous arm: apply it first —
-        // draw normally (option 0) or one dredge — restoring the pre-arm
-        // priority seat exactly as the blocking prompt's post-get_input
-        // restore did.
+        // What replaces the card is under way: it resolves in a frame of its own, nothing being
+        // on the stack, so a question it asks parks like any resolution's and comes back here.
+        if (pd.batch.body) {
+            const Ability body = replacement::draw_body(pd.batch);
+            if (StackManager::resolve_off_stack(body, orderer) == ResolveStatus::SUSPENDED) return;
+            pd.batch.body = nullptr;
+            pd.batch.remaining--;
+            continue;
+        }
+        // A latched TURN_DRAW answer from the previous arm: apply it first — restoring the pre-arm
+        // priority seat exactly as the blocking prompt's post-get_input restore did.
         if (game.pending.query.active) {
             PendingQuery &pq = game.pending.query;
             if (pq.tag != PendingQuery::TURN_DRAW || !pq.answered)
@@ -645,31 +681,24 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             int choice = pq.answer;
             game.priority.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
-            if (choice == 0) {
-                // The base draw plus any additive-draw-replacement bonus (CR 614.1/614.5,
-                // Quantum Riddler) is applied inside the shared helper.
-                orderer->perform_draw_with_bonus(pd.player);
-            } else {
-                orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
-                                      opts[static_cast<size_t>(choice) - 1].mill);
-            }
-            pd.remaining--;
+            replacement::take_draw_option(*orderer, pd.player, opts[static_cast<size_t>(choice)], pd.batch);
             continue;
         }
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
         // draw ends the game mid-batch).
-        if (pd.remaining <= 0 || game.ended) {
+        if (pd.batch.remaining == 0 || game.ended) {
             pd = Game::PendingDrawRT{};
             return;
         }
         std::vector<replacement::DrawReplacementOption> opts;
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(pd.player, &opts);
         if (menu.empty()) {
-            // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch. The additive draw replacement
-            // (CR 614.1/614.5, Quantum Riddler) bonus is applied inside the helper.
-            orderer->perform_draw_with_bonus(pd.player);
-            pd.remaining--;
+            orderer->perform_draw(pd.player);
+            pd.batch.remaining--;
+            continue;
+        }
+        if (menu.size() == 1) {  // a lone replacement that must apply: no question
+            replacement::take_draw_option(*orderer, pd.player, opts[0], pd.batch);
             continue;
         }
         // Park the dredge question for the loop top (tag TURN_DRAW): persist

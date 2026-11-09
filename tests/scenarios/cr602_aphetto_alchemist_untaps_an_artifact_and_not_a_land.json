@@ -1,0 +1,50 @@
+{
+  "name": "cr602_aphetto_alchemist_untaps_an_artifact_and_not_a_land",
+  "why": "Aphetto Alchemist's oracle: {T}: Untap target artifact or creature. Grim Monolith tapped for mana is one, the tapped Island is neither.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Aphetto Alchemist",
+    "Grim Monolith",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:mana:u",
+    "A:mana:c",
+    "A:activate:Aphetto",
+    "A:target:Grim Monolith"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Grim Monolith untaps"
+  ],
+  "expect_menu": [
+    "Grim Monolith"
+  ],
+  "expect_not": [
+    "Island untaps"
+  ]
+}

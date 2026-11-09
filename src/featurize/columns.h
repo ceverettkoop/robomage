@@ -21,7 +21,6 @@ enum class TagKind : uint8_t {
     BOOL,
     COUNT,
     SIGNED,
-    PROB,
     INDEX,
     MASK,        // mask:<enum>
     ENUM,        // enum:<enum>
@@ -41,13 +40,12 @@ struct Tag {
 Tag parse_tag(const std::string &tag);
 
 // A numeric slot's transform (§3.2): BOOL x; LOG1P log1p(x); SIGNED_LOG1P sign(x)·log1p(|x|);
-// PROB x / 10^9; INDEX log1p(x), 0 at the none value; NONE_FLAG 1 at the none value (all ones);
+// INDEX log1p(x), 0 at the none value; NONE_FLAG 1 at the none value (all ones);
 // MASK_BIT bit `arg` of x; ONE_HOT x == arg; COUNT the number of rows (card tables' child tables).
 enum class Transform : uint8_t {
     BOOL,
     LOG1P,
     SIGNED_LOG1P,
-    PROB,
     INDEX,
     NONE_FLAG,
     MASK_BIT,
@@ -61,7 +59,7 @@ const char *transform_name(Transform t);
 // COUNT is not a cell transform (0).
 float cell_value(Transform t, uint32_t arg, const rmstate::Value &v, rmstate::Storage storage);
 
-// The numeric transform of a scalar tag (BOOL, COUNT, SIGNED, PROB, INDEX); false for any other.
+// The numeric transform of a scalar tag (BOOL, COUNT, SIGNED, INDEX); false for any other.
 bool scalar_transform(TagKind kind, Transform *out);
 
 // The string table of enum `name` in `schema` (empty when the schema has none).

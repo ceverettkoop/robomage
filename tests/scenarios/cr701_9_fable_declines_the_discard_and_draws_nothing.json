@@ -1,0 +1,40 @@
+{
+  "name": "cr701_9_fable_declines_the_discard_and_draws_nothing",
+  "why": "CR 701.9: 'you may': no card discarded, so none drawn.",
+  "hand_a": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Fable of the Mirror-Breaker"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Discard no more"
+  ],
+  "max_decisions": 6,
+  "expect_count": {
+    "Player A discards": 0,
+    "Player A draws Mountain": 0
+  }
+}

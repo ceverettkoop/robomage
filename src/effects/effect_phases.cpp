@@ -6,6 +6,7 @@
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/permanent.h"
+#include "../queries/characteristics.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../queries/battlefield.h"
@@ -63,7 +64,7 @@ static void phase_out_as(Entity e, bool indirectly, const EntitySet &entities) {
     perm.is_phased_out = true;
     perm.phased_out_indirectly = indirectly;
     remove_from_combat(e, entities);
-    game_log("%s phases out\n", perm.name.c_str());
+    game_log("%s phases out\n", permanent_label(e).c_str());
     for (auto att : attached_to(e, false, entities)) phase_out_as(att, true, entities);
 }
 
@@ -78,7 +79,7 @@ void phase_in(Entity e, const EntitySet &entities) {
     auto &perm = global_coordinator.GetComponent<Permanent>(e);
     perm.is_phased_out = false;
     perm.phased_out_indirectly = false;
-    game_log("%s phases in\n", perm.name.c_str());
+    game_log("%s phases in\n", permanent_label(e).c_str());
     for (auto att : attached_to(e, true, entities)) phase_in(att, entities);
 }
 

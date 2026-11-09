@@ -1,0 +1,57 @@
+{
+  "name": "cr702_142a_boast_once_each_turn",
+  "why": "CR 702.142a: boast only once each turn: with fodder left after one activation Broadside Bombardiers offers no other, so A's windows go unasked and turn 2 comes inside the cap",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Broadside Bombardiers",
+    "Thought Monitor",
+    "Grizzly Bears",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Broadside",
+    "A:attack:done",
+    "A:activate:Broadside",
+    "A:target:Player B",
+    "A:sacrifice:Thought Monitor"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Broadside Bombardiers deals 9 damage",
+    "^-------- TURN 2"
+  ],
+  "expect_count": {
+    "sacrifices ": 1
+  },
+  "expect_dump": [
+    "^A .*attacked self",
+    "^B .*attacked opp"
+  ]
+}

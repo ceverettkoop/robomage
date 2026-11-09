@@ -77,6 +77,13 @@ std::string card_script_text(const std::string &card_name) {
     return uid.empty() ? std::string() : file_text(script_path_for(uid));
 }
 
+std::string card_script_path(const std::string &card_name) {
+    auto uid = name_to_uid(card_name);
+    if (uid.empty()) return std::string();
+    const std::string path = script_path_for(uid);
+    return script_file_exists(path) ? path : std::string();
+}
+
 std::string token_script_text(const std::string &stem) {
     return file_text(RESOURCE_DIR + "/tokenscripts/" + stem + ".txt");
 }

@@ -1,0 +1,50 @@
+{
+  "name": "cr601_2f_bilbo_costs_less_from_anywhere_but_the_hand",
+  "why": "Bilbo's ReduceCost: Card.!wasCastFromYourHand. Wear costs {1}{R} and A has one Mountain: from the graveyard it costs {R}; from the hand it can't be cast.",
+  "hand_a": [
+    "Wear/Tear",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Bilbo Thief in the Night",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Wear/Tear"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:Bilbo",
+    "A:attack:done",
+    "A:desc:Accept",
+    "A:desc:Cast Wear (from graveyard)"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Player A casts Wear",
+    "Mishra's Bauble is destroyed",
+    "Wear is exiled"
+  ],
+  "expect_menu_not": [
+    "^Cast Wear$"
+  ]
+}

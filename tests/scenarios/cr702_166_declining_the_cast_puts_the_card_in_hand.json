@@ -1,0 +1,46 @@
+{
+  "name": "cr702_166_declining_the_cast_puts_the_card_in_hand",
+  "why": "Beseech the Mirror: 'Put the exiled card into your hand if it wasn't cast this way.' Declined, it is in the hand to be cast for its cost.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mishra's Bauble",
+    "Mountain"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Accept",
+    "A:search:Lightning Bolt",
+    "A:desc:Do not cast",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Player A casts Lightning Bolt targeting Player B"
+  ]
+}

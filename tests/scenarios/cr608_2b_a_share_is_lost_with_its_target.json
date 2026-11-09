@@ -1,0 +1,54 @@
+{
+  "name": "cr608_2b_a_share_is_lost_with_its_target",
+  "why": "CR 608.2b, 601.2d: the division is fixed as Fury's trigger goes on the stack. With the target holding 3 gone by resolution, those 3 are lost: Air Elemental still takes only its 1.",
+  "hand_a": [
+    "Fury"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Grizzly Bears",
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Fury",
+    "A:target:Grizzly Bears",
+    "A:target:Air Elemental",
+    "A:target:Done",
+    "A:divide:Grizzly Bears",
+    "A:divide:Grizzly Bears",
+    "B:cast:Lightning Bolt",
+    "B:target:Grizzly Bears"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "Fury deals 1 damage to Air Elemental"
+  ],
+  "expect_not": [
+    "Fury deals [234] damage",
+    "fizzles"
+  ]
+}

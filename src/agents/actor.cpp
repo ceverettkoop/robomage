@@ -224,7 +224,8 @@ static void refuse_options() {
         {max_decisions >= 0, "--max-decisions (use --max-game-decisions)"},
         {!trajectory_out_dir.empty(), "--trajectory-out (the schedule's outputs name the directories)"},
         {!rmstate_dump_path.empty(), "--rmstate-dump"}, {selfcheck_state, "--selfcheck-*"},
-        {!battlefield_a_cards.empty() || !battlefield_b_cards.empty() || !graveyard_a_cards.empty() ||
+        {!battlefield_a_cards.empty() || !battlefield_b_cards.empty() || !face_down_a_cards.empty() ||
+                !face_down_b_cards.empty() || !graveyard_a_cards.empty() ||
                 !graveyard_b_cards.empty() || !exile_a_cards.empty() || !exile_b_cards.empty() ||
                 !sideboard_a_cards.empty() || !sideboard_b_cards.empty(),
             "the zone presets"},
@@ -561,7 +562,7 @@ static void add_raw(std::string &o, const char *key, const std::string &raw) {
 
 // A --knowledge-a/-b level's name.
 static const char *knowledge_name(int level) {
-    return level == 0 ? "off" : level == 2 ? "expert+belief" : "expert";
+    return level == 0 ? "off" : "expert";
 }
 
 static std::string versions_json(const std::set<uint64_t> &versions) {

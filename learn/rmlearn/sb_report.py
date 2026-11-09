@@ -1,5 +1,5 @@
-"""The benchmark's sideboarding report (docs/rmtrain.md §7.1; docs/rnad_training_plan.md §6.2
-Measurements): one side's sideboarding phases in a benchmark's results lines, and their summary.
+"""The benchmark's sideboarding report (docs/rmtrain.md §7.1): one side's sideboarding phases in a benchmark's
+results lines, and their summary.
 
     recs = phases(lines, side="a")       # side a: the policy; side b: the opponent
     rep = report(lines, side="a")        # overall and per deck: swap rate, histogram, cards, ...

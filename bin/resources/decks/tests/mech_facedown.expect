@@ -1,0 +1,16 @@
+# M11 (b1): Morph (Aphetto Alchemist) and what meets a face-down object.
+# The cast, its alternative cost and the row it comes by.
+cast:face_down
+cast:alt_cost
+cast_row:morph
+# From exile, under Light Up the Stage.
+cast_row:exile_morph
+# The turn up, a special action with a category of its own.
+cast:turn_face_up
+category:TURN_FACE_UP
+# M11 (b2): Cloak (Cryptic Coat), and the Coat on what it cloaked.
+effect:Cloak
+effect:Attach
+row:EquippedBy
+# A cloak turned face up.
+row:turn_up_cloaked

@@ -1,0 +1,12 @@
+{
+  "name": "cr509_1b_borrower_blocks_a_creature_with_flying",
+  "why": "CR 509.1b: a creature with flying isn't Creature.withoutFlying, so Brazen Borrower may block it, flying itself.",
+  "hand_a": ["Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Air Elemental"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Brazen Borrower"],
+  "play": ["A:keep", "B:keep", "A:attack:Air Elemental", "A:attack:done", "B:block:Brazen Borrower"],
+  "max_decisions": 12,
+  "expect": ["Brazen Borrower .*block"]
+}

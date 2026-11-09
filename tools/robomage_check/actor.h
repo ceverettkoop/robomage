@@ -7,7 +7,7 @@
 #include "gate.h"
 #include "proc.h"
 
-// ── robomage_check: the actor binary and the reference policy (plan step 5d, docs/ci.md) ──────
+// ── robomage_check: the actor binary and the reference policy (docs/ci.md) ───────────────────
 //
 // The `actor` tier and the `bench` tier's evaluation stage need bin/<config>/robomage_nn (`make
 // actor`, beside the engine) and a model of the network contract. The model is the reference
@@ -31,13 +31,18 @@ struct ActorSetup {
         std::string cards;      // the whole-vocab cards file
         std::string tables;     // the exported tables (spec.json among them)
         std::string prefix;     // the exports' path prefix
+        std::string stale;      // a TorchScript reference policy of the tables before their last card
+        std::string drifted;    // one of the tables with another tables' digest (a known card's rows changed)
         std::string ts() const { return prefix + ".ts.pt"; }
         std::string pt2() const { return prefix + ".pt2"; }
 };
 
-// The actor binary and the reference policy, built when missing or stale. False with `skip` (why,
-// for a `skipped:` line) when the binary or the opt-in is absent; false with `skip` empty after an
-// error reported under `tier`.
+// The actor binary and the reference policy, built when missing or stale; and `stale` / `drifted`, the
+// reference policy exported from the tables with their last vocab card left out of the manifest (an
+// export of the vocab before that card was appended) / with another tables' digest (of a known card's
+// rows before a parsing change): the evaluator and the servers refuse both, rebuild them. False with `skip`
+// (why, for a `skipped:` line) when the binary or the opt-in is absent; false with `skip` empty after an error reported
+// under `tier`.
 bool actor_setup(const Options &opt, Report &rep, const char *tier, ActorSetup *out, std::string *skip);
 
 // An inference server (rmserve, tools/nn/serve_check.py) run as a session.
@@ -71,8 +76,8 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a);
 // picking up a replaced in-process model between matches, under <out>/actor/reload/.
 void actor_reload_check(const Options &opt, Report &rep, const ActorSetup &a);
 
-// The actor tier's continuous smoke run (tier_actorloop.cpp, sharing the actorloop tier's checks;
-// training plan T8): robomage_nn --actor over four bo3 matches of one entry swapping sides, the
+// The actor tier's continuous smoke run (tier_actorloop.cpp, sharing the actorloop tier's
+// checks): robomage_nn --actor over four bo3 matches of one entry swapping sides, the
 // reference policy (a random-initialised model, CPU) sampled on side a, taught by python/teacher.py
 // at mix 0.5, and projected (thresh=0.03:disc=16) on side b, both seats recorded: the run, its
 // status and results against the episodes, every step's mu, labels and policy version, and each

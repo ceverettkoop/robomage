@@ -1,0 +1,12 @@
+{
+  "name": "cr118_9_massacre_needs_their_plains",
+  "why": "CR 118.9: with a Swamp of yours but no Plains of an opponent's, Massacre's alternative cost isn't offered; your own Plains doesn't count.",
+  "hand_a": ["Massacre"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Plains"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu_not": ["Cast Massacre"]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "cr701_67a_waterbend_with_a_summoning_sick_creature",
+  "why": "CR 701.67a, 302.6: a waterbend cost has no {T}, so a creature cast this turn may be tapped for it",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Mox Opal",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grizzly Bears",
+    "A:activate:Invasion Submersible",
+    "A:waterbend:Grizzly Bears"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "taps Grizzly Bears for Waterbend"
+  ]
+}

@@ -12,6 +12,7 @@
 #include "../../src/featurize/targets.h"
 #include "corpus.h"
 #include "featurize_history.h"
+#include "featurize_layout.h"
 #include "frames.h"
 #include "gate.h"
 #include "proc.h"
@@ -31,8 +32,6 @@ struct SeatFacts {
         bool sideboarding = false;
         rmstate::DecodedFrame lite;  // the frame header and its header table
         uint64_t opp_hand = 0, own_library = 0, opp_library = 0;
-        bool has_templates = false;
-        int64_t registered = -1;  // the k_template row marking the seat's own list registered
 };
 
 // What one dump's checks found; with `keep`, every decision's tensors and targets.
@@ -42,6 +41,12 @@ struct DumpResult {
         std::vector<std::string> fails;
         std::vector<Tensors> tensors[3];
         std::vector<featurize::Targets> targets_of[2];
+};
+
+// Per token type which tok_num, tok_cat, tok_card and tok_ability columns are its slots'.
+struct ColumnUse {
+        std::vector<uint8_t> num, card, ability;
+        std::vector<const featurize::CatSlot *> cat;
 };
 
 // Every this many decisions of a dump, the determinism and row-order checks.
@@ -56,7 +61,6 @@ static bool load_inputs(const rmcheck::Options &opt, rmcheck::Report &rep, Featu
 static void tables_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
     const std::string &cards, const std::string &tables_dir);
 static void vocab_coverage_part(rmcheck::Report &rep, const Featurization &f);
-static bool same_tensors(const Tensors &a, const Tensors &b);
 static std::string check_shapes(
     const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Tensors &t, size_t menu_rows);
 static size_t table_rows(const rmstate::DecodedFrame &frame, uint16_t id);
@@ -67,20 +71,21 @@ static std::string check_deltas(
     const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first);
 static std::string check_ledger(const Featurization &f, const rmstate::Schema &schema,
     const rmstate::DecodedFrame &state, const Tensors &t, const std::vector<int64_t> &first);
-static std::string check_pivots(const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t);
 static std::string check_folds(
     const Featurization &f, const rmstate::Schema &schema, const rmstate::DecodedFrame &state, const Tensors &t);
 static std::string check_permuted(const Featurization &f, const rmstate::Schema &schema,
     const rmstate::DecodedFrame &state, const Tensors &t, uint32_t seed);
 static SeatFacts seat_facts(
     const Featurization &f, const rmstate::Schema &schema, const rmstate::DecodedFrame &state, size_t menu_rows);
-static std::string check_targets(const featurize::Targets &t, const SeatFacts &own, const SeatFacts &opp, size_t depth);
+static std::string check_targets(const featurize::Targets &t, const SeatFacts &own, size_t depth);
 static void add_fail(DumpResult *r, const std::string &label, const std::string &msg);
-static DumpResult check_dump(const Featurization &f, const std::string &path, const std::string &label, bool keep);
+static DumpResult check_dump(const Featurization &f, const std::string &path, const std::string &label, bool keep,
+    const rmcheck::LayoutVariants *layout);
 static void report_dump(rmcheck::Report &rep, const std::string &label, const DumpResult &r);
 static void add_totals(DumpResult *total, const DumpResult &r);
 static bool same_decision(const SeatFacts &a, const SeatFacts &b);
-static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f, DumpResult *total);
+static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
+    const rmcheck::LayoutVariants *layout, DumpResult *total);
 static std::string games_part(
     const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f, DumpResult *total, DumpResult *kept);
 static std::string file_bytes(const std::string &path);
@@ -89,9 +94,10 @@ static void cli_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Fe
 static std::string digests_json(const std::string &path, const featurize::RmtbFile &file);
 static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
     const std::string &tables_dir, const DumpResult &kept);
+static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep);
 
 // Explore games under --selfcheck-featurize, with dumps: bo1 and bo3, a closed decklist, and seat A at
-// level expert+belief (the b_* token types).
+// knowledge level off (no k_* tables but k_meta).
 static std::vector<rmcheck::FuzzGame> featurize_games() {
     struct Row {
             const char *a, *b;
@@ -100,10 +106,10 @@ static std::vector<rmcheck::FuzzGame> featurize_games() {
             const char *flag;
     };
     static const Row rows[] = {
-        {"ur_delver", "bug", false, 301, nullptr},
+        {"ur_tempo", "bug", false, 301, nullptr},
         {"reanimator", "wrb_energy", true, 302, nullptr},
-        {"lands", "bw_dnt", false, 303, "--closed-decklist"},
-        {"gw_maverick", "uw_control", false, 304, "expert+belief"},
+        {"lands_top8", "death_and_taxes", false, 303, "--closed-decklist"},
+        {"eldrazi_aggro", "uw_control", false, 304, "off"},
     };
     std::vector<rmcheck::FuzzGame> out;
     for (const Row &r : rows) {
@@ -113,8 +119,8 @@ static std::vector<rmcheck::FuzzGame> featurize_games() {
         g.bo3 = r.bo3;
         g.seed = r.seed;
         g.flags = {"--selfcheck-featurize"};
-        if (r.flag && std::string(r.flag) == "expert+belief") {
-            g.flags.insert(g.flags.end(), {"--knowledge-a", "expert+belief"});
+        if (r.flag && std::string(r.flag) == "off") {
+            g.flags.insert(g.flags.end(), {"--knowledge-a", "off"});
         } else if (r.flag) {
             g.flags.push_back(r.flag);
         }
@@ -230,42 +236,59 @@ static void tables_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
              std::to_string(f.tables.text_width) + "]; exported, read back and rmfeat's the same");
 }
 
-static bool same_tensors(const Tensors &a, const Tensors &b) {
-    return a.viewer == b.viewer && a.game == b.game && a.decision == b.decision && a.sideboarding == b.sideboarding &&
-           a.tok_type == b.tok_type && a.tok_num == b.tok_num && a.tok_cat == b.tok_cat && a.tok_card == b.tok_card &&
-           a.tok_ability == b.tok_ability && a.tok_mask == b.tok_mask && a.rel == b.rel && a.act_tok == b.act_tok &&
-           a.act_mask == b.act_mask;
-}
-
 // Shapes and indices against the spec and the tables; "" when they agree.
 static std::string check_shapes(
     const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Tensors &t, size_t menu_rows) {
     const size_t n = t.n();
+    std::vector<ColumnUse> uses(spec.types.size());
+    for (size_t i = 0; i < spec.types.size(); ++i) {
+        const featurize::TokenType &type = spec.types[i];
+        ColumnUse &u = uses[i];
+        u.num.assign(spec.F, 0);
+        u.cat.assign(spec.C, nullptr);
+        u.card.assign(spec.K, 0);
+        u.ability.assign(spec.Q, 0);
+        for (const featurize::NumSlot &x : type.numeric)
+            if (x.at < spec.F) u.num[x.at] = 1;
+        for (const featurize::CatSlot &x : type.categorical)
+            if (x.col < spec.C) u.cat[x.col] = &x;
+        for (const featurize::CardSlot &x : type.cards)
+            if (x.col < spec.K) u.card[x.col] = 1;
+        for (const featurize::AbilitySlot &x : type.abilities)
+            if (x.col < spec.Q) u.ability[x.col] = 1;
+    }
     if (t.tok_num.size() != n * spec.F || t.tok_cat.size() != n * spec.C || t.tok_card.size() != n * spec.K ||
         t.tok_ability.size() != n * spec.Q || t.tok_mask.size() != n || t.rel.size() % 3 != 0)
         return "a tensor's width is not the spec's";
     if (t.a() != menu_rows || t.act_mask.size() != menu_rows) return "act_tok has not one entry per menu row";
     for (size_t i = 0; i < n; ++i) {
         const int64_t ty = t.tok_type[i];
-        if (ty < 0 || static_cast<size_t>(ty) >= spec.types.size()) return "tok_type out of range";
+        if (ty < 0 || static_cast<size_t>(ty) >= spec.types.size() ||
+            spec.types[static_cast<size_t>(ty)].kind == featurize::TypeKind::ABSENT)
+            return "tok_type out of range";
         const featurize::TokenType &type = spec.types[static_cast<size_t>(ty)];
+        // Every column of a kind of slot is one of the type's slots (within its range) or reserved
+        // (0 / -1); a numeric value other than 0 only at a slot's column.
+        const ColumnUse &use = uses[static_cast<size_t>(ty)];
         for (size_t c = 0; c < spec.C; ++c) {
             const int64_t id = t.tok_cat[i * spec.C + c];
-            if (c >= type.categorical.size()
-                    ? id != 0
-                    : id < type.categorical[c].offset || id >= type.categorical[c].offset + type.categorical[c].size)
-                return type.name + ": tok_cat slot " + std::to_string(c) + " out of its range";
+            const featurize::CatSlot *slot = use.cat[c];
+            if (slot ? id < slot->offset || id >= slot->offset + slot->size : id != 0)
+                return type.name + ": tok_cat column " + std::to_string(c) + " out of its slot's range";
         }
         for (size_t k = 0; k < spec.K; ++k) {
             const int64_t c = t.tok_card[i * spec.K + k];
-            if (c < -1 || c >= static_cast<int64_t>(tables.card_rows) || (k >= type.cards.size() && c != -1))
+            if (c < -1 || c >= static_cast<int64_t>(tables.card_rows) || (!use.card[k] && c != -1))
                 return type.name + ": tok_card out of the card table";
         }
         for (size_t q = 0; q < spec.Q; ++q) {
             const int64_t a = t.tok_ability[i * spec.Q + q];
-            if (a < -1 || a >= static_cast<int64_t>(tables.ability_rows()) || (q >= type.abilities.size() && a != -1))
+            if (a < -1 || a >= static_cast<int64_t>(tables.ability_rows()) || (!use.ability[q] && a != -1))
                 return type.name + ": tok_ability out of the ability table";
         }
+        for (size_t c = 0; c < spec.F; ++c)
+            if (t.tok_num[i * spec.F + c] != 0.0f && !use.num[c])
+                return type.name + ": tok_num column " + std::to_string(c) + " is no slot's but not 0";
     }
     for (size_t r = 0; r < t.r(); ++r) {
         const int64_t s = t.rel[3 * r], d = t.rel[3 * r + 1], ty = t.rel[3 * r + 2];
@@ -294,8 +317,12 @@ static std::vector<int64_t> row_cat_ids(
     std::vector<int64_t> out;
     for (const featurize::ColumnOp &op : type.ops) {
         const rmstate::Value &v = row[op.col];
-        if (op.kind == featurize::OpKind::CATEGORICAL)
-            out.push_back(op.offset + (v.bits < op.width ? static_cast<int64_t>(v.bits) + 1 : 0));
+        if (op.kind == featurize::OpKind::CATEGORICAL) {
+            int64_t index = v.bits < op.width ? static_cast<int64_t>(v.bits) : -1;
+            if (index >= 0 && op.enum_map >= 0)
+                index = spec.enum_maps[static_cast<size_t>(op.enum_map)][static_cast<size_t>(index)];
+            out.push_back(op.offset + (index >= 0 ? index + 1 : 0));
+        }
         if (op.kind == featurize::OpKind::HASHED)
             out.push_back(
                 op.offset + (v.text.empty() ? 0
@@ -321,8 +348,8 @@ static std::string check_deltas(
     const featurize::TokenType &ot = spec.types[static_cast<size_t>(spec.object_type)];
     const rmstate::DecodedTable *objects = state.table(ot.table);
     int face_slot = -1;
-    for (size_t c = 0; c < ot.cards.size(); ++c)
-        if (ot.cards[c].current_face) face_slot = static_cast<int>(c);
+    for (const featurize::CardSlot &c : ot.cards)
+        if (c.current_face) face_slot = static_cast<int>(c.col);
     std::map<uint64_t, int64_t> row_of;  // handle -> object row
     for (size_t r = 0; objects && r < objects->rows.size(); ++r)
         row_of[objects->rows[r][static_cast<size_t>(spec.object_handle)].bits] = static_cast<int64_t>(r);
@@ -360,8 +387,8 @@ static std::string check_deltas(
                 object_of[t.rel[3 * r]] = t.rel[3 * r + 1] - first[static_cast<size_t>(spec.object_type)];
         for (size_t k = 0; k < t.n(); ++k) {
             if (t.tok_type[k] != static_cast<int64_t>(d)) continue;
-            const std::vector<int64_t> ids(t.tok_cat.begin() + static_cast<long>(k * spec.C),
-                t.tok_cat.begin() + static_cast<long>(k * spec.C + dt.categorical.size()));
+            std::vector<int64_t> ids;
+            for (const featurize::CatSlot &c : dt.categorical) ids.push_back(t.tok_cat[k * spec.C + c.col]);
             auto it = object_of.find(static_cast<int64_t>(k));
             const int64_t obj = it == object_of.end() ? -1 : it->second;
             const bool removed = t.tok_num[k * spec.F + static_cast<size_t>(dt.removed_slot)] != 0.0f;
@@ -393,8 +420,8 @@ static std::string check_ledger(const Featurization &f, const rmstate::Schema &s
     std::map<std::pair<uint64_t, uint64_t>, size_t> tok;  // (player_rel, card) -> token
     for (size_t k = 0; k < t.n(); ++k)
         if (t.tok_type[k] == lt)
-            tok[{static_cast<uint64_t>(t.tok_cat[k * spec.C] - ledger.rel_offset - 1),
-                static_cast<uint64_t>(t.tok_card[k * spec.K])}] = k;
+            tok[{static_cast<uint64_t>(t.tok_cat[k * spec.C + ledger.rel_col] - ledger.rel_offset - 1),
+                static_cast<uint64_t>(t.tok_card[k * spec.K + ledger.card_col])}] = k;
     std::set<std::pair<uint64_t, uint64_t>> keys;
     std::string bad;
     const auto expect = [&](uint64_t rel, uint64_t card, size_t slot, float value) {
@@ -402,7 +429,7 @@ static std::string check_ledger(const Featurization &f, const rmstate::Schema &s
         auto it = tok.find({rel, card});
         if (it == tok.end()) {
             bad = "no ledger token for a folded row";
-        } else if (t.tok_num[it->second * spec.F + slot] != value && bad.empty()) {
+        } else if (t.tok_num[it->second * spec.F + ledger.numeric[slot].at] != value && bad.empty()) {
             bad = "ledger slot " + ledger.numeric[slot].name + " is not its folded rows' value";
         }
     };
@@ -460,37 +487,7 @@ static std::string check_ledger(const Featurization &f, const rmstate::Schema &s
     return "";
 }
 
-// Every pivot source row's columns are in its player's token at its key's slots.
-static std::string check_pivots(const Featurization &f, const rmstate::DecodedFrame &state, const Tensors &t) {
-    const featurize::FeatureSpec &spec = f.spec;
-    for (size_t p = 0; p < spec.types.size(); ++p) {
-        const featurize::TokenType &pt = spec.types[p];
-        if (pt.kind != featurize::TypeKind::PIVOT) continue;
-        std::map<uint64_t, size_t> tok;
-        for (size_t k = 0; k < t.n(); ++k)
-            if (t.tok_type[k] == static_cast<int64_t>(p))
-                tok[static_cast<uint64_t>(t.tok_cat[k * spec.C] - pt.rel_offset - 1)] = k;
-        std::set<uint64_t> rels;
-        for (const featurize::PivotSource &src : pt.pivot) {
-            const rmstate::DecodedTable *tab = state.table(src.table_id);
-            for (size_t r = 0; tab && r < tab->rows.size(); ++r) {
-                const std::vector<rmstate::Value> &row = tab->rows[r];
-                const uint64_t rel = row[src.rel_col].bits, key = row[src.key_col].bits;
-                rels.insert(rel);
-                auto it = tok.find(rel);
-                if (it == tok.end()) return pt.name + ": no token for a player of " + src.table;
-                for (size_t i = 0; key < src.keys && i < src.cols.size(); ++i)
-                    if (t.tok_num[it->second * spec.F + src.first_slot + key * src.cols.size() + i] !=
-                        featurize::cell_value(src.transforms[i], 0, row[src.cols[i]], src.storages[i]))
-                        return pt.name + ": a slot is not its " + src.table + " row's value";
-            }
-        }
-        if (rels.size() != tok.size()) return pt.name + ": a token for a player with no row";
-    }
-    return "";
-}
-
-// The folds lose nothing (docs/featurizer.md §3.6): the deltas, the ledger and the pivots read back.
+// The folds lose nothing (docs/featurizer.md §3.6): the deltas and the ledger read back.
 static std::string check_folds(
     const Featurization &f, const rmstate::Schema &schema, const rmstate::DecodedFrame &state, const Tensors &t) {
     std::vector<int64_t> first(f.spec.types.size() + 1, 0);  // per type its first token (types are contiguous)
@@ -498,7 +495,6 @@ static std::string check_folds(
     for (size_t i = 0; i < f.spec.types.size(); ++i) first[i + 1] += first[i];
     std::string e = check_deltas(f, state, t, first);
     if (e.empty()) e = check_ledger(f, schema, state, t, first);
-    if (e.empty()) e = check_pivots(f, state, t);
     return e;
 }
 
@@ -516,7 +512,7 @@ static std::string check_permuted(const Featurization &f, const rmstate::Schema 
     std::string err;
     if (!featurize::featurize_traced(spec, f.tables, state, nullptr, &again, &src, &err))
         return "the traced frame: " + err;
-    if (!same_tensors(t, again) || src.size() != t.n()) return "the traced featurization differs";
+    if (!featurize::same_tensors(t, again) || src.size() != t.n()) return "the traced featurization differs";
     rmstate::DecodedFrame copy = state;
     std::map<uint16_t, std::vector<int64_t>> inv;  // table id -> old row -> new row
     std::mt19937 gen(seed);
@@ -611,7 +607,7 @@ static SeatFacts seat_facts(
         s.decision = static_cast<int64_t>(h->rows[0][static_cast<size_t>(spec.header_decision)].bits);
         s.sideboarding = h->rows[0][static_cast<size_t>(spec.header_sideboarding)].bits != 0;
     }
-    const rmcheck::Rows player(state, schema, "player"), templates(state, schema, "k_template");
+    const rmcheck::Rows player(state, schema, "player");
     const int p_rel = player.col("player_rel"), p_hand = player.col("hand"), p_lib = player.col("library");
     for (size_t r = 0; r < player.size(); ++r) {
         if (player.u(r, p_rel) == 1) s.own_library = player.u(r, p_lib);
@@ -620,25 +616,15 @@ static SeatFacts seat_facts(
             s.opp_library = player.u(r, p_lib);
         }
     }
-    const int t_rel = templates.col("player_rel"), t_list = templates.col("list"), t_reg = templates.col("registered");
-    s.has_templates = templates.size() > 0;
-    for (size_t r = 0; r < templates.size(); ++r)
-        if (templates.u(r, t_rel) == 1 && templates.u(r, t_reg) == 1)
-            s.registered = static_cast<int64_t>(templates.u(r, t_list));
     return s;
 }
 
-// A decision's targets against the seat's frame (the opponent's hand size, the libraries' sizes) and
-// the opponent's own frame (the k_template row it marks registered).
-static std::string check_targets(
-    const featurize::Targets &t, const SeatFacts &own, const SeatFacts &opp, size_t depth) {
+// A decision's targets against the seat's frame (the opponent's hand size, the libraries' sizes).
+static std::string check_targets(const featurize::Targets &t, const SeatFacts &own, size_t depth) {
     if (t.opp_hand.size() != own.opp_hand) return "opp_hand is not the opponent's hand size";
     if (t.own_library.size() != std::min<uint64_t>(own.own_library, depth) ||
         t.opp_library.size() != std::min<uint64_t>(own.opp_library, depth))
         return "a library target is not the library's top";
-    if (opp.has_templates && t.opp_list != opp.registered)
-        return "opp_list " + std::to_string(t.opp_list) + " is not the list the opponent's frame marks registered (" +
-               std::to_string(opp.registered) + ")";
     return "";
 }
 
@@ -652,12 +638,12 @@ static void add_fail(DumpResult *r, const std::string &label, const std::string 
 
 // Every decision of a dump with a menu: the spec's shapes, the actor entry point's refusal of the
 // omniscient frame, each seat decision's targets, and every SAMPLE_EVERY'th decision deterministic
-// and invariant to row order.
-static DumpResult check_dump(const Featurization &f, const std::string &path, const std::string &label, bool keep) {
+// and invariant to row order; with `layout`, the same tensors from the inputs with a card and a
+// keyword appended (and, sampled, with the keyword enum reordered: featurize_layout.h).
+static DumpResult check_dump(const Featurization &f, const std::string &path, const std::string &label, bool keep,
+    const rmcheck::LayoutVariants *layout) {
     DumpResult r;
     SeatFacts facts[2];
-    featurize::RegisteredLists lists;
-    bool have_lists = false;
     Tensors t, again;
     std::string err;
     const bool ok = featurize::read_stream(
@@ -685,23 +671,27 @@ static DumpResult check_dump(const Featurization &f, const std::string &path, co
             if (!seat && featurize::featurize_seat(f.spec, f.tables, state, &again, &err))
                 add_fail(&r, label, at + ": the actor entry point featurized the omniscient frame");
             if (r.decisions % SAMPLE_EVERY == 0) {
-                if (!featurize::featurize_viewer(f.spec, f.tables, state, &again, e) || !same_tensors(t, again))
+                if (!featurize::featurize_viewer(f.spec, f.tables, state, &again, e) ||
+                    !featurize::same_tensors(t, again))
                     add_fail(&r, label, at + ": featurizing twice gives other tensors");
                 ++r.permuted;
                 const std::string p = check_permuted(f, v.schema, state, t, static_cast<uint32_t>(r.decisions));
                 if (!p.empty()) add_fail(&r, label, at + ": " + p);
             }
+            if (layout) {
+                const std::string l =
+                    rmcheck::check_layout_decision(*layout, state, seat, r.decisions % SAMPLE_EVERY == 0, t);
+                if (!l.empty()) add_fail(&r, label, at + ": " + l);
+            }
             if (keep) r.tensors[viewer].push_back(t);
             if (seat) return true;
-            if (!have_lists && !featurize::registered_lists(v.schema, v.decklists, v.metagame, &lists, e)) return false;
-            have_lists = true;
             for (int s = 0; s < 2; ++s) {
                 const SeatFacts &own = facts[s], &opp = facts[1 - s];
                 if (!own.has_menu || !same_decision(own, opp)) continue;
                 featurize::Targets tg;
-                if (!featurize::decision_targets(f.spec, v.schema, own.lite, state, lists, &tg, e)) return false;
+                if (!featurize::decision_targets(f.spec, v.schema, own.lite, state, &tg, e)) return false;
                 ++r.targets;
-                const std::string c = check_targets(tg, own, opp, f.spec.library_depth);
+                const std::string c = check_targets(tg, own, f.spec.library_depth);
                 if (!c.empty()) add_fail(&r, label, at + " seat " + std::to_string(s) + ": " + c);
                 if (keep) r.targets_of[s].push_back(tg);
             }
@@ -729,7 +719,8 @@ static void add_totals(DumpResult *total, const DumpResult &r) {
 }
 
 // The replay corpus, each game replayed with a dump and checked.
-static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f, DumpResult *total) {
+static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
+    const rmcheck::LayoutVariants *layout, DumpResult *total) {
     const std::vector<std::string> names = rmcheck::corpus_names(opt);
     std::vector<DumpResult> results(names.size());
     rmcheck::parallel_for(names.size(), opt.jobs, [&](size_t i) {
@@ -742,7 +733,7 @@ static void corpus_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
         if (!pr.ok()) {
             add_fail(&results[i], names[i], "replay " + pr.status_text());
         } else {
-            results[i] = check_dump(f, dump, "corpus " + names[i], false);
+            results[i] = check_dump(f, dump, "corpus " + names[i], false, layout);
         }
         rmcheck::remove_tree(dump);
     });
@@ -768,7 +759,7 @@ static std::string games_part(
     rmcheck::parallel_for(games.size(), opt.jobs, [&](size_t i) {
         outs[i] = rmcheck::play_fuzz_game(opt, games[i], dir);
         if (outs[i].result.ok() && rmcheck::file_exists(outs[i].dump))
-            results[i] = check_dump(f, outs[i].dump, outs[i].label, i == 0);
+            results[i] = check_dump(f, outs[i].dump, outs[i].label, i == 0, nullptr);
     });
     for (size_t i = 0; i < games.size(); ++i) {
         const rmcheck::FuzzOutcome &o = outs[i];
@@ -871,13 +862,36 @@ static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
     if (!r.ok()) rep.error("featurize", "python/pycheck.py --part featurize " + r.status_text() + ": " + r.err);
 }
 
+// python/pycheck.py --part open_vocab: the open-vocabulary fixtures' gate sources replayed and
+// featurized by this build to the inputs tests/open_vocab/inputs.json records, those on which the
+// migrated checkpoints reproduce the fixtures' recorded outputs (the networks themselves
+// run in the actor tier, learn/open_vocab_acceptance.py gate).
+static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
+    if (opt.python.empty()) {
+        rep.info("featurize: open_vocab skipped (no python3 on PATH)");
+        return;
+    }
+    rmcheck::ProcSpec spec;
+    spec.argv = {opt.python, rmcheck::path_join(opt.repo, "python/pycheck.py"), "--part", "open_vocab", "--binary",
+        opt.binary, "--out-dir", opt.out("featurize")};
+    spec.cwd = opt.repo;
+    const rmcheck::ProcResult r = rmcheck::run_process(spec);
+    for (const std::string &line : rmcheck::split_lines(r.out)) {
+        if (rmcheck::starts_with(line, "FAIL: ")) rep.error("featurize", "pycheck: " + line.substr(6));
+        if (rmcheck::starts_with(line, "  OK   ")) rep.info("OK   pycheck: " + line.substr(7));
+    }
+    if (!r.ok()) rep.error("featurize", "python/pycheck.py --part open_vocab " + r.status_text() + ": " + r.err);
+}
+
 namespace rmcheck {
 
 // The featurize tier (docs/featurizer.md §7): the card tables and the spec from the whole-vocab
 // cards file, every vocab card with a card-table row, exported and read back (C++, rmfeat and
-// Python alike); the recent-event history option (featurize_history.h); the corpus's and four explore
-// games' dumps featurized with the checks of check_dump; the engine's --selfcheck-featurize on the
-// explore games; rmfeat's tensors and targets against the in-process ones.
+// Python alike); the recent-event history option (featurize_history.h); the layout registry's
+// append-only property (featurize_layout.h); the corpus's and four explore games' dumps featurized
+// with the checks of check_dump (the corpus's also with the layout variants); the engine's
+// --selfcheck-featurize on the explore games; rmfeat's tensors and targets against the in-process
+// ones; the open-vocabulary fixtures' recorded inputs (open_vocab_part).
 void tier_featurize(const Options &opt, Report &rep) {
     const double t0 = now_seconds();
     Featurization f;
@@ -887,9 +901,16 @@ void tier_featurize(const Options &opt, Report &rep) {
     tables_part(opt, rep, f, cards, tables_dir);
     vocab_coverage_part(rep, f);
     featurize_history_part(opt, rep, f, cards);
+    LayoutVariants layout;
+    std::string err;
+    const bool variants = build_layout_variants(f, &layout, &err);
+    if (variants)
+        featurize_layout_part(rep, f, layout);
+    else
+        rep.error("featurize", "layout: " + err);
     const double t1 = now_seconds();
     DumpResult total, kept;
-    corpus_part(opt, rep, f, &total);
+    corpus_part(opt, rep, f, variants ? &layout : nullptr, &total);
     const double t2 = now_seconds();
     const std::string dump = games_part(opt, rep, f, &total, &kept);
     const double t3 = now_seconds();
@@ -898,6 +919,7 @@ void tier_featurize(const Options &opt, Report &rep) {
         python_part(opt, rep, f, tables_dir, kept);
         remove_tree(dump);
     }
+    open_vocab_part(opt, rep);
     const double d = static_cast<double>(std::max<size_t>(total.decisions, 1));
     rep.info("featurize: " + std::to_string(total.decisions) + " decisions, " +
              fmt1(static_cast<double>(total.tokens) / d) + " tokens and " +
@@ -905,7 +927,7 @@ void tier_featurize(const Options &opt, Report &rep) {
              std::to_string(static_cast<long>(d / std::max(total.featurize_s, 1e-9))) +
              " decisions/s featurized (this build, one thread)");
     rep.info("featurize: tables " + fmt1(t1 - t0) + "s, corpus " + fmt1(t2 - t1) + "s, games " + fmt1(t3 - t2) +
-             "s, rmfeat + pycheck " + fmt1(now_seconds() - t3) + "s");
+             "s, rmfeat + pycheck (open_vocab too) " + fmt1(now_seconds() - t3) + "s");
 }
 
 }  // namespace rmcheck

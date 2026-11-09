@@ -1,0 +1,58 @@
+{
+  "name": "cr103_a_zone_preset_starts_the_first_game_of_a_match_only",
+  "why": "A test preset sets up the position a run starts from, and each later game of a match starts from its deck alone (CR 103): --battlefield-a and --life-b came back in game 2, a card made from no zone, which --selfcheck-state reported.",
+  "format": "bo3",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Grizzly Bears"
+  ],
+  "life_b": 3,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:concede",
+    "B:keep",
+    "A:keep",
+    "A:play:Mountain",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "MATCH GAME 2"
+  ],
+  "expect_order": [
+    "MATCH GAME 2",
+    "TURN 2 \\(Player A\\)",
+    "Lightning Bolt deals 3 damage to Player B \\(now at 17 life\\)",
+    "No creatures eligible to attack"
+  ]
+}

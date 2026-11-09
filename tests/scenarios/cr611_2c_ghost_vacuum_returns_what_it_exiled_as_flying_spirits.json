@@ -1,0 +1,71 @@
+{
+  "name": "cr611_2c_ghost_vacuum_returns_what_it_exiled_as_flying_spirits",
+  "why": "CR 611.2c, 122.6, 613.4b: sacrificed, Ghost Vacuum still knows what it exiled: the creature card, an opponent's too, comes back under its controller's control with a flying counter as a 1/1; its Island stays, and so does a creature it didn't exile.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Ghost Vacuum",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears",
+    "Island"
+  ],
+  "exile_a": [
+    "Air Elemental"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Ghost Vacuum",
+    "A:target:Grizzly Bears",
+    "A:pass",
+    "B:play:Island",
+    "A:desc:(ChangeZoneAll)",
+    "A:pass",
+    "A:discard:Forest",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 60,
+  "expect_order": [
+    "Grizzly Bears is moved to exile",
+    "moves Grizzly Bears to the battlefield",
+    "Grizzly Bears enters with a Flying counter",
+    "Grizzly Bears becomes a Spirit in addition to its other types",
+    "Grizzly Bears deals 1 damage to Player B"
+  ],
+  "expect_not": [
+    "moves Air Elemental",
+    "moves Island"
+  ]
+}

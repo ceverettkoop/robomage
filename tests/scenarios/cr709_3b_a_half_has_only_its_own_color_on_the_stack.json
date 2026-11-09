@@ -1,0 +1,14 @@
+{
+  "name": "cr709_3b_a_half_has_only_its_own_color_on_the_stack",
+  "why": "CR 709.3b: while on the stack only the half being cast exists, so Tear is white, not its card's left half's red: Blue Elemental Blast, which counters a red spell, has no spell to target and no red permanent either.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Plains"],
+  "hand_b": ["Blue Elemental Blast"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Sylvan Library"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Tear", "A:target:Sylvan Library"],
+  "max_decisions": 7,
+  "expect": ["Player A casts Tear targeting Sylvan Library"],
+  "expect_menu_not": ["Cast Blue Elemental Blast"]
+}

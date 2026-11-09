@@ -1,0 +1,59 @@
+{
+  "name": "cr701_6_theorists_proxy_covers_only_this_turn",
+  "why": "CR 701.6a, 101.2: {U}, Sacrifice: unused on Player A's turn, it has ended on Player B's: Counterspell counters the Bolt",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "battlefield_a": [
+    "Theorist's Proxy",
+    "Island",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Theorist's Proxy",
+    "B:play:Island",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Counterspell",
+    "B:target:Lightning Bolt"
+  ],
+  "max_decisions": 20,
+  "expect_order": [
+    "TURN 2 \\(Player B\\)",
+    "Player A casts Lightning Bolt",
+    "Player B casts Counterspell",
+    "Lightning Bolt is countered"
+  ],
+  "expect_not": [
+    "Lightning Bolt deals 3 damage to Player B"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

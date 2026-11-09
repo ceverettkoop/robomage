@@ -15,8 +15,10 @@
 //
 // One thread: a poll loop over the listening socket, the connected clients and a self-pipe the
 // SIGTERM / SIGINT handler writes. Each policy is an in-process evaluator (actor/evaluator.h:
-// TorchScript or .pt2, CPU) of one model; every model must have the same spec_hash, vocab_hash
-// and text_model, and a client's handshake must name them. A client's requests queue in arrival
+// TorchScript or .pt2, CPU) of one model; every model must be an export of the same tables (spec_hash,
+// vocab_hash, text_model, layout_hash, vocab manifest), and a client's handshake must name them:
+// featurize::check_compatible, exact, so an export of other tables is refused with the rebuild
+// message. A client's requests queue in arrival
 // order; a batch is the queued requests whose decisions fit max_batch (a larger request alone),
 // evaluated when the queue reaches max_batch decisions, when every connected client has a request
 // queued, or deadline_us after the oldest arrived (§5 of the protocol). Each policy runs once per
@@ -97,7 +99,7 @@ class Server {
         Options opt_;
         featurize::FeatureSpec spec_;  // only the widths (F, C, K, Q), from the first handshake
         bool have_dims_ = false;
-        std::string spec_hash_, vocab_hash_, text_model_;
+        featurize::Manifest tables_;  // the models' (the first policy's)
         std::vector<Policy> policies_;
         int listen_fd_ = -1;
         std::vector<std::unique_ptr<Client>> clients_;

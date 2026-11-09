@@ -1,0 +1,51 @@
+{
+  "name": "cr704_5i_empower_makes_the_token_with_its_counters",
+  "why": "Empower (oracle, docs/rules_deviations.md), CR 704.5i, 105.2: Theorist's Proxy's trigger makes a blue Jace token and puts three loyalty counters on it in one resolution, so no state-based action sees it at 0",
+  "hand_a": [
+    "Theorist's Proxy"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Theorist's Proxy"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Token created: Jace",
+    "Empower Jace 3: Player A's Jace token now has 3 loyalty"
+  ],
+  "expect_not": [
+    "Jace.*(graveyard|ceases|dies)"
+  ],
+  "expect_menu": [
+    "Activate Jace.*\\[-1\\]",
+    "Activate Jace.*\\[-3\\]"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

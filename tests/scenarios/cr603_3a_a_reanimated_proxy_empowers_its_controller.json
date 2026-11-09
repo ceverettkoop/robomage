@@ -1,0 +1,46 @@
+{
+  "name": "cr603_3a_a_reanimated_proxy_empowers_its_controller",
+  "why": "CR 603.3a, Empower (oracle): \"when this creature enters\" from anywhere: Player B's Reanimate on Player A's Proxy makes Player B the Jace token",
+  "graveyard_a": [
+    "Theorist's Proxy"
+  ],
+  "hand_b": [
+    "Reanimate"
+  ],
+  "battlefield_b": [
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Reanimate",
+    "B:target:Theorist's Proxy"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Empower Jace 3: Player B's Jace token now has 3 loyalty"
+  ],
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

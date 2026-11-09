@@ -1,0 +1,40 @@
+{
+  "name": "cr404_1_shallow_grave_reads_only_your_own_graveyard",
+  "why": "CR 404.1: your graveyard's top creature: with none there, an opponent's creature card stays where it is.",
+  "hand_a": [
+    "Shallow Grave"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Shallow Grave"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A casts Shallow Grave"
+  ],
+  "expect_not": [
+    "to the battlefield"
+  ]
+}

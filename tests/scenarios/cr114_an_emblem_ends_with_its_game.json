@@ -1,0 +1,73 @@
+{
+  "name": "cr114_an_emblem_ends_with_its_game",
+  "why": "CR 114.1, 103: an emblem lasts the rest of its game and no longer: Tezzeret's emblem from game 1 of a match is gone in game 2, its trigger seeing A's own artifact at A's combat with nothing to do",
+  "format": "bo3",
+  "hand_a": [
+    "Lotus Petal",
+    "Lotus Petal",
+    "Lotus Petal",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Tezzeret Cruel Captain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:cast:Lotus Petal",
+    "A:desc:[-7]",
+    "A:pass",
+    "A:concede",
+    "A:keep",
+    "B:keep",
+    "A:cast:Lotus Petal",
+    "A:play:Island"
+  ],
+  "max_decisions": 24,
+  "expect": [
+    "gets an emblem",
+    "MATCH GAME 2"
+  ],
+  "expect_order": [
+    "gets an emblem",
+    "MATCH GAME 2",
+    "TURN 1 \\(Player A\\)"
+  ],
+  "expect_not": [
+    "^Put 3 "
+  ]
+}

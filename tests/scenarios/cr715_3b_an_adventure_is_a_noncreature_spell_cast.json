@@ -1,0 +1,57 @@
+{
+  "name": "cr715_3b_an_adventure_is_a_noncreature_spell_cast",
+  "why": "CR 715.3b: on the stack as an Adventure the spell has only its alternative characteristics, an instant, so Petty Theft cast as the turn's fourth noncreature spell triggers The Fantasticar's 'your fourth noncreature spell'; that trigger read the card's front face, a creature, until M8 (b1).",
+  "hand_a": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Brazen Borrower"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Island",
+    "Island",
+    "The Fantasticar"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:cast:Petty Theft",
+    "A:target:Grizzly Bears",
+    "#0"
+  ],
+  "max_decisions": 12,
+  "expect_menu": [
+    "Don't sacrifice The Fantasticar"
+  ]
+}

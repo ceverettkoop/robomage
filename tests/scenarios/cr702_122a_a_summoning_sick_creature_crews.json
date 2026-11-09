@@ -1,0 +1,32 @@
+{
+  "name": "cr702_122a_a_summoning_sick_creature_crews",
+  "why": "CR 702.122a: crewing isn't a {T} cost of the creature, so one that came this turn may be tapped for it. Grizzly Bears cast this turn crews Unlicensed Hearse.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse",
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Grizzly Bears",
+    "A:desc:Crew Unlicensed Hearse",
+    "A:crew:Grizzly Bears"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player A taps Grizzly Bears to crew Unlicensed Hearse"
+  ]
+}

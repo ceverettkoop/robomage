@@ -2,13 +2,18 @@
 #define REPLACEMENT_EFFECTS_H
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "../classes/action.h"
 #include "../classes/colors.h"
+#include "../components/effect.h"
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+#include "../resolution_frame.h"
+
+class Orderer;
 
 // Replacement-effect dispatcher (MTG Comprehensive Rules 614 / 616).
 //
@@ -29,13 +34,13 @@ struct ReplacementEvent {
     enum Type {
         ENTERS_BATTLEFIELD,  // a permanent is about to enter the battlefield
         MOVE_TO_ZONE,        // a card is about to change zones
-        DRAW_CARD,           // a player is about to draw a card
         UNTAP,               // a permanent is about to untap during its controller's untap step
         PRODUCE_MANA,        // a permanent is about to produce mana from being tapped (Damping Sphere)
+        COUNTER,             // an object on the stack is about to be countered
     };
 
     Type type;
-    Entity entity = 0;                                 // affected object (drawing player entity for DRAW_CARD)
+    Entity entity = 0;                                 // affected object
     Zone::Ownership affected_player = Zone::PLAYER_A;   // 616.1 chooser
 
     // ENTERS_BATTLEFIELD in/out. `ask_inline`: a choice the entry needs (pay life to enter
@@ -46,10 +51,12 @@ struct ReplacementEvent {
     int  etb_p1p1 = 0;                                 // counters to add when the permanent enters (614.1c); count of etb_counter_type
     std::string etb_counter_type = "P1P1";             // kind of "enters with" counter ("P1P1", "CHARGE", ...)
 
+    // COUNTER: `entity` is the object, `affected_player` its controller; `prevented` the outcome.
+
     // MOVE_TO_ZONE in/out
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
     Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
-    bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
+    bool prevented = false;                            // 614.13/CantHappen — the event doesn't happen: a move leaves the card in its origin zone (Grafdigger's Cage), a counter leaves the spell on the stack (Hexing Squelcher)
     bool with_void_counter = false;                    // out: the card is exiled with a void counter (Dauthi Voidwalker); the caller records it on the new object
     // DISCARD_ELSE_GRAVEYARD additional cost (Mox Diamond / Chrome Mox): the card the affected
     // player chose to discard as this permanent enters. dispatch() has no orderer, so the caller
@@ -58,11 +65,6 @@ struct ReplacementEvent {
     // graveyard and leaves this 0.
     Entity pending_discard = 0;
 
-    // DRAW_CARD outcome (dredge, 702.52a / 614.1a)
-    bool   draw_replaced = false;                      // a dredge replaced the draw — caller performs no draw
-    Entity dredge_source = 0;                          // the dredge card to return from graveyard to hand
-    int    dredge_mill = 0;                            // number of cards to mill for the dredge
-
     // UNTAP outcome (Choke, 614.1d)
     bool   skip_untap = false;                         // a replacement prevents this permanent from untapping
 
@@ -70,6 +72,7 @@ struct ReplacementEvent {
     // its controller (affected_player), the color it would produce and how much. dispatch() may
     // rewrite produced_color (e.g. to {C}) and sets mana_replaced; the caller adds produced_amount
     // mana of the (possibly replaced) color to the pool.
+    bool   simulation = false;                         // input: a mana simulation (can_pay_mana), not a real event: --coverage does not count it
     Colors produced_color = COLORLESS;                 // input: color the source would produce; dispatch may replace it
     size_t produced_amount = 0;                        // input: amount of mana produced this tap
     bool   mana_replaced = false;                      // output: a ProduceMana replacement rewrote the production (idempotency guard)
@@ -81,31 +84,41 @@ namespace replacement {
 // more than one applies (616.1).
 void dispatch(ReplacementEvent &ev);
 
-// One dredge candidate behind a draw-replacement menu entry (menu index i+1).
+// What one row of a draw's replacement menu does: draw normally, dredge, or what a replacement's
+// ReplaceWith$ says instead.
 struct DrawReplacementOption {
-    Entity source = 0;  // the dredge card in the graveyard
-    int mill = 0;       // its dredge number (cards to mill)
+    Entity source = 0;  // the dredge card, or what generates the replacement (0: an effect object's)
+    int mill = 0;       // its dredge number (cards to mill); 0 for the other rows
+    const AbilityDef *body = nullptr;            // ReplaceWith$ of a replacement that isn't a dredge
+    Zone::Ownership controller = Zone::UNKNOWN;  // its controller, who the body acts for
 };
 
-// Build the dredge draw-replacement menu for a draw by `player` (CR 702.52a):
-// menu[0] is always "Draw a card"; menu[i > 0] corresponds to (*opts)[i - 1].
-// Returns an EMPTY menu when no dredge applies — the promptless common case.
-// Pure ECS reads (graveyard scan + library count), so a suspended prompt
-// re-derives the identical menu on resume. Shared by the blocking
-// dispatch(DRAW_CARD) path, the turn-based draw batch (resume_pending_draws)
-// and the suspendable resolution-time draw loop (effects
-// draw_n_with_replacements).
+// The menu of one draw by `player` (CR 616.1), each row `(*opts)[i]`: a replacement that must apply
+// if it can, then each dredge (CR 702.52a), and a first row "Draw a card" while nothing makes the
+// player do otherwise, so the default (index 0) keeps the draw. Empty when nothing applies, the
+// promptless common case; one row when a single replacement must apply, which needs no question.
+// Pure ECS reads, so a suspended prompt re-derives the identical menu on resume. Shared by the
+// turn-based draw batch (resume_pending_draws) and the suspendable resolution-time draw loop
+// (effects::draw_n_with_replacements).
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts);
 
-// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player`
-// draws for a single "would draw a card" event, summed over every DRAW_ADD replacement on
-// `player`'s battlefield permanents whose CheckSVar condition currently holds ("as long as you
-// have one or fewer cards in hand"). 0 = no additive replacement applies (the common case). A
-// pure ECS read (battlefield scan + SVar evaluation) with no prompt, evaluated at the draw site
-// BEFORE the base draw so the condition sees the pre-draw hand. The caller performs `bonus`
-// extra plain draws after the base draw — those extra draws are part of the same replaced event
-// (614.5) and are NOT re-passed through this replacement.
+// Carries out row `option` of a draw by `player` that needs no ReplaceWith$ run: the draw or a
+// dredge. A row with a body leaves it on `batch` for the draw loop to run where it may suspend
+// (draw_body); either way the card is accounted for when it returns, or when the body completes.
+void take_draw_option(Orderer &orderer, Zone::Ownership player, const DrawReplacementOption &option, DrawBatch &batch);
+
+// The ability `batch`'s ReplaceWith$ body runs as (CR 614.6), an ability of what generated the
+// replacement, controlled by that replacement's controller, nothing resolving.
+Ability draw_body(const DrawBatch &batch);
+
+// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player` draws
+// for a "would draw one or more cards" event, summed over every DRAW_ADD replacement on `player`'s
+// battlefield permanents whose CheckSVar condition currently holds ("as long as you have one or
+// fewer cards in hand"). 0 = no additive replacement applies (the common case). A pure ECS read
+// (battlefield scan + SVar evaluation) with no prompt, evaluated once as the event starts, so the
+// condition sees the pre-draw hand. Every card of the event, the extra ones too, is then a draw of
+// its own (CR 121.2), with its own replacement effects.
 int draw_count_bonus(Zone::Ownership player);
 
 // Diagnostics: how many 616.1 choose-one-of-several-replacements prompts this

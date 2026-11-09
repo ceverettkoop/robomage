@@ -1,0 +1,37 @@
+{
+  "name": "cr702_122a_tapping_past_the_total",
+  "why": "CR 702.122a: \"any number\" with total power N or greater: with the total reached its controller may go on tapping (CR 702.122b: each crews it) or stop.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Unlicensed Hearse",
+    "Flying Men",
+    "Flying Men",
+    "Flying Men"
+  ],
+  "library_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "desc:Crew Unlicensed Hearse",
+    "crew:Flying Men",
+    "crew:Flying Men",
+    "crew:Flying Men"
+  ],
+  "max_decisions": 8,
+  "expect_count": {
+    "Player A taps Flying Men to crew Unlicensed Hearse": 3
+  },
+  "expect_menu": [
+    "Tap nothing more"
+  ]
+}

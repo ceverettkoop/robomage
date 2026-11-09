@@ -1,0 +1,45 @@
+{
+  "name": "cr702_166_a_card_of_mana_value_five_goes_to_the_hand",
+  "why": "Beseech the Mirror: 'if that spell's mana value is 4 or less': a card of mana value 5 gets no offer and goes to the hand.",
+  "hand_a": [
+    "Beseech the Mirror",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Air Elemental",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Mishra's Bauble"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Beseech the Mirror",
+    "A:desc:Accept",
+    "A:search:Air Elemental"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A sacrifices Mishra's Bauble"
+  ],
+  "expect_menu_not": [
+    "without paying its mana cost"
+  ]
+}

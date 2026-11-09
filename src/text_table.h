@@ -5,7 +5,7 @@
 
 #include "featurize/oracle_text.h"
 
-// ── The oracle-text table's engine side (plan step 5c, docs/featurizer.md §5) ──────────────────
+// ── The oracle-text table's engine side (docs/featurizer.md §5) ───────────────────────────────
 //
 // The text entries come from the vocab (src/card_vocab.h): every card entry and registered token
 // whose face has oracle text, one per face vocab id (a front face under its own id, a

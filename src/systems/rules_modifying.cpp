@@ -3,40 +3,56 @@
 #include <algorithm>
 #include <climits>
 
-#include "state_manager.h"  // g_active_statics, ActiveStatic
 #include "../classes/game.h"  // cur_game, CastWithFlashPermission
-#include "../ecs/coordinator.h"
 #include "../components/carddata.h"
+#include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/static_ability.h"
 #include "../components/types.h"
+#include "../components/zone.h"
+#include "../ecs/coordinator.h"
+#include "../mana_system.h"  // get_player_entity
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/filters.h"
+#include "../queries/keywords.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
-#include "../mana_system.h"  // get_player_entity
-#include "../svar_eval.h"  // evaluate_svar (CantAttack dynamic-X hand count)
+#include "../queries/zones.h"
+#include "../svar_eval.h"   // evaluate_svar (CantAttack dynamic-X hand count)
+#include "../type_constants.h"
+#include "state_manager.h"  // g_active_statics, ActiveStatic
 
 namespace rules_mod {
 
-static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
+static bool cant_activate_filter_matches(Entity permanent_entity, const FilterSpec &filter,
                                          Zone::Ownership source_controller);
 static std::string activation_source_name(Entity source);
 static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card);
+static bool may_play_player_covers(
+    StaticAbility::MayPlayPlayer who, Zone::Ownership controller, Zone::Ownership caster);
+static std::string landwalk_subtype(const std::string &kw);
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
+static bool blocked_by_none_this_turn(Entity blocker, Entity attacker);
+static bool blocked_by_none_for_landwalk(Entity blocker, Entity attacker);
+static bool shadow_differs(Entity blocker, Entity attacker);
+static bool flyer_out_of_reach(Entity blocker, Entity attacker);
+static bool protected_from_blocker(Entity blocker, Entity attacker);
+static bool block_static_prohibits(Entity blocker, Entity attacker);
 
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
 // Conqueror, or "Artifact.OppCtrl" for Karn, the Great Creator)? Routed through the shared
-// permanent_matches_any so type qualifiers AND controller qualifiers (.YouCtrl/.OppCtrl) are
+// permanent_matches_filter so type qualifiers AND controller qualifiers (.YouCtrl/.OppCtrl) are
 // honored — the controller reference is the static's own controller, so Karn's ".OppCtrl"
 // correctly restricts the lock to the opponent's artifacts and never the controller's own.
-static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
+static bool cant_activate_filter_matches(Entity permanent_entity, const FilterSpec &filter,
                                          Zone::Ownership source_controller) {
     if (filter.empty()) return false;
     MatchCtx ctx;
     ctx.controller = source_controller;  // the "you" for YouCtrl/OppCtrl in the spec
-    return permanent_matches_any(permanent_entity, filter, ctx);
+    return permanent_matches_filter(permanent_entity, filter, ctx);
 }
 
 // The name a NamedCard CantBeActivated static (Pithing Needle, Disruptor Flute) compares against
@@ -60,9 +76,11 @@ static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const C
     if (as.sa()->only_sorcery_speed || !as.condition_met || caster == as.controller) return -1;
     MatchCtx ctx;
     ctx.controller = caster;  // "you" reference for the ValidCard$ filter
-    if (!as.sa()->cant_cast_filter.empty() && !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
+    if (!as.sa()->cant_cast_filter.empty() &&
+        !card_matches_filter(off_battlefield_face(card), as.sa()->cant_cast_filter, ctx))
         return -1;  // creature / land spells are unaffected
-    return count_battlefield_matching("Land.YouCtrl", caster, 0);
+    static const FilterSpec lands_you_control("Land.YouCtrl");
+    return count_battlefield_matching(lands_you_control, caster, 0);
 }
 
 bool mana_activation_prohibited(Entity permanent_entity) {
@@ -98,13 +116,22 @@ bool activation_prohibited(Entity source) {
     return false;
 }
 
+bool damage_cant_be_prevented(bool is_combat) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        const StaticAbility &sa = *as.sa();
+        if (sa.category == "CantPreventDamage" && (is_combat || !sa.cant_prevent_combat_only)) return true;
+    }
+    return false;
+}
+
 bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneValue cast_from) {
-    bool card_is_creature = is_creature_card(card);
+    bool card_is_creature = is_creature_card(off_battlefield_face(card));
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa()->category != "CantBeCast") continue;
         // Creatures are unaffected by a nonCreature restriction.
-        if (as.sa()->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
+        if (as.sa()->cant_cast_filter.text().find("nonCreature") != std::string::npos && card_is_creature)
             continue;
         // Origin$ Graveyard,Library (Grafdigger's Cage): only spells cast from those zones are
         // prohibited. A spell cast from any other zone (e.g. the hand) is unaffected by this
@@ -149,15 +176,14 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         // Characteristic-based prohibition (Gaddock Teeg: "Noncreature spells with mana value 4 or
         // greater can't be cast", "…with {X} in their mana costs can't be cast"). The static's
         // ValidCard$ filter is matched against the spell's PRINTED characteristics — including the
-        // numeric mana-value bound (cmcGE4) seeded via extract_static_cmc_bound and the {X}-cost
+        // numeric mana-value bound (cmcGE4) and the {X}-cost
         // qualifier (hasXCost). Reached only by statics that aren't one of the special-cased forms
         // above, so it never double-applies to an origin/opponent/per-turn static. Applies to all
         // casters (Gaddock Teeg's lock is symmetric, CR 614/611 continuous prohibition).
         if (!as.sa()->cant_cast_filter.empty()) {
             MatchCtx ctx;
             ctx.controller = caster;
-            extract_static_cmc_bound(as.sa()->cant_cast_filter, ctx);
-            if (card_matches_filter(card, as.sa()->cant_cast_filter, ctx)) return true;
+            if (card_matches_filter(off_battlefield_face(card), as.sa()->cant_cast_filter, ctx)) return true;
         }
     }
     return false;
@@ -197,9 +223,45 @@ bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
         if (perm.filter.empty()) return true;
         MatchCtx ctx;
         ctx.controller = caster;
-        if (card_matches_filter(card, perm.filter, ctx)) return true;
+        if (card_matches_filter(off_battlefield_face(card), perm.filter, ctx)) return true;
     }
     return false;
+}
+
+// Does a MayPlayPlayer$ scope, read from the static's `controller`, include `caster`?
+static bool may_play_player_covers(
+    StaticAbility::MayPlayPlayer who, Zone::Ownership controller, Zone::Ownership caster) {
+    switch (who) {
+        case StaticAbility::MayPlayPlayer::ANY:
+            return true;
+        case StaticAbility::MayPlayPlayer::OPPONENT:
+            return caster == opponent_of(controller);
+        case StaticAbility::MayPlayPlayer::YOU:
+            break;
+    }
+    return caster == controller;
+}
+
+FreeCastGrant free_cast_grant(Entity card, const CardData &face, Zone::Ownership caster) {
+    FreeCastGrant grant;
+    if (!global_coordinator.entity_has_component<Zone>(card) ||
+        !global_coordinator.entity_has_component<CardData>(card))
+        return grant;
+    const Zone::ZoneValue zone = global_coordinator.GetComponent<Zone>(card).location;
+    // The card's own face is matched as the object (its owner for YouOwn); a back face or second
+    // half by that face's characteristics, in its owner's hand.
+    const bool own_face = &face == &global_coordinator.GetComponent<CardData>(card);
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;  // 613.1f: source lost all abilities (Humility)
+        const StaticAbility &sa = *as.sa();
+        if (sa.category != "Continuous" || !sa.may_play_without_mana_cost) continue;
+        if (!may_play_player_covers(sa.may_play_player, as.controller, caster)) continue;
+        if (!(own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_face(as, card, face, zone)))
+            continue;
+        grant.granted = true;
+        grant.with_flash = grant.with_flash || sa.may_play_with_flash;
+    }
+    return grant;
 }
 
 bool attack_prohibited(Entity creature_entity) {
@@ -219,6 +281,96 @@ bool attack_prohibited(Entity creature_entity) {
         if (permanent_matches_filter(creature_entity, as.sa()->cant_attack_filter, ctx)) return true;
     }
     return false;
+}
+
+static std::string landwalk_subtype(const std::string &kw) {
+    // "Swampwalk" -> "Swamp", "Forestwalk" -> "Forest", etc.
+    if (kw == "Swampwalk") return "Swamp";
+    if (kw == "Forestwalk") return "Forest";
+    if (kw == "Islandwalk") return "Island";
+    if (kw == "Mountainwalk") return "Mountain";
+    if (kw == "Plainswalk") return "Plains";
+    return "";
+}
+
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype) {
+    for (auto e : battlefield_permanents(zoned_entities(), player))
+        for (auto &t : global_coordinator.GetComponent<Permanent>(e).types)
+            if (t.kind == SUBTYPE && t.name == subtype) return true;
+    return false;
+}
+
+static bool blocked_by_none_this_turn(Entity, Entity attacker) {
+    return global_coordinator.GetComponent<Creature>(attacker).cant_be_blocked_this_turn;
+}
+
+// Landwalk: the attacker can't be blocked while the defending player, who controls the blocker,
+// controls a land of that type (CR 702.14c).
+static bool blocked_by_none_for_landwalk(Entity blocker, Entity attacker) {
+    const Zone::Ownership defending_player = global_coordinator.GetComponent<Permanent>(blocker).controller;
+    for (const auto &kw : global_coordinator.GetComponent<Creature>(attacker).keywords) {
+        const std::string subtype = landwalk_subtype(kw);
+        if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype)) return true;
+    }
+    return false;
+}
+
+// Shadow: creatures with shadow can only be blocked by shadow creatures, and creatures without
+// shadow cannot be blocked by shadow creatures (rule 702.28)
+static bool shadow_differs(Entity blocker, Entity attacker) {
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Shadow") !=
+           creature_has_keyword(global_coordinator.GetComponent<Creature>(blocker), "Shadow");
+}
+
+static bool flyer_out_of_reach(Entity blocker, Entity attacker) {
+    const Creature &cr = global_coordinator.GetComponent<Creature>(blocker);
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Flying") &&
+           !creature_has_keyword(cr, "Flying") && !creature_has_keyword(cr, "Reach");
+}
+
+static bool protected_from_blocker(Entity blocker, Entity attacker) {
+    return has_protection_from(global_coordinator.GetComponent<Creature>(attacker), blocker);
+}
+
+static bool block_static_prohibits(Entity blocker, Entity attacker) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        const StaticAbility &sa = *as.sa();
+        if (sa.cant_block && static_reaches(as, blocker, StaticRead::LIVE)) return true;
+        if (sa.category != "CantBlockBy") continue;
+        MatchCtx ctx;
+        ctx.controller = as.controller;
+        ctx.source = as.entity;
+        if (permanent_matches_filter(attacker, sa.cant_block_attacker, ctx) &&
+            (sa.cant_block_blocker.empty() || permanent_matches_filter(blocker, sa.cant_block_blocker, ctx)))
+            return true;
+    }
+    return false;
+}
+
+// "Can't block this turn" (Untimely Malfunction's KW$ HIDDEN CARDNAME can't block.): a rule of the
+// game until end of turn, not an ability (CR 611.2c): read from the grant, which Humility leaves.
+static bool cant_block_this_turn(Entity blocker, Entity) {
+    const auto &grants = global_coordinator.GetComponent<Creature>(blocker).eot_keywords;
+    return std::find(grants.begin(), grants.end(), kCantBlockKeyword) != grants.end();
+}
+
+// A restriction on one blocker and one attacker (CR 509.1b).
+using BlockRestriction = bool (*)(Entity blocker, Entity attacker);
+static const BlockRestriction kBlockRestrictions[] = {
+    blocked_by_none_this_turn, blocked_by_none_for_landwalk, shadow_differs,
+    flyer_out_of_reach,        protected_from_blocker,       block_static_prohibits,
+    cant_block_this_turn,
+};
+
+bool block_prohibited(Entity blocker, Entity attacker) {
+    for (BlockRestriction prohibits : kBlockRestrictions)
+        if (prohibits(blocker, attacker)) return true;
+    return false;
+}
+
+size_t minimum_blockers(Entity attacker) {
+    return creature_has_keyword(global_coordinator.GetComponent<Creature>(attacker), "Menace") ? 2 : 1;
 }
 
 int land_play_bonus(Zone::Ownership player) {
@@ -251,6 +403,41 @@ bool may_play_lands_from_graveyard(Zone::Ownership player) {
         if (as.sa()->may_play_from_graveyard) return true;
     }
     return false;
+}
+
+bool may_cast_spells_from_graveyard(Zone::Ownership player) {
+    for (const auto &as : g_active_statics)
+        if (!as.suppressed && as.controller == player && as.sa()->may_cast_from_graveyard) return true;
+    return false;
+}
+
+bool graveyard_land_permission_outlasts_turn(Zone::Ownership player) {
+    for (const auto &as : g_active_statics)
+        if (!as.suppressed && as.controller == player && as.entity != 0 && as.sa()->may_play_from_graveyard) return true;
+    return false;
+}
+
+bool may_cast_from_library(Zone::Ownership player, Entity card, const CardData &face) {
+    const bool own_face = &face == &global_coordinator.GetComponent<CardData>(card);
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met || as.controller != player) continue;
+        if (!as.sa()->may_play_from_library) continue;
+        if (own_face ? static_reaches(as, card, StaticRead::CARD) : static_reaches_as(as, card, face)) return true;
+    }
+    return false;
+}
+
+std::vector<StandingLook> standing_looks() {
+    std::vector<StandingLook> looks;
+    for (Zone::Ownership owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        const Entity top = library_top(owner);
+        if (top == 0) continue;
+        for (const auto &as : g_active_statics) {
+            if (as.suppressed || !as.condition_met || !as.sa()->may_look_at) continue;
+            if (static_reaches(as, top, StaticRead::CARD)) looks.push_back({top, as.controller});
+        }
+    }
+    return looks;
 }
 
 bool etb_triggers_suppressed(Entity entering) {

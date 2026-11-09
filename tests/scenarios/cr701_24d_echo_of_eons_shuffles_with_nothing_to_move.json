@@ -1,0 +1,15 @@
+{
+  "name": "cr701_24d_echo_of_eons_shuffles_with_nothing_to_move",
+  "why": "CR 701.24d: a library is shuffled even if the set of objects shuffled into it is empty: Player A's hand held only Echo of Eons and its graveyard nothing, and A still shuffles; on flashback (CR 702.34a) it is cast from the graveyard, moves nothing of itself, and is exiled",
+  "hand_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Island","Island","Island","Island","Island","Island","Island","Island","Island","Island"],
+  "graveyard_a": ["Echo of Eons"],
+  "battlefield_a": ["Island", "Island", "Island"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Echo of Eons"],
+  "max_decisions": 4,
+  "expect": ["Player A shuffles their library", "Player B shuffles their library", "Echo of Eons .*(exile|Exile)"],
+  "expect_not": ["moves Echo of Eons"],
+  "expect_count": {"^Player A draws": 7, "^Player B draws": 7}
+}

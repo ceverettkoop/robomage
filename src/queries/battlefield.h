@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../components/filter_spec.h"
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -53,6 +54,16 @@ inline std::vector<Entity> battlefield_permanents(const EntitySet &entities, Zon
     return out;
 }
 
+// Taps the permanent `e` (CR 701.26a), the one place a permanent on the battlefield becomes
+// tapped: an attacker, a {T} cost, a tap to pay for a spell, a Tap effect. False, and nothing
+// changes, when it was already tapped. A permanent that enters tapped never becomes tapped, so
+// the entry paths set the state themselves. Defined in battlefield.cpp.
+bool tap_permanent(Entity e);
+
+// Undoes a tap made by a payment that was reversed (CR 733.1): the permanent never became tapped,
+// so the event its tap sent, still unread, goes too.
+void reverse_tap(Entity e);
+
 // True if the ability's source is still the object it was when the ability was created (CR
 // 400.7) and is a battlefield permanent (phased-in). Defined in battlefield.cpp.
 bool ability_source_on_battlefield(const Ability &ab);
@@ -71,7 +82,7 @@ bool entered_battlefield_this_turn(long entered_on_turn);
 // "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.
 // Its callers (SVar evaluation, cast-cost and presence checks) sit outside any system, so it
 // walks zoned_entities() (zones.h).
-int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+int count_battlefield_matching(const FilterSpec &filter_spec, Zone::Ownership controller,
                                Entity source);
 
 // Battlefield permanents controlled by `player` matching the ';'-delimited `spec` used by
@@ -83,7 +94,7 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
 // Matching runs through the shared permanent_matches_filter so the full qualifier grammar
 // (colors, P/T, subtypes, …) is available here too.
 std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const EntitySet &entities, Entity exclude_entity = 0);
+    Zone::Ownership player, const FilterSpec &spec, const EntitySet &entities, Entity exclude_entity = 0);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — first unattaching every Equipment and Aura among `entities`

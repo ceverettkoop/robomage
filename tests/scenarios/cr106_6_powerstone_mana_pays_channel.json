@@ -1,0 +1,13 @@
+{
+  "name": "cr106_6_powerstone_mana_pays_channel",
+  "why": "CR 106.6: a Powerstone's mana only can't be spent to cast a nonartifact spell, so it pays Boseiju's Channel ability from hand",
+  "hand_b": ["Boseiju Who Endures"],
+  "library_b": ["Forest"],
+  "library_a": ["Mountain"],
+  "hand_a": ["Mountain"],
+  "battlefield_a": ["Cityscape Leveler"],
+  "battlefield_b": ["Forest", "Mox Opal"],
+  "play": ["A:keep", "B:keep", "A:attack:Cityscape Leveler", "A:target:Mox Opal", "B:desc:Activate Boseiju"],
+  "max_decisions": 12,
+  "expect": ["Player B activated Powerstone"]
+}

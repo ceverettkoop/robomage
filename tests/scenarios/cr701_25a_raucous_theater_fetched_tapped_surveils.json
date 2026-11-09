@@ -1,0 +1,47 @@
+{
+  "name": "cr701_25a_raucous_theater_fetched_tapped_surveils",
+  "why": "CR 701.25a, 603.6a, 305.7: Raucous Theater, found by its Swamp subtype, enters tapped and surveils 1 from any zone (here the card stays on top); it taps for {B} or {R} next turn",
+  "hand_a": [
+    "Polluted Delta",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Raucous Theater",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Polluted Delta",
+    "A:activate:Polluted Delta",
+    "A:search:Raucous Theater",
+    "A:top:Mountain"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "^Player A surveils 1\\."
+  ],
+  "expect_menu": [
+    "Tap Raucous Theater for \\(B\\)",
+    "Tap Raucous Theater for \\(R\\)"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

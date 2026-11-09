@@ -1,0 +1,48 @@
+{
+  "name": "cr602_2b_giants_boulder_destroys_for_seven",
+  "why": "CR 602.2b: {7}, {T}, sacrifice destroys any target permanent, a land included",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Giant's Boulder",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Forest",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Giant's Boulder",
+    "A:target:Forest@opp"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A sacrifices Giant's Boulder",
+    "^Forest is destroyed"
+  ],
+  "expect_menu": [
+    "^Grizzly Bears$"
+  ]
+}

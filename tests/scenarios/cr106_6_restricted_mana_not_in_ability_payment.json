@@ -1,0 +1,15 @@
+{
+  "name": "cr106_6_restricted_mana_not_in_ability_payment",
+  "why": "CR 106.6: paying Stoneforge Mystic's ability by hand, Cavern of Souls offers its {C} and not its any-color mana, which can be spent only to cast a creature spell of the chosen type",
+  "hand_a": ["Cavern of Souls", "Shadowspear", "Stoneforge Mystic"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_a": ["Stoneforge Mystic", "Mountain", "Plains"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "engine_flags": ["--no-auto-mana"],
+  "play": ["A:keep", "B:keep", "A:land:Cavern of Souls", "A:desc:Artificer", "A:desc:Activate Stoneforge", "A:tap:Plains", "A:tap:Mountain"],
+  "max_decisions": 9,
+  "expect": ["Player A .*Plains", "Stoneforge Mystic"],
+  "expect_menu": ["Tap Cavern of Souls for \\(C\\)"],
+  "expect_menu_not": ["Tap Cavern of Souls for \\([WUBRG]\\)"]
+}

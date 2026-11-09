@@ -1,0 +1,14 @@
+{
+  "name": "cr702_9_rough_damages_creatures_without_flying",
+  "why": "CR 702.9 / 120.3e: Rough deals 2 damage to each creature without flying, either player's: the bears die, the flyers take none",
+  "hand_a": ["Rough Tumble"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Grizzly Bears", "Flying Men"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Grizzly Bears", "Birds of Paradise"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Rough"],
+  "max_decisions": 5,
+  "expect_count": {"deals 2 damage to Grizzly Bears": 2},
+  "expect_not": ["deals 2 damage to (Flying Men|Birds of Paradise)"]
+}

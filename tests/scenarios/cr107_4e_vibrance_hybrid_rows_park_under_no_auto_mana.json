@@ -1,0 +1,38 @@
+{
+  "name": "cr107_4e_vibrance_hybrid_rows_park_under_no_auto_mana",
+  "why": "CR 107.4e / 601.2b: under --no-auto-mana an alternative cost's hybrid pips are asked; this parks on a hybrid pip of an alternative cost",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)",
+    "A:pay:{R}",
+    "A:pay:{R}",
+    "A:tap:Mountain",
+    "A:tap:Mountain"
+  ],
+  "max_decisions": 9,
+  "expect": [
+    "Player A casts Vibrance"
+  ]
+}

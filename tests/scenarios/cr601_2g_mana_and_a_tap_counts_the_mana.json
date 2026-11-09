@@ -1,0 +1,14 @@
+{
+  "name": "cr601_2g_mana_and_a_tap_counts_the_mana",
+  "why": "CR 106.1, 601.2g: the same Metallic Rebuke with its {1} paid from an Island has mana spent to cast it, so Roiling Vortex does nothing",
+  "hand_a": ["Metallic Rebuke"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Omniscience", "Thalia Guardian of Thraben", "Roiling Vortex", "Island"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "B:cast:Lightning Bolt", "B:target:Player A", "A:desc:Cast Metallic Rebuke without paying its mana cost", "A:target:Lightning Bolt"],
+  "max_decisions": 24,
+  "expect": ["Player A casts Metallic Rebuke"],
+  "expect_not": ["Roiling Vortex deals 5 damage"]
+}

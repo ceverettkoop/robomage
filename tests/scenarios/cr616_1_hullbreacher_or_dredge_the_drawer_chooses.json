@@ -1,0 +1,70 @@
+{
+  "name": "cr616_1_hullbreacher_or_dredge_the_drawer_chooses",
+  "why": "CR 616.1: Hullbreacher and dredge both apply to a draw: the drawing player chooses one and the other no longer can; there is no plain draw on offer, and the question suspends",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Brainstorm"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "graveyard_b": [
+    "Life from the Loam"
+  ],
+  "battlefield_a": [
+    "Hullbreacher"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:done",
+    "B:cast:Brainstorm",
+    "B:desc:Dredge Life from the Loam"
+  ],
+  "max_decisions": 12,
+  "engine_flags": [
+    "--selfcheck-state",
+    "--selfcheck-state-sample",
+    "1"
+  ],
+  "expect_order": [
+    "dredges Life from the Loam",
+    "^Token created"
+  ],
+  "expect_count": {
+    "^Token created": 2
+  },
+  "expect_menu": [
+    "^Hullbreacher: replace the draw$",
+    "^Dredge Life from the Loam"
+  ],
+  "expect_menu_not": [
+    "^Draw a card$"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "cr702_179d_life_gain_is_no_trigger",
+  "why": "CR 702.179d: life gained isn't life lost: B gains life from Swords on A's turn, no trigger",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Plains"
+  ],
+  "hand_a": [
+    "Swords to Plowshares"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Swords to Plowshares",
+    "A:target:Grizzly Bears@opp"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player B gains"
+  ],
+  "expect_not": [
+    "their speed triggers"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

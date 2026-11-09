@@ -1,0 +1,60 @@
+{
+  "name": "cr702_179d_speed_stops_at_4",
+  "why": "CR 702.179d, e: four turns of attacks: speed 2, 3, 4, and at 4 the intervening if keeps it from triggering",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done"
+  ],
+  "max_decisions": 22,
+  "expect_count": {
+    "their speed triggers": 3
+  },
+  "expect": [
+    "Player A's speed is 4"
+  ],
+  "expect_not": [
+    "speed is 5"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

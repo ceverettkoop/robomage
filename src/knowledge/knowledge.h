@@ -13,11 +13,10 @@
 #include "k_rows.h"
 #include "player_model.h"
 #include "solver.h"
-#include "templates.h"
 
 // ── The knowledge sidecar: one seat's recall and deduction (docs/knowledge_store.md) ──────────
 //
-// A pure function of one viewer's frame stream: the SCHEMA, CARDS, DECKLISTS and METAGAME frames, then every
+// A pure function of one viewer's frame stream: the SCHEMA, CARDS and DECKLISTS frames, then every
 // STATE frame (its events in order, then its snapshot). It never sees engine state; it may include
 // only the standard library and state_format/decode.h / schema.h (the rmstate gate tier checks).
 //
@@ -38,27 +37,12 @@
 //      under a per-player step budget.
 // rows() then gives the k_* tables for the current state.
 //
-// Archetype inference (templates.h, knowledge_store §10): every reference list of the METAGAME
-// frame is checked against each player. A list the viewer sees (their own, or the opponent's with
-// open decklists) is consistent exactly when it is that list; under --closed-decklist the
-// opponent's network decides, with the list as root. That check runs on the opponent's network as
-// it was after the last event that pinned a card or added a root (the template network): only such
-// an event can make a list inconsistent, so its answer is a function of the events, whichever frame
-// computes it. Each game's last answer (at game_end) is match memory: a list proven inconsistent in
-// one game stays so for the match, the registered list being the same in every game.
-//
 // The model per player (PlayerModel) is a network of nodes (sets of cards the viewer cannot tell
 // apart) rooted in the player's list: game 1 the registered main deck and sideboard, games 2-3 the
 // registered 75 for the opponent (split between deck and sideboard in a way the viewer does not
 // know) and the viewer's current own_deck for themselves; under --closed-decklist the opponent's
 // root is free apart from the copies seen earlier in the match. Networks reset at game_start;
 // match memory (copies seen per match) persists.
-//
-// The belief layer (level expert+belief; belief.h, knowledge_store §10.6) weighs the lists the sound
-// layer keeps: each list's likelihood is the weighted count of its hypothesis network's worlds,
-// computed with the consistency check on the same template network (so it is a function of the
-// events too); each finished game's likelihood joins the match memory, and the b_* tables are the
-// posterior under a uniform prior over the reference lists.
 //
 // Deterministic: ordered containers only, so the same frames give the same bytes. Errors are
 // returned, never thrown (-fno-exceptions).
@@ -69,14 +53,13 @@ class Knowledge {
     public:
         explicit Knowledge(rmstate::KnowledgeLevel level = rmstate::KnowledgeLevel::EXPERT);
 
-        // One record payload of the viewer's stream: SCHEMA, CARDS, DECKLISTS, METAGAME or STATE. A frame
+        // One record payload of the viewer's stream: SCHEMA, CARDS, DECKLISTS or STATE. A frame
         // for another viewer, or one that does not decode, is an error. A STATE frame it decoded
         // (every level but off) is moved into `decoded`, when given, once applied; true then.
         bool feed(const std::string &payload, rmstate::DecodedFrame *decoded = nullptr);
 
         // The decoded entry points feed() uses; unit tests drive the model through them directly.
         void begin_match(int viewer, const Codes &codes, const Decklists &lists);
-        void begin_metagame(const Metagame &metagame);
         void apply_frame(const Snapshot &snap);
 
         // The k_* tables for the current state (k_meta only at level off).
@@ -123,18 +106,6 @@ class Knowledge {
         // For tests: compaction on (the default) or off. Not part of the serialised state.
         void set_compaction(bool on) { compaction_ = on; }
         const Decklists &decklists() const { return lists_; }
-        const Metagame &metagame() const { return metagame_; }
-        // For tools and tests: the opponent's template network (its network after the last event
-        // that pinned a card or added a root) while the reference lists are checked against it.
-        bool template_network_active() const { return tpl_active_; }
-        const Network &template_network() const { return tpl_net_; }
-        // For tools and tests (level expert+belief): the belief layer's posterior over the reference
-        // lists for player `p` (unrounded; the b_list rows are its fixed-point form), all zero when no
-        // list is possible or below that level.
-        std::vector<double> belief_posterior(int p) const;
-        // Reference list `l`'s log-likelihood for the hidden opponent over the match so far (the b_list
-        // loglik column, unrounded) and whether it is exact.
-        double belief_log_likelihood(size_t l, bool *exact) const { return list_log_likelihood(l, exact); }
 
     private:
         // ── frame flow ──
@@ -147,25 +118,6 @@ class Knowledge {
         void update_seen();
         void check(const Snapshot &snap);
 
-        // ── archetype inference (templates.h) ──
-        bool templates_by_network() const;
-        size_t opponent_pins() const;
-        size_t opponent_roots() const;
-        void save_template_network();
-        void check_template(size_t l);
-        void solve_templates();
-        void close_templates();
-        bool seen_allows(size_t l) const;
-        void list_state(int p, size_t l, const std::vector<std::pair<int, int>> &main,
-            const std::vector<std::pair<int, int>> &side, KTemplateRow *row) const;
-        void template_rows(KRows &out) const;
-        // ── the belief layer (belief.h) ──
-        bool belief_on() const;
-        void check_likelihood(size_t l, const Network &h, bool proven);
-        double list_log_likelihood(size_t l, bool *exact) const;
-        void belief_weights(int p, const KRows &rows, std::vector<double> *log_w, std::vector<uint8_t> *support,
-            std::vector<uint8_t> *exact) const;
-        void belief_rows(KRows &out) const;
         void error(const std::string &what);
 
         // ── update rules (knowledge_store §5), one per event kind ──
@@ -227,12 +179,8 @@ class Knowledge {
         Codes codes_;
         std::map<int, std::string> names_;
         Decklists lists_;
-        Metagame metagame_;
         // match memory
         std::map<int, uint8_t> seen_match_[2];
-        // Per reference list: proven inconsistent with the opponent in a finished game, and not
-        // proven consistent in one (its check ran out of budget).
-        std::vector<uint8_t> list_excluded_, list_unproven_;
         // game state
         uint32_t last_seq_ = 0;
         bool game_active_ = false;
@@ -261,27 +209,12 @@ class Knowledge {
         bool solve_stale_ = true;
         Solver solver_;
         bool compaction_ = true;
-        // The template network and, per reference list, whether it was checked against it and the
-        // answer (consistent, proven).
-        bool tpl_active_ = false;
-        bool tpl_dirty_ = false;
-        Network tpl_net_;
-        std::vector<uint8_t> tpl_done_, tpl_consistent_, tpl_exact_;
-        // The belief layer: per reference list, its log-likelihood against the template network and
-        // whether that is the exact weighted count (else the copies-seen fallback), the opponent's
-        // copies seen as of the template network (the fallback's input), and the match memory: the
-        // finished games' summed log-likelihood and whether any of them used the fallback.
-        std::vector<double> tpl_ll_;
-        std::vector<uint8_t> tpl_ll_exact_;
-        std::map<int, uint8_t> tpl_seen_;
-        std::vector<double> list_ll_;
-        std::vector<uint8_t> list_ll_approx_;
         // frame context
         uint8_t frame_game_ = 0;
         uint32_t frame_decision_ = 0;
         uint32_t frame_seq_ = 0;
         const std::vector<DeckEntry> *frame_own_deck_ = nullptr;  // the frame's own_deck rows, while it applies
-        std::map<uint16_t, LibPos> batch_place_;  // this frame's batches: library_place range
+        std::map<uint16_t, LibPos> batch_place_;                  // this frame's batches: library_place range
         std::map<uint16_t, std::pair<int, std::vector<NodeId>>> batch_nodes_;  // batch → (player, units placed)
         std::vector<std::string> errors_;
 };

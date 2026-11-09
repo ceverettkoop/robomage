@@ -1,0 +1,4 @@
+{"name": "face_down",
+ "why": "CR 702.37c, e: hotseat, Player A casts Aphetto Alchemist face down and turns it up: A's menu and board name the card, B's stack, board and event lines say face down until the face_up event shows it",
+ "args": ["--game-seed", "1", "--hand-a", "Aphetto Alchemist", "--library-a", "Island", "--battlefield-a", "Island,Island,Island,Island", "--hand-b", "Lightning Bolt", "--battlefield-b", "Mountain", "--library-b", "Mountain"],
+ "input": ["0", "0", "0", "0", "8", "0", "7", "0", "0"]}

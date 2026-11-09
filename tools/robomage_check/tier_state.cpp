@@ -61,20 +61,20 @@ static std::vector<FuzzGame> fuzz_games() {
     };
     static const Row rows[] = {
         {"reanimator", "wrb_energy", false, 101, false, true},
-        {"wrb_energy", "bw_dnt", true, 102, false, true},
-        {"bw_dnt", "wubg_doomsday", false, 103, false, false},
+        {"wrb_energy", "death_and_taxes", true, 102, false, true},
+        {"death_and_taxes", "wubg_doomsday", false, 103, false, false},
         {"reanimator", "uw_control", true, 104, false, false},
         {"wubg_doomsday", "wrb_energy", false, 105, false, false},
         {"burn", "reanimator", false, 106, false, false},
-        {"ur_delver", "gw_maverick", false, 107, true, false},
-        {"lands", "bw_dnt", false, 108, true, false},
+        {"ur_tempo", "eldrazi_aggro", false, 107, true, false},
+        {"lands_top8", "death_and_taxes", false, 108, true, false},
         {"bug", "reanimator", true, 109, false, false},
-        {"wrb_energy", "lands", true, 110, false, false},
-        {"uw_control", "bw_dnt", false, 111, false, false},
-        {"gw_maverick", "wrb_energy", false, 112, false, false},
+        {"wrb_energy", "lands_top8", true, 110, false, false},
+        {"uw_control", "death_and_taxes", false, 111, false, false},
+        {"eldrazi_aggro", "wrb_energy", false, 112, false, false},
         {"reanimator", "reanimator", false, 113, true, false},
         {"wubg_doomsday", "burn", true, 114, false, false},
-        {"bw_dnt", "ur_delver", true, 115, false, false},
+        {"death_and_taxes", "ur_tempo", true, 115, false, false},
         {"wrb_energy", "wrb_energy", false, 116, true, false},
     };
     std::vector<FuzzGame> out;
@@ -99,13 +99,13 @@ static std::vector<FuzzGame> fuzz_games() {
 // The state tier's RMSTATE sessions.
 static std::vector<StreamGame> stream_games() {
     StreamGame a;
-    a.deck_a = "league/ur_delver";
+    a.deck_a = "league/ur_tempo";
     a.deck_b = "league/bug";
     a.seed = 21;
     a.flags = {"--selfcheck-state", "--narrative"};
     StreamGame b;
     b.deck_a = "league/wrb_energy";
-    b.deck_b = "league/bw_dnt";
+    b.deck_b = "league/death_and_taxes";
     b.bo3 = true;
     b.seed = 23;
     b.flags = {"--selfcheck-state", "--closed-decklist"};
@@ -320,7 +320,7 @@ static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
     for (bool closed : {false, true}) {
         const std::string label = std::string("name-a-card ") + (closed ? "closed" : "open") + " decklist";
         StreamGame g;
-        g.deck_a = "league/bw_dnt";
+        g.deck_a = "league/death_and_taxes";
         g.deck_b = "league/burn";
         g.seed = 31;
         g.flags = {"--battlefield-a", "Disruptor Flute", "--selfcheck-state", "--selfcheck-state-sample", "1"};
@@ -379,10 +379,10 @@ static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
         std::sort(fronts.begin(), fronts.end());
         std::vector<std::string> fails;
         if (closed) {
-            std::vector<uint64_t> sorted_named = named;
-            std::sort(sorted_named.begin(), sorted_named.end());
-            if (sorted_named != fronts)
-                fails.push_back(label + ": " + std::to_string(named.size()) + " candidates, CARDS lists " +
+            // A split card is a candidate under each of its names (CR 709.4a).
+            const std::set<uint64_t> distinct(named.begin(), named.end());
+            if (std::vector<uint64_t>(distinct.begin(), distinct.end()) != fronts)
+                fails.push_back(label + ": " + std::to_string(distinct.size()) + " candidate cards, CARDS lists " +
                                 std::to_string(fronts.size()) + " vocab cards");
             if (has_source) fails.push_back(label + ": a candidate has an object handle");
             if (!std::is_sorted(descs.begin(), descs.end()))
@@ -391,8 +391,8 @@ static void check_name_card(const rmcheck::Options &opt, rmcheck::Report &rep) {
                 fails.push_back(label + ": DECKLISTS lists other than only A's own list");
         } else {
             const std::set<uint64_t> &opp = listed["PLAYER_B"];
-            const std::set<uint64_t> unique(named.begin(), named.end());
-            bool inside = unique.size() == named.size();
+            const std::set<std::string> unique(descs.begin(), descs.end());
+            bool inside = unique.size() == descs.size();
             for (uint64_t c : named) inside = inside && opp.count(c);
             if (!inside) fails.push_back(label + ": candidates outside the opponent's registered list");
         }
@@ -648,8 +648,9 @@ static void isolation_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
         "string", "string_view", "system_error", "tuple", "type_traits", "typeinfo", "unordered_map", "unordered_set",
         "utility", "variant", "vector"};
     static const std::set<std::string> allowed = {
-        "src/state_format/decode.h", "src/state_format/schema.h", "src/state_format/json.h"};
-    std::vector<std::string> files;
+        "src/state_format/decode.h", "src/state_format/schema.h", "src/state_format/json.h",
+        "src/state_format/designations.def"};
+    std::vector<std::string> files = {"src/state_format/designations.def"};
     for (const char *stem : {"decode", "schema", "json", "recode"})
         for (const char *ext : {".h", ".cpp"}) {
             const std::string rel = std::string("src/state_format/") + stem + ext;

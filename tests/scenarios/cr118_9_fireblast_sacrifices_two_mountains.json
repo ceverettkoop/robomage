@@ -1,0 +1,36 @@
+{
+  "name": "cr118_9_fireblast_sacrifices_two_mountains",
+  "why": "CR 118.9, 601.2h: an alternative cost's sacrifice, each of its two Mountains chosen and neither chosen twice, moves after the targets",
+  "hand_a": [
+    "Fireblast"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Fireblast (alternate cost)",
+    "A:target:Grizzly Bears"
+  ],
+  "max_decisions": 10,
+  "expect_count": {
+    "Player A sacrifices Mountain": 2
+  },
+  "expect_order": [
+    "Player A sacrifices Mountain",
+    "Player A sacrifices Mountain",
+    "Player A casts Fireblast"
+  ]
+}

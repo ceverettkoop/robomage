@@ -1,0 +1,39 @@
+{
+  "name": "cr613_1e_painters_servant_colors_nothing_with_another_color_chosen",
+  "why": "CR 613.1e: only the chosen color is added: under Painter's Servant set to green, Grizzly Bears stays no red spell and Blue Elemental Blast can't counter it.",
+  "hand_a": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Forest",
+    "Forest",
+    "Painter's Servant"
+  ],
+  "hand_b": [
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:color:Green",
+    "A:cast:Grizzly Bears"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Player A casts Grizzly Bears"
+  ],
+  "expect_menu_not": [
+    "Cast Blue Elemental Blast"
+  ]
+}

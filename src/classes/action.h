@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../components/ability.h"
+#include "../components/cast_option.h"
 #include "../ecs/entity.h"
 
 enum ActionType {
@@ -71,9 +72,15 @@ enum class ActionCategory {
     KEEP_HAND = 46,            // opening mulligan: keep the current hand (paired with MULLIGAN's take-a-mulligan)
     EXILE_FROM_YARD = 47,      // exile a card from the graveyard to pay a cost (Escape); distinct from
                                // SACRIFICE_PERMANENT (a permanent leaving the battlefield)
+    CONFIRM_MODES = 48,        // choose no further mode: "choose one or more" once the fewest modes
+                               // are chosen (MinCharmNum$, CR 700.2); paired with CHOOSE_MODE
+    CHOOSE_COLOR = 49,         // choose a color as a permanent enters (Painter's Servant)
+    DIVIDE_DAMAGE = 50,        // give one more point of divided damage to this target (CR 601.2d);
+                               // option_ordinal: what it holds so far
+    TURN_FACE_UP = 51,         // turn a face-down permanent face up for its morph cost (CR 702.37e)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 47;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 51;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;
@@ -82,22 +89,8 @@ struct LegalAction {
         Ability ability;       // Ability being activated (ACTIVATE_ABILITY only)
         std::string description;
         ActionCategory category = ActionCategory::OTHER_CHOICE;
-        bool use_alt_cost = false;
-        bool use_flashback = false;
-        bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
-        bool use_escape = false;     // cast from graveyard paying the Escape cost (CR 702.139)
-        bool impulse_cast = false;   // cast from exile under a cur_game.resolved_effects.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
-        // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
-        // CardData is the front face), but it is being played as its back face (a land). The
-        // processor marks it EntryInfo::enters_transformed so it enters showing the back face.
-        bool play_back_face = false;
-        // CAST_SPELL of a modal DFC's BACK face when that back face is a NONLAND spell
-        // (Tergrid, God of Fright // Tergrid's Lantern). The source entity is the combined
-        // card (whose CardData is the front face); it is cast paying the BACK face's mana cost
-        // and using the back face's characteristics/abilities (CR 712.8). If the back is a
-        // permanent the processor marks it EntryInfo::enters_transformed so it enters showing the
-        // back face (reusing the transform machinery, parallel to play_back_face for lands).
-        bool cast_back_face = false;
+        // How this row casts its card, or which face a PLAY_LAND plays (CastOption).
+        CastOption option;
         // SPECIAL_ACTION that puts the player's chosen Companion (CR 702.139) from the sideboard
         // into their hand for {3}. Disambiguates the companion special action from the play-land
         // special action; the processor pays {3} and moves the source entity Sideboard -> Hand.
@@ -107,6 +100,10 @@ struct LegalAction {
         // action from the play-land / companion special actions; the processor pays the cost, moves
         // the source entity Hand -> Exile, and records the time counters.
         bool suspend_action = false;
+        // SPECIAL_ACTION that turns the face-down permanent `source_entity` face up (CR 702.37e,
+        // 116.2b): the processor pays what its overlay row asks of the card under it, and it is the
+        // same object.
+        bool turn_face_up = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

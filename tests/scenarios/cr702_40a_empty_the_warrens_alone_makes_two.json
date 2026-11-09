@@ -1,0 +1,46 @@
+{
+  "name": "cr702_40a_empty_the_warrens_alone_makes_two",
+  "why": "CR 702.40a: with no spell before it, Empty the Warrens has no copies: two Goblins",
+  "hand_a": [
+    "Empty the Warrens",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Empty the Warrens"
+  ],
+  "max_decisions": 3,
+  "expect_count": {
+    "^Token created: 1/1 Goblin": 2
+  },
+  "expect_not": [
+    "copies Empty the Warrens"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "name": "cr608_2c_burning_wish_exiles_itself",
+  "why": "CR 608.2c, 608.2n, 400.11: Burning Wish finds a sorcery from outside the game, not another card type, and its own instruction exiles it rather than sending it to the graveyard",
+  "hand_a": [
+    "Burning Wish",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "sideboard_a": [
+    "Reanimate",
+    "Lightning Bolt",
+    "Temur Sabertooth"
+  ],
+  "sideboard_b": [
+    "Doomsday"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Burning Wish",
+    "A:choice:Reanimate"
+  ],
+  "max_decisions": 5,
+  "expect_order": [
+    "^Player A reveals Reanimate and puts it to hand",
+    "^Burning Wish is exiled"
+  ],
+  "expect_menu": [
+    "^Reanimate$"
+  ],
+  "expect_menu_not": [
+    "^Lightning Bolt$",
+    "^Temur Sabertooth$",
+    "^Doomsday$"
+  ],
+  "expect_not": [
+    "fails to find"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

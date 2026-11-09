@@ -1,0 +1,53 @@
+{
+  "name": "cr708_9_a_countered_face_down_spell_is_revealed",
+  "why": "CR 708.9: a face-down spell that moves from the stack to any zone but the battlefield is revealed to all players as it moves; until then the other player doesn't know what he counters.",
+  "hand_a": [
+    "Aphetto Alchemist",
+    "Island"
+  ],
+  "hand_b": [
+    "Counterspell",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:morph:Aphetto",
+    "B:cast:Counterspell"
+  ],
+  "max_decisions": 7,
+  "expect": [
+    "Face-down creature is revealed as Aphetto Alchemist"
+  ],
+  "expect_dump": [
+    "^B .*stack SPELL card=none",
+    "^B .*event ZONE_MOVE STACK>GRAVEYARD card=Aphetto Alchemist face_down=0",
+    "^B .*seen opp Aphetto Alchemist"
+  ],
+  "expect_not": [
+    "Face-down creature enters"
+  ]
+}

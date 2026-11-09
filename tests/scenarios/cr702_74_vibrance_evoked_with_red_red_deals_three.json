@@ -1,0 +1,37 @@
+{
+  "name": "cr702_74_vibrance_evoked_with_red_red_deals_three",
+  "why": "CR 702.74 / 107.4e / 603.4: Vibrance for its evoke cost {R/G}{R/G} with {R}{R}: its red trigger fires, and deals 3 even if the evoke sacrifice resolved first: what was spent is read as it last existed",
+  "hand_a": [
+    "Vibrance",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Vibrance (alternate cost)",
+    "A:desc:Vibrance (DealDamage",
+    "A:target:Player B"
+  ],
+  "max_decisions": 12,
+  "expect_not": [
+    "Searching Player A's library"
+  ],
+  "expect_order": [
+    "sacrifices Vibrance|Vibrance is sacrificed|Vibrance.*graveyard",
+    "Vibrance deals 3 damage to Player B"
+  ]
+}

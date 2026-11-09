@@ -29,7 +29,7 @@
 //
 // featurize_seat is the actor entry point (what an nn: seat calls): it refuses a frame whose viewer
 // is not seat A or B. featurize_viewer also takes the omniscient viewer's frame, for learner-side
-// writers only (rmfeat, the training plan's trajectory writer). Both refuse a frame that is not a
+// writers only (rmfeat, the trajectory writer). Both refuse a frame that is not a
 // STATE frame of the spec's schema. Under a spec with recent-event history (feature_spec.h) the
 // seat's EventHistory (history.h, observed up to this frame) gives the history tokens:
 // featurize_seat refuses such a spec without one, featurize_viewer emits none without one (the
@@ -74,6 +74,9 @@ bool featurize_viewer(const FeatureSpec &spec, const CardTables &tables, const r
 // is its rank in its type).
 bool featurize_traced(const FeatureSpec &spec, const CardTables &tables, const rmstate::DecodedFrame &state,
     const EventHistory *history, Tensors *out, std::vector<TokenSource> *sources, std::string *err);
+
+// Whether two featurizations are the same decision's same tensors (every field and array equal).
+bool same_tensors(const Tensors &a, const Tensors &b);
 
 // The decisions as one RMTB tensors file, stamped with the spec's and vocab's hashes.
 RmtbFile tensors_file(const FeatureSpec &spec, const std::vector<Tensors> &list);

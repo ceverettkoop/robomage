@@ -8,13 +8,16 @@
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "coverage.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
+#include "cost_payment.h"
 #include "ecs/coordinator.h"
 #include "effects/effects.h"
 #include "input_logger.h"
 #include "queries/activation.h"
+#include "queries/affected.h"
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/filters.h"
@@ -22,6 +25,7 @@
 #include "queries/players.h"
 #include "queries/spells.h"
 #include "queries/visibility.h"
+#include "resolution_memory.h"
 #include "svar_eval.h"
 #include "systems/orderer.h"
 #include "targeting.h"
@@ -47,8 +51,10 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
-// CR 608.2b: every target of `ab` became illegal; it is removed from the stack without effect.
-static void fizzle(const Ability &ab);
+// CR 608.2b: every target of `ab` became illegal: a stack object is removed from the stack without
+// effect, and an instruction of one does nothing.
+static void fizzle(const Ability &ab, const FrameCtx &ctx);
+static void prune_illegal_targets(Ability &ab);
 
 static bool condition_svar_passes(const Ability &ab) {
     const Entity src = ab.source.lki_entity();
@@ -81,11 +87,17 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // outer player target (see Ability::targeted_player).
     sub.targeted_player = parent.player_target_for_subs();
     if (sub.def->valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
-    const std::string &d = sub.def->defined;
-    if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
-        d == "TargetedController")
+    const ObjectSpec &d = sub.def->defined;
+    if (d.is(ObjectSpec::DEFAULT) || inherits_parent_target(d))
         sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
+}
+
+void bind_chained_sub(const Ability &parent, Ability &sub) {
+    sub.source = parent.source;
+    sub.source_transforms = parent.source_transforms;
+    bind_sub_target(parent, sub);  // CR 608.2c — Defined$-driven (see helper)
+    sub.controller = parent.controller;
 }
 
 // See forward declaration at top of file. The bind closure holds the exact
@@ -99,21 +111,13 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
         const Ability &sub_template = parent.subabilities[static_cast<size_t>(next_sub)];
         if (ctx.can_suspend()) {
             Ability *pp = &parent;
-            auto bind = [pp](Ability &sub) {
-                sub.source = pp->source;
-                sub.source_transforms = pp->source_transforms;
-                bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
-                sub.controller = pp->controller;
-            };
+            auto bind = [pp](Ability &sub) { bind_chained_sub(*pp, sub); };
             if (ctx.resolve_child(sub_template, FrameLevel::SUB, next_sub, -1, bind, orderer) ==
                 ResolveStatus::SUSPENDED)
                 return ResolveStatus::SUSPENDED;
         } else {
             Ability sub_ab = sub_template;
-            sub_ab.source = parent.source;
-            sub_ab.source_transforms = parent.source_transforms;
-            bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-            sub_ab.controller = parent.controller;
+            bind_chained_sub(parent, sub_ab);
             resolve_ability(sub_ab, orderer);
         }
     }
@@ -167,7 +171,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
         if (amt == 0 && (ab.def->kind == EffectKind::Draw || ab.def->kind == EffectKind::Mill)) amt = 1;
         if (!ab.def->dynamic_amount_expr.empty())
-            amt = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
+            amt = evaluate_amount(ab.def->dynamic_amount_expr, ResolveCtx::of(ab));
         return ", amount: " + std::to_string(amt);
     }
     return "";
@@ -217,11 +221,28 @@ struct BlockingRememberedScope {
 };
 }  // namespace
 
-static void fizzle(const Ability &ab) {
-    // stack manager present behavior moves everything to graveyard or destroys it
-    // so for now this is a stub
+static void fizzle(const Ability &ab, const FrameCtx &ctx) {
+    if (ctx.is_stack_object()) cur_game.resolution.fizzled = true;
     game_log("%s fizzles\n", ab.def->category.c_str());
-    return;
+}
+
+// CR 608.2b: a multi-target instruction whose targets are only PARTLY illegal still resolves,
+// affecting only the still-legal targets (a spell that left the stack, a permanent that left the
+// battlefield or gained protection, ...). Prune the illegal ones so every effect handler
+// downstream sees legal targets only; what a target was to receive of a division goes with it.
+static void prune_illegal_targets(Ability &ab) {
+    if (ab.targets.empty()) return;
+    for (size_t i = 0; i < ab.targets.size();) {
+        if (!is_legal_target(ab, ab.targets[i].get(), ab.controller)) {
+            std::string tname = entity_name(ab.targets[i].lki_entity());
+            game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
+            ab.targets.erase(ab.targets.begin() + i);
+            if (i < ab.target_shares.size()) ab.target_shares.erase(ab.target_shares.begin() + i);
+        } else {
+            ++i;
+        }
+    }
+    ab.target = ab.targets.empty() ? ObjectRef{} : ab.targets[0];
 }
 
 // Transitional blocking shim: every non-stack caller (sub-ability recursion, the
@@ -270,9 +291,15 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             cur_game.resolution.memory.remembered = ab.restore_remembered_exiled_with;
         }
 
+        // ResolvedLimit$ (CR 603.4 intervening-if, re-checked on resolution): an ability that
+        // has already resolved its limit's number of times this turn does nothing.
+        if (trigger_resolved_limit_reached(ab)) {
+            game_log("Triggered ability has already resolved its limit this turn; it does nothing.\n");
+            return ResolveStatus::DONE;
+        }
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
-        if (ab.def->trigger_optional) {
+        if (ab.def->trigger_optional && !trigger_cost_offered(ab.def->cost)) {
             int yc = ctx.ask(
                 optional_yesno_menu("use " + entity_name(ab.source.lki_entity()) + "'s triggered ability"),
                 ab.controller, ab.source.lki_entity());
@@ -285,51 +312,15 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         phase = 1;
     }
     if (phase == 1) {
-        // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
-        // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
-        // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
-        // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
-        // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
-        // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
-        // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
-        if (ab.def->ability_type == AbilityDef::TRIGGERED && ab.def->sac_self) {
-            const Entity src = ab.source.get();
-            std::string sname = global_coordinator.entity_has_component<Permanent>(src)
-                                    ? global_coordinator.GetComponent<Permanent>(src).name
-                                    : std::string("it");
-            bool on_bf = src != 0 && is_battlefield_permanent(src);
-            if (ab.def->mandatory) {
-                // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
-                // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
-                // clause: only run the effect (the token creation) if the source was actually on
-                // the battlefield to be sacrificed (CR 603.8 fired, but the permanent may already
-                // have left). A source no longer on the battlefield → no sacrifice, no effect.
-                if (!on_bf) {
-                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-            } else {
-                // The source is no longer the permanent that triggered (CR 400.7): it can't be
-                // sacrificed, so the "if you do" effect doesn't happen.
-                if (!on_bf) {
-                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
-                // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
-                // accept, do nothing (skip the effect and its subabilities) on decline.
-                int yc = ctx.ask(yesno_menu("Don't sacrifice " + sname, "Sacrifice " + sname),
-                                 ab.controller, src);
-                if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
-                if (yc == 0) {
-                    game_log("%s declines to sacrifice %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-                    return ResolveStatus::DONE;
-                }
-                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), sname.c_str());
-            }
+        // A triggered ability pays its cost as it resolves (CR 603.2), and the cost makes the whole
+        // effect conditional on it: on no sacrifice, discard or mana, the effect and its subabilities
+        // are skipped. Activated abilities never reach here with ability_type == TRIGGERED, so
+        // their already-paid sac is not double-charged.
+        if (ab.def->ability_type == AbilityDef::TRIGGERED &&
+            (ab.def->cost.self(CostPart::SACRIFICE) || trigger_cost_offered(ab.def->cost))) {
+            const PayStatus paid = pay_trigger_cost(ab, ctx, orderer);
+            if (paid == PayStatus::SUSPENDED) return ResolveStatus::SUSPENDED;
+            if (paid != PayStatus::PAID) return ResolveStatus::DONE;
         }
         phase = 2;
     }
@@ -348,74 +339,67 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // evaluated by the state-trigger scan when it fires — it is NOT an intervening-if to be
             // re-checked at resolution. Dark Depths' "sacrifice it, if you do create Marit Lage" must
             // still create the token even though the sacrifice it just performed makes the "no ice
-            // counters" condition read false (the source has left the battlefield).
-            if (ab.def->intervening_if && !ab.def->trigger_state_condition &&
+            // counters" condition read false (the source has left the battlefield). Neither this
+            // check nor the stored-SVar gate below applies to a NoResolvingCheck$ trigger, whose
+            // condition is part of the trigger event (Moonshadow's "while this creature has a
+            // -1/-1 counter on it").
+            const bool recheck_condition = !ab.def->trigger_no_resolving_check;
+            if (recheck_condition && ab.def->intervening_if && !ab.def->trigger_state_condition &&
                 !evaluate_present_condition(ab, ab.controller, orderer)) {
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
-            // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
-            // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
-            // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
-            // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
-            // the mana resolves, so the gate still reads 0 here for a legitimate fire).
-            if (!ab.def->stored_svar_gate_name.empty() &&
-                !stored_svar_gate_passes(ab.source.get(), ab.def->stored_svar_gate_name, ab.def->stored_svar_gate_compare)) {
+            // Per-permanent stored-SVar gate (CheckSVar$ NAME | SVarCompare$ EQ0 on a Number$ scratch
+            // int). Like the intervening-if it is re-checked at resolution (CR 603.4): if the source
+            // permanent's latched scratch int no longer satisfies the comparison, the ability does
+            // nothing (a latch the ability's own effect sets is written only after this check, so the
+            // gate still reads its old value here for a legitimate fire).
+            if (recheck_condition && !ab.def->stored_svar_gate_name.empty() &&
+                !stored_svar_gate_passes(
+                    ab.source.get(), ab.def->stored_svar_gate_name, ab.def->stored_svar_gate_compare)) {
                 game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
             // Pre-resolve target validity check (CR 608.2b): every targeted effect, a Pump
-            // included, was targeted as it was put on the stack and fizzles here if its target
-            // became illegal (it does NOT retarget).
-            if (ab.def->valid_tgts != "N_A") {
-                if (!targets_still_legal(ab)) {
-                    fizzle(ab);
-                    return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
-                }
-                // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
-                // resolves, affecting only the still-legal targets (a spell that left the stack, a
-                // permanent that left the battlefield or gained protection, ...). Prune the illegal
-                // ones here so every effect handler downstream sees legal targets only; the all-illegal
-                // case was already countered by the targets_still_legal gate above.
-                if (!ab.targets.empty()) {
-                    for (size_t i = 0; i < ab.targets.size();) {
-                        if (!is_legal_target(ab, ab.targets[i].get(), ab.controller)) {
-                            std::string tname = entity_name(ab.targets[i].lki_entity());
-                            game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
-                            ab.targets.erase(ab.targets.begin() + i);
-                        } else {
-                            ++i;
-                        }
-                    }
-                    ab.target = ab.targets.empty() ? ObjectRef{} : ab.targets[0];
-                }
+            // included, was targeted as it was put on the stack and it does NOT retarget. A stack
+            // object doesn't resolve only when all its targets are illegal, whichever of its
+            // instructions chose them. An instruction with its own targets illegal does nothing
+            // (phase 3), and what is chained to it goes on.
+            const bool targets = ab.def->valid_tgts != "N_A";
+            const bool own_illegal = targets && !targets_still_legal(ab);
+            if (ctx.is_stack_object() ? every_target_illegal(ab) : own_illegal) {
+                fizzle(ab, ctx);
+                if (ctx.is_stack_object()) return ResolveStatus::DONE;
             }
-            // RememberTargets/RememberObjects: stash the target(s) so chained
-            // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-            if (ab.def->remember_targeted) {
-                cur_game.resolution.memory.remembered.clear();
-                if (!ab.targets.empty()) {
-                    for (const ObjectRef &t : ab.targets)
-                        if (Entity te = t.get()) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
-                } else if (Entity te = ab.target.get()) {
-                    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
-                }
+            if (targets && !own_illegal) prune_illegal_targets(ab);
+            if (ctx.is_stack_object() || !own_illegal) {
+                // The ability resolves: count it toward its ResolvedLimit$ and, as the stack object,
+                // its source's Count$ResolvedThisTurn, before its effects read the count (a declined
+                // optional ability, an unmet intervening-if or illegal targets returned above
+                // uncounted, CR 603.4 / 608.2b).
+                count_resolution(ab, ctx.is_stack_object());
+                // RememberTargets/RememberObjects: stash the target(s) so chained
+                // ChangeType$ Remembered.sameName subabilities can match by name (Surgical
+                // Extraction). An illegal target isn't one of them.
+                if (!own_illegal) report_targets(ab);
+                apply_memory_ops(ab);
+                if (!ab.replacing_an_event)
+                    game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
+                             resolving_log_detail(ab, orderer).c_str());
             }
-            game_log("Resolving ability (category: %s%s)\n", ab.def->category.c_str(),
-                     resolving_log_detail(ab, orderer).c_str());
             next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
         }  // end of the one-shot (non-resuming) section
 
         // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
         // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
-        // ability; run them first when Spell::gift_promised is set on the source spell. The token's
+        // ability; run them first when ChosenCost::gift_promised is set on the source spell. The token's
         // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
         // Each gift resolves as a persisted GIFT FrameLevel (next_sub is the loop cursor — free
         // until phase 4 resets it for the phase 5 sub chain) so a prompt inside a gift suspends.
         const Entity spell_src = ab.source.get();
         if (!ab.gift_abilities.empty() && spell_src != 0 &&
             global_coordinator.entity_has_component<Spell>(spell_src) &&
-            global_coordinator.GetComponent<Spell>(spell_src).gift_promised) {
+            global_coordinator.GetComponent<Spell>(spell_src).chosen.gift_promised) {
             for (; next_sub < static_cast<int>(ab.gift_abilities.size()); ++next_sub) {
                 const Ability &gift_template = ab.gift_abilities[static_cast<size_t>(next_sub)];
                 if (ctx.can_suspend()) {
@@ -439,8 +423,9 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     if (phase == 3) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
-        bool condition_passed = true;
-        if (!ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
+        const bool own_illegal = ab.def->valid_tgts != "N_A" && !targets_still_legal(ab);
+        bool condition_passed = !own_illegal;
+        if (condition_passed && !ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
         // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you
         // control four or fewer lands"), ConditionDefined$ Remembered (Birthing Ritual: the dig
@@ -471,8 +456,13 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             // (matching the pre-refactor early return). Routed to its own
             // phase (7) so a suspension inside a chained sub resumes there —
             // never re-evaluating the condition gates above, which could read
-            // state an earlier sub mutated and diverge.
-            next_sub = 0;
+            // state an earlier sub mutated and diverge. What is chained to an illegal target finds
+            // nothing of it (CR 608.2b).
+            if (own_illegal) {
+                ab.target = ObjectRef{};
+                ab.targets.clear();
+            }
+            next_sub = static_cast<int>(ab.def->repeat_sub_count);
             phase = 7;
         } else {
             phase = 4;
@@ -488,7 +478,13 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
         // or clearing the named card — the re-entry finishes both.
         if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
-        next_sub = 0;
+        // The effect is done: what it reported goes into the resolution's memory, once, before
+        // anything chained after it can read it.
+        report_effect(ab, EffectObjects::FINISHED);
+        apply_memory_ops(ab);
+        coverage_effect(ab.def->kind);
+        // A repeating effect's body is its own to run; what is chained follows it.
+        next_sub = static_cast<int>(ab.def->repeat_sub_count);
         // Chain subabilities unless the handler opted out (Charm/WinsGame and the
         // non-peek PeekAndReveal path return DONE_NO_SUBS to handle their own resolution).
         phase = (hres == HandlerResult::DONE_RUN_SUBS) ? 5 : 6;

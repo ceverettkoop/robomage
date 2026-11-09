@@ -1,0 +1,43 @@
+{
+  "name": "cr702_84a_mishras_research_desk_unearth_only_as_a_sorcery",
+  "why": "CR 702.84a: \"Unearth only as a sorcery\": on the opponent's turn and in the upkeep the card in the graveyard offers nothing",
+  "hand_a": [
+    "Forest",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Mishra's Research Desk"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu": [
+    "Cast Lightning Bolt"
+  ],
+  "expect_menu_not": [
+    "Unearth Mishra's Research Desk"
+  ]
+}

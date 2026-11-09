@@ -94,9 +94,8 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
     std::vector<NodeId> parts;  // library, sideboard, set aside...
     if (closed_[p]) {
         // Unknown cards from the vocab: lower-bound roots (at least the copies seen earlier this
-        // match, nothing in game 1), which compaction keeps, so a reference list's hypothesis can
-        // take their place (templates.h): game 1 the main deck and the sideboard apart, games 2-3
-        // the 75.
+        // match, nothing in game 1), which compaction keeps: game 1 the main deck and the sideboard
+        // apart, games 2-3 the 75.
         std::vector<std::pair<int, int>> lower;
         if (game_ > 0) {
             for (const auto &s : seen_match_[p])
@@ -153,12 +152,10 @@ void Knowledge::build_roots(int p, uint16_t library, uint16_t sideboard) {
 
 // ── game_end ──────────────────────────────────────────────────────────────────────────────────
 
-// The game's last events are already counted into match memory (each was settled), and so is the
-// game's last answer for every reference list (close_templates); the networks stay until the next
-// game_start replaces them.
+// The game's last events are already counted into match memory (each was settled); the networks
+// stay until the next game_start replaces them.
 void Knowledge::on_game_end(const Event &ev) {
     (void)ev;
-    close_templates();
     game_active_ = false;
 }
 

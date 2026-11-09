@@ -1,0 +1,13 @@
+{
+  "name": "cr702_102a_fuse_needs_a_target_for_each_half",
+  "why": "CR 702.102b, 601.2c: a fused split spell is both halves, so with an artifact and no enchantment Wear may be cast and Tear and the fused spell may not.",
+  "hand_a": ["Wear Tear"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Plains"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Chalice of the Void"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu": ["Cast Wear$"],
+  "expect_menu_not": ["Cast Tear", "fused"]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "cr115_1b_untimely_malfunction_changes_what_an_aura_spell_targets",
+  "why": "CR 115.1b: an Aura spell has a target: Animate Dead's, held on its entry, changes from one creature card to the other, and that one comes back.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Flying Men"
+  ],
+  "hand_b": [
+    "Animate Dead"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Animate Dead",
+    "B:target:Grizzly Bears",
+    "A:cast:Untimely Malfunction",
+    "A:mode:Change the target"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "Animate Dead now targets Flying Men"
+  ],
+  "expect_not": [
+    "Grizzly Bears is moved to the battlefield"
+  ]
+}

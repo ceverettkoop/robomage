@@ -1,0 +1,47 @@
+{
+  "name": "cr115_9a_a_spell_with_two_targets_cant_be_chosen",
+  "why": "CR 115.9a: SpellAbility.singleTarget counts the targets chosen: Prismari Charm with two has no single target, so the mode's target isn't there and the mode isn't offered.",
+  "hand_a": [
+    "Untimely Malfunction"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Grizzly Bears"
+  ],
+  "hand_b": [
+    "Prismari Charm"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Prismari Charm",
+    "B:mode:deals 1 damage",
+    "B:target:Player A",
+    "B:target:Grizzly Bears",
+    "A:cast:Untimely Malfunction"
+  ],
+  "max_decisions": 10,
+  "expect_menu": [
+    "One or two target creatures can't block"
+  ],
+  "expect_menu_not": [
+    "Change the target"
+  ]
+}

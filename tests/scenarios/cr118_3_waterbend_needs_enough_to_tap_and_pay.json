@@ -1,0 +1,45 @@
+{
+  "name": "cr118_3_waterbend_needs_enough_to_tap_and_pay",
+  "why": "CR 118.3: with two artifacts and creatures and no mana {3} can't be paid, so Invasion Submersible offers no activation",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Invasion Submersible",
+    "Mox Opal"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "^-------- TURN 2"
+  ],
+  "expect_menu_not": [
+    "Activate Invasion Submersible"
+  ]
+}

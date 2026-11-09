@@ -1,4 +1,4 @@
-"""The orchestrator (docs/rmtrain.md; docs/rnad_training_plan.md §4 L6, §6): one process, no GPU, that
+"""The orchestrator (docs/rmtrain.md): one process, no GPU, that
 walks the phases B0–B5 of one run, owns the actors, the GPU process, the evaluations and exports,
 and answers the control socket.
 
@@ -45,6 +45,7 @@ import traceback
 
 from . import config as C
 from . import evaluation as EVAL
+from . import retable as RT
 from . import sb_explore as SBX
 from . import schedules as SCH
 from .actors import ActorPool, Counters, ResultsTail, cpu_env, draw_finding
@@ -114,7 +115,7 @@ class Orchestrator:
         self.actors_waiting = None      # what the actors wait for before they start (the status says)
         self.sb_cov = SBX.Coverage()    # structured sideboard exploration's counts (state.json's sb_explore)
         self.sb_snap = None             # what the B4 schedule's entries carry (sb_tick)
-        self.sb_decks = None            # the league deck files' card keys (the coverage cells)
+        self.sb_decks = None            # (league stems, their deck files' card keys): the coverage cells
 
     # ── state ────────────────────────────────────────────────────────────────────────────────
 
@@ -173,7 +174,8 @@ class Orchestrator:
         self.counters = Counters(res.get("counters"))
         self.sb_cov = SBX.Coverage(self.state.get("sb_explore"))
         self.pool = ActorPool(self.engine, self.bin_dir, self.run.schedule, self.run.actors, self.run.actor_logs,
-                              self.cfg["run"]["seed"], self.cfg["actors"], self.log)
+                              self.cfg["run"]["seed"], self.cfg["actors"], self.log,
+                              extra_args=C.engine_feature_args(self.cfg))
         for sig in (signal.SIGTERM, signal.SIGINT):
             signal.signal(sig, lambda s, f: self.request_stop("signal %d" % s))
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
@@ -186,6 +188,7 @@ class Orchestrator:
             if not os.path.exists(self.engine):
                 raise Fatal("no engine %s (make BUILD=%s actor)" % (self.engine, self.cfg["run"]["build"].upper()))
             self.ensure_tables()
+            self.note_tables()
             self.save_state()
             self.write_status()
             control.start()
@@ -339,9 +342,10 @@ class Orchestrator:
         """The coverage summary (``sb_explore.summary``) over the league's matchups and deck files."""
         pairs = [(SCH.deck(a), SCH.deck(b), w) for a, b, w in SCH.league_pairs(self.cfg)]
         mups = SBX.matchups(pairs)
-        if self.sb_decks is None:
-            self.sb_decks = SBX.read_decks(self.bin_dir, sorted({d for m in mups for d in m}))
-        return SBX.summary(self.sb_cov, mups, self.sb_decks)
+        stems = sorted({d for m in mups for d in m})
+        if self.sb_decks is None or sorted(self.sb_decks[0]) != stems:     # a league change re-reads them
+            self.sb_decks = (stems, SBX.read_decks(self.bin_dir, stems))
+        return SBX.summary(self.sb_cov, mups, self.sb_decks[1])
 
     def sb_status(self):
         """status.json's ``sb_explore``: p now, the p the schedule carries, the coverage summary."""
@@ -1165,8 +1169,29 @@ class Orchestrator:
             rmfeat = os.path.join(self.bin_dir, self.cfg["run"]["build"], "rmfeat")
             self.log("exporting the card tables into %s" % self.run.tables)
             os.makedirs(self.run.tables, exist_ok=True)
-            subprocess.run([rmfeat, "--export-tables", self.run.cards, self.run.tables], cwd=self.bin_dir, env=env,
-                           check=True, stdout=subprocess.DEVNULL)
+            argv = [rmfeat, "--export-tables", self.run.cards, self.run.tables] + C.rmfeat_feature_args(self.cfg)
+            subprocess.run(argv, cwd=self.bin_dir, env=env, check=True, stdout=subprocess.DEVNULL)
+
+    def note_tables(self):
+        """The run's tables against the engine's (a stale run is stopped: rmtrain retable) and against
+        the ones state.json records: tables that changed since (replaced, or a retable whose exports did
+        not all finish) have every export made again from its checkpoint."""
+        why = RT.check_start(self.run, self.cfg, self.engine, self.bin_dir)
+        if why:
+            raise Fatal(why)
+        cur = RT.tables_summary(self.cfg["run"]["tables"] or self.run.tables)
+        last = self.state.get("tables")
+        if cur is not None and last is not None and not RT.same_tables(last, cur):
+            for p in RT.stale_exports(self.run):
+                os.unlink(p)
+            redo = RT.latest_exports(self.state)
+            for e in redo:
+                self.queue_export(e["checkpoint"], e["name"], e["version"])
+            self.log("the run's tables changed since the last start (spec %s -> %s): %d exports queued again"
+                     % (last.get("spec_hash"), cur["spec_hash"], len(redo)))
+            self.emit("tables_changed", previous=last.get("spec_hash"), spec_hash=cur["spec_hash"], exports=len(redo))
+        if cur is not None:
+            self.state["tables"] = cur
 
     # ── control ─────────────────────────────────────────────────────────────────────────────
 
@@ -1221,16 +1246,26 @@ class Orchestrator:
             self.request_stop("rmtrain stop")
             return {"stopping": True}
         if cmd == "set":
-            key, value = C.parse_live(req["key"], str(req["value"]))
-            old = C.get_key(self.cfg, key)
-            self.cfg = C.set_key(self.cfg, key, value)
-            if key in C.GPU_LIVE and self.gpu is not None:
-                self.gpu.call("set", key=key, value=value)
+            # One key ({"key", "value": text}) or several set together ({"changes": {key: value}}),
+            # validated as one config (league.decks with league.pairs: rmtrain add-decks).
+            if "changes" in req:
+                changes = dict(C.parse_live(k, json.dumps(v)) for k, v in req["changes"].items())
+            else:
+                changes = dict([C.parse_live(req["key"], str(req["value"]))])
+            olds = {k: C.get_key(self.cfg, k) for k in changes}
+            self.cfg = C.set_keys(self.cfg, changes)
+            for key, value in changes.items():
+                if key in C.GPU_LIVE and self.gpu is not None:
+                    self.gpu.call("set", key=key, value=value)
             self.pool.settings = self.cfg["actors"]
             write_json(self.run.config, self.cfg)
-            self.log("set %s = %s (was %s)" % (key, json.dumps(value), json.dumps(old)))
-            self.emit("set", key=key, value=value, old=old)
-            return {"key": key, "value": value, "old": old}
+            for key, value in changes.items():
+                self.log("set %s = %s (was %s)" % (key, json.dumps(value), json.dumps(olds[key])))
+                self.emit("set", key=key, value=value, old=olds[key])
+            if "changes" in req:
+                return {"changes": changes, "old": olds}
+            key = next(iter(changes))
+            return {"key": key, "value": changes[key], "old": olds[key]}
         if cmd == "eval":
             if self.gpu is None or not self.gpu_model:
                 raise ValueError("no policy to evaluate yet (phase %s)" % st["phase"])

@@ -1,0 +1,51 @@
+{
+  "name": "cr702_37e_turning_up_a_blocker_keeps_the_block",
+  "why": "CR 702.37e, 708.8: a blocker turned face up stays blocking, as what it is: the 1/2 Alchemist takes the 2 and deals 1, so the Bears live, where the 2/2 would have traded with them.",
+  "hand_a": [
+    "Island"
+  ],
+  "hand_b": [
+    "Mountain"
+  ],
+  "face_down_a": [
+    "Aphetto Alchemist"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:attack:done",
+    "B:attack:Grizzly Bears",
+    "B:attack:done",
+    "A:block:Aphetto",
+    "A:block:done",
+    "A:turn-up:Aphetto"
+  ],
+  "max_decisions": 50,
+  "expect": [
+    "Aphetto Alchemist is destroyed|Aphetto Alchemist dies"
+  ],
+  "expect_not": [
+    "Grizzly Bears is destroyed",
+    "Grizzly Bears dies"
+  ]
+}

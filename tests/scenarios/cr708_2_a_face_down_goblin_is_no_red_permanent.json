@@ -1,0 +1,35 @@
+{
+  "name": "cr708_2_a_face_down_goblin_is_no_red_permanent",
+  "why": "CR 708.2a: a face-down object has no color, so Blue Elemental Blast can't target a face-down Goblin Guide.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island",
+    "Blue Elemental Blast"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "face_down_a": [
+    "Goblin Guide"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Island"
+  ],
+  "max_decisions": 7,
+  "expect_menu_not": [
+    "Blue Elemental Blast"
+  ]
+}

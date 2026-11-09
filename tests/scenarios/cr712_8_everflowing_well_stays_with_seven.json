@@ -1,0 +1,47 @@
+{
+  "name": "cr712_8_everflowing_well_stays_with_seven",
+  "why": "CR 603.4: seven permanent cards and an instant in the graveyard: the trigger's condition isn't met.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Everflowing Well"
+  ],
+  "graveyard_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_not": [
+    "transforms"
+  ]
+}

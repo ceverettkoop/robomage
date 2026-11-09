@@ -19,6 +19,11 @@
 // are always visible.
 bool identity_visible(Entity entity, Zone::Ownership viewer);
 
+// Whether `viewer` can see what `entity` is where it is, its characteristics: whatever identity they
+// can see, and a face-down permanent or spell, public for what it is face down while the card
+// under it isn't (CR 708.2, 708.6).
+bool characteristics_visible(Entity entity, Zone::Ownership viewer);
+
 // Whether `viewer` can see the order of the cards `owner` has in `zone`: the stack, graveyards and
 // exile keep a public order; a library's order is hidden from everyone (CR 401.2), and hands, the
 // battlefield and the sideboard have none. A library card in one of the viewer's reveal windows
@@ -133,6 +138,8 @@ bool in_reveal_window(Entity card, Zone::Ownership viewer);
 // A reveal to all players while the current resolution needs it (CR 701.20a).
 void reveal_card(Entity card);
 void reveal_cards(const std::vector<Entity> &cards);
+// CR 708.9: at the end of a game, every face-down permanent and spell is revealed to all players.
+void reveal_face_down_objects();
 // A look by `looker` alone while the current resolution needs it (CR 701.20e).
 void look_at_card(Entity card, Zone::Ownership looker);
 void look_at_cards(const std::vector<Entity> &cards, Zone::Ownership looker);
@@ -172,5 +179,18 @@ void close_windows_on_shuffle(Zone::Ownership owner);
 // resolving stack object `resolving` (0 for an effect resolved off the stack) or to a stack
 // object that has since left the stack.
 void close_resolution_windows(Entity resolving);
+
+// ── Standing looks ────────────────────────────────────────────────────────────────────────────
+
+// Brings the STANDING_LOOK windows into line with what the MayLookAt$ statics give right now
+// (rules_mod::standing_looks), the one place they change: whatever moved a library's cards, and
+// whatever ended a static, the window is on the live top card at every decision and no mover
+// knows of it. A card leaving the top loses its window, as any window on a card that moves does;
+// a new top card gets one, except while a spell is being cast, an ability activated or a special
+// action taken (CR 401.5): it can't be looked at until that is done. A look is reported to the
+// looker at each new card. The other player is told once, as a look at that library starts, and
+// not as it moves on: a reordering they can't see must not tell them that the top card changed.
+// Called as every decision is asked (InputLogger::get_input), before its menu and frames.
+void sync_standing_looks();
 
 #endif /* QUERIES_VISIBILITY_H */

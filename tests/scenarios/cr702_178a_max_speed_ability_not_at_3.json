@@ -1,0 +1,55 @@
+{
+  "name": "cr702_178a_max_speed_ability_not_at_3",
+  "why": "CR 702.178a: at speed 3 Snare has no ability to activate, in A's first main phase with nothing else going on",
+  "battlefield_a": [
+    "Perilous Snare",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:land:Plains"
+  ],
+  "max_decisions": 13,
+  "expect": [
+    "Player A's speed is 3"
+  ],
+  "expect_not": [
+    "Player A's speed is 4"
+  ],
+  "expect_menu_not": [
+    "Activate Perilous Snare"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

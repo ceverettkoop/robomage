@@ -2,148 +2,390 @@
 
 Where the engine knowingly departs from the Comprehensive Rules
 ([`mtg_comprehensive_rules.txt`](mtg_comprehensive_rules.txt)) or leaves a rules edge case
-unimplemented. Every entry was checked against the code when written. **Update this file when you
-knowingly deviate, leave a gap, or fix one listed here.**
-
-Scope: the engine simulates two-player (1-v-1) games only (a project decision, see `CLAUDE.md`).
-Multiplayer rules (CR 800+) are out of scope and are not listed per rule below.
-
-Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what the code does ·
-**Effect:** consequence, with a vocab card where one is exposed · **Code:** where it lives.
+unimplemented. **Update this file when you knowingly deviate, leave a gap, or fix one listed here.**
+Two-player games only (`CLAUDE.md`); multiplayer rules (CR 800+) are out of scope and not listed.
 
 ---
 
 ## 1. Intentional deviations (design decisions)
 
-### 1.1 Phyrexian life is paid when the pip is chosen
-- **CR** 601.2h, 601.5, 733.1
-- **Rules:** the total cost, Phyrexian life included, is paid together at 601.2h.
-- **Engine:** the 2 life is paid as each Phyrexian pip is chosen, during cost determination. A cancelled or rewound cast refunds it (`phyrexian_life_paid`).
-- **Effect:** none visible, since nothing can happen between the pip choice and the payment. The early payment keeps each decision observable (the archived Python snapshot tier's "choice has an observable effect" invariant) without adding a "committed life" observation field.
-- **Code:** `src/action_processor.cpp`: `run_cast_flow` (PHYREXIAN_PIP step), `rewind_cast`.
+### 1.1 A cost's moved cards are narrated on different sides of the move
+- **CR** none (narrative only). A cast logs each card its cost moves just before the move; an
+  activation or triggered ability's cost just after it, so a line a replacement prints during the
+  move lands on different sides. Moves, order and frames are the same. `src/cost_payment.cpp`: `move_items`.
 
 ### 1.2 Name-a-card offers a limited candidate set
-- **CR** 201.4
-- **Rules:** the player may name any card in the Oracle card reference.
-- **Engine:** with open decklists (the default), the candidates are the distinct vocab cards in the relevant deck(s), filtered by `ValidCards$`, uncapped. `CHOOSER_ONLY` offers one player's whole deck (Cabal Therapy: the target player's deck; Disruptor Flute: the opponent's). `BOTH_PLAYERS` offers both decks for land naming (Petrified Hamlet). Under `--closed-decklist`, which hides the opponent's list, the candidates are every vocab card (by front face) passing `ValidCards$`, in name order and uncapped (`docs/state_format.md` register 11a). Their card data comes from the process-wide parse cache (`card_data_by_name`), so cards no deck holds create no entity and change no entity id or RNG draw. The RMSTATE menu has no width limit.
-- **Effect:** with open decklists a card that is in neither deck can't be named; under `--closed-decklist` a card outside the vocab can't be. Naming such a card has no effect except bluffing.
-- **Code:** `src/name_card_choices.cpp`: `build_name_card_choices`; `src/effects/effect_name_card.cpp`; `src/card_db.cpp`: `card_data_by_name`.
+- **CR 201.4:** any card in the Oracle card reference may be named.
+- **Engine:** with open decklists (default) the candidates are the distinct vocab cards in the
+  relevant deck(s), filtered by `ValidCards$`, uncapped: `CHOOSER_ONLY` one player's whole deck
+  (Cabal Therapy: the target player's; Disruptor Flute: the opponent's), `BOTH_PLAYERS` both decks
+  for land naming (Petrified Hamlet). Under `--closed-decklist` (`docs/state_format.md` register 11a)
+  they are every vocab card (by front face) passing `ValidCards$`, in name order, read from the
+  parse cache (`card_data_by_name`), so no entity or RNG draw changes.
+- **Effect:** a card outside both decks (open) or outside the vocab (closed) can't be named; naming
+  one would only bluff.
+- **Code:** `src/name_card_choices.cpp`: `build_name_card_choices`; `src/effects/effect_name_card.cpp`;
+  `src/card_db.cpp`: `card_data_by_name`.
 
 ### 1.3 Drawn games in a bo3 match
-- **CR** 104.4a, 103.1 (match procedure is MTR-style policy)
-- **Rules:** a drawn game counts for neither player. After a draw, the player who chose the starting player in that game chooses again.
-- **Engine:** a draw (`GAME_RESULT: <n> draw`) counts for neither player, and the match continues until one player has won two games. The drawn game's starting player starts again, which matches 103.1 under the forced-play policy (see 2.1). A match that reaches `MAX_MATCH_GAMES` (10) games is a fatal error.
-- **Code:** `src/game_driver.cpp`: `play_bo3_match`; `MAX_MATCH_GAMES` in `src/game_driver.h`.
+- **CR 104.4a, 103.1** (match procedure is MTR-style policy). A draw (`GAME_RESULT: <n> draw`)
+  counts for neither player; the match continues until someone has won two games, and the drawn
+  game's starting player starts again (103.1 under the forced-play policy, 2.1). Reaching
+  `MAX_MATCH_GAMES` (10) is fatal. `src/game_driver.cpp`: `play_bo3_match`; `src/game_driver.h`.
 
 ### 1.4 Automatic mana payment (auto-mana)
-- **CR** 601.2g–h, 605, 107.4e
-- **Rules:** the player chooses which mana abilities to activate, which pool mana to spend, and how each hybrid symbol is paid.
-- **Engine:** with auto-mana on (the default, for every consumer), the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision. Ordinary mana abilities are not offered at priority; instant-speed sources and sources targeted by removal on the stack are, so mana can still be floated. `--no-auto-mana` turns all of this off for the match: every mana ability is offered at priority, and costs and hybrid pips are paid by the player's choices. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first.
-- **Effect:** with auto-mana on there are no tapping decisions. With {W}{C} floating, paying {1} spends the {W}, which can strand a later {W} spell in the same step.
-- **Code:** `src/mana_system.cpp`: `auto_pay_mana`, `auto_pay_mana_attempt`, `pay_from_pool`; `src/action_processor.cpp`: `run_cast_flow` (HYBRID step, `resolve_hybrid_cost`).
+- **CR 601.2g–h, 605, 107.4e:** the player chooses which mana abilities to activate, which pool
+  mana to spend and how each hybrid symbol is paid.
+- **Engine (auto-mana on, the default):** a greedy payer pays what the pool doesn't cover,
+  preferring painless and single-colour sources, falling back to each source's highest-yield
+  ability. Hybrid pips take the first payable assignment, unasked, unless the card reads the colors
+  spent (Vibrance, `spell_reads_colors_spent`): those pips are asked among the payable colors while
+  the payer still picks the generic part. Sunburst counts the colors of the sources the payer chose
+  (Engineered Explosives). Ordinary mana abilities are not offered at priority; instant-speed
+  sources and sources targeted by removal on the stack are, so mana can be floated.
+  `--no-auto-mana` offers every mana ability and pays costs and hybrid pips by the player's choices.
+- **In both modes:** generic pips are paid from the pool in enum order (W, U, B, R, G, C), after
+  restricted mana usable on the payment and mana whose rider applies, before mana whose rider would
+  be wasted (`spendable_unit`). TapToPay (Improvise) taps only for what mana sources can't pay, in
+  entity order (under `--no-auto-mana` the permanents are payment rows). Convoke asks a creature at
+  a time before mana is paid; each pays the first pip it can (colored before generic) that leaves
+  the rest payable, so a two-color creature can't be aimed at its second color.
+- **Effect:** no tapping decisions. With {W}{C} floating, paying {1} spends the {W}. A mana ability
+  activated from the hand (Simian Spirit Guide) is spent last, after self-sacrificing sources, and
+  stays offered at priority. A mana ability whose rider gives a keyword (Arena of Glory's second)
+  is never chosen by the payer; offered at priority, its mana floats and the rider goes with the
+  first spell it matches.
+- **Code:** `src/mana_system.cpp`: `auto_pay_mana`, `auto_pay_mana_attempt`, `pay_from_pool`,
+  `resolve_hybrid_cost`; `src/action_processor.cpp`: `run_cast_flow` (HYBRID step).
 
 ### 1.5 An illegal menace block is released, not rewound
-- **CR** 509.1b, 702.111b, 733.1
-- **Rules:** a block that breaks a restriction makes the whole declaration illegal, and it is rewound.
-- **Engine:** when blockers are confirmed, a lone blocker on a menace attacker is removed from the block and the other blocks stand.
-- **Code:** `src/action_processor.cpp`: `release_illegal_menace_blockers`.
+- **CR 509.1b, 702.111b, 733.1:** an illegal block declaration is rewound as a whole. The engine
+  removes a lone blocker on a menace attacker and the other blocks stand.
+  `src/action_processor.cpp`: `release_illegal_menace_blockers`.
 
-### 1.6 Interchangeable choices are collapsed; the sideboard menu is capped at 64 actions
-- **CR** none (an action-encoding limit)
-- **Engine:** before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard, or in a library when each seat sees both of them or neither in a live reveal window). The RMSTATE menu has no width limit. `SIDEBOARD_MENU_LIMIT` (64, `src/game_driver.cpp`) still bounds one menu: a sideboarding menu wider than 64 is a fatal error (the swap locks keep it far smaller).
-- **Code:** `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`; `src/queries/zones.cpp`: `interchangeable_cards`; `src/game_driver.cpp` (the sideboard menu).
+### 1.6 Interchangeable choices are collapsed; the sideboard menu is capped at 64
+- **CR** none (action encoding). Menu entries making the same choice on interchangeable objects are
+  dropped (two copies in a graveyard, or in a library when each seat sees both or neither). The
+  RMSTATE menu has no width limit; a sideboarding menu wider than `SIDEBOARD_MENU_LIMIT` (64) is
+  fatal. `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`;
+  `src/queries/zones.cpp`: `interchangeable_cards`; `src/game_driver.cpp`.
 
 ### 1.7 Some prompts block and are never search roots
-- **CR** none (a search limitation; the rules outcome is correct)
-- **Engine:** a few prompts inside resolution or a zone move still read input inline and can't suspend:
+- **CR** none (the rules outcome is correct). These prompts read input inline and can't suspend:
   - choosing among two or more applicable replacement effects (CR 616.1);
   - the Mox Diamond discard;
-  - an Aura's enchant pick when the Aura is put onto the battlefield by a library search, a same-name move, a Remembered/ExiledWith return, Dig, DigUntil or ChangeZoneAll;
-  - dredge offered on a mulligan redraw (unreachable).
+  - an Aura's enchant pick when it is put onto the battlefield by a library search, a same-name
+    move, a Remembered/ExiledWith return, the return of an "until" exile (within a zone move, CR
+    610.3), Dig, DigUntil or ChangeZoneAll.
 
-  They are not loop-safe (`snapshot_loop_safe()` is false there), so no snapshot is saved or restored at them: the `--selfcheck-state` snapshot check skips them, and a search agent could not root a search there. The user accepted this as long as search doesn't break.
-- **Code:** `src/systems/replacement_effects.cpp`: `choose_one`, the MOVE_TO_ZONE discard in `apply_one`; `src/effects/effect_change_zone.cpp` and `effect_dig*.cpp`, `effect_change_zone_all.cpp` (`FrameCtx::blocking()` call sites); `src/snapshot.h`: `snapshot_set_loop_safe`.
+  They are not loop-safe, so no snapshot is saved or restored there (the `--selfcheck-state`
+  snapshot check skips them; a search could not root there). Accepted as long as search doesn't break.
+- **Code:** `src/systems/replacement_effects.cpp`: `choose_one`, `apply_discard_else_graveyard`;
+  the `FrameCtx::blocking()` call sites in `src/effects/effect_change_zone.cpp`, `effect_dig*.cpp`,
+  `effect_change_zone_all.cpp`; `src/snapshot.h`: `snapshot_set_loop_safe`.
 
 ### 1.8 Rulings the engine follows that are easy to mistake for bugs
-- **CR 614.12:** a nonbasic land entering under Blood Moon or Magus of the Moon enters **untapped**. Its own "enters tapped" replacement effect doesn't apply, because the land won't have that ability on the battlefield (the shockland ruling). The same rule means Moonshadow cast under Humility gets no -1/-1 counters. `src/systems/replacement_effects.cpp`: `collect`.
-- **CR 613.1f / 614.12:** Containment Priest under Humility exiles nothing, because the replacement effect comes from an ability Humility removes. `replacement_effects.cpp` (the header comment above `collect`).
-- **CR 702.21a / 601.2c:** a permanent targeted by several "target" words of one spell or ability becomes the target once, so each of its Ward instances (and each BecomesTarget trigger) triggers once. The CR doesn't address repeated targeting directly; this follows the published rulings for other "becomes the target" triggers (Heroic/Valiant trigger once per spell). `src/action_processor.cpp`: `chosen_targets_of`, `trigger_ward_for_targets`, `fire_targeting_hooks`.
-- **CR 603.8:** Dark Depths' Marit Lage is still created after the sacrifice makes the "no ice counters" check read false. It is a state trigger, not an intervening-if. `src/resolution.cpp`: `resolve_ability`.
+- **CR 614.12:** a nonbasic land entering under Blood Moon / Magus of the Moon enters **untapped**
+  (it won't have its "enters tapped" ability on the battlefield); Moonshadow cast under Humility gets
+  no -1/-1 counters. `src/systems/replacement_effects.cpp`: `collect`.
+- **CR 613.1f / 614.12:** Containment Priest under Humility exiles nothing (the replacement comes
+  from a removed ability). `replacement_effects.cpp` (comment above `collect`).
+- **CR 702.21a / 601.2c:** a permanent targeted by several "target" words of one spell or ability
+  becomes the target once, so each Ward instance (and each BecomesTarget trigger) triggers once, as
+  the Heroic/Valiant rulings read. `src/action_processor.cpp`: `chosen_targets_of`,
+  `trigger_ward_for_targets`, `fire_targeting_hooks`.
+- **CR 118.3 / 118.12:** "you may discard your hand" (Phyrexian Dragon Engine) is offered on an
+  empty hand and, accepted, draws three: discarding a whole hand needs no resource (`hand_covers`)
+  and "if you do" reads the choice. `src/cost_payment.cpp`: `offer_trigger_cost`.
+- **CR 603.8:** Dark Depths' Marit Lage is created even though the sacrifice makes the "no ice
+  counters" check false: a state trigger, not an intervening-if. `src/resolution.cpp`: `resolve_ability`.
 
 ---
 
 ## 2. Known gaps and unimplemented edge cases
 
 ### 2.1 Pregame and match procedure
-- **CR 103.2b — the companion is revealed after mulligans.** The rules put the reveal before shuffling and mulligans. The engine reveals it in the FIAT_SETUP pregame stage, after the keep/mulligan decisions, so the mulligan observation lacks the opponent's companion. `src/game_driver.cpp`: `pregame_fiat_setup` → `setup_companions` (`src/companion.cpp`).
-- **CR 103.1 — the player who chooses always plays first.** There is no play/draw choice: the loser of the previous game is forced to play first. In game 1 the engine always puts A on the play. The Python driver can swap the two sides between the engine seats instead (`rm_driver.py --on-the-play b|random`, `resolve_on_the_play`). `src/game_driver.cpp`: `play_bo3_match`; `src/main.cpp`.
-- **CR 100.2a / 100.4a — deck limits are not checked.** Minimum 60 cards, sideboard at most 15, and the four-copy limit are not validated, because harness temp decks are small. A malformed count in a deck file hits `std::stoul` under `-fno-exceptions` and terminates with no message. `src/classes/deck.cpp`: `Deck::parse_text`.
+- **CR 103.2b — the companion is revealed after mulligans** (FIAT_SETUP pregame stage), so the
+  mulligan observation lacks the opponent's companion. `src/game_driver.cpp`: `pregame_fiat_setup`;
+  `src/companion.cpp`: `setup_companions`.
+- **CR 103.1 — no play/draw choice.** The previous game's loser plays first; in game 1 A is on the
+  play. `rm_driver.py --on-the-play b|random` swaps the sides between engine seats instead.
+  `src/game_driver.cpp`: `play_bo3_match`.
+- **CR 100.2a / 100.4a — deck limits are not checked** (60 cards, sideboard ≤ 15, four copies), since
+  harness decks are small. A malformed count hits `std::stoul` under `-fno-exceptions` and
+  terminates silently. `src/classes/deck.cpp`: `Deck::parse_text`.
 
 ### 2.2 Combat
-- **CR 510.1c — damage split among blockers is limited to lethal-sized picks.** The rules let the attacker divide damage among its blockers freely. The engine asks for a split only when the attacker can't assign lethal damage to every blocker. It then offers "assign exactly lethal to blocker X" one pick at a time, and the leftover goes on the last pick (or the first blocker if none was picked). When the power covers every blocker's lethal damage, the split is automatic: lethal to each, then the excess on the last blocker or trampling over. This is a documented ML simplification. `src/action_processor.cpp`: `attacker_needs_assignment`, `run_damage_assignment`, `finish_pending_attacker`; `src/systems/state_manager_combat.cpp`: `deal_combat_damage`.
-- **CR 702.7b/c — the second damage step reads current keywords.** The rules say the creatures that deal damage in the second step are those that didn't deal first-strike damage, plus double strikers. The engine uses the creature's current First Strike/Double Strike. A creature that gains first strike after the first-strike step deals no damage. One that loses it after dealing first-strike damage deals damage again. `src/systems/state_manager_combat.cpp`: `should_deal_damage`.
+- **CR 510.1c — damage split among blockers is limited to lethal-sized picks.** A split is asked only
+  when the attacker can't assign lethal to every blocker: "assign exactly lethal to blocker X" one
+  pick at a time, the leftover on the last pick (or the first blocker if none). Otherwise it is
+  automatic: lethal to each, the excess on the last blocker or trampling over.
+  `src/action_processor.cpp`: `attacker_needs_assignment`, `run_damage_assignment`,
+  `finish_pending_attacker`; `src/systems/state_manager_combat.cpp`: `deal_combat_damage`.
+- **CR 702.7b/c — the second damage step reads current keywords.** A creature that gains first strike
+  after the first-strike step deals no damage; one that loses it after dealing first-strike damage
+  deals damage again. `state_manager_combat.cpp`: `should_deal_damage`.
 
 ### 2.3 Continuous effects and layers
-- **CR 613.8 — dependency is implemented only for land-type setters.** The only dependency the engine handles: a land-type setter (Blood Moon, Magus of the Moon) suppresses the statics of the nonbasic lands it affects (Yavimaya, Cradle of Growth). Every other within-layer order is timestamp order (613.7), and `resolve_dependencies` is a documented no-op. `src/systems/state_manager_statics.cpp`: `apply_type_changing_effects`; `src/systems/state_manager_layers.cpp`: `resolve_dependencies`.
-- **CR 613.7 — unearth's haste has no timestamp.** The haste is recorded as an Animate keyword with no Animate timestamp. An ability-removal effect (Humility) therefore always removes it, even when the removal is older. `state_manager_statics.cpp`: `mark_unearthed_permanent`, `regrant_later_keywords`.
-- **CR 613.7c / 613.1f — keyword counters and keyword-derived triggers count as older than any removal.** Keyword counters and the triggered abilities that come from a granted keyword (Prowess) are treated as predating every ability-removal effect, so a later removal always strips them and they never come back after one. This limitation is documented in the code. `state_manager_statics.cpp`: `recompute_abilities`.
-- **CR 611.3a / 613 — static abilities' effects are re-applied at each state-based pass.** The engine derives characteristics from statics (`apply_continuous_effects`) when it checks state-based actions, so at a decision in the middle of a flow (a trigger's target choice, a parked prompt) a characteristic can lag the change that just happened: Urza's Saga's Construct showed 5 power with six artifacts until the next pass. A plain `snapshot_restore` re-derives them at once (the post-restore hook), so a restored decision can show the newer value; the `--selfcheck-state` snapshot check restores exactly instead (`snapshot_restore_exact`). `src/systems/state_manager_layers.cpp`: `apply_continuous_effects`; `src/snapshot.cpp`.
-- **CR 614.12 — a token keeps its own entering replacements under ability removal.** The rules say a permanent entering under a "loses all abilities" effect doesn't apply its own entering replacement effects. The engine's check reads `CardData`, which tokens don't have, so a token still applies its own "enters tapped" or "enters with counters". Latent in the vocab. `state_manager_statics.cpp`: `entering_object_loses_abilities`.
+- **CR 613.8 — dependency only for land-type setters.** A land-type setter (Blood Moon) suppresses
+  the statics of the nonbasics it affects (Yavimaya, Cradle of Growth); every other within-layer
+  order is timestamp order (613.7); `resolve_dependencies` is a no-op.
+  `src/systems/state_manager_statics.cpp`: `apply_type_changing_effects`;
+  `src/systems/state_manager_layers.cpp`: `resolve_dependencies`.
+- **CR 613.7 — unearth's haste has no timestamp,** so ability removal (Humility) always removes it,
+  even when older. `state_manager_statics.cpp`: `mark_unearthed_permanent`, `regrant_later_keywords`.
+- **CR 613.7c / 613.1f — keyword counters and keyword-derived triggers (Prowess) count as older than
+  any removal:** a later removal always strips them and they never return after one.
+  `state_manager_statics.cpp`: `recompute_abilities`.
+- **CR 611.3a / 613 — statics are re-applied at each state-based pass** (`apply_continuous_effects`),
+  so at a decision mid-flow (a trigger's target choice, a parked prompt) a characteristic can lag the
+  change just made (Urza's Saga's Construct's power after a sixth artifact). A plain
+  `snapshot_restore` re-derives at once, so a restored decision can show the newer value; the
+  `--selfcheck-state` snapshot check uses `snapshot_restore_exact`.
+  `src/systems/state_manager_layers.cpp`; `src/snapshot.cpp`.
+- **CR 614.12 — a token keeps its own entering replacements under ability removal:** the check reads
+  `CardData`, which tokens lack. Latent. `state_manager_statics.cpp`: `entering_object_loses_abilities`.
 
 ### 2.4 Triggers and state-based actions
-- **CR 603.2 / 603.3 — triggers are collected at the next SBA check.** Events are buffered and matched when the next state-based-action check starts, not at the moment each event happens. If a trigger source leaves within the same resolution, after its event but before the next check, it misses a trigger that doesn't look back. Leaves-the-battlefield look-back (603.10a) treats all departures in one drained batch as simultaneous, so a watcher that left earlier in the batch still sees later departures. `src/systems/state_manager.cpp`: `state_based_effects`; `src/systems/state_manager_triggers.cpp`: `collect_triggered_abilities`, `match_departed_watcher_triggers`.
-- **CR 704.3 / 704.5j — one legend-rule conflict per SBA check.** Only the first conflict (APNAP, then by name) is resolved in each check. Any other conflict is resolved in the next loop iteration, so the two sets of legend-rule deaths are not one simultaneous event. `state_manager.cpp`: `choose_legend_rule_keep`.
+- **CR 603.2 / 603.3 — triggers are collected at the next SBA check,** not as each event happens. A
+  source that leaves in the same resolution after its event misses a non-look-back trigger.
+  Leaves-the-battlefield look-back (603.10a) treats all departures in one drained batch as
+  simultaneous. `src/systems/state_manager.cpp`: `state_based_effects`;
+  `src/systems/state_manager_triggers.cpp`: `collect_triggered_abilities`,
+  `match_departed_watcher_triggers`.
+- **CR 603.4 — `ResolvedLimit$` counts resolutions, not mana added** (as Forge counts it): a
+  resolution counts once its "you may" is accepted and its intervening-if and targets held; at the
+  limit the ability doesn't trigger and one on the stack does nothing. Carpet of Flowers accepted at
+  X = 0 adds no mana but counts, so it doesn't trigger again that turn (its oracle says it would);
+  declining doesn't count. `src/queries/activation.cpp`: `trigger_resolved_limit_reached`,
+  `count_resolution`; `src/resolution.cpp`; `state_manager_triggers.cpp`.
+- **CR 704.3 / 704.5j — one legend-rule conflict per SBA check** (APNAP, then by name); others
+  resolve in later iterations, not simultaneously. `state_manager.cpp`: `choose_legend_rule_keep`.
 
 ### 2.5 Casting, targeting and resolution
-- **CR 608.2b — partial illegality isn't tracked across sub-abilities.** The engine applies 608.2b only within one ability's multi-target list. If the parent's target is illegal, the whole chain fizzles, including subs with their own legal targets. A sub whose own target is illegal also skips its nested subs. Vocab exposure is small (commands and charms with per-mode targets resolve each mode on its own). `src/resolution.cpp`: `resolve_ability`, marked with a TODO there.
-- **CR 601.2c / 602.2b — an activated ability's X isn't capped by the number of legal targets.** Candelabra of Tawnos ("untap X target lands") can announce X above the number of lands. The target loop then stops early, with fewer targets than X, when the activation should be illegal. Spells have this cap (`spell_xpaid_target_cap`). `src/action_processor.cpp`: `run_activation_flow` (X_LADDER), `run_target_select`.
-- **Multi-pip Phyrexian dead end.** Each pip's "Pay {C}" option is checked against the cost accumulated so far. A later pip can still find neither life ≥ 2 nor payable mana. The cast then fails payment and is rewound cleanly (601.5), so no illegal state results, but that menu path is wasted. `run_cast_flow` (PHYREXIAN_PIP), `fail_cast_payment`.
-- **CR 733.1 — a rewind doesn't reverse sacrificed mana sources.** The payment rewind restores the pool, tapped state, activation counts, life and delve exiles, but not a sacrificed mana source (Lotus Petal). Not reversing a mana ability is permitted by 733.1, but the pool is still restored to its pre-payment contents, so that source's mana is lost too. Reachable only through the interactive CLI payer's "Cancel casting". The machine payer simulates a payment before committing it, so a machine cast never fails partway through paying. `src/mana_system.cpp`: `snapshot_mana_state`, `restore_mana_state`.
+- **CR 608.2b — a chained `Defined$ ParentTarget` of a player target gone illegal** finds no target,
+  so a Draw reading it falls back to the controller (`affected_player`) instead of doing nothing.
+  Latent (Kozilek's Command only). An object chain correctly finds nothing.
+- **CR 115.7f, 707.10 — a copy of a dividing spell** choosing new targets (`run_target_select`) isn't
+  held to the original's target count or shares. Latent: no copy effect reaches a
+  `DividedAsYouChoose$` spell. `src/effects/effect_copy_spell.cpp`.
+- **"Simultaneously" as two instructions (Goblin Welder):** `DB$ SacrificeAll`, then `DB$ ChangeZone`,
+  one resolution with no check between, but two events in that order.
+- **CR 601.2c / 602.2b — an activated ability's X isn't capped by its legal targets.** Candelabra of
+  Tawnos can announce X above the land count; the target loop stops early instead of the activation
+  being illegal. Spells have the cap (`spell_xpaid_target_cap`); an X a target's mana value must
+  match is held to it (`x_leaves_a_target`, Lazotep Quarry). `src/action_processor.cpp`:
+  `run_activation_flow` (X_LADDER), `run_target_select`.
+- **CR 702.96a, 702.103a — overload and bestow are offered from the hand only.** An exile grant on
+  Cyclonic Rift or Springheart Nantuko, and Bilbo's graveyard cast of Cyclonic Rift, offer the mana
+  cost. `src/cast_options.cpp`.
+- **CR 118.9a — a resolution's cast offers none of the card's own alternative costs** (morph's
+  face-down cast included). `kResolutionCasts` holds the mana cost, what the effect names
+  (`PlayCost$`, `WithoutManaCost$`) and, from the graveyard, a free-cast static's row: Bilbo can't
+  pitch-cast Force of Will or flash back. `src/cast_options.cpp`.
+- **`DB$ Play`'s `Amount$ All` is read as one card** (Beseech the Mirror, the one script, names one).
+  `src/parse.cpp`.
+- **CR 702.96c, 612 — overload changes a definition, not text.** `overload_spell` reads each
+  `ValidTgts$` as `Defined$ Valid` on a face built at parse; an effect that reads no such set is a
+  parse finding, so only ChangeZone has it (Cyclonic Rift). `src/queries/overlays.cpp`.
+- **CR 702.102b — a fused spell takes timing and additional costs from the left half.**
+  `combined_halves` joins names, costs, types, keywords and abilities; a right half's additional,
+  alternative or kicker cost isn't carried, and a fused instant + sorcery would read as an instant.
+  Wear/Tear has none of these. `src/queries/overlays.cpp`.
+- **CR 709.4c — direct type reads see a split card's left half.** Filters, colors and
+  `effective_types` read both halves (`card_characteristics`); `card_has_type` on a `CardData` reads
+  the face given, so off the stack it is the left half. All vocab split cards have halves of one type.
+- **CR 106.5 — a reflected mana ability with no color isn't offered** (Chrome Mox with nothing or a
+  colorless card imprinted, Mox Amber with no colored legendary), so it can't be tapped for nothing.
+  `src/mana_system.cpp`: `push_mana_source`.
+- **CR 707.8a, 712.10 — a copy of a double-faced permanent has one face.** `copied_token` gives a
+  token copy the face that's up, so it can't transform; an in-place copy (`copied_card`) likewise.
+  Untested.
+- **CR 707.2 — a spell copied after it left the stack is read as its whole card** (`copiable_card`),
+  so a modal back face cast and countered copies its front. Latent.
+  `src/queries/copies.cpp`.
+- **CR 614.12a, 707.9 — a token copy makes no "as this enters" choice:** the choice is asked from a
+  card's `CardData` in `apply_permanent_components`, so a token copy of Painter's Servant adds no
+  color and of Cavern of Souls names no type. Latent. `src/systems/state_manager_statics.cpp`.
+- **CR 715.3d — only a mana-cost grant casts an Adventure from exile;** another "you may play it"
+  offers Petty Theft, and a free or resource grant the card alone. `exile_adventure_offered`.
+- **CR 722.3c — a prepared copy has no card of its own in a frame:** the exiled copy's `card` is the
+  preparation card with `transformed` set, flagged as a token (no knowledge-sidecar unit). Nothing in
+  the vocab moves a card from exile there; if something did it would cease to exist (CR 704.5e) and
+  the permanent would stay prepared with no copy.
+- **CR 118.9d — Offspring is offered only on a regular or free-static cast.** Every cast runs the
+  same announcement (kicker, replicate, additional life X, Delve, TapToPay), skipping only what
+  belongs to an unpaid mana cost: its {X} (0, CR 107.3b) and its hybrid and Phyrexian pips.
+  Offspring is a row of the hand cast and the free-cast static's alone, so a card cast from exile
+  (Thundertrap Trainer, Agate Instigator) can't pay it. An alternative cost with {X} is refused
+  (`cost_form_pays`, a finding). A cost increase on an alternative cost (Thalia on a pitched Force of
+  Will) isn't lowered by reductions, and kicker's and replicate's mana join after the SetCost floor.
+  `src/action_processor.cpp`: `run_cast_flow` (COST); `src/systems/state_manager_statics.cpp`:
+  `floored_alt_mana_cost`.
+- **CR 702.120a — escalate:** a further mode is offered only while its escalate cost is still
+  payable on top (never made and reversed, CR 601.2e, 733); an alternative cost's pitch is reserved
+  by count, not card. Escalate's mana joins after increases, reductions and the SetCost floor (as
+  kicker's): an unused reduction doesn't reduce it and Trinisphere counts it on top. Escalate costs
+  other than mana and `Discard<N/Filter>` (Collective Effort's tap) are not paid (`cost` findings).
+  `src/action_processor.cpp`: `escalate_payable`, `apply_escalate`, `run_cast_flow`
+  (ESCALATE_DISCARD); `src/parse.cpp`: `kw_escalate`.
+- **CR 601.2f — a target-conditioned cost reduction is offered only through payable targets.**
+  Mystical Dispute's reduction applies once targets are chosen; the cast is offered when its cost,
+  reduced for the best single legal target, is payable, and each pick offers only candidates whose
+  cost is payable, judged one target at a time (latent: it has one). Regular cost branch only.
+  `src/action_processor.cpp`: `best_target_cost_reduction`, `target_cost_payable`,
+  `apply_target_cost_reduction`; `state_manager_statics.cpp`: `target_cost_reduction_for`.
+- **Free-cast statics apply only at priority, from the zones the engine casts from.** Omniscience's
+  and Aluren's `MayPlayWithoutManaCost$` is offered from the hand, a cast-from-graveyard permission
+  (Emry) and a play-from-exile permission for normal costs (Light Up the Stage); never with another
+  alternative cost (CR 118.9a), during a resolution only from the graveyard (Bilbo), from a library
+  top under a permission (Mystic Forge), never from the command zone. A MayPlay static that opens a
+  zone itself (no `MayPlayDontGrantZonePermissions$`), or another play permission than these, is a
+  `static_form` `MayPlay.<zone>` finding. `src/systems/rules_modifying.cpp`: `free_cast_grant`;
+  `src/cast_options.cpp`: `free_cast_offered`; `src/parse.cpp`: `resolve_may_play_form`.
+- **CR 605.3a — a mana ability that takes another permanent or energy is activated at priority
+  alone** (Lazotep Quarry's sacrifice): its mana floats, and no payment taps it, as a payment runs
+  blocking (`activate_mana_source`). `src/mana_system.cpp`: `mana_cost_paid_at_priority`.
+- **Multi-pip Phyrexian dead end:** each pip's "Pay {C}" is checked against the cost so far, so a
+  later pip can find neither 2 life nor mana; the cast is rewound cleanly (601.5). `run_cast_flow`
+  (PHYREXIAN_PIP), `fail_cast_payment`.
+- **CR 733.1 — a rewind doesn't reverse sacrificed mana sources** (Lotus Petal, Simian Spirit Guide),
+  yet the pool is restored, so their mana is lost. Reachable only by the CLI payer's "Cancel
+  casting"; the machine payer simulates before committing. `src/mana_system.cpp`:
+  `snapshot_mana_state`, `restore_mana_state`.
+- **`DB$ Animate`'s `Keywords$` grants nothing for `Duration$ UntilYourNextTurn`.** Permanent grants
+  join the rest-of-game keywords (Sneak Attack), end-of-turn ones the until-end-of-turn keywords
+  (Shallow Grave); an Enchant keyword (Animate Dead) is never granted. Latent.
+  `src/effects/effect_animate.cpp`: `animate_permanent`.
+- **Drop of Honey can't choose an indestructible creature tied for least power** (Oracle allows it,
+  destroying nothing, CR 702.12b): the engine honours Forge's
+  `Creature.leastPower+withoutIndestructible`. With only indestructible creatures at least power
+  nothing is destroyed; `leastPower` compares every creature (`src/queries/filters.cpp`).
+- **CR 106.6 — a spending restriction reads the printed card** (`CardData`), so a token of the chosen
+  type or a permanent with changed types is judged wrongly. Latent. `src/mana_system.cpp`:
+  `restricted_mana_matches`, `creature_restricted_mana_matches`,
+  `colorless_eldrazi_restricted_mana_matches`.
+- **Empower isn't in the checked-in CR (effective 2026-04-17).** From Theorist's Proxy's oracle:
+  put N loyalty counters on a token of the subtype you control, creating it first if none. Token and
+  counters arrive in one resolution (CR 704.5i never sees 0). With two (one phased in later) the
+  controller chooses; a phased-out one isn't there (CR 702.26b); a copy has no counters and dies.
+  Matches Forge's `EmpowerEffect` at the pin. A `Type$` with no `kEmpowerTokens` row is a finding.
+  `src/effects/effect_empower.cpp`.
+- **CR 701.42, 712.4 — a meld half is one plain face.** Phyrexian Dragon Engine's script has no back
+  (the meld action is on the unprovisioned Mishra, Claimed by Gix), so nothing melds and it doesn't
+  count as double-faced. A meld script with a back stays a `layout` finding. `src/parse.cpp`:
+  `parse_card_file`.
+- **CR 118.9 — a permission to cast from a graveyard offers the normal cost alone** (Gaea's Will:
+  mana cost, either face's, or an Adventure; no pitch or evoke), and a modal double-faced card's land
+  back can't be played from there (the land permission reads the front). `src/cast_options.cpp`:
+  `kCastSections`; `src/queries/permissions.cpp`.
 
 ### 2.6 Zones, libraries and searches
-- **CR 701.23 — search and shuffle sequencing.** Three problems, all in `src/effects/effect_change_zone.cpp` (`change_zone`, the search loop):
-  1. A multi-card search (Buried Alive) shuffles once per pick. Only RNG consumption differs.
-  2. A "may search" that is declined still shuffles: the decline is taken as fail-to-find (Stoneforge Mystic, Ghost Quarter, Erode, Flagstones of Trokair, Price of Freedom). The rulings say no search means no shuffle. The effect is that known-top information (after Brainstorm or Ponder) is lost. `ShuffleNonMandatory$` and `Shuffle$ False` are not read.
-  3. The shuffle is keyed on the first origin zone only, so a multi-zone search that lists Library second would never shuffle. Latent: Doomsday's `Origin$ Graveyard,Library` has `Shuffle$ False`.
-- **CR 111.8 — a token that left the battlefield can move again.** The rule is enforced only for linked exile-until-host-leaves returns (`register_exile_until_host_leaves`). `Orderer::add_to_zone` has no general guard, so a same-resolution exile-and-return of a token would bring it back. Latent: no vocab flicker returns in the same resolution. `src/systems/orderer.cpp`: `Orderer::add_to_zone`.
-- **CR 101.4 / 303.4f — Show and Tell puts cards in sequentially.** The active player's card is put onto the battlefield before the non-active player chooses, instead of both choosing in APNAP order and the cards entering together. As a result, an Aura put by the non-active player can enchant the active player's just-entered creature, and "enters" triggers see a sequential order. `src/effects/effect_change_zone.cpp`: `each_player_put_from_hand`.
-- **Until-your-next-turn Animate reversal.** `revert_until_turn_animates` clears the rest-of-game animate fields (`animate_make_creature`, `animate_set_pt`, and the base P/T) and strips Creature/Damage whenever the printed card isn't a creature. This happens even if another Animate (earthbend, `Duration$ Permanent`, end of turn) still animates the permanent. Latent: it needs Karn, the Great Creator's +1 on an already-animated artifact. `src/effects/effect_animate.cpp`: `revert_until_turn_animates`.
+- **CR 601.3e — a cast from the top of a library reads the front face and the face-down face**
+  (mana cost, free under a free-cast static, or morph); no back face, split half, Adventure or other
+  alternative cost. No vocab card Mystic Forge reaches needs one. `src/cast_options.cpp`: `kCastSections`.
+- **CR 701.23 — search and shuffle sequencing** (`src/effects/effect_change_zone.cpp`: `change_zone`):
+  1. A multi-card search (Buried Alive) shuffles once per pick (RNG consumption only).
+  2. A "may search" (`ShuffleNonMandatory$ True`: Stoneforge Mystic, Ghost Quarter, …) has one
+     fail-to-find row, read as declining: no shuffle. `Shuffle$ False` is not read.
+  3. The shuffle keys on the first origin zone, so a multi-zone search listing Library second never
+     shuffles. Latent (Doomsday has `Shuffle$ False`).
+- **CR 701.23b — "any number of cards with the same name" finds them all** (Surgical Extraction, up
+  to `ChangeNum$`), with no choice to find fewer. `change_zone_same_name`.
+- **CR 111.8 — a departed token is held in place only by ChangeZone:** `change_zone_move` leaves it
+  until the SBA removes it (CR 704.5d), so an exile-and-return in one resolution (Displacer Kitten,
+  Eldrazi Confluence) returns nothing. `Orderer::add_to_zone` has no guard; no other mover reaches
+  such a token. `change_zone_move`.
+- **CR 401.4 — cards put into a library together are not ordered by their owner.** ChangeZoneAll
+  (Terminus, Atraxa, Endurance) uses entity order (`RandomOrder$` shuffles); opponents see the batch
+  order-hidden. Terminus moves permanents one at a time, A's before B's, a token before the owner's
+  cards. `src/effects/effect_change_zone_all.cpp`: `move_all_cards`.
+- **CR 101.4 / 303.4f — Show and Tell puts cards in sequentially:** the active player's card enters
+  before the non-active player chooses, so a non-active Aura can enchant the just-entered creature
+  and "enters" triggers see an order. `each_player_put_from_hand`.
+- **Until-your-next-turn Animate reversal:** `revert_until_turn_animates` clears the rest-of-game
+  animate fields and base P/T and strips Creature/Damage when the printed card isn't a creature, even
+  if another Animate still applies. Latent (Karn, the Great Creator's +1 on an animated artifact).
+  `src/effects/effect_animate.cpp`.
+- **CR 404.3 — cards put into a graveyard together stay in move order,** unarranged: a mill or sweep
+  one by one, a hand discarded at once in hand order (`discard_hand`, `src/cost_payment.cpp`;
+  `Mode$ Hand`, `src/effects/effect_discard.cpp`). Only Shallow Grave reads the order.
+  `src/systems/orderer.cpp`: `add_to_zone`.
 
 ### 2.6a Reveal windows (`src/queries/visibility.cpp`)
-The per-viewer reveal windows (`Game::reveal_windows`) feed the state format's `reveal` table and visibility (`docs/state_format.md`), not the rules, so these change what a viewer is shown (and so what an agent can know), not how the rules resolve.
-- **CR 702.139a / 103.2b — the companion stays revealed.** The rules say the companion is revealed before the game begins, not for how long. The engine keeps it revealed to both players (a continuous reveal) for as long as it stays outside the game, as it sits face up in paper play. `src/companion.cpp`: `setup_companion_for`.
-- **CR 701.23a / 406.3 — the found card after the pre-move shuffle.** A library search shuffles before it moves the found card (2.6), and the shuffle ends the search's look at every card (CR 701.20d). The searcher's look at the found card is opened again after the shuffle, so a card the search then exiles face down (The Creation of Avacyn I) keeps its CR 406.3 look window. `src/effects/effect_change_zone.cpp`: the search loop in `change_zone`.
-- **CR 733.1 / 702.94b — a reversed cast doesn't restore a reveal.** A card's windows end when its cast moves it to the stack, and `rewind_cast_move` doesn't reopen them. Reachable only by cancelling a miracle cast under `--offer-cancel` (a testing aid): the card would stay revealed until the miracle trigger leaves the stack. `src/systems/orderer.cpp`: `rewind_cast_move`.
+Reveal windows (`Game::reveal_windows`) feed the state format's `reveal` table and visibility
+(`docs/state_format.md`): these change what a viewer is shown, not how the rules resolve.
+- **CR 708.9 — a face-down object leaving is revealed by its move** (`zone_move`), no `reveal_start`
+  first. `src/queries/face_down.cpp`: `reveal_as_it_leaves`.
+- **CR 702.139a / 103.2b — the companion stays revealed** to both players while outside the game.
+  `src/companion.cpp`: `setup_companion_for`.
+- **CR 701.23a / 406.3 — the found card after the pre-move shuffle:** the shuffle ends the search's
+  looks (CR 701.20d); the searcher's look at the found card is reopened, so a card then exiled face
+  down (The Creation of Avacyn I) keeps its look. `change_zone`'s search loop.
+- **CR 733.1 / 702.94b — a reversed cast doesn't restore a reveal** (`rewind_cast_move`). Reachable
+  only by cancelling a miracle cast under `--offer-cancel` (a testing aid): the card would stay
+  revealed until the miracle trigger leaves the stack. `src/systems/orderer.cpp`.
+- **CR 401.5, 701.20e — a standing look is taken at decisions.** `sync_standing_looks` moves the
+  window as each decision is asked, so a card on top only mid-resolution is never looked at, and a
+  card a put-back buried stays looked at until the next decision. A seat may know less than it
+  could, never more. No vocab card asks for that look. `src/queries/visibility.cpp`:
+  `sync_standing_looks`; `src/input_logger.cpp`: `InputLogger::get_input`.
 
 ### 2.7 Script shortcuts that bypass the card's own tags
-Two cards are recognised by a fingerprint of their script and handled by special-case code, not by the general mechanics their tags name (this goes against `CLAUDE.md`, "Parse script tags as intended"). Each fingerprint matches exactly one script in the cardsfolder today. Both are left as they are for now, by decision.
+Two cards are recognised by a script fingerprint and handled by special-case code, against
+`CLAUDE.md`'s "Parse script tags as intended". Each fingerprint matches one script today; a
+different card with it would silently get the same behavior.
+- **Sylvan Library** (CR 608.2c). Script: `AB$ ChooseCard` (`Cost$ Draw<2/You>`, `Amount$ 2` over
+  `Card.YouOwn+DrawnThisTurn`), `DB$ RepeatEach` over `Card.ChosenCard`, body `DB$ ChangeZone` to the
+  library with `UnlessCost$ PayLife<4>`. Engine: a trigger whose `Execute$` body has both
+  `ChooseCard` and `DrawnThisTurn` becomes a synthetic `SylvanLibrary` category with a hard-coded
+  handler. Fix: those three forms generically, then delete it. `src/parse.cpp`: `parse_one_trigger`;
+  `src/effects/effect_sylvan_library.cpp`.
+- **Green Sun's Zenith** (CR 608.2c, 608.2n). Script: `DB$ ChangeZone | Origin$ Stack | Destination$
+  Library | Shuffle$ True | Defined$ Parent` moves the resolving spell. Engine: an SVar with those
+  tags sets `CardData::shuffle_into_library` and is stripped; the resolved spell then goes to its
+  owner's library, shuffled. Fix: read `Defined$ Parent` and the shuffle as a resolution step
+  (`Spell::resolves_to` already carries a spell's own destination). `src/parse.cpp`:
+  `parse_card_face_body`; `src/queries/spells.cpp`: `spell_destination`.
 
-- **Sylvan Library**
-  - **CR** 608.2c (follow the ability's instructions as written)
-  - **Rules:** the script is `AB$ ChooseCard` with `Cost$ Draw<2/You>`, `Amount$ 2` over `Card.YouOwn+DrawnThisTurn`, then `DB$ RepeatEach` over `Card.ChosenCard`, whose body is a `DB$ ChangeZone` to the library with `UnlessCost$ PayLife<4>`.
-  - **Engine:** any trigger whose `Execute$` body contains both `ChooseCard` and `DrawnThisTurn` has its parsed body thrown away and replaced by a synthetic `SylvanLibrary` category. Its handler hard-codes draw two, choose two cards drawn this turn, and "pay 4 life or put it on top", ignoring the script's own tags.
-  - **Effect:** none for Sylvan Library itself. A different card with that fingerprint would silently get Sylvan Library's behavior. The proper fix is to make ChooseCard with a draw cost, RepeatEach over chosen cards and ChangeZone with a PayLife unless-cost work generically, then delete the category and the handler.
-  - **Code:** `src/parse.cpp`: `parse_one_trigger`; `src/effects/effect_sylvan_library.cpp`: `sylvan_library`.
-- **Green Sun's Zenith**
-  - **CR** 608.2c, 608.2n
-  - **Rules:** "Shuffle Green Sun's Zenith into its owner's library" is part of the spell's resolution: the script's `DB$ ChangeZone | Origin$ Stack | Destination$ Library | Shuffle$ True | Defined$ Parent` sub-ability moves the resolving spell itself.
-  - **Engine:** any SVar containing `DB$ ChangeZone`, `Origin$ Stack`, `Destination$ Library` and `Defined$ Parent` sets `CardData::shuffle_into_library` and strips that sub-ability from the card's spell abilities. When the spell finishes resolving, the stack manager puts the card into its owner's library and shuffles, instead of putting it into the graveyard.
-  - **Effect:** none for Green Sun's Zenith. The proper fix is to support ChangeZone of the resolving spell itself from the stack (`Defined$ Parent`) as a step of its resolution, shuffling as the script says, then delete the flag and the strip.
-  - **Code:** `src/parse.cpp`: `parse_card_face_body` (the fingerprint scan after `parse_abilities`); `src/systems/stack_manager.cpp`: the spell's final move in `resolve_top`.
+### 2.8 Script params of vocab cards the parser does not read
+`robomage --parse-report @vocab` (`src/parse_report.h`) lists what the parser meets in a vocab
+card's script and models nowhere; the findings are recorded in `tests/parse_report/vocab.json`
+(checked by the `vocab` tier). A fix removes the finding there and the entry here.
+- **Ajani, Nacatl Pariah — `ability_param:ImmediateTrigger.TriggerAmount`.** `TriggerAmount$
+  Remembered$Amount` on his back face's reflexive ability; it triggers once, which is right, as the
+  ability makes one token.
 
 ---
 
 ## 3. Out of scope because no vocab card needs it
 
-These are left unimplemented, or implemented but never exercised, because no card in `src/card_vocab.h` needs them. Implement them when such a card is added.
+Unimplemented, or implemented but unexercised, because no card in `src/card_vocab.h` needs them. A
+candidate deck's needs are listed by the onboarding pipeline (`tools/onboard/README.md`,
+`bin/resources/decks/candidates/REPORT.md`).
 
-- **Toxic** (CR 702.164, 120.3g): not implemented. Poison counters and the 704.5c poison SBA exist.
-- **Battles** (CR 310, 120.3h): "Battle" is recognised as a permanent card type only. Battles can't be damaged, attacked or defeated.
-- **Infect / wither** (CR 702.90, 702.80): the damage-result paths exist (`src/components/damage.cpp`) but no vocab card has these keywords, so they are untested.
-- **Handlers limited to the forms the vocab uses:**
-  - `gain_life` evaluates only the `Targeted$CardPower` dynamic amount; any other `LifeAmount$` expression reads the literal amount (`effect_gain_life.cpp`).
-  - `multiply_counter` always doubles +1/+1 counters and ignores `CounterType$` (`effect_multiply_counter.cpp`).
-  - `parse_activation_cost` passes any unrecognised cost token to the mana parser (`src/parse.cpp`).
-- **Modal forms beyond "choose N different modes"** (CR 700.2d–i): choosing the same mode more than once, "choose one or more", a mode chosen by another player, per-mode additional costs and pawprint modes are not implemented (`CharmNum$` is the only mode-count tag read). Modes are announced for a modal ability at the root of a stack object only; a `DB$ Charm` chained as a sub-ability would reach resolution unannounced, which is a fatal error (`src/announce.cpp`: `run_announce`; `src/effects/effect_charm.cpp`: `charm`).
-- **Regeneration** (CR 701.19): not implemented; no vocab card creates a regeneration shield. "Can't be regenerated" (`NoRegen$ True`, Snuff Out) is accepted by the parser and has no effect (`src/parse.cpp`: `apply_param_to_ability`, the ignored keys).
-- **Mechanics with no vocab card:** mutate, banding, morph/manifest/disguise/cloak (face-down cast), splice, entwine, cumulative upkeep, dungeons/initiative. No rules machinery exists for these.
+- **Toxic** (CR 702.164, 120.3g). Poison counters and the 704.5c SBA exist.
+- **Battles** (CR 310, 120.3h): a permanent card type only; can't be damaged, attacked or defeated.
+- **Infect / wither** (CR 702.90, 702.80): damage-result paths exist (`src/components/damage.cpp`),
+  untested.
+- **Handlers limited to the vocab's forms:** `gain_life` evaluates only `Targeted$CardPower` (other
+  `LifeAmount$` expressions read the literal); `multiply_counter` always doubles +1/+1 counters,
+  ignoring `CounterType$`; `parse_activation_cost` passes an unrecognised cost token to the mana
+  parser (a `cost` finding).
+- **Modal forms beyond "choose N" and "choose one or more"** (CR 700.2e–i): a mode chosen by another
+  player, per-mode additional costs and pawprint modes. Only `CharmNum$`, `MinCharmNum$` (a
+  CONFIRM_MODES row ends the choice; `0` reads as 1) and `CanRepeatModes$` (CR 700.2d) are read.
+  Modes are announced only at the root of a stack object; a chained `DB$ Charm` would be fatal.
+  `src/announce.cpp`: `run_announce`; `src/effects/effect_charm.cpp`.
+- **Regeneration** (CR 701.19); `NoRegen$ True` (Snuff Out) is accepted and ignored
+  (`src/parse.cpp`: `apply_param_to_ability`).
+- **Face-down objects (CR 708):** Morph and Cloak only (`src/queries/face_down.h`); manifest,
+  disguise and megamorph aren't built. CR 701.58g isn't: a cloaked instant or sorcery has no row (only
+  `SetState`'s `TurnFaceUp`, for The Creation of Avacyn's exiled card). A cloaked creature with
+  Phyrexian pips would pay them in color (`turns_up_as_cloaked`). No non-mana or X morph costs (CR
+  702.37f), no "when turned face up" (CR 708.11). Showing the cost to all players (CR 702.37e,
+  701.58b) isn't a step of its own. CR 708.5's control change is unexercised. A token can't be turned
+  face down (`turn_face_down`). A card exiled face down keeps its printed characteristics for readers
+  (CR 406.3a: none); only its identity is hidden. Two objects entering face down together show their
+  entity order in timestamps (`docs/state_format.md` §6).
+- **No machinery:** mutate, banding, splice, entwine, cumulative upkeep, dungeons/initiative.

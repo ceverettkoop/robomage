@@ -1,0 +1,44 @@
+{
+  "name": "cr603_7_shallow_grave_in_the_end_step_waits_for_the_next",
+  "why": "CR 603.7, 513.2: cast during an end step, the creature stays until the NEXT end step: the trigger for this one has passed.",
+  "hand_a": [
+    "Shallow Grave"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "cast:Shallow Grave"
+  ],
+  "max_decisions": 24,
+  "expect_order": [
+    "Player A casts Shallow Grave",
+    "TURN 2",
+    "Delayed trigger fires",
+    "Grizzly Bears is moved to exile"
+  ]
+}

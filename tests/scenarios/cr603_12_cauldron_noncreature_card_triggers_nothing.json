@@ -1,0 +1,33 @@
+{
+  "name": "cr603_12_cauldron_noncreature_card_triggers_nothing",
+  "why": "CR 603.12: a noncreature card exiled makes no reflexive trigger, and the rest of the ability still resolves.",
+  "battlefield_a": [
+    "Agatha's Soul Cauldron",
+    "Grizzly Bears"
+  ],
+  "graveyard_b": [
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Agatha",
+    "A:target:Lightning Bolt"
+  ],
+  "max_decisions": 6,
+  "expect": [
+    "Lightning Bolt is moved to exile"
+  ],
+  "expect_not": [
+    "reflexive trigger",
+    "\\+1/\\+1 counter"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest"
+  ],
+  "library_b": [
+    "Island",
+    "Island"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "cr603_8_drop_of_honey_sacrificed_with_no_creatures",
+  "why": "CR 603.8: with no creature on the battlefield Drop of Honey's state trigger sacrifices it, here after its upkeep trigger destroys the last creature",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Drop of Honey"],
+  "hand_b": ["Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 3,
+  "expect_order": ["Grizzly Bears is destroyed", "Player A sacrifices Drop of Honey"]
+}

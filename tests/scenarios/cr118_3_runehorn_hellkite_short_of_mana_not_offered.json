@@ -1,0 +1,36 @@
+{
+  "name": "cr118_3_runehorn_hellkite_short_of_mana_not_offered",
+  "why": "CR 118.3: with five lands Runehorn Hellkite's {5}{R} can't be paid: no offer from the graveyard",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_a": [
+    "Runehorn Hellkite"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 3,
+  "expect_menu_not": [
+    "Runehorn Hellkite"
+  ]
+}

@@ -1,0 +1,15 @@
+# M10 (b2): targets. Fury and Shatterskull Smashing (a division among targets, at trigger placement
+# and as a spell is cast), Sink into Stupor (a
+# spell or a permanent in one target).
+category:DIVIDE_DAMAGE
+row:divide_among_targets
+row:divide_one_target
+# Group rows: Unlicensed Hearse's one graveyard, Goblin Welder's pair, its Branch.
+row:target_gate:same_controller
+row:target_gate:defined_controller
+row:target_gate:leaves_a_target
+row:sharesControllerWith
+effect:Branch
+# ChangeTargets (Untimely Malfunction): a target changed as it resolves, through the same rows.
+effect:ChangeTargets
+row:target_gate:another_target

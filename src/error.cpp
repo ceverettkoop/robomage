@@ -135,7 +135,7 @@ void dump_entity(Entity e) {
         fprintf(stderr, "    spells_cast_turn=%zu  spells_cast_game=%zu\n",
                 p.spells_cast_this_turn, p.spells_cast_this_game);
         fprintf(stderr, "    mana_pool:");
-        for (auto col : p.mana) fprintf(stderr, " %s", mana_symbol(col).c_str());
+        for (const ManaUnit &unit : p.mana) fprintf(stderr, " %s", mana_symbol(unit.color).c_str());
         fprintf(stderr, "\n");
     }
 
@@ -150,7 +150,7 @@ void dump_entity(Entity e) {
                 owner_str(a.controller));
         fprintf(stderr, "    amount=%zu  color=%s\n", a.def->amount, mana_symbol(a.color).c_str());
         fprintf(stderr, "    valid_tgts=%s  tap_cost=%d  sac_self=%d  life_cost=%d\n",
-                a.def->valid_tgts.c_str(), a.def->tap_cost, a.def->sac_self, a.def->life_cost);
+                a.def->valid_tgts.text().c_str(), a.def->cost.taps(), a.def->cost.self(CostPart::SACRIFICE), a.def->cost.life());
         fprintf(stderr, "    subabilities: %zu\n", a.subabilities.size());
     }
 

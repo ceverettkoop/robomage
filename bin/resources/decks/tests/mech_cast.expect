@@ -1,0 +1,21 @@
+# M7 (b): spells that become something else when cast.
+# Overload: no targets, "target" reads as "each" (Cyclonic Rift).
+cast:overload
+cast_row:overload
+# Fuse: both halves as one spell (Wear/Tear).
+cast:fused
+cast_row:fuse
+# Adventure: the back face, exiled as it resolves, then the card from exile (Brazen Borrower).
+cast:adventure
+cast_row:adventure
+cast_row:exile_mana_cost
+# Bestow: an Aura while cast (Springheart Nantuko), and what its landfall pays for.
+cast:bestow
+cast_row:bestow
+effect:CopyPermanent
+category:PAY_UNLESS
+# Prepare: the copy in exile cast (Carnivorous Cultivator).
+cast:prepared
+cast_row:prepared
+# An alternative cost with two conditions (Massacre) among the plain ones.
+cast_row:alternative

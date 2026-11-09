@@ -1,0 +1,15 @@
+{
+  "name": "cr722_3c_a_countered_enroot_leaves_the_cultivator_unprepared",
+  "why": "CR 722.3c: the permanent loses the prepared designation at the time the spell becomes cast (CR 601.2i), so a countered Enroot leaves no copy to cast again.",
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Carnivorous Cultivator", "Forest"],
+  "hand_b": ["Counterspell"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Enroot (prepared)", "B:cast:Counterspell"],
+  "max_decisions": 14,
+  "expect_count": {"Player A casts Enroot": 1},
+  "expect_not": ["is prepared: a copy of Enroot"],
+  "expect_order": ["Player A casts Enroot", "Carnivorous Cultivator is no longer prepared", "Enroot is countered"]
+}

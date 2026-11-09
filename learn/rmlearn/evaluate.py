@@ -1,11 +1,11 @@
 """Evaluation games of an exported policy against fixed opponents through engine actors
-(``--actor``, docs/actor.md), scored per game (docs/rnad_training_plan.md §6 B1, T8).
+(``--actor``, docs/actor.md), scored per game (docs/rmtrain.md §7).
 
     s = run_eval("run/ckpt/p1.pt2", "run/eval/p1", opponents=("scripted", "explore"), matches=50)
     s["scripted"]["win_rate"], s["scripted"]["game1"]["win_rate"], s["scripted"]["games23"]
 
     python -m rmlearn.evaluate --model run/ckpt/p1.pt2 --out run/eval/p1 [--opponents scripted,explore,random]
-        [--pairs ur_delver-burn,uw_control-wrb_energy] [--feature-history N]
+        [--pairs ur_tempo-burn,uw_control-wrb_energy] [--feature-history N]
 
 The policy plays as ``nn:<model>`` in process (``robomage_nn``, CPU, the GPU hidden; ``--nn-options``
 e.g. ``argmax`` or ``temp=1``) against each opponent: ``scripted`` (side ``first`` with the scripted
@@ -28,7 +28,8 @@ import time
 
 from .corpus import BIN_DIR, CPU_ENV, teacher_command
 
-DEFAULT_PAIRS = (("ur_delver", "burn"), ("bug", "bw_dnt"), ("uw_control", "wrb_energy"), ("gw_maverick", "lands"))
+DEFAULT_PAIRS = (("ur_tempo", "burn"), ("bug", "death_and_taxes"), ("uw_control", "wrb_energy"),
+                 ("eldrazi_aggro", "lands_top8"))
 
 
 def opponent_side(name):
@@ -141,7 +142,7 @@ def main():
     ap.add_argument("--nn-options", default="argmax")
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--engine", help="robomage_nn (default bin/release/robomage_nn)")
-    ap.add_argument("--pairs", help="deck pairs, e.g. ur_delver-burn,uw_control-wrb_energy (default: four league pairs)")
+    ap.add_argument("--pairs", help="deck pairs, e.g. ur_tempo-burn,uw_control-wrb_energy (default: four league pairs)")
     ap.add_argument("--feature-history", type=int, default=0, help="the policy's recent-event history cap")
     a = ap.parse_args()
     from .matches import parse_pairs

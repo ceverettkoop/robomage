@@ -1,0 +1,58 @@
+{
+  "name": "cr702_179d_a_cancelled_payment_loses_no_life",
+  "why": "CR 702.179d, 733.1: B taps Horizon Canopy for a spell and cancels the cast: the life comes back and no life was lost, so A's speed doesn't trigger",
+  "offer_cancel": true,
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "battlefield_a": [
+    "Perilous Snare"
+  ],
+  "hand_b": [
+    "Abrade"
+  ],
+  "battlefield_b": [
+    "Horizon Canopy",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Abrade",
+    "B:mode:Destroy",
+    "B:target:Perilous Snare",
+    "B:tap:Horizon Canopy",
+    "B:desc:Cancel"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player B pays 1 life",
+    "Payment cancelled"
+  ],
+  "expect_not": [
+    "their speed triggers"
+  ],
+  "hand_a": [
+    "Plains"
+  ],
+  "library_a": [
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

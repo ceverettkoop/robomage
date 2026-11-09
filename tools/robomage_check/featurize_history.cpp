@@ -35,19 +35,11 @@ static std::string check_spec(const rmcheck::Options &opt, const Featurization &
 static std::string check_prefix(const Featurization &on, const Featurization &off, const Tensors &a, const Tensors &b);
 static std::string check_history_tokens(const featurize::FeatureSpec &spec, const Tensors &t);
 static void add(std::vector<std::string> *fails, const std::string &m);
-static bool same_tensors(const Tensors &a, const Tensors &b);
 static void featurize_history_game(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &on,
     const Featurization &off, const std::string &cards, const std::string &text);
 
 static void add(std::vector<std::string> *fails, const std::string &m) {
     if (fails->size() < MAX_FAILS) fails->push_back(m);
-}
-
-static bool same_tensors(const Tensors &a, const Tensors &b) {
-    return a.viewer == b.viewer && a.game == b.game && a.decision == b.decision && a.sideboarding == b.sideboarding &&
-           a.tok_type == b.tok_type && a.tok_num == b.tok_num && a.tok_cat == b.tok_cat && a.tok_card == b.tok_card &&
-           a.tok_ability == b.tok_ability && a.tok_mask == b.tok_mask && a.rel == b.rel && a.act_tok == b.act_tok &&
-           a.act_mask == b.act_mask;
 }
 
 static bool featurize_dump(
@@ -81,7 +73,9 @@ static std::string check_spec(const rmcheck::Options &opt, const Featurization &
     for (const featurize::TokenType &t : off.spec.types)
         if (t.kind == featurize::TypeKind::HISTORY) return "the spec built without options has a history type";
     if (!on.spec.history.on() || on.spec.hash == off.spec.hash) return "the history spec has the off spec's hash";
-    if (on.spec.types.size() != off.spec.types.size() + 2) return "the history spec does not add two token types";
+    const auto history_types = std::count_if(on.spec.types.begin(), on.spec.types.end(),
+        [](const featurize::TokenType &t) { return t.kind == featurize::TypeKind::HISTORY; });
+    if (history_types != 2) return "the history spec does not add two token types";
     for (size_t i = 0; i < off.spec.types.size(); ++i)
         if (on.spec.types[i].name != off.spec.types[i].name) return "the history spec reorders the off spec's types";
     rmcheck::ProcSpec spec;
@@ -179,7 +173,7 @@ static void featurize_history_game(const rmcheck::Options &opt, rmcheck::Report 
     size_t tokens = 0;
     for (size_t d = 0; d < a.on.size(); ++d) {
         const std::string at = "history: " + names[0] + " decision " + std::to_string(d + 1) + ": ";
-        if (!same_tensors(a.on[d], b.on[d])) add(&fails, at + "featurizing twice gives other tensors");
+        if (!featurize::same_tensors(a.on[d], b.on[d])) add(&fails, at + "featurizing twice gives other tensors");
         const std::string p = check_prefix(on, off, a.on[d], a.off[d]);
         if (!p.empty()) add(&fails, at + p + " of the off tensors differ");
         const std::string h = check_history_tokens(on.spec, a.on[d]);

@@ -1,0 +1,67 @@
+{
+  "name": "cr701_23_stone_brain_exiles_up_to_four_and_refills_the_hand",
+  "why": "CR 701.23 / 608.2c: The Stone Brain: exile itself, name a card, search the opponent's graveyard, hand and library for up to four cards with that name, exile them; that player shuffles, then draws a card for each exiled from their hand",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Stone Brain",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:The Stone Brain",
+    "A:name:Lightning Bolt",
+    "A:search:Lightning Bolt",
+    "A:search:fail",
+    "A:search:Lightning Bolt",
+    "A:search:Lightning Bolt",
+    "A:search:fail",
+    "A:search:Lightning Bolt"
+  ],
+  "max_decisions": 11,
+  "expect_order": [
+    "Player A exiles The Stone Brain",
+    "Player A names card: Lightning Bolt",
+    "Player B shuffles their library",
+    "Player B draws",
+    "Player B draws",
+    "category: Cleanup"
+  ],
+  "expect_count": {
+    "Player A puts Lightning Bolt to exile": 4
+  }
+}

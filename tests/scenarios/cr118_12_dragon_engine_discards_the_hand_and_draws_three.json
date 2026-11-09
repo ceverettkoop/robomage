@@ -1,0 +1,63 @@
+{
+  "name": "cr118_12_dragon_engine_discards_the_hand_and_draws_three",
+  "why": "CR 118.12, 701.9a: \"you may discard your hand. If you do, draw three cards\": accepted, all seven cards go and three are drawn",
+  "hand_a": [
+    "Island",
+    "Forest"
+  ],
+  "graveyard_a": [
+    "Phyrexian Dragon Engine"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Phyrexian Dragon Engine",
+    "A:desc:Accept"
+  ],
+  "max_decisions": 4,
+  "expect_order": [
+    "Phyrexian Dragon Engine triggered",
+    "Player A discards Forest",
+    "Player A draws"
+  ],
+  "expect_count": {
+    "Player A discards": 7,
+    "Player A draws": 3
+  },
+  "expect_menu": [
+    "Accept: discard your hand"
+  ],
+  "expect_dump": [
+    "^A .*pending_cost TRIGGER discard=7$"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

@@ -9,8 +9,10 @@
 #include "agents/trajectory.h"
 #include "cli_output.h"
 #include "components/zone.h"
+#include "coverage.h"
 #include "error.h"
 #include "game_driver.h"
+#include "parse_report.h"
 #include "state_format/cards_file.h"
 #include "state_format/selfcheck_featurize.h"
 #include "text_table.h"
@@ -83,6 +85,10 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) { h.add_flag_list(k, battlefield_a_cards); }},
     {"--battlefield-b", nullptr, true, true, [](const char *v) { battlefield_b_cards = split_card_list(v); },
         [](DecisionLogHeader &h, const std::string &k) { h.add_flag_list(k, battlefield_b_cards); }},
+    {"--face-down-a", nullptr, true, true, [](const char *v) { face_down_a_cards = split_card_list(v); },
+        [](DecisionLogHeader &h, const std::string &k) { h.add_flag_list(k, face_down_a_cards); }},
+    {"--face-down-b", nullptr, true, true, [](const char *v) { face_down_b_cards = split_card_list(v); },
+        [](DecisionLogHeader &h, const std::string &k) { h.add_flag_list(k, face_down_b_cards); }},
     {"--graveyard-a", nullptr, true, true, [](const char *v) { graveyard_a_cards = split_card_list(v); },
         [](DecisionLogHeader &h, const std::string &k) { h.add_flag_list(k, graveyard_a_cards); }},
     {"--graveyard-b", nullptr, true, true, [](const char *v) { graveyard_b_cards = split_card_list(v); },
@@ -260,6 +266,8 @@ static const CliOption OPTIONS[] = {
     // (deck_check.h).
     {"--check-decks", nullptr, false, false, [](const char *) { check_decks_flag = true; }, nullptr},
     {"--check-decks-dir", nullptr, true, false, [](const char *v) { check_decks_dirs.push_back(v); }, nullptr},
+    // Report what the parser does not model in cards' scripts instead of playing (parse_report.h).
+    {"--parse-report", nullptr, true, false, [](const char *v) { parse_report_args.push_back(v); }, nullptr},
     // Check the oracle-text table against the vocab and the model pin, or write the inputs of its
     // stale rows, instead of playing (text_table.h).
     {"--text-table-check", nullptr, true, false, [](const char *v) { text_table_check_path = v; }, nullptr},
@@ -281,6 +289,8 @@ static const CliOption OPTIONS[] = {
     {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
     // Narrate each observation event as it is queued, per viewer (EVENT: lines in the game log).
     {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
+    // Count the engine paths the run reaches and write them to a file at exit (coverage.h).
+    {"--coverage", nullptr, true, false, [](const char *v) { coverage_open(v); }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
     // The machine protocol's stdout format: rmstate, the only one (state_format/stream.h), so the
@@ -304,7 +314,7 @@ static const CliOption OPTIONS[] = {
             state_dump_json = true;
         },
         nullptr},
-    // Write the whole-vocab CARDS frame (with the SCHEMA and METAGAME frames) instead of playing
+    // Write the whole-vocab CARDS frame (after the SCHEMA frame) instead of playing
     // (state_format/cards_file.h).
     {"--cards-frame", nullptr, true, false, [](const char *v) { cards_frame_path = v; }, nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
@@ -368,13 +378,15 @@ static bool is_seat_a(const char *value) {
     return std::strcmp(value, "A") == 0 || std::strcmp(value, "a") == 0;
 }
 
-// The value of --knowledge-a / --knowledge-b: off (0), expert (1) or expert+belief (2); anything
-// else is fatal.
+// The value of --knowledge-a / --knowledge-b: off (0) or expert (1); expert+belief is a removed
+// value, anything else is fatal too.
 static int knowledge_level_value(const char *value) {
     if (std::strcmp(value, "off") == 0) return 0;
     if (std::strcmp(value, "expert") == 0) return 1;
-    if (std::strcmp(value, "expert+belief") == 0) return 2;
-    fatal_error("--knowledge-a/--knowledge-b: expected off, expert or expert+belief, got '" + std::string(value) + "'");
+    if (std::strcmp(value, "expert+belief") == 0)
+        fatal_error("--knowledge-a/--knowledge-b expert+belief was removed: the belief layer and its reference "
+                    "lists are gone; use expert");
+    fatal_error("--knowledge-a/--knowledge-b: expected off or expert, got '" + std::string(value) + "'");
     return 0;
 }
 

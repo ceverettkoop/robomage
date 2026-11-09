@@ -1,0 +1,39 @@
+{
+  "name": "cr702_126a_improvise_cant_pay_a_colored_pip",
+  "why": "CR 702.126a, 118.3: artifacts pay only generic mana, so Kappa Cannoneer's {U} needs a source",
+  "hand_a": [
+    "Kappa Cannoneer",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mishra's Bauble",
+    "Urza's Bauble",
+    "Aether Spellbomb",
+    "Chromatic Star",
+    "Lotus Petal"
+  ],
+  "hand_b": [
+    "Lightning Bolt"
+  ],
+  "library_b": [
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 12,
+  "expect_menu_not": [
+    "Cast Kappa Cannoneer"
+  ],
+  "expect_menu": [
+    "Play Mountain"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "cr709_4b_split_card_is_both_colors_off_the_stack",
+  "why": "CR 709.4b: a split card's colors come from its combined mana cost, so Wear/Tear in the hand is white and red: pitched to Solitude's evoke cost as a white card, though its left half alone is red.",
+  "hand_a": ["Solitude", "Wear Tear"],
+  "library_a": ["Mountain"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Solitude (alternate cost)"],
+  "max_decisions": 8,
+  "expect_menu": ["Cast Solitude \\(alternate cost\\)"],
+  "expect": ["Player A casts Solitude"]
+}

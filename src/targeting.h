@@ -22,6 +22,18 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster);
 // unchosen counts as legal). A target that changed zones since it was chosen is a new object and
 // illegal (CR 400.7).
 bool targets_still_legal(const Ability &ab);
+// The instructions of a stack object that may hold targets, in the order it lists them: its own,
+// its chained sub-abilities', then each chosen mode's and what that mode chains.
+std::vector<const Ability *> announced_instructions(const Ability &ab);
+std::vector<Ability *> announced_instructions(Ability &ab);
+// How many times an object or player was chosen as a target of stack object `stack_object`, an
+// Aura spell's enchant target included (CR 115.9a).
+int chosen_target_count(Entity stack_object);
+// CR 608.2b, for a stack object as it resolves: are all its targets, for every instance of the word
+// "target" on it, its chained instructions and its chosen modes, illegal? Its own count even with
+// none chosen when one is required; an instruction that chose none and could count for nothing
+// (CR 115.6). False with no target at all.
+bool every_target_illegal(const Ability &ab);
 
 // The legal targets for `ability` from `priority_player`'s perspective, in menu order: opponent
 // entities first (opponent player, then opponent's permanents in entity-ID order), then own
@@ -31,24 +43,41 @@ bool targets_still_legal(const Ability &ab);
 std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
                                         Zone::Ownership priority_player);
 
+// What a first pick of `ability`'s targets may choose now: its legal targets, through the rows of
+// target_gate.cpp. What every check that a target can be chosen reads.
+std::vector<Entity> target_candidates(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                      Zone::Ownership chooser);
+
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 // "Requirement" is the ability's minimum target count (CR 601.2c) as effective_target_min reads it
 // before X is announced: an X-driven minimum counts as 0, since X may legally be 0. A modal
 // ability (CR 700.2) needs its required number of choosable modes (has_choosable_modes).
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer);
 
+// ── Division (CR 601.2d) ─────────────────────────────────────────────────────
+// Does `def` divide something among its targets (DividedAsYouChoose$)?
+bool divides_among_targets(const AbilityDef &def);
+// What `ab`, controlled by `controller`, divides; read once its X is announced.
+int division_total(const Ability &ab, Zone::Ownership controller);
+
 // ── Modes (CR 700.2) ─────────────────────────────────────────────────────────
 // A modal spell or ability ("Choose one —", DB$/SP$/AB$ Charm): its modes live in
 // charm_choices, and the ones announced as it was put on the stack in charm_chosen.
 bool is_modal(const Ability &ab);
 
-// Can mode `idx` of `modal` be chosen by `chooser` now (CR 700.2a/b, 603.3c)? A mode can't be
-// chosen only when it requires a target and none is legal. The required minimum is
+// Can printed mode `idx` of `modal` be chosen by `chooser` now (CR 700.2a/b, 603.3c)? A mode
+// can't be chosen only when it requires a target and none is legal. The required minimum is
 // effective_target_min's, reading the announced X when `x_announced`.
 bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,
                     Zone::Ownership chooser, bool x_announced);
 
-// Can `modal`'s required number of different modes (CharmNum$, default one) be chosen now?
+// The most modes `def` picks (CharmNum$, default one) and the fewest: MinCharmNum$ for "choose
+// one or more" (CR 700.2), at least one, else the most.
+int charm_max_picks(const AbilityDef &def);
+int charm_min_picks(const AbilityDef &def);
+
+// Can `modal`'s required number of different modes (charm_min_picks; any one mode when it may
+// choose the same mode more than once, CanRepeatModes$) be chosen now?
 // The legality gate for casting a modal spell or activating a modal ability (CR 601.2b, 602.2b).
 bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
                          Zone::Ownership chooser, bool x_announced);
@@ -68,7 +97,8 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
 // The kinds of object a definition's targeting admits, read from the definition alone through
 // is_legal_target's branches: stack objects when TargetType$ names them (a spell, an activated or
 // triggered ability), a card in a graveyard for a graveyard target (TgtZone$ Graveyard, a
-// graveyard-origin ChangeZone), else the players and permanents of ValidTgts$. A permanent
+// graveyard-origin ChangeZone), else the players and permanents of ValidTgts$ and, under TgtZone$
+// Stack, its inZoneStack alternatives' spells. A permanent
 // alternative is classed by its head: a permanent card type, or for a Permanent / Card head every
 // permanent type its non<Type> qualifiers leave; any other head (a subtype) is permanent_other.
 // "Any" is a creature, planeswalker, battle or player (CR 115.4). All false when the definition

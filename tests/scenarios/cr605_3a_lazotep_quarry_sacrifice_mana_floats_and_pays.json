@@ -1,0 +1,43 @@
+{
+  "name": "cr605_3a_lazotep_quarry_sacrifice_mana_floats_and_pays",
+  "why": "CR 605.3a, 118.3: Lazotep Quarry's {T}, Sacrifice a creature: Add one mana of any color, activated at priority: the creature goes, the mana floats and casts a spell.",
+  "hand_a": [
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Lazotep Quarry",
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Pay the cost of Lazotep Quarry for (R)",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player A sacrifices Grizzly Bears",
+    "Player A casts Lightning Bolt",
+    "Lightning Bolt deals 3 damage"
+  ]
+}

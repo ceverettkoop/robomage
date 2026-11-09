@@ -1,0 +1,27 @@
+{
+  "name": "cr702_74a_solitude_evoke_pitches_a_white_card",
+  "why": "CR 118.9, 702.74a: Solitude's evoke cost pitches another white card from the hand, and it is sacrificed as it enters",
+  "hand_a": [
+    "Solitude",
+    "Swords to Plowshares"
+  ],
+  "library_a": [
+    "Plains"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Grizzly Bears"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Cast Solitude (alternate cost)"
+  ],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A exiles Swords to Plowshares",
+    "Player A casts Solitude"
+  ]
+}

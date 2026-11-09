@@ -1,0 +1,37 @@
+{
+  "name": "cr303_4c_animate_dead_falls_off_grist",
+  "why": "CR 604.3, 303.4c, 704.5m: Animate Dead may enchant Grist, a creature card in the graveyard. It enters as a planeswalker, which Animate Dead can't enchant, so the Aura goes to the graveyard and its leaves-the-battlefield trigger sacrifices Grist.",
+  "hand_a": [
+    "Animate Dead"
+  ],
+  "library_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Swamp"
+  ],
+  "graveyard_a": [
+    "Grist the Hunger Tide"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Animate Dead",
+    "A:target:Grist"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Grist, the Hunger Tide is sacrificed|sacrifices Grist"
+  ],
+  "expect_order": [
+    "Grist, the Hunger Tide is moved to the battlefield",
+    "Animate Dead is put into the graveyard",
+    "Delayed trigger fires"
+  ]
+}

@@ -26,6 +26,8 @@ namespace Events {
     constexpr EventId SECOND_MAIN_BEGAN       = 20; // "at the beginning of [your] second/postcombat main phase" / Phase$ Main2; Params: PLAYER=active player
     constexpr EventId CLEANUP_BEGAN           = 21; // "at the beginning of the cleanup step" / Phase$ Cleanup; Params: PLAYER=active player
     constexpr EventId END_OF_COMBAT_BEGAN     = 22; // "at end of combat" — the end of combat step begins (CR 512); Params: PLAYER=active player. Used by end-of-combat delayed triggers (Geist of Saint Traft's token exile).
+    constexpr EventId LAND_PLAYED             = 23; // "whenever [you] play a land" (Mode$ LandPlayed): a land was PLAYED (CR 305.1, the special action), not put onto the battlefield by an effect (CR 305.4). Fired after the land's own zone-change event. Params: ENTITY=the land (now on the battlefield), PLAYER=the player who played it, ORIGIN=the zone it was played from
+    constexpr EventId BECAME_TAPPED           = 24; // "whenever ~ becomes tapped" (Mode$ Taps, CR 701.26a): an untapped permanent was tapped, not one that entered tapped. Params: ENTITY=the permanent, PLAYER=its controller
 }
 
 // Param IDs used across events

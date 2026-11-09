@@ -1,0 +1,60 @@
+{
+  "name": "cr701_23_stone_brain_finds_nothing_in_a_hidden_zone",
+  "why": "CR 701.23b: a search of a hidden zone for a stated quality needn't find: The Stone Brain may leave the hand's copies, the opponent then draws nothing",
+  "hand_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Stone Brain",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Lightning Bolt",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "graveyard_b": [
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:The Stone Brain",
+    "A:name:Lightning Bolt",
+    "A:search:fail",
+    "A:search:fail",
+    "A:search:fail"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Player B shuffles their library"
+  ],
+  "expect_not": [
+    "Player A puts Lightning Bolt to exile",
+    "Player B draws"
+  ]
+}

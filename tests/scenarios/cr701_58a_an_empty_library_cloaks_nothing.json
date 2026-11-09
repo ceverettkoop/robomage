@@ -1,0 +1,51 @@
+{
+  "name": "cr701_58a_an_empty_library_cloaks_nothing",
+  "why": "CR 701.58a, 608.2d: with an empty library nothing is cloaked, Remembered holds nothing and the Attach finds nothing: the Coat stays unattached. The deck is the seven cards of the opening hand.",
+  "hand_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "deck_a": "tests/coat_no_library",
+  "battlefield_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Cryptic Coat"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "Cryptic Coat triggered"
+  ],
+  "expect_not": [
+    "cloaks",
+    "Equipment attached",
+    "Equipment will attach"
+  ],
+  "expect_dump_not": [
+    "face_down self"
+  ],
+  "engine_flags": [
+    "--selfcheck-knowledge",
+    "--selfcheck-state-sample",
+    "1"
+  ]
+}

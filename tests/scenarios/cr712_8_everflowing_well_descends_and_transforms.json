@@ -1,0 +1,51 @@
+{
+  "name": "cr712_8_everflowing_well_descends_and_transforms",
+  "why": "CR 701.27, 712.8: at your upkeep with eight or more permanent cards in your graveyard The Everflowing Well transforms; a land there counts, an instant doesn't.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "The Everflowing Well"
+  ],
+  "graveyard_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Lightning Bolt"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 12,
+  "expect": [
+    "The Everflowing Well transforms into The Myriad Pools"
+  ],
+  "expect_count": {
+    "The Everflowing Well triggered": 1
+  }
+}

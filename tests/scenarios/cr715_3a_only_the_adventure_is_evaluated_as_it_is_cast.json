@@ -1,0 +1,13 @@
+{
+  "name": "cr715_3a_only_the_adventure_is_evaluated_as_it_is_cast",
+  "why": "CR 715.3a: cast as an Adventure only its alternative characteristics are evaluated: Petty Theft needs its own target and its own cost, {1}{U}, while Brazen Borrower needs neither, and with no nonland permanent of an opponent's only the creature is offered.",
+  "hand_a": ["Brazen Borrower"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu": ["Cast Brazen Borrower$"],
+  "expect_menu_not": ["Cast Petty Theft"]
+}

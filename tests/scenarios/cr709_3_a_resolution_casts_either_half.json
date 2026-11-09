@@ -1,0 +1,50 @@
+{
+  "name": "cr709_3_a_resolution_casts_either_half",
+  "why": "CR 709.3, 608.2g: an effect that lets a split card be cast offers either half, and Amped Raptor's energy is the mana value of the half cast.",
+  "hand_a": [
+    "Amped Raptor",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "library_a": [
+    "Wear/Tear",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_a": [
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble",
+    "Sylvan Library"
+  ],
+  "library_b": [
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Amped Raptor",
+    "A:desc:Cast Tear",
+    "A:target:Sylvan Library"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Player A pays 1 energy",
+    "Player A casts Tear"
+  ],
+  "expect_menu": [
+    "Cast Wear",
+    "Cast Tear"
+  ],
+  "expect_order": [
+    "Player A casts Tear",
+    "Sylvan Library is destroyed"
+  ]
+}

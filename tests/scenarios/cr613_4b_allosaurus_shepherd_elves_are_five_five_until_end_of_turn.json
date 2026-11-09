@@ -1,0 +1,57 @@
+{
+  "name": "cr613_4b_allosaurus_shepherd_elves_are_five_five_until_end_of_turn",
+  "why": "CR 613.4b, 514.2: AnimateAll's Power$, Toughness$ and Types$ set each Elf's base P/T in layer 7b and add Dinosaur for the turn; a Bear is no Elf, and cleanup ends it.",
+  "hand_a": [
+    "Forest"
+  ],
+  "library_a": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Allosaurus Shepherd",
+    "Llanowar Elves",
+    "Grizzly Bears",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Allosaurus Shepherd",
+    "A:attack:Allosaurus Shepherd",
+    "A:attack:Grizzly Bears",
+    "A:attack:done",
+    "A:attack:Allosaurus Shepherd",
+    "A:attack:done"
+  ],
+  "max_decisions": 30,
+  "expect": [
+    "Llanowar Elves becomes a Dinosaur in addition to its other types",
+    "Allosaurus Shepherd has base power and toughness 5/5 until end of turn"
+  ],
+  "expect_not": [
+    "Grizzly Bears becomes a Dinosaur",
+    "Grizzly Bears has base power"
+  ],
+  "expect_order": [
+    "Allosaurus Shepherd deals 5 damage to Player B",
+    "Grizzly Bears deals 2 damage to Player B",
+    "Allosaurus Shepherd deals 1 damage to Player B"
+  ]
+}

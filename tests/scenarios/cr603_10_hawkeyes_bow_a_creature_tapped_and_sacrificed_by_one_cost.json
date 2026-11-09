@@ -1,0 +1,39 @@
+{
+  "name": "cr603_10_hawkeyes_bow_a_creature_tapped_and_sacrificed_by_one_cost",
+  "why": "CR 603.2, 608.2h, Hawkeye's Bow: {T}, Sacrifice taps Dauthi Voidwalker and takes it in one cost: it became tapped while equipped, so the Bow triggers though the creature is gone when triggers are collected, and it deals the damage as it last existed.",
+  "hand_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Hawkeye's Bow",
+    "Dauthi Voidwalker",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Hawkeye's Bow",
+    "A:pass",
+    "A:activate:Dauthi Voidwalker"
+  ],
+  "max_decisions": 10,
+  "expect": [
+    "Hawkeye's Bow triggered",
+    "Dauthi Voidwalker deals 1 damage to Player B"
+  ]
+}

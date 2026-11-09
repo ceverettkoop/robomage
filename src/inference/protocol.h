@@ -6,9 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "../featurize/compat.h"
 #include "../featurize/featurizer.h"
 
-// ── The inference protocol's wire code (docs/inference_protocol.md, RMIP v1) ──────────────────
+// ── The inference protocol's wire code (docs/inference_protocol.md, RMIP v2) ──────────────────
 //
 // Standard library and POSIX only (sockets, shm_open, mmap; no exceptions): what the remote
 // evaluator (actor/remote_evaluator.h), rmserve (tools/rmserve/) and the gate's protocol checks
@@ -19,7 +20,7 @@
 
 namespace inference {
 
-constexpr uint32_t PROTOCOL_VERSION = 1;
+constexpr uint32_t PROTOCOL_VERSION = 2;
 // A control message's body is at most this long.
 constexpr uint32_t MAX_BODY = 1u << 20;
 
@@ -54,7 +55,8 @@ struct Dims {
 struct Hello {
         uint32_t protocol = PROTOCOL_VERSION;
         std::string client;
-        std::string spec_hash, vocab_hash, text_model;
+        featurize::Manifest
+            tables;  // the client's tables (spec, vocab, text model, layout, vocab manifest; no registry)
         Dims dims;
         std::string shm;
         uint64_t request_bytes = 0, response_bytes = 0;

@@ -1,0 +1,13 @@
+{
+  "name": "cr709_4a_a_split_card_has_each_half_s_name",
+  "why": "CR 709.4a: a split card has two names, the player chooses one of them, and an object has the chosen name if one of its names is it: Cabal Therapy naming Gone, the second half, discards Dead/Gone.",
+  "hand_a": ["Cabal Therapy"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Dead Gone", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B", "A:name:Gone"],
+  "max_decisions": 8,
+  "expect_menu": ["Name card: Dead", "Name card: Gone"],
+  "expect": ["Player A names card: Gone", "Player B discards Dead"]
+}

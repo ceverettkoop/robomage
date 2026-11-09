@@ -1,0 +1,21 @@
+{
+  "name": "cr400_3_terminus_all_creatures_to_owners_libraries",
+  "why": "Terminus (ChangeZoneAll ChangeType$ Creature, Origin$ Battlefield, Destination$ Library, LibraryPosition$ -1) puts every creature on the battlefield, both players' and tokens, on the bottom of its owner's library (CR 400.3); ChangeZoneAll read no Origin$ Battlefield and moved nothing (found by the first onboarding's scripted games, bant_control). The Eldrazi Scion tokens go there and cease to exist (CR 111.7, 704.5d), the library positions closing behind them",
+  "hand_a": ["Eldrazi Confluence", "Terminus"],
+  "battlefield_a": ["Wastes", "Wastes", "Wastes", "Wastes", "Plains", "Plains", "Plains", "Plains", "Plains", "Plains", "Grizzly Bears", "Air Elemental"],
+  "battlefield_b": ["Grizzly Bears", "Phelia Exuberant Shepherd"],
+  "play": ["A:keep", "B:keep", "A:cast:Eldrazi Confluence", "A:desc:Scion", "A:desc:Scion", "A:desc:Scion",
+           "A:pass", "A:attack:done", "A:cast:Terminus"],
+  "seed": 1,
+  "max_decisions": 12,
+  "expect_count": {"Player A moves Eldrazi Scion token to the bottom of their library": 3,
+                   "Eldrazi Scion \\(token\\) is put into the library and ceases to exist": 3},
+  "expect_order": ["Player A casts Terminus", "Player A moves Grizzly Bears to the bottom of their library",
+                   "Player A moves Air Elemental to the bottom of their library",
+                   "Player A moves 5 card\\(s\\) to the bottom of their library",
+                   "Player B moves Grizzly Bears to the bottom of their library",
+                   "Player B moves Phelia, Exuberant Shepherd to the bottom of their library",
+                   "Player B moves 2 card\\(s\\) to the bottom of their library",
+                   "TURN 2 \\(Player B\\)"],
+  "expect_not": ["Player [AB] moves 0 card\\(s\\)", "attacking Player"]
+}

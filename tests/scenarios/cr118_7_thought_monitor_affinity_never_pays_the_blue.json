@@ -1,0 +1,36 @@
+{
+  "name": "cr118_7_thought_monitor_affinity_never_pays_the_blue",
+  "why": "CR 118.7c, 702.41a: affinity reduces generic mana only: six artifacts and no blue source leave {U} unpaid",
+  "hand_a": [
+    "Thought Monitor"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Great Furnace",
+    "Tormod's Crypt",
+    "Urza's Bauble",
+    "Mishra's Bauble",
+    "Voltaic Key",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep"
+  ],
+  "max_decisions": 6,
+  "expect_menu_not": [
+    "Cast Thought Monitor"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "cr616_1_jace_or_hullbreacher_on_an_empty_library",
+  "why": "CR 616.1: from an empty library Jace, Wielder of Mysteries and an opponent's Hullbreacher both replace the draw: the drawing player chooses, and taking Jace wins the game",
+  "deck_a": "tests/no_library",
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Hullbreacher"
+  ],
+  "battlefield_a": [
+    "Island",
+    "Jace Wielder of Mysteries"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Brainstorm",
+    "A:desc:Wielder of Mysteries"
+  ],
+  "max_decisions": 8,
+  "expect_result": "A",
+  "expect_menu": [
+    "^Hullbreacher: replace the draw$"
+  ],
+  "expect_not": [
+    "^Token created"
+  ]
+}

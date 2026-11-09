@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+struct Token;
+
 struct Permanent {
     std::string name;
     std::set<Type> types;
@@ -25,7 +27,17 @@ struct Permanent {
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
     size_t entered_on_turn = 0;  // cur_game.turn_state.turn when this entered the battlefield (Ocelot Pride "entered this turn")
+    // Its designations (designations.def).
+#define DESIGNATION_OBJECT(type, field, init, ...) type field = init;
+#include "../state_format/designations.def"
+    // The turn it was last declared as an attacker (CR 508.1k), -1 before any: read through
+    // attacked_this_turn (queries/combat.h). A stamp, so a new turn needs no walk to clear it and a
+    // permanent phased out at that walk can't keep it. On the Permanent, not the Creature: a
+    // permanent that attacked and stopped being a creature still attacked.
+    long attacked_on_turn = -1;
     bool transformed = false;  // true when DFC is showing its back face
+    SpellOverlay overlay = SpellOverlay::NONE;  // what it keeps of its spell (bestowed, CR 702.103b), read through active_face, or how it came to lie face down
+    ObjectRef prepared_copy;     // the copy of its prepare spell in exile (CR 722.3c), once made
     uint32_t times_transformed = 0;  // transforms since it entered (CR 701.27f stamp)
     // For an Equipment or Aura: the permanent it is attached to (0 = unattached). This is the
     // one record of an attachment; what is attached to a permanent is derived from it (several
@@ -44,45 +56,16 @@ struct Permanent {
     CounterMap counters;
     // Per-permanent named integer SVars written by a DB$ StoreSVar effect (Forge's
     // "SVar:NAME:Number$N" scratch values) and read by a CheckSVar$ NAME | SVarCompare$ ...
-    // trigger gate. Carpet of Flowers uses one ("CarpetX") as a once-per-turn latch: the
-    // beginning-of-main-phase mana trigger is gated EQ0, its CheckPlus sub-ability stores 1
-    // after adding mana, and a Static$ True cleanup reset stores 0 to re-arm next turn. An
-    // absent entry reads as 0. Lives on the Permanent so it resets naturally when the source
-    // leaves the battlefield (a fresh Permanent on re-entry starts empty). General — any future
-    // card using the StoreSVar/CheckSVar scratch-int idiom reuses this map.
+    // trigger gate (e.g. a once-per-turn latch: a trigger gated EQ0 whose effect stores 1, reset
+    // to 0 by another trigger). An absent entry reads as 0. Lives on the Permanent so it resets
+    // naturally when the source leaves the battlefield (a fresh Permanent on re-entry starts
+    // empty). General over the StoreSVar/CheckSVar scratch-int idiom.
     std::map<std::string, int> stored_svars;
-    // 606.3: a loyalty ability can be activated only if no loyalty ability of THIS
-    // permanent has been activated this turn. The gate is per-permanent (across all its
-    // loyalty abilities), not per-ability, so it can't reuse Ability::activations_this_turn.
-    bool loyalty_ability_activated_this_turn = false;
-    // 701.37b: monstrous is a per-permanent designation with no rules meaning of its own — a
-    // marker the monstrosity action and "becomes monstrous" triggers identify. Once set it
-    // stays until the permanent leaves the battlefield (so it resets naturally when a new
-    // Permanent is created on re-entry). Internal state only — NOT exposed in the obs/state
-    // vector. Set by the Monstrosity$ resolution in effect_put_counter.cpp; read by the
-    // "NotMonstrous" activation gate (queries/activation.h). Mutated nowhere else.
-    bool is_monstrous = false;
-    bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
-    // This permanent entered because its spell was cast from the graveyard for its Escape cost
-    // (CR 702.139): the permanent "escaped". Read by the Card.Self+escaped present condition
-    // (Uro's "sacrifice it unless it escaped" ETB). Set when the Permanent is created from a
-    // spell cast with escape; false for a normal hand cast or any non-escape entry. General —
-    // reusable by any escape card with an "if it escaped" clause.
-    bool cast_with_escape = false;
+    // How often this object's limited abilities were activated (ActivationRule): its own, so a
+    // new object (CR 400.7) starts with none, and through a change of controller or the loss of
+    // the ability (CR 602.5b) it keeps them. Read and written through queries/activation.h.
+    std::vector<ActivationCount> activation_counts;
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
-    // This permanent was returned to the battlefield by its Unearth ability (CR 702.84). While
-    // set: it gained haste on entry, a delayed triggered ability exiles it at the beginning of the
-    // next end step (CR 603.7b), and a leaves-the-battlefield replacement exiles it instead of
-    // letting it go anywhere else (the redirect in Orderer::add_to_zone). Set when the Permanent is
-    // created from a card whose unearth ChangeZone resolved (EntryInfo::unearthed); a fresh
-    // re-entry by any other means leaves it false.
-    bool unearthed = false;
-    // This permanent entered the battlefield as a spell its controller cast from their own
-    // hand (CR 601 — a normal hand cast). Read by the Card.wasCastFromYourHandByYou condition
-    // (Amped Raptor's dig-from-hand gate). Set when its Permanent is created from a spell that
-    // was cast from the hand; false for permanents put onto the battlefield any other way
-    // (reanimation, tokens, ChangeZone-to-battlefield, casts from exile/graveyard, etc.).
-    bool cast_from_hand_by_controller = false;
     // This permanent entered the battlefield because its spell was cast (from any zone), CR
     // 614.12. Read by the Card.wasCastByYou cast-condition on an "enters, if you cast it" ETB
     // trigger (The One Ring's protection grant). True only for a permanent that resolved onto the
@@ -90,14 +73,14 @@ struct Permanent {
     // battlefield, and any other non-cast entry. Set one-shot from EntryInfo::cast
     // when the Permanent is created.
     bool entered_by_cast = false;
-    // CR 107.3m: the X chosen for the spell that became this permanent as it resolved (0 for any
-    // other entry). Its enters-the-battlefield triggered abilities use this X, though the
-    // permanent's own X is 0. Set one-shot from EntryInfo::x_paid.
-    int entered_x = 0;
-    std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
-    std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
+    // The mana spent to cast the spell that became this permanent, for a card that reads it
+    // (Count$Adamant_: Vibrance's "if {R}{R} was spent to cast it"); empty for any other.
+    ManaPaid cast_mana_paid;
     std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,
                                          // linked "until it leaves" returns)
+    // What its abilities imprinted (Chrome Mox), kept past their resolution until a ForgetImprinted$ or
+    // ClearImprinted$ takes it out. A card moved away stays here, by its stale reference, until then.
+    std::vector<ObjectRef> imprinted;
 
     // DB$ Animate | Duration$ Permanent (CR 613, the "becomes ..." continuous effects a
     // resolved ability bakes onto a permanent for the rest of the game). Stored on the
@@ -146,6 +129,11 @@ struct Permanent {
     std::vector<Type> animate_added_types_eot;
     bool animate_make_creature_eot = false;
     size_t animate_timestamp_eot = 0;  // CR 613.7b timestamp of the latest EOT Animate above
+    // The base P/T an EOT Animate set (layer 7b, Allosaurus Shepherd's 5/5): read into
+    // Creature::set_power / set_toughness at each pass's rebuild, cleared at cleanup.
+    bool animate_set_pt_eot = false;
+    int animate_power_eot = 0;
+    int animate_toughness_eot = 0;
 
     // DB$/AB$ Animate with Duration$ UntilYourNextTurn (Karn, the Great Creator +1: "Until your
     // next turn, ... becomes an artifact creature with power and toughness each equal to its mana
@@ -225,6 +213,11 @@ struct Permanent {
     // the card's CardData as it leaves, after last-known information is captured. Null for a
     // permanent that is not a copy. Shared and immutable, so snapshot copies stay cheap.
     std::shared_ptr<const CardData> printed_card;
+    // What a copy effect lasting until end of turn replaced (The Myriad Pools, CR 514.2), put back at
+    // cleanup: the card's values, or a token's. The first such effect of the turn stashes them, so
+    // what lasts past it (a Thespian's Stage's copy) comes back and a second one leaves them alone.
+    std::shared_ptr<const CardData> copy_eot_card;
+    std::shared_ptr<const Token> copy_eot_token;
 };
 
 #endif /* PERMANENT_H */

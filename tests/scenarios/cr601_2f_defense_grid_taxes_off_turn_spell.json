@@ -1,0 +1,48 @@
+{
+  "name": "cr601_2f_defense_grid_taxes_off_turn_spell",
+  "why": "CR 601.2f: Defense Grid: each spell costs {3} more except during its controller's turn. A's Lightning Bolt on A's turn pays {R}; B's in response pays {3}{R}",
+  "hand_a": [
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Defense Grid",
+    "Mountain"
+  ],
+  "battlefield_b": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "B:cast:Lightning Bolt",
+    "B:target:Player A"
+  ],
+  "max_decisions": 8,
+  "expect_count": {
+    "Player A activated Mountain": 1,
+    "Player B activated Mountain": 4
+  },
+  "expect": [
+    "Player B casts Lightning Bolt"
+  ]
+}

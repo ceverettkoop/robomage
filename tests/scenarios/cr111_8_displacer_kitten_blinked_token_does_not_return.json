@@ -1,0 +1,50 @@
+{
+  "name": "cr111_8_displacer_kitten_blinked_token_does_not_return",
+  "why": "CR 111.8, 704.5d: a token exiled by Displacer Kitten can't come back in the same resolution: it stays in exile and ceases to exist",
+  "hand_a": [
+    "Empty the Warrens",
+    "Lightning Bolt"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Displacer Kitten",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Empty the Warrens",
+    "A:desc:Displacer Kitten",
+    "A:target:No target",
+    "A:pass",
+    "A:pass",
+    "A:pass",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B",
+    "A:target:Goblin"
+  ],
+  "max_decisions": 14,
+  "expect": [
+    "^Goblin token is moved to exile",
+    "^Goblin \\(token\\) is put into exile and ceases to exist"
+  ],
+  "expect_not": [
+    "^Goblin token is moved to the battlefield"
+  ]
+}

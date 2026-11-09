@@ -1,0 +1,47 @@
+{
+  "name": "cr701_25a_lush_portico_enters_tapped_surveils",
+  "why": "CR 701.25a, 614.1c, 305.7: Lush Portico enters tapped and surveils 1 (here the card goes to the graveyard); it is a Forest Plains and taps for {G} or {W} next turn",
+  "hand_a": [
+    "Lush Portico",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "library_a": [
+    "Island",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "engine_flags": [
+    "--no-auto-mana"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:land:Lush Portico",
+    "A:choice:Island"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "^Lush Portico enters tapped",
+    "^Player A surveils 1\\."
+  ],
+  "expect_menu": [
+    "Put Island into graveyard",
+    "Tap Lush Portico for \\(G\\)",
+    "Tap Lush Portico for \\(W\\)"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ]
+}

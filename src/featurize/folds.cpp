@@ -43,8 +43,6 @@ static void mark_runs(std::vector<Pool> *pools, const std::vector<Exact> &exact)
 static void merge_entries(std::vector<LedgerEntry> *entries);
 static void fold_ledger(const featurize::FeatureSpec &spec, const featurize::CardTables &tables,
     const rmstate::DecodedFrame &state, bool want_sources, featurize::FoldedRows *out);
-static void fold_pivot(const featurize::FeatureSpec &spec, size_t type, const rmstate::DecodedFrame &state,
-    bool want_sources, featurize::FoldedRows *out);
 static int value_cmp(const Row &a, const featurize::TokenType &t, const Row &printed);
 static int rows_cmp(const Row &a, const Row &b, const featurize::TokenType &t);
 static int64_t printed_face(const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Row &obj);
@@ -221,35 +219,6 @@ static void fold_ledger(const featurize::FeatureSpec &spec, const featurize::Car
     out->count[lt] = led.size();
 }
 
-// A PIVOT type's tokens: per player_rel, each folded row's columns at its key's slots.
-static void fold_pivot(const featurize::FeatureSpec &spec, size_t type, const rmstate::DecodedFrame &state,
-    bool want_sources, featurize::FoldedRows *out) {
-    const featurize::TokenType &t = spec.types[type];
-    const size_t width = t.numeric.size();
-    std::map<uint64_t, std::vector<float>> tokens;
-    for (const featurize::PivotSource &src : t.pivot) {
-        const rmstate::DecodedTable *tab = state.table(src.table_id);
-        if (!tab) continue;
-        for (const Row &row : tab->rows) {
-            const uint64_t key = row[src.key_col].bits;
-            std::vector<float> &num = tokens[row[src.rel_col].bits];
-            num.resize(width, 0.0f);
-            if (key >= src.keys) continue;
-            const size_t base = src.first_slot + static_cast<size_t>(key) * src.cols.size();
-            for (size_t i = 0; i < src.cols.size(); ++i)
-                num[base + i] = featurize::cell_value(src.transforms[i], 0, row[src.cols[i]], src.storages[i]);
-        }
-    }
-    size_t k = 0;
-    for (const auto &e : tokens) {
-        out->num[type].insert(out->num[type].end(), e.second.begin(), e.second.end());
-        out->rel[type].push_back(e.first);
-        if (want_sources) out->sources[type].push_back({static_cast<int32_t>(type), -1, static_cast<int64_t>(k), 0});
-        ++k;
-    }
-    out->count[type] = tokens.size();
-}
-
 // A delta row's values against a printed row: text columns by their text, the others by bits.
 static int value_cmp(const Row &a, const featurize::TokenType &t, const Row &printed) {
     for (size_t i = 0; i < t.value_cols.size(); ++i) {
@@ -404,8 +373,6 @@ void fold_rows(const FeatureSpec &spec, const CardTables &tables, const rmstate:
             if (!faces_built) objects = object_faces(spec, tables, tabs);
             faces_built = true;
             fold_delta(spec, tables, i, tabs, objects, want_sources, out);
-        } else if (t.kind == TypeKind::PIVOT) {
-            fold_pivot(spec, i, state, want_sources, out);
         }
     }
     if (spec.ledger.type >= 0) fold_ledger(spec, tables, state, want_sources, out);

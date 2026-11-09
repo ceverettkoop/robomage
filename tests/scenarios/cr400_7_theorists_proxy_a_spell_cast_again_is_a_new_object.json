@@ -1,0 +1,59 @@
+{
+  "name": "cr400_7_theorists_proxy_a_spell_cast_again_is_a_new_object",
+  "why": "CR 701.6a, 101.2: {U}, Sacrifice: the same card cast again from the graveyard is a new object (CR 400.7) and the next spell's mark went with the first: Counterspell takes the flashback",
+  "hand_a": [
+    "Faithless Looting"
+  ],
+  "battlefield_a": [
+    "Theorist's Proxy",
+    "Island",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Counterspell"
+  ],
+  "battlefield_b": [
+    "Island",
+    "Island"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Theorist's Proxy",
+    "A:pass",
+    "A:cast:Faithless Looting",
+    "A:discard:Island",
+    "A:discard:Island",
+    "A:cast:Faithless Looting",
+    "B:cast:Counterspell",
+    "B:target:Faithless Looting"
+  ],
+  "max_decisions": 14,
+  "expect_count": {
+    "Resolving ability \\(category: Draw": 1,
+    "Faithless Looting is countered": 1
+  },
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ]
+}

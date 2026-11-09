@@ -27,16 +27,17 @@ class StackManager;
 // preamble); queried by determine_legal_actions, collect_triggered_abilities,
 // mana_system, game.cpp untap, etc.
 //
-// The static itself is held as a handle — its source (a battlefield permanent, or an emblem
-// index) plus its position in that source's static list — and resolved by sa() at every read,
-// never as a pointer into component storage: a Permanent removed or added between gathers
-// moves other permanents' components (the component array's swap-remove), and a new emblem can
-// reallocate Game::resolved_effects.emblems. A static whose source has left the battlefield (or phased out)
-// since the gather resolves to an inert, empty StaticAbility, so its effect stops at once
-// (CR 611.3b: a static ability's effect applies only while its source is on the battlefield).
+// The static itself is held as a handle — its source (a battlefield permanent, or an effect
+// object's id) plus its position in that source's static list — and resolved by sa() at every
+// read, never as a pointer into component storage: a Permanent removed or added between gathers
+// moves other permanents' components (the component array's swap-remove), and a new or ended
+// effect object moves the others within Game::resolved_effects.effect_objects. A static whose
+// source has left the battlefield (or phased out) since the gather resolves to an inert, empty
+// StaticAbility, so its effect stops at once (CR 611.3b: a static ability's effect applies only
+// while its source is on the battlefield).
 struct ActiveStatic {
-    Entity            entity = 0;              // source permanent (0 for an emblem)
-    int               emblem = -1;             // index into Game::resolved_effects.emblems when the source is an emblem
+    Entity            entity = 0;              // source permanent (0 for an effect object)
+    int               effect_object = -1;      // EffectObject::id when the source is an effect object
     size_t            index = 0;               // position in the source's static list
     Zone::Ownership   controller = Zone::PLAYER_A;
     bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
@@ -49,16 +50,32 @@ struct ActiveStatic {
 // Rebuilt every SBE pass. Consumers read this instead of scanning all permanents.
 extern std::vector<ActiveStatic> g_active_statics;
 
-// Resolve the set of battlefield permanents a continuous static's Affected$ filter
-// designates (CR 611/613 — the objects a continuous effect applies to). The filter is
-// evaluated through the shared permanent_matches_filter so the full qualifier grammar
-// (colors, Colorless, subtypes, P/T, …) is honoured; YouCtrl/OppCtrl are controller-scoped
-// to the static's controller and `+Other` excludes the source permanent itself. Returns an
-// empty list for the EquippedBy / Self forms (those resolve to a single creature in the
-// applier) or for an empty filter. This is the single, reusable "which permanents does this
-// static affect" step — the additive-P/T anthem path (It That Heralds the End) uses it, and
-// future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
-std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as, const EntitySet &entities);
+// ── A static's scope (CR 611.3, 613.1) ─────────────────────────────────────────
+// What a static reaches is answered in one place. static_targets (state_manager_statics.cpp)
+// enumerates the objects a layer applies it to; static_reaches and static_reaches_face ask about
+// one object. No other reader looks at Affected$, AffectedDefined$, AffectedZone$ or ExcludeZone$.
+
+// How a scope question reads the object it asks about.
+enum class StaticRead {
+    LIVE,     // a battlefield permanent, by its live characteristics
+    CARD,     // a card where it is, as a filter reads it there
+    PRINTED,  // a card as printed, a token by a color-free test. For a color-setting static, whose
+              // own filter can't read the colors it decides
+};
+
+// Does static `as` reach `e`, read as `read`? `e` must be in a zone it reaches (AffectedZone$, by
+// default the battlefield, less ExcludeZone$). AffectedDefined$ decides first, naming the one object
+// it covers, then Affected$ restricts that further; a static with no Affected$ reaches all it
+// covers. The filter's "you" is the static's controller, and its "this" the static's source.
+bool static_reaches(const ActiveStatic &as, Entity e, StaticRead read);
+
+// The same for `e` read as the characteristics `face`, in `zone`: a card about to enter (CR 614.12),
+// or a back face or second half being cast from where the card is.
+bool static_reaches_face(const ActiveStatic &as, Entity e, const CardData &face, Zone::ZoneValue zone);
+
+// The same for `e` where it is, read as the spell `face` it would be: its place in its zone and its
+// owner are the card's, its characteristics the face's (CR 601.3e).
+bool static_reaches_as(const ActiveStatic &as, Entity e, const CardData &face);
 
 // CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
 // effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?
@@ -72,7 +89,8 @@ bool entering_object_loses_abilities(Entity entity);
 // payment matching. Read by the mana-payment path (mana_system.cpp) so affordability and the
 // actual spend agree. Scans g_active_statics (rebuilt each SBA pass), so callers must run after
 // gather_active_statics — true of every cast/pay path.
-bool any_mana_as_any_color_active();
+struct ManaPayee;
+bool any_mana_as_any_color_active(const ManaPayee &paid_for);
 
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard
@@ -85,9 +103,27 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster = Zo
 
 // Total generic mana that active ReduceCost statics remove from `card_data`'s cost for
 // player `caster` (the mirror of active_raise_cost_for). An Activator$ You static (Eye of
-// Ugin) only reduces spells cast by its own controller. The generic portion is clamped at
-// zero and colored pips are never reduced (CR 118.7 / 601.2f); applied in effective_base_cost.
-int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
+// Ugin) only reduces spells cast by its own controller; the card's own Card.Self statics reduce
+// it as it is cast (CR 113.6d); a ValidTarget$-conditioned one is target_cost_reduction_for's.
+// The generic portion is clamped at zero and colored pips are never reduced (CR 118.7 /
+// 601.2f); applied in effective_base_cost.
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from);
+
+// The generic mana the ReduceCost statics with a ValidTarget$ condition remove from the cost of
+// casting `card_data` for `caster` when the spell targets `targets` (Mystical Dispute's own "costs
+// {2} less to cast if it targets a blue spell"): each such static whose condition one of the
+// targets meets adds its Amount$. The targets are chosen before the total cost is determined
+// (CR 601.2c, 601.2f), so the cast flow applies it once they are, through reduce_generic_cost.
+int target_cost_reduction_for(const CardData &card_data, Zone::Ownership caster, const std::vector<Entity> &targets);
+
+// Is any ReduceCost static with a ValidTarget$ condition one that could reduce the cost of casting
+// `card_data` for `caster` (its spell's targets decide it)?
+bool has_target_cost_reduction(const CardData &card_data, Zone::Ownership caster);
+
+// Remove up to `amount` generic pips from `cost`, `card_data`'s total cost being determined
+// (CR 118.7a; never a colored pip, never below {0}), then raise it to the active SetCost floor,
+// which applies after every reduction (CR 601.2f).
+void reduce_generic_cost(ManaValue &cost, int amount, const CardData &card_data);
 
 // Minimum total mana value an active SetCost cost-floor static (Trinisphere) imposes on
 // `card_data` when cast — the largest set_cost_min among the active (condition-met) RaiseTo
@@ -97,17 +133,19 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
 int active_cost_floor_for(const CardData &card_data);
 
 // The mana portion of an alternative casting cost (alt cost / flashback / escape) with the
-// active cost-increase surcharge (Thalia) and SetCost floor (Trinisphere) folded in. CR 601.2f
-// applies both AFTER the alternative cost is substituted for the mana cost: first the additive
-// increase, then the floor. So a sub-floor alternative — including a free one (Mindbreak Trap's
+// active cost-increase surcharge (Thalia), cost reductions (Bilbo; `from` is the zone the spell is
+// cast from) and SetCost floor (Trinisphere) folded in. CR 601.2f, 118.9d apply them AFTER the
+// alternative cost is substituted for the mana cost: first the additive increase, then the
+// reductions, then the floor. So a sub-floor alternative — including a free one (Mindbreak Trap's
 // {0}, Daze's pitch) — is padded with generic pips up to the floor; a noncreature pitch spell
 // under an opposing Thalia pays the extra {1} on top of its alternative cost. The non-mana parts
 // of the cost (pitch, sacrifice, life) are unaffected and colored pips in the alt cost are kept.
 // `caster` folds in the per-spell/NamedCard-aware increase for the casting player (Zone::UNKNOWN
 // omits the caster-relative part). Shared by determine_legal_actions (affordability) and
-// action_processor (payment) so the two cannot disagree.
-ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
-                                Zone::Ownership caster = Zone::UNKNOWN);
+// action_processor (payment) so the two cannot disagree. `hybrid_pips` counts toward the floor: pips
+// of the alternative cost not yet resolved into `alt_mana`.
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana, Zone::Ownership caster,
+                                Zone::ZoneValue from, int hybrid_pips = 0);
 
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single
@@ -118,8 +156,8 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 // casting player's board — currently Affinity for artifacts (CR 702.41): the generic
 // portion is reduced by {1} per artifact the caster controls. CR 601.2f applies all
 // such reductions after additions; the generic total never drops below zero.
-ManaValue effective_base_cost(const CardData &card_data,
-                              Zone::Ownership caster = Zone::UNKNOWN);
+// `from` is the zone the spell is cast from, which a reduction can ask about.
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster, Zone::ZoneValue from);
 
 // Drive the persisted APNAP trigger placement (Game::pending.trigger_placement) to
 // completion: each ordering pick / trigger target selection is parked as a
@@ -129,19 +167,6 @@ ManaValue effective_base_cost(const CardData &card_data,
 // when a batch is collected, and by the main loop's TRIGGER_PLACE dispatch
 // with a latched answer. On completion restores the pre-placement priority.
 void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
-
-// Whether `caster` may cast the exiled `card` now under its cast permission
-// (Game::resolved_effects.impulse_cast_permission): the spell's timing — ignored for a permission granted for a
-// cast during resolution (CR 608.2g) — its targets and cast prohibitions (can_cast_now), and the
-// permission's alternative cost with any cost floor (CR 118.9d, 601.2f). Shared by the priority
-// offer of granted exile casts and cast_during_resolution's offer.
-bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
-                          std::shared_ptr<Orderer> orderer);
-
-// Whether `owner` may cast the revealed miracle `card` from their hand for its miracle cost as
-// its miracle trigger resolves (CR 702.94a, 608.2g): timing ignored, its targets and cast
-// prohibitions (can_cast_now), and the miracle mana cost with any cost floor (CR 118.9d, 601.2f).
-bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
 
 class StateManager : public System {
 

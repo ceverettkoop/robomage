@@ -1,0 +1,46 @@
+{
+  "name": "cr707_2_a_copy_of_a_face_down_creature_has_no_name",
+  "why": "CR 707.2, 708.2: a face-down creature's copiable values are those of 708.2a: Mockingbird copying one is a face-up 2/2 with no name, a Bird with flying by its exception, and nothing of the card under it reaches either the copy or a frame.",
+  "hand_a": [
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Island",
+    "Mockingbird"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "face_down_a": [
+    "Baleful Strix"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:play:Island",
+    "B:cast:Mockingbird",
+    "B:x:0"
+  ],
+  "max_decisions": 9,
+  "engine_flags": [
+    "--selfcheck-knowledge"
+  ],
+  "expect": [
+    "Mockingbird enters as a copy of a creature with no name"
+  ],
+  "expect_not": [
+    "Baleful Strix"
+  ],
+  "expect_dump_not": [
+    "^B .*face_down .*card=[^n]"
+  ]
+}

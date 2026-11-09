@@ -217,14 +217,15 @@ def cmd_actor(args, tables):
         if meta != want:
             fail("%s metadata %r, expected %r" % (f, meta, want))
     w = args.work
-    decks = ("league/ur_delver", "league/burn")
+    decks = ("league/ur_tempo", "league/burn")
     runs = {
         "ts": eng.start(match_argv(nn_spec(paths["ts"], argmax=True, dump=w + "/ts_A.rmtb", evals=w + "/ts_A_ev.rmtb"),
                                    "explore", *decks, args.seed, True, w + "/ts.rmlog"), "actor_ts"),
         "pt2": eng.start(match_argv(nn_spec(paths["pt2"], argmax=True, evals=w + "/pt2_A_ev.rmtb"), "explore", *decks,
                                     args.seed, True, w + "/pt2.rmlog"), "actor_pt2"),
         "nn_vs_nn": eng.start(match_argv(nn_spec(paths["ts"], temp=1), nn_spec(paths["pt2"], temp=1),
-                                         "league/bw_dnt", "league/reanimator", args.seed + 1, True), "actor_nn_vs_nn"),
+                                         "league/death_and_taxes", "league/reanimator", args.seed + 1, True),
+                             "actor_nn_vs_nn"),
     }
     for k, p in runs.items():
         Engine.finish(p)
@@ -281,8 +282,8 @@ def cmd_server(args, tables):
     say("server on %s: policies %s" % (args.device, srv.policies()))
 
     # 1. Argmax bo1 games, in process and through the server, concurrently.
-    games = [("league/bug", "league/burn"), ("league/ur_delver", "league/uw_control"),
-             ("league/reanimator", "league/bw_dnt"), ("league/gw_maverick", "league/wrb_energy")]
+    games = [("league/bug", "league/burn"), ("league/ur_tempo", "league/uw_control"),
+             ("league/reanimator", "league/death_and_taxes"), ("league/eldrazi_aggro", "league/wrb_energy")]
     procs = []
     for g, (da, db) in enumerate(games):
         seed = args.seed + 10 + g
@@ -370,13 +371,18 @@ def cmd_server(args, tables):
     say("server after the matches: %s" % short_stats(srv.stats()))
 
     # 3. Handshake refusals.
-    base = {"protocol": 1, "client": "integration", "spec_hash": tables.hashes["spec_hash"],
+    base = {"protocol": SV.PROTOCOL, "client": "integration", "spec_hash": tables.hashes["spec_hash"],
             "vocab_hash": tables.hashes["vocab_hash"], "text_model": tables.hashes["text_model"],
+            "layout_hash": tables.hashes["layout_hash"], "tables_digest": tables.hashes["tables_digest"],
+            "vocab": tables.hashes["vocab"],
             "dims": tables.spec.dims(), "shm": "/rmip-none", "request_bytes": 64, "response_bytes": 64,
             "policies": [0]}
     cases = [("spec_hash", dict(base, spec_hash="0123456789abcdef")),
              ("vocab_hash", dict(base, vocab_hash="0123456789abcdef")),
-             ("text_model", dict(base, text_model="other@0")), ("protocol", dict(base, protocol=2)),
+             ("text_model", dict(base, text_model="other@0")), ("protocol", dict(base, protocol=SV.PROTOCOL + 1)),
+             ("layout_hash", dict(base, layout_hash="0123456789abcdef")),
+             ("tables_digest", dict(base, tables_digest="0123456789abcdef")),
+             ("vocab_hash", dict(base, vocab=base["vocab"] + [[899, "A Card Appended"]])),
              ("policy", dict(base, policies=[9])), ("shm", base)]
     for code, hello in cases:
         got = CL.hello_only(sock, hello)
@@ -412,7 +418,7 @@ def kill_check(args, eng, ts):
         return
     spec = remote_spec(sock, argmax=True, timeout=300)
     rmlog = os.path.join(args.work, "kill.rmlog")
-    actor = eng.start(match_argv(spec, spec, "league/ur_delver", "league/uw_control", args.seed + 12, False, rmlog),
+    actor = eng.start(match_argv(spec, spec, "league/ur_tempo", "league/uw_control", args.seed + 12, False, rmlog),
                       "kill_actor")
     paused = wait_for(log.name, "paused after", 300)
     srv.send_signal(signal.SIGKILL)
@@ -511,8 +517,9 @@ def e2e(args, tables, model, eng, n_actors):
     """N concurrent actors (nn:remote both seats, sampled, bo1 games back to back) for --seconds."""
     srv, sock = start_server(args, tables, {0: (model, 1)}, max_batch=512, deadline_us=args.deadline_us,
                              precision=args.precision)
-    decks = ["league/bug", "league/burn", "league/ur_delver", "league/uw_control", "league/reanimator",
-             "league/bw_dnt", "league/gw_maverick", "league/wrb_energy", "league/lands", "league/wubg_doomsday"]
+    decks = ["league/bug", "league/burn", "league/ur_tempo", "league/uw_control", "league/reanimator",
+             "league/death_and_taxes", "league/eldrazi_aggro", "league/wrb_energy", "league/lands_top8",
+             "league/wubg_doomsday", "league/maverick"]
     spec = remote_spec(sock, temp=1, timeout=300)
     procs = {}
     games = [0]

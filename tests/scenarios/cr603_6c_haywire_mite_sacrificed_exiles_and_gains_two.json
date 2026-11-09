@@ -1,0 +1,52 @@
+{
+  "name": "cr603_6c_haywire_mite_sacrificed_exiles_and_gains_two",
+  "why": "CR 603.6c, 603.10a: {G}, sacrifice exiles a noncreature artifact or enchantment (an artifact creature is no target), and the sacrifice is a death: the dies trigger gains 2 life first",
+  "hand_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Haywire Mite",
+    "Forest"
+  ],
+  "battlefield_b": [
+    "Lotus Petal",
+    "Sylvan Library",
+    "Kappa Cannoneer",
+    "Forest"
+  ],
+  "life_a": 10,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:activate:Haywire Mite",
+    "A:target:Sylvan Library"
+  ],
+  "max_decisions": 6,
+  "expect_order": [
+    "^Player A sacrifices Haywire Mite",
+    "^Player A gains 2 life \\(now at 12\\)",
+    "^Sylvan Library is moved to exile"
+  ],
+  "expect_menu": [
+    "^Lotus Petal$",
+    "^Sylvan Library$"
+  ],
+  "expect_menu_not": [
+    "^Kappa Cannoneer$",
+    "^Forest$",
+    "^Haywire Mite$"
+  ]
+}

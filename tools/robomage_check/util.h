@@ -31,6 +31,8 @@ std::string quoted(const std::string &s);
 bool read_file(const std::string &path, std::string *out);
 bool write_file(const std::string &path, const std::string &data);
 bool file_exists(const std::string &path);
+// The first executable `name` on $PATH, else in /usr/bin, /usr/local/bin or /bin; "" when none.
+std::string find_program(const char *name);
 bool is_dir(const std::string &path);
 // mkdir -p.
 bool make_dirs(const std::string &path);

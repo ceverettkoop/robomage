@@ -1,0 +1,51 @@
+{
+  "name": "cr712_8e_volcanic_fissure_enters_tapped_unless_you_pay_three",
+  "why": "CR 712, 614.12: Volcanic Fissure, Sundering Eruption's back face, is played as a land: pay 3 life as it enters or it enters tapped; it taps for red",
+  "hand_a": [
+    "Sundering Eruption",
+    "Sundering Eruption"
+  ],
+  "library_a": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Forest"
+  ],
+  "library_b": [
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:play:Volcanic Fissure",
+    "A:choice:Accept"
+  ],
+  "max_decisions": 8,
+  "expect": [
+    "pays 3 life"
+  ],
+  "expect_menu": [
+    "Play Volcanic Fissure"
+  ],
+  "expect_not": [
+    "Volcanic Fissure enters tapped"
+  ]
+}

@@ -36,6 +36,7 @@ def load_model(path, tables):
     data = torch.load(path, map_location="cpu", weights_only=False)
     if "learner" in data:
         sd = data["learner"]
+        S.require_compatible(sd["hashes"], tables, path)
         model = M.RMNet(M.ModelConfig.from_dict(sd["model_config"]), tables)
         model.load_state_dict(sd["model"])
         return model

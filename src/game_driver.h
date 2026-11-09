@@ -67,6 +67,8 @@ extern int selfcheck_state_sample;
 extern bool selfcheck_knowledge;
 extern std::vector<std::string> battlefield_a_cards;
 extern std::vector<std::string> battlefield_b_cards;
+extern std::vector<std::string> face_down_a_cards;
+extern std::vector<std::string> face_down_b_cards;
 extern std::vector<std::string> graveyard_a_cards;
 extern std::vector<std::string> graveyard_b_cards;
 extern std::vector<std::string> exile_a_cards;
