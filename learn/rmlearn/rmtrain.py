@@ -1,4 +1,4 @@
-"""rmtrain: the training program's command line (docs/rmtrain.md; docs/rnad_training_plan.md §4 L6).
+"""rmtrain: the training program's command line (docs/rmtrain.md).
 
     learn/rmtrain start <run> [--config FILE] [--set section.key=value ...] [--foreground]
     learn/rmtrain status <run> [--json]

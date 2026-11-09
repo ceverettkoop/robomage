@@ -1,6 +1,6 @@
 # learn/ — the learner side (PyTorch)
 
-The learner of `docs/rnad_training_plan.md` §4. It needs torch + numpy (`learn/requirements.txt`,
+The learner and its training program (`docs/rmtrain.md`). It needs torch + numpy (`learn/requirements.txt`,
 its own venv `learn/.venv`) and is never imported by `python/`, the engine or the gate.
 
 ## Layout
@@ -15,10 +15,10 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `rmlearn/episodes.py` | trajectory episodes (`docs/trajectory_format.md`) in numpy: `read_episode` (the file's bytes kept, arrays as views), `expand` (steps of many episodes → the contract's padded inputs, = `batch.pad`), `targets`, `evaluations`, `episode_attrs` |
 | `rmlearn/replay.py` | `ReplayWindow` (RAM window over trajectory directories: polling ingestion, eviction by decisions / bytes, optional deletion of evicted `.rmtraj`, never `.rmlog`; labels; held-out split by game), `DecisionBatch` (BC), `TrajectoryBatch` (R-NaD: full games time-major, chunked), `Prefetcher` (background batch threads) |
 | `rmlearn/bc.py` | behaviour cloning: `BCConfig` (incl. `sideboard_weight`, the policy loss's weight of sideboarding decisions), `BCTrainer` (`train(n)`, `evaluate()`, `save`, `restore`, `export` → metric dicts), `python -m rmlearn.bc` |
-| `rmlearn/corpus.py` | the teacher corpus (plan B0): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus`; `refeaturize` (`--refeaturize RMLOG_DIR`: the kept logs replayed into episodes after a spec change) |
+| `rmlearn/corpus.py` | the teacher corpus (phase B0, `docs/rmtrain.md` §6): scripted:hard games through engine actors (or `rm_driver.py` + `--replay`) into episodes; `make_schedule`, `run_actor_corpus`; `refeaturize` (`--refeaturize RMLOG_DIR`: the kept logs replayed into episodes after a spec change) |
 | `rmlearn/evaluate.py` | an export as `nn:<model>` against `scripted` / `explore` / `random` through engine actors, scored per game (game 1 apart from games 2–3): `run_eval`, `summarize` |
 | `rmlearn/matches.py` | evaluation matches through engine actors: `eval_schedule` (a policy vs an opponent over deck pairs, `swap: sides`), `ActorPool` (N actors, their results lines as games finish, SIGTERM stop), `game_record`, per-game `tally` / `report` (Wilson interval, match-clustered SE, game 1 apart from games 2–3, per matchup / deck / seat / play-draw, draws and caps as findings) |
-| `rmlearn/sprt.py` | the SPRT match runner (plan T8): `SPRTConfig`, `run_sprt(policy, opponent, cfg, out_dir)` → result dict (`sprt.json`, `summary.txt`), `python -m rmlearn.sprt` |
+| `rmlearn/sprt.py` | the SPRT match runner (`docs/rmtrain.md` §7): `SPRTConfig`, `run_sprt(policy, opponent, cfg, out_dir)` → result dict (`sprt.json`, `summary.txt`), `python -m rmlearn.sprt` |
 | `rmlearn/benchmark.py` | the end-of-run benchmark (`rmtrain bench`, docs/rmtrain.md §7.1): a run's policies (default `bc-final`, every `m<k>`, `final` at argmax and projected) against scripted:hard over every league pair with common random numbers; `summary.md`: overall, per deck playing and facing, the difference from the baseline, the deck matrices |
 | `rmlearn/ladder.py` | past fixed points: `Ladder(dir)` (`ladder.json`), `add_fixed_point`, `evaluate_against_ladder`, `ratings` (Bradley–Terry, Elo scale), `python -m rmlearn.ladder` |
 | `rmlearn/exploiter.py` | a PPO best response against a frozen checkpoint (exploiter and victim served by one `InferenceServer`): `ExploiterConfig`, `run_exploiter(victim, init, cfg, out_dir, tables)`, `ExploiterSession` (driven by a host's loop: rmtrain's GPU process), `python -m rmlearn.exploiter` |
@@ -32,7 +32,7 @@ its own venv `learn/.venv`) and is never imported by `python/`, the engine or th
 | `check_rmtrain.py` | rmtrain's CPU checks, and `--smoke`: a tiny end-to-end run (GPU, engine) |
 | `bench_rnad.py` | the learner step's throughput and memory |
 | `integration.py` | checks and benches against the C++ actor (`robomage_nn`): `actor`, `server`, `bench` |
-| `open_vocab_baseline.py` | the open-vocabulary refactor's baseline fixtures (`docs/open_vocab_plan.md` S0): every runnable `runs/**/ckpt/` checkpoint's logits, values and critic values on a fixed decision set (`tests/open_vocab/`: sources, `baseline/`, `manifest.json`), also with the `lists` / `b_lists` tokens removed; `generate` (CPU, reproduces bit for bit), `select` (the decision sources) |
+| `open_vocab_baseline.py` | the open-vocabulary refactor's baseline fixtures: every runnable `runs/**/ckpt/` checkpoint's logits, values and critic values on a fixed decision set (`tests/open_vocab/`: sources, `baseline/`, `manifest.json`), also with the `lists` / `b_lists` tokens removed; `generate` (CPU, reproduces bit for bit), `select` (the decision sources) |
 
 ## Using it
 

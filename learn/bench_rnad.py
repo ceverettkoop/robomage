@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The R-NaD learner step's throughput (docs/rnad_training_plan.md §4 L4, §5): decisions per second
+"""The R-NaD learner step's throughput: decisions per second
 and peak memory of ``RNaDLearner.step`` for the given model, batch shapes and precisions.
 
     HSA_OVERRIDE_GFX_VERSION=10.3.0 flock /tmp/rm-gpu.lock learn/.venv/bin/python learn/bench_rnad.py \\

@@ -51,14 +51,14 @@ playing does not:
             μ, policy version, teacher label and evaluations as the C++ reader read them, and
             tensors files holding the C++ reader's expansion of every step's tensors, and of the
             omniscient tensors and the targets of an omniscient episode) to exactly those values.
-  open_vocab  (not in the default set: the ``featurize`` tier runs it) the S5 acceptance's inputs: the
+  open_vocab  (not in the default set: the ``featurize`` tier runs it) the migration acceptance's inputs: the
             gate's sources of the open-vocabulary fixtures (``tests/open_vocab/inputs.json``'s
             ``gate_sources``, decision logs under ``tests/open_vocab/sources/``) replayed by the engine
             (``--machine --rmstate-dump``) and featurized by ``rmfeat`` beside it (seats A and B, the
             omniscient viewer, over its own ``--cards-frame`` tables): every fixture decision of them
             still listed in ``inputs.json`` has the digest recorded there (sha256 of its seat and its
             omniscient decision's arrays as written), the inputs on which the migrated checkpoints were
-            shown to reproduce S0's outputs (``learn/open_vocab_acceptance.py``).
+            shown to reproduce the fixtures' recorded outputs (``learn/open_vocab_acceptance.py``).
   driver    ``rm_driver.py`` derives the engine seeds it always has (pinned values), and a game it
             plays (scripted against explore) on an interpreter without site-packages (``-S``)
             imports no module from outside the standard library and this directory: the kept
@@ -96,7 +96,7 @@ import rmtraj  # noqa: E402
 
 PARTS = ("decode", "refusals", "selfkill", "driver", "guides", "sideboard", "rmtb", "featurize", "traj")
 OPTIONAL_PARTS = ("open_vocab",)   # run only when named
-# The open-vocabulary fixtures (docs/open_vocab_plan.md S0 / S5).
+# The open-vocabulary fixtures.
 OPEN_VOCAB = os.path.join(os.path.dirname(_HERE), "tests", "open_vocab")
 # The decision arrays of a tensors file a digest covers, in order, with the count naming their rows.
 OPEN_VOCAB_TENSORS = (("tok_type", "tok_type"), ("tok_num", "tok_type"), ("tok_cat", "tok_type"),
@@ -1065,7 +1065,7 @@ def check_open_vocab(binary, work):
         fails.append(f"open_vocab: {moved - 5} more fixture decisions' inputs moved")
     if moved:
         fails.append("open_vocab: the featurization of the open-vocabulary fixtures moved: the migration's acceptance "
-                     "holds on the recorded inputs only (docs/open_vocab_plan.md S5); if intended, drop the moved "
+                     "holds on the recorded inputs only; if intended, drop the moved "
                      "decisions: learn/open_vocab_acceptance.py inputs --drop-moved")
     if not fails:
         print(f"  OK   open_vocab: {checked} fixture decisions of {len(inputs['gate_sources'])} sources featurize to "

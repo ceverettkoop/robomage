@@ -123,7 +123,7 @@ class Tables:
 def load_tables(tables_dir, text_table=None, legacy=False):
     """The exported tables of `tables_dir` and the text table; ValueError when they disagree. A
     directory exported before model manifests (no manifest.json) is refused unless `legacy`, which
-    gives it a manifest of its hashes alone (what such a directory's checkpoints carry: the S5
+    gives it a manifest of its hashes alone (what such a directory's checkpoints carry: the
     migration reads old runs' tables this way)."""
     spec = load_spec(os.path.join(tables_dir, "spec.json"))
     if text_table is None:

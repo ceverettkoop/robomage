@@ -7,7 +7,7 @@
 #include "gate.h"
 #include "proc.h"
 
-// ── robomage_check: the actor binary and the reference policy (plan step 5d, docs/ci.md) ──────
+// ── robomage_check: the actor binary and the reference policy (docs/ci.md) ───────────────────
 //
 // The `actor` tier and the `bench` tier's evaluation stage need bin/<config>/robomage_nn (`make
 // actor`, beside the engine) and a model of the network contract. The model is the reference
@@ -76,8 +76,8 @@ void actor_remote_checks(const Options &opt, Report &rep, const ActorSetup &a);
 // picking up a replaced in-process model between matches, under <out>/actor/reload/.
 void actor_reload_check(const Options &opt, Report &rep, const ActorSetup &a);
 
-// The actor tier's continuous smoke run (tier_actorloop.cpp, sharing the actorloop tier's checks;
-// training plan T8): robomage_nn --actor over four bo3 matches of one entry swapping sides, the
+// The actor tier's continuous smoke run (tier_actorloop.cpp, sharing the actorloop tier's
+// checks): robomage_nn --actor over four bo3 matches of one entry swapping sides, the
 // reference policy (a random-initialised model, CPU) sampled on side a, taught by python/teacher.py
 // at mix 0.5, and projected (thresh=0.03:disc=16) on side b, both seats recorded: the run, its
 // status and results against the episodes, every step's mu, labels and policy version, and each

@@ -10,7 +10,7 @@
 #include "traj.h"
 #include "util.h"
 
-// ── The traj tier's teacher channel checks (--teacher-a/-b, agents/teacher.h; plan T4) ─────────
+// ── The traj tier's teacher channel checks (--teacher-a/-b, agents/teacher.h) ─────────────────
 //
 // python/teacher.py (the scripted agent, hard tier) labels seats of in-process runs; each part
 // writes under <out>/traj/teacher/<part>/ and reports its own failures.

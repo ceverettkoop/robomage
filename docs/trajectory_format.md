@@ -1,9 +1,9 @@
-# Trajectory episodes (`--trajectory-out`, training plan T1)
+# Trajectory episodes (`--trajectory-out`)
 
-The actor-side record of what was played, for the learner (`docs/rnad_training_plan.md` T1, L1):
-one **episode** file per game, holding every decision of the recorded seats with the deciding
-seat's featurized tensors (exactly as the actor's featurizer produced them), the behaviour
-distribution μ it was sampled from, the reply, the policies' evaluations and the game's result.
+The actor-side record of what was played, for the learner: one **episode** file per game, holding
+every decision of the recorded seats with the deciding seat's featurized tensors (exactly as the
+actor's featurizer produced them), the behaviour distribution μ it was sampled from, the reply,
+the policies' evaluations and the game's result.
 The engine side is `src/agents/trajectory.{h,cpp}`; the format, its writer and its C++ reader are
 `src/featurize/episode.{h,cpp}` (standard library only); `python/rmtraj.py` is the stdlib Python
 reader. The gate's `traj` tier (`docs/ci.md`) and the `actor` tier's trajectory checks test it.
@@ -17,7 +17,7 @@ cd bin
     --deck-a league/burn --deck-b league/bug --bo3 --game-seed 7 --trajectory-out DIR
 # the same games re-featurized from their decision log (μ absent)
 ./release/robomage --replay DIR/s<seed>.rmlog --trajectory-out DIR2
-# the behaviour-cloning corpus (plan B0): scripted games through the Python driver, logs kept
+# a behaviour-cloning corpus: scripted games through the Python driver, logs kept
 python3 python/rm_driver.py --player-a scripted --player-b scripted --deck-a league/bug \
     --deck-b league/burn --format bo3 --games 100 --quiet --rmlog-dir LOGS
 for f in LOGS/*.rmlog; do ./release/robomage --replay "$f" --trajectory-out EPISODES; done
@@ -31,7 +31,45 @@ for f in LOGS/*.rmlog; do ./release/robomage --replay "$f" --trajectory-out EPIS
 
 The options are output only: not recorded in the decision log, honored under `--replay`.
 
-### 1.1 Teacher labels (`--teacher-a / --teacher-b`, training plan T4)
+- **The decision log is always kept.** Outside `--replay`, `--trajectory-out` turns decision
+  logging on: `--decision-log FILE` when given, else `DIR/s<engine seed>.rmlog`. Under bo3 one log
+  covers the match; each episode records which game it is. Under `--replay` the replayed log is the
+  episodes' log.
+- **Names.** `DIR/<stem>.g<n>.rmtraj` for game `n` (1-based, the `GAME_RESULT` number) of the
+  match, `<stem>` the decision log's file name without its extension. A live run and a `--replay`
+  of its log write the same names; a corpus of logs replayed into one directory keeps one name per
+  log (`rm_driver.py --rmlog-dir` names each `<deck a>-<deck b>.<bo1|bo3>.seed<seed>.rmlog`).
+- **Atomic.** Each file is written whole when its game ends (or the run stops at
+  `--max-decisions`, or a human seat quits), to `<name>.tmp` and renamed into place, so a reader
+  polling DIR for `*.rmtraj` never sees part of one. An actor stopped by a signal writes none for
+  its unfinished game.
+- **Re-featurization.** The frames are a function of the decision log, so `--replay LOG
+  --trajectory-out` writes byte-identical tensors (and every other array but `has_mu`, `mu`,
+  `policy_version`, `eval_*`, and `teacher` unless the replay has the same teachers): old games
+  re-featurize after a feature-spec change, a scripted corpus becomes tensors. The knowledge level
+  (`--knowledge-a/-b`) shapes the `k_*` tokens and is not logged, so a replay must be given the live
+  run's levels (each episode records them).
+- **The decision log carries no μ.** It holds one integer per decision, so μ, the policy versions
+  and the evaluations exist only in the live run's episodes; a replay's have μ absent (for
+  behaviour cloning the reply is the label).
+
+**Which decisions.** Every decision the engine asks of a recorded seat, in order: a decision the
+engine takes itself (a menu with one row: a lone pass, a single legal target, …;
+`docs/state_format.md` §9) is never asked and never appears, so the seat sequence is
+irregular and every record carries its seat. Concession unwinding (CR 104.3a) asks nothing.
+
+**What the recorded seat's decider gives.**
+
+| Decider | μ | policy version, evaluations |
+|---|---|---|
+| `nn:<model>` | the distribution sampled from (after temperature, `thresh=`, `disc=`; one-hot under `argmax`) | the model's version; its one policy (id 0): value, `log π` |
+| `nn:remote:<socket>:policies=a,b,…` | the same, from the first policy | the first policy's version; every requested policy's value, `log π`, version |
+| `random` | uniform, `1/n` | version 0, none |
+| `explore`, `first`, `actions:`, `play:`, a human seat, a stream seat (`--machine`, e.g. the Python scripted agent), every decision of `--replay` | absent | -1, none |
+| `--play` / `--actions` script | absent on the script's own replies; the seat agent's once the script hands over | as the seat agent |
+| an exploring sideboarding phase (the actor's `sb_explore`, `docs/actor.md` §2) | the proposal `q` the row was drawn from, over every menu row | the agent's (`nn:`: its version and evaluation of the decision, made as always; an agent with none: version 0, none) |
+
+### 1.1 Teacher labels (`--teacher-a / --teacher-b`)
 
 | Flag | Meaning |
 |---|---|
@@ -71,51 +109,6 @@ match's stream.
   the timeout, replies anything but a menu row, −1, −2 or −3, or exits with a status other than 0
   when its input ends at the end of the run, ends the run with a fatal error naming the seat. There
   is no default label.
-- **Cost** (release build, explore on both seats, league bo3 matches, one engine and its teachers
-  per match): ~1,790 decisions/s without a teacher, ~1,400 with one seat taught and ~1,180 with both
-  (each teacher process's ~30 ms start included); `teacher.py` itself labels ~4,800 decisions/s on
-  one core, its start left out. The teacher thinks while the engine decodes the frame and the agent
-  decides.
-
-- **The decision log is always kept.** Outside `--replay`, `--trajectory-out` turns decision
-  logging on: `--decision-log FILE` when given, else `DIR/s<engine seed>.rmlog`. Under bo3 one log
-  covers the match; each episode records which game it is. Under `--replay` the replayed log is the
-  episodes' log.
-- **Names.** `DIR/<stem>.g<n>.rmtraj` for game `n` (1-based, the `GAME_RESULT` number) of the
-  match, `<stem>` the decision log's file name without its extension. A live run and a `--replay`
-  of its log write the same names; a corpus of logs replayed into one directory keeps one name per
-  log (`rm_driver.py --rmlog-dir` names each `<deck a>-<deck b>.<bo1|bo3>.seed<seed>.rmlog`).
-- **Atomic.** Each file is written whole when its game ends (or the run stops at
-  `--max-decisions`, or a human seat quits), to `<name>.tmp` and renamed into place, so a reader
-  polling DIR for `*.rmtraj` never sees part of one. An actor stopped by a signal writes none for
-  its unfinished game.
-- **Re-featurization.** The frames are a function of the decision log, so `--replay LOG
-  --trajectory-out` writes byte-identical tensors (and every other array but the behaviour
-  policy's: `has_mu`, `mu`, `policy_version`, `eval_*`; and `teacher` unless the replay has the
-  same teachers). This is how old games are re-featurized
-  after a feature-spec change, and how the scripted agent's corpus becomes tensors. The knowledge
-  level (`--knowledge-a/-b`) shapes the `k_*` tokens and is output only, so a replay must be given
-  the same levels as the live run (each episode records them).
-- **The decision log carries no μ.** It holds one integer per decision and replays byte for byte
-  (the replay corpus depends on it), so μ, the policy versions and the evaluations exist only in
-  the live run's episodes; a replay's episodes have μ absent, which is what behaviour cloning on
-  the scripted corpus needs (the reply is the label).
-
-**Which decisions.** Every decision the engine asks of a recorded seat, in order: a decision the
-engine takes itself (a menu with one row: a lone pass, a single legal target, …;
-`docs/state_format.md` §9) is never asked and never appears, so the seat sequence is
-irregular and every record carries its seat. Concession unwinding (CR 104.3a) asks nothing.
-
-**What the recorded seat's decider gives.**
-
-| Decider | μ | policy version, evaluations |
-|---|---|---|
-| `nn:<model>` | the distribution sampled from (after temperature, `thresh=`, `disc=`; one-hot under `argmax`) | the model's version; its one policy (id 0): value, `log π` |
-| `nn:remote:<socket>:policies=a,b,…` | the same, from the first policy | the first policy's version; every requested policy's value, `log π`, version |
-| `random` | uniform, `1/n` | version 0, none |
-| `explore`, `first`, `actions:`, `play:`, a human seat, a stream seat (`--machine`, e.g. the Python scripted agent), every decision of `--replay` | absent | -1, none |
-| `--play` / `--actions` script | absent on the script's own replies; the seat agent's once the script hands over | as the seat agent |
-| an exploring sideboarding phase (the actor's `sb_explore`, `docs/actor.md` §2) | the proposal `q` the row was drawn from, over every menu row | the agent's (`nn:`: its version and evaluation of the decision, made as always; an agent with none: version 0, none) |
 
 ## 2. Episodes
 
@@ -151,7 +144,7 @@ In this order; integers unless marked as strings.
 
 | Attr | Meaning |
 |---|---|
-| `episode_version` | 3 (version 2 was of the layout before the layout registry, `open_vocab_plan.md` S2, and had no `layout_hash`; version 1 also had the `opp_list` / `opp_archetype` targets, S1) |
+| `episode_version` | 3 |
 | `layout_hash` (string) | the spec's `layout_hash` (16 hex digits, `docs/featurizer.md` §6.1): the layout the tensors are in, the same whatever cards or entries were appended to it |
 | `F`, `C`, `K`, `Q` | the spec's widths of `tok_num`, `tok_cat`, `tok_card`, `tok_ability` (the layout registry's) |
 | `menu_type` | the spec's token type of `menu` rows (`act_tok` is rebuilt from it, §3.3) |
@@ -254,26 +247,3 @@ rule of `docs/featurizer.md` §3.5).
   with every array a view of them and `expand(steps)` builds a batch's padded inputs from steps of
   many episodes at once (§3.3 vectorised; equal to `batch.pad`); `learn/rmlearn/replay.py` is the
   replay window over trajectory directories. `learn/check.py` checks it against `rmtraj.py`.
-
-## 5. Size and cost
-
-Measured on an explore bo3 match (burn vs uw_control, 209 recorded decisions; the sizes do not
-depend on the build), feature spec version 2 (the folds of `docs/featurizer.md` §3.6; ~126 seat
-tokens per decision):
-
-| Part | Bytes per decision |
-|---|---|
-| seat tensors | ~3.7 KB: `tok_num` index + value ~2.3 KB (about 580 nonzero values), `tok_cat` ~0.6 KB, `tok_card` ~0.5 KB, `tok_type` ~0.13 KB, `rel` ~0.1 KB, the rest < 0.1 KB |
-| omniscient tensors and targets | ~8.0 KB more |
-
-(Spec version 1, before the folds, ~264 seat tokens: ~4.7 KB and ~8.9 KB on the same match.) For
-comparison, the featurizer's own tensors file (`rmfeat --featurize`: f32 and i64, every slot of
-`[N, F]`) is ~40 KB per seat decision.
-
-Cost (release build, explore vs explore bo3, one process per match, both seats already served by the
-in-process feed): ~470 µs per decision without trajectories, ~520 µs with (`featurize_seat` on the
-decoded frame, the compaction and the file write; the agent's tensors are reused when it is `nn:`),
-~810 µs with `--trajectory-omniscient` (the omniscient frame is encoded, decoded and featurized per
-decision); loading the featurizer's inputs adds ~13 ms per process. A recorded seat that the RMSTATE
-stream decides (not otherwise served in process) also gets its frames built and decoded for the
-writer.

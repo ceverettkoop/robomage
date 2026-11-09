@@ -17,7 +17,7 @@
 // (policies(); policy 0 is the one an actor samples from) the logits over the decision's menu rows,
 // their log-softmax over those rows (log π) and the policy's version, and the value of policy 0.
 // The in-process implementation serves one policy; the remote one (remote_evaluator.h,
-// docs/inference_protocol.md) serves the policies its spec names, e.g. the training plan's current
+// docs/inference_protocol.md) serves the policies its spec names, e.g. a training run's current
 // and regularisation policies in the same request, filling more entries, so callers index policies
 // and never assume one.
 //

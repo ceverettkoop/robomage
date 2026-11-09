@@ -1,7 +1,7 @@
 #ifndef ROBOMAGE_CHECK_CLI_H
 #define ROBOMAGE_CHECK_CLI_H
 
-// robomage_check: the engine's test gate in C++ (docs/engine_fork_plan.md step 3a, docs/ci.md).
+// robomage_check: the engine's test gate in C++ (docs/ci.md).
 //
 //   robomage_check [--tier a,b,...] [-j N] [--seed N] [--binary PATH] [--out-dir DIR]
 //                  [--fuzz-games N] [--smoke-games N] [--matchups PRESET] [--mode explore|explore:patient]

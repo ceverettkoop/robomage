@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A minimal inference server in Python (plan step 5d, docs/inference_protocol.md).
+"""A minimal inference server in Python (docs/inference_protocol.md).
 
 NEEDS torch and numpy (e.g. /root/torchenv/bin/python); `make` never runs it. It proves the protocol
 is implementable outside C++ with `socket`, `struct`, `json`, `multiprocessing.shared_memory`, numpy

@@ -262,10 +262,10 @@ static bool build_variant(const rmcheck::Options &opt, rmcheck::Report &rep, con
     return false;
 }
 
-// The checkpoint migration's acceptance (docs/open_vocab_plan.md S5, learn/open_vocab_acceptance.py
-// gate): the gate's subset of S0's fixture checkpoints (originals under runs/, git-ignored) migrated in
-// memory and run on the fixture decisions of the gate's sources as this build featurizes them, against
-// S0's outputs; the cut-over's files against their migration; a synthetic one-card expansion. A
+// The checkpoint migration's acceptance (learn/open_vocab_acceptance.py gate): the gate's subset of
+// the fixture checkpoints (originals under runs/, git-ignored) migrated in memory and run on the
+// fixture decisions of the gate's sources as this build featurizes them, against their recorded
+// outputs; the cut-over's files against their migration; a synthetic one-card expansion. A
 // clone without the original checkpoints prints its skipped: line.
 static void check_open_vocab(const rmcheck::Options &opt, rmcheck::Report &rep, const rmcheck::ActorSetup &a) {
     rmcheck::ProcSpec spec;

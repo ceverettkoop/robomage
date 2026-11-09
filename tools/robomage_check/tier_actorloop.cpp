@@ -1125,7 +1125,7 @@ static void part_sb_schedule_errors(const rmcheck::Options &opt, rmcheck::Report
 
 namespace rmcheck {
 
-// The actor tier's continuous smoke run (plan T8; actor.h).
+// The actor tier's continuous smoke run (actor.h).
 void actor_smoke_check(const Options &opt, Report &rep, const ActorSetup &setup) {
     const char *part = "actor smoke";
     if (opt.python.empty()) {

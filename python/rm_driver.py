@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The agent-game driver on the RMSTATE protocol: engine subprocess, frame read, reply write.
 
-Plan step 2, "Driver" (``docs/engine_fork_plan.md``): the minimal, stdlib-only driver that plays
+The minimal, stdlib-only driver that plays
 agent games. It launches the engine with ``--machine`` (``docs/state_format.md`` §9: stdout carries
 only ``RMSTATE`` records; narrative, ``GAME_RESULT`` and ``MATCH_RESULT`` go to stderr), decodes
 each seat's frames with ``rmstate.py``, follows them in that seat's ``rm_agent.SeatFrames``, asks

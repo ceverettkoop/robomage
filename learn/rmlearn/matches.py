@@ -1,5 +1,5 @@
 """Evaluation matches through engine actors (``--actor``, docs/actor.md), read game by game as they
-finish, and their per-game reports (docs/rnad_training_plan.md T8): the shared machinery of
+finish, and their per-game reports (docs/rmtrain.md §7): the shared machinery of
 ``sprt.py``, ``ladder.py`` and ``exploiter.py``.
 
     sched = eval_schedule("nn:/r/p3.pt2:argmax", "scripted", out_dir, pairs=league_pairs())

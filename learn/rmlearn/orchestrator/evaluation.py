@@ -1,4 +1,4 @@
-"""Evaluation (docs/rmtrain.md §7; docs/rnad_training_plan.md T8): an evaluator registry and the
+"""Evaluation (docs/rmtrain.md §7): an evaluator registry and the
 evaluation job that plays an evaluator's matches with evaluation actors.
 
     @evaluator("mine")

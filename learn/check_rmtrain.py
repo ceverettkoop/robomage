@@ -26,7 +26,7 @@ evaluations against scripted:hard, ``bc.sideboard_weight``, ``rnad.reg_eps_sideb
 structured sideboard exploration (``p_explore``'s schedule, the coverage counts from results lines, the
 weights, the self-play schedule's ``sb_explore`` and no other schedule's, the orchestrator's snapshot
 cadence, metrics, status and state; the engine's own schedule check when a built engine knows the key),
-and the T8 evaluators (sprt groups and an SPRT evaluation stopping its actors when
+and the evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
 ladder record and ratings), the end-of-run benchmark (its policy set, summary, sideboarding report
 and ``--opponent``), and ``run.feature_history`` (not live, fixed at creation, its flags, the start
@@ -42,7 +42,7 @@ then run to its end (B5, done); per-iteration SPRT evaluations and one exploiter
 --evaluators exploiter``) run on the way, and the ladder's ratings land in ``state.json``.
 ``--feature-history N`` runs it with ``run.feature_history`` N (its episodes carry history tokens),
 then a short run with it from a checkpoint without history (``--start-from``, else a d 64 network
-built here: docs/open_vocab_training_plan.md §1). Prints per-phase timings and ``RMTRAIN-SMOKE: ok``.
+built here). Prints per-phase timings and ``RMTRAIN-SMOKE: ok``.
 """
 
 import os
@@ -705,7 +705,7 @@ def check_schedules(tmp):
 
 
 def check_sideboarding_warm_start(tmp):
-    """The sideboarding warm start (docs/rnad_training_plan.md §6.2): actors.teacher_tier is the
+    """The sideboarding warm start (docs/rmtrain.md §3): actors.teacher_tier is the
     teacher of B0's scripted seats and DAgger's labels while every evaluation opponent stays
     scripted:hard; bc.sideboard_weight weights the policy loss (1: the plain mean); rnad.reg_eps_sideboarding
     at 0 or 0.01 validates and smooths finitely."""
@@ -801,7 +801,7 @@ def check_sideboarding_warm_start(tmp):
 
 
 def check_t8(tmp):
-    """The T8 evaluators: sprt (groups, the test stopping an evaluation), exploiter (its spec and the
+    """The evaluators (docs/rmtrain.md §7): sprt (groups, the test stopping an evaluation), exploiter (its spec and the
     GPU process's config), the request split, the ladder record and ratings."""
     from rmlearn import exploiter as X
     from rmlearn.orchestrator.orchestrator import Orchestrator
@@ -1520,7 +1520,7 @@ def smoke(args):
     s = wait(lambda s: (s.get("progress") or {}).get("iterations", 0) >= 2 and (s.get("checkpoint") or {}).get(
         "kind") == "rnad" and (s["checkpoint"].get("learner_steps") or 0) >= 60, "two R-NaD iterations", 1200)
     ck_steps = s["checkpoint"]["learner_steps"]
-    # The expansion procedure, live (open_vocab_plan S8): a league deck whose cards the tables hold.
+    # The expansion procedure, live (docs/rmtrain.md §1.1): a league deck whose cards the tables hold.
     r = sh([rmtrain, "add-decks", run.path, "lands_top8"])
     check(r.returncode == 0 and "set live" in r.stdout, "add-decks on the running run")
     check(sh([rmtrain, "add-decks", run.path, "heldout/bant_control"], check_ok=False).returncode != 0,
@@ -1702,7 +1702,7 @@ every_minutes = 0.5
 
 
 def smoke_start_from(args, rmtrain, base, history):
-    """docs/open_vocab_training_plan.md §1: a checkpoint trained without history (``--start-from``, else a
+    """A checkpoint trained without history (``--start-from``, else a
     d 64 network built here over the run's tables exported without history) starts a run with
     run.feature_history: it loads (the same layout_hash; spec.check_compatible compares no spec hash for a
     checkpoint), an export of it is refused across the option (exact: the spec hash), and the run reaches B4
@@ -2140,7 +2140,7 @@ def _fake_decks(root, league=(), heldout=()):
 
 
 def check_benchmark_decks(tmp):
-    """``rmtrain bench --decks`` (open_vocab_plan S8): the deck sets (league/ with the eleven first, heldout/,
+    """``rmtrain bench --decks`` (docs/rmtrain.md §7.1): the deck sets (league/ with the eleven first, heldout/,
     single stems), --focus, the default unchanged, a report over other pairs not reused, the summary's
     per-deck facing deltas and deck groups (paired), the tables."""
     from rmlearn import benchmark as BM
@@ -2225,7 +2225,7 @@ def check_benchmark_decks(tmp):
 
 
 def check_league_expansion(tmp):
-    """The expansion procedure (open_vocab_plan S8, docs/rmtrain.md §1.1): league.decks / league.pairs
+    """The expansion procedure (docs/rmtrain.md §1.1): league.decks / league.pairs
     live and validated together (a held-out deck, a deck in no pair, a pair outside the decks refused),
     ``plan_add``'s new pairs at the mean weight, the orchestrator's set of both keys rewriting the
     self-play schedule with the new deck's entries and re-reading the coverage cells, ``check_deck``

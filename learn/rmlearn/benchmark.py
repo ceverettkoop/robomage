@@ -4,7 +4,7 @@ per game and per deck.
 
     learn/rmtrain bench <run> [--wait] [--policies bc-final,m3,final,final@thresh=0.03:disc=16]
     learn/rmtrain bench <run> --opponent scripted:hard+sb      # under bench/end-vs-hard_sb/
-    learn/rmtrain bench <run> --decks league,heldout --label heldout   # held-out decks too (open_vocab_plan S8)
+    learn/rmtrain bench <run> --decks league,heldout --label heldout   # held-out decks too
     python -m rmlearn.benchmark --run runs/league12h [--matches 480] [--actors 12] [--label end]
 
 A policy is an export name of the run (``exports/<name>.ts.pt``: ``bc-final``, ``m<k>``, ``final``) or

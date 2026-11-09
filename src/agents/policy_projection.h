@@ -5,7 +5,7 @@
 
 // ── DeepNash's play-time policy projection: thresholding, then discretisation ────────────────
 //
-// rnad_training_plan.md T6; OpenSpiel's FineTuning (open_spiel/python/algorithms/rnad/rnad.py,
+// OpenSpiel's FineTuning (open_spiel/python/algorithms/rnad/rnad.py,
 // _threshold and _discretize_single), in double precision over one decision's menu rows. Std only:
 // the nn: agent (src/actor/nn_agent.h) projects the distribution it samples from, and the gate
 // links it to recompute the agent's behaviour distributions.

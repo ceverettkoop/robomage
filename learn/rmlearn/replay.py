@@ -1,5 +1,4 @@
-"""The learner's RAM replay window over trajectory episodes and its two batch kinds
-(docs/rnad_training_plan.md §4 L1).
+"""The learner's RAM replay window over trajectory episodes and its two batch kinds.
 
     win = ReplayWindow(WindowConfig(dirs=["runs/r1/episodes"], max_decisions=4_000_000))
     win.poll()                                   # ingest the episodes that appeared (or win.start())
@@ -47,7 +46,7 @@ games for comparing train and held-out metrics.
 **Decision batches** (BC): ``sample_decisions`` draws steps uniformly over the split's labelled
 steps; ``decision_batch`` expands them (``DecisionBatch``).
 
-**Trajectory batches** (R-NaD, L4): ``TrajectoryBatch`` lays G full games out time-major,
+**Trajectory batches** (R-NaD): ``TrajectoryBatch`` lays G full games out time-major,
 ``[T, G]`` with T the longest game rounded up to a multiple of ``chunk_len``, both seats'
 decisions interleaved in decision order (an episode's steps are in that order, the sideboarding
 before the game first); the network inputs come chunk by chunk (``chunk_inputs``), since a whole

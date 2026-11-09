@@ -1,4 +1,4 @@
-"""The orchestrator (docs/rmtrain.md; docs/rnad_training_plan.md §4 L6, §6): one process, no GPU, that
+"""The orchestrator (docs/rmtrain.md): one process, no GPU, that
 walks the phases B0–B5 of one run, owns the actors, the GPU process, the evaluations and exports,
 and answers the control socket.
 

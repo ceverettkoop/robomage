@@ -1,4 +1,4 @@
-// rmembed: the oracle-text table's generator (plan step 5c, docs/featurizer.md §5). libtorch; links
+// rmembed: the oracle-text table's generator (docs/featurizer.md §5). libtorch; links
 // no engine translation unit (only src/featurize/ and the std-only schema for FNV-1a).
 //
 //   rmembed --model DIR --pin PIN --inputs ENTRIES.jsonl --table TABLE

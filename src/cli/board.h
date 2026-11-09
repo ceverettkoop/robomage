@@ -7,7 +7,7 @@
 
 #include "../agents/decision_view.h"
 
-// ── The C++ CLI's renderer: one seat's decoded RMSTATE frames as text (plan step 4b) ──────────
+// ── The C++ CLI's renderer: one seat's decoded RMSTATE frames as text ─────────────────────────
 //
 // Reads only the deciding seat's decoded frames (agents/decision_view.h: its STATE frame with the
 // k_* knowledge tables appended to it, and the stream's SCHEMA, CARDS and DECKLISTS

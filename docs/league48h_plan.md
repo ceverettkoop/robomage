@@ -4,10 +4,9 @@ Goal: one 48-hour R-NaD run over the 26 league decks, carrying on from the histo
 (`runs/hist-off`, 5,002 learner steps from `m11`), with the recent-event history off. The four held-out
 decks stay out of training and measure generalisation.
 
-This replaces two choices of `docs/open_vocab_training_plan.md`: history is off (the paired run found no
-gain from it: difference in differences +0.002 ± 0.008, at ~20% more wall time per step), and the start is
-hist-off's final network, not `m11`. The rest of that plan holds: the league of §3, the measures of §4, new
-decks entering through self-play with no teacher, no BC and no deck-specific logic.
+History is off: the paired run found no gain from it (difference in differences +0.002 ± 0.008) at ~20%
+more wall time per step. New decks enter through self-play from the current policy, with no teacher, no BC
+and no deck-specific logic.
 
 Config: `runs/league48h.toml` (validated with `rmlearn.orchestrator.config.validate`). Launching it needs the
 user's go-ahead.
@@ -84,7 +83,7 @@ in 5k steps.
 | `rnad.reg_eps`, `reg_eps_sideboarding` | 0.02, 0.0 | as hist-off |
 | `b4.max_learner_steps`, `b5.max_learner_steps` | 20,000 (re-set at hour 3) | the run ends in B4 with no fine-tuning, as hist-off did |
 | `sb_explore` | 0.25 → 0.05, hold 0.33 | as hist-off. The hold and the slope scale with `b4.max_learner_steps`, so moving the cap moves them too |
-| `model.id_dropout` | 0.1 | unchanged. 0.25 is `docs/open_vocab_plan.md` S8's follow-up experiment, not this run |
+| `model.id_dropout` | 0.1 | unchanged. 0.25 is a later experiment, judged on the held-out decks, not this run |
 | `eval.pairs` | the default four, plus `elves`–`painter`, `doomsday`–`stoneblade`, `hogaak`–`cradle_control`, `mystic_forge`–`boros_aggro` | the run's own evaluations also follow new decks |
 | `eval.every_minutes` | 90 (hist-off: 60) | `per_iteration` already adds an evaluation every 2,000 steps |
 | actors | 26, `local_count` 16, local TorchScript | as hist-off |
@@ -162,8 +161,11 @@ FATAL, not a reviewed draw). Don't stop on noise from one evaluation.
 ## 6. Training files to clean up
 
 `du` on 2026-11-09, with 933 GB free on `/home`. The run itself needs at most ~40 GB of replay window
-(`replay.max_gb`) plus its checkpoints, so none of this deletion is required for the run. Nothing below
-has been deleted. The user decides.
+(`replay.max_gb`) plus its checkpoints, so none of this deletion is required for the run.
+
+*Removed (2026-11-09, 93 GB):* the two history runs' `episodes`, `open_vocab_s7`'s fuzz and acceptance
+scratch, and the S0–S5 and `scythecat_fix` scratch, as listed below. For `open_vocab_s1`–`s3`, the top-level
+scripts and logs the docs cite were kept. The rest of the table is still on disk.
 
 **Safe to delete: nothing reads them.**
 
@@ -172,7 +174,7 @@ has been deleted. The user decides.
 | `train/` (untracked) | 129 GB | the archived RL stack's data: `az_data` (103 GB of AlphaZero shards), `checkpoints` (7.5 GB), `logs`, `ci_out`, `analysis_out`, generated `card_costs.py` / `card_props.py` / `sb_rules.py`. The obs format is long dead; the code is on `archive/rl-stack` |
 | `src/gen/` (untracked) | 156 KB | `card_costs_gen.h`, `sb_rules_gen.h`: the old stack's codegen output. Nothing includes them |
 | `runs/hist-off/episodes`, `runs/hist-on/episodes` | 17 + 21 GB | the finished paired runs' replay windows. Neither run can be resumed, and league48h starts with an empty window. hist-on's are of the history spec |
-| `runs/open_vocab_s7/onboard/fuzz`, `fuzz_prefix` | 12 GB | M-stage onboarding fuzz transcripts. Keep `onboard/*.log`, `campaign.sh`, `scripted*/` (`docs/open_vocab_plan.md` cites them) |
+| `runs/open_vocab_s7/onboard/fuzz`, `fuzz_prefix` | 12 GB | M-stage onboarding fuzz transcripts. Keep `onboard/*.log`, `campaign.sh`, `scripted*/` (the onboarding record) |
 | `runs/open_vocab_s7/subtypes/{inputs_work,inputs_work2,acceptance}` | 9.6 GB | acceptance scratch. Keep `agents_{before,after}` (cited) |
 | `runs/open_vocab_s5/{acceptance,acceptance_pre,inputs_work,rehearsal,try,gate_try}` | 12.8 GB | S5 acceptance work directories. `acceptance` is `open_vocab_acceptance.py full`'s default `--work` and is rebuilt when run |
 | `runs/open_vocab_s0/{decisions,feat,tensors,dumps}` | 6.5 GB | S0 fixture generation scratch. The fixtures are committed in `tests/open_vocab/`. **Keep `open_vocab_s0/ckpt*`** (`m11-critic.pt`, read by the gate) |
@@ -196,8 +198,8 @@ layout-2 migration. The current `ckpt/` files are migrated, and the acceptance r
 
 - `runs/league24h-sb` (`m11`, the gate's checkpoints).
 - Every `ckpt/` and `ckpt.v1/` of league12h, league24h-sb, val1, pilotA, pilot-p1/p2, bc1 and open_vocab_s0:
-  the S0 fixture manifest's originals for `open_vocab_acceptance.py full`, which `docs/open_vocab_training_plan.md`
-  §2 item 4 still has to run.
+  the S0 fixture manifest's originals for `learn/open_vocab_acceptance.py full`, not yet run over the
+  cards added since M7.
 - `runs/hist-off` except `episodes`: the start checkpoint, its exports and `final-model.pt`.
 - `runs/hist-on/bench/hist-pair`: the paired baseline above.
 - `runs/hist-on`'s `ckpt` and `exports`, for any later history comparison.

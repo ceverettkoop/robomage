@@ -1,5 +1,5 @@
 """Structured sideboard exploration, the orchestrator's side (docs/rmtrain.md §3 ``[sb_explore]``,
-§6.1; docs/rnad_training_plan.md §6.2 part 2): ``p_explore``'s schedule, the coverage counts from
+§6.1): ``p_explore``'s schedule, the coverage counts from
 the training actors' results lines, and the ``sb_explore`` object each self-play schedule entry
 carries (the actor's side: docs/actor.md §2 ``sb_explore``, §4 ``sb``).
 

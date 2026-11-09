@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The reference policy of the network contract (plan step 5d, docs/featurizer.md §6).
+"""The reference policy of the network contract (docs/featurizer.md §6).
 
 NEEDS torch (and, for the ONNX export and --check, onnx, onnxscript and onnxruntime), e.g.
 /root/torchenv/bin/python; `make` never runs it (the gate's `actor` tier does, when asked).

@@ -7,7 +7,7 @@
 
 // ── Structured sideboard exploration: the proposal q of an exploring phase ────────────────────
 //
-// docs/rnad_training_plan.md §6.2 part 2, docs/actor.md §2 (the schedule's `sb_explore`). Standard
+// docs/actor.md §2 (the schedule's `sb_explore`). Standard
 // library and the agents' frame reader only: q is a function of the deciding seat's frame (its menu
 // rows' categories and cards, the MATCH table's sb_swaps) and the seat's configuration.
 //

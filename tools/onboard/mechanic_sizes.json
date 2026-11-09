@@ -1,5 +1,5 @@
 {
- "_doc": "onboard.py capability: parse-report findings (kind:name) grouped into the mechanics an engine change implements, with a size each (S <= half a day, M ~1 day, L 2-3 days, XL a week or more). A finding no group lists is its own mechanic, sized by its kind. Estimated 2026-10-24 from the candidates' scripts (docs/open_vocab_plan.md S7); revise as mechanics land.",
+ "_doc": "onboard.py capability: parse-report findings (kind:name) grouped into the mechanics an engine change implements, with a size each (S <= half a day, M ~1 day, L 2-3 days, XL a week or more). A finding no group lists is its own mechanic, sized by its kind. Estimated 2026-10-24 from the candidates' scripts; revise as mechanics land.",
  "points": {"S": 1, "M": 3, "L": 8, "XL": 20},
  "kinds": {
   "category": "M",

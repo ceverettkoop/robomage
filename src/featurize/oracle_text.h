@@ -8,7 +8,7 @@
 
 #include "rmtb.h"
 
-// ── The oracle-text table's inputs and staleness (plan step 5c, docs/featurizer.md §5) ─────────
+// ── The oracle-text table's inputs and staleness (docs/featurizer.md §5) ───────────────────────
 //
 // Standard library only: the engine (--text-table-check / --text-table-inputs, text_table.h) builds
 // the text entries from its cards and calls these; rmembed reads the inputs file and rewrites the

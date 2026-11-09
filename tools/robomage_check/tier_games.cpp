@@ -33,7 +33,7 @@ const int FIXTURE_MIN_GAMES = 16;
 // Runs of each bench game and stage; each figure is the fastest (process timings on a shared machine
 // vary by 10-20% from run to run).
 const int BENCH_REPS = 2;
-// The training plan's target for the actor loop (engine, knowledge, featurizer; T7), in decisions/s
+// The target for the actor loop (engine, knowledge, featurizer; docs/ci.md), in decisions/s
 // per core: an optimised build (bin/release/, bin/pgo/) below it gets a warning, never an error.
 const double BENCH_TARGET = 1500;
 
@@ -483,7 +483,7 @@ void tier_fuzz(const Options &opt, Report &rep) {
              fmt1(cpu) + " engine-seconds");
 }
 
-// The bench tier (docs/engine_fork_plan.md §5d, throughput accounting): a fixed workload — explore
+// The bench tier (docs/ci.md, throughput accounting): a fixed workload — explore
 // vs explore, bo1, three league pairings × three games (game seeds 1-3), one engine at a time (so
 // the figures do not depend on -j) — per stage, each stage the previous one plus a part of the
 // actor loop, so the differences per decision are the parts' costs: the engine alone (--replay of

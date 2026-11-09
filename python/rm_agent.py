@@ -1,6 +1,6 @@
 """The scripted agent on RMSTATE: one seat's decoded frames as the decision core's view.
 
-Plan step 2, pass 2 (``docs/engine_fork_plan.md``). The agent's decisions are
+The agent's decisions are
 ``scripted_core.ScriptedCore``'s; this module is the view they read on the RMSTATE protocol, built
 from the seat's decoded frames (``python/rmstate.py``) and the knowledge sidecar's ``k_*`` tables
 (``docs/knowledge_store.md`` §6), with nothing copied from the engine's layout: tables, columns and

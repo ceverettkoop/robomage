@@ -1,4 +1,4 @@
-"""The teacher corpus (docs/rnad_training_plan.md §6 B0): scripted:hard games as trajectory episodes.
+"""The teacher corpus (phase B0, docs/rmtrain.md §6): scripted:hard games as trajectory episodes.
 
     python -m rmlearn.corpus --out runs/bc1/corpus --actors 16 --matches 2000 [--explore-frac 0.2]
 

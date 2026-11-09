@@ -1,4 +1,4 @@
-"""R-NaD's learner math (docs/rnad_training_plan.md §4 L4) in PyTorch: a port of OpenSpiel's
+"""R-NaD's learner math in PyTorch: a port of OpenSpiel's
 ``open_spiel/python/algorithms/rnad/rnad.py`` at commit 8156646cdef0c753162fc6b68a11d57cce642f95
 (the JAX reference implementation of Perolat et al., arXiv 2206.15378).
 
@@ -18,8 +18,7 @@ decisions of ``B`` games; ``A`` menu rows), so the two read side by side:
 
 The learner step that drives them is ``rnad_learner.py``.
 
-**Differences from the reference** (each forced by this game or this pipeline; the plan's L4
-section lists the same):
+**Differences from the reference** (each forced by this game or this pipeline):
 
 1. *Variable menus.* A decision's actions are its menu rows, padded to the batch's largest menu
    with ``legal`` 0 (the reference has one fixed action space with a legal mask, so the math is the

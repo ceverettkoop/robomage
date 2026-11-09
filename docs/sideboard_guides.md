@@ -1,36 +1,29 @@
 # League sideboard guides
 
-Sideboarding for the `scripted:hard+sb` teacher tier (`docs/rnad_training_plan.md` §6.2):
-for each league deck, what it brings in and cuts against each other league deck, and what it
-changes on the draw. These are a prior for the warm start, not the target: the trained policy is
-meant to learn sideboarding that carries beyond this table.
+Sideboarding for the `scripted:hard+sb` teacher tier: for each guided league deck, what it brings
+in and cuts against each other guided deck, and what it changes on the draw. A prior for the warm
+start, not the target: the trained policy is meant to learn sideboarding beyond this table.
 
-**Status:** reviewed 2026-10-21; for training. The death_and_taxes, lands_top8 and ur_tempo sections
-are rewritten for those lists (2026-11-06, replacing bw_dnt, lands and ur_delver) and not yet
-reviewed; the maverick section and uw_control's row against it (2026-11-07) are new and not yet
-reviewed. The machine-readable copy the tier reads is
-`python/sideboard_guides.json` (draw lands, every table row and the held-out matchups, card names
-as the league deck files spell them); `python/pycheck.py` (the gate's `smoke` tier) checks that it
-agrees with the tables here and with the deck files.
+Not yet reviewed: the death_and_taxes, lands_top8, ur_tempo and maverick sections and uw_control's
+row against maverick.
+
+The tier reads the machine-readable copy `python/sideboard_guides.json` (draw lands, every table
+row and the held-out matchups, card names as the league deck files spell them);
+`python/pycheck.py` (the gate's `smoke` tier) checks it against the tables here and the deck files.
 
 ## How the guides are applied
 
-- A guide is a **target configuration** per (own deck, opponent deck, on the play or on the draw).
-  At every sideboarding phase the teacher swaps from its current 75 to that target: game 3 starts
-  from game 2's configuration, and play/draw can flip between games 2 and 3, so the land rule is
-  undone or applied as needed.
-- The opponent's deck is known from its registered list (open decklists). An opponent list that is
-  not a league deck, a matchup a guide leaves out, or a held-out matchup (below) gets Done (no
-  swaps).
-- **The guided decks** are the ten below. A deck onboarded into `decks/league/` with no guide
-  (`docs/open_vocab_plan.md` S7, eldrazi_aggro) keeps its maindeck, and its
-  opponents keep theirs against it. New decks are learned through self-play, with no teacher (S8).
+- A guide is a **target configuration** per (own deck, opponent deck, on the play or the draw). At
+  every sideboarding phase the teacher swaps from its current 75 to that target, so game 3 starts
+  from game 2's configuration and the draw-land swap is undone or applied as play/draw flips.
+- The opponent's deck is known from its registered list (open decklists). An opponent that is not a
+  guided deck, a matchup with no row, or a held-out matchup (below) gets Done (no swaps). A league
+  deck with no guide keeps its maindeck, and its opponents keep theirs against it.
 - **On the play:** the matchup's *In* and *Out*.
-- **On the draw:** the same, plus one more swap: the deck's draw land out and the matchup's *Draw +1*
-  card in. lands_top8, maverick and wubg_doomsday cut no land on the draw: their guides are the same on the
-  play and on the draw.
+- **On the draw:** also the deck's draw land out and the matchup's *Draw +1* card in. lands_top8,
+  maverick and wubg_doomsday cut no land: their guides are the same on the play and the draw.
 - Every swap is one card in and one out (the engine's balance rule), so *In* and *Out* have equal
-  counts. All of a deck's phases stay under the engine's 15-swap cap.
+  counts, and every phase stays under the engine's 15-swap cap.
 
 ## Draw land per deck
 
@@ -151,7 +144,7 @@ Liberator, 4 Thoughtseize.
 | wrb_energy | 2 Erode, 1 Force of Vigor | 1 Collector Ouphe, 1 Gaddock Teeg, 1 Sylvan Safekeeper | - |
 | wubg_doomsday | 4 Thoughtseize, 3 Doorkeeper Thrull, 2 Choke | 2 Swords to Plowshares, 1 Prismatic Ending, 1 Keen-Eyed Curator, 2 Endurance, 1 Sylvan Safekeeper, 1 Icetill Explorer, 1 Renegade Rallier | - |
 
-Notes: not yet reviewed. Collector Ouphe stays against lands_top8, reanimator, doomsday, DnT, ur_tempo
+Notes: Collector Ouphe stays against lands_top8, reanimator, doomsday, DnT, ur_tempo
 and uw_control (Mox Diamond, Lotus Petal, Lion's Eye Diamond, Aether Vial, Cori-Steel Cutter's equip,
 The One Ring). Doorkeeper Thrull answers Thassa's Oracle and Archon of Cruelty's and Atraxa's enter
 triggers, at the price of the deck's own Bowmasters and Badgermole Cub. Keen-Eyed Curator stays against
@@ -268,8 +261,8 @@ out against decks with neither blue nor black (burn, DnT, lands).
 
 ## Held-out matchups
 
-For the generalisation test (`docs/rnad_training_plan.md` §6.2) the teacher answers Done in these
-ten matchups (deck vs opponent), though their rows stay in the tables above:
+For the generalisation test the teacher answers Done in these ten matchups (deck vs opponent),
+though their rows stay in the tables above:
 
 | Deck | vs |
 |---|---|
@@ -284,8 +277,7 @@ ten matchups (deck vs opponent), though their rows stay in the tables above:
 | wrb_energy | death_and_taxes |
 | wubg_doomsday | burn |
 
-Each deck is held out once as the sideboarding deck and once as the opponent, and each held-out
-matchup has a held-in one calling for similar cards (bug against reanimator brings in the
-graveyard hate it brings in against lands; burn against uw_control brings in Roiling Vortex as
-against bug and Smash to Smithereens as against lands; …), so a policy that learned what the cards are for can board the
-held-out matchups without having been shown them.
+Each deck is held out once on each side, and each held-out matchup has a held-in one calling for
+similar cards (burn against uw_control brings in Roiling Vortex as against bug and Smash to
+Smithereens as against lands), so a policy that learned what the cards are for can board the
+held-out matchups unseen.

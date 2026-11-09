@@ -8,7 +8,7 @@
 
 #include "agent.h"
 
-// ── The teacher channel: a seat's labels from an external agent (training plan T4) ────────────
+// ── The teacher channel: a seat's labels from an external agent ───────────────────────────────
 //
 // Engine side, like agents/trajectory.h. Options (cli_args.cpp; not recorded in the decision log):
 //   --teacher-a <command> / --teacher-b <command>

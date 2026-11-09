@@ -415,8 +415,8 @@ static void report_sizes(rmcheck::Report &rep, const rmcheck::EpisodeFile &e) {
              std::to_string(static_cast<long>(omni_total)) + " (" + rmcheck::trim(omni) + ")");
 }
 
-// The behaviour-cloning corpus's path (training plan B0): the scripted agent (Python, over the
-// RMSTATE stream) against explore in a bo3 match through python/rm_driver.py, its decision log kept
+// The behaviour-cloning corpus's path (rmtrain's phase B0, docs/rmtrain.md): the scripted agent
+// (Python, over the RMSTATE stream) against explore in a bo3 match through python/rm_driver.py, its decision log kept
 // (--rmlog-dir), then re-featurized by --replay --trajectory-out: μ-absent episodes, one per game,
 // the replies the log's and the footers the replay's GAME_RESULT lines.
 static void driver_part(const rmcheck::Options &opt, rmcheck::Report &rep) {

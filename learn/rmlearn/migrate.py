@@ -1,4 +1,4 @@
-"""Checkpoints of an earlier layout onto the current one, by name (docs/open_vocab_plan.md S5).
+"""Checkpoints of an earlier layout onto the current one, by name (docs/rmtrain.md §1.2).
 
     python -m rmlearn.migrate OLD.pt --tables NEW_TABLES [--seen IDS] --out NEW.pt [--old-tables DIR]
     python -m rmlearn.migrate --run runs/league24h-sb [--seen IDS] --tables NEW_TABLES [--keep v1]
@@ -18,16 +18,16 @@ past an enum's values) reads zero in every input and has no counterpart. The omn
 encoder is remapped the same way. Everything else must keep its name and shape. The same tool
 migrates across a later layout bump (a registry ``layout_version`` raised: docs/rmtrain.md §1.2).
 
-**What is dropped:** only what S1 removed (``REMOVED_TYPES``, ``REMOVED_VALUES``,
+**What is dropped:** only the removed inputs (``REMOVED_TYPES``, ``REMOVED_VALUES``,
 ``REMOVED_PARAMS``: the ``lists`` / ``b_lists`` token types and their slots, the ``EXPERT_BELIEF``
 knowledge level, the ``aux_list`` / ``aux_archetype`` heads). Any other old name with no place in
 the current layout refuses the migration, naming it: a migration that would silently drop an input
 the network reads is not one.
 
-**Seen cards.** A network made before the seen-card mask (S4) gets ``card_seen`` from ``--seen``
+**Seen cards.** A network made before the seen-card mask gets ``card_seen`` from ``--seen``
 (``CardRows.set_seen``: the mask exactly those ids, every other ``card_id`` row zeroed): the card ids
 the run's training inputs held, a JSON list or an object with ``all`` (``runs/open_vocab_s4/
-card_ids_<run>.json``). Its ``card_id`` rows do not tell (S4's Done). A network that carries the mask
+card_ids_<run>.json``). Its ``card_id`` rows do not tell. A network that carries the mask
 keeps it, its ``card_id`` rows and their Adam moments exactly (``--seen`` is then not needed, and
 refused when it differs from a carried mask).
 
@@ -43,7 +43,7 @@ the ordinary loaders before it is written.
 
 **A run** (``--run DIR``): every ``DIR/ckpt/**/*.pt`` but TorchScript exports (and BC ``.opt`` files) migrated into
 ``DIR/ckpt.migrating/``, then the originals moved aside to ``DIR/ckpt.<keep>/`` (``--keep``: ``v1`` for
-S5's cut-over, ``layout1`` for the layout-version-2 bump) and the migrated set to ``DIR/ckpt/`` (with
+the open-vocabulary cut-over, ``layout1`` for the layout-version-2 bump) and the migrated set to ``DIR/ckpt/`` (with
 ``migration.json``: per file its source, both sha256s, the old spec hash, the seen ids), and
 ``DIR/exports/`` (exports of the old tables) moved to ``DIR/exports.<keep>/``; nothing is deleted. The old tables are the run's (``run.tables`` of its ``config.json``, else ``DIR/tables``)
 and its cards frame ``DIR/cards.rmstate``. A run's checkpoints then sit where ``state.json`` names
@@ -72,7 +72,7 @@ sys.path.insert(0, os.path.join(REPO_ROOT, "python"))
 import rmstate  # noqa: E402
 
 FORMAT = 1
-# What S1 removed (docs/open_vocab_plan.md S1's Done): dropped, never refused.
+# The removed inputs: dropped, never refused.
 REMOVED_TYPES = ("lists", "b_lists")
 REMOVED_VALUES = {("knowledge_level", "EXPERT_BELIEF")}
 REMOVED_PARAMS = ("aux_list.", "aux_archetype.")
@@ -154,7 +154,7 @@ def reserved_column(name):
 
 class LayoutMap:
     """The old → new position maps of every layout-indexed parameter, by name; ``dropped`` lists what
-    the old layout had and the new lacks (all of it S1's removals, else MigrationError)."""
+    the old layout had and the new lacks (all of it removed inputs, else MigrationError)."""
 
     def __init__(self, old, new):
         self.old, self.new = old, new
@@ -168,7 +168,7 @@ class LayoutMap:
                 (self.dropped if name in REMOVED_TYPES else bad).append("token type %s" % name)
                 continue
             if name in REMOVED_TYPES:
-                bad.append("token type %s, which S1 removed, is in the new layout" % name)
+                bad.append("token type %s, a removed input, is in the new layout" % name)
             self.type_rows.append((t["id"], nt["id"]))
             onum, nnum = old.numeric(t), new.numeric(nt)
             for s, c in onum.items():
@@ -210,7 +210,7 @@ class LayoutMap:
                     pairs.append((j, ncol[c]))
             self.table_cols[k] = pairs
         if bad:
-            raise MigrationError("the old layout has %d name(s) the current one lacks (not S1's removals): %s"
+            raise MigrationError("the old layout has %d name(s) the current one lacks (not removed inputs): %s"
                                  % (len(bad), "; ".join(bad[:8]) + (" ..." if len(bad) > 8 else "")))
 
     def _cat_slot(self, type_name, s, ns):
@@ -338,7 +338,7 @@ def build_network(lm, cfg, old_sd, tables, seen):
             raise MigrationError("the network carries a seen mask of %d ids, --seen gives %d other ones"
                                  % (len(model.cards.seen_ids()), len(seen)))
     elif seen is None:
-        raise MigrationError("a network without the seen-card mask needs --seen (S4)")
+        raise MigrationError("a network without the seen-card mask needs --seen")
     else:
         model.cards.set_seen(seen)
     model.eval()

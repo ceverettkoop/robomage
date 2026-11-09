@@ -1,5 +1,5 @@
 """Evaluation games of an exported policy against fixed opponents through engine actors
-(``--actor``, docs/actor.md), scored per game (docs/rnad_training_plan.md §6 B1, T8).
+(``--actor``, docs/actor.md), scored per game (docs/rmtrain.md §7).
 
     s = run_eval("run/ckpt/p1.pt2", "run/eval/p1", opponents=("scripted", "explore"), matches=50)
     s["scripted"]["win_rate"], s["scripted"]["game1"]["win_rate"], s["scripted"]["games23"]

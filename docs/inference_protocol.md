@@ -1,19 +1,11 @@
-# The inference protocol (RMIP v2, plan step 5d)
+# The inference protocol (RMIP v2)
 
 How an actor (`nn:remote:<endpoint>`, `src/actor/remote_evaluator.h`) asks an inference server for
-the evaluations of featurized decisions. Framework-neutral and versioned: a server is anything that
-speaks it. `rmserve` (`tools/rmserve/`, C++, libtorch, CPU) is the reference server;
-`tools/nn/serve_check.py` is a minimal one in Python (`socket`, `struct`, `json`,
-`multiprocessing.shared_memory`, numpy and torch), and the training plan's GPU server
-(`docs/rnad_training_plan.md` L5) implements the same protocol. The C++ wire code (framing, the
-request and response layouts, the shared region) is `src/inference/protocol.h`, standard library and
-POSIX only.
-
-Version 2 (`docs/open_vocab_plan.md` S3) adds the tables' layout hash and vocab manifest to the
-handshake (`HELLO`'s `layout_hash`, `tables_digest` and `vocab`, §3): a server's exports are built for one vocab and
-tables, and a client on other tables is refused naming what differs (an export of the vocab before a
-card was appended: rebuild it from its checkpoint). Requests and responses are as in version 1 but for
-the protocol number.
+the evaluations of featurized decisions. Framework-neutral and versioned. Servers: `rmserve`
+(`tools/rmserve/`, C++, libtorch, CPU; the reference), `tools/nn/serve_check.py` (minimal Python:
+`socket`, `struct`, `json`, `multiprocessing.shared_memory`, numpy, torch) and the learner's GPU
+server `learn/rmlearn/server.py`. The C++ wire code (framing, request and response layouts, the
+shared region) is `src/inference/protocol.h`, standard library and POSIX only.
 
 ## 1. Transport
 
@@ -69,7 +61,7 @@ The client creates the region (`shm_open(name, O_CREAT | O_EXCL | O_RDWR, 0600)`
 | `dims` | `{"F": …, "C": …, "K": …, "Q": …}`, the spec's widths (§4) |
 | `shm` | the region's POSIX name, starting with `/` |
 | `request_bytes`, `response_bytes` | the two areas' sizes, each a multiple of 8 |
-| `policies` | the policy ids to evaluate on every request, non-empty and distinct; results come back in this order. Policy 0 is the one an actor samples from ("current"); the training plan's regularisation policies are other ids |
+| `policies` | the policy ids to evaluate on every request, non-empty and distinct; results come back in this order. The actor samples from the first |
 
 The server checks that it serves every requested policy and that each one's model is an export of
 the client's tables exactly (`docs/featurizer.md` §6.2, `check_compatible` exact: the same
@@ -84,9 +76,9 @@ opens and maps the region (its size at least the two areas), and answers `WELCOM
 | `max_batch` | the most decisions the server evaluates in one batch (informative) |
 | `policies` | per requested policy, in the client's order, `{"id": …, "version": …}` |
 
-or `ERROR` and closes. On either answer the client unlinks the name (`shm_unlink`): both sides keep
-their mappings, and a client that dies leaks nothing. A server needs nothing but the client's
-`dims` to read requests (it never needs the feature spec document); the spec hash ties the two.
+or `ERROR` and closes. On either answer the client unlinks the name (`shm_unlink`); both sides keep
+their mappings, so a client that dies leaks nothing. A server needs only `dims` to read requests;
+the spec hash ties them to the spec.
 
 ## 4. Requests and responses
 
@@ -151,9 +143,8 @@ decisions into the network contract's `[B, …]` inputs as it likes (`docs/featu
 then per policy, in the same order, each at the next multiple of 8: `value` f32 `[D]`, `logits` f32
 `[ΣA]` and `log_pi` f32 `[ΣA]`, the decisions' menu rows concatenated as in the request. `logits`
 are the policy's over each decision's real menu rows only; `log_pi` is their log-softmax over those
-rows; `value` is the policy's value for the deciding seat. The version is the policy's weights'
-version at the time of this response, so a server may swap weights between requests and every
-response says which it used.
+rows; `value` is the policy's value for the deciding seat. The version is that of the weights used
+for this response (a server may swap weights between requests).
 
 ## 5. Batching
 
@@ -185,7 +176,7 @@ exits naming the endpoint, never taking a default action.
 
 ## 7. Implementing a server
 
-In Python (`tools/nn/serve_check.py` is a complete example, about 200 lines):
+In Python (`tools/nn/serve_check.py` is a complete example):
 
 ```python
 hdr = struct.unpack_from("<4sIQQII4IQQ", shm.buf, 0)        # magic … reserved
@@ -197,5 +188,5 @@ n = np.frombuffer(shm.buf, np.int64, D, off); off = align8(off + 8 * D)   # then
 then for each array `np.frombuffer(shm.buf, dtype, count, off)` with `count` from the sizes' sums,
 split per decision with `np.cumsum`, pad, run the model, and write the response with
 `struct.pack_into` and numpy views of the response area. Open the region with
-`multiprocessing.shared_memory.SharedMemory(name.lstrip("/"), track=False)` (Python 3.13; without
+`multiprocessing.shared_memory.SharedMemory(name.lstrip("/"), track=False)` (Python ≥ 3.13; without
 `track=False` the resource tracker unlinks it at exit).

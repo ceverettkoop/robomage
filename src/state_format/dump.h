@@ -5,7 +5,7 @@
 
 #include "../classes/action.h"
 
-// ── --rmstate-dump FILE (docs/step1_handoff.md T5) ────────────────────────────────────────────
+// ── --rmstate-dump FILE ───────────────────────────────────────────────────────────────────────
 //
 // Writes the state-format frames of every viewer (A, B, omniscient) to FILE as
 // "RMSTATE <nbytes>\n<payload>" records while the normal protocol runs unchanged: for each viewer,

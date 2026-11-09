@@ -59,11 +59,10 @@ seat's frames carrying the C++ knowledge sidecar's tables (perfect recall and so
 `docs/knowledge_store.md`). The small Python side (`python/`) is the rule-based scripted agent
 and its driver over that protocol, used for agent games and to record the replay corpus.
 
-The plan this repo follows is [`docs/engine_fork_plan.md`](docs/engine_fork_plan.md) (steps 1–5
-done — 4: one decision schedule and a C++ CLI on the decoder; 5: a C++ featurizer, the in-process
-actor and remote batched evaluation; next: `docs/rnad_training_plan.md`). The RL stack (PPO/AlphaZero training, the float state vector, the libtorch actor, the
-TUI/GUI) is archived in place: branch `archive/rl-stack` (tag `rl-stack-final`, if created), whose
-tip `cf7f97f` is the last commit with both stacks.
+Learned policies are trained by `learn/rmtrain` (R-NaD, `docs/rmtrain.md`) on the featurizer
+(`docs/featurizer.md`) and the continuous actor (`docs/actor.md`); open plans are the `docs/*_plan.md`
+files. The earlier RL stack (PPO/AlphaZero training, the float state vector, the TUI/GUI) is archived on
+branch `archive/rl-stack` (tip `cf7f97f`).
 
 ## Rules Reference (authoritative)
 
@@ -800,7 +799,7 @@ handshake JSON, the shared region, request / response layouts.
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README; `--manifest` records the scrape)
-- `tools/onboard/` — the deck onboarding pipeline (`docs/open_vocab_plan.md` S7, its README):
+- `tools/onboard/` — the deck onboarding pipeline (its README):
   `onboard.py <stage|all|report|check>` over `bin/resources/decks/candidates/` (scraped decks, every
   deck's committed `<stem>.status.json`, the generated capability report `REPORT.md`), `league/`
   (training) and `heldout/` (never trained on); `mechanic_sizes.json` (findings grouped into mechanics,
@@ -856,7 +855,7 @@ handshake JSON, the shared region, request / response layouts.
   §2.8; `robomage_check --tier vocab --record` rewrites it)
 - `tests/corpus/<name>.rmlog` + `<name>.replay` — the replay corpus (decision log and its replay
   baseline; `docs/ci.md`)
-- `tests/open_vocab/` — the open-vocabulary refactor's fixtures (`docs/open_vocab_plan.md` S0, S5): the
+- `tests/open_vocab/` — the open-vocabulary refactor's fixtures: the
   decision sources, every pre-refactor network's outputs on them (`learn/open_vocab_baseline.py`), and
   `inputs.json`, the decisions' recorded inputs (`learn/open_vocab_acceptance.py inputs`)
 
@@ -864,4 +863,6 @@ handshake JSON, the shared region, request / response layouts.
 (RMSTATE), `knowledge_store.md` (the sidecar), `featurizer.md` (the featurizer and the network
 contract), `trajectory_format.md` (trajectory episodes), `actor.md` (the continuous actor, its
 schedule, status and results files), `inference_protocol.md` (remote evaluation),
-`rules_deviations.md`, `engine_fork_plan.md` (the plan), `rnad_training_plan.md` (the training plan); `step1_handoff.md` and `state_format_agent_map.md` are historical records of steps 1–2.
+`rules_deviations.md`, `sideboard_guides.md` (the league sideboard guides; `python/pycheck.py` parses its
+tables), `rmtrain.md` (the training program), `mtg_comprehensive_rules.md` (the rules reference); plans:
+`league48h_plan.md` (the next training run), `llm_play_plan.md` (deferred).

@@ -7,7 +7,7 @@ with its per-game novelty set. It reads the same view the rest of the agent read
 (category names), ``card(i)`` (the action's card name or None), ``hand`` (own hand card names) and
 ``cards.mana_value(name)``. No numpy, no layout.
 
-**Decision rules** (in order; what a port, e.g. the C++ explore agent of plan step 3a, implements):
+**Decision rules** (in order; what a port, e.g. ``src/agents/explore.h``, implements):
 
 1. A menu of one row (or none) is answered 0 with no draw.
 2. A menu holding a ``MULLIGAN`` row starts a game: the novelty set ``seen`` is cleared.

@@ -1,5 +1,5 @@
 """Trajectory episodes (docs/trajectory_format.md) in numpy: the reader and the expansion of steps
-into the network contract's padded tensors (docs/rnad_training_plan.md §4 L1).
+into the network contract's padded tensors (docs/featurizer.md §6).
 
     ep = read_episode("runs/r1/episodes/a3-m17.g2.rmtraj")   # Episode: the file's compact arrays
     ep.attrs["result_a"], ep.steps, ep.omniscient

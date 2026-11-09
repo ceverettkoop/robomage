@@ -10,7 +10,7 @@
 #include "decision_view.h"
 #include "py_random.h"
 
-// ── In-process agents (plan step 3a) ──────────────────────────────────────────────────────────
+// ── In-process agents ─────────────────────────────────────────────────────────────────────────
 //
 // An agent decides one seat's decisions inside the engine process, through InputLogger's
 // in-process decision hook (agents/driver.h installs it). At each decision it receives the

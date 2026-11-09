@@ -22,7 +22,7 @@ import re
 import tomllib
 
 # The default league.decks: the eleven league decks, named, not read from decks/league/, so a deck
-# onboarded there later (docs/open_vocab_plan.md S7) joins a run only through its league.decks (S8).
+# onboarded there later joins a run only through its league.decks (docs/rmtrain.md §1.1).
 LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "maverick", "reanimator", "ur_tempo",
           "uw_control", "wrb_energy", "wubg_doomsday"]
 EVAL_PAIRS = [["ur_tempo", "burn"], ["bug", "death_and_taxes"], ["uw_control", "wrb_energy"],
@@ -92,11 +92,11 @@ SPEC = {
         ("layers", 4, "transformer layers"),
         ("ff_mult", 4, "feed-forward width multiple"),
         ("id_dropout", 0.1, "card id-dropout: the probability a card slot reads the unknown-card vector, the path "
-         "a card no training batch has held plays (docs/open_vocab_plan.md S4); 0.2-0.25 for runs meant to "
-         "generalise to unseen decks, to be decided by the held-out benchmark (S8). The run's value applies to "
+         "a card no training batch has held plays (docs/rmtrain.md §1.1); 0.2-0.25 for runs meant to "
+         "generalise to unseen decks, to be decided by the held-out benchmark (docs/rmtrain.md §7.1). The run's value applies to "
          "a resumed BC or R-NaD model and to a start_from checkpoint"),
         ("aux_heads", True, "hidden-information heads"),
-        ("omniscient_critic", False, "the omniscient critic (an A/B experiment, plan §4 L4)"),
+        ("omniscient_critic", False, "the omniscient critic (an A/B experiment)"),
         ("critic_layers", 2, "the omniscient critic's depth"),
     ],
     "replay": [
@@ -184,7 +184,7 @@ SPEC = {
         ("precision", "fp16", "fp32, fp16 or bf16"),
         ("reg_eps", 0.1, "π_0,reg's smoothing ε (live)"),
         ("reg_eps_sideboarding", 0.25, "π_0,reg's smoothing ε at sideboarding steps; about 0 with a sideboarding "
-         "teacher (actors.teacher_tier hard+sb: exploration belongs to the actors, plan §6.2) (live)"),
+         "teacher (actors.teacher_tier hard+sb: exploration belongs to the actors) (live)"),
         ("stale_reg", "recompute", "recompute or drop"),
         ("finetune_threshold", 0.03, "B5's threshold"),
         ("finetune_discretization", 16, "B5's discretisation"),

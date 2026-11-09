@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reference outputs for the oracle-text generator (plan step 5c, docs/featurizer.md §5).
+"""Reference outputs for the oracle-text generator (docs/featurizer.md §5).
 
 NEEDS torch, transformers and safetensors (e.g. /root/torchenv/bin/python); `make` never runs it.
 It produces, from the reference implementation (Hugging Face transformers), what the C++ side is

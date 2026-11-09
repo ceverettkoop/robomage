@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The teacher: the scripted agent as a labeller on the RMSTATE machine protocol (training plan T4).
+"""The teacher: the scripted agent as a labeller on the RMSTATE machine protocol.
 
 The engine's ``--teacher-a / --teacher-b <command>`` (``src/agents/teacher.h``) starts a command
 and streams one seat's frames to its stdin, exactly the ``--machine`` protocol

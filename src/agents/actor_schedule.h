@@ -8,7 +8,7 @@
 
 #include "sb_explore.h"
 
-// ── The actor's schedule: matchups, seats, agents, teachers, purposes (training plan T5) ──────
+// ── The actor's schedule: matchups, seats, agents, teachers, purposes ─────────────────────────
 //
 // Standard library and featurize/json.h only. docs/actor.md §2 is the reference. A JSON object:
 //

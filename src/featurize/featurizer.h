@@ -29,7 +29,7 @@
 //
 // featurize_seat is the actor entry point (what an nn: seat calls): it refuses a frame whose viewer
 // is not seat A or B. featurize_viewer also takes the omniscient viewer's frame, for learner-side
-// writers only (rmfeat, the training plan's trajectory writer). Both refuse a frame that is not a
+// writers only (rmfeat, the trajectory writer). Both refuse a frame that is not a
 // STATE frame of the spec's schema. Under a spec with recent-event history (feature_spec.h) the
 // seat's EventHistory (history.h, observed up to this frame) gives the history tokens:
 // featurize_seat refuses such a spec without one, featurize_viewer emits none without one (the

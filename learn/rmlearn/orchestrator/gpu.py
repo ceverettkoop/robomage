@@ -1,5 +1,5 @@
 """The run's GPU process (docs/rmtrain.md §5): the learner and the inference server in one process,
-the only one of the run that touches the GPU (docs/rnad_training_plan.md §4 L5, §7 decision 3).
+the only one of the run that touches the GPU.
 
     python -m rmlearn.orchestrator.gpu RUN_DIR          # started by the orchestrator, never by hand
 

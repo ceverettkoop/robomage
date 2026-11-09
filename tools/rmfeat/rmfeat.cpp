@@ -456,7 +456,7 @@ static int run_registry_check(const Options &opt) {
             fails.push_back("layout_version " + std::to_string(reg.layout_version) + " is below the base's " +
                             std::to_string(base.layout_version));
         } else if (base.layout_version < reg.layout_version) {
-            std::printf("REGISTRY: layout bump %d -> %d against %s: entries may move (S5-style migration)\n",
+            std::printf("REGISTRY: layout bump %d -> %d against %s: entries may move (checkpoints migrate: docs/rmtrain.md §1.2)\n",
                 base.layout_version, reg.layout_version, opt.base.c_str());
         } else {
             for (const std::string &m : featurize::registry_moves(base, reg))

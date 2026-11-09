@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""The open-vocabulary refactor's baseline fixtures (docs/open_vocab_plan.md S0; read by S5's
-acceptance test): every runnable checkpoint's outputs on a fixed decision set, under today's tables.
+"""The open-vocabulary refactor's baseline fixtures (read by the checkpoint
+migration's acceptance test): every runnable checkpoint's outputs on a fixed decision set, under today's tables.
 
     learn/.venv/bin/python learn/open_vocab_baseline.py generate [--out tests/open_vocab] [--work runs/open_vocab_s0]
     learn/.venv/bin/python learn/open_vocab_baseline.py select   # once: copy the decision sources in
 
-``generate`` reproduces the fixtures only on the pre-S1 tree (13ffb640) with the original checkpoints
-in each run's ``ckpt/``: since S5's cut-over they are in ``ckpt.v1/`` (``rmlearn.migrate``) and the
+``generate`` reproduces the fixtures only on the pre-refactor tree (13ffb640) with the original checkpoints
+in each run's ``ckpt/``: since the migration's cut-over they are in ``ckpt.v1/`` (``rmlearn.migrate``) and the
 runs' old tables in ``tables.<spec_hash>/``. Its helpers (featurizing the sources, the decision set,
-the decisions files) serve S5's acceptance (``learn/open_vocab_acceptance.py``) on today's layout.
+the decisions files) serve the migration's acceptance (``learn/open_vocab_acceptance.py``) on today's layout.
 
 **Decision sources** (committed under ``OUT/sources/``, so the fixture does not depend on a later
 corpus re-recording or on a run directory): the replay corpus's decision logs
@@ -38,7 +38,7 @@ generator, so the critic's every embedding and bias is non-trivial.
 **Outputs** (``OUT/baseline/``): ``decisions.rmtb`` (per decision its source, viewer, game, sideboarding,
 decision and its menu rows' offset) and per network ``<id>.rmtb``: ``logits`` (the decisions' real
 menu rows, concatenated) and ``value``; ``logits_nolists`` / ``value_nolists``, the same with the
-``lists`` and ``b_lists`` tokens removed from every decision (the inputs S1 deletes; S5 compares a
+``lists`` and ``b_lists`` tokens removed from every decision (the inputs the refactor deletes; the acceptance compares a
 migrated checkpoint with these); with a critic ``critic_value`` / ``critic_value_nolists`` on the
 decisions' omniscient frames, the deciding seat as ``seat``. All fp32 on the CPU, eval mode, without
 gradients (the export's path), in fixed batches (decisions sorted by token count, at most

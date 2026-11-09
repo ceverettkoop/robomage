@@ -1,4 +1,4 @@
-"""The SPRT match runner (docs/rnad_training_plan.md T8, B1/B4's "an SPRT against scripted:hard"):
+"""The SPRT match runner (docs/rmtrain.md §7):
 a policy against an opponent over the league matchups, bo3 with ``swap: sides``, through N engine
 actors, with a sequential probability ratio test on the **per-game** win rate that stops the actors
 as soon as it decides.

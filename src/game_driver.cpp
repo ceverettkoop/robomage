@@ -776,7 +776,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         if (concede_unwind_pending()) continue;
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
-    // A real game end must never strand a suspended resolution (plan risk R7):
+    // A real game end must never strand a suspended resolution:
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
     // (A concession discards its game's suspended state at the loop top, so it

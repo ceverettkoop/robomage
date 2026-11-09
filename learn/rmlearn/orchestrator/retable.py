@@ -1,5 +1,5 @@
 """The run's tables after a vocab expansion: ``rmtrain retable <run>`` and the start-time check
-(docs/rmtrain.md §1.1; docs/open_vocab_plan.md S3).
+(docs/rmtrain.md §1.1).
 
 The vocab is compiled into the engine, so cards appended to it (or a change to how the engine parses
 a known card) make the engine's whole-vocab cards frame differ from the run's ``cards.rmstate``,

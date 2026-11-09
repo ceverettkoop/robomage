@@ -1,4 +1,4 @@
-// rmserve: the reference inference server (plan step 5d, docs/inference_protocol.md).
+// rmserve: the reference inference server (docs/inference_protocol.md).
 //
 //   rmserve --socket PATH --policy ID=MODEL [--policy ID=MODEL …] [--version ID=N …]
 //           [--max-batch N] [--deadline-us N] [--threads N] [--verbose] [--pause-after N]

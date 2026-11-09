@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download the pinned text-embedding model's files (plan step 5c, docs/featurizer.md §5).
+"""Download the pinned text-embedding model's files (docs/featurizer.md §5).
 
 Standalone tool, Python standard library only. Reads MODEL_PIN (next to this script) and
 fetches the files the generator bin/<config>/rmembed reads, at the pinned commit, into

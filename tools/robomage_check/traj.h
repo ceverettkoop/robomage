@@ -53,7 +53,7 @@ std::vector<std::string> check_against_evals(
 std::vector<std::string> check_against_dump(
     const std::vector<EpisodeFile> &eps, int seat, const std::string &dump, size_t *checked);
 
-// The traj tier's teacher channel checks (traj_teacher.cpp, --teacher-a/-b, training plan T4).
+// The traj tier's teacher channel checks (traj_teacher.cpp, --teacher-a/-b).
 void traj_teacher_part(const Options &opt, Report &rep);
 
 }  // namespace rmcheck

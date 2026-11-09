@@ -864,8 +864,8 @@ static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
 
 // python/pycheck.py --part open_vocab: the open-vocabulary fixtures' gate sources replayed and
 // featurized by this build to the inputs tests/open_vocab/inputs.json records, those on which the
-// migrated checkpoints reproduce S0's outputs (docs/open_vocab_plan.md S5; the networks themselves run
-// in the actor tier, learn/open_vocab_acceptance.py gate).
+// migrated checkpoints reproduce the fixtures' recorded outputs (the networks themselves
+// run in the actor tier, learn/open_vocab_acceptance.py gate).
 static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     if (opt.python.empty()) {
         rep.info("featurize: open_vocab skipped (no python3 on PATH)");

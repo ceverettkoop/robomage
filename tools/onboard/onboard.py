@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The deck onboarding pipeline (docs/open_vocab_plan.md S7; tools/onboard/README.md).
+"""The deck onboarding pipeline (tools/onboard/README.md).
 
     python3 tools/onboard/onboard.py <stage|all|report|check> [--deck STEM ...] [options]
 
@@ -26,8 +26,8 @@ skipped while its inputs are unchanged and its result ok (--force reruns it). St
 themselves when a later stage needs them and their inputs changed; stages 7-10 need only an ok.
 `report` prints every status file as one table; `check` reruns stages 2, 4 and 5 for every
 candidate without writing anything or touching the network and reports any committed status file
-whose result is out of date, and fails on a card added under docs/mechanics_plan.md that no scenario
-names (the gate's vocab tier runs it). Standard library only.
+whose result is out of date, and fails on a card with an id from FIRST_PLAN_CARD_ID up that no
+scenario names (the gate's vocab tier runs it). Standard library only.
 """
 
 import argparse
@@ -65,7 +65,7 @@ AUTOMATIC = ["diff", "provision", "parse", "capability", "implement"]
 TOKEN_BASE, TOKEN_LAST = 900, 1022
 # The column token_vocab_entries' trailing comments (the card that makes the token) start at.
 TOKEN_COMMENT_COLUMN = 69
-# Ids below this predate docs/mechanics_plan.md; every card from here up needs a scenario naming it.
+# Ids below this predate the scenario rule; every card from here up needs a scenario naming it.
 FIRST_PLAN_CARD_ID = 367
 # The scenario keys that list cards (tools/robomage_check/scenarios.h); deck_a / deck_b name a deck.
 SCENARIO_ZONE_KEYS = tuple("%s_%s" % (zone, seat) for zone in ("hand", "library", "battlefield", "graveyard", "exile",
@@ -969,8 +969,8 @@ def plan_cards():
 
 
 def check_scenarios():
-    """The test kit's rule (docs/mechanics_plan.md §3): a card added under the plan has a scenario
-    naming it. Prints an ERROR per card without one and returns their number."""
+    """The test kit's rule: a card with an id from FIRST_PLAN_CARD_ID up has a scenario naming
+    it. Prints an ERROR per card without one and returns their number."""
     named = scenario_card_keys()
     cards = plan_cards()
     missing = [name for name, keys in cards if not keys & named]

@@ -1,4 +1,4 @@
-"""Adding decks to a run's league (docs/rmtrain.md §1.1; docs/open_vocab_plan.md S8): ``rmtrain
+"""Adding decks to a run's league (docs/rmtrain.md §1.1): ``rmtrain
 add-decks <run> STEM ... [--weight W]``.
 
 A new deck enters training through self-play from the current policy (no teacher, no behaviour

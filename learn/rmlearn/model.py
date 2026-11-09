@@ -1,4 +1,4 @@
-"""The learner's network (docs/rnad_training_plan.md §4 L2) on the step-5 network contract.
+"""The learner's network on the network contract (docs/featurizer.md §6).
 
     cfg = ModelConfig(d=256, layers=4)
     model = RMNet(cfg, tables)                     # tables: spec.load_tables(...)
@@ -40,7 +40,7 @@ same design over the omniscient featurization of the same decision, with the dec
 embedding added to every token (the omniscient frame is A-relative), and its own value head
 (``critic_value``). It shares the card and ability rows with the policy.
 
-**Cost on the GPU** (the RX 6700 XT, rocBLAS; profiled, docs/rnad_training_plan.md §4 L4): a token's
+**Cost on the GPU** (the RX 6700 XT, rocBLAS; profiled): a token's
 card, ability and slot parts are one ``embedding_bag`` over a per-batch table (``token_table``: per
 card slot every card's row plus the slot's vector; under id-dropout a second copy with the
 unknown-card vector), its categorical and type parts another (bag gradients rather than one sorted
@@ -77,7 +77,7 @@ class ModelConfig:
     layers: int = 4
     ff_mult: int = 4          # feed-forward width = ff_mult * d
     id_dropout: float = 0.1   # probability a card slot's id embedding is replaced by the unknown-card vector
-    #                           (the path unseen cards read; docs/open_vocab_plan.md S4, a training lever)
+    #                           (the path unseen cards read; docs/rmtrain.md §1.1, a training lever)
     aux_heads: bool = True    # hidden-information heads (training only)
     omniscient_critic: bool = False
     critic_layers: int = 2    # the omniscient critic's encoder depth
@@ -336,7 +336,7 @@ def gather_tokens(card_idx, tok_card, tok_ability, table, card_rows: int, n_abil
 class CardRows(nn.Module):
     """The frozen card / text / ability / part tables and their learned projections.
 
-    **Seen cards** (docs/open_vocab_plan.md S4). ``card_seen`` [n_cards] (bool, saved in the
+    **Seen cards** (docs/rmtrain.md §1.1). ``card_seen`` [n_cards] (bool, saved in the
     state_dict) marks the card ids some training batch has held (``mark_seen``, called by the
     training loops on each batch before its forward). A seen card's id part is its ``card_id`` row;
     an unseen card's is ``unknown_id``, the vector id-dropout trains, in the training rows, the aux
@@ -345,7 +345,7 @@ class CardRows(nn.Module):
     read). A state_dict without ``card_seen`` (a network made before the mask) is refused: such a
     network read every id row as a card's, and its rows do not tell which cards it trained on (the aux
     heads' softmax moved all of them), so neither "all seen" nor "none seen" is its function;
-    ``set_seen`` (S5's migration) or ``load_checkpoint(seen=...)`` states its seen set."""
+    ``set_seen`` (the migration, docs/rmtrain.md §1.2) or ``load_checkpoint(seen=...)`` states its seen set."""
 
     def __init__(self, tables, d: int):
         super().__init__()
@@ -408,7 +408,7 @@ class CardRows(nn.Module):
     def set_seen(self, card_ids):
         """Sets the seen mask to exactly the ids in `card_ids` (any iterable or array of ids) and zeroes
         every other card's id row (never read; a later first marking sets it). For a network trained
-        before the mask existed: the ids its training actually saw (S5's migration)."""
+        before the mask existed: the ids its training actually saw (the migration, docs/rmtrain.md §1.2)."""
         ids = torch.as_tensor(list(card_ids) if not torch.is_tensor(card_ids) else card_ids,
                               dtype=torch.int64).reshape(-1)
         if ids.numel() and (int(ids.min()) < 0 or int(ids.max()) >= self.n_cards - 1):
@@ -575,7 +575,7 @@ def masked_log_softmax(logits, act_mask):
 
 
 def smoothed_log_policy(logits, act_mask, eps, sideboarding=None, eps_sideboarding=None):
-    """log of (1 - ε)·π + ε·uniform-over-legal (R-NaD's smoothed π_0,reg, plan B3), -inf at padded
+    """log of (1 - ε)·π + ε·uniform-over-legal (R-NaD's smoothed π_0,reg, phase B3), -inf at padded
     rows. `eps` a float or a [B] tensor; with `sideboarding` [B] (bool) and `eps_sideboarding`, the
     sideboarding decisions take that ε instead. An ε of 0 gives the raw log π; the padded rows are
     taken out before the mix, so its gradient stays finite there too."""

@@ -1,6 +1,6 @@
-"""The R-NaD learner (docs/rnad_training_plan.md §4 L4, B3–B5): the update of OpenSpiel's
+"""The R-NaD learner (phases B3–B5, docs/rmtrain.md §6): the update of OpenSpiel's
 ``RNaDSolver`` (``rnad.py`` at 8156646cdef0c753162fc6b68a11d57cce642f95, ``loss`` and
-``update_parameters``) over the step-5 network, its state, the iteration boundary and the pushes to
+``update_parameters``) over the network, its state, the iteration boundary and the pushes to
 the inference server.
 
     cfg = RNaDConfig(entropy_schedule_sizes=(10_000,), chunk_len=32)
@@ -67,7 +67,7 @@ v-trace targets (``critic_trains_value_head``) so the exported policy's value st
 **Steps without μ** cannot be trained on (v-trace's importance ratios divide by μ(a)):
 ``trainable_episodes`` raises or drops them, and ``step`` raises if one reaches it.
 
-**The batch** is L1's ``replay.TrajectoryBatch`` (full games time-major, ``[T, G]``, T a multiple of
+**The batch** is ``replay.TrajectoryBatch`` (full games time-major, ``[T, G]``, T a multiple of
 ``chunk_len``); ``step`` reads only its ``valid``, ``seat``, ``legal``, ``mu``, ``has_mu``,
 ``chosen``, ``reward``, ``sideboarding``, ``policy_version``, ``evals[p]`` (``present``, ``version``,
 ``log_pi``), ``G``, ``T``, ``A``, ``chunk_len``, ``chunks``, ``omniscient`` and

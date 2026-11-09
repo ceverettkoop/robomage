@@ -1,4 +1,4 @@
-"""The learner's inference server (docs/rnad_training_plan.md §4 L5): RMIP v2
+"""The learner's inference server: RMIP v2
 (docs/inference_protocol.md) as a component inside a host process.
 
     srv = InferenceServer("/run/x/infer.sock", device="cuda", max_batch=512, deadline_us=2000)

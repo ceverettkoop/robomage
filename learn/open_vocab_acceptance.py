@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""The checkpoint migration's acceptance test (docs/open_vocab_plan.md S5) against S0's fixtures.
+"""The checkpoint migration's acceptance test against the baseline's fixtures.
 
     learn/.venv/bin/python learn/open_vocab_acceptance.py full [--work runs/open_vocab_s5/acceptance]
     learn/.venv/bin/python learn/open_vocab_acceptance.py gate --out-dir DIR [--engine E --rmfeat R]
     learn/.venv/bin/python learn/open_vocab_acceptance.py inputs     # rewrites tests/open_vocab/inputs.json
 
-**(a) The fixtures.** Every runnable checkpoint of S0's manifest (``tests/open_vocab/manifest.json``)
+**(a) The fixtures.** Every runnable checkpoint of the baseline's manifest (``tests/open_vocab/manifest.json``)
 is migrated in memory from its original (``rmlearn.migrate``; the original is the manifest's file, by
 its sha256, at its path or in the run's ``ckpt.v1/`` after the cut-over) and each of its networks
 evaluated, fp32 on the CPU, on the fixture decisions as today's engine featurizes them (the committed
-sources replayed, ``open_vocab_baseline``'s helpers; S2 showed they equal S0's ``*_nolists`` decisions
-mapped by name): logits and values against S0's ``logits_nolists`` / ``value_nolists``, a critic's
+sources replayed, ``open_vocab_baseline``'s helpers; they equal the baseline's ``*_nolists`` decisions
+mapped by name): logits and values against the baseline's ``logits_nolists`` / ``value_nolists``, a critic's
 values on the omniscient frames against ``critic_value_nolists``. Twice: with the seen mask widened to
 the fixtures' card ids (a test-only copy: the old function, within ``TOL`` on every decision), and with
 the run's true seen set (within ``TOL`` on the decisions holding no card outside it; on the others the
@@ -23,7 +23,7 @@ in-memory migration with its true mask parameter for parameter.
 parts; the manifest's vocab grown) load (``spec.check_compatible``) and give identical outputs on
 every decision (none mentions the new card); their exports' folded rows differ in the new card's row
 only. ``full --expanded DIR`` also loads every migrated checkpoint on another expanded tables
-directory (S3's scratch tree's, ``runs/open_vocab_s3/expansion_work/appended/tables``) and compares
+directory (a scratch tree's, ``runs/open_vocab_s3/expansion_work/appended/tables``) and compares
 outputs on the decisions mentioning neither its new nor its drifted card (``--skip-cards``).
 
 **Modes.** ``full``: every source, every network (a few minutes on 8 processes; the cut-over's log).
@@ -32,11 +32,11 @@ outputs on the decisions mentioning neither its new nor its drifted card (``--sk
 ``tests/open_vocab/inputs.json``, each fixture decision's input digest (``decision_digest``: sha256 of
 its seat and omniscient decisions' arrays as rmfeat writes them) under today's featurization, which
 the ``featurize`` tier checks without torch (``python/pycheck.py --part open_vocab``): run it only
-after showing today's featurization equals S0's mapped one; a decision whose inputs later move
+after showing today's featurization equals the baseline's mapped one; a decision whose inputs later move
 intentionally is dropped from the file (``inputs --drop-moved``), and (a) runs on the rest; one that moved in a
-column S0's networks hold at zero keeps its place at today's digest (``inputs --keep-decisions``).
+column the baseline's networks hold at zero keeps its place at today's digest (``inputs --keep-decisions``).
 
-**Rows that moved on purpose.** S0's outputs are of the card rows of their day. A card whose table rows moved
+**Rows that moved on purpose.** The baseline's outputs are of the card rows of their day. A card whose table rows moved
 since, by a script change or a parser change the digest reports, has its old rows in
 ``tests/open_vocab/s0_rows.json``, and (a) and (b) run on a test-only copy of today's tables holding them
 (``fixture_tables``): the check is of the migration, and every decision stays in it. A card that drifts is one
@@ -77,12 +77,12 @@ from rmlearn import spec as S  # noqa: E402
 # The fixtures are fp32, and fp32 rounding alone (the migrated layout sums its zero-padded columns in
 # another order) moves logits by up to ~5e-5: the fixtures themselves are ~2e-5 from the float64
 # function, and in float64 the migrated networks equal the originals exactly (runs/open_vocab_s5/
-# fp64_check.py; docs/open_vocab_plan.md S5's Done). A mapping error moves outputs by far more.
+# fp64_check.py). A mapping error moves outputs by far more.
 TOL = 1e-4
 FIXTURE = os.path.join(REPO_ROOT, "tests", "open_vocab")
 INPUTS = os.path.join(FIXTURE, "inputs.json")
 S0_ROWS = os.path.join(FIXTURE, "s0_rows.json")
-# The card ids each run's training inputs held (S4's episode scan); the critic fixture is m11's.
+# The card ids each run's training inputs held (an episode scan); the critic fixture is m11's.
 SEEN = {"runs/league24h-sb": "runs/open_vocab_s4/card_ids_league24h-sb.json",
         "runs/pilotA": "runs/open_vocab_s4/card_ids_pilotA.json",
         "runs/open_vocab_s0": "runs/open_vocab_s4/card_ids_league24h-sb.json"}
@@ -224,7 +224,7 @@ def original_of(entry):
 
 
 def true_seen(entry):
-    """The run's seen set: the cut-over file's record, else S4's scan."""
+    """The run's seen set: the cut-over file's record, else the episode scan."""
     p = os.path.join(REPO_ROOT, entry["path"])
     if os.path.exists(p):
         data = torch.load(p, map_location="cpu", weights_only=False)
@@ -236,7 +236,7 @@ def true_seen(entry):
 
 
 def networks_of(data):
-    """{role: (model config, state_dict)} of a loaded checkpoint (S0's roles)."""
+    """{role: (model config, state_dict)} of a loaded checkpoint (the baseline's roles)."""
     if "learner" in data:
         L = data["learner"]
         out = {"model": (L["model_config"], L["model"]), "target": (L["model_config"], L["target"])}
@@ -259,7 +259,7 @@ def _init(work, tables_dir, threads):
 
 
 def fixture_tables(tables_dir):
-    """The tables of `tables_dir` with each card of ``s0_rows.json`` holding the rows S0 recorded it with."""
+    """The tables of `tables_dir` with each card of ``s0_rows.json`` holding the rows the baseline recorded it with."""
     tables = S.load_tables(tables_dir)
     with open(S0_ROWS) as fp:
         cards = json.load(fp)["cards"]
@@ -458,7 +458,7 @@ def expansion_check(model, seat, v, lg, job, fails):
 # ── the modes ─────────────────────────────────────────────────────────────────────────────────
 
 def old_tables_of(run, spec_hash):
-    """(old tables, old cards frame) of a run whose checkpoints S0 ran: its tables while unmigrated,
+    """(old tables, old cards frame) of a run whose checkpoints the baseline ran: its tables while unmigrated,
     the tables directory rmtrain retable kept (``tables.<spec_hash>/``, with its cards frame) after."""
     kept = os.path.join(run, "tables.%s" % spec_hash)
     if os.path.exists(os.path.join(kept, "cards.rmstate")):
@@ -505,7 +505,7 @@ def acceptance(args, names, checkpoints, roles, expansion_every):
     os.makedirs(work)
     jobs, missing = plan_jobs(man, checkpoints, roles)
     if not jobs:
-        log("skipped: no original of S0's fixture checkpoints on disk (%s)" % ", ".join(missing[:3]))
+        log("skipped: no original of the baseline's fixture checkpoints on disk (%s)" % ", ".join(missing[:3]))
         return 0
     seat, omni, rows, tables_dir = featurize(os.path.join(work, "feat"), args.engine, args.rmfeat, names, args.jobs)
     seat, omni, rows, moved = recorded_only(seat, omni, rows)
@@ -634,7 +634,7 @@ def write_inputs(args):
     doc = {"format": 1, "plan": "docs/open_vocab_plan.md S5",
            "what": "per fixture decision (its row of baseline/decisions.rmtb) the sha256 (16 hex) of its seat and "
                    "omniscient decisions' arrays as rmfeat --featurize writes them (tok_type, tok_num, tok_cat, "
-                   "tok_card, tok_ability, tok_mask, rel, act_tok, act_mask), today's featurization equal to S0's "
+                   "tok_card, tok_ability, tok_mask, rel, act_tok, act_mask), today's featurization equal to the baseline's "
                    "*_nolists decisions mapped by name; a decision whose inputs moved since is absent",
            "generator": "learn/open_vocab_acceptance.py inputs", "gate_sources": GATE_SOURCES,
            "sources": [s["name"] for s in man["sources"]], "replay_limits": replay_limits(), "decisions": keep}
@@ -662,7 +662,7 @@ def main(argv=None):
     ap.add_argument("--expanded-every", type=int, default=8, help="compare outputs over --expanded for every k-th")
     ap.add_argument("--skip-cards", default="", help="card ids the --expanded tables add or change")
     ap.add_argument("--also-load", nargs="*", default=[], help="full: more migrated checkpoint files to load over "
-                                                             "--expanded (the runs not in S0's fixtures)")
+                                                             "--expanded (the runs not in the baseline's fixtures)")
     ap.add_argument("--drop-moved", action="store_true", help="inputs: keep only decisions whose digest is unchanged")
     ap.add_argument("--keep-decisions", action="store_true",
                     help="inputs: the file's decisions at today's digests, for inputs that moved and networks that don't read them")

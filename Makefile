@@ -158,7 +158,7 @@ refetch:
 	$(MAKE) check
 
 # ── make actor — bin/<config>/robomage_nn, the engine with the nn: agent, and bin/<config>/rmserve,
-# the reference inference server (plan step 5d), NOT in the default build ──
+# the reference inference server, NOT in the default build ──
 # src/actor/ (the evaluators and the nn: agent, docs/featurizer.md §6) is compiled with exceptions ON
 # and C++20 (libtorch 2.10+ headers require it) against libtorch, and linked with every engine
 # object but main.o and with src/inference/ (the protocol, docs/inference_protocol.md):
@@ -221,7 +221,7 @@ rmserve: $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmserve $(RMSERVE_OBJ) $(RMSERVE_LIB_OBJ) $(ACTOR_LDFLAGS)
 
-# ── bin/<config>/rmembed — the oracle-text table's generator (plan step 5c, docs/featurizer.md §5) ──
+# ── bin/<config>/rmembed — the oracle-text table's generator (docs/featurizer.md §5) ──
 # tools/rmembed/ (the BERT encoder in the libtorch C++ API and its safetensors reader), compiled like
 # the actor TUs (exceptions on, torch includes), linked with src/featurize/ (std only: RMTB, the
 # WordPiece tokenizer, the text-table inputs; the featurizer beside them needs the decoder) and the
@@ -319,7 +319,7 @@ rmfeat: $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmfeat $(RMFEAT_OBJ) $(RMFEAT_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md, plan step 3a) ──
+# ── bin/<config>/robomage_check — the C++ test gate (docs/ci.md) ──
 # tools/robomage_check/ runs the engine as subprocesses and links NO engine translation unit: only
 # the std-only RMSTATE decoder and schema, the agents' std-only frame reader, Python-compatible
 # generator and policy projection, src/featurize/ (std only: the JSON reader, RMTB, the WordPiece

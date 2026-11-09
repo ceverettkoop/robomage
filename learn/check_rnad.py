@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, on L1's
-replay.TrajectoryBatch;
-docs/rnad_training_plan.md §4 L4). The GPU is hidden from this process.
+"""The R-NaD learner's CPU-only checks (learn/rmlearn/rnad.py, rnad_learner.py, on
+replay.TrajectoryBatch). The GPU is hidden from this process.
 
     learn/.venv/bin/python learn/check_rnad.py                      # the self-contained checks
     learn/.venv/bin/python learn/check_rnad.py --tables DIR --episodes DIR [--omni-episodes DIR]
@@ -26,7 +25,7 @@ Checks:
 - **projection**: ``threshold_policy`` / ``discretize_policy`` against the engine's
   ``src/agents/policy_projection.cpp`` (compiled into a small harness with ``g++``) on random and
   known inputs, and against the reference's plain-ceiling rounding;
-- **real data** (with ``--tables`` / ``--episodes``): engine episodes (L1's reader and
+- **real data** (with ``--tables`` / ``--episodes``): engine episodes (the episode reader and
   ``TrajectoryBatch``) through learner steps with the default model on CPU, finite (and the
   omniscient critic with ``--omni-episodes``; with ``--bc-checkpoint`` the B3 seeding from a
   behaviour-cloning checkpoint, then steps).
@@ -602,8 +601,8 @@ def _compact(tokens, prefix):
 
 def make_episode(spec_hash, seats, tokens, mus, chosen, result, sideboarding=None, evals=None, omni_tokens=None,
                  versions=None, has_mu=None, end_reason="win"):
-    """An episodes.Episode (L1's reader) of an episode file written from per-step lists. `evals`: per
-    step a list of (policy id, version, log π over the menu)."""
+    """An episodes.Episode (the episode reader's) of an episode file written from per-step lists.
+    `evals`: per step a list of (policy id, version, log π over the menu)."""
     d = len(seats)
     menus = np.array([len(m) for m in mus], np.int64)
     menu_off = _starts(menus)

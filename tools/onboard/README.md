@@ -1,8 +1,8 @@
 # onboard — the deck onboarding pipeline
 
 One command takes a scraped meta deck to a playable, fuzzed deck in `decks/league/` (training) or
-`decks/heldout/` (never trained on: the generalisation test). The plan it implements is
-`docs/open_vocab_plan.md` S7. Standard library only (`python3`, no venv); run from anywhere.
+`decks/heldout/` (never trained on: the generalisation test). Standard library only (`python3`, no venv); run from
+anywhere.
 
 ```bash
 python3 tools/onboard/onboard.py scrape --top 25 --meta 39   # stage 1 (network)
@@ -50,7 +50,7 @@ while its inputs are unchanged and its result `ok`; `--force` reruns it.
 | 10 | `designate` | `--to league` or `--to heldout`: `git mv` the deck there | no |
 | 11 | `baseline` | `rm_driver.py` `scripted:hard` with the deck against every league deck (`--baseline-games` bo1 each), then the zero-shot benchmark of the run's policies (`--run`; `--bench-policies`, default the run's set; `--bench-matches`, default 480): `learn/rmtrain bench <run> --decks league,<dir>/<stem> --focus <dir>/<stem> --label onboard-<stem>` — the deck against every league deck, the policy playing it and facing it (`docs/rmtrain.md` §7.1). The status records the scripted record per opponent and, per policy, the deck played and faced from the benchmark's `summary.json` | no |
 
-Rules (plan S7): a stage never runs past an earlier one that is not `ok` (stages 2-6 rerun
+Rules: a stage never runs past an earlier one that is not `ok` (stages 2-6 rerun
 themselves first when their inputs changed; 7-10 need only a recorded `ok`); `vocab --deck` needs zero
 findings and zero missing mechanics (stage 6 `ok`), and `vocab --card` zero findings on the cards it
 names, whatever their decks' stages say; `designate` needs a clean campaign (stage 9
@@ -61,7 +61,7 @@ only, never onboarded, and in no preset.
 
 ## A card ahead of its deck
 
-Mechanic-first work (`docs/mechanics_plan.md`) finishes cards while their decks are still blocked,
+Mechanic-first work finishes cards while their decks are still blocked,
 and a card outside the vocab may not be tested. `onboard.py vocab --card NAME` (repeatable, since a
 card name can hold a comma; either face of a double-faced card) appends named cards by stage 7's
 rules and code, with no deck involved and no stage 6 needed:
@@ -94,7 +94,7 @@ written, no network — and compares the results with the committed status files
 exits 1, a status file whose recorded result the current engine and vocab no longer give is
 printed as `STALE` (rerun `onboard.py all` and commit the status files). It also applies the
 scenario rule: every card with an id from `FIRST_PLAN_CARD_ID` (367; lower ids predate
-`docs/mechanics_plan.md`) needs a `tests/scenarios/*.json` naming it in a zone key (`hand`, `library`,
+the rule) needs a `tests/scenarios/*.json` naming it in a zone key (`hand`, `library`,
 `battlefield`, `graveyard`, `exile`, `sideboard`, `_a` or `_b`, a variant's included) or in a
 `deck_a` / `deck_b` deck, else it is an `ERROR` naming the card. Names match as the engine's do, so
 case and punctuation do not count, and a zone entry splits on commas (write `Thalia Guardian of

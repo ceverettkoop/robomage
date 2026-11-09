@@ -28,7 +28,7 @@
 static void game_loop();
 
 #ifndef VERSION_NUMBER
-#define VERSION_NUMBER "0.2"
+#define VERSION_NUMBER "0.3"
 #endif
 
 static void game_loop() {

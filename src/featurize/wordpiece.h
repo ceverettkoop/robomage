@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-// ── The BERT WordPiece tokenizer (plan step 5c, docs/featurizer.md §5), standard library only ──
+// ── The BERT WordPiece tokenizer (docs/featurizer.md §5), standard library only ──
 //
 // The reference is Hugging Face's BertTokenizerFast over a model's vocab.txt and
 // tokenizer_config.json; tools/embed/make_goldens.py records its ids for every text entry, and the

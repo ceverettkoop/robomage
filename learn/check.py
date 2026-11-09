@@ -275,7 +275,7 @@ def check_exports(args, model, pol, x):
 
 
 def check_seen(args, tables, model, x):
-    """The seen-card mask (docs/open_vocab_plan.md S4): a never-seen card's folded export row is its
+    """The seen-card mask (docs/rmtrain.md §1.1): a never-seen card's folded export row is its
     features plus ``unknown_id`` and marking it seen changes that row only; training's marking moves
     no output; the mask round-trips through a checkpoint, and a checkpoint without it is refused unless
     given a seen set; the TorchScript and ``.pt2`` exports of a network with an unseen card agree with
@@ -483,7 +483,7 @@ def check_compat(args, tables, model):
 def synthetic_old_layout(doc, rng):
     """A layout before the registry (ids in order, running offsets, no reserved positions) holding the
     same names as the spec document `doc` in other orders: token types, numeric slots, enum values,
-    relations and table columns permuted, plus what S1 removed (a ``lists`` type, the knowledge level
+    relations and table columns permuted, plus the removed inputs (a ``lists`` type, the knowledge level
     ``EXPERT_BELIEF``); (the spec document, its enums)."""
     enums = {k: list(v)[::-1] for k, v in doc["enums"].items()}
     enums["knowledge_level"] = enums["knowledge_level"] + ["EXPERT_BELIEF"]
@@ -549,7 +549,7 @@ def synthetic_registry_layout(doc, rng):
 
 def old_state_of(lm, sd, rng, keep_seen=False):
     """`sd` (a state_dict of the current layout) laid out in `lm`'s old layout: each layout-indexed
-    tensor at its old positions (random where the current one has none), the aux heads S1 removed
+    tensor at its old positions (random where the current one has none), the removed aux heads
     added (unless `keep_seen`: a network of a later layout, which keeps its seen mask)."""
     g = torch.Generator().manual_seed(int(rng.integers(1 << 30)))
     out = {}
@@ -675,7 +675,7 @@ def check_migration(args, tables, model, x):
         ok(False, "migration: an old numeric slot the current layout lacks was not refused")
     except MG.MigrationError as err:
         ok("no_such_slot" in str(err), "migration: the refusal does not name the slot: %s" % err)
-    info("migration: a synthetic old layout (%d types, every order permuted, S1's removals) migrates back exactly, "
+    info("migration: a synthetic old layout (%d types, every order permuted, the removed inputs) migrates back exactly, "
          "outputs equal, Adam's moments like their parameters, an unknown name refused" % len(old_doc["token_types"]))
     check_migration_bump(doc, tables, model, x, rng)
 

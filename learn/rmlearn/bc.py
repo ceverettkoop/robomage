@@ -1,4 +1,4 @@
-"""Behaviour cloning (docs/rnad_training_plan.md §4 L3, §6 B1): the network imitates the label of
+"""Behaviour cloning (phases B1–B2, docs/rmtrain.md §6): the network imitates the label of
 each step of a replay window (the teacher's, or the reply of a replayed scripted seat).
 
     trainer = BCTrainer(model, window, BCConfig(batch_size=128), device="cuda", categories=cats)
