@@ -48,6 +48,11 @@ draw_*.txt
 bin/*/robomage_nn
 bin/*/rmserve
 
+# The workbench (`make workbench`) and its vendored objects (obj/<config>/third_party/imgui/backends/)
+bin/*/rmwork
+obj/*/*/*/*/*.o
+obj/*/*/*/*/*.d
+
 # Cached Scryfall card art of the PySide6 board (archived on branch archive/rl-stack) —
 # downloaded on demand, never committed.
 bin/resources/card_images/

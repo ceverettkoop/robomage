@@ -298,6 +298,48 @@ RMKNOW_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMKNOW_SRCS))
 RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/knowledge/*.cpp))
 
+# ── make workbench — bin/<config>/rmwork, the workbench GUI (docs/workbench_plan.md), NOT in the default build ──
+# tools/rmwork/ on the vendored Dear ImGui (docking), ImPlot and stb (third_party/, unmodified), GLFW and
+# OpenGL 3; linked with src/featurize/json (std only), no engine TU, no libtorch. The vendored sources
+# are compiled with the configuration's flags minus $(CHECKFLAGS); tools/rmwork/ with all of them,
+# the vendored headers included as system headers so their warnings stay theirs.
+WORKBENCH_SRCS := $(wildcard tools/rmwork/*.cpp)
+WORKBENCH_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(WORKBENCH_SRCS))
+WORKBENCH_VENDOR_SRCS := $(addprefix third_party/imgui/,imgui.cpp imgui_draw.cpp imgui_tables.cpp imgui_widgets.cpp \
+                         backends/imgui_impl_glfw.cpp backends/imgui_impl_opengl3.cpp) \
+                         $(addprefix third_party/implot/,implot.cpp implot_items.cpp)
+WORKBENCH_VENDOR_OBJ := $(patsubst third_party/%.cpp,$(ODIR)/third_party/%.o,$(WORKBENCH_VENDOR_SRCS))
+WORKBENCH_LIB_OBJ := $(ODIR)/featurize/json.o
+WORKBENCH_FONTS := $(wildcard third_party/fonts/*/*.ttf)
+ifneq (,$(filter workbench,$(MAKECMDGOALS)))
+GLFW_CFLAGS := $(shell pkg-config --cflags glfw3 2>/dev/null)
+GLFW_LIBS := $(shell pkg-config --libs glfw3 2>/dev/null)
+ifeq ($(strip $(GLFW_LIBS)),)
+$(error make workbench: pkg-config finds no glfw3. Install GLFW 3 (e.g. the glfw package))
+endif
+endif
+WORKBENCH_IFLAGS = -isystem third_party/imgui -isystem third_party/imgui/backends -isystem third_party/implot \
+                   -isystem third_party/stb $(GLFW_CFLAGS)
+
+$(ODIR)/third_party/%.o: third_party/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(WORKBENCH_IFLAGS) $(filter-out $(CHECKFLAGS),$(CXXFLAGS)) $(DEPFLAGS) $(PLATFLAGS)
+
+# Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81; see the actor rule above).
+$(ODIR)/tools/rmwork/%.o: tools/rmwork/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(WORKBENCH_IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+# tools/rmwork/fonts.cpp compiles the UI fonts in (the assembler's .incbin, like src/featurize/registry.cpp);
+# the compiler's dependency file does not see .incbin, so the object depends on every font file here.
+$(ODIR)/tools/rmwork/fonts.o: $(WORKBENCH_FONTS)
+$(ODIR)/tools/rmwork/fonts.o: CXXFLAGS += -DRM_FONT_DIR='"$(abspath third_party/fonts)"'
+
+workbench: $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmwork $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ) $(LDFLAGS) $(LDLIBS) \
+		$(GLFW_LIBS) -lGL $(PLATFLAGS)
+
 $(ODIR)/tools/%.o: tools/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
@@ -336,7 +378,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo
+.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo workbench
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -362,7 +404,7 @@ pgo:
 
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve bin/*/rmwork
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -375,3 +417,5 @@ clean:
 -include $(RMEMBED_OBJ:.o=.d)
 -include $(RMSERVE_OBJ:.o=.d)
 -include $(INFERENCE_OBJ:.o=.d)
+-include $(WORKBENCH_OBJ:.o=.d)
+-include $(WORKBENCH_VENDOR_OBJ:.o=.d)

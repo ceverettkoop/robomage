@@ -29,6 +29,7 @@ static const TierEntry TIERS[] = {
     {"traj", rmcheck::tier_traj},
     {"actorloop", rmcheck::tier_actorloop},
     {"actor", rmcheck::tier_actor},
+    {"workbench", rmcheck::tier_workbench},
     {"knowledge", rmcheck::tier_knowledge},
     {"fuzz", rmcheck::tier_fuzz},
     {"bench", rmcheck::tier_bench},

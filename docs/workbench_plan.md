@@ -15,7 +15,7 @@ fit the same frame (§3), and the screens still to be mocked up before building 
 | Layout | Dockable, tileable tool panels; drag a tab to re-dock, drag splitters to resize, close and reopen from **View**; preset layouts per mode (Replay (ImHex), Play, Analysis, Table only). ImGui's docking provides this; `imgui.ini` persists it and the DockBuilder API builds the presets |
 | Modes | **Play** (a live game against a model) and **Replay** (a recorded game), each with its own layout |
 | Platform | Desktop only; no phone layout |
-| Cards | Full-colour Scryfall images, oldest paper printing by default (non-promo, non-digital), per-card override under File → Settings only. Magnify by holding Q over a card or right-clicking it; no other enlargement |
+| Cards | Full-colour Scryfall images, oldest paper printing by default (non-promo, non-digital), per-card override under Edit → Settings only. Magnify by holding Q over a card or right-clicking it; no other enlargement |
 | Table | MTGO-style: opponent's lands and permanents on top, the phase and the stack (only when not empty) across the middle, your permanents, lands and hand below. Opponent's hand is a count only. Cards size themselves to fill the Table panel. Background: colour, texture (default wood) or image |
 | Passing | F2: pass to the end of the turn unless something goes on the stack. F6: pass to the end of the turn whatever happens, taking the first choice at every decision |
 
@@ -26,10 +26,27 @@ or two), L (more).
 
 ### 2.1 The application shell
 
+**Status: built** (`tools/rmwork/`, `make workbench`, `bin/<config>/rmwork`). Eight colour themes, each a
+full set of the mock-up's colour tokens and the only source of colour (ImHex Dark, the default and the
+mock-up's look; ImHex Light, ImGui Dark, ImGui Classic, Solarized Dark and Light, Nord, Windows 95), chosen
+in Settings → Appearance with a swatch strip per theme and applied live; eight embedded UI font families (JetBrains Mono, Fira Code, IBM Plex Mono,
+Source Code Pro, Cascadia Mono, Hack, and the proportional Inter and IBM Plex Sans), each in a regular
+and a heavier weight, at 11–20 px (default JetBrains Mono Medium 14), chosen in Settings → Appearance
+and applied live; Play and Replay, each with its own
+dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the nine tools as
+placeholders, the Value Graph's empty axes in ImPlot; the four presets (DockBuilder, the mock-up's
+split ratios), View's tool toggles, presets, Reset Layout and mode switch; the menus, toolbar and
+status bar (engine and inference-server health shown as not connected); the key table (← → Home End,
+F2 / F6, Q reserved, the menu shortcuts), rebindable in `settings.json`; Settings (table background,
+the printings placeholder, the bindings read-only, the theme and font); the error dialog (`App::report_error`). Checked by
+`rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Not yet:
+the std-only decoder and the rest of the data links (they arrive with §2.2), user-named layouts (Save
+Layout As…), engine binary / models / stops / image cache settings, rebinding from Settings → Keys.
+
 | Feature | Notes | Size |
 |---|---|---|
 | Binary and build | `bin/<config>/rmwork`, sources under `tools/rmwork/`, `make workbench` (not part of plain `make`, like `make actor`). Vendors Dear ImGui (docking), ImPlot and stb_image; links the std-only decoder (`src/state_format/decode.h`), the frame reader, `src/featurize/` and `src/knowledge/` like `rmfeat` / `rmknow`, no engine TU, no libtorch | M |
-| Theme and fonts | An ImHex-like ImGui style (colours, rounding 0–2, padding), JetBrains Mono embedded as a compressed TTF | S |
+| Theme and fonts | An ImHex-like ImGui style (rounding 0–2, padding) under eight colour themes; the UI fonts embedded (eight families, two weights each) | S |
 | Docking, presets, persistence | Dockspace over the window; one saved layout per mode; presets built with DockBuilder; View → tool toggles, presets, Reset Layout; user-named layouts (Save Layout As…) | S |
 | Settings file | `~/.config/robomage/settings.json`: table background, engine binary path, models and the inference server, default stops, key bindings, card-image cache location | S |
 | Menus, toolbar, status bar | As mocked; status bar shows mode, decision, turn/step/decider, V, and engine and inference-server health | S |
