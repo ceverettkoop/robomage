@@ -871,4 +871,4 @@ schedule, status and results files), `inference_protocol.md` (remote evaluation)
 `rules_deviations.md`, `sideboard_guides.md` (the league sideboard guides; `python/pycheck.py` parses its
 tables), `rmtrain.md` (the training program), `mtg_comprehensive_rules.md` (the rules reference); plans:
 `league48h_plan.md` (the next training run), `league26_24h_plan.md` (the same run in 24 hours),
-`llm_play_plan.md` (deferred).
+`workbench_plan.md` (the analysis-and-play GUI), `llm_play_plan.md` (deferred).
