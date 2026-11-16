@@ -817,6 +817,11 @@ handshake JSON, the shared region, request / response layouts.
 - `learn/rmlearn/migrate.py` — checkpoints of an earlier layout onto the current one, by name (`--run`: a
   run's `ckpt/`, the originals kept in `ckpt.v1/`; `docs/rmtrain.md` §1.2); `learn/open_vocab_acceptance.py`
   — its acceptance against S0's fixtures (`full`, the gate's `gate`, `inputs`)
+- `learn/ablate.py` (`rmlearn/ablation.py`, `rmlearn/ablation_plot.py`) — ablations of a network's card
+  inputs over a seeded sample of a run's recorded decisions: `identity` (a card's id row replaced by the
+  unknown-card vector), `properties` (groups of card / text / ability / part table columns replaced),
+  `report` and `plot` over a result directory (`<run>/ablation/<kind>-<checkpoint>`); the GPU's only
+  process while it runs (`learn/README.md`)
 
 **Python (`python/`, stdlib only)**
 - `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
@@ -865,4 +870,5 @@ contract), `trajectory_format.md` (trajectory episodes), `actor.md` (the continu
 schedule, status and results files), `inference_protocol.md` (remote evaluation),
 `rules_deviations.md`, `sideboard_guides.md` (the league sideboard guides; `python/pycheck.py` parses its
 tables), `rmtrain.md` (the training program), `mtg_comprehensive_rules.md` (the rules reference); plans:
-`league48h_plan.md` (the next training run), `llm_play_plan.md` (deferred).
+`league48h_plan.md` (the next training run), `league26_24h_plan.md` (the same run in 24 hours),
+`llm_play_plan.md` (deferred).
