@@ -9,7 +9,8 @@
 // ── Key bindings: one table of actions, each with its default key chord ──────────────────────────
 //
 // The settings file stores a chord per action by the action's key, so a binding is rebound there
-// (and, later, from Settings → Keys) without touching the code that reacts to it.
+// or from Settings → Keys without touching the code that reacts to it. Two actions may share a
+// chord only where they never both work (one Play's, the other Replay's).
 
 namespace rmwork {
 
@@ -64,6 +65,15 @@ bool parse_chord(const std::string &text, ImGuiKeyChord *out);
 bool chord_pressed(ImGuiKeyChord chord, bool repeat);
 // "Play", "Replay" or "Anywhere".
 const char *scope_name(Scope s);
+// Both scopes work in some mode (Anywhere overlaps both; Play and Replay do not overlap).
+bool scopes_overlap(Scope a, Scope b);
+// The action other than `a` bound to `chord` where `a` also works, or -1 (none for chord 0).
+int binding_conflict(const KeyBindings &b, Action a, ImGuiKeyChord chord);
+// Binds `chord` to `a` unless binding_conflict finds another action; false with `why`.
+bool rebind(KeyBindings *b, Action a, ImGuiKeyChord chord, std::string *why);
+// The chord whose key went down this frame, with the modifiers held: a keyboard key that is not a
+// modifier or Escape (Escape cancels a capture); 0 for none.
+ImGuiKeyChord pressed_chord();
 
 }  // namespace rmwork
 

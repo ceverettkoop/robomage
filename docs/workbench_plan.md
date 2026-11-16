@@ -26,22 +26,28 @@ or two), L (more).
 
 ### 2.1 The application shell
 
-**Status: built** (`tools/rmwork/`, `make workbench`, `bin/<config>/rmwork`). Eight colour themes, each a
+**Status: done** (`tools/rmwork/`, `make workbench`, `bin/<config>/rmwork`). Play and Replay, each with
+its own dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the nine tools as
+placeholders, the Value Graph's empty axes in ImPlot; the four presets (DockBuilder, the mock-up's split
+ratios) and the user's named layouts per mode (View → Save Layout As…, asking before it overwrites; the
+saved names under the presets; Manage Layouts… to show, rename or delete), each saved as its tree of
+splits and tab groups in `settings.json` and rebuilt like a preset; View's tool toggles, Reset Layout and
+mode switch; the menus, toolbar and status bar (the configured engine binary found or missing, the
+inference server's socket present or not connected); the key table (← → Home End, F2 / F6, Q reserved,
+the menu shortcuts), rebound from Settings → Keys (capture the next chord, Esc cancels; a chord another
+action answers to where both work is refused; a reset per row and Reset All); eight colour themes, each a
 full set of the mock-up's colour tokens and the only source of colour (ImHex Dark, the default and the
-mock-up's look; ImHex Light, ImGui Dark, ImGui Classic, Solarized Dark and Light, Nord, Windows 95), chosen
-in Settings → Appearance with a swatch strip per theme and applied live; eight embedded UI font families (JetBrains Mono, Fira Code, IBM Plex Mono,
-Source Code Pro, Cascadia Mono, Hack, and the proportional Inter and IBM Plex Sans), each in a regular
-and a heavier weight, at 11–20 px (default JetBrains Mono Medium 14), chosen in Settings → Appearance
-and applied live; Play and Replay, each with its own
-dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the nine tools as
-placeholders, the Value Graph's empty axes in ImPlot; the four presets (DockBuilder, the mock-up's
-split ratios), View's tool toggles, presets, Reset Layout and mode switch; the menus, toolbar and
-status bar (engine and inference-server health shown as not connected); the key table (← → Home End,
-F2 / F6, Q reserved, the menu shortcuts), rebindable in `settings.json`; Settings (table background,
-the printings placeholder, the bindings read-only, the theme and font); the error dialog (`App::report_error`). Checked by
-`rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Not yet:
-the std-only decoder and the rest of the data links (they arrive with §2.2), user-named layouts (Save
-Layout As…), engine binary / models / stops / image cache settings, rebinding from Settings → Keys.
+mock-up's look; ImHex Light, ImGui Dark, ImGui Classic, Solarized Dark and Light, Nord, Windows 95), and
+eight embedded UI font families (JetBrains Mono, Fira Code, IBM Plex Mono, Source Code Pro, Cascadia
+Mono, Hack, and the proportional Inter and IBM Plex Sans) in two weights at 11–20 px (default JetBrains
+Mono Medium 14), chosen in Settings → Appearance and applied live; Settings' other tabs: table
+background, the printings placeholder and the image cache directory, Engine (binary, working
+directory), Models (server socket, the `id = model` policies, run directory), Stops (Play's default
+stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
+in `settings.json` for the stages that use them; the error dialog (`App::report_error`). Checked by
+`rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
+for later stages by design: the std-only decoder and the rest of the data links (§2.2), and Enter /
+arrows in Choices once Choices has rows (§2.3).
 
 | Feature | Notes | Size |
 |---|---|---|

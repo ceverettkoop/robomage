@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
+#include <cstdio>
 #include <utility>
 
 #include "imgui_internal.h"
@@ -11,10 +13,10 @@ namespace {
 using rmwork::LayoutNode;
 using rmwork::Tool;
 
-// A built tab group: its dock node and its tools.
+// A built tab group: its dock node and its layout node.
 struct BuiltGroup {
         ImGuiID node;
-        const std::vector<Tool> *tools;
+        const LayoutNode *group;
 };
 
 const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
@@ -39,12 +41,18 @@ static LayoutNode group(std::vector<Tool> tools);
 static LayoutNode split(LayoutNode::Kind kind, std::vector<float> sizes, std::vector<LayoutNode> children);
 static std::vector<rmwork::Preset> make_presets();
 static std::string lower(const std::string &s);
-static void collect_groups(const LayoutNode &n, std::vector<std::vector<Tool>> *out);
+static void collect_groups(const LayoutNode &n, std::vector<const LayoutNode *> *out);
 static void collect_rects(const LayoutNode &n, ImVec2 pos, ImVec2 size, std::vector<std::pair<ImVec2, ImVec2>> *out);
 static void build_node(const LayoutNode &n, ImGuiID id, std::vector<BuiltGroup> *out);
 static void set_dock_order(const std::string &window_name, int order);
 static ImGuiID tab_id(const std::string &window_name);
 static int position_in(const std::vector<Tool> &tools, rmwork::Mode m, const ImGuiWindow *w);
+static int tool_of_window(rmwork::Mode m, const ImGuiWindow *w);
+static LayoutNode capture_node(rmwork::Mode m, const ImGuiDockNode *n, const rmwork::ToolFlags &open);
+static void add_child(LayoutNode *split, LayoutNode child, float size);
+static bool nodes_match(const LayoutNode &a, const LayoutNode &b, float tolerance);
+static void describe(const LayoutNode &n, std::string *out);
+static bool valid_node(const LayoutNode &n, int depth, rmwork::ToolFlags *seen, std::string *why);
 
 static LayoutNode group(std::vector<Tool> tools) {
     LayoutNode n;
@@ -88,9 +96,9 @@ static std::string lower(const std::string &s) {
     return out;
 }
 
-static void collect_groups(const LayoutNode &n, std::vector<std::vector<Tool>> *out) {
+static void collect_groups(const LayoutNode &n, std::vector<const LayoutNode *> *out) {
     if (n.kind == LayoutNode::Kind::GROUP) {
-        out->push_back(n.tools);
+        out->push_back(&n);
         return;
     }
     for (const LayoutNode &c : n.children) collect_groups(c, out);
@@ -118,7 +126,7 @@ static void collect_rects(const LayoutNode &n, ImVec2 pos, ImVec2 size, std::vec
 // first child's share of what remains, k - 1 times.
 static void build_node(const LayoutNode &n, ImGuiID id, std::vector<BuiltGroup> *out) {
     if (n.kind == LayoutNode::Kind::GROUP) {
-        out->push_back({id, &n.tools});
+        out->push_back({id, &n});
         return;
     }
     const ImGuiDir dir = n.kind == LayoutNode::Kind::ROW ? ImGuiDir_Left : ImGuiDir_Up;
@@ -158,6 +166,133 @@ static int position_in(const std::vector<Tool> &tools, rmwork::Mode m, const ImG
     for (size_t i = 0; i < tools.size(); ++i)
         if (w && w->ID == ImHashStr(rmwork::tool_window_name(m, tools[i]).c_str())) return static_cast<int>(i);
     return static_cast<int>(tools.size());
+}
+
+// The tool whose window in `m` is `w`, or -1.
+static int tool_of_window(rmwork::Mode m, const ImGuiWindow *w) {
+    for (int t = 0; t < rmwork::TOOL_COUNT; ++t)
+        if (w && w->ID == ImHashStr(rmwork::tool_window_name(m, static_cast<Tool>(t)).c_str())) return t;
+    return -1;
+}
+
+// The subtree under dock node `n`, sizes in pixels along the split (capture_layout normalises
+// them); an empty group where no open tool is docked.
+static LayoutNode capture_node(rmwork::Mode m, const ImGuiDockNode *n, const rmwork::ToolFlags &open) {
+    LayoutNode out;
+    if (n->IsSplitNode()) {
+        const bool row = n->SplitAxis == ImGuiAxis_X;
+        out.kind = row ? LayoutNode::Kind::ROW : LayoutNode::Kind::COL;
+        for (const ImGuiDockNode *c : n->ChildNodes) {
+            if (!c) continue;
+            add_child(&out, capture_node(m, c, open), row ? c->Size.x : c->Size.y);
+        }
+        if (out.children.size() == 1) return out.children.front();
+        if (out.children.empty()) return LayoutNode();
+        return out;
+    }
+    ImGuiID shown = n->TabBar ? n->TabBar->SelectedTabId : 0;
+    if (n->TabBar) {
+        for (const ImGuiTabItem &tab : n->TabBar->Tabs) {
+            const int t = tool_of_window(m, tab.Window);
+            if (t < 0 || !open[t]) continue;
+            if (tab.ID == shown) out.selected = static_cast<int>(out.tools.size());
+            out.tools.push_back(static_cast<Tool>(t));
+        }
+    } else {
+        for (const ImGuiWindow *w : n->Windows) {
+            const int t = tool_of_window(m, w);
+            if (t < 0 || !open[t]) continue;
+            if (w == n->VisibleWindow) out.selected = static_cast<int>(out.tools.size());
+            out.tools.push_back(static_cast<Tool>(t));
+        }
+    }
+    return out;
+}
+
+// Appends `child` (of pixel extent `size`) to `split`: an empty group is dropped, a split in the
+// same direction is spliced in child by child.
+static void add_child(LayoutNode *split, LayoutNode child, float size) {
+    if (child.kind == LayoutNode::Kind::GROUP && child.tools.empty()) return;
+    if (child.kind == split->kind) {
+        for (size_t i = 0; i < child.children.size(); ++i) {
+            split->children.push_back(std::move(child.children[i]));
+            split->sizes.push_back(child.sizes[i]);
+        }
+        return;
+    }
+    split->children.push_back(std::move(child));
+    split->sizes.push_back(size);
+}
+
+static bool nodes_match(const LayoutNode &a, const LayoutNode &b, float tolerance) {
+    if (a.kind != b.kind) return false;
+    if (a.kind == LayoutNode::Kind::GROUP) return a.tools == b.tools && (a.tools.empty() || a.selected == b.selected);
+    if (a.children.size() != b.children.size() || a.sizes.size() != b.sizes.size()) return false;
+    float ta = 0, tb = 0;
+    for (float s : a.sizes) ta += s;
+    for (float s : b.sizes) tb += s;
+    for (size_t i = 0; i < a.children.size(); ++i) {
+        if (std::fabs(a.sizes[i] / ta - b.sizes[i] / tb) > tolerance) return false;
+        if (!nodes_match(a.children[i], b.children[i], tolerance)) return false;
+    }
+    return true;
+}
+
+static void describe(const LayoutNode &n, std::string *out) {
+    if (n.kind == LayoutNode::Kind::GROUP) {
+        *out += "[";
+        for (size_t i = 0; i < n.tools.size(); ++i) {
+            if (i) *out += " ";
+            if (static_cast<int>(i) == n.selected) *out += "*";
+            *out += rmwork::tool_info(n.tools[i]).key;
+        }
+        *out += "]";
+        return;
+    }
+    *out += n.kind == LayoutNode::Kind::ROW ? "row(" : "col(";
+    float total = 0;
+    for (float s : n.sizes) total += s;
+    for (size_t i = 0; i < n.children.size(); ++i) {
+        char buf[16];
+        std::snprintf(buf, sizeof buf, "%s%.3f:", i ? " " : "", i < n.sizes.size() ? n.sizes[i] / total : 0.0f);
+        *out += buf;
+        describe(n.children[i], out);
+    }
+    *out += ")";
+}
+
+static bool valid_node(const LayoutNode &n, int depth, rmwork::ToolFlags *seen, std::string *why) {
+    if (depth > 16) {
+        *why = "the layout is nested more than 16 deep";
+        return false;
+    }
+    if (n.kind == LayoutNode::Kind::GROUP) {
+        for (Tool t : n.tools) {
+            if ((*seen)[rmwork::tool_index(t)]) {
+                *why = std::string("tool \"") + rmwork::tool_info(t).key + "\" appears twice";
+                return false;
+            }
+            (*seen)[rmwork::tool_index(t)] = true;
+        }
+        if (!n.tools.empty() && (n.selected < 0 || n.selected >= static_cast<int>(n.tools.size()))) {
+            *why = "a tab group's selected tab is out of range";
+            return false;
+        }
+        return true;
+    }
+    if (n.children.size() < 2 || n.sizes.size() != n.children.size()) {
+        *why = "a split has fewer than two children, or not one size per child";
+        return false;
+    }
+    for (float s : n.sizes) {
+        if (!(s > 0.0f) || !std::isfinite(s)) {
+            *why = "a split's size is not a positive number";
+            return false;
+        }
+    }
+    for (const LayoutNode &c : n.children)
+        if (!valid_node(c, depth + 1, seen, why)) return false;
+    return true;
 }
 
 namespace rmwork {
@@ -204,53 +339,55 @@ int find_preset(const std::string &name) {
     return -1;
 }
 
-std::vector<std::vector<Tool>> preset_groups(const Preset &p) {
-    std::vector<std::vector<Tool>> out;
-    collect_groups(p.root, &out);
+std::vector<const LayoutNode *> layout_groups(const LayoutNode &root) {
+    std::vector<const LayoutNode *> out;
+    collect_groups(root, &out);
     return out;
 }
 
-std::vector<std::pair<ImVec2, ImVec2>> preset_group_rects(const Preset &p, ImVec2 pos, ImVec2 size) {
+std::vector<std::pair<ImVec2, ImVec2>> layout_group_rects(const LayoutNode &root, ImVec2 pos, ImVec2 size) {
     std::vector<std::pair<ImVec2, ImVec2>> out;
-    collect_rects(p.root, pos, size, &out);
+    collect_rects(root, pos, size, &out);
     return out;
 }
 
-ToolFlags preset_tools(const Preset &p) {
+ToolFlags layout_tools(const LayoutNode &root) {
     ToolFlags open{};
-    for (const std::vector<Tool> &g : preset_groups(p))
-        for (Tool t : g) open[tool_index(t)] = true;
+    for (const LayoutNode *g : layout_groups(root))
+        for (Tool t : g->tools) open[tool_index(t)] = true;
     return open;
 }
 
-std::vector<Tool> preset_order(const Preset &p) {
+std::vector<Tool> layout_order(const LayoutNode &root) {
     std::vector<Tool> order;
-    for (const std::vector<Tool> &g : preset_groups(p)) order.insert(order.end(), g.begin(), g.end());
-    const ToolFlags open = preset_tools(p);
+    for (const LayoutNode *g : layout_groups(root)) order.insert(order.end(), g->tools.begin(), g->tools.end());
+    const ToolFlags open = layout_tools(root);
     for (int i = 0; i < TOOL_COUNT; ++i)
         if (!open[i]) order.push_back(static_cast<Tool>(i));
     return order;
 }
 
-void apply_preset(Mode m, const Preset &p, ImVec2 size, ToolFlags *open) {
+void apply_layout(Mode m, const LayoutNode &root, ImVec2 size, ToolFlags *open) {
     const ImGuiID ds = dockspace_id(m);
     ImGui::DockBuilderRemoveNode(ds);
     ImGui::DockBuilderAddNode(ds, ImGuiDockNodeFlags_DockSpace);
     ImGui::DockBuilderSetNodeSize(ds, size);
     std::vector<BuiltGroup> groups;
-    build_node(p.root, ds, &groups);
-    *open = preset_tools(p);
+    build_node(root, ds, &groups);
+    *open = layout_tools(root);
     for (const BuiltGroup &g : groups) {
         int order = 0;
-        for (Tool t : *g.tools) {
+        for (Tool t : g.group->tools) {
             const std::string name = tool_window_name(m, t);
             ImGui::DockBuilderDockWindow(name.c_str(), g.node);
             set_dock_order(name, order++);
         }
-        ImGui::DockBuilderGetNode(g.node)->SelectedTabId = tab_id(tool_window_name(m, g.tools->front()));
+        if (g.group->tools.empty()) continue;
+        const size_t shown = std::min(static_cast<size_t>(std::max(0, g.group->selected)), g.group->tools.size() - 1);
+        ImGui::DockBuilderGetNode(g.node)->SelectedTabId = tab_id(tool_window_name(m, g.group->tools[shown]));
     }
     // The closed tools wait behind the first group, so reopening one from View adds it there.
-    int order = static_cast<int>(groups.front().tools->size());
+    int order = static_cast<int>(groups.front().group->tools.size());
     for (int i = 0; i < TOOL_COUNT; ++i) {
         if ((*open)[i]) continue;
         const std::string name = tool_window_name(m, static_cast<Tool>(i));
@@ -262,8 +399,10 @@ void apply_preset(Mode m, const Preset &p, ImVec2 size, ToolFlags *open) {
     ImGui::SetWindowFocus(nullptr);
 }
 
-void order_preset_tabs(Mode m, const Preset &p) {
-    for (const std::vector<Tool> &g : preset_groups(p)) {
+void order_layout_tabs(Mode m, const LayoutNode &root) {
+    for (const LayoutNode *group : layout_groups(root)) {
+        const std::vector<Tool> &g = group->tools;
+        if (g.empty()) continue;
         const ImGuiWindow *first = ImGui::FindWindowByName(tool_window_name(m, g.front()).c_str());
         ImGuiDockNode *node = first ? first->DockNode : nullptr;
         if (!node || !node->TabBar) continue;
@@ -272,6 +411,113 @@ void order_preset_tabs(Mode m, const Preset &p) {
             return position_in(g, m, a.Window) < position_in(g, m, b.Window);
         });
     }
+}
+
+LayoutNode capture_layout(Mode m, const ToolFlags &open) {
+    LayoutNode root;
+    if (const ImGuiDockNode *ds = ImGui::DockBuilderGetNode(dockspace_id(m))) root = capture_node(m, ds, open);
+    if (root.kind != LayoutNode::Kind::GROUP) {
+        std::vector<LayoutNode *> stack = {&root};
+        while (!stack.empty()) {
+            LayoutNode *n = stack.back();
+            stack.pop_back();
+            if (n->kind == LayoutNode::Kind::GROUP) continue;
+            float sum = 0;
+            for (float s : n->sizes) sum += s;
+            for (float &s : n->sizes) s = sum > 0 ? s / sum : 1.0f / static_cast<float>(n->sizes.size());
+            for (LayoutNode &c : n->children) stack.push_back(&c);
+        }
+    }
+    const ToolFlags placed = layout_tools(root);
+    LayoutNode *first = &root;
+    while (first->kind != LayoutNode::Kind::GROUP) first = &first->children.front();
+    for (int t = 0; t < TOOL_COUNT; ++t)
+        if (open[t] && !placed[t]) first->tools.push_back(static_cast<Tool>(t));
+    return root;
+}
+
+bool layouts_match(const LayoutNode &a, const LayoutNode &b, float tolerance) {
+    return nodes_match(a, b, tolerance);
+}
+
+std::string describe_layout(const LayoutNode &root) {
+    std::string out;
+    describe(root, &out);
+    return out;
+}
+
+bool layout_valid(const LayoutNode &root, std::string *why) {
+    ToolFlags seen{};
+    return valid_node(root, 0, &seen, why);
+}
+
+bool layout_name_valid(const std::string &name, std::string *why) {
+    bool blank = true;
+    for (char c : name) {
+        if (static_cast<unsigned char>(c) < 0x20 || c == 0x7f) {
+            *why = "a name has no control characters";
+            return false;
+        }
+        if (c != ' ') blank = false;
+    }
+    if (blank) {
+        *why = "the name is empty";
+        return false;
+    }
+    if (name.size() > LAYOUT_NAME_MAX) {
+        *why = "the name is longer than " + std::to_string(LAYOUT_NAME_MAX) + " characters";
+        return false;
+    }
+    if (find_preset(name) >= 0) {
+        *why = "\"" + name + "\" is a preset's name";
+        return false;
+    }
+    return true;
+}
+
+int find_named_layout(const NamedLayouts &all, const std::string &name) {
+    const std::string want = lower(name);
+    for (size_t i = 0; i < all.size(); ++i)
+        if (lower(all[i].name) == want) return static_cast<int>(i);
+    return -1;
+}
+
+SaveResult save_named_layout(
+    NamedLayouts *all, const std::string &name, const LayoutNode &root, bool overwrite, std::string *why) {
+    if (!layout_name_valid(name, why)) return SaveResult::INVALID;
+    const int i = find_named_layout(*all, name);
+    if (i >= 0 && !overwrite) {
+        *why = "a layout is already named \"" + (*all)[static_cast<size_t>(i)].name + "\"";
+        return SaveResult::EXISTS;
+    }
+    if (i >= 0)
+        (*all)[static_cast<size_t>(i)] = {name, root};
+    else
+        all->push_back({name, root});
+    return SaveResult::SAVED;
+}
+
+bool rename_named_layout(NamedLayouts *all, const std::string &from, const std::string &to, std::string *why) {
+    const int i = find_named_layout(*all, from);
+    if (i < 0) {
+        *why = "no layout is named \"" + from + "\"";
+        return false;
+    }
+    if (!layout_name_valid(to, why)) return false;
+    const int other = find_named_layout(*all, to);
+    if (other >= 0 && other != i) {
+        *why = "another layout is named \"" + (*all)[static_cast<size_t>(other)].name + "\"";
+        return false;
+    }
+    (*all)[static_cast<size_t>(i)].name = to;
+    return true;
+}
+
+bool delete_named_layout(NamedLayouts *all, const std::string &name) {
+    const int i = find_named_layout(*all, name);
+    if (i < 0) return false;
+    all->erase(all->begin() + i);
+    return true;
 }
 
 }  // namespace rmwork

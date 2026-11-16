@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "files.h"
 #include "imgui_internal.h"
 #include "panels.h"
 #include "theme.h"
@@ -31,6 +32,7 @@ App::App(const Settings &settings, const ConfigPaths &paths, bool persist)
 }
 
 void App::begin_frame() {
+    check_health();
     if (find_theme(settings_.theme) < 0) settings_.theme = DEFAULT_THEME;
     if (applied_theme_ != settings_.theme) {
         apply_theme(settings_.theme);
@@ -51,6 +53,12 @@ void App::frame() {
     draw_dock();
     draw_tools();
     settings_dialog_.draw(&settings_, paths_.settings);
+    Mode show_mode = mode();
+    std::string show_name;
+    if (layout_dialogs_.draw(&settings_, &show_mode, &show_name)) {
+        set_mode(show_mode);
+        request_named_layout(show_name);
+    }
     if (error_dialog_.draw()) status("Diagnostics copied to the clipboard");
     save_if_changed();
 }
@@ -62,8 +70,52 @@ void App::set_mode(Mode m) {
 }
 
 void App::request_preset(int index) {
-    pending_preset_[mode_index(mode())] = index;
-    status(std::string("Layout: ") + presets()[static_cast<size_t>(index)].name);
+    request_layout(presets()[static_cast<size_t>(index)].root, presets()[static_cast<size_t>(index)].name);
+}
+
+bool App::request_named_layout(const std::string &name) {
+    const NamedLayouts &all = settings_.layouts[mode_index(mode())];
+    const int i = find_named_layout(all, name);
+    if (i < 0) return false;
+    request_layout(all[static_cast<size_t>(i)].root, all[static_cast<size_t>(i)].name);
+    return true;
+}
+
+SaveResult App::save_current_layout(const std::string &name, bool overwrite, std::string *why) {
+    const int mi = mode_index(mode());
+    return save_named_layout(&settings_.layouts[mi], name, capture_layout(mode(), settings_.tools[mi]), overwrite, why);
+}
+
+void App::request_layout(const LayoutNode &root, const std::string &label) {
+    const int mi = mode_index(mode());
+    pending_[mi] = true;
+    pending_root_[mi] = root;
+    status("Layout: " + label);
+}
+
+void App::begin_key_capture(Action a) {
+    settings_dialog_.begin_key_capture(a);
+}
+
+std::string App::engine_health() const {
+    return engine_found_ ? "Engine: found" : "Engine: missing";
+}
+
+std::string App::inference_health() const {
+    return socket_present_ ? "Inference: socket present" : "Inference: not connected";
+}
+
+// The configured engine binary and socket, looked at again when their paths change or a second
+// has passed.
+void App::check_health() {
+    const std::string engine = engine_binary_path(settings_), socket = socket_path(settings_);
+    const std::string key = engine + '\n' + socket;
+    const double now = ImGui::GetTime();
+    if (key == health_paths_ && health_checked_ >= 0 && now - health_checked_ < 1.0) return;
+    health_paths_ = key;
+    health_checked_ = now;
+    engine_found_ = is_executable(engine);
+    socket_present_ = !socket.empty() && path_kind(socket) == PathKind::SOCKET;
 }
 
 void App::set_tool_open(Mode m, Tool t, bool open) {
@@ -225,6 +277,21 @@ void App::draw_view_menu() {
     const std::vector<Preset> &all = presets();
     for (size_t i = 0; i < all.size(); ++i)
         if (ImGui::MenuItem(all[i].name)) request_preset(static_cast<int>(i));
+    const NamedLayouts &saved = settings_.layouts[mode_index(m)];
+    if (!saved.empty()) {
+        ImGui::Separator();
+        ImGui::TextDisabled("Saved layouts");
+        ImGui::PushID("saved");
+        for (size_t i = 0; i < saved.size(); ++i) {
+            ImGui::PushID(static_cast<int>(i));
+            if (ImGui::MenuItem(saved[i].name.c_str())) request_named_layout(saved[i].name);
+            ImGui::PopID();
+        }
+        ImGui::PopID();
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Save Layout As…")) layout_dialogs_.open_save(m);
+    if (ImGui::MenuItem("Manage Layouts…")) layout_dialogs_.open_manage(m);
     if (ImGui::MenuItem("Reset Layout")) request_preset(default_preset(m));
     ImGui::PopID();
     ImGui::Separator();
@@ -324,8 +391,9 @@ void App::draw_status_bar() {
         status_segment("Decision —");
         status_segment("Turn —");
         status_segment("V —");
-        const char *engine = "Engine: not connected";
-        const char *server = "Inference: not connected";
+        const std::string engine_text = engine_health(), server_text = inference_health();
+        const char *engine = engine_text.c_str();
+        const char *server = server_text.c_str();
         const float right_w = ImGui::CalcTextSize(engine).x + ImGui::CalcTextSize(server).x + 12 * 2 + 21 + 2;
         const ImVec2 msg_pos = ImGui::GetCursorScreenPos();
         const float msg_end = w->Pos.x + w->Size.x - 8 - right_w - 12;
@@ -336,10 +404,10 @@ void App::draw_status_bar() {
             ImGui::PopStyleColor();
         }
         ImGui::SetCursorScreenPos(ImVec2(std::max(msg_pos.x, w->Pos.x + w->Size.x - 8 - right_w), msg_pos.y));
-        health_indicator(engine, tok().DIM);
+        health_indicator(engine, engine_found_ ? tok().GOOD : tok().BAD);
         ImGui::SameLine(0, 10);
         status_rule();
-        health_indicator(server, tok().DIM);
+        health_indicator(server, socket_present_ ? tok().ACCENT : tok().DIM);
     }
     ImGui::End();
     ImGui::PopStyleColor();
@@ -354,19 +422,21 @@ void App::draw_dock() {
     const ImGuiID ds = dockspace_id(m);
     if (!layout_checked_[mi]) {
         layout_checked_[mi] = true;
-        if (!ImGui::DockBuilderGetNode(ds) && pending_preset_[mi] < 0) pending_preset_[mi] = default_preset(m);
+        if (!ImGui::DockBuilderGetNode(ds) && !pending_[mi]) {
+            pending_[mi] = true;
+            pending_root_[mi] = presets()[static_cast<size_t>(default_preset(m))].root;
+        }
     }
-    if (pending_preset_[mi] >= 0) {
-        const Preset &p = presets()[static_cast<size_t>(pending_preset_[mi])];
-        apply_preset(m, p, area.GetSize(), &settings_.tools[mi]);
-        submit_order_[mi] = preset_order(p);
-        applied_preset_[mi] = pending_preset_[mi];
+    if (pending_[mi]) {
+        apply_layout(m, pending_root_[mi], area.GetSize(), &settings_.tools[mi]);
+        submit_order_[mi] = layout_order(pending_root_[mi]);
+        applied_root_[mi] = pending_root_[mi];
         tab_order_frames_[mi] = 3;
-        pending_preset_[mi] = -1;
+        pending_[mi] = false;
         rehome_[mi].fill(false);
     } else if (tab_order_frames_[mi] > 0) {
         --tab_order_frames_[mi];
-        order_preset_tabs(m, presets()[static_cast<size_t>(applied_preset_[mi])]);
+        order_layout_tabs(m, applied_root_[mi]);
     }
     ImGui::SetNextWindowPos(area.Min);
     ImGui::SetNextWindowSize(area.GetSize());

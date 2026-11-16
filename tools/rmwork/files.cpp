@@ -36,6 +36,31 @@ bool file_exists(const std::string &path) {
     return stat(path.c_str(), &st) == 0;
 }
 
+PathKind path_kind(const std::string &path) {
+    struct stat st;
+    if (path.empty() || stat(path.c_str(), &st) != 0) return PathKind::MISSING;
+    if (S_ISREG(st.st_mode)) return PathKind::FILE;
+    if (S_ISDIR(st.st_mode)) return PathKind::DIRECTORY;
+    if (S_ISSOCK(st.st_mode)) return PathKind::SOCKET;
+    return PathKind::OTHER;
+}
+
+bool is_executable(const std::string &path) {
+    return path_kind(path) == PathKind::FILE && access(path.c_str(), X_OK) == 0;
+}
+
+std::string executable_path() {
+    std::vector<char> buf(4096);
+    const ssize_t n = readlink("/proc/self/exe", buf.data(), buf.size() - 1);
+    if (n <= 0) return "";
+    return std::string(buf.data(), static_cast<size_t>(n));
+}
+
+std::string current_dir() {
+    std::vector<char> buf(4096);
+    return getcwd(buf.data(), buf.size()) ? std::string(buf.data()) : std::string();
+}
+
 bool read_file(const std::string &path, std::string *out) {
     FILE *f = std::fopen(path.c_str(), "rb");
     if (!f) return false;

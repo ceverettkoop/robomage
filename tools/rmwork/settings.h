@@ -3,6 +3,7 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 #include "fonts.h"
 #include "keys.h"
@@ -27,14 +28,69 @@ struct TableBackground {
         std::string value = "wood";  // "#rrggbb", a texture key or an image path
 };
 
+// The engine the workbench runs (Play, and Replay's re-evaluation); "" is the default (paths.h).
+struct EngineSettings {
+        std::string binary;   // default bin/<config>/robomage_nn, else robomage
+        std::string workdir;  // default bin/
+};
+
+// One policy rmserve serves: `rmserve --policy <id>=<model>`.
+struct PolicyEntry {
+        std::string id;
+        std::string model;
+};
+
+struct ModelSettings {
+        std::string socket;  // the inference server's socket ("" = none)
+        std::vector<PolicyEntry> policies;
+        std::string run_dir;  // where training runs live; default runs/
+};
+
+// The twelve steps a stop can be set in (a stop at combat damage also covers first-strike damage).
+inline constexpr int STOP_STEP_COUNT = 12;
+struct StepInfo {
+        const char *key;     // settings key ("declare_attackers")
+        const char *name;    // "Declare attackers"
+        const char *abbrev;  // "Atk", as the Table's step strip shows it
+};
+const StepInfo &stop_step(int index);
+// The step with settings key `key`, or -1.
+int find_stop_step(const std::string &key);
+
+// Play's default stops: per step, whether priority stops there with an empty stack.
+struct StopSettings {
+        std::array<bool, STOP_STEP_COUNT> own{};       // in your turn
+        std::array<bool, STOP_STEP_COUNT> opponent{};  // in the opponent's turn
+};
+// The mock-up's: upkeep, main 1, declare attackers, declare blockers and end step, in both turns.
+StopSettings default_stops();
+
 struct Settings {
         Mode mode = Mode::REPLAY;
-        std::array<ToolFlags, MODE_COUNT> tools{};  // per mode, which tools are open
+        std::array<ToolFlags, MODE_COUNT> tools{};     // per mode, which tools are open
+        std::array<NamedLayouts, MODE_COUNT> layouts;  // per mode, the user's saved layouts
         TableBackground table;
         std::string theme = DEFAULT_THEME;  // a theme id (theme.h); an unknown one reads as the default
         FontChoice font;                    // always sanitized: a known family, a size in range
         KeyBindings keys{};
+        EngineSettings engine;
+        ModelSettings models;
+        StopSettings stops = default_stops();
+        std::string image_cache;  // the card-image cache; "" = default_image_cache()
 };
+
+// The path settings resolved (paths.h): the setting, else its default; the socket has none ("").
+std::string engine_binary_path(const Settings &s);
+std::string engine_workdir_path(const Settings &s);
+std::string run_dir_path(const Settings &s);
+std::string image_cache_path(const Settings &s);
+std::string socket_path(const Settings &s);
+std::string policy_model_path(const PolicyEntry &p);
+
+// A policy id rmserve takes: letters, digits, '_', '-' and '.'; false with `why`.
+bool policy_id_valid(const std::string &id, std::string *why);
+// Appends a policy with a valid id no other policy has and a model path; false with `why`.
+bool add_policy(ModelSettings *m, const std::string &id, const std::string &model, std::string *why);
 
 // The table textures, by settings key, with their display names.
 struct TextureInfo {
@@ -50,13 +106,16 @@ struct ConfigPaths {
         std::string imgui_ini;  // <dir>/workbench/imgui.ini
 };
 
-// Each mode's default preset's tools open, the default bindings, a wood table.
+// Each mode's default preset's tools open, the default bindings, a wood table, no saved layouts,
+// the default paths and stops.
 Settings default_settings();
 // `dir` when given, else $XDG_CONFIG_HOME/robomage, else $HOME/.config/robomage.
 ConfigPaths config_paths(const std::string &dir);
 std::string settings_to_json(const Settings &s);
-// Starts from the defaults; false with `err` on malformed JSON or a value of the wrong kind. An
-// unknown theme, font family or weight, or an out-of-range size is the default's (no error).
+// Starts from the defaults; false with `err` on malformed JSON, a value of the wrong kind, an
+// unknown key name or step, two actions bound to one key where both work, a malformed or misnamed
+// layout, or a bad policy row. An unknown theme, font family or weight, or an out-of-range size is
+// the default's (no error).
 bool settings_from_json(const std::string &text, Settings *out, std::string *err);
 // A missing file gives the defaults (true); an unreadable or malformed one false with `err`.
 bool load_settings(const std::string &path, Settings *out, std::string *err);

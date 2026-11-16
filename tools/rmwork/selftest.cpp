@@ -1,5 +1,8 @@
 #include "selftest.h"
 
+#include <sys/socket.h>
+#include <sys/un.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -11,6 +14,7 @@
 #include "files.h"
 #include "imgui_internal.h"
 #include "implot.h"
+#include "paths.h"
 #include "theme.h"
 
 namespace {
@@ -33,8 +37,9 @@ static void run_frames(rmwork::App &app, int n);
 static ImGuiWindow *tool_window(rmwork::Mode m, rmwork::Tool t);
 static bool window_active(const ImGuiWindow *w);
 static std::string tab_names(const ImGuiDockNode *node);
-static std::string where(rmwork::Mode m, const rmwork::Preset &p);
 static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int preset);
+static void check_layout_tree(
+    Tally *t, const rmwork::App &app, rmwork::Mode m, const rmwork::LayoutNode &layout, const std::string &label);
 static void check_other_mode_hidden(Tally *t, rmwork::Mode m);
 static void check_presets(Tally *t, rmwork::App &app);
 static void check_mode_switching(Tally *t, rmwork::App &app);
@@ -54,6 +59,18 @@ static void check_min_contrast(Tally *t, const std::string &at, const char *fg_n
 static void check_theme_contrast(Tally *t);
 static void check_theme_settings(Tally *t);
 static void check_font_settings(Tally *t);
+static void check_preset_capture(Tally *t, rmwork::App &app);
+static rmwork::LayoutNode custom_layout();
+static void check_named_layouts(Tally *t, const rmwork::ConfigPaths &paths);
+static void check_layout_names(Tally *t);
+static bool layouts_json_accepted(const std::string &layouts);
+static void check_layout_files(Tally *t);
+static void check_layout_dialogs(Tally *t, const rmwork::ConfigPaths &paths);
+static void check_later_settings(Tally *t, const std::string &tmp);
+static std::string make_socket(const std::string &path);
+static void check_health(Tally *t, const rmwork::ConfigPaths &paths, const std::string &tmp);
+static void check_rebinding(Tally *t, const rmwork::ConfigPaths &paths);
+static void check_key_resets(Tally *t);
 static void check_ini_round_trip(Tally *t, const rmwork::ConfigPaths &paths);
 static void check_settings_file(Tally *t, const rmwork::ConfigPaths &paths, const std::string &tmp);
 static void check_app_persists(Tally *t, const rmwork::ConfigPaths &paths);
@@ -102,17 +119,19 @@ static std::string tab_names(const ImGuiDockNode *node) {
     return out;
 }
 
-static std::string where(rmwork::Mode m, const rmwork::Preset &p) {
-    return std::string(rmwork::mode_title(m)) + " / " + p.name + ": ";
+// The last frame shows preset `preset` in mode `m` (check_layout_tree).
+static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int preset) {
+    const rmwork::Preset &p = rmwork::presets()[static_cast<size_t>(preset)];
+    check_layout_tree(t, app, m, p.root, p.name);
 }
 
-// The last frame shows exactly preset `preset`'s tools in mode `m`, each group in one dock node of
-// the mode's dockspace, in order, the first tab selected, at the preset's split ratios.
-static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int preset) {
+// The last frame shows exactly the layout's tools in mode `m`, each group in one dock node of the
+// mode's dockspace, in order, its selected tab shown, at the layout's split ratios.
+static void check_layout_tree(
+    Tally *t, const rmwork::App &app, rmwork::Mode m, const rmwork::LayoutNode &layout, const std::string &label) {
     using namespace rmwork;
-    const Preset &p = presets()[static_cast<size_t>(preset)];
-    const std::string at = where(m, p);
-    const ToolFlags expected = preset_tools(p);
+    const std::string at = std::string(mode_title(m)) + " / " + label + ": ";
+    const ToolFlags expected = layout_tools(layout);
     for (int i = 0; i < TOOL_COUNT; ++i) {
         const Tool tool = static_cast<Tool>(i);
         const std::string name = tool_info(tool).title;
@@ -123,13 +142,15 @@ static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int p
     const ImGuiDockNode *root = ImGui::DockBuilderGetNode(dockspace_id(m));
     check(t, root != nullptr, at + "no dockspace node");
     if (!root) return;
-    const std::vector<std::vector<Tool>> groups = preset_groups(p);
-    const std::vector<std::pair<ImVec2, ImVec2>> rects = preset_group_rects(p, root->Pos, root->Size);
+    const std::vector<const LayoutNode *> groups = layout_groups(layout);
+    const std::vector<std::pair<ImVec2, ImVec2>> rects = layout_group_rects(layout, root->Pos, root->Size);
     std::vector<const ImGuiDockNode *> nodes;
     for (size_t g = 0; g < groups.size(); ++g) {
-        const ImGuiWindow *first = tool_window(m, groups[g].front());
+        const std::vector<Tool> &tools = groups[g]->tools;
+        const ImGuiWindow *first = tool_window(m, tools.front());
+        const ImGuiWindow *shown = tool_window(m, tools[static_cast<size_t>(groups[g]->selected)]);
         const ImGuiDockNode *node = first ? first->DockNode : nullptr;
-        const std::string gname = at + "group of " + tool_info(groups[g].front()).title;
+        const std::string gname = at + "group of " + tool_info(tools.front()).title;
         check(t, node != nullptr, gname + " is not docked");
         if (!node) continue;
         check(t, ImGui::DockNodeGetRootNode(const_cast<ImGuiDockNode *>(node))->ID == root->ID,
@@ -137,7 +158,7 @@ static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int p
         for (const ImGuiDockNode *other : nodes) check(t, other != node, gname + " shares a node with another group");
         nodes.push_back(node);
         std::vector<const ImGuiWindow *> want;
-        for (Tool tool : groups[g]) {
+        for (Tool tool : tools) {
             const ImGuiWindow *w = tool_window(m, tool);
             want.push_back(w);
             check(t, w && w->DockNode == node, at + tool_info(tool).title + " is not in its group's tab node");
@@ -146,8 +167,8 @@ static void check_layout(Tally *t, const rmwork::App &app, rmwork::Mode m, int p
         if (node->TabBar)
             for (const ImGuiTabItem &tab : node->TabBar->Tabs)
                 if (tab.Window && window_active(tab.Window)) tabs.push_back(tab.Window);
-        check(t, tabs == want, gname + ": tabs not in the preset's order:" + tab_names(node));
-        check(t, node->VisibleWindow == first, gname + ": the first tab is not the selected one");
+        check(t, tabs == want, gname + ": tabs not in the layout's order:" + tab_names(node));
+        check(t, node->VisibleWindow == shown, gname + ": the selected tab is not the one shown");
         const ImVec2 lo = rects[g].first, hi = rects[g].second;
         const ImVec2 nlo = node->Pos, nhi = ImVec2(node->Pos.x + node->Size.x, node->Pos.y + node->Size.y);
         const bool near = std::fabs(nlo.x - lo.x) <= RECT_TOLERANCE && std::fabs(nlo.y - lo.y) <= RECT_TOLERANCE &&
@@ -585,6 +606,376 @@ static void check_theme_settings(Tally *t) {
     check(t, default_settings().theme == "imhex-dark", "the default theme is not ImHex Dark");
 }
 
+// Each preset built in each mode reads back (capture_layout) as itself: same-direction splits
+// flattened, the same groups, tabs, selected tabs and ratios.
+static void check_preset_capture(Tally *t, rmwork::App &app) {
+    using namespace rmwork;
+    for (int mi = 0; mi < MODE_COUNT; ++mi) {
+        const Mode m = static_cast<Mode>(mi);
+        app.set_mode(m);
+        for (size_t p = 0; p < presets().size(); ++p) {
+            app.request_preset(static_cast<int>(p));
+            run_frames(app, 4);
+            const LayoutNode got = capture_layout(m, app.settings().tools[mi]);
+            check(t, layouts_match(got, presets()[p].root, 0.01f),
+                std::string(mode_title(m)) + " / " + presets()[p].name + " reads back as " + describe_layout(got) +
+                    ", not " + describe_layout(presets()[p].root));
+        }
+    }
+    app.set_mode(Mode::REPLAY);
+    app.request_preset(default_preset(Mode::REPLAY));
+    run_frames(app, 3);
+}
+
+// Two groups with an unusual split and a tab other than the first shown in each.
+static rmwork::LayoutNode custom_layout() {
+    using namespace rmwork;
+    LayoutNode left;
+    left.tools = {Tool::PLAYERS, Tool::MODEL};
+    left.selected = 1;
+    LayoutNode top;
+    top.tools = {Tool::TABLE};
+    LayoutNode bottom;
+    bottom.tools = {Tool::LOG, Tool::TREE, Tool::CHOICES};
+    bottom.selected = 2;
+    LayoutNode right;
+    right.kind = LayoutNode::Kind::COL;
+    right.sizes = {0.6f, 0.4f};
+    right.children = {top, bottom};
+    LayoutNode root;
+    root.kind = LayoutNode::Kind::ROW;
+    root.sizes = {0.25f, 0.75f};
+    root.children = {left, right};
+    return root;
+}
+
+// A saved layout survives settings.json, rebuilds exactly (groups, tab order, the shown tabs,
+// ratios) and reads back as itself; the live dockspace saved under a name comes back after another
+// layout; a name is taken only with overwrite; the modes keep their own lists.
+static void check_named_layouts(Tally *t, const rmwork::ConfigPaths &paths) {
+    using namespace rmwork;
+    Settings s = default_settings();
+    const LayoutNode custom = custom_layout();
+    s.layouts[mode_index(Mode::REPLAY)].push_back({"Custom", custom});
+    Settings back;
+    std::string err;
+    check(t, settings_from_json(settings_to_json(s), &back, &err) && settings_to_json(back) == settings_to_json(s),
+        "a saved layout does not survive settings.json: " + err);
+    check(t,
+        back.layouts[mode_index(Mode::REPLAY)].size() == 1 &&
+            layouts_match(back.layouts[mode_index(Mode::REPLAY)][0].root, custom, 0.0001f),
+        "a saved layout reads back changed");
+    App app(back, paths, false);
+    run_frames(app, 3);
+    check(t, app.request_named_layout("custom"), "a saved layout is not found by name, case aside");
+    check(t, !app.request_named_layout("nothing"), "a missing saved layout is found");
+    run_frames(app, 4);
+    check_layout_tree(t, app, Mode::REPLAY, custom, "Custom");
+    const LayoutNode live = capture_layout(Mode::REPLAY, app.settings().tools[mode_index(Mode::REPLAY)]);
+    check(t, layouts_match(live, custom, 0.01f),
+        "the rebuilt saved layout reads back as " + describe_layout(live) + ", not " + describe_layout(custom));
+
+    // The dockspace as it is now: a tool closed, another tab shown.
+    app.set_tool_open(Mode::REPLAY, Tool::MODEL, false);
+    run_frames(app, 2);
+    ImGui::SetWindowFocus(tool_window_name(Mode::REPLAY, Tool::TREE).c_str());
+    run_frames(app, 2);
+    std::string why;
+    check(t, app.save_current_layout("Mine", false, &why) == SaveResult::SAVED, "saving the current layout: " + why);
+    const LayoutNode mine = app.settings().layouts[mode_index(Mode::REPLAY)].back().root;
+    const std::vector<const LayoutNode *> groups = layout_groups(mine);
+    check(t,
+        groups.size() == 3 && groups[0]->tools == std::vector<Tool>{Tool::PLAYERS} &&
+            groups[2]->tools[static_cast<size_t>(groups[2]->selected)] == Tool::TREE,
+        "the saved current layout is " + describe_layout(mine) + " (Model's Read closed, State Tree shown expected)");
+    app.request_preset(find_preset("analysis"));
+    run_frames(app, 3);
+    check(t, app.request_named_layout("Mine"), "the saved current layout is not found");
+    run_frames(app, 4);
+    check_layout_tree(t, app, Mode::REPLAY, mine, "Mine");
+    check(t, layouts_match(capture_layout(Mode::REPLAY, app.settings().tools[mode_index(Mode::REPLAY)]), mine, 0.01f),
+        "the saved current layout does not rebuild as saved");
+
+    check(t, app.save_current_layout("MINE", false, &why) == SaveResult::EXISTS && !why.empty(),
+        "saving over a layout of the same name does not ask");
+    check(t,
+        app.save_current_layout("MINE", true, &why) == SaveResult::SAVED &&
+            app.settings().layouts[mode_index(Mode::REPLAY)].size() == 2 &&
+            app.settings().layouts[mode_index(Mode::REPLAY)][1].name == "MINE",
+        "overwriting a layout does not replace it in place under the new spelling");
+    check(t, app.save_current_layout("Analysis", false, &why) == SaveResult::INVALID, "a preset's name is accepted");
+    app.set_mode(Mode::PLAY);
+    run_frames(app, 3);
+    check(t, app.settings().layouts[mode_index(Mode::PLAY)].empty() && !app.request_named_layout("Custom"),
+        "Play sees Replay's saved layouts");
+    check(t, app.save_current_layout("Custom", false, &why) == SaveResult::SAVED,
+        "Play cannot save a name Replay uses: " + why);
+    check(t, app.settings().layouts[mode_index(Mode::REPLAY)].size() == 2, "saving in Play changed Replay's layouts");
+}
+
+// Names: rename and delete, and the names refused.
+static void check_layout_names(Tally *t) {
+    using namespace rmwork;
+    NamedLayouts all = {{"One", custom_layout()}, {"Two", custom_layout()}};
+    std::string why;
+    check(t, !rename_named_layout(&all, "One", "two", &why) && !why.empty(), "a rename onto a taken name is accepted");
+    check(t, rename_named_layout(&all, "One", "one", &why) && all[0].name == "one", "a rename of case only is refused");
+    check(t, rename_named_layout(&all, "one", "Three", &why) && find_named_layout(all, "three") == 0,
+        "a rename is refused: " + why);
+    check(t, !rename_named_layout(&all, "Nine", "Ten", &why), "renaming a missing layout succeeds");
+    check(t, delete_named_layout(&all, "TWO") && all.size() == 1 && !delete_named_layout(&all, "Two"),
+        "delete does not remove exactly the named layout");
+    for (const char *bad :
+        {"", "   ", "Analysis", "table", "tab\there", "0123456789012345678901234567890123456789012345678"})
+        check(t, !layout_name_valid(bad, &why), std::string("the layout name \"") + bad + "\" is accepted");
+    check(t, layout_name_valid("My analysis (wide)", &why), "a plain layout name is refused: " + why);
+}
+
+// The settings with `layouts` as their "layouts" value load.
+static bool layouts_json_accepted(const std::string &layouts) {
+    rmwork::Settings s;
+    std::string err;
+    return rmwork::settings_from_json("{\"layouts\": " + layouts + "}", &s, &err);
+}
+
+// Malformed saved layouts refuse the settings file.
+static void check_layout_files(Tally *t) {
+    const std::string group = "{\"tabs\": [\"table\"], \"selected\": 0}";
+    check(t, layouts_json_accepted("{\"replay\": {\"A\": " + group + "}, \"play\": {}}"),
+        "a one-group layout is refused");
+    const struct {
+            const char *what;
+            std::string json;
+    } bad[] = {
+        {"an unknown tool", "{\"replay\": {\"A\": {\"tabs\": [\"teapot\"]}}}"},
+        {"a tool twice", "{\"replay\": {\"A\": {\"split\": \"row\", \"sizes\": [1, 1], \"children\": [" + group + ", " +
+                             group + "]}}}"},
+        {"a one-child split",
+            "{\"replay\": {\"A\": {\"split\": \"col\", \"sizes\": [1], \"children\": [" + group + "]}}}"},
+        {"sizes not matching children", "{\"replay\": {\"A\": {\"split\": \"row\", \"sizes\": [1], \"children\": [" +
+                                            group + ", {\"tabs\": [\"log\"]}]}}}"},
+        {"a negative size", "{\"replay\": {\"A\": {\"split\": \"row\", \"sizes\": [1, -1], \"children\": [" + group +
+                                ", {\"tabs\": [\"log\"]}]}}}"},
+        {"an unknown split", "{\"replay\": {\"A\": {\"split\": \"diagonal\", \"sizes\": [1, 1], \"children\": []}}}"},
+        {"a selected tab out of range", "{\"replay\": {\"A\": {\"tabs\": [\"table\"], \"selected\": 3}}}"},
+        {"a preset's name", "{\"play\": {\"Analysis\": " + group + "}}"},
+        {"a name twice", "{\"play\": {\"A\": " + group + ", \"a\": " + group + "}}"},
+        {"a list for a mode", "{\"play\": []}"},
+    };
+    for (const auto &b : bad)
+        check(t, !layouts_json_accepted(b.json), std::string("a layout with ") + b.what + " is accepted");
+}
+
+// Save Layout As: Enter saves under the name typed and closes; the same name again asks to
+// overwrite and changes nothing until it is answered; Manage Layouts opens.
+static void check_layout_dialogs(Tally *t, const rmwork::ConfigPaths &paths) {
+    using namespace rmwork;
+    App app(default_settings(), paths, false);
+    app.request_preset(default_preset(Mode::REPLAY));
+    run_frames(app, 4);
+    app.layout_dialogs().open_save(Mode::REPLAY);
+    run_frames(app, 2);
+    check(t, app.layout_dialogs().save_open(), "Save Layout As does not open");
+    ImGui::GetIO().AddInputCharactersUTF8("Wide table");
+    run_frames(app, 1);
+    press(app, ImGuiKey_Enter);
+    const NamedLayouts &saved = app.settings().layouts[mode_index(Mode::REPLAY)];
+    check(t, saved.size() == 1 && saved[0].name == "Wide table" && !app.layout_dialogs().save_open(),
+        "Enter in Save Layout As does not save and close");
+    check(t, saved.size() == 1 && layouts_match(saved[0].root, presets()[default_preset(Mode::REPLAY)].root, 0.01f),
+        "Save Layout As does not save the dockspace as it is: " +
+            (saved.empty() ? std::string("nothing") : describe_layout(saved[0].root)));
+    app.layout_dialogs().open_save(Mode::REPLAY);
+    run_frames(app, 2);
+    ImGui::GetIO().AddInputCharactersUTF8("wide TABLE");
+    run_frames(app, 1);
+    press(app, ImGuiKey_Enter);
+    check(t, app.layout_dialogs().save_open() && saved.size() == 1 && saved[0].name == "Wide table",
+        "Save Layout As over a taken name does not stop to ask");
+    press(app, ImGuiKey_Escape);
+    check(t, !app.layout_dialogs().save_open() && saved.size() == 1 && saved[0].name == "Wide table",
+        "Esc does not cancel the overwrite");
+    app.layout_dialogs().open_manage(Mode::REPLAY);
+    run_frames(app, 2);
+    check(t, app.layout_dialogs().manage_open(), "Manage Layouts does not open");
+    press(app, ImGuiKey_Escape);
+    check(t, !app.layout_dialogs().manage_open(), "Esc does not close Manage Layouts");
+}
+
+// The later stages' settings: defaults from the install, path resolution, a round trip of every
+// field, and the refusals.
+static void check_later_settings(Tally *t, const std::string &tmp) {
+    using namespace rmwork;
+    const Settings def = default_settings();
+    const std::string bin = repo_root() + "/bin/" + build_config() + "/";
+    check(t, parent_dir(executable_path()) + "/" == bin, "the repository is not found from the rmwork binary: " + bin);
+    const std::string engine = engine_binary_path(def);
+    check(t, engine == bin + "robomage_nn" || engine == bin + "robomage", "the default engine binary is " + engine);
+    check(t, engine == bin + "robomage" || is_executable(bin + "robomage_nn"),
+        "the default engine is robomage_nn though there is none");
+    check(t, engine_workdir_path(def) == repo_root() + "/bin" && run_dir_path(def) == repo_root() + "/runs",
+        "the default working directory or run directory is wrong");
+    check(t, socket_path(def).empty(), "a socket is configured by default");
+    const char *old_cache = std::getenv("XDG_CACHE_HOME");
+    const std::string saved_cache = old_cache ? old_cache : "";
+    setenv("XDG_CACHE_HOME", tmp.c_str(), 1);
+    check(t, image_cache_path(def) == tmp + "/robomage/scryfall", "the image cache ignores $XDG_CACHE_HOME");
+    unsetenv("XDG_CACHE_HOME");
+    check(t, image_cache_path(def) == std::string(std::getenv("HOME")) + "/.cache/robomage/scryfall",
+        "the image cache is not under ~/.cache without $XDG_CACHE_HOME");
+    if (old_cache) setenv("XDG_CACHE_HOME", saved_cache.c_str(), 1);
+    check(t,
+        resolve_path("~/m.pt2", "x") == std::string(std::getenv("HOME")) + "/m.pt2" &&
+            resolve_path("runs/a", "x") == repo_root() + "/runs/a" && resolve_path("/abs", "x") == "/abs" &&
+            resolve_path("", "fallback") == "fallback",
+        "resolve_path does not resolve ~/, relative and absolute paths and the default");
+    const StopSettings stops = default_stops();
+    int own = 0;
+    for (int i = 0; i < STOP_STEP_COUNT; ++i) own += stops.own[static_cast<size_t>(i)] ? 1 : 0;
+    check(t,
+        own == 5 && stops.own[1] && stops.own[3] && stops.own[5] && stops.own[6] && stops.own[10] &&
+            stops.opponent == stops.own && def.stops.own == stops.own,
+        "the default stops are not upkeep, main 1, declare attackers, declare blockers and end step");
+
+    Settings s = def;
+    s.engine = {"bin/release/robomage", "/tmp/work"};
+    s.models.socket = "~/rmserve.sock";
+    s.models.run_dir = "runs/league";
+    std::string why;
+    check(t, add_policy(&s.models, "main", "runs/a/model.pt2", &why) && add_policy(&s.models, "b.2-x_", "/m.pt", &why),
+        "add_policy refuses a valid row: " + why);
+    check(t,
+        !add_policy(&s.models, "main", "x", &why) && !add_policy(&s.models, "a=b", "x", &why) &&
+            !add_policy(&s.models, "", "x", &why) && !add_policy(&s.models, "c", "", &why) &&
+            s.models.policies.size() == 2,
+        "add_policy accepts a taken, malformed or empty id or an empty model");
+    s.stops.own.fill(false);
+    s.stops.opponent[0] = s.stops.opponent[11] = true;
+    s.image_cache = "/cache/images";
+    Settings back;
+    std::string err;
+    check(t, settings_from_json(settings_to_json(s), &back, &err) && settings_to_json(back) == settings_to_json(s),
+        "the engine, models, stops and image settings do not round-trip: " + err);
+    check(t,
+        back.models.policies.size() == 2 && back.models.policies[1].id == "b.2-x_" && !back.stops.own[1] &&
+            back.stops.opponent[11] && back.engine.workdir == "/tmp/work",
+        "the read-back later-stage settings differ");
+    const char *refused[] = {"{\"stops\": {\"own\": [\"upkeep\", \"second_breakfast\"]}}",
+        "{\"stops\": {\"own\": \"upkeep\"}}", "{\"stops\": []}", "{\"engine\": {\"binary\": 3}}",
+        "{\"engine\": \"robomage\"}", "{\"models\": {\"socket\": []}}",
+        "{\"models\": {\"policies\": [{\"id\": \"a\", \"model\": \"x\"}, {\"id\": \"a\", \"model\": \"y\"}]}}",
+        "{\"models\": {\"policies\": [{\"id\": \"a b\", \"model\": \"x\"}]}}",
+        "{\"models\": {\"policies\": [{\"id\": \"a\"}]}}", "{\"images\": {\"cache\": false}}",
+        "{\"keys\": {\"replay.next\": \"Ctrl+O\"}}"};
+    for (const char *text : refused) check(t, !settings_from_json(text, &back, &err), std::string("accepted: ") + text);
+    check(t, settings_from_json("{\"keys\": {\"play.skip_turn\": \"RightArrow\"}}", &back, &err),
+        "a Play key equal to a Replay key is refused: " + err);
+}
+
+// A listening UNIX socket at `path` (its descriptor kept open); "" or the error.
+static std::string make_socket(const std::string &path) {
+    const int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) return "socket() failed";
+    sockaddr_un addr{};
+    addr.sun_family = AF_UNIX;
+    std::snprintf(addr.sun_path, sizeof addr.sun_path, "%s", path.c_str());
+    if (bind(fd, reinterpret_cast<sockaddr *>(&addr), sizeof addr) != 0) return "bind() failed";
+    return "";
+}
+
+// The status bar says whether the configured engine binary exists and whether the socket is there.
+static void check_health(Tally *t, const rmwork::ConfigPaths &paths, const std::string &tmp) {
+    using namespace rmwork;
+    Settings s = default_settings();
+    s.engine.binary = tmp + "/no-engine";
+    s.models.socket = tmp + "/no.sock";
+    {
+        App app(s, paths, false);
+        run_frames(app, 1);
+        check(t, app.engine_health() == "Engine: missing" && app.inference_health() == "Inference: not connected",
+            "health with a missing engine and socket: " + app.engine_health() + ", " + app.inference_health());
+    }
+    const std::string sock = tmp + "/rm.sock";
+    const std::string made = make_socket(sock);
+    check(t, made.empty(), "cannot make a test socket: " + made);
+    s.engine.binary = "/bin/sh";
+    s.models.socket = sock;
+    App app(s, paths, false);
+    run_frames(app, 1);
+    check(t, app.engine_health() == "Engine: found" && app.inference_health() == "Inference: socket present",
+        "health with an engine and a socket: " + app.engine_health() + ", " + app.inference_health());
+}
+
+// Settings → Keys: a captured chord rebinds, one taken where both work is refused with a message,
+// Esc cancels the capture without closing the dialog.
+static void check_rebinding(Tally *t, const rmwork::ConfigPaths &paths) {
+    using namespace rmwork;
+    KeyBindings b = default_bindings();
+    std::string why;
+    check(t,
+        !rebind(&b, Action::REPLAY_NEXT, ImGuiMod_Ctrl | ImGuiKey_O, &why) &&
+            why.find("Open Replay") != std::string::npos && b == default_bindings(),
+        "a Replay key taken by an Anywhere action is not refused: " + why);
+    check(t, rebind(&b, Action::PLAY_SKIP_TURN, ImGuiKey_RightArrow, &why),
+        "a Play key equal to a Replay key is refused");
+    check(t, !rebind(&b, Action::MAGNIFY, ImGuiKey_F2, &why), "an Anywhere key taken by a Play action is accepted");
+
+    App app(default_settings(), paths, false);
+    run_frames(app, 2);
+    app.begin_key_capture(Action::REPLAY_NEXT);
+    run_frames(app, 2);
+    check(t, app.settings_open() && app.settings_dialog().capturing(), "Keys does not wait for a key");
+    press(app, ImGuiMod_Ctrl | ImGuiKey_L);
+    const ImGuiKeyChord want = ImGuiMod_Ctrl | ImGuiKey_L;
+    check(t, app.settings().keys[action_index(Action::REPLAY_NEXT)] == want && !app.settings_dialog().capturing(),
+        "a captured Ctrl+L is not Next decision's key");
+    app.begin_key_capture(Action::REPLAY_PREV);
+    run_frames(app, 1);
+    press(app, ImGuiMod_Ctrl | ImGuiKey_O);
+    check(t,
+        app.settings().keys[action_index(Action::REPLAY_PREV)] == ImGuiKey_LeftArrow &&
+            app.settings_dialog().key_message_is_error() &&
+            app.settings_dialog().key_message().find("Open Replay") != std::string::npos,
+        "Ctrl+O, Open Replay's key, is not refused for Previous decision: " + app.settings_dialog().key_message());
+    app.begin_key_capture(Action::REPLAY_PREV);
+    run_frames(app, 1);
+    press(app, ImGuiKey_Escape);
+    check(t,
+        app.settings_open() && !app.settings_dialog().capturing() &&
+            app.settings().keys[action_index(Action::REPLAY_PREV)] == ImGuiKey_LeftArrow,
+        "Esc does not cancel a capture, or closes Settings");
+    press(app, ImGuiKey_Escape);
+    check(t, !app.settings_open(), "Esc after a capture does not close Settings");
+    app.set_mode(Mode::REPLAY);
+    run_frames(app, 1);
+    app.status("");
+    press(app, ImGuiMod_Ctrl | ImGuiKey_L);
+    check(t, app.status_message() == "No game loaded: Next decision", "the rebound Ctrl+L does not act");
+}
+
+// A row's Reset and Reset All; a reset onto a key another action took is refused.
+static void check_key_resets(Tally *t) {
+    using namespace rmwork;
+    Settings s = default_settings();
+    SettingsDialog d;
+    std::string why;
+    check(t,
+        rebind(&s.keys, Action::REPLAY_FIRST, ImGuiMod_Ctrl | ImGuiKey_L, &why) &&
+            rebind(&s.keys, Action::MAGNIFY, ImGuiKey_Home, &why),
+        "rebinding First decision then Magnify onto Home: " + why);
+    check(t,
+        !d.reset_key(&s, Action::REPLAY_FIRST) && d.key_message_is_error() &&
+            s.keys[action_index(Action::REPLAY_FIRST)] == (ImGuiMod_Ctrl | ImGuiKey_L),
+        "resetting First decision onto Magnify's Home is not refused");
+    check(t, d.reset_key(&s, Action::MAGNIFY) && s.keys[action_index(Action::MAGNIFY)] == ImGuiKey_Q,
+        "Magnify's Reset does not restore Q");
+    check(t, d.reset_key(&s, Action::REPLAY_FIRST) && s.keys[action_index(Action::REPLAY_FIRST)] == ImGuiKey_Home,
+        "First decision's Reset does not restore Home");
+    rebind(&s.keys, Action::FIND_IN_LOG, ImGuiMod_Ctrl | ImGuiKey_G, &why);
+    d.reset_all_keys(&s);
+    check(t, s.keys == default_bindings(), "Reset All does not restore every key");
+}
+
 // The layout saved to an ini and loaded into a fresh context is the one shown (no default preset).
 static void check_ini_round_trip(Tally *t, const rmwork::ConfigPaths &paths) {
     using namespace rmwork;
@@ -715,16 +1106,25 @@ int run_selftest() {
         check_fonts(&t, app);
         check_font_sizes(&t, app);
         check_themes(&t, app);
+        check_preset_capture(&t, app);
         app.open_settings(SettingsDialog::APPEARANCE);
         run_frames(app, 3);
         check(&t, app.settings_open(), "Settings does not open at Appearance");
     }
+    check_named_layouts(&t, paths);
+    check_layout_dialogs(&t, paths);
+    check_health(&t, paths, tmp);
+    check_rebinding(&t, paths);
     check_ini_round_trip(&t, paths);
     check_app_persists(&t, paths);
     destroy_ui_context();
     check_settings_file(&t, paths, tmp);
     check_font_settings(&t);
     check_theme_settings(&t);
+    check_layout_names(&t);
+    check_layout_files(&t);
+    check_later_settings(&t, tmp);
+    check_key_resets(&t);
     begin_headless();
     check_theme_contrast(&t);
     destroy_ui_context();

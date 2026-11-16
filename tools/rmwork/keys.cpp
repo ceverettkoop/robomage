@@ -103,6 +103,38 @@ bool chord_pressed(ImGuiKeyChord chord, bool repeat) {
     return ImGui::IsKeyPressed(static_cast<ImGuiKey>(chord & ~ImGuiMod_Mask_), repeat);
 }
 
+bool scopes_overlap(Scope a, Scope b) {
+    return a == Scope::ANY || b == Scope::ANY || a == b;
+}
+
+int binding_conflict(const KeyBindings &b, Action a, ImGuiKeyChord chord) {
+    if (chord == 0) return -1;
+    for (int i = 0; i < ACTION_COUNT; ++i)
+        if (i != action_index(a) && b[i] == chord && scopes_overlap(ACTIONS[i].scope, action_info(a).scope)) return i;
+    return -1;
+}
+
+bool rebind(KeyBindings *b, Action a, ImGuiKeyChord chord, std::string *why) {
+    const int other = binding_conflict(*b, a, chord);
+    if (other >= 0) {
+        const ActionInfo &o = ACTIONS[other];
+        *why = chord_label(chord) + " is already the key of " + o.label + " (" + scope_name(o.scope) +
+               "). Rebind that first, or choose another key.";
+        return false;
+    }
+    (*b)[action_index(a)] = chord;
+    return true;
+}
+
+ImGuiKeyChord pressed_chord() {
+    for (int k = ImGuiKey_NamedKey_BEGIN; k < ImGuiKey_GamepadStart; ++k) {
+        const ImGuiKey key = static_cast<ImGuiKey>(k);
+        if (key == ImGuiKey_Escape || (key >= ImGuiKey_LeftCtrl && key <= ImGuiKey_RightSuper)) continue;
+        if (ImGui::IsKeyPressed(key, false)) return (ImGui::GetIO().KeyMods & ImGuiMod_Mask_) | key;
+    }
+    return 0;
+}
+
 const char *scope_name(Scope s) {
     switch (s) {
         case Scope::PLAY:

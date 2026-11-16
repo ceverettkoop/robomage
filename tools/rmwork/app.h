@@ -8,14 +8,17 @@
 #include "dialogs.h"
 #include "imgui.h"
 #include "layout.h"
+#include "layout_dialogs.h"
 #include "settings.h"
+#include "settings_dialog.h"
 
 // ── The application shell: menu bar, toolbar, the mode's dockspace and tools, status bar ────────
 //
 // begin_frame() goes before ImGui::NewFrame() (it applies a changed theme or font setting, which
 // only take effect between frames) and frame() draws one UI frame between ImGui::NewFrame() and
 // ImGui::Render(); the App owns no window or renderer, so the self-test runs it headless. Settings
-// changes are written back as they happen (when `persist`).
+// changes are written back as they happen (when `persist`). The status bar's health indicators
+// look at the configured engine binary and server socket at most once a second.
 
 struct ImGuiDockNode;
 
@@ -33,6 +36,10 @@ class App {
         void set_mode(Mode m);
         // Builds preset `index` on the current mode's dockspace at the next dock pass.
         void request_preset(int index);
+        // The same for the current mode's saved layout `name`; false when there is none.
+        bool request_named_layout(const std::string &name);
+        // Saves the current mode's dockspace as it is now under `name` (as Save Layout As does).
+        SaveResult save_current_layout(const std::string &name, bool overwrite, std::string *why);
         bool tool_open(Mode m, Tool t) const { return settings_.tools[mode_index(m)][tool_index(t)]; }
         // Opens or closes a tool as View does; a tool opened with no home in the mode's dockspace is
         // docked into its first tab group.
@@ -46,6 +53,13 @@ class App {
         void open_settings(SettingsDialog::Tab tab = SettingsDialog::TABLE);
         bool settings_open() const { return settings_dialog_.is_open(); }
         bool error_open() const { return error_dialog_.is_open(); }
+        SettingsDialog &settings_dialog() { return settings_dialog_; }
+        LayoutDialogs &layout_dialogs() { return layout_dialogs_; }
+        // Settings, at the Keys tab, waiting for `a`'s new key.
+        void begin_key_capture(Action a);
+        // The status bar's health texts ("Engine: found", "Inference: not connected").
+        std::string engine_health() const;
+        std::string inference_health() const;
         // Shows the error dialog (for the later stages: an engine exit, a frame that fails to
         // decode, a lost inference server).
         void report_error(const std::string &title, const std::string &message, const std::string &detail);
@@ -66,6 +80,8 @@ class App {
         void draw_tools();
         void dock_home_if_lost(Mode m, Tool t);
         void save_if_changed();
+        void check_health();
+        void request_layout(const LayoutNode &root, const std::string &label);
         std::string shortcut(Action a) const;
         static ImGuiDockNode *first_leaf(ImGuiDockNode *node);
         static void status_segment(const char *text);
@@ -82,17 +98,23 @@ class App {
         bool font_applied_ = false;
         std::string applied_theme_;  // the theme in effect (empty before the first frame)
         bool quit_ = false;
-        int view_ = 0;         // Replay's viewer: 0 seat A, 1 seat B, 2 omniscient
-        int focus_tool_ = -1;  // a tool to bring to the front at its next Begin
-        std::array<int, MODE_COUNT> pending_preset_{{-1, -1}};
-        std::array<int, MODE_COUNT> applied_preset_{{-1, -1}};  // the preset whose tabs are being ordered
+        int view_ = 0;                                          // Replay's viewer: 0 seat A, 1 seat B, 2 omniscient
+        int focus_tool_ = -1;                                   // a tool to bring to the front at its next Begin
+        std::array<bool, MODE_COUNT> pending_{{false, false}};  // a layout waits for the next dock pass
+        std::array<LayoutNode, MODE_COUNT> pending_root_;
+        std::array<LayoutNode, MODE_COUNT> applied_root_;       // the layout whose tabs are being ordered
         std::array<int, MODE_COUNT> tab_order_frames_{{0, 0}};  // frames left to order them
         std::array<bool, MODE_COUNT> layout_checked_{{false, false}};
         std::array<std::array<bool, TOOL_COUNT>, MODE_COUNT> rehome_{};
         std::array<std::array<std::string, TOOL_COUNT>, MODE_COUNT> window_names_;
         std::array<std::vector<Tool>, MODE_COUNT> submit_order_;  // the order draw_tools begins the windows
         SettingsDialog settings_dialog_;
+        LayoutDialogs layout_dialogs_;
         ErrorDialog error_dialog_;
+        double health_checked_ = -1.0;
+        std::string health_paths_;  // the engine and socket paths last checked
+        bool engine_found_ = false;
+        bool socket_present_ = false;
 };
 
 }  // namespace rmwork

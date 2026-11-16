@@ -22,6 +22,10 @@ struct CliOptions {
         std::string font_weight;
         int font_size = 0;
         bool demo_error = false;
+        bool save_layout = false;
+        bool manage_layouts = false;
+        std::string layout;       // a saved layout to show at start
+        std::string capture_key;  // an action whose key Settings → Keys waits for
         std::string mode;
         std::string preset;
         std::string config_dir;
@@ -41,7 +45,8 @@ static void usage() {
     std::printf(
         "usage: rmwork [--mode play|replay] [--preset NAME] [--config-dir DIR] [--size WxH]\n"
         "       rmwork --screenshot FILE.png [--mode …] [--preset …] [--size WxH] [--config-dir DIR] "
-        "[--open-settings] [--settings-tab TAB] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
+        "[--open-settings] [--settings-tab TAB] [--capture-key ACTION] [--save-layout] [--manage-layouts]\n"
+        "         [--layout NAME] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
         "       rmwork --selftest\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
         "(default ~/.config/robomage), the layout beside it in workbench/imgui.ini.\n"
@@ -53,7 +58,12 @@ static void usage() {
         "  --screenshot FILE  render 30 frames, write the last to FILE (PNG) and exit; reads the settings\n"
         "                     and layout but writes neither\n"
         "  --open-settings    open Edit → Settings at start\n"
-        "  --settings-tab TAB open Settings at a tab: table, printings, keys, appearance\n"
+        "  --settings-tab TAB open Settings at a tab: table, printings, keys, appearance, engine, models, stops\n"
+        "  --capture-key ACTION  open Settings → Keys waiting for ACTION's new key (a settings key such as\n"
+        "                     replay.next)\n"
+        "  --save-layout      open View → Save Layout As… at start\n"
+        "  --manage-layouts   open View → Manage Layouts… at start\n"
+        "  --layout NAME      show the starting mode's saved layout NAME\n"
         "  --theme NAME       the colour theme: imhex-dark, imhex-light, imgui-dark, imgui-classic,\n"
         "                     solarized-dark, solarized-light, nord, windows-95\n"
         "  --font FAMILY      the UI font: jetbrains-mono, fira-code, ibm-plex-mono, source-code-pro,\n"
@@ -93,10 +103,25 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->open_settings = true;
             opt->settings_tab = rmwork::SettingsDialog::find_tab(argv[++i]);
             if (opt->settings_tab < 0) {
-                std::fprintf(stderr, "rmwork: no settings tab '%s' (table, printings, keys, appearance)\n", argv[i]);
+                std::fprintf(stderr,
+                    "rmwork: no settings tab '%s' (table, printings, keys, appearance, engine, models, stops)\n",
+                    argv[i]);
                 *exit_code = 2;
                 return false;
             }
+        } else if (a == "--capture-key" && has_value) {
+            opt->capture_key = argv[++i];
+            if (rmwork::find_action(opt->capture_key) < 0) {
+                std::fprintf(stderr, "rmwork: no action '%s' (Settings → Keys lists them)\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--save-layout") {
+            opt->save_layout = true;
+        } else if (a == "--manage-layouts") {
+            opt->manage_layouts = true;
+        } else if (a == "--layout" && has_value) {
+            opt->layout = argv[++i];
         } else if (a == "--theme" && has_value) {
             opt->theme = argv[++i];
             if (rmwork::find_theme(opt->theme) < 0) {
@@ -223,6 +248,14 @@ int workbench_main(int argc, char **argv) {
     if (!opt.theme.empty()) app.set_theme(opt.theme);
     if (opt.open_settings) app.open_settings(static_cast<SettingsDialog::Tab>(opt.settings_tab));
     if (opt.demo_error) show_demo_error(app);
+    if (!opt.capture_key.empty()) app.begin_key_capture(static_cast<Action>(find_action(opt.capture_key)));
+    if (opt.save_layout) app.layout_dialogs().open_save(app.mode());
+    if (opt.manage_layouts) app.layout_dialogs().open_manage(app.mode());
+    if (!opt.layout.empty() && !app.request_named_layout(opt.layout))
+        app.report_error("No such layout",
+            "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +
+                "\". View lists the saved layouts.",
+            "");
     const int status = run_window(app, opt.window);
     destroy_ui_context();
     return status;
