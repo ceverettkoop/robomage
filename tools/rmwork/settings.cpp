@@ -35,6 +35,7 @@ static bool read_engine(const featurize::Json &v, rmwork::EngineSettings *out, s
 static bool read_models(const featurize::Json &v, rmwork::ModelSettings *out, std::string *err);
 static bool read_stops(const featurize::Json &v, rmwork::StopSettings *out, std::string *err);
 static bool read_images(const featurize::Json &v, std::string *out, std::string *err);
+static bool read_recent(const featurize::Json &v, std::vector<std::string> *out, std::string *err);
 static bool read_layout_node(const featurize::Json &v, int depth, rmwork::LayoutNode *out, std::string *err);
 static bool read_layouts(
     const featurize::Json &v, std::array<rmwork::NamedLayouts, rmwork::MODE_COUNT> *out, std::string *err);
@@ -215,6 +216,22 @@ static bool read_images(const featurize::Json &v, std::string *out, std::string 
 }
 
 // {"tabs": [tool, …], "selected": i} or {"split": "row" | "col", "sizes": [f, …], "children": […]}.
+static bool read_recent(const featurize::Json &v, std::vector<std::string> *out, std::string *err) {
+    if (!v.is_array()) {
+        *err = "\"recent\" is not a list of paths";
+        return false;
+    }
+    out->clear();
+    for (const featurize::Json &p : v.items()) {
+        if (!p.is_string()) {
+            *err = "\"recent\" holds something other than a path";
+            return false;
+        }
+        if (out->size() < rmwork::RECENT_MAX && !p.as_string().empty()) out->push_back(p.as_string());
+    }
+    return true;
+}
+
 static bool read_layout_node(const featurize::Json &v, int depth, rmwork::LayoutNode *out, std::string *err) {
     using rmwork::LayoutNode;
     if (!v.is_object() || depth > 16) {
@@ -439,6 +456,16 @@ bool add_policy(ModelSettings *m, const std::string &id, const std::string &mode
     return true;
 }
 
+void add_recent(std::vector<std::string> *recent, const std::string &path) {
+    for (size_t i = 0; i < recent->size(); ++i) {
+        if ((*recent)[i] != path) continue;
+        recent->erase(recent->begin() + static_cast<long>(i));
+        break;
+    }
+    recent->insert(recent->begin(), path);
+    if (recent->size() > RECENT_MAX) recent->resize(RECENT_MAX);
+}
+
 Settings default_settings() {
     Settings s;
     for (int m = 0; m < MODE_COUNT; ++m)
@@ -504,6 +531,9 @@ std::string settings_to_json(const Settings &s) {
     out += "  \"stops\": {\"own\": " + stops_json(s.stops.own) + ", \"opponent\": " + stops_json(s.stops.opponent) +
            "},\n";
     out += "  \"images\": {\"cache\": " + json_quote(s.image_cache) + "},\n";
+    out += "  \"recent\": [";
+    for (size_t i = 0; i < s.recent.size(); ++i) out += std::string(i ? ", " : "") + json_quote(s.recent[i]);
+    out += "],\n";
     out += "  \"layouts\": {";
     for (int m = 0; m < MODE_COUNT; ++m) {
         out += std::string(m ? ",\n" : "\n") + "    " + json_quote(mode_key(static_cast<Mode>(m))) + ": {";
@@ -552,6 +582,8 @@ bool settings_from_json(const std::string &text, Settings *out, std::string *err
         if (!read_images(*v, &out->image_cache, err)) return false;
     if (const featurize::Json *v = doc.get("layouts"))
         if (!read_layouts(*v, &out->layouts, err)) return false;
+    if (const featurize::Json *v = doc.get("recent"))
+        if (!read_recent(*v, &out->recent, err)) return false;
     return true;
 }
 

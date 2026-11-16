@@ -12,9 +12,12 @@ namespace rmwork {
 struct WindowOptions {
         int width = 1600;
         int height = 1000;
-        // When set: render `screenshot_frames` frames, write the last one to this PNG and return.
+        // When set: render `screenshot_frames` frames once no game is being opened and no run
+        // directory read (at most `screenshot_wait_s` seconds of waiting), write the last one to
+        // this PNG and return.
         std::string screenshot;
         int screenshot_frames = 30;
+        double screenshot_wait_s = 300;
 };
 
 // Runs the UI until the window closes or File → Exit (or, with a screenshot, for its frames); the

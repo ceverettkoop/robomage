@@ -21,6 +21,7 @@ enum class Icon {
     FIRST,
     PREV,
     PLAY,
+    PAUSE,
     NEXT,
     LAST,
     SWING

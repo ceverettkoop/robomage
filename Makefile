@@ -300,7 +300,9 @@ RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
 
 # ── make workbench — bin/<config>/rmwork, the workbench GUI (docs/workbench_plan.md), NOT in the default build ──
 # tools/rmwork/ on the vendored Dear ImGui (docking), ImPlot and stb (third_party/, unmodified), GLFW and
-# OpenGL 3; linked with src/featurize/json (std only), no engine TU, no libtorch. The vendored sources
+# OpenGL 3; linked with the std-only RMSTATE decoder and schema, the agents' std-only frame reader, the
+# CLI's std-only renderer (src/cli/board: the seat logs' event lines) and src/featurize/ (std only: the
+# JSON reader, the episode reader), no engine TU, no libtorch; the engine runs as a subprocess. The vendored sources
 # are compiled with the configuration's flags minus $(CHECKFLAGS); tools/rmwork/ with all of them,
 # the vendored headers included as system headers so their warnings stay theirs.
 WORKBENCH_SRCS := $(wildcard tools/rmwork/*.cpp)
@@ -309,7 +311,9 @@ WORKBENCH_VENDOR_SRCS := $(addprefix third_party/imgui/,imgui.cpp imgui_draw.cpp
                          backends/imgui_impl_glfw.cpp backends/imgui_impl_opengl3.cpp) \
                          $(addprefix third_party/implot/,implot.cpp implot_items.cpp)
 WORKBENCH_VENDOR_OBJ := $(patsubst third_party/%.cpp,$(ODIR)/third_party/%.o,$(WORKBENCH_VENDOR_SRCS))
-WORKBENCH_LIB_OBJ := $(ODIR)/featurize/json.o
+WORKBENCH_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                     $(ODIR)/agents/seat_frames.o $(ODIR)/agents/decision_view.o $(ODIR)/cli/board.o \
+                     $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
 WORKBENCH_FONTS := $(wildcard third_party/fonts/*/*.ttf)
 ifneq (,$(filter workbench,$(MAKECMDGOALS)))
 GLFW_CFLAGS := $(shell pkg-config --cflags glfw3 2>/dev/null)
@@ -338,7 +342,7 @@ $(ODIR)/tools/rmwork/fonts.o: CXXFLAGS += -DRM_FONT_DIR='"$(abspath third_party/
 workbench: $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmwork $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ) $(LDFLAGS) $(LDLIBS) \
-		$(GLFW_LIBS) -lGL $(PLATFLAGS)
+		$(GLFW_LIBS) -lGL -pthread $(PLATFLAGS)
 
 $(ODIR)/tools/%.o: tools/%.cpp
 	@mkdir -p $(dir $@)

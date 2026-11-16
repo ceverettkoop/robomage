@@ -17,7 +17,9 @@ class ErrorDialog {
         void open(const std::string &title, const std::string &message, const std::string &detail);
         // True in the frame "Copy diagnostics" was pressed.
         bool draw();
-        bool is_open() const { return open_; }
+        bool is_open() const { return open_ || want_open_; }
+        const std::string &title() const { return title_; }
+        const std::string &message() const { return message_; }
         // The clipboard text: title, message and detail.
         std::string diagnostics() const;
 

@@ -5,7 +5,8 @@
 #include "widgets.h"
 
 static void legend_entry(const char *label, ImU32 color, bool dashed);
-static void draw_value_graph();
+static void draw_value_graph(const char *note);
+static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t);
 
 // A short line in the series' colour and its label, on the current line.
 static void legend_entry(const char *label, ImU32 color, bool dashed) {
@@ -23,8 +24,9 @@ static void legend_entry(const char *label, ImU32 color, bool dashed) {
     ImGui::SameLine(0, 14);
 }
 
-// V from −1 to +1 above a life strip from 0 to 20, decisions along the shared x axis.
-static void draw_value_graph() {
+// V from −1 to +1 above a life strip from 0 to 20, decisions along the shared x axis; `note` in the
+// middle of the V plot.
+static void draw_value_graph(const char *note) {
     using namespace rmwork;
     legend_entry("V (A)", tok().S_A, false);
     legend_entry("V (A, re-eval)", tok().S_A6, true);
@@ -46,7 +48,7 @@ static void draw_value_graph() {
         ImPlot::SetupAxisLimits(ImAxis_X1, 0, 1, ImPlotCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, -1.08, 1.08, ImPlotCond_Always);
         ImPlot::SetupAxisTicks(ImAxis_Y1, v_ticks, 5, v_labels);
-        ImPlot::PlotText("No game loaded", 0.5, 0.5);
+        ImPlot::PlotText(note, 0.5, 0.5);
         ImPlot::EndPlot();
     }
     if (ImPlot::BeginPlot("##life", ImVec2(-1, 0), flags)) {
@@ -61,14 +63,36 @@ static void draw_value_graph() {
     ImPlot::EndSubplots();
 }
 
+// "<deck> vs <deck>, decision n of N (<game, turn, step>), viewer …", then what the tool will show.
+static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t) {
+    const rmwork::Match &m = *s.match();
+    const rmwork::DecisionInfo *d = s.current();
+    std::string out = m.title() + ": decision " + std::to_string(s.cursor() + 1) + " of " + std::to_string(s.count()) +
+                      (d ? " (" + d->header + ")" : "") + ", " + rmwork::view_name(s.view()) + "'s frames.\n\n" +
+                      rmwork::tool_info(t).blurb;
+    return out;
+}
+
 namespace rmwork {
 
-void draw_tool_body(Tool t) {
+void draw_tool_body(Tool t, const ToolContext &ctx) {
+    const bool loaded = ctx.mode == Mode::REPLAY && ctx.replay && ctx.replay->loaded();
     if (t == Tool::GRAPH) {
-        draw_value_graph();
+        draw_value_graph(loaded ? "No evaluations yet" : "No game loaded");
         return;
     }
-    centered_text_block("No game loaded", tool_info(t).blurb, 46.0f * ImGui::CalcTextSize("M").x);
+    if (loaded && t == Tool::LOG && ctx.log) {
+        ctx.log->draw(*ctx.replay);
+        return;
+    }
+    const float width = 46.0f * ImGui::CalcTextSize("M").x;
+    if (loaded) {
+        centered_text_block("Game loaded", loaded_body(*ctx.replay, t).c_str(), width);
+    } else if (ctx.mode == Mode::REPLAY && !ctx.loading.empty()) {
+        centered_text_block(ctx.loading.c_str(), tool_info(t).blurb, width);
+    } else {
+        centered_text_block("No game loaded", tool_info(t).blurb, width);
+    }
 }
 
 }  // namespace rmwork

@@ -395,8 +395,10 @@ void SettingsDialog::draw_theme_choice(std::string *theme, float field_x, float 
 void SettingsDialog::draw_engine_tab(Settings *s) {
     const float field_x = 16 * char_width();
     note(
-        "The engine the workbench starts for Play and for Replay's re-evaluation (§2.3). Leave a field empty for its "
-        "default; a relative path is under the repository, ~/ under your home directory.");
+        "The engine the workbench starts for Play, for replaying a decision log in Replay and for Replay's "
+        "re-evaluation. A replay runs the plain robomage beside a robomage_nn named here (a replay needs no learned "
+        "policy). Leave a field empty for its default; a relative path is under the repository, ~/ under your home "
+        "directory.");
     ImGui::Spacing();
     path_field("Engine binary", &s->engine.binary, default_engine_binary(), Want::EXECUTABLE, field_x,
         "missing: build it with make actor (robomage_nn) or make (robomage)");

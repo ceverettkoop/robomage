@@ -2,19 +2,37 @@
 
 #include <algorithm>
 
+#include "episodes.h"
 #include "files.h"
 #include "imgui_internal.h"
 #include "panels.h"
+#include "paths.h"
+#include "replay_cache.h"
 #include "theme.h"
 #include "widgets.h"
 
 namespace {
 
-const char *const VIEW_NAMES[] = {"seat A", "seat B", "omniscient"};
 // The toolbar's game combo box, in font heights (300 px at the default 14).
 const float GAME_COMBO_EMS = 21.5f;
+// The status bar's load progress bar, in font heights.
+const float PROGRESS_EMS = 9.0f;
 
 }  // namespace
+
+static std::string file_name(const std::string &path);
+static std::string seconds_text(double s);
+
+static std::string file_name(const std::string &path) {
+    const size_t slash = path.rfind('/');
+    return slash == std::string::npos ? path : path.substr(slash + 1);
+}
+
+static std::string seconds_text(double s) {
+    char buf[32];
+    std::snprintf(buf, sizeof buf, "%.1f s", s);
+    return buf;
+}
 
 namespace rmwork {
 
@@ -46,6 +64,8 @@ void App::begin_frame() {
 }
 
 void App::frame() {
+    poll_loader();
+    replay_.tick(ImGui::GetTime());
     handle_keys();
     draw_menu_bar();
     draw_toolbar();
@@ -60,7 +80,140 @@ void App::frame() {
         request_named_layout(show_name);
     }
     if (error_dialog_.draw()) status("Diagnostics copied to the clipboard");
+    std::string picked;
+    if (picker_.draw(&picked)) pick_done(picked);
+    std::string run_log;
+    if (run_browser_.draw(&run_log)) open_replay(run_log);
     save_if_changed();
+}
+
+bool App::open_replay(const std::string &log, const std::vector<std::string> &episodes) {
+    if (loader_.busy()) {
+        status("Still opening a game: wait, or cancel it in the status bar");
+        return false;
+    }
+    LoadRequest req;
+    req.log_path = log;
+    req.episodes = episodes;
+    opened_episodes_.clear();
+    for (const std::string &e : episodes) opened_episodes_.push_back(absolute_path(e));
+    req.engine = replay_engine();
+    req.workdir = engine_workdir_path(settings_);
+    req.cache_root = replay_cache_root();
+    replay_.set_playing(false, ImGui::GetTime());
+    load_started_ = ImGui::GetTime();
+    loader_.start(req);
+    set_mode(Mode::REPLAY);
+    status("Opening " + file_name(log) + " …");
+    return true;
+}
+
+bool App::open_episode(const std::string &path) {
+    std::string err;
+    const std::string log = absolute_path(log_for_episode(path, engine_workdir_path(settings_), &err));
+    if (log.empty()) {
+        report_error("No decision log for the episode",
+            "The episode " + file_name(path) +
+                " joins a replay of its decision log, which was not found: open the log with File → Open Replay "
+                "first, or keep the episode beside it.",
+            err + "\n");
+        return false;
+    }
+    if (replay_.loaded() && replay_.match()->log_path == log && target_decision_ < 0)
+        target_decision_ = static_cast<int>(replay_.cursor());
+    return open_replay(log, {path});
+}
+
+void App::open_run(const std::string &dir) {
+    run_browser_.open(absolute_path(dir));
+    add_recent(&settings_.recent, absolute_path(dir));
+    set_mode(Mode::REPLAY);
+}
+
+void App::open_file_picker(PickPurpose purpose) {
+    std::string start = settings_.recent.empty() ? std::string() : parent_dir(settings_.recent.front());
+    if (replay_.loaded()) start = parent_dir(replay_.match()->log_path);
+    if (purpose == PICK_RUN) start = run_dir_path(settings_);
+    if (start.empty() || path_kind(start) != PathKind::DIRECTORY) start = repo_root();
+    const char *titles[] = {"Open Replay", "Open Trajectory Episode", "Open Run Directory"};
+    const FileFilter filters[] = {FileFilter::DECISION_LOGS, FileFilter::EPISODES, FileFilter::DIRECTORIES};
+    picker_.open(titles[purpose], purpose, filters[purpose], start, settings_.recent);
+}
+
+void App::pick_done(const std::string &path) {
+    if (path_kind(path) == PathKind::DIRECTORY) {
+        open_run(path);
+        return;
+    }
+    const bool episode = path.size() > 7 && path.compare(path.size() - 7, 7, ".rmtraj") == 0;
+    if (episode) {
+        open_episode(path);
+    } else {
+        open_replay(path);
+    }
+}
+
+std::string App::load_phase(double *fraction) const {
+    *fraction = -1;
+    if (!loader_.busy()) return "";
+    std::string phase;
+    loader_.progress(&phase, fraction);
+    return phase;
+}
+
+void App::set_load_target(int decision, int view) {
+    target_decision_ = decision;
+    target_view_ = view;
+}
+
+std::string App::replay_engine() const {
+    return replay_engine_binary(engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+}
+
+// Takes a finished load: the match into the session, or the error dialog.
+void App::poll_loader() {
+    if (!loader_.busy() || !loader_.finished()) return;
+    LoadOutcome o;
+    if (!loader_.take(&o)) return;
+    install(&o);
+}
+
+void App::install(LoadOutcome *o) {
+    const double took = ImGui::GetTime() - load_started_;
+    load_notes_ = o->notes;
+    if (o->status == LoadOutcome::Status::CANCELLED) {
+        status("Opening cancelled");
+        target_decision_ = target_view_ = -1;
+        return;
+    }
+    if (o->status == LoadOutcome::Status::FAILED) {
+        status(o->title);
+        report_error(o->title, o->message, o->detail);
+        target_decision_ = target_view_ = -1;
+        return;
+    }
+    Match &m = *o->match;
+    add_recent(&settings_.recent, m.log_path);
+    for (const std::string &e : opened_episodes_) add_recent(&settings_.recent, e);
+    std::string msg = "Loaded " + file_name(m.log_path) + ": " + std::to_string(m.decisions.size()) + " decisions";
+    size_t games = 0;
+    for (const GameSpan &g : m.games) games += g.sideboarding ? 0 : 1;
+    if (m.bo3()) msg += ", " + std::to_string(games) + " games";
+    msg += ", " + m.result.text + (o->replayed ? " (replayed in " + seconds_text(took) + ")" : " (from the cache)");
+    if (!m.episode_files.empty())
+        msg += "; " + std::to_string(m.episode_files.size()) + " episode" + (m.episode_files.size() == 1 ? "" : "s") +
+               ", " + std::to_string(m.episode_steps.size()) + " decisions joined";
+    const size_t cursor = target_decision_ >= 0 ? static_cast<size_t>(target_decision_) : 0;
+    replay_.set_match(std::move(o->match), cursor);
+    if (target_view_ >= 0) replay_.set_view(target_view_);
+    target_decision_ = target_view_ = -1;
+    status(msg);
+    if (!o->title.empty()) report_error(o->title, o->message, o->detail);
+}
+
+std::string App::status_mode_text() const {
+    if (mode() == Mode::PLAY) return "Play · no game";
+    return std::string("Replay · view ") + view_name(replay_.view());
 }
 
 void App::set_mode(Mode m) {
@@ -157,11 +310,26 @@ void App::run_action(Action a) {
     const ActionInfo &info = action_info(a);
     if ((info.scope == Scope::REPLAY && mode() != Mode::REPLAY) || (info.scope == Scope::PLAY && mode() != Mode::PLAY))
         return;
+    const bool nav =
+        a == Action::REPLAY_FIRST || a == Action::REPLAY_PREV || a == Action::REPLAY_NEXT || a == Action::REPLAY_LAST;
+    if (nav && !replay_.loaded()) {
+        status(std::string("No game loaded: ") + info.label);
+        return;
+    }
+    if (nav) replay_.set_playing(false, ImGui::GetTime());
     switch (a) {
         case Action::REPLAY_FIRST:
+            replay_.first();
+            break;
         case Action::REPLAY_PREV:
+            replay_.step(-1);
+            break;
         case Action::REPLAY_NEXT:
+            replay_.step(1);
+            break;
         case Action::REPLAY_LAST:
+            replay_.last();
+            break;
         case Action::PLAY_TO_END_OF_TURN:
         case Action::PLAY_SKIP_TURN:
             status(std::string("No game loaded: ") + info.label);
@@ -172,6 +340,8 @@ void App::run_action(Action a) {
             open_settings();
             break;
         case Action::OPEN_REPLAY:
+            open_file_picker(PICK_REPLAY);
+            break;
         case Action::SAVE_DECISION_LOG:
         case Action::NEW_GAME:
         case Action::FIND_IN_LOG:
@@ -252,8 +422,20 @@ void App::draw_menu_bar() {
 }
 
 void App::draw_file_menu() {
-    if (ImGui::MenuItem("Open Replay (.rmlog)…", shortcut(Action::OPEN_REPLAY).c_str())) not_built("Open Replay");
-    if (ImGui::MenuItem("Open Trajectory Episode…")) not_built("Open Trajectory Episode");
+    if (ImGui::MenuItem("Open Replay (.rmlog)…", shortcut(Action::OPEN_REPLAY).c_str())) open_file_picker(PICK_REPLAY);
+    if (ImGui::MenuItem("Open Trajectory Episode…")) open_file_picker(PICK_EPISODE);
+    if (ImGui::MenuItem("Open Run Directory…")) open_file_picker(PICK_RUN);
+    if (ImGui::BeginMenu("Open Recent", !settings_.recent.empty())) {
+        for (size_t i = 0; i < settings_.recent.size(); ++i) {
+            const std::string path = settings_.recent[i];
+            ImGui::PushID(static_cast<int>(i));
+            const bool exists = path_kind(path) != PathKind::MISSING;
+            if (ImGui::MenuItem(file_name(path).c_str(), nullptr, false, exists)) pick_done(path);
+            ImGui::SetItemTooltip("%s", path.c_str());
+            ImGui::PopID();
+        }
+        ImGui::EndMenu();
+    }
     if (ImGui::MenuItem("Save Decision Log…", shortcut(Action::SAVE_DECISION_LOG).c_str()))
         not_built("Save Decision Log");
     ImGui::Separator();
@@ -312,7 +494,7 @@ void App::draw_toolbar() {
     const ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
                                    ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus;
     if (ImGui::BeginViewportSideBar("##rmwork.toolbar", vp, ImGuiDir_Up, height, flags)) {
-        if (icon_button("##open", Icon::OPEN, "Open replay or trajectory")) not_built("Open Replay");
+        if (icon_button("##open", Icon::OPEN, "Open a replay (.rmlog)")) open_file_picker(PICK_REPLAY);
         ImGui::SameLine();
         if (icon_button("##save", Icon::SAVE, "Save decision log")) not_built("Save Decision Log");
         toolbar_separator();
@@ -321,40 +503,10 @@ void App::draw_toolbar() {
         int sel = mode() == Mode::PLAY ? 0 : 1;
         if (segmented("##mode", modes, 2, &sel)) set_mode(sel == 0 ? Mode::PLAY : Mode::REPLAY);
         ImGui::SameLine(0, 6);
-        ImGui::SetNextItemWidth(GAME_COMBO_EMS * ImGui::GetFontSize());
-        ImGui::PushStyleColor(ImGuiCol_Button, tok().BTN_HOVER);
-        if (ImGui::BeginCombo("##game", "No game loaded")) {
-            ImGui::TextDisabled("No games yet: File → Open Replay arrives with the replay data (plan §2.2).");
-            ImGui::EndCombo();
-        }
-        ImGui::PopStyleColor();
+        draw_game_combo();
         toolbar_separator();
         if (mode() == Mode::REPLAY) {
-            const struct {
-                    const char *id;
-                    Icon icon;
-                    const char *what;
-                    Action action;
-                    bool keyed;
-            } nav[] = {{"##first", Icon::FIRST, "First decision", Action::REPLAY_FIRST, true},
-                {"##prev", Icon::PREV, "Previous decision", Action::REPLAY_PREV, true},
-                {"##play", Icon::PLAY, "Play through", Action::REPLAY_NEXT, false},
-                {"##next", Icon::NEXT, "Next decision", Action::REPLAY_NEXT, true},
-                {"##last", Icon::LAST, "Last decision", Action::REPLAY_LAST, true},
-                {"##swing", Icon::SWING, "Next big swing", Action::REPLAY_NEXT, false}};
-            for (const auto &n : nav) {
-                const std::string tip =
-                    n.keyed ? std::string(n.what) + " (" + shortcut(n.action) + ")" : std::string(n.what);
-                icon_button(n.id, n.icon, tip.c_str(), false);
-                ImGui::SameLine();
-            }
-            toolbar_separator();
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextDisabled("View");
-            ImGui::SameLine(0, 6);
-            const Segment views[] = {{"A", false, Icon::LOGO, "Seat A's frames"},
-                {"B", false, Icon::LOGO, "Seat B's frames"}, {"Omni", false, Icon::LOGO, "The omniscient frames"}};
-            if (segmented("##view", views, 3, &view_)) status(std::string("View: ") + VIEW_NAMES[view_]);
+            draw_replay_nav();
         } else {
             const std::string f2 = shortcut(Action::PLAY_TO_END_OF_TURN) + " To end of turn";
             const std::string f6 = shortcut(Action::PLAY_SKIP_TURN) + " Skip turn";
@@ -374,6 +526,112 @@ void App::draw_toolbar() {
     ImGui::PopStyleVar(3);
 }
 
+// Replay: the match's games and sideboarding phases (choosing one goes to its first decision);
+// Play: no game yet.
+void App::draw_game_combo() {
+    const bool replay = mode() == Mode::REPLAY;
+    const std::string preview = replay ? (loader_.busy() ? "Opening…" : replay_.game_label()) : "No game loaded";
+    ImGui::SetNextItemWidth(GAME_COMBO_EMS * ImGui::GetFontSize());
+    ImGui::PushStyleColor(ImGuiCol_Button, tok().BTN_HOVER);
+    if (open_game_combo_ && replay && replay_.loaded()) {
+        ImGui::OpenPopupEx(ImHashStr("##ComboPopup", 0, ImGui::GetID("##game")));
+        open_game_combo_ = false;
+    }
+    if (ImGui::BeginCombo("##game", preview.c_str())) {
+        if (!replay || !replay_.loaded()) {
+            ImGui::TextDisabled(replay ? "No game loaded: File → Open Replay" : "No game: Play arrives in plan §2.3.");
+        } else {
+            const Match &m = *replay_.match();
+            const int cur = m.span_of(replay_.cursor());
+            ImGui::TextDisabled("%s", m.title().c_str());
+            for (size_t g = 0; g < m.games.size(); ++g) {
+                const GameSpan &span = m.games[g];
+                std::string label = span.label + "  (" + std::to_string(span.count) + " decisions";
+                if (!span.sideboarding && static_cast<size_t>(span.game) < m.result.game_winners.size()) {
+                    const int w = m.result.game_winners[static_cast<size_t>(span.game)];
+                    label += w == 0 ? ", Player A wins" : w == 1 ? ", Player B wins" : ", a draw";
+                }
+                label += ")";
+                ImGui::PushID(static_cast<int>(g));
+                if (ImGui::Selectable(label.c_str(), static_cast<int>(g) == cur)) {
+                    replay_.set_playing(false, ImGui::GetTime());
+                    replay_.go_to(span.first);
+                }
+                ImGui::PopID();
+            }
+            ImGui::Separator();
+            ImGui::TextDisabled("Result: %s", m.result.text.c_str());
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::PopStyleColor();
+    if (replay && replay_.loaded()) ImGui::SetItemTooltip("%s", replay_.match()->log_path.c_str());
+}
+
+// First, previous, play / pause, next, last, next swing (waits for evaluations, plan §2.7); the viewer.
+void App::draw_replay_nav() {
+    const bool loaded = replay_.loaded();
+    const double now = ImGui::GetTime();
+    const std::string first = "First decision (" + shortcut(Action::REPLAY_FIRST) + ")";
+    const std::string prev = "Previous decision (" + shortcut(Action::REPLAY_PREV) + ")";
+    const std::string next = "Next decision (" + shortcut(Action::REPLAY_NEXT) + ")";
+    const std::string last = "Last decision (" + shortcut(Action::REPLAY_LAST) + ")";
+    if (icon_button("##first", Icon::FIRST, first.c_str(), loaded)) run_action(Action::REPLAY_FIRST);
+    ImGui::SameLine();
+    if (icon_button("##prev", Icon::PREV, prev.c_str(), loaded)) run_action(Action::REPLAY_PREV);
+    ImGui::SameLine();
+    const bool playing = replay_.playing();
+    if (icon_button("##play", playing ? Icon::PAUSE : Icon::PLAY,
+            playing ? "Pause" : "Play through, a decision at a time", loaded))
+        replay_.set_playing(!playing, now);
+    ImGui::SameLine();
+    if (icon_button("##next", Icon::NEXT, next.c_str(), loaded)) run_action(Action::REPLAY_NEXT);
+    ImGui::SameLine();
+    if (icon_button("##last", Icon::LAST, last.c_str(), loaded)) run_action(Action::REPLAY_LAST);
+    ImGui::SameLine();
+    icon_button("##swing", Icon::SWING, "Next big swing (needs evaluations, plan §2.7)", false);
+    ImGui::SameLine();
+    toolbar_separator();
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextDisabled("View");
+    ImGui::SameLine(0, 6);
+    const Segment views[] = {{"A", false, Icon::LOGO, "Seat A's frames and its own log"},
+        {"B", false, Icon::LOGO, "Seat B's frames and its own log"},
+        {"Omni", false, Icon::LOGO, "The omniscient frames and the narrative"}};
+    int view = replay_.view();
+    if (segmented("##view", views, 3, &view)) {
+        replay_.set_view(view);
+        status(std::string("View: ") + view_name(view));
+    }
+}
+
+// While a load runs: its phase, a progress bar and Cancel, ending at `right_edge`.
+void App::draw_load_progress(float right_edge) {
+    double fraction = -1;
+    const std::string phase = load_phase(&fraction);
+    const float bar_w = PROGRESS_EMS * ImGui::GetFontSize();
+    const float cancel_w = ImGui::CalcTextSize("Cancel").x + 10;
+    const ImVec2 p = ImGui::GetCursorScreenPos();
+    const float h = ImGui::GetTextLineHeight();
+    const float text_end = right_edge - bar_w - cancel_w - 16;
+    if (text_end > p.x) {
+        ImGui::PushStyleColor(ImGuiCol_Text, tok().TEXT);
+        ImGui::RenderTextEllipsis(
+            ImGui::GetWindowDrawList(), p, ImVec2(text_end, p.y + h), text_end, phase.c_str(), nullptr, nullptr);
+        ImGui::PopStyleColor();
+    }
+    ImGui::SetCursorScreenPos(ImVec2(std::max(p.x, text_end + 8), p.y));
+    const float shown = fraction < 0 ? static_cast<float>(-ImGui::GetTime()) : static_cast<float>(fraction);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, tok().ACCENT);
+    ImGui::ProgressBar(shown, ImVec2(bar_w, h), fraction < 0 ? "" : nullptr);
+    ImGui::PopStyleColor();
+    ImGui::SameLine(0, 6);
+    if (ImGui::SmallButton("Cancel")) cancel_load();
+    ImGui::PopStyleVar();
+    ImGui::SameLine(0, 10);
+}
+
 void App::draw_status_bar() {
     ImGuiViewport *vp = ImGui::GetMainViewport();
     const float height = ImGui::GetTextLineHeight() + 7;
@@ -385,16 +643,21 @@ void App::draw_status_bar() {
     if (ImGui::BeginViewportSideBar("##rmwork.status", vp, ImGuiDir_Down, height, flags)) {
         const ImGuiWindow *w = ImGui::GetCurrentWindow();
         ImGui::GetWindowDrawList()->AddLine(w->Pos, ImVec2(w->Pos.x + w->Size.x, w->Pos.y), tok().LINE);
-        const std::string mode_text =
-            mode() == Mode::REPLAY ? std::string("Replay · view ") + VIEW_NAMES[view_] : std::string("Play · no game");
-        status_segment(mode_text.c_str());
-        status_segment("Decision —");
-        status_segment("Turn —");
+        status_segment(status_mode_text().c_str());
+        if (mode() == Mode::REPLAY) {
+            status_segment(replay_.decision_text().c_str());
+            status_segment(replay_.turn_text().c_str());
+            status_segment(replay_.decider_text().c_str());
+        } else {
+            status_segment("Decision —");
+            status_segment("Turn —");
+        }
         status_segment("V —");
         const std::string engine_text = engine_health(), server_text = inference_health();
         const char *engine = engine_text.c_str();
         const char *server = server_text.c_str();
         const float right_w = ImGui::CalcTextSize(engine).x + ImGui::CalcTextSize(server).x + 12 * 2 + 21 + 2;
+        if (loader_.busy()) draw_load_progress(w->Pos.x + w->Size.x - 8 - right_w - 12);
         const ImVec2 msg_pos = ImGui::GetCursorScreenPos();
         const float msg_end = w->Pos.x + w->Size.x - 8 - right_w - 12;
         if (msg_end > msg_pos.x) {
@@ -487,7 +750,13 @@ void App::draw_tools() {
         tab_class.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseButton;
         ImGui::SetNextWindowClass(&tab_class);
         const ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
-        if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool);
+        ToolContext ctx;
+        ctx.mode = mode();
+        ctx.replay = mode() == Mode::REPLAY ? &replay_ : nullptr;
+        ctx.log = &game_log_;
+        double fraction = -1;
+        ctx.loading = load_phase(&fraction);
+        if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
         ImGui::End();
     }
 }

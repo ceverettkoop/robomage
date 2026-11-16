@@ -46,8 +46,8 @@ directory), Models (server socket, the `id = model` policies, run directory), St
 stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
 in `settings.json` for the stages that use them; the error dialog (`App::report_error`). Checked by
 `rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
-for later stages by design: the std-only decoder and the rest of the data links (§2.2), and Enter /
-arrows in Choices once Choices has rows (§2.3).
+for later stages by design: Enter / arrows in Choices once Choices has rows (§2.3); the data links
+followed in §2.2.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -60,6 +60,48 @@ arrows in Choices once Choices has rows (§2.3).
 | Error handling | Engine exits, a frame that fails to decode, rmserve disconnects: a modal with the stderr tail and a "copy diagnostics" button | S |
 
 ### 2.2 Data: recorded games
+
+**Status: done** (`tools/rmwork/`: `loader`, `match`, `episodes`, `replay_cache`, `replay_session`,
+`game_log`, `file_picker`, `run_browser`). File → Open Replay (`rmwork --open LOG`) replays a decision
+log on a background thread, `<engine> --replay LOG --rmstate-dump DUMP --narrative` in the engine's
+working directory (`posix_spawn`, stdout and stderr into files), with its progress (decisions replayed,
+then indexed) and a Cancel in the status bar; the engine is Settings → Engine's binary, except that a
+`robomage_nn` with a `robomage` beside it replays with that `robomage` (a replay needs no learned policy,
+and plain `make` keeps it current). The dump and the narrative are cached under
+`$XDG_CACHE_HOME/robomage/workbench/replays/<log hash>-<engine hash>/` (the engine's resolved path, size
+and modification time, so a rebuild replays again; written to a `.tmp-<pid>` directory and renamed into
+place once the engine exits 0; the oldest entries pruned past 4 GB), not beside the log, since run and
+corpus directories are not ours to write. The dump is indexed once: per decision the three viewers'
+`STATE` frame offsets (A, B, omniscient, in the dump's order, their headers' decision keys checked to
+agree), the deciding seat (the seat frame that carries the menu), game and sideboarding, turn, step,
+life, the reply; frames are decoded again on demand through a small LRU cache, never a whole match. The
+decision count must be the log's. Best-of-three: the toolbar's game list holds the games and their
+sideboarding phases ("Game 1", "Sideboarding 2", "Game 2"), each game's winner and the match result (from
+the omniscient frames' `game_end` / `match_end` events); choosing one goes to its first decision. The
+viewer toggle (A / B / Omni, seat A at start) selects the frames the tools read. The Game Log shows, in a
+seat view, that seat's own log built only from its own frames' event tables (the CLI's `event_lines`, with
+turn and game headers; decision i's lines are its frame at decision i, the terminal frame's at the last),
+and in Omni the narrative cut at the replay's per-decision lines (`(REPLAY) [… ] Input: n`, written as each
+logged decision is taken: decision i's lines run to its marker, which becomes "» Player X: <the chosen
+row>"); the current decision's lines highlighted with a rule after them, earlier ones normal, later ones
+dimmed, a click going to a line's decision, the view following the cursor. Navigation: first / previous /
+play-pause (0.6 s a decision) / next / last and ← → Home End, the status bar's decision `n / N`, game,
+turn, step and deciding seat; next swing stays disabled until §2.7. Episodes: File → Open Trajectory
+Episode (`--episode`) opens its decision log (its `rmlog` attribute, else by name) with it, joining each
+step to the decision of its (game, sideboarding, decision) key with the same seat and reply (μ, versions,
+evaluations and teacher label kept per decision for §2.6–2.7); a log's own episodes (`<stem>.g<n>.rmtraj`
+beside it, in `<run>/episodes/<purpose>/` for `<run>/rmlog/<purpose>/`, or an actor's `traj/`) join
+whenever it is opened. File → Open Run Directory (`--run`) lists a run's logs by purpose, with the games
+their episodes cover, a filter and "with episodes only" (read on a thread: a run holds 180 000 logs);
+choosing one opens it with its episodes. The file picker (a path field, places, recent files kept in
+`settings.json`, the listing in natural order with size and time read only for the rows drawn, filters for
+decision logs, episodes, both, directories, all) serves every Open. Engine exits (the `FATAL` line, the
+stderr and stdout tails), dumps that do not decode, malformed logs, a missing engine and episodes of
+another match reach the error dialog. Checked by `rmwork --selftest-data` (the gate's `workbench` tier).
+Waiting for later stages: every other tool's contents (they say which game and decision they will show:
+the Table, Players, Choices, Inspector and State Tree from the frames, §2.5–2.6), the episodes'
+evaluations in the Value Graph, Swings and next swing (§2.7), the full Episode Browser and the run's other
+files (`bench/`, `metrics.jsonl`, §3).
 
 | Feature | Notes | Size |
 |---|---|---|

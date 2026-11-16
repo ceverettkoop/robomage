@@ -6,9 +6,14 @@
 #include <vector>
 
 #include "dialogs.h"
+#include "file_picker.h"
+#include "game_log.h"
 #include "imgui.h"
 #include "layout.h"
 #include "layout_dialogs.h"
+#include "loader.h"
+#include "replay_session.h"
+#include "run_browser.h"
 #include "settings.h"
 #include "settings_dialog.h"
 
@@ -19,6 +24,12 @@
 // ImGui::Render(); the App owns no window or renderer, so the self-test runs it headless. Settings
 // changes are written back as they happen (when `persist`). The status bar's health indicators
 // look at the configured engine binary and server socket at most once a second.
+//
+// Replay's data: File → Open Replay (a decision log), Open Trajectory Episode and Open Run Directory
+// go through the file picker (file_picker.h) or the run's list (run_browser.h); a log is replayed
+// and indexed on the loader's thread (loader.h) with its progress and a Cancel in the status bar, and
+// the match it hands over becomes the ReplaySession the toolbar, the keys, the status bar and the
+// tools read. A failure opens the error dialog.
 
 struct ImGuiDockNode;
 
@@ -53,6 +64,9 @@ class App {
         void open_settings(SettingsDialog::Tab tab = SettingsDialog::TABLE);
         bool settings_open() const { return settings_dialog_.is_open(); }
         bool error_open() const { return error_dialog_.is_open(); }
+        // The error dialog's title and message (the last one opened).
+        const std::string &error_title() const { return error_dialog_.title(); }
+        const std::string &error_message() const { return error_dialog_.message(); }
         SettingsDialog &settings_dialog() { return settings_dialog_; }
         LayoutDialogs &layout_dialogs() { return layout_dialogs_; }
         // Settings, at the Keys tab, waiting for `a`'s new key.
@@ -67,6 +81,46 @@ class App {
         void status(const std::string &message);
         const std::string &status_message() const { return status_; }
 
+        // Opens decision log `log` in Replay (replayed and indexed on the loader's thread); the
+        // episodes named join it with those found by name. False when a load is running.
+        bool open_replay(const std::string &log, const std::vector<std::string> &episodes = {});
+        // Opens an episode: its decision log (the `rmlog` attribute, else by name) with it; when
+        // that log is the one loaded, it is opened again at the same decision. False after an error.
+        bool open_episode(const std::string &path);
+        // Lists a run directory's decision logs (run_browser.h).
+        void open_run(const std::string &dir);
+        // The file picker, for a decision log, an episode or a run directory.
+        enum PickPurpose {
+            PICK_REPLAY,
+            PICK_EPISODE,
+            PICK_RUN
+        };
+        void open_file_picker(PickPurpose purpose);
+        bool loading() const { return loader_.busy(); }
+        // A game is being opened or a run directory read (a screenshot waits for both).
+        bool working() const { return loader_.busy() || (run_browser_.is_open() && !run_browser_.ready()); }
+        void cancel_load() { loader_.cancel(); }
+        // The loader's phase and fraction (-1 unknown), "" when idle.
+        std::string load_phase(double *fraction) const;
+        ReplaySession &replay() { return replay_; }
+        const ReplaySession &replay() const { return replay_; }
+        // The decision (0-based) and viewer the next finished load shows (-1: the first, the current).
+        void set_load_target(int decision, int view);
+        // The engine binary used for replays instead of the setting's (for the command line and the
+        // data self-test); "" goes back to the setting.
+        void set_engine_override(const std::string &path) { engine_override_ = path; }
+        // The binary a replay runs (replay_engine_binary of the override or the setting).
+        std::string replay_engine() const;
+        FilePicker &file_picker() { return picker_; }
+        RunBrowser &run_browser() { return run_browser_; }
+        GameLogView &game_log() { return game_log_; }
+        // Opens the toolbar's game combo box at the next frame.
+        void open_game_combo() { open_game_combo_ = true; }
+        // The status bar's fields, as drawn.
+        std::string status_mode_text() const;
+        // What the last finished load said (the notes), for the self-test.
+        const std::vector<std::string> &load_notes() const { return load_notes_; }
+
     private:
         void handle_keys();
         void run_action(Action a);
@@ -78,6 +132,12 @@ class App {
         void draw_status_bar();
         void draw_dock();
         void draw_tools();
+        void draw_game_combo();
+        void draw_replay_nav();
+        void draw_load_progress(float right_edge);
+        void poll_loader();
+        void install(LoadOutcome *o);
+        void pick_done(const std::string &path);
         void dock_home_if_lost(Mode m, Tool t);
         void save_if_changed();
         void check_health();
@@ -98,7 +158,17 @@ class App {
         bool font_applied_ = false;
         std::string applied_theme_;  // the theme in effect (empty before the first frame)
         bool quit_ = false;
-        int view_ = 0;                                          // Replay's viewer: 0 seat A, 1 seat B, 2 omniscient
+        ReplaySession replay_;
+        Loader loader_;
+        GameLogView game_log_;
+        FilePicker picker_;
+        RunBrowser run_browser_;
+        std::string engine_override_;
+        int target_decision_ = -1, target_view_ = -1;
+        bool open_game_combo_ = false;
+        double load_started_ = 0;
+        std::vector<std::string> load_notes_;
+        std::vector<std::string> opened_episodes_;              // the episodes the running load was asked to join
         int focus_tool_ = -1;                                   // a tool to bring to the front at its next Begin
         std::array<bool, MODE_COUNT> pending_{{false, false}};  // a layout waits for the next dock pass
         std::array<LayoutNode, MODE_COUNT> pending_root_;

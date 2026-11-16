@@ -92,6 +92,7 @@ ImVec2 icon_size(Icon icon) {
         case Icon::FIRST:
         case Icon::PREV:
         case Icon::PLAY:
+        case Icon::PAUSE:
         case Icon::NEXT:
         case Icon::LAST:
             break;
@@ -136,6 +137,10 @@ void draw_icon(ImDrawList *dl, Icon icon, ImVec2 pos, float alpha) {
             break;
         case Icon::PLAY:
             triangle(dl, pos, {4, 2}, {4, 12}, {11, 7}, fade(tok().GOOD, alpha));
+            break;
+        case Icon::PAUSE:
+            dl->AddRectFilled(at(pos, 3.5f, 2), at(pos, 6, 12), fade(tok().GOOD, alpha));
+            dl->AddRectFilled(at(pos, 8.5f, 2), at(pos, 11, 12), fade(tok().GOOD, alpha));
             break;
         case Icon::NEXT:
             triangle(dl, pos, {4, 2}, {4, 12}, {11, 7}, text);

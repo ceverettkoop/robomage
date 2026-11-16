@@ -3,11 +3,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 #include "app.h"
 #include "files.h"
 #include "platform.h"
 #include "selftest.h"
+#include "selftest_data.h"
 #include "theme.h"
 
 namespace {
@@ -29,6 +31,16 @@ struct CliOptions {
         std::string mode;
         std::string preset;
         std::string config_dir;
+        // Replay's data.
+        std::string open_log;
+        std::vector<std::string> episodes;
+        std::string run_dir;
+        int decision = 0;  // 1-based; 0 = the first
+        int view = -1;
+        std::string engine;
+        bool selftest_data = false;
+        bool open_picker = false;
+        bool game_combo = false;
         rmwork::WindowOptions window;
 };
 
@@ -40,6 +52,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code);
 static bool check_font_flags(const CliOptions &opt);
 static rmwork::FontChoice font_override(const CliOptions &opt, const rmwork::FontChoice &from);
 static void show_demo_error(rmwork::App &app);
+static int parse_view(const std::string &text);
+static void open_data(rmwork::App &app, const CliOptions &opt);
 
 static void usage() {
     std::printf(
@@ -47,7 +61,10 @@ static void usage() {
         "       rmwork --screenshot FILE.png [--mode …] [--preset …] [--size WxH] [--config-dir DIR] "
         "[--open-settings] [--settings-tab TAB] [--capture-key ACTION] [--save-layout] [--manage-layouts]\n"
         "         [--layout NAME] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
+        "       rmwork [--open LOG.rmlog] [--episode FILE.rmtraj]… [--run DIR] [--decision N] [--view a|b|omni]\n"
+        "         [--engine PATH] [--open-picker] [--game-combo] (with --screenshot too)\n"
         "       rmwork --selftest\n"
+        "       rmwork --selftest-data [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
         "(default ~/.config/robomage), the layout beside it in workbench/imgui.ini.\n"
         "  --mode MODE        start in Play or Replay\n"
@@ -70,8 +87,19 @@ static void usage() {
         "                     cascadia-mono, hack, inter, ibm-plex-sans (as Settings → Appearance sets it)\n"
         "  --font-weight W    regular or heavy (the family's Medium, SemiBold or Bold)\n"
         "  --font-size N      the UI font's size in pixels, 11 to 20\n"
+        "  --open LOG         open a decision log in Replay (replayed by the engine, cached under\n"
+        "                     $XDG_CACHE_HOME/robomage/workbench/replays)\n"
+        "  --episode FILE     open a trajectory episode (with its decision log); repeatable\n"
+        "  --run DIR          list a run directory's decision logs\n"
+        "  --decision N       show decision N (1-based) of the opened log\n"
+        "  --view V           Replay's viewer: a, b or omni\n"
+        "  --engine PATH      replay with this engine binary instead of Settings → Engine's\n"
+        "  --open-picker      open File → Open Replay's file picker at start\n"
+        "  --game-combo       open the toolbar's game list once the game is loaded\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
-        "                     RMWORK-SELFTEST: N checks, M failures\n");
+        "                     RMWORK-SELFTEST: N checks, M failures\n"
+        "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
+        "                     beside rmwork (or --engine); prints RMWORK-SELFTEST-DATA: N checks, M failures\n");
 }
 
 static bool parse_size(const std::string &text, int *w, int *h) {
@@ -97,6 +125,34 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             return false;
         } else if (a == "--selftest") {
             opt->selftest = true;
+        } else if (a == "--selftest-data") {
+            opt->selftest_data = true;
+        } else if (a == "--open" && has_value) {
+            opt->open_log = argv[++i];
+        } else if (a == "--episode" && has_value) {
+            opt->episodes.push_back(argv[++i]);
+        } else if (a == "--run" && has_value) {
+            opt->run_dir = argv[++i];
+        } else if (a == "--decision" && has_value) {
+            opt->decision = std::atoi(argv[++i]);
+            if (opt->decision < 1) {
+                std::fprintf(stderr, "rmwork: --decision is a decision number from 1\n");
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--view" && has_value) {
+            opt->view = parse_view(argv[++i]);
+            if (opt->view < 0) {
+                std::fprintf(stderr, "rmwork: --view is a, b or omni, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--engine" && has_value) {
+            opt->engine = argv[++i];
+        } else if (a == "--open-picker") {
+            opt->open_picker = true;
+        } else if (a == "--game-combo") {
+            opt->game_combo = true;
         } else if (a == "--open-settings") {
             opt->open_settings = true;
         } else if (a == "--settings-tab" && has_value) {
@@ -216,6 +272,30 @@ static void show_demo_error(rmwork::App &app) {
         "exit status 1\n");
 }
 
+// "a", "b", "omni" (or "o", "omniscient") -> the viewer, else -1.
+static int parse_view(const std::string &text) {
+    if (text == "a" || text == "A") return rmwork::VIEW_A;
+    if (text == "b" || text == "B") return rmwork::VIEW_B;
+    if (text == "o" || text == "O" || text == "omni" || text == "omniscient") return rmwork::VIEW_OMNI;
+    return -1;
+}
+
+// The data flags: a log (with the episodes), else an episode, a run directory, the picker.
+static void open_data(rmwork::App &app, const CliOptions &opt) {
+    if (!opt.engine.empty()) app.set_engine_override(opt.engine);
+    app.set_load_target(opt.decision - 1, opt.view);
+    if (!opt.open_log.empty()) {
+        app.open_replay(opt.open_log, opt.episodes);
+    } else if (!opt.episodes.empty()) {
+        app.open_episode(opt.episodes.front());
+    } else if (opt.view >= 0) {
+        app.replay().set_view(opt.view);
+    }
+    if (!opt.run_dir.empty()) app.open_run(opt.run_dir);
+    if (opt.open_picker) app.open_file_picker(rmwork::App::PICK_REPLAY);
+    if (opt.game_combo) app.open_game_combo();
+}
+
 namespace rmwork {
 
 int workbench_main(int argc, char **argv) {
@@ -223,6 +303,7 @@ int workbench_main(int argc, char **argv) {
     int exit_code = 0;
     if (!parse_args(argc, argv, &opt, &exit_code)) return exit_code;
     if (opt.selftest) return run_selftest();
+    if (opt.selftest_data) return run_selftest_data(opt.engine);
 
     create_ui_context();
     const ConfigPaths paths = config_paths(opt.config_dir);
@@ -251,6 +332,7 @@ int workbench_main(int argc, char **argv) {
     if (!opt.capture_key.empty()) app.begin_key_capture(static_cast<Action>(find_action(opt.capture_key)));
     if (opt.save_layout) app.layout_dialogs().open_save(app.mode());
     if (opt.manage_layouts) app.layout_dialogs().open_manage(app.mode());
+    open_data(app, opt);
     if (!opt.layout.empty() && !app.request_named_layout(opt.layout))
         app.report_error("No such layout",
             "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +

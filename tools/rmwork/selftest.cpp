@@ -273,8 +273,8 @@ static void press(rmwork::App &app, ImGuiKeyChord chord) {
     run_frames(app, 1);
 }
 
-// The bindings act in their mode only and write a status message without a game; Ctrl+, opens
-// Settings, Esc closes it and the error dialog.
+// The bindings act in their mode only and write a status message without a game; Ctrl+O opens the
+// file picker and Ctrl+, Settings, Esc closes them and the error dialog.
 static void check_keys(Tally *t, rmwork::App &app) {
     using namespace rmwork;
     const KeyBindings keys = default_bindings();
@@ -295,7 +295,13 @@ static void check_keys(Tally *t, rmwork::App &app) {
     press(app, keys[action_index(Action::REPLAY_FIRST)]);
     check(t, app.status_message().empty(), "Play: Home acts outside Replay");
     press(app, keys[action_index(Action::OPEN_REPLAY)]);
-    check(t, app.status_message() == "not built yet: Open Replay", "Ctrl+O does not report that it is not built");
+    run_frames(app, 1);
+    check(t,
+        app.file_picker().is_open() && app.file_picker().purpose() == App::PICK_REPLAY &&
+            app.file_picker().filter() == FileFilter::DECISION_LOGS,
+        "Ctrl+O does not open the file picker for a decision log");
+    press(app, ImGuiKey_Escape);
+    check(t, !app.file_picker().is_open(), "Esc does not close the file picker");
     press(app, keys[action_index(Action::OPEN_SETTINGS)]);
     check(t, app.settings_open(), "Ctrl+, does not open Settings");
     app.status("");

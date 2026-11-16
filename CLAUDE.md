@@ -114,8 +114,10 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   part of plain `make`
 - `make workbench` — `bin/<config>/rmwork`, the workbench GUI (`docs/workbench_plan.md`): Dear ImGui
   and ImPlot (`third_party/`) on GLFW and OpenGL 3 (`pkg-config glfw3`), no engine TU; not part of
-  plain `make`. `rmwork --selftest` runs headless; `--screenshot FILE.png` (under
-  `xvfb-run -a -s "-screen 0 1600x1000x24"` without a display) renders and writes a PNG
+  plain `make`. `rmwork --selftest` and `--selftest-data` run headless; `--screenshot FILE.png` (under
+  `xvfb-run -a -s "-screen 0 1600x1000x24"` without a display) renders and writes a PNG (with `--open
+  LOG --decision N --view a|b|omni`, `--episode`, `--run DIR`, `--open-picker`, `--game-combo`: once the
+  game is loaded)
 - `make clean`
 
 **Which binary the tooling runs is independent of which one you just built.** The gate
@@ -159,7 +161,7 @@ background** and make the live output inspectable by the user:
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; the checkpoint migration's acceptance (`learn/open_vocab_acceptance.py gate`: S0's fixture checkpoints migrated, against S0's outputs; skipped without the originals under `runs/`); `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π); the recent-event history case (`--feature-history 32`, the reference policy over `rmfeat --history` tables): an `nn:` self-play bo3 match, exact re-featurization of its `--replay` with history tokens, its episodes and a `--replay --trajectory-out` the same, `--selfcheck-featurize` clean over the replay, exports refused across the option (`spec_hash`) |
-  | `workbench` | opt-in (`bin/<config>/rmwork`, `make workbench`, else skipped): `rmwork --selftest` (headless: every preset in both modes docked as the preset says, each mode keeping its layout, the settings file round trip, the key bindings, every UI font and the bars at 11 and 20 px, every colour theme and its contrast, named layouts, key rebinding, the later stages' settings) |
+  | `workbench` | opt-in (`bin/<config>/rmwork`, `make workbench`, else skipped): `rmwork --selftest` (headless: every preset in both modes docked as the preset says, each mode keeping its layout, the settings file round trip, the key bindings, every UI font and the bars at 11 and 20 px, every colour theme and its contrast, named layouts, key rebinding, the later stages' settings); `rmwork --selftest-data --engine <engine>` (Replay's data on corpus logs and a bo3 match the engine replays: decision counts, every viewer's frames decoding, bo3 games and sideboarding, the narrative and each seat's own log, the replay cache, episodes joined, navigation, the error paths) |
   | `knowledge` | `rmknow --selftest` / `--exactness`, soundness under `--selfcheck-knowledge`, isolation and truth |
   | `fuzz` | C++ explore vs explore over the playable decks' matchups (`league/` and `heldout/`) (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings; then each fixture deck (`decks/tests/mech_*.dk`) against itself under `--coverage`: a key of its `.expect` with no hits is an error (summed counts `ci_out/coverage/<stem>.txt`; `docs/ci.md`) |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
@@ -802,11 +804,22 @@ handshake JSON, the shared region, request / response layouts.
   [--threads N]`): many clients, batches across them, the in-process evaluator per policy,
   `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
-- `tools/rmwork/` — `bin/<config>/rmwork` (`make workbench`): the workbench GUI's shell
-  (`docs/workbench_plan.md` §2.1): `app` (menu bar, toolbar, the mode's dockspace and tools, status
-  bar, keys, health), `layout` (modes, tools, layouts as trees built with DockBuilder: the presets and
-  the user's named layouts, read back from the dockspace), `settings` (`~/.config/robomage/settings.json`:
-  layouts, engine, models, stops, image cache, keys …), `paths` (the repository from the binary's own
+- `tools/rmwork/` — `bin/<config>/rmwork` (`make workbench`): the workbench GUI
+  (`docs/workbench_plan.md` §2.1–2.2): `app` (menu bar, toolbar, the mode's dockspace and tools, status
+  bar, keys, health, opening Replay's data), Replay's data: `loader` (a decision log opened on a thread:
+  the cached replay or the engine's `--replay --rmstate-dump --narrative`, the index, the episodes;
+  progress, cancel), `subprocess` (`posix_spawn`, output into files), `replay_cache`
+  (`$XDG_CACHE_HOME/robomage/workbench/replays/<log hash>-<engine hash>`), `rmlog` (the RMLOG v3
+  header and replies), `match` (the index: per decision every viewer's frame offsets and its key,
+  decider, turn, step; frames decoded on demand through an LRU; the games and sideboarding phases, the
+  result; each seat's own log from its frames' event tables, the omniscient narrative cut at the replay's
+  decision markers), `episodes` (trajectory episodes ↔ decision logs by name and `rmlog`, the join by
+  decision key), `replay_session` (cursor, viewer, autoplay, the status bar's fields), `game_log` (the
+  Game Log tool), `file_picker` (the modal file browser), `run_browser` (a run directory's logs),
+  `panels` (the tools' contents), `selftest_data` (`--selftest-data`); the shell: `layout` (modes,
+  tools, layouts as trees built with DockBuilder: the presets and the user's named layouts, read back
+  from the dockspace), `settings` (`~/.config/robomage/settings.json`: layouts, engine, models, stops,
+  image cache, keys, recent files …), `paths` (the repository from the binary's own
   path, the default engine binary and directories), `keys` (the action → key table, conflicts,
   capture), `settings_dialog` (Settings' tabs, key rebinding), `layout_dialogs` (Save Layout As…,
   Manage Layouts…), `dialogs` (the error dialog), `modal` (what the dialogs share), `theme` (the colour themes: eight palettes of the mock-up's tokens, the only source of colour,

@@ -28,6 +28,8 @@ bool is_executable(const std::string &path);
 std::string executable_path();
 // The current directory ("" when it cannot be read).
 std::string current_dir();
+// `path` made absolute against the current directory (unchanged when absolute or empty).
+std::string absolute_path(const std::string &path);
 bool read_file(const std::string &path, std::string *out);
 // Writes `data` to `<path>.tmp`, then renames it over `path`; false with `err` when it cannot.
 bool write_file_atomic(const std::string &path, const std::string &data, std::string *err);

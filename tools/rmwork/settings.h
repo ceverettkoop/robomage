@@ -28,7 +28,8 @@ struct TableBackground {
         std::string value = "wood";  // "#rrggbb", a texture key or an image path
 };
 
-// The engine the workbench runs (Play, and Replay's re-evaluation); "" is the default (paths.h).
+// The engine the workbench runs (Play, Replay's replays of decision logs and re-evaluation); "" is the
+// default (paths.h).
 struct EngineSettings {
         std::string binary;   // default bin/<config>/robomage_nn, else robomage
         std::string workdir;  // default bin/
@@ -76,8 +77,14 @@ struct Settings {
         EngineSettings engine;
         ModelSettings models;
         StopSettings stops = default_stops();
-        std::string image_cache;  // the card-image cache; "" = default_image_cache()
+        std::string image_cache;          // the card-image cache; "" = default_image_cache()
+        std::vector<std::string> recent;  // files and run directories opened, the latest first
 };
+
+// How many recent files and directories are kept.
+inline constexpr size_t RECENT_MAX = 12;
+// Puts `path` first in `recent` (once), keeping at most RECENT_MAX.
+void add_recent(std::vector<std::string> *recent, const std::string &path);
 
 // The path settings resolved (paths.h): the setting, else its default; the socket has none ("").
 std::string engine_binary_path(const Settings &s);

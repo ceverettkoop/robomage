@@ -53,6 +53,7 @@ int run_window(App &app, const WindowOptions &opt) {
 
     int status = 0;
     int frames = 0;
+    const double started = glfwGetTime();
     while (!glfwWindowShouldClose(window) && !app.quit_requested()) {
         glfwPollEvents();
         if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {
@@ -72,7 +73,8 @@ int run_window(App &app, const WindowOptions &opt) {
         glClearColor(bg.x, bg.y, bg.z, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        if (!opt.screenshot.empty() && ++frames >= opt.screenshot_frames) {
+        const bool waiting = app.working() && glfwGetTime() - started < opt.screenshot_wait_s;
+        if (!opt.screenshot.empty() && !waiting && ++frames >= opt.screenshot_frames) {
             if (write_framebuffer_png(opt.screenshot, fb_w, fb_h)) {
                 std::printf("rmwork: wrote %s (%dx%d)\n", opt.screenshot.c_str(), fb_w, fb_h);
             } else {

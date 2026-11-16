@@ -61,6 +61,11 @@ std::string current_dir() {
     return getcwd(buf.data(), buf.size()) ? std::string(buf.data()) : std::string();
 }
 
+std::string absolute_path(const std::string &path) {
+    if (path.empty() || path[0] == '/') return path;
+    return current_dir() + "/" + path;
+}
+
 bool read_file(const std::string &path, std::string *out) {
     FILE *f = std::fopen(path.c_str(), "rb");
     if (!f) return false;
