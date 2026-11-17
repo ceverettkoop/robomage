@@ -10,6 +10,7 @@
 #include "card_renderer.h"
 #include "keys.h"
 #include "links.h"
+#include "magnifier.h"
 #include "replay_session.h"
 #include "settings.h"
 #include "table_backdrop.h"
@@ -31,8 +32,9 @@
 // night, the twelve-step bar (its stop dots only in Play), and the stack when it is not empty.
 //
 // Linking (links.h): the Table reports the card, stack object or player chip under the mouse and
-// outlines whatever the hovered (else the selected) item links to; hovering a stack object also
-// draws arrows to its targets. A left click selects a card or chip (again: unselects). When the
+// outlines whatever the hovered (else the selected) item links to: a stack object, hovered here or
+// in another tool, lights itself and its targets (cards and player chips), with no line between
+// them; a menu row its source and target. A left click selects a card or chip (again: unselects). When the
 // viewer is the deciding seat, the cards some menu row acts with glow.
 //
 // The magnifier: holding the Magnify key (Q) over a card, or right-clicking it, shows it large
@@ -62,8 +64,8 @@ class TableView {
         const TableModel *model() const { return have_model_ ? &model_ : nullptr; }
         const TableLayout &layout() const { return layout_; }
         // Whether the magnifier is open, and on which object.
-        bool magnifier_open() const { return mag_handle_ != 0; }
-        uint64_t magnified() const { return mag_handle_; }
+        bool magnifier_open() const { return mag_.handle() != 0; }
+        uint64_t magnified() const { return mag_.handle(); }
 
         // Debugging and screenshots: hover stack object `index` (0 = top; -1 off) every frame, and
         // open the magnifier on the first card whose name contains `name` ("" off).
@@ -90,7 +92,6 @@ class TableView {
         void draw_steps(ImDrawList *dl, ImVec2 pos, const TableDraw &d);
         void draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d);
-        void draw_target_arrows(ImDrawList *dl, ImVec2 o, int stack_index);
         void draw_magnifier(const TableObject &o, const TRect &at, ImVec2 origin);
         void update_magnifier(const Hit &hit, const TableDraw &d, bool over);
 
@@ -112,8 +113,7 @@ class TableView {
         std::array<TRect, 2> chip_rects_;  // by seat
         uint64_t hovered_handle_ = 0;
         int hovered_stack_ = -1;
-        uint64_t mag_handle_ = 0;
-        bool mag_by_click_ = false;
+        MagnifierState mag_;
         int force_stack_ = -1;
         std::string force_mag_;
 };

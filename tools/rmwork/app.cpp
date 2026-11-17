@@ -67,6 +67,8 @@ void App::frame() {
     poll_loader();
     replay_.tick(ImGui::GetTime());
     handle_keys();
+    // The toolbar and the status bar read the tools' data: it follows the match, cursor and viewer.
+    tools_.begin_frame(replay_, table_, links_);
     draw_menu_bar();
     draw_toolbar();
     draw_status_bar();
@@ -209,6 +211,16 @@ void App::install(LoadOutcome *o) {
     target_decision_ = target_view_ = -1;
     status(msg);
     if (!o->title.empty()) report_error(o->title, o->message, o->detail);
+}
+
+bool App::next_swing() {
+    replay_.set_playing(false, ImGui::GetTime());
+    if (!tools_.next_swing(replay_)) {
+        status("No later swing");
+        return false;
+    }
+    status("Next swing: decision " + std::to_string(replay_.cursor() + 1));
+    return true;
 }
 
 std::string App::status_mode_text() const {
@@ -402,7 +414,7 @@ void App::draw_menu_bar() {
         if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
         if (ImGui::MenuItem("Biggest Swings")) {
             set_tool_open(mode(), Tool::SWINGS, true);
-            focus_tool_ = tool_index(Tool::SWINGS);
+            focus_tool(Tool::SWINGS);
         }
         if (ImGui::MenuItem("Batch Over Episodes…")) not_built("Batch Over Episodes");
         ImGui::EndMenu();
@@ -568,7 +580,8 @@ void App::draw_game_combo() {
     if (replay && replay_.loaded()) ImGui::SetItemTooltip("%s", replay_.match()->log_path.c_str());
 }
 
-// First, previous, play / pause, next, last, next swing (waits for evaluations, plan §2.7); the viewer.
+// First, previous, play / pause, next, last, next swing (enabled when the viewer sees a later
+// swing); the viewer.
 void App::draw_replay_nav() {
     const bool loaded = replay_.loaded();
     const double now = ImGui::GetTime();
@@ -589,7 +602,11 @@ void App::draw_replay_nav() {
     ImGui::SameLine();
     if (icon_button("##last", Icon::LAST, last.c_str(), loaded)) run_action(Action::REPLAY_LAST);
     ImGui::SameLine();
-    icon_button("##swing", Icon::SWING, "Next big swing (needs evaluations, plan §2.7)", false);
+    const bool swing = loaded && tools_.next_swing_target(replay_) >= 0;
+    const char *swing_tip = !loaded ? "Next big swing"
+                            : swing ? "Next big swing: the next of the Swings tool's rows after this decision"
+                                    : "No later swing (they come from the episodes' evaluations the viewer sees)";
+    if (icon_button("##swing", Icon::SWING, swing_tip, swing)) next_swing();
     ImGui::SameLine();
     toolbar_separator();
     ImGui::AlignTextToFramePadding();
@@ -652,7 +669,7 @@ void App::draw_status_bar() {
             status_segment("Decision —");
             status_segment("Turn —");
         }
-        status_segment("V —");
+        status_segment(mode() == Mode::REPLAY ? tools_.status_value().c_str() : "V —");
         const std::string engine_text = engine_health(), server_text = inference_health();
         const char *engine = engine_text.c_str();
         const char *server = server_text.c_str();
@@ -735,6 +752,10 @@ void App::draw_tools() {
     const int mi = mode_index(mode());
     links_.set_context(replay_.generation());
     links_.new_frame();
+    const bool replay_loaded = mode() == Mode::REPLAY && replay_.loaded();
+    tools_.begin_frame(replay_, table_, links_);
+    // A layout being built or its tabs ordered would undo a focus.
+    const bool settled = !pending_[mi] && tab_order_frames_[mi] == 0;
     for (Tool tool : submit_order_[mi]) {
         const int t = tool_index(tool);
         if (!settings_.tools[mi][t]) continue;
@@ -743,10 +764,8 @@ void App::draw_tools() {
             if (ImGuiDockNode *root = ImGui::DockBuilderGetNode(dockspace_id(mode())))
                 ImGui::SetNextWindowDockID(first_leaf(root)->ID, ImGuiCond_Always);
         }
-        if (focus_tool_ == t) {
+        if (settled && std::find(focus_tools_.begin(), focus_tools_.end(), t) != focus_tools_.end())
             ImGui::SetNextWindowFocus();
-            focus_tool_ = -1;
-        }
         // A docked group has one close button, at the right of its tab strip; the tabs have none.
         ImGuiWindowClass tab_class;
         tab_class.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseButton;
@@ -759,12 +778,15 @@ void App::draw_tools() {
         ctx.log = &game_log_;
         ctx.table = &table_;
         ctx.links = &links_;
+        ctx.tools = &tools_;
         ctx.settings = &settings_;
         double fraction = -1;
         ctx.loading = load_phase(&fraction);
         if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
         ImGui::End();
     }
+    if (settled) focus_tools_.clear();
+    if (replay_loaded) tools_.draw_windows(&links_, settings_.keys[action_index(Action::MAGNIFY)]);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
 }

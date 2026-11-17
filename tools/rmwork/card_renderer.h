@@ -48,6 +48,10 @@ class TextCardRenderer : public CardRenderer {
             float alpha) const override;
 };
 
+// A colour swatch of a card's frame colours over the rectangle: one colour, two split down the
+// middle, gold for more, colourless grey, a land (with no colour) tan.
+void draw_card_swatch(ImDrawList *dl, ImVec2 min, ImVec2 max, uint8_t colors, bool land);
+
 // The WUBRG bits of the basic land types among `subtypes` (Plains W, Island U, Swamp B, Mountain R,
 // Forest G).
 uint8_t basic_land_mana(const std::vector<std::string> &subtypes);

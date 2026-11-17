@@ -46,7 +46,7 @@ directory), Models (server socket, the `id = model` policies, run directory), St
 stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
 in `settings.json` for the stages that use them; the error dialog (`App::report_error`). Checked by
 `rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
-for later stages by design: Enter / arrows in Choices once Choices has rows (§2.3); the data links
+for later stages by design: Enter in Choices (§2.3; ↑ / ↓ came with §2.6); the data links
 followed in §2.2.
 
 | Feature | Notes | Size |
@@ -86,7 +86,7 @@ logged decision is taken: decision i's lines run to its marker, which becomes "�
 row>"); the current decision's lines highlighted with a rule after them, earlier ones normal, later ones
 dimmed, a click going to a line's decision, the view following the cursor. Navigation: first / previous /
 play-pause (0.6 s a decision) / next / last and ← → Home End, the status bar's decision `n / N`, game,
-turn, step and deciding seat; next swing stays disabled until §2.7. Episodes: File → Open Trajectory
+turn, step and deciding seat; next swing (enabled with §2.6's Swings). Episodes: File → Open Trajectory
 Episode (`--episode`) opens its decision log (its `rmlog` attribute, else by name) with it, joining each
 step to the decision of its (game, sideboarding, decision) key with the same seat and reply (μ, versions,
 evaluations and teacher label kept per decision for §2.6–2.7); a log's own episodes (`<stem>.g<n>.rmtraj`
@@ -161,7 +161,8 @@ name, type, colour …), summoning sickness, phased-out permanents faded. Attack
 row; an arrow runs from each blocker to the attacker it blocks. Linking: `LinkState` holds the hover and
 selection every tool shares (objects by handle, players, menu rows by their `source` / `target`
 handles); the Table reports the card, stack object or player chip under the mouse and outlines whatever
-it links to, hovering a stack object lights its targets (`stack_target`) with arrows, a click selects;
+it links to, hovering a stack object lights itself and its targets (`stack_target`; both ends highlighted, no
+line drawn between them), a click selects;
 when the viewer is the deciding seat the cards some menu row acts with glow. The magnifier: Q held over a
 card (or a stack object), or a right-click, shows it large beside it with its state listed under it
 (release Q; a right-click one closes on leaving the card, a click or Esc). The background is Settings →
@@ -182,11 +183,64 @@ very wide board shrinks every card; identical tokens do not stack (only lands do
 | Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical untapped lands stacked; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
 | Object state | Tapped, counters by kind, effective P/T (post-layer, from `object`), damage marked, summoning sickness, loyalty, designations (monarch, day/night, speed …; `designations.def`), energy and poison on the player | M |
 | Combat | Attackers set forward; arrows from blockers to attackers; damage assignment order | M |
-| Targets | Hovering a stack object highlights its targets (`stack_target` rows, not text matching as in the mock-up); optional arrows | S |
+| Targets | Hovering a stack object highlights it and its targets (`stack_target` rows, not text matching as in the mock-up); no arrows: both ends are highlighted | S |
 | Card-to-choice linking | Use each menu row's `source` / `target` handles (`menu` table) to link rows and objects, replacing the mock-up's name matching | S |
 | Auto-fit | Size cards to fill the panel, as mocked | S |
 
 ### 2.6 Other tools in the mock-up
+
+**Status: done** (`tools/rmwork/`: `replay_tools` and the views `players_view`, `choices_view`,
+`inspector_view`, `state_tree_view`, `value_views`; their data `tool_data`, `decision_frame`,
+`zone_model`, `state_tree`, `evaluations`; `magnifier`, `tool_widgets`). Every tool reads the cursor's
+decision in the current viewer's STATE frame and that viewer's CARDS frame only. What a viewer sees of a
+decision: the omniscient viewer and the deciding seat its menu and the decider's recorded evaluations (μ,
+values, π, teacher); the other seat only whose decision it is. Of the evaluations over the match a seat
+view sees its own seat's (series, swings, reads), the omniscient view both. Players: a box per player,
+the viewer's opponent first (seat chip, the agent the episodes name, deck, life large, "deciding",
+poison, energy, counters, designations, effects and emblems, the zone icons with counts; hovering a box
+links the player). Zone windows (every zone icon opens one; floating, several at once, following the
+cursor and viewer; Esc closes a right-click magnifier, else the focused window): graveyard and exile
+newest first with an exiled card's linked source, a seat's library only its knowledge's exact positions
+and the cards its frame shows (the omniscient viewer's in full), the opponent's hand only the cards
+revealed or known (`k_known_hand`) and the rest as a counted card back; the cards drawn by the
+`CardRenderer`, hover links, the magnifier (shared with the Table, `magnifier`). Choices: the menu rows,
+► on the log's reply, π bars of the shown policy (the Inspector's choice, else the first) with π and μ,
+↑ / ↓ moving a highlight, a click selecting the row and Enter / a double-click submitting it
+(`take_submitted`, for §2.3), hovering a row lighting its source and target on the Table, the State Tree
+and the zone windows, a row shaded when what it acts with is hovered there. Decision Inspector: an ImHex
+Name / Value grid (decision, game, turn and active player, step, deciding seat and agent, the pending
+query, the pending cost's remaining pips, life, energy and discards, stack depth, menu size; from the
+episode V per policy on the deciding seat's or Player A's scale (a radio), H(π), log π(chosen), μ's
+support, policy version, teacher label against the chosen row), the shown policy's radio, and the menu
+with π per policy as bars, μ, ► chosen. State Tree: generic over the SCHEMA (`state_tree`): "game",
+"player A/B" (life, counters, the zones with their objects, the player row), "stack", then "frame tables"
+with every table and row, every column by its schema name, storage and semantic tag, its value by the
+tag (enums and masks by their string tables, cards by name, a handle named only where the viewer's
+object table identifies it); Col swatches in the card's colours (lands tan, colourless grey); nodes
+expanded lazily and kept expanded across decisions by their keys; hover linked both ways with the Table.
+Value Graph (ImPlot): V per seat and policy on Player A's scale, turn bands, game boundaries,
+sideboarding shaded, each game's z with a line from the last value, a life strip, the cursor, click / drag
+to scrub, a hover tooltip, a wrapping legend of toggles; without evaluations the life strip and a note.
+Swings: the largest |ΔV| between a seat's consecutive decisions of a game and to its result, with the turn
+and the viewer's own log lines between; in Omni the seats' disagreement (adjacent A and B decisions:
+A's V against −V of B); a click goes to the decision; the toolbar's next swing walks the same rows.
+Model's Read: the deciding seat's (a seat view: its own) V, the shown policy's preferred row with its π,
+the model, a sparkline of the seat's values so far. The status bar's V is the deciding seat's when the
+viewer sees it. The links (`LinkState`) take the menu and stack targets from the tools' data every frame,
+so Choices, the Table, the State Tree and the zone windows link the same handles whichever are open; a
+hovered stack object lights itself and its targets (cards, player chips and boxes), with no line drawn
+(the Table's target arrows are gone; the combat lines stay). Screenshot and check flags: `--tool NAME`,
+`--choices-hover N`, `--tree-expand`, `--open-zone SEAT:ZONE`, `--zone-magnify NAME`. Checked by `rmwork
+--selftest` (the evaluations' series, swings, disagreements, turn bands and text on a synthetic match)
+and `rmwork --selftest-data` (every decision of the corpus logs and the played bo3 in every view: the
+Players' counts, the zone windows' cards exactly the frame's and its knowledge's, Choices the menu or
+nothing in a non-deciding seat's view, the chosen row the reply, the Inspector's fields, the State Tree's
+tables, rows and handle names, the links between Choices, the Table and the tree; a sample drawn with
+every tool open, a Choices hover lighting the Table, zone windows opened, magnified in and closed by Esc;
+the bo3 match with evaluations added to its episodes: the Value Graph's series, Swings and disagreements
+recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status bar). Not done:
+re-evaluation (§2.7), so a second policy's series and the seats' disagreement come only from episodes that
+recorded them (a self-play match evaluates both seats); Play's tools (§2.3).
 
 | Tool | Real implementation | Size |
 |---|---|---|
@@ -203,7 +257,7 @@ very wide board shrinks every card; identical tokens do not stack (only lands do
 
 | Feature | Notes | Size |
 |---|---|---|
-| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes | S |
+| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes. **Done** with §2.6 (`evaluations`: per seat and policy, shown by the Value Graph, Swings, the Inspector, Choices and the Model's Read) | S |
 | Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk | M |
 | Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest) | M |
 

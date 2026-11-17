@@ -14,6 +14,7 @@
 #include "links.h"
 #include "loader.h"
 #include "replay_session.h"
+#include "replay_tools.h"
 #include "run_browser.h"
 #include "settings.h"
 #include "settings_dialog.h"
@@ -31,7 +32,8 @@
 // go through the file picker (file_picker.h) or the run's list (run_browser.h); a log is replayed
 // and indexed on the loader's thread (loader.h) with its progress and a Cancel in the status bar, and
 // the match it hands over becomes the ReplaySession the toolbar, the keys, the status bar and the
-// tools read. A failure opens the error dialog.
+// tools read (the tools beside the Table through ReplayTools, replay_tools.h). A failure opens the
+// error dialog.
 
 struct ImGuiDockNode;
 
@@ -118,6 +120,11 @@ class App {
         GameLogView &game_log() { return game_log_; }
         TableView &table() { return table_; }
         LinkState &links() { return links_; }
+        ReplayTools &tools() { return tools_; }
+        // Brings tool `t`'s tab to the front of its group once the layout has settled.
+        void focus_tool(Tool t) { focus_tools_.push_back(tool_index(t)); }
+        // Goes to the next swing the viewer sees (the toolbar's button); false when there is none.
+        bool next_swing();
         // Opens the toolbar's game combo box at the next frame.
         void open_game_combo() { open_game_combo_ = true; }
         // The status bar's fields, as drawn.
@@ -167,6 +174,7 @@ class App {
         GameLogView game_log_;
         TableView table_;
         LinkState links_;
+        ReplayTools tools_;
         FilePicker picker_;
         RunBrowser run_browser_;
         std::string engine_override_;
@@ -175,7 +183,7 @@ class App {
         double load_started_ = 0;
         std::vector<std::string> load_notes_;
         std::vector<std::string> opened_episodes_;              // the episodes the running load was asked to join
-        int focus_tool_ = -1;                                   // a tool to bring to the front at its next Begin
+        std::vector<int> focus_tools_;                          // tools to bring to the front at their next Begin
         std::array<bool, MODE_COUNT> pending_{{false, false}};  // a layout waits for the next dock pass
         std::array<LayoutNode, MODE_COUNT> pending_root_;
         std::array<LayoutNode, MODE_COUNT> applied_root_;       // the layout whose tabs are being ordered

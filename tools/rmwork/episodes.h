@@ -37,9 +37,9 @@ struct JoinReport {
 };
 
 // Reads the episode at `path` and joins its steps to `m`'s decisions (Match::episode_steps,
-// DecisionInfo::episode_step). False with `err` when the file is not an episode or is of another
-// match (its engine_seed differs from the log's SEED); a step with no decision of its key, or of
-// another seat or reply, is a problem in `report` and is not joined.
+// DecisionInfo::episode_step); the seats' agents it names go to Match::agents. False with `err` when the file is not an
+// episode or is of another match (its engine_seed differs from the log's SEED); a step with no decision of its key, or
+// of another seat or reply, is a problem in `report` and is not joined.
 bool join_episode(Match *m, const std::string &path, JoinReport *report, std::string *err);
 
 }  // namespace rmwork

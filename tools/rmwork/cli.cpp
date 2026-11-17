@@ -43,6 +43,11 @@ struct CliOptions {
         bool game_combo = false;
         int table_hover_stack = -1;
         std::string table_magnify;
+        std::vector<std::string> focus_tools;
+        int choices_hover = -1;
+        bool tree_expand = false;
+        std::vector<std::pair<int, rmwork::ZoneKind>> zones;
+        std::string zone_magnify;
         rmwork::WindowOptions window;
 };
 
@@ -55,6 +60,7 @@ static bool check_font_flags(const CliOptions &opt);
 static rmwork::FontChoice font_override(const CliOptions &opt, const rmwork::FontChoice &from);
 static void show_demo_error(rmwork::App &app);
 static int parse_view(const std::string &text);
+static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind> *out);
 static void open_data(rmwork::App &app, const CliOptions &opt);
 static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist);
 
@@ -66,6 +72,7 @@ static void usage() {
         "         [--layout NAME] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
         "       rmwork [--open LOG.rmlog] [--episode FILE.rmtraj]… [--run DIR] [--decision N] [--view a|b|omni]\n"
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
+        "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
@@ -102,6 +109,13 @@ static void usage() {
         "  --game-combo       open the toolbar's game list once the game is loaded\n"
         "  --table-hover-stack N  the Table: hover stack object N (0 = top) every frame (its targets lit)\n"
         "  --table-magnify NAME   the Table: open the magnifier on the first card whose name contains NAME\n"
+        "  --tool NAME        bring a tool's tab to the front (table, players, choices, inspector, tree, log,\n"
+        "                     swings, graph, model); repeatable\n"
+        "  --choices-hover N  Choices: hover menu row N (0-based) every frame (its objects lit on the Table)\n"
+        "  --tree-expand      the State Tree: expand the players' zones, the stack, the frame's tables and its\n"
+        "                     object table\n"
+        "  --open-zone SEAT:ZONE  open a zone window: a or b, then hand, library, graveyard or exile; repeatable\n"
+        "  --zone-magnify NAME    the zone windows: open the magnifier on the first card whose name contains NAME\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
         "                     RMWORK-SELFTEST: N checks, M failures\n"
         "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
@@ -163,6 +177,28 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->table_hover_stack = std::atoi(argv[++i]);
         } else if (a == "--table-magnify" && has_value) {
             opt->table_magnify = argv[++i];
+        } else if (a == "--tool" && has_value) {
+            opt->focus_tools.push_back(argv[++i]);
+            if (rmwork::find_tool(opt->focus_tools.back()) < 0) {
+                std::fprintf(stderr, "rmwork: no tool '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--choices-hover" && has_value) {
+            opt->choices_hover = std::atoi(argv[++i]);
+        } else if (a == "--tree-expand") {
+            opt->tree_expand = true;
+        } else if (a == "--open-zone" && has_value) {
+            std::pair<int, rmwork::ZoneKind> z;
+            if (!parse_zone(argv[++i], &z)) {
+                std::fprintf(stderr,
+                    "rmwork: --open-zone is SEAT:ZONE (a or b; hand, library, graveyard, exile), not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+            opt->zones.push_back(z);
+        } else if (a == "--zone-magnify" && has_value) {
+            opt->zone_magnify = argv[++i];
         } else if (a == "--open-settings") {
             opt->open_settings = true;
         } else if (a == "--settings-tab" && has_value) {
@@ -290,6 +326,21 @@ static int parse_view(const std::string &text) {
     return -1;
 }
 
+// "a:graveyard" -> (0, GRAVEYARD); false for anything else.
+static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind> *out) {
+    const size_t colon = text.find(':');
+    if (colon == std::string::npos) return false;
+    const int view = parse_view(text.substr(0, colon));
+    if (view != rmwork::VIEW_A && view != rmwork::VIEW_B) return false;
+    const std::string zone = text.substr(colon + 1);
+    for (int z = 0; z < rmwork::ZONE_KINDS; ++z)
+        if (zone == rmwork::zone_key(static_cast<rmwork::ZoneKind>(z))) {
+            *out = {view, static_cast<rmwork::ZoneKind>(z)};
+            return true;
+        }
+    return false;
+}
+
 // The data flags: a log (with the episodes), else an episode, a run directory, the picker.
 static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (!opt.engine.empty()) app.set_engine_override(opt.engine);
@@ -306,6 +357,11 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (opt.game_combo) app.open_game_combo();
     app.table().force_stack_hover(opt.table_hover_stack);
     app.table().force_magnify(opt.table_magnify);
+    for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
+    app.tools().choices().force_hover(opt.choices_hover);
+    if (opt.tree_expand) app.tools().tree().expand_overview();
+    for (const auto &z : opt.zones) app.tools().players().open_zone(z.first, z.second);
+    app.tools().players().force_magnify(opt.zone_magnify);
 }
 
 // The workbench's window until it closes; the App is gone before the ImGui context is destroyed

@@ -24,7 +24,9 @@
 //     fields and the Game Log's lines;
 //   - a malformed log, a diverging replay (the engine exits 1), a missing engine and a cancelled load
 //     reach the error path (or none), leaving no temporary entry;
-//   - the file picker's listing and filters, natural order, the recent files.
+//   - the file picker's listing and filters, natural order, the recent files;
+//   - the Table and the other tools on every match (selftest_table.h, selftest_tools.h), and the
+//     evaluations' tools on the bo3 match with made-up evaluations added to its episodes.
 // Prints "RMWORK-SELFTEST-DATA: N checks, M failures"; nonzero exit on a failure.
 
 namespace rmwork {

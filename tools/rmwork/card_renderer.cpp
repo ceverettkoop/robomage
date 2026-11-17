@@ -419,6 +419,13 @@ uint8_t basic_land_mana(const std::vector<std::string> &subtypes) {
     return out;
 }
 
+void draw_card_swatch(ImDrawList *dl, ImVec2 min, ImVec2 max, uint8_t colors, bool land) {
+    CardLook look;
+    look.colors = colors;
+    look.land = land;
+    draw_frame(dl, Box{min.x, min.y, max.x - min.x, max.y - min.y}, look, 0, 0);
+}
+
 float draw_fitted_text(
     ImDrawList *dl, ImFont *font, float size, ImVec2 pos, ImU32 color, const std::string &text, float max_w) {
     if (max_w <= 0) return 0;

@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "imgui_internal.h"
+#include "magnifier.h"
 #include "theme.h"
 #include "widgets.h"
 
@@ -273,7 +274,7 @@ bool TableView::refresh(ReplaySession &s) {
     model_view_ = s.view();
     have_model_ = true;
     error_.clear();
-    if (mag_handle_ && model_.find(mag_handle_) < 0) mag_handle_ = 0;
+    if (mag_.handle() && model_.find(mag_.handle()) < 0) mag_.close();
     return true;
 }
 
@@ -389,8 +390,6 @@ void TableView::draw(const TableDraw &d) {
     draw_combat(dl, o);
     draw_mid(dl, o, d);
     draw_chips(dl, o, d);
-    const int arrows = force_stack_ >= 0 ? force_stack_ : hovered_stack_;
-    if (arrows >= 0 && static_cast<size_t>(arrows) < layout_.stack_items.size()) draw_target_arrows(dl, o, arrows);
     dl->PopClipRect();
     update_magnifier(hit, d, over);
 }
@@ -616,41 +615,6 @@ void TableView::draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     }
 }
 
-// Arrows from a stack object to what it targets.
-void TableView::draw_target_arrows(ImDrawList *dl, ImVec2 o, int stack_index) {
-    const TableStackItem &it = model_.stack[static_cast<size_t>(stack_index)];
-    const TRect &from = layout_.stack_items[static_cast<size_t>(stack_index)];
-    for (const StackTarget &t : it.targets) {
-        TRect to;
-        bool found = false;
-        if (t.player) {
-            if (t.seat >= 0) {
-                to = chip_rects_[static_cast<size_t>(t.seat)];
-                found = true;
-            }
-        } else {
-            for (const PlacedCard &c : layout_.cards)
-                if (model_.objects[static_cast<size_t>(c.object)].handle == t.handle) {
-                    to = c.rect;
-                    found = true;
-                    break;
-                }
-            for (size_t k = 0; !found && k < layout_.stack_items.size(); ++k)
-                if (model_.stack[k].handle == t.handle) {
-                    to = layout_.stack_items[k];
-                    found = true;
-                }
-        }
-        if (!found) continue;
-        const ImVec2 tc = rect_center(o, to);
-        const ImVec2 fc = rect_center(o, from);
-        const bool up = tc.y < fc.y;
-        const ImVec2 start(fc.x, up ? o.y + from.y0 : o.y + from.y1);
-        const ImVec2 end(tc.x, up ? o.y + to.y1 - 2 : o.y + to.y0 + 2);
-        arrow(dl, start, end, tok().LINK, 2.5f);
-    }
-}
-
 void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) {
     uint64_t under = 0;
     if (hit.card >= 0) {
@@ -658,22 +622,7 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
     } else if (hit.stack >= 0 && force_stack_ < 0) {
         under = model_.stack[static_cast<size_t>(hit.stack)].handle;
     }
-    const ImGuiKey key = static_cast<ImGuiKey>(d.magnify & ~ImGuiMod_Mask_);
-    const bool key_down = d.magnify != 0 && !ImGui::GetIO().WantTextInput && ImGui::IsKeyDown(key);
-    if (key_down && under) {
-        mag_handle_ = under;
-        mag_by_click_ = false;
-    } else if (!mag_by_click_ && (!key_down || !under)) {
-        mag_handle_ = 0;
-    }
-    if (under && over && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-        mag_handle_ = under;
-        mag_by_click_ = true;
-    } else if (mag_by_click_ && (under != mag_handle_ || ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
-                                    ImGui::IsKeyPressed(ImGuiKey_Escape, false))) {
-        mag_handle_ = 0;
-        mag_by_click_ = false;
-    }
+    mag_.update(under, over, d.magnify);
     if (!force_mag_.empty()) {
         std::string want = force_mag_;
         for (char &ch : want) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
@@ -681,15 +630,14 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
             std::string n = model_.objects[static_cast<size_t>(c.object)].name;
             for (char &ch : n) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
             if (!n.empty() && n.find(want) != std::string::npos) {
-                mag_handle_ = model_.objects[static_cast<size_t>(c.object)].handle;
-                mag_by_click_ = true;
+                mag_.open(model_.objects[static_cast<size_t>(c.object)].handle);
                 break;
             }
         }
     }
-    if (!mag_handle_) return;
+    if (!mag_.handle()) return;
     const ImVec2 origin = ImGui::GetCurrentWindow()->InnerRect.Min;
-    const int obj = model_.find(mag_handle_);
+    const int obj = model_.find(mag_.handle());
     if (obj >= 0) {
         for (const PlacedCard &c : layout_.cards)
             if (c.object == obj) {
@@ -698,7 +646,7 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
             }
     }
     for (size_t k = 0; k < layout_.stack_items.size(); ++k) {
-        if (model_.stack[k].handle != mag_handle_) continue;
+        if (model_.stack[k].handle != mag_.handle()) continue;
         TableObject face;
         face.handle = model_.stack[k].handle;
         face.card = model_.stack[k].card;
@@ -711,49 +659,21 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
         draw_magnifier(face, layout_.stack_items[k], origin);
         return;
     }
-    mag_handle_ = 0;
+    mag_.close();
 }
 
-// The card large beside `at` (the right of it, else the left, else centred), its state under it.
+// The card large beside `at`, its state under it.
 void TableView::draw_magnifier(const TableObject &o, const TRect &at_rect, ImVec2 origin) {
-    const ImGuiViewport *vp = ImGui::GetMainViewport();
-    const float mw = std::max(200.0f, std::min(340.0f, vp->Size.y * 0.42f / CARD_ASPECT));
-    const float mh = mw * CARD_ASPECT;
     const bool on_table = model_.find(o.handle) >= 0;
     const std::vector<std::string> lines = on_table ? state_lines(model_, o) : std::vector<std::string>{o.name};
-    const float lh = ImGui::GetTextLineHeight();
-    float box_h = 0;
-    std::vector<std::vector<std::string>> wrapped;
-    for (const std::string &l : lines) {
-        wrapped.push_back(wrap_text(ImGui::GetFont(), ImGui::GetFontSize(), l, mw - 16, 3));
-        box_h += lh * static_cast<float>(wrapped.back().size());
-    }
-    box_h += 12;
-    const ImVec2 a = rmin(origin, at_rect), b = rmax(origin, at_rect);
-    float left = b.x + 12;
-    if (left + mw > vp->Pos.x + vp->Size.x - 8) left = a.x - mw - 12;
-    if (left < vp->Pos.x + 8) left = vp->Pos.x + (vp->Size.x - mw) / 2;
-    const float total = mh + 6 + box_h;
-    float top = (a.y + b.y) / 2 - total / 2;
-    top = std::max(vp->Pos.y + 8, std::min(top, vp->Pos.y + vp->Size.y - total - 8));
-    ImDrawList *fg = ImGui::GetForegroundDrawList();
-    fg->AddRectFilled(
-        ImVec2(left + 3, top + 5), ImVec2(left + mw + 3, top + mh + 5), hex_color(0x000000, 120), mw * 0.05f);
-    renderer_->draw(fg, look_of(o), ImVec2(left, top), ImVec2(left + mw, top + mh), false, 1.0f);
-    if (on_table) {
-        PlacedCard pc;
-        pc.rect = TRect{left, top, left + mw, top + mh};
-        draw_card_state(fg, o, pc, ImVec2(0, 0));
-    }
-    const ImVec2 ba(left, top + mh + 6), bz(left + mw, top + mh + 6 + box_h);
-    fg->AddRectFilled(ba, bz, tok().DROP, 2);
-    fg->AddRect(ba, bz, tok().LINE, 2);
-    float y = ba.y + 6;
-    for (size_t i = 0; i < wrapped.size(); ++i)
-        for (const std::string &l : wrapped[i]) {
-            fg->AddText(ImVec2(ba.x + 8, y), i == 0 ? tok().TEXT : tok().DIM, l.c_str());
-            y += lh;
-        }
+    std::function<void(ImDrawList *, ImVec2, ImVec2)> overlay;
+    if (on_table)
+        overlay = [this, &o](ImDrawList *fg, ImVec2 a, ImVec2 b) {
+            PlacedCard pc;
+            pc.rect = TRect{a.x, a.y, b.x, b.y};
+            draw_card_state(fg, o, pc, ImVec2(0, 0));
+        };
+    draw_magnified_card(*renderer_, look_of(o), lines, rmin(origin, at_rect), rmax(origin, at_rect), overlay);
 }
 
 }  // namespace rmwork

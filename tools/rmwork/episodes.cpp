@@ -111,6 +111,10 @@ bool join_episode(Match *m, const std::string &path, JoinReport *report, std::st
     }
     featurize::Episode ep;
     if (!featurize::read_episode(file, &ep, err)) return false;
+    const char *agent_keys[2] = {"agent_a", "agent_b"};
+    for (size_t s = 0; s < 2; ++s)
+        if (const featurize::RmtbAttr *a = file.attr(agent_keys[s]))
+            if (!a->is_int && !a->s.empty()) m->agents[s] = a->s;
     report->steps = ep.steps.size();
     for (featurize::EpisodeStep &s : ep.steps) {
         const int at = m->find_decision(static_cast<int>(s.game), s.sideboarding, s.decision);

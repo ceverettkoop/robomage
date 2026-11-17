@@ -47,6 +47,8 @@ struct ToolInfo {
 };
 
 const ToolInfo &tool_info(Tool t);
+// The tool whose key or title is `name` (case-insensitive), or -1.
+int find_tool(const std::string &name);
 inline int tool_index(Tool t) {
     return static_cast<int>(t);
 }

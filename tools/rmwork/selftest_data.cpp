@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <climits>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -26,6 +27,7 @@
 #include "rmlog.h"
 #include "run_browser.h"
 #include "selftest_table.h"
+#include "selftest_tools.h"
 #include "subprocess.h"
 #include "theme.h"
 
@@ -66,15 +68,20 @@ static bool open_and_wait(Tally *t, rmwork::App &app, const std::string &log, co
 static void check_frames(Tally *t, const rmwork::Match &m, const std::string &at);
 static void check_seat_logs(Tally *t, const rmwork::Match &m, const std::string &at);
 static void check_narrative(Tally *t, const rmwork::Match &m, const std::string &at);
-static void check_match(
-    Tally *t, rmwork::App &app, const std::string &log, const std::string &at, rmwork::TableCoverage *cov);
+static void check_match(Tally *t, rmwork::App &app, const std::string &log, const std::string &at,
+    rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools);
 static void check_table(Tally *t, rmwork::App &app, const std::string &at, rmwork::TableCoverage *cov);
+static void check_tools(Tally *t, rmwork::App &app, const std::string &at, rmwork::ToolsCoverage *cov);
+static void check_tools_coverage(Tally *t, const rmwork::ToolsCoverage &cov);
+static std::string make_eval_match(Tally *t, const Env &env, const std::string &bo3_log);
+static bool add_evaluations(const std::string &from, const std::string &to, std::string *err);
 static void check_table_coverage(Tally *t, const rmwork::TableCoverage &cov);
 static void check_navigation(Tally *t, rmwork::App &app);
 static void check_cache(Tally *t, rmwork::App &app, const Env &env);
 static void check_corpus_episode(Tally *t, rmwork::App &app, const Env &env);
 static std::string make_bo3(Tally *t, const Env &env);
-static void check_bo3(Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov);
+static void check_bo3(
+    Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools);
 static void check_errors(Tally *t, rmwork::App &app, const Env &env);
 static void check_run_directory(Tally *t, const Env &env, const std::string &bo3_log);
 static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::string &bo3_log);
@@ -299,9 +306,10 @@ static void check_narrative(Tally *t, const rmwork::Match &m, const std::string 
     check(t, in_order, at + ": the narrative's lines are out of decision order");
 }
 
-// The loaded match against its log: the decision count, the frames, the logs, the result, the Table.
-static void check_match(
-    Tally *t, rmwork::App &app, const std::string &log, const std::string &at, rmwork::TableCoverage *cov) {
+// The loaded match against its log: the decision count, the frames, the logs, the result, the Table
+// and the other tools.
+static void check_match(Tally *t, rmwork::App &app, const std::string &log, const std::string &at,
+    rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools) {
     using namespace rmwork;
     check(t, app.replay().loaded(), at + ": no match loaded (" + app.error_title() + ": " + app.error_message() + ")");
     if (!app.replay().loaded()) return;
@@ -324,6 +332,7 @@ static void check_match(
     check_seat_logs(t, m, at);
     check_narrative(t, m, at);
     check_table(t, app, at, cov);
+    check_tools(t, app, at, tools);
 }
 
 // The Table of the loaded match: its model and layout of every frame, then every decision drawn
@@ -335,6 +344,33 @@ static void check_table(Tally *t, rmwork::App &app, const std::string &at, rmwor
     check_table_drawing(fn, app, [&app](int n) { run_frames(app, n); }, at, cov);
     app.replay().go_to(0);
     app.replay().set_view(VIEW_A);
+}
+
+// The tools beside the Table on the loaded match: every frame's models, then a sample drawn.
+static void check_tools(Tally *t, rmwork::App &app, const std::string &at, rmwork::ToolsCoverage *cov) {
+    using namespace rmwork;
+    const CheckFn fn = [t](bool ok, const std::string &what) { check(t, ok, "Tools: " + what); };
+    check_tools_frames(fn, app, at, cov);
+    check_tools_drawing(fn, app, [&app](int n) { run_frames(app, n); }, at, cov);
+}
+
+// The matches met each thing the tools show.
+static void check_tools_coverage(Tally *t, const rmwork::ToolsCoverage &cov) {
+    check(t, cov.frames > 0 && cov.drawn > 0, "Tools: no frame checked or drawn");
+    check(t, cov.menus > 0 && cov.withheld > 0, "Tools: no menu seen, or none withheld from a seat");
+    check(t, cov.zone_cards > 0, "Tools: no zone window card met");
+    check(t, cov.known_hand > 0, "Tools: no card of the opponent's hand known by knowledge alone");
+    check(t, cov.known_library > 0, "Tools: no library card known by position alone");
+    check(t, cov.pending > 0 && cov.pending_costs > 0, "Tools: no pending query or cost met");
+    check(t, cov.trees > 0 && cov.tree_handles > 0, "Tools: no State Tree walked");
+    check(t, cov.links > 0, "Tools: no menu row linked");
+    check(t, cov.episode_decisions > 0, "Tools: no decision checked against its evaluations");
+    std::printf(
+        "Tools: %d frames (%d menus, %d withheld), %d drawn; %d zone cards (%d known hand, %d known library, %d linked "
+        "exile); %d pending, %d costs; %d trees, %d handles; %d links; %d evaluated decisions\n",
+        cov.frames, cov.menus, cov.withheld, cov.drawn, cov.zone_cards, cov.known_hand, cov.known_library,
+        cov.linked_exile, cov.pending, cov.pending_costs, cov.trees, cov.tree_handles, cov.links,
+        cov.episode_decisions);
 }
 
 // The logs' frames met each thing the Table draws.
@@ -496,10 +532,11 @@ static std::string make_bo3(Tally *t, const Env &env) {
 }
 
 // The games and sideboarding phases, the result, the game list, the episodes joined by name.
-static void check_bo3(Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov) {
+static void check_bo3(
+    Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools) {
     using namespace rmwork;
     if (!open_and_wait(t, app, log, "bo3")) return;
-    check_match(t, app, log, "bo3", cov);
+    check_match(t, app, log, "bo3", cov, tools);
     if (!app.replay().loaded()) return;
     const Match &m = *app.replay().match();
     check(t, m.bo3(), "bo3: the log is not a bo3 match");
@@ -560,6 +597,68 @@ static void check_bo3(Tally *t, rmwork::App &app, const std::string &log, rmwork
     check(t, same, "bo3: a joined decision's seat or reply differs from the episode's");
     check(t, mu_b == b && b > 0,
         "bo3: the random seat's μ is on " + std::to_string(mu_b) + " of its " + std::to_string(b) + " decisions");
+}
+
+// The episode at `from` with evaluations added, written to `to`: per decision policy 0 (version 100)
+// and, on seat A's decisions only, policy 1 (version 50), each a value and a log π over the menu
+// rows, made up from the decision's index.
+static bool add_evaluations(const std::string &from, const std::string &to, std::string *err) {
+    featurize::RmtbFile f;
+    if (!featurize::rmtb_read_file(from, &f, err)) return false;
+    std::vector<int64_t> seat, game, offsets;
+    const featurize::RmtbArray *s = f.find("seat"), *g = f.find("game"), *o = f.find("menu_offsets");
+    if (!s || !g || !o || !featurize::rmtb_values(*s, &seat) || !featurize::rmtb_values(*g, &game) ||
+        !featurize::rmtb_values(*o, &offsets)) {
+        *err = "the episode lacks its seat, game or menu_offsets arrays";
+        return false;
+    }
+    const size_t d = seat.size(), a = static_cast<size_t>(offsets.back());
+    std::vector<int64_t> ids(d * 2), versions(d * 2);
+    std::vector<float> values(d * 2), log_pi(a * 2);
+    for (size_t i = 0; i < d; ++i) {
+        const double x = static_cast<double>(i);
+        ids[i * 2] = 0;
+        versions[i * 2] = 100;
+        values[i * 2] = static_cast<float>(0.9 * std::sin(0.37 * x + 1.7 * static_cast<double>(game[i])));
+        ids[i * 2 + 1] = seat[i] == 0 ? 1 : -1;
+        versions[i * 2 + 1] = seat[i] == 0 ? 50 : 0;
+        values[i * 2 + 1] = seat[i] == 0 ? static_cast<float>(0.6 * std::cos(0.23 * x)) : 0.0f;
+        for (int p = 0; p < 2; ++p) {
+            double norm = 0;
+            const size_t b = static_cast<size_t>(offsets[i]), e = static_cast<size_t>(offsets[i + 1]);
+            for (size_t k = b; k < e; ++k)
+                norm += std::exp(p == 0 ? std::sin(1.3 * static_cast<double>(k) + x)
+                                        : std::cos(0.7 * static_cast<double>(k) + x / 2));
+            for (size_t k = b; k < e; ++k) {
+                const double z = p == 0 ? std::sin(1.3 * static_cast<double>(k) + x)
+                                        : std::cos(0.7 * static_cast<double>(k) + x / 2);
+                log_pi[k * 2 + static_cast<size_t>(p)] = static_cast<float>(z - std::log(norm));
+            }
+        }
+    }
+    f.arrays.erase(std::remove_if(f.arrays.begin(), f.arrays.end(),
+                       [](const featurize::RmtbArray &x) { return x.name.compare(0, 5, "eval_") == 0; }),
+        f.arrays.end());
+    f.arrays.push_back(featurize::rmtb_ints("eval_policy", featurize::Dtype::I64, {d, 2}, ids));
+    f.arrays.push_back(featurize::rmtb_ints("eval_version", featurize::Dtype::I64, {d, 2}, versions));
+    f.arrays.push_back(featurize::rmtb_floats("eval_value", featurize::Dtype::F32, {d, 2}, values));
+    f.arrays.push_back(featurize::rmtb_floats("eval_log_pi", featurize::Dtype::F32, {a, 2}, log_pi));
+    return featurize::rmtb_write_file(to, f, err);
+}
+
+// The bo3 match's log and episodes, with evaluations added, in a directory of their own; the log's path.
+static std::string make_eval_match(Tally *t, const Env &env, const std::string &bo3_log) {
+    const std::string dir = env.tmp + "/bo3_eval";
+    rmwork::make_dirs(dir);
+    std::string bytes, err;
+    const std::string log = dir + "/" + bo3_log.substr(bo3_log.rfind('/') + 1);
+    check(t, rmwork::read_file(bo3_log, &bytes) && rmwork::write_file_atomic(log, bytes, &err),
+        "evaluations: cannot copy the bo3 log: " + err);
+    const std::vector<std::string> eps = files_with(rmwork::parent_dir(bo3_log), ".rmtraj");
+    bool ok = !eps.empty();
+    for (const std::string &e : eps) ok = ok && add_evaluations(e, dir + "/" + e.substr(e.rfind('/') + 1), &err);
+    check(t, ok, "evaluations: cannot write the episodes with evaluations: " + err);
+    return ok ? log : "";
 }
 
 // A malformed log, a diverging replay, a missing engine and a cancelled load.
@@ -718,8 +817,9 @@ int run_selftest_data(const std::string &engine) {
         run_frames(app, 2);
         const std::string bo1 = env.corpus + "/" + BO1_LOG;
         TableCoverage cov;
+        ToolsCoverage tools;
         if (open_and_wait(&t, app, bo1, "bo1")) {
-            check_match(&t, app, bo1, "bo1", &cov);
+            check_match(&t, app, bo1, "bo1", &cov, &tools);
             check(&t, app.replay().loaded() && !app.replay().match()->from_cache, "bo1: the first open is cached");
             if (app.replay().loaded()) {
                 const Match &m = *app.replay().match();
@@ -729,21 +829,27 @@ int run_selftest_data(const std::string &engine) {
         }
         const std::string manual = env.corpus + "/" + MANUAL_LOG;
         if (file_exists(manual) && open_and_wait(&t, app, manual, "no-auto-mana"))
-            check_match(&t, app, manual, "no-auto-mana", &cov);
+            check_match(&t, app, manual, "no-auto-mana", &cov, &tools);
         for (const char *name : TABLE_LOGS) {
             const std::string log = env.corpus + "/" + name;
-            if (open_and_wait(&t, app, log, name)) check_match(&t, app, log, name, &cov);
+            if (open_and_wait(&t, app, log, name)) check_match(&t, app, log, name, &cov, &tools);
         }
         check_cache(&t, app, env);
         check_corpus_episode(&t, app, env);
         const std::string bo3 = make_bo3(&t, env);
         if (!bo3.empty()) {
-            check_bo3(&t, app, bo3, &cov);
+            check_bo3(&t, app, bo3, &cov, &tools);
+            const std::string eval = make_eval_match(&t, env, bo3);
+            if (!eval.empty() && open_and_wait(&t, app, eval, "evaluations")) {
+                const CheckFn fn = [&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); };
+                check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "evaluations", &tools);
+            }
             check_run_directory(&t, env, bo3);
             check_picker(&t, app, env, bo3);
         }
         check_errors(&t, app, env);
         check_table_coverage(&t, cov);
+        check_tools_coverage(&t, tools);
     }
     destroy_ui_context();
     remove_tree(env.tmp);

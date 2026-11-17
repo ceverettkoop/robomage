@@ -297,6 +297,13 @@ static bool valid_node(const LayoutNode &n, int depth, rmwork::ToolFlags *seen, 
 
 namespace rmwork {
 
+int find_tool(const std::string &name) {
+    const std::string want = lower(name);
+    for (int t = 0; t < TOOL_COUNT; ++t)
+        if (want == TOOLS[t].key || want == lower(TOOLS[t].title)) return t;
+    return -1;
+}
+
 const ToolInfo &tool_info(Tool t) {
     return TOOLS[tool_index(t)];
 }

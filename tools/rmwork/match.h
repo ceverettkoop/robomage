@@ -129,6 +129,7 @@ class Match {
         MatchResult result;
         std::vector<EpisodeStepInfo> episode_steps;
         std::vector<std::string> episode_files;
+        std::array<std::string, 2> agents;  // per seat the agent its episodes name (`agent_a` / `agent_b`), "" none
 
         bool bo3() const { return log.has_flag("bo3"); }
         const agents::SeatStream &stream(int view) const { return *streams_[static_cast<size_t>(view)]; }

@@ -7,6 +7,7 @@
 static void legend_entry(const char *label, ImU32 color, bool dashed);
 static void draw_value_graph(const char *note);
 static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t);
+static bool replay_tool(rmwork::Tool t);
 
 // A short line in the series' colour and its label, on the current line.
 static void legend_entry(const char *label, ImU32 color, bool dashed) {
@@ -73,12 +74,23 @@ static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t) {
     return out;
 }
 
+// One of the tools ReplayTools draws.
+static bool replay_tool(rmwork::Tool t) {
+    return t != rmwork::Tool::TABLE && t != rmwork::Tool::LOG;
+}
+
 namespace rmwork {
 
 void draw_tool_body(Tool t, const ToolContext &ctx) {
     const bool loaded = ctx.mode == Mode::REPLAY && ctx.replay && ctx.replay->loaded();
+    if (loaded && replay_tool(t) && ctx.tools) {
+        ctx.tools->draw(t, *ctx.replay, ctx.links);
+        return;
+    }
     if (t == Tool::GRAPH) {
-        draw_value_graph(loaded ? "No evaluations yet" : "No game loaded");
+        draw_value_graph(ctx.mode == Mode::PLAY ? "No game: Play arrives in plan \xC2\xA7"
+                                                  "2.3"
+                                                : "No game loaded");
         return;
     }
     if (loaded && t == Tool::LOG && ctx.log) {

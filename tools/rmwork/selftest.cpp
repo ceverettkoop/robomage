@@ -16,6 +16,7 @@
 #include "implot.h"
 #include "paths.h"
 #include "selftest_table.h"
+#include "selftest_tools.h"
 #include "theme.h"
 
 namespace {
@@ -1135,6 +1136,7 @@ int run_selftest() {
     check_later_settings(&t, tmp);
     check_key_resets(&t);
     check_table_units([&t](bool ok, const std::string &what) { check(&t, ok, "Table: " + what); });
+    check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     begin_headless();
     check_theme_contrast(&t);
     destroy_ui_context();
