@@ -805,7 +805,7 @@ handshake JSON, the shared region, request / response layouts.
   `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
 - `tools/rmwork/` — `bin/<config>/rmwork` (`make workbench`): the workbench GUI
-  (`docs/workbench_plan.md` §2.1–2.2): `app` (menu bar, toolbar, the mode's dockspace and tools, status
+  (`docs/workbench_plan.md` §2.1–2.2, §2.5): `app` (menu bar, toolbar, the mode's dockspace and tools, status
   bar, keys, health, opening Replay's data), Replay's data: `loader` (a decision log opened on a thread:
   the cached replay or the engine's `--replay --rmstate-dump --narrative`, the index, the episodes;
   progress, cancel), `subprocess` (`posix_spawn`, output into files), `replay_cache`
@@ -816,7 +816,15 @@ handshake JSON, the shared region, request / response layouts.
   decision markers), `episodes` (trajectory episodes ↔ decision logs by name and `rmlog`, the join by
   decision key), `replay_session` (cursor, viewer, autoplay, the status bar's fields), `game_log` (the
   Game Log tool), `file_picker` (the modal file browser), `run_browser` (a run directory's logs),
-  `panels` (the tools' contents), `selftest_data` (`--selftest-data`); the shell: `layout` (modes,
+  `panels` (the tools' contents), `selftest_data` (`--selftest-data`); the Table: `table_model` (one
+  viewer's frame as rows of piles: lands, other permanents, attachments with their host, identical
+  lands stacked; the hand, the players, the stack and its targets, blocks, menu links), `table_layout`
+  (the fit and every card's, strip's and stack object's rectangle, ImGui-free), `table_view` (the
+  tool: drawing, state badges, combat lines, the middle strip, hover and selection, the magnifier),
+  `card_book` (a viewer's CARDS faces), `card_renderer` (`CardRenderer`; the text-face renderer until
+  card images), `table_backdrop` (the background: colour, the five generated textures, an image),
+  `links` (the tools' shared hover and selection over handles and menu rows), `selftest_table` (the
+  Table's checks in both self-tests); the shell: `layout` (modes,
   tools, layouts as trees built with DockBuilder: the presets and the user's named layouts, read back
   from the dockspace), `settings` (`~/.config/robomage/settings.json`: layouts, engine, models, stops,
   image cache, keys, recent files …), `paths` (the repository from the binary's own

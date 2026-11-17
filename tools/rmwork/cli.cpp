@@ -41,6 +41,8 @@ struct CliOptions {
         bool selftest_data = false;
         bool open_picker = false;
         bool game_combo = false;
+        int table_hover_stack = -1;
+        std::string table_magnify;
         rmwork::WindowOptions window;
 };
 
@@ -54,6 +56,7 @@ static rmwork::FontChoice font_override(const CliOptions &opt, const rmwork::Fon
 static void show_demo_error(rmwork::App &app);
 static int parse_view(const std::string &text);
 static void open_data(rmwork::App &app, const CliOptions &opt);
+static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist);
 
 static void usage() {
     std::printf(
@@ -62,7 +65,8 @@ static void usage() {
         "[--open-settings] [--settings-tab TAB] [--capture-key ACTION] [--save-layout] [--manage-layouts]\n"
         "         [--layout NAME] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
         "       rmwork [--open LOG.rmlog] [--episode FILE.rmtraj]… [--run DIR] [--decision N] [--view a|b|omni]\n"
-        "         [--engine PATH] [--open-picker] [--game-combo] (with --screenshot too)\n"
+        "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
+        "         (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
@@ -96,6 +100,8 @@ static void usage() {
         "  --engine PATH      replay with this engine binary instead of Settings → Engine's\n"
         "  --open-picker      open File → Open Replay's file picker at start\n"
         "  --game-combo       open the toolbar's game list once the game is loaded\n"
+        "  --table-hover-stack N  the Table: hover stack object N (0 = top) every frame (its targets lit)\n"
+        "  --table-magnify NAME   the Table: open the magnifier on the first card whose name contains NAME\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
         "                     RMWORK-SELFTEST: N checks, M failures\n"
         "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
@@ -153,6 +159,10 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->open_picker = true;
         } else if (a == "--game-combo") {
             opt->game_combo = true;
+        } else if (a == "--table-hover-stack" && has_value) {
+            opt->table_hover_stack = std::atoi(argv[++i]);
+        } else if (a == "--table-magnify" && has_value) {
+            opt->table_magnify = argv[++i];
         } else if (a == "--open-settings") {
             opt->open_settings = true;
         } else if (a == "--settings-tab" && has_value) {
@@ -294,26 +304,14 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (!opt.run_dir.empty()) app.open_run(opt.run_dir);
     if (opt.open_picker) app.open_file_picker(rmwork::App::PICK_REPLAY);
     if (opt.game_combo) app.open_game_combo();
+    app.table().force_stack_hover(opt.table_hover_stack);
+    app.table().force_magnify(opt.table_magnify);
 }
 
-namespace rmwork {
-
-int workbench_main(int argc, char **argv) {
-    CliOptions opt;
-    int exit_code = 0;
-    if (!parse_args(argc, argv, &opt, &exit_code)) return exit_code;
-    if (opt.selftest) return run_selftest();
-    if (opt.selftest_data) return run_selftest_data(opt.engine);
-
-    create_ui_context();
-    const ConfigPaths paths = config_paths(opt.config_dir);
-    const bool persist = opt.window.screenshot.empty();
-    if (persist) {
-        make_dirs(parent_dir(paths.imgui_ini));
-        ImGui::GetIO().IniFilename = paths.imgui_ini.c_str();
-    } else if (file_exists(paths.imgui_ini)) {
-        ImGui::LoadIniSettingsFromDisk(paths.imgui_ini.c_str());
-    }
+// The workbench's window until it closes; the App is gone before the ImGui context is destroyed
+// (its textures unregister themselves).
+static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist) {
+    using namespace rmwork;
     Settings settings;
     std::string err;
     const bool loaded = load_settings(paths.settings, &settings, &err);
@@ -338,7 +336,28 @@ int workbench_main(int argc, char **argv) {
             "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +
                 "\". View lists the saved layouts.",
             "");
-    const int status = run_window(app, opt.window);
+    return run_window(app, opt.window);
+}
+
+namespace rmwork {
+
+int workbench_main(int argc, char **argv) {
+    CliOptions opt;
+    int exit_code = 0;
+    if (!parse_args(argc, argv, &opt, &exit_code)) return exit_code;
+    if (opt.selftest) return run_selftest();
+    if (opt.selftest_data) return run_selftest_data(opt.engine);
+
+    create_ui_context();
+    const ConfigPaths paths = config_paths(opt.config_dir);
+    const bool persist = opt.window.screenshot.empty();
+    if (persist) {
+        make_dirs(parent_dir(paths.imgui_ini));
+        ImGui::GetIO().IniFilename = paths.imgui_ini.c_str();
+    } else if (file_exists(paths.imgui_ini)) {
+        ImGui::LoadIniSettingsFromDisk(paths.imgui_ini.c_str());
+    }
+    const int status = run_app(opt, paths, persist);
     destroy_ui_context();
     return status;
 }

@@ -733,6 +733,8 @@ void App::draw_dock() {
 
 void App::draw_tools() {
     const int mi = mode_index(mode());
+    links_.set_context(replay_.generation());
+    links_.new_frame();
     for (Tool tool : submit_order_[mi]) {
         const int t = tool_index(tool);
         if (!settings_.tools[mi][t]) continue;
@@ -749,16 +751,22 @@ void App::draw_tools() {
         ImGuiWindowClass tab_class;
         tab_class.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseButton;
         ImGui::SetNextWindowClass(&tab_class);
-        const ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
+        if (tool == Tool::TABLE) flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         ToolContext ctx;
         ctx.mode = mode();
         ctx.replay = mode() == Mode::REPLAY ? &replay_ : nullptr;
         ctx.log = &game_log_;
+        ctx.table = &table_;
+        ctx.links = &links_;
+        ctx.settings = &settings_;
         double fraction = -1;
         ctx.loading = load_phase(&fraction);
         if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
         ImGui::End();
     }
+    const std::string table_status = table_.take_status();
+    if (!table_status.empty()) status(table_status);
 }
 
 // A tool reopened with no home in the mode's dockspace (never docked, or its node is gone) is

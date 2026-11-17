@@ -85,12 +85,17 @@ static void read_key(const agents::Table &header, int *game, bool *sideboarding,
     *terminal = header.rows() && header.u(0, header.col("terminal")) != 0;
 }
 
-// "Sideboarding", "Opening hand" (a keep, mulligan or bottoming decision), else the step.
+// "Sideboarding", "Opening hand" (a keep or mulligan decision, or a London bottoming pick: a
+// bottom-of-library pick while a player still owes cards to the bottom, which a scry-like effect's
+// bottom pick is not), else the step.
 static std::string phase_of(const agents::DecisionView &v, bool sideboarding) {
     if (sideboarding) return "Sideboarding";
+    const agents::Table players = v.table("player");
+    bool bottoming = false;
+    for (size_t r = 0; r < players.rows(); ++r) bottoming = bottoming || players.u(r, players.col("to_bottom")) > 0;
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
-        if (c == "KEEP_HAND" || c == "MULLIGAN" || c == "BOTTOM_DECK_CARD") return "Opening hand";
+        if (c == "KEEP_HAND" || c == "MULLIGAN" || (c == "BOTTOM_DECK_CARD" && bottoming)) return "Opening hand";
     }
     const agents::Table turn = v.table("turn");
     if (!turn.rows()) return "";

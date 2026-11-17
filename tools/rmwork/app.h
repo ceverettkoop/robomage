@@ -11,11 +11,13 @@
 #include "imgui.h"
 #include "layout.h"
 #include "layout_dialogs.h"
+#include "links.h"
 #include "loader.h"
 #include "replay_session.h"
 #include "run_browser.h"
 #include "settings.h"
 #include "settings_dialog.h"
+#include "table_view.h"
 
 // ── The application shell: menu bar, toolbar, the mode's dockspace and tools, status bar ────────
 //
@@ -114,6 +116,8 @@ class App {
         FilePicker &file_picker() { return picker_; }
         RunBrowser &run_browser() { return run_browser_; }
         GameLogView &game_log() { return game_log_; }
+        TableView &table() { return table_; }
+        LinkState &links() { return links_; }
         // Opens the toolbar's game combo box at the next frame.
         void open_game_combo() { open_game_combo_ = true; }
         // The status bar's fields, as drawn.
@@ -161,6 +165,8 @@ class App {
         ReplaySession replay_;
         Loader loader_;
         GameLogView game_log_;
+        TableView table_;
+        LinkState links_;
         FilePicker picker_;
         RunBrowser run_browser_;
         std::string engine_override_;

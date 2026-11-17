@@ -135,6 +135,48 @@ files (`bench/`, `metrics.jsonl`, §3).
 
 ### 2.5 The Table
 
+**Status: done** (`tools/rmwork/`: `table_model`, `table_layout`, `table_view`, `card_book`,
+`card_renderer`, `table_backdrop`, `links`). The Table shows Replay's current decision as the viewer saw
+it, built only from that viewer's STATE frame and its own CARDS frame (the omniscient viewer sits as
+seat A): the opponent's lands at the far edge and other permanents toward the middle, the middle strip
+(turn, active player, step, deciding seat, day or night, the twelve-step bar, its stop dots only in Play;
+the stack, top first, only when it is not empty: each object's card thumbnail, controller chip, kind and
+type line, X, modes and targets), the viewer's other permanents, lands and hand on a shaded band, the
+player chips (name, deck, life, hand and library counts, poison, energy, other counters, monarch, the
+city's blessing, speed) with their player-effect and emblem chips beside them; the opponent's hand is its
+chip's count. A land is an object whose post-layer types hold Land and not Creature; Auras and
+Equipment peek above their host (an attachment's attachments join the root host's pile); identical
+untapped lands with nothing on them stack with an offset and a `×n` count; rows are in entry
+(timestamp) order and centred. The fit is the mock-up's: one card width for the four rows and the hand
+(1.15×) so they fill the height and the widest row fits the width, every frame, so it follows a resize;
+a row keeps an upright card's height when empty. Cards are drawn by a `CardRenderer`; until card images
+(§2.4) the text renderer prints the CARDS face in a rounded card in its frame colour (one colour, two
+split, gold, colourless grey, a land tan with a land glyph and pips for its basic land types; a token
+silver-bordered and "Token" in its type line): the name (wrapped on a small card), the cost as pips, the
+type line once legible, and the oracle text from 120 px. Face-down objects are card backs (the identity
+printed on the back only where the viewer's frame gives it); hidden cards are never named. Over the
+cards: tapped cards turned a quarter, the post-layer P/T (green above the printed, red below, blue
+mixed), marked damage, loyalty, counters by kind, designations (monstrous, exerted, prepared, a chosen
+name, type, colour …), summoning sickness, phased-out permanents faded. Attackers stand forward of their
+row; an arrow runs from each blocker to the attacker it blocks. Linking: `LinkState` holds the hover and
+selection every tool shares (objects by handle, players, menu rows by their `source` / `target`
+handles); the Table reports the card, stack object or player chip under the mouse and outlines whatever
+it links to, hovering a stack object lights its targets (`stack_target`) with arrows, a click selects;
+when the viewer is the deciding seat the cards some menu row acts with glow. The magnifier: Q held over a
+card (or a stack object), or a right-click, shows it large beside it with its state listed under it
+(release Q; a right-click one closes on leaving the card, a click or Esc). The background is Settings →
+Table's colour, one of the five textures generated as GPU tiles on first use, or an image (stb_image,
+drawn covering the panel; one that cannot be read shows the wood and says so in the status bar). The
+twelve-step bar's "Opening hand" phase now counts a bottom-of-library pick only while a player owes
+London-mulligan cards (a scry-like effect's bottom pick was taken for the opening hands). `--table-hover-stack N`
+and `--table-magnify NAME` force a hover and the magnifier for screenshots. Checked by `rmwork --selftest`
+(the layout and fit of synthetic boards, the links, the tiles, the new colour tokens' contrast) and
+`rmwork --selftest-data` (every decision of five corpus logs and the played bo3 in every view against its
+frame, drawn headless, and the hover and magnifier interactions; `docs/ci.md`). Waiting for later stages:
+card images (§2.4), direct manipulation in Play (§4.2) and the stop dots' toggling, the Choices tool's
+side of the linking (§2.6), damage assignment order (the frame has none). Not done: rows never wrap, so a
+very wide board shrinks every card; identical tokens do not stack (only lands do).
+
 | Feature | Notes | Size |
 |---|---|---|
 | Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical untapped lands stacked; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |

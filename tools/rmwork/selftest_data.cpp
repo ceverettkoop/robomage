@@ -25,6 +25,7 @@
 #include "replay_cache.h"
 #include "rmlog.h"
 #include "run_browser.h"
+#include "selftest_table.h"
 #include "subprocess.h"
 #include "theme.h"
 
@@ -46,6 +47,9 @@ struct Env {
 const double LOAD_TIMEOUT_S = 600;
 const char *const BO1_LOG = "delver_mirror.rmlog";
 const char *const MANUAL_LOG = "manual_doomsday_vs_delver.rmlog";
+// Corpus logs with blocks, attachments and stacks of targeted objects, for the Table's checks.
+const char *const TABLE_LOGS[] = {
+    "lg_death_and_taxes__wrb_energy.rmlog", "lg_reanimator__reanimator.rmlog", "lg_reanimator__wrb_energy.rmlog"};
 
 }  // namespace
 
@@ -62,12 +66,15 @@ static bool open_and_wait(Tally *t, rmwork::App &app, const std::string &log, co
 static void check_frames(Tally *t, const rmwork::Match &m, const std::string &at);
 static void check_seat_logs(Tally *t, const rmwork::Match &m, const std::string &at);
 static void check_narrative(Tally *t, const rmwork::Match &m, const std::string &at);
-static void check_match(Tally *t, rmwork::App &app, const std::string &log, const std::string &at);
+static void check_match(
+    Tally *t, rmwork::App &app, const std::string &log, const std::string &at, rmwork::TableCoverage *cov);
+static void check_table(Tally *t, rmwork::App &app, const std::string &at, rmwork::TableCoverage *cov);
+static void check_table_coverage(Tally *t, const rmwork::TableCoverage &cov);
 static void check_navigation(Tally *t, rmwork::App &app);
 static void check_cache(Tally *t, rmwork::App &app, const Env &env);
 static void check_corpus_episode(Tally *t, rmwork::App &app, const Env &env);
 static std::string make_bo3(Tally *t, const Env &env);
-static void check_bo3(Tally *t, rmwork::App &app, const std::string &log);
+static void check_bo3(Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov);
 static void check_errors(Tally *t, rmwork::App &app, const Env &env);
 static void check_run_directory(Tally *t, const Env &env, const std::string &bo3_log);
 static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::string &bo3_log);
@@ -292,8 +299,9 @@ static void check_narrative(Tally *t, const rmwork::Match &m, const std::string 
     check(t, in_order, at + ": the narrative's lines are out of decision order");
 }
 
-// The loaded match against its log: the decision count, the frames, the logs, the result.
-static void check_match(Tally *t, rmwork::App &app, const std::string &log, const std::string &at) {
+// The loaded match against its log: the decision count, the frames, the logs, the result, the Table.
+static void check_match(
+    Tally *t, rmwork::App &app, const std::string &log, const std::string &at, rmwork::TableCoverage *cov) {
     using namespace rmwork;
     check(t, app.replay().loaded(), at + ": no match loaded (" + app.error_title() + ": " + app.error_message() + ")");
     if (!app.replay().loaded()) return;
@@ -315,6 +323,36 @@ static void check_match(Tally *t, rmwork::App &app, const std::string &log, cons
     check_frames(t, m, at);
     check_seat_logs(t, m, at);
     check_narrative(t, m, at);
+    check_table(t, app, at, cov);
+}
+
+// The Table of the loaded match: its model and layout of every frame, then every decision drawn
+// in every view and the hover and magnifier interactions.
+static void check_table(Tally *t, rmwork::App &app, const std::string &at, rmwork::TableCoverage *cov) {
+    using namespace rmwork;
+    const CheckFn fn = [t](bool ok, const std::string &what) { check(t, ok, "Table: " + what); };
+    check_table_frames(fn, app.table(), *app.replay().match(), at, cov);
+    check_table_drawing(fn, app, [&app](int n) { run_frames(app, n); }, at, cov);
+    app.replay().go_to(0);
+    app.replay().set_view(VIEW_A);
+}
+
+// The logs' frames met each thing the Table draws.
+static void check_table_coverage(Tally *t, const rmwork::TableCoverage &cov) {
+    check(t, cov.frames > 0, "Table: no frame checked");
+    check(t, cov.land_stacks > 0, "Table: no stack of identical lands met");
+    check(t, cov.attachments > 0, "Table: no attachment met");
+    check(t, cov.stack_targets > 0, "Table: no stack target met");
+    check(t, cov.blocks > 0, "Table: no block met");
+    check(t, cov.counters > 0, "Table: no counter met");
+    check(t, cov.tapped > 0, "Table: no tapped permanent met");
+    check(t, cov.hover_checks > 0, "Table: no stack object's targets hovered");
+    check(t, cov.magnifier_checks > 0, "Table: no card magnified");
+    std::printf(
+        "Table: %d frames; %d land stacks, %d attachments, %d stack targets, %d blocks, %d counters, %d hidden; "
+        "%d hovers, %d magnifiers\n",
+        cov.frames, cov.land_stacks, cov.attachments, cov.stack_targets, cov.blocks, cov.counters, cov.hidden,
+        cov.hover_checks, cov.magnifier_checks);
 }
 
 // The keys, autoplay and the viewer toggle move the cursor and update the status bar's fields.
@@ -458,10 +496,10 @@ static std::string make_bo3(Tally *t, const Env &env) {
 }
 
 // The games and sideboarding phases, the result, the game list, the episodes joined by name.
-static void check_bo3(Tally *t, rmwork::App &app, const std::string &log) {
+static void check_bo3(Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov) {
     using namespace rmwork;
     if (!open_and_wait(t, app, log, "bo3")) return;
-    check_match(t, app, log, "bo3");
+    check_match(t, app, log, "bo3", cov);
     if (!app.replay().loaded()) return;
     const Match &m = *app.replay().match();
     check(t, m.bo3(), "bo3: the log is not a bo3 match");
@@ -679,8 +717,9 @@ int run_selftest_data(const std::string &engine) {
         app.set_engine_override(env.engine);
         run_frames(app, 2);
         const std::string bo1 = env.corpus + "/" + BO1_LOG;
+        TableCoverage cov;
         if (open_and_wait(&t, app, bo1, "bo1")) {
-            check_match(&t, app, bo1, "bo1");
+            check_match(&t, app, bo1, "bo1", &cov);
             check(&t, app.replay().loaded() && !app.replay().match()->from_cache, "bo1: the first open is cached");
             if (app.replay().loaded()) {
                 const Match &m = *app.replay().match();
@@ -690,16 +729,21 @@ int run_selftest_data(const std::string &engine) {
         }
         const std::string manual = env.corpus + "/" + MANUAL_LOG;
         if (file_exists(manual) && open_and_wait(&t, app, manual, "no-auto-mana"))
-            check_match(&t, app, manual, "no-auto-mana");
+            check_match(&t, app, manual, "no-auto-mana", &cov);
+        for (const char *name : TABLE_LOGS) {
+            const std::string log = env.corpus + "/" + name;
+            if (open_and_wait(&t, app, log, name)) check_match(&t, app, log, name, &cov);
+        }
         check_cache(&t, app, env);
         check_corpus_episode(&t, app, env);
         const std::string bo3 = make_bo3(&t, env);
         if (!bo3.empty()) {
-            check_bo3(&t, app, bo3);
+            check_bo3(&t, app, bo3, &cov);
             check_run_directory(&t, env, bo3);
             check_picker(&t, app, env, bo3);
         }
         check_errors(&t, app, env);
+        check_table_coverage(&t, cov);
     }
     destroy_ui_context();
     remove_tree(env.tmp);

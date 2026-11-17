@@ -98,6 +98,11 @@ static rmwork::Palette imhex_dark_palette() {
     p.FOLDER = hex_color(0xe0b44a);
     p.LOGO_BG = hex_color(0x2a5a8c);
     p.LOGO_FG = hex_color(0xffffff);
+    p.GLOW = hex_color(0xffd84a);
+    p.LINK = hex_color(0x00e0ff);
+    p.COUNTER = hex_color(0x7a3cc0);
+    p.SEAT_A = hex_color(0x24456b);
+    p.SEAT_B = hex_color(0x6b2b2b);
     return p;
 }
 
@@ -140,6 +145,11 @@ static rmwork::Palette imhex_light_palette() {
     p.FOLDER = hex_color(0xb07d00);
     p.LOGO_BG = hex_color(0x2a6cc2);
     p.LOGO_FG = hex_color(0xffffff);
+    p.GLOW = hex_color(0xf5b800);
+    p.LINK = hex_color(0x0096d6);
+    p.COUNTER = hex_color(0xdccbf5);
+    p.SEAT_A = hex_color(0xbcd5f2);
+    p.SEAT_B = hex_color(0xf5c9c9);
     return p;
 }
 
@@ -182,6 +192,11 @@ static rmwork::Palette imgui_dark_palette() {
     p.FOLDER = hex_color(0xe6b54a);
     p.LOGO_BG = hex_color(0x294a7a);
     p.LOGO_FG = hex_color(0xffffff);
+    p.GLOW = hex_color(0xffd84a);
+    p.LINK = hex_color(0x00e0ff);
+    p.COUNTER = hex_color(0x6b38b0);
+    p.SEAT_A = hex_color(0x284a80);
+    p.SEAT_B = hex_color(0x803030);
     return p;
 }
 
@@ -224,6 +239,11 @@ static rmwork::Palette imgui_classic_palette() {
     p.FOLDER = hex_color(0xe6c34d);
     p.LOGO_BG = hex_color(0x474789);
     p.LOGO_FG = hex_color(0xffffff);
+    p.GLOW = hex_color(0xffd84a);
+    p.LINK = hex_color(0x00e0ff);
+    p.COUNTER = hex_color(0x6b38b0);
+    p.SEAT_A = hex_color(0x3a3a8c);
+    p.SEAT_B = hex_color(0x8c3a3a);
     return p;
 }
 
@@ -266,6 +286,11 @@ static rmwork::Palette solarized_dark_palette() {
     p.FOLDER = hex_color(0xb58900);
     p.LOGO_BG = hex_color(0x268bd2);
     p.LOGO_FG = hex_color(0xfdf6e3);
+    p.GLOW = hex_color(0xe6b800);
+    p.LINK = hex_color(0x35d0c5);
+    p.COUNTER = hex_color(0x4b4f9a);
+    p.SEAT_A = hex_color(0x1a4a6e);
+    p.SEAT_B = hex_color(0x6e2424);
     return p;
 }
 
@@ -308,6 +333,11 @@ static rmwork::Palette solarized_light_palette() {
     p.FOLDER = hex_color(0x9a7300);
     p.LOGO_BG = hex_color(0x268bd2);
     p.LOGO_FG = hex_color(0xfdf6e3);
+    p.GLOW = hex_color(0xd9a400);
+    p.LINK = hex_color(0x1a9e94);
+    p.COUNTER = hex_color(0xd8d5f2);
+    p.SEAT_A = hex_color(0xcfe0ee);
+    p.SEAT_B = hex_color(0xf2d3cf);
     return p;
 }
 
@@ -350,6 +380,11 @@ static rmwork::Palette nord_palette() {
     p.FOLDER = hex_color(0xebcb8b);
     p.LOGO_BG = hex_color(0x5e81ac);
     p.LOGO_FG = hex_color(0xeceff4);
+    p.GLOW = hex_color(0xebcb8b);
+    p.LINK = hex_color(0x88c0d0);
+    p.COUNTER = hex_color(0x6a4f8a);
+    p.SEAT_A = hex_color(0x3b5a80);
+    p.SEAT_B = hex_color(0x7a3b44);
     return p;
 }
 
@@ -392,6 +427,11 @@ static rmwork::Palette windows_95_palette() {
     p.FOLDER = hex_color(0x806000);
     p.LOGO_BG = hex_color(0x000080);
     p.LOGO_FG = hex_color(0xffffff);
+    p.GLOW = hex_color(0xffff00);
+    p.LINK = hex_color(0x00c0ff);
+    p.COUNTER = hex_color(0xc8b4ea);
+    p.SEAT_A = hex_color(0xa8c4ea);
+    p.SEAT_B = hex_color(0xeab0b0);
     return p;
 }
 
@@ -424,6 +464,7 @@ static void derive(rmwork::Palette *p, bool light) {
     p->SCROLL_THUMB_ACTIVE = mix(p->SCROLL_THUMB, p->TEXT, 0.25f);
     p->ACCENT_ACTIVE = mix(p->ACCENT, p->TEXT, 0.20f);
     p->MODAL_DIM = rmwork::hex_color(0x000000, light ? 64 : 90);
+    p->TABLE_SHADE = (p->PANEL & ~IM_COL32_A_MASK) | (static_cast<ImU32>(224) << IM_COL32_A_SHIFT);
 }
 
 static ImVec4 v4(ImU32 c) {

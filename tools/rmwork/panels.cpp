@@ -85,6 +85,17 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
         ctx.log->draw(*ctx.replay);
         return;
     }
+    if (loaded && t == Tool::TABLE && ctx.table && ctx.settings) {
+        TableDraw d;
+        d.replay = ctx.replay;
+        d.background = &ctx.settings->table;
+        d.links = ctx.links;
+        d.magnify = ctx.settings->keys[action_index(Action::MAGNIFY)];
+        d.play = ctx.mode == Mode::PLAY;
+        d.stops = &ctx.settings->stops;
+        ctx.table->draw(d);
+        return;
+    }
     const float width = 46.0f * ImGui::CalcTextSize("M").x;
     if (loaded) {
         centered_text_block("Game loaded", loaded_body(*ctx.replay, t).c_str(), width);

@@ -15,6 +15,7 @@
 #include "imgui_internal.h"
 #include "implot.h"
 #include "paths.h"
+#include "selftest_table.h"
 #include "theme.h"
 
 namespace {
@@ -573,6 +574,8 @@ static void check_theme_contrast(Tally *t) {
             check_min_contrast(t, at, icon.first, icon.second, {{"toolbar", p.MENU}}, 3.0f);
         check_min_contrast(t, at, "accent", p.ACCENT, {{"panel", p.PANEL}, {"field", p.FIELD}}, 3.0f);
         check_min_contrast(t, at, "logo letter", p.LOGO_FG, {{"logo", p.LOGO_BG}}, 3.0f);
+        check_min_contrast(t, at, "text", p.TEXT,
+            {{"seat A chip", p.SEAT_A}, {"seat B chip", p.SEAT_B}, {"counter", p.COUNTER}}, 4.5f);
         const std::vector<std::vector<std::pair<const char *, ImU32>>> plots = {
             {series[0], series[1], series[2]}, {series[3], series[4]}};
         for (const auto &plot : plots) {
@@ -1131,6 +1134,7 @@ int run_selftest() {
     check_layout_files(&t);
     check_later_settings(&t, tmp);
     check_key_resets(&t);
+    check_table_units([&t](bool ok, const std::string &what) { check(&t, ok, "Table: " + what); });
     begin_headless();
     check_theme_contrast(&t);
     destroy_ui_context();

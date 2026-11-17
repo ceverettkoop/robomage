@@ -5,13 +5,17 @@
 
 #include "game_log.h"
 #include "layout.h"
+#include "links.h"
 #include "replay_session.h"
+#include "settings.h"
+#include "table_view.h"
 
 // ── The tools' contents ─────────────────────────────────────────────────────────────────────────
 //
-// In Replay with a game loaded the Game Log shows the viewer's log (game_log.h) and the other tools
-// say which game and decision they will show (their renderers are later stages); otherwise each
-// tool shows what it will show. The Value Graph draws its empty axes.
+// In Replay with a game loaded the Table shows the decision as the viewer saw it (table_view.h), the
+// Game Log the viewer's log (game_log.h) and the other tools say which game and decision they will
+// show (their renderers are later stages); otherwise each tool shows what it will show. The Value
+// Graph draws its empty axes.
 
 namespace rmwork {
 
@@ -19,6 +23,9 @@ struct ToolContext {
         Mode mode = Mode::REPLAY;
         ReplaySession *replay = nullptr;  // Replay's session (nullptr in Play)
         GameLogView *log = nullptr;
+        TableView *table = nullptr;
+        LinkState *links = nullptr;
+        const Settings *settings = nullptr;
         std::string loading;  // what the loader is doing, "" when idle
 };
 

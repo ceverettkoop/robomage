@@ -57,6 +57,11 @@ struct Palette {
         ImU32 FOLDER;        // the open icon
         ImU32 LOGO_BG;       // the logo's square
         ImU32 LOGO_FG;       // the logo's letter
+        ImU32 GLOW;          // the Table: a card some menu row acts with (playable)
+        ImU32 LINK;          // the Table: what a hovered object, stack object or menu row links to
+        ImU32 COUNTER;       // the Table: a counter badge (TEXT on it)
+        ImU32 SEAT_A;        // seat A's chip (TEXT on it)
+        ImU32 SEAT_B;        // seat B's chip (TEXT on it)
         // Derived from the tokens above by apply_theme's palette build:
         ImU32 FIELD_HOVER;          // a hovered field
         ImU32 FIELD_ACTIVE;         // an active field
@@ -65,6 +70,7 @@ struct Palette {
         ImU32 SCROLL_THUMB_ACTIVE;  // a dragged scrollbar thumb
         ImU32 ACCENT_ACTIVE;        // a dragged slider grab
         ImU32 MODAL_DIM;            // over the workbench behind a dialog (translucent)
+        ImU32 TABLE_SHADE;          // the Table's chips and middle strip over the background (PANEL, translucent)
 };
 
 struct ThemeInfo {
