@@ -7,7 +7,11 @@ TODO:
   planeswalker loyalty after excess damage: `damage_planeswalker` (`src/queries/damage.h`) removes
   `amount` LOYALTY counters ("loyalty now -10"). The 0-loyalty SBA still destroys it, but the
   stored count is wrong (CR 306.8 / 609.3: only as many as exist can be removed; an effect that
-  reads the count, or one that adds counters back first, sees the negative value).
+  reads the count, or one that adds counters back first, sees the negative value). Repro (from
+  `bin/`): `./debug/robomage --narrative --game-seed 1 --max-decisions 20 --hand-a "Lightning
+  Bolt,Lightning Bolt" --battlefield-a "Mountain,Mountain" --battlefield-b "Teferi Time Raveler"
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Teferi,A:cast:Lightning
+  Bolt,A:target:Teferi"` logs "loyalty now -2".
 
 - `rules_mod::may_play_lands_from_graveyard` (`src/systems/rules_modifying.cpp`) ignores the
   static's `Affected$` filter beyond its `Land` head: `parse.cpp` (~4207) sets
