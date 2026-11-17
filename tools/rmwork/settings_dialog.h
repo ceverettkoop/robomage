@@ -4,6 +4,7 @@
 #include <string>
 
 #include "files.h"
+#include "printings_tab.h"
 #include "settings.h"
 
 // ── Edit → Settings: a modal of tabs over the settings, each change applied as it is made ───────
@@ -44,6 +45,9 @@ class SettingsDialog {
         bool reset_key(Settings *s, Action a);
         // Reset All: every key back to its default.
         void reset_all_keys(Settings *s);
+        // The card images the Card Printings tab shows and changes (nullptr: none).
+        void set_card_images(CardImages *images) { images_ = images; }
+        PrintingsTab &printings() { return printings_; }
 
     private:
         // What a path setting must name to count as found.
@@ -85,6 +89,8 @@ class SettingsDialog {
         char policy_id_[64] = {0};
         char policy_model_[1024] = {0};
         std::string policy_error_;
+        CardImages *images_ = nullptr;
+        PrintingsTab printings_;
 };
 
 }  // namespace rmwork

@@ -23,6 +23,8 @@ struct CliOptions {
         std::string font;
         std::string font_weight;
         int font_size = 0;
+        std::string card_faces;      // "images" / "text" ("" the setting's)
+        std::string printings_card;  // Settings → Card Printings: the card shown
         bool demo_error = false;
         bool save_layout = false;
         bool manage_layouts = false;
@@ -78,6 +80,7 @@ static void usage() {
         "       rmwork --screenshot FILE.png [--mode …] [--preset …] [--size WxH] [--config-dir DIR] "
         "[--open-settings] [--settings-tab TAB] [--capture-key ACTION] [--save-layout] [--manage-layouts]\n"
         "         [--layout NAME] [--theme NAME] [--font FAMILY] [--font-weight W] [--font-size N]\n"
+        "         [--card-faces images|text] [--printings-card NAME]\n"
         "       rmwork [--open LOG.rmlog] [--episode FILE.rmtraj]… [--run DIR] [--decision N] [--view a|b|omni]\n"
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
@@ -97,6 +100,8 @@ static void usage() {
         "                     and layout but writes neither\n"
         "  --open-settings    open Edit → Settings at start\n"
         "  --settings-tab TAB open Settings at a tab: table, printings, keys, appearance, engine, models, stops\n"
+        "  --card-faces F     draw cards as images or text, as Settings → Card Printings sets it\n"
+        "  --printings-card NAME  open Settings → Card Printings showing the first card whose name contains NAME\n"
         "  --capture-key ACTION  open Settings → Keys waiting for ACTION's new key (a settings key such as\n"
         "                     replay.next)\n"
         "  --save-layout      open View → Save Layout As… at start\n"
@@ -252,6 +257,17 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
                 *exit_code = 2;
                 return false;
             }
+        } else if (a == "--card-faces" && has_value) {
+            opt->card_faces = argv[++i];
+            if (opt->card_faces != "images" && opt->card_faces != "text") {
+                std::fprintf(stderr, "rmwork: --card-faces takes images or text, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--printings-card" && has_value) {
+            opt->printings_card = argv[++i];
+            opt->open_settings = true;
+            opt->settings_tab = rmwork::SettingsDialog::PRINTINGS;
         } else if (a == "--capture-key" && has_value) {
             opt->capture_key = argv[++i];
             if (rmwork::find_action(opt->capture_key) < 0) {
@@ -492,6 +508,8 @@ static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool
     app.set_font(font_override(opt, app.settings().font));
     if (!opt.theme.empty()) app.set_theme(opt.theme);
     if (opt.open_settings) app.open_settings(static_cast<SettingsDialog::Tab>(opt.settings_tab));
+    if (!opt.card_faces.empty()) app.set_card_faces(opt.card_faces == "images");
+    if (!opt.printings_card.empty()) app.settings_dialog().printings().select(opt.printings_card);
     if (opt.demo_error) show_demo_error(app);
     if (!opt.capture_key.empty()) app.begin_key_capture(static_cast<Action>(find_action(opt.capture_key)));
     if (opt.save_layout) app.layout_dialogs().open_save(app.mode());

@@ -234,6 +234,10 @@ namespace rmwork {
 
 TableView::TableView() : renderer_(&text_renderer_) {}
 
+void TableView::set_renderer(const CardRenderer *r) {
+    renderer_ = r ? r : &text_renderer_;
+}
+
 const CardBook &TableView::book(const Match &m, int view) {
     if (book_match_ != &m || book_dump_ != m.dump_path) {
         book_match_ = &m;
@@ -293,7 +297,10 @@ CardLook TableView::look_of(const TableObject &o) const {
     CardLook look;
     const CardBook *b =
         book_built_[static_cast<size_t>(model_view_)] ? &books_[static_cast<size_t>(model_view_)] : nullptr;
-    if (!o.face_down && o.card >= 0 && b) look.face = b->face(o.card, o.back);
+    if (!o.face_down && o.card >= 0 && b) {
+        look.face = b->face(o.card, o.back);
+        look.other = b->face(o.card, !o.back);
+    }
     if (o.face_down && !o.name.empty()) look.note = o.name;
     look.colors = o.colors;
     look.land = o.land || (look.face && look.face->land && !o.creature);

@@ -182,6 +182,50 @@ step bar (Settings → Stops sets them), and the start page of §4.1.
 
 ### 2.4 Card images and printings
 
+**Status: done** (`tools/scryfall/fetch_images.py`; `tools/rmwork/`: `card_images`, `image_textures`,
+`image_renderer`, `printings_tab`). The fetch tool (stdlib, its README) lists, for every vocab index and
+every token script the decks make (`bin/resources/tokenscripts/`), the paper printings Scryfall has
+(`/cards/named` then `oracleid:… game:paper`, `unique=prints`; a token by `t:token !"<name>"` with its
+script's colours, types, P/T and keywords, relaxed until one matches), chooses the default (the oldest
+by date, set and collector number that is paper, not digital, not a promo, not oversized, not from a
+memorabilia / funny / minigame / alchemy / vanguard / planechase / archenemy / treasure-chest set, with
+an image; else the oldest paper one with an image), downloads its `normal` images (each face of a
+double-faced card) into `~/.cache/robomage/scryfall/images/<set>/<number>[-<face>].jpg` and writes
+`manifest.json` (per card its key, vocab index, names, every paper printing with its faces' URLs and
+files, the default; the cards Scryfall lacks); API requests 500 ms apart (the search and named-card
+endpoints allow two a second), images 100 ms, retries honouring `Retry-After`, resumable, `--cards`,
+`--printing NAME=SET:NUMBER`, `--dry-run`, `--selftest`. Run over the vocab it found every card and token (441 of 441 vocab
+cards, 29 of 29 token scripts, 468 images, 56 MB, about 15 minutes). The workbench reads only the
+cache: `CardImages` (the manifest, the overrides in `~/.config/robomage/printings.json`, which image a
+face shows: the manifest card of its card id (a token's in the token band, an unregistered token by
+name), the override's printing when the manifest lists it, else the default; of a double-faced
+printing the face of the same name, else the back for a back face) and `ImageTextures` (a worker
+thread decodes with stb_image and halves to the level a card is drawn at, 1/1 to 1/8; at most twelve a
+frame are handed to ImGui 1.92 as user textures; at most 400 textures and 256 MB, the least recently
+drawn evicted past either, never one drawn this frame or the last; another level of the file stands in
+while one decodes; nothing blocks a frame). `ImageCardRenderer` draws the image with rounded corners,
+turned a quarter when tapped and faded when phased out, and falls back to the text renderer for a
+back (a face-down card keeps the drawn back with what the viewer knows of it; hidden cards are never
+named), a card or token without a cached image, and an image still decoding. The Table (its cards and
+the stack's thumbnails), the magnifier and the zone windows draw with it; a double-faced card shows the
+face it is on, and the magnifier shows both faces side by side (one image when a card is printed whole
+on one face, a split card). Edit → Settings → Card Printings: Card faces images / text (default images;
+no manifest draws text), the cache directory and its status (vocab cards and tokens with images, what
+Scryfall lacks, the command that fetches the rest, Reload), and the printings: a card list searched by
+name, the chosen card's paper printings oldest first (thumbnail when cached, set name and code, number,
+year, set type, default / promo / not downloaded); a row overrides the default (the default's row
+resets), "Default (oldest)" and Reset All; a shown printing not downloaded shows the
+`fetch_images.py --printing` command and a Fetch button that runs it (`/usr/bin/env python3`, its own
+network access) and reloads the cache when it exits. Screenshot flags `--card-faces images|text` and
+`--printings-card NAME`. Checked by `rmwork --selftest` (a synthetic cache of tiny PNGs: the manifest
+and its refusals, the overrides file, the printing and face each card shows, the status, the LRU and
+levels, the decode thread's hand-over, a file that does not decode, eviction, the renderer's image and
+fallbacks), `rmwork --selftest-data` (the Table over sampled corpus decisions in every view with images
+for half the cards: each card an image or text as the cache says, every image decoding) and
+`fetch_images.py --selftest` (the choice rule on canned Scryfall JSON), all in the `workbench` tier. Not
+done: "flip on hover" on the Table (the magnifier shows both faces instead); token images are Scryfall's
+oldest matching token, which may differ in art from the set the card came from.
+
 | Feature | Notes | Size |
 |---|---|---|
 | Image cache | `tools/scryfall/fetch_images.py` (stdlib, like `tools/forge_fetch`): for every vocab card and token, list paper printings (`unique=prints`, oldest first), choose the oldest non-promo printing, download `normal` images into `~/.cache/robomage/scryfall/`, rate-limited, with a manifest. The C++ app reads only the cache, so it never touches the network | M |
@@ -206,8 +250,8 @@ Equipment peek above their host (an attachment's attachments join the root host'
 untapped lands with nothing on them stack with an offset and a `×n` count; rows are in entry
 (timestamp) order and centred. The fit is the mock-up's: one card width for the four rows and the hand
 (1.15×) so they fill the height and the widest row fits the width, every frame, so it follows a resize;
-a row keeps an upright card's height when empty. Cards are drawn by a `CardRenderer`; until card images
-(§2.4) the text renderer prints the CARDS face in a rounded card in its frame colour (one colour, two
+a row keeps an upright card's height when empty. Cards are drawn by a `CardRenderer`: the card's image (§2.4), else
+the text renderer, which prints the CARDS face in a rounded card in its frame colour (one colour, two
 split, gold, colourless grey, a land tan with a land glyph and pips for its basic land types; a token
 silver-bordered and "Token" in its type line): the name (wrapped on a small card), the cost as pips, the
 type line once legible, and the oracle text from 120 px. Face-down objects are card backs (the identity
@@ -231,7 +275,7 @@ and `--table-magnify NAME` force a hover and the magnifier for screenshots. Chec
 (the layout and fit of synthetic boards, the links, the tiles, the new colour tokens' contrast) and
 `rmwork --selftest-data` (every decision of five corpus logs and the played bo3 in every view against its
 frame, drawn headless, and the hover and magnifier interactions; `docs/ci.md`). Waiting for later stages:
-card images (§2.4), direct manipulation in Play (§4.2) and the stop dots' toggling, the Choices tool's
+direct manipulation in Play (§4.2) and the stop dots' toggling, the Choices tool's
 side of the linking (§2.6), damage assignment order (the frame has none). Not done: rows never wrap, so a
 very wide board shrinks every card; identical tokens do not stack (only lands do).
 

@@ -35,7 +35,8 @@ class MagnifierState {
 
 // Draws `look` large beside the screen rectangle (min, max) — to its right, else its left, else
 // centred — with `lines` under it (the first in the text colour, the rest dimmed); `overlay` draws
-// over the large card (its rectangle given) when set.
+// over the large card (its rectangle given) when set. A double-faced card's other face
+// (`look.other`) is drawn beside it, as large.
 void draw_magnified_card(const CardRenderer &renderer, const CardLook &look, const std::vector<std::string> &lines,
     ImVec2 min, ImVec2 max, const std::function<void(ImDrawList *, ImVec2, ImVec2)> &overlay = {});
 

@@ -11,14 +11,6 @@
 
 namespace {
 
-// One drawing pass of a card: the draw list's state at its start, to rotate and fade what it adds.
-struct CardPass {
-        int vtx = 0;
-        int cmd = 0;
-        ImVec4 clip;
-        bool rotated = false;
-};
-
 // An upright card's rectangle and the scale its parts are sized by.
 struct Box {
         float x, y, w, h;
@@ -49,8 +41,6 @@ const ImU32 BACK_TEXT = rmwork::hex_color(0xf0e6d2);
 
 }  // namespace
 
-static CardPass begin_pass(ImDrawList *dl, bool rotated);
-static void end_pass(ImDrawList *dl, const CardPass &p, ImVec2 center, float alpha);
 static ImU32 mix(ImU32 a, ImU32 b, float t);
 static ImU32 color_frame(uint8_t bit);
 static int color_count(uint8_t colors);
@@ -69,40 +59,6 @@ static void draw_full(ImDrawList *dl, const Box &b, const rmwork::CardLook &look
 static void draw_back(ImDrawList *dl, const Box &b, const rmwork::CardLook &look);
 static void draw_lines(ImDrawList *dl, ImFont *font, float size, const std::vector<std::string> &lines, float x,
     float y, float w, ImU32 color, bool centred);
-
-// A rotated card is drawn upright first, unclipped (the font's line culling and the window's clip
-// rectangle are in upright coordinates), then turned and given the clip rectangle back.
-static CardPass begin_pass(ImDrawList *dl, bool rotated) {
-    CardPass p;
-    p.vtx = dl->VtxBuffer.Size;
-    p.cmd = dl->CmdBuffer.Size;
-    p.clip = dl->_ClipRectStack.back();
-    p.rotated = rotated;
-    if (rotated) dl->PushClipRect(ImVec2(UNCLIPPED.x, UNCLIPPED.y), ImVec2(UNCLIPPED.z, UNCLIPPED.w), false);
-    return p;
-}
-
-static void end_pass(ImDrawList *dl, const CardPass &p, ImVec2 center, float alpha) {
-    if (p.rotated) {
-        dl->PopClipRect();
-        for (int i = p.vtx; i < dl->VtxBuffer.Size; ++i) {
-            ImVec2 &pos = dl->VtxBuffer[i].pos;
-            const float dx = pos.x - center.x, dy = pos.y - center.y;
-            pos = ImVec2(center.x - dy, center.y + dx);
-        }
-        for (int c = std::max(0, p.cmd - 1); c < dl->CmdBuffer.Size; ++c) {
-            ImVec4 &r = dl->CmdBuffer[c].ClipRect;
-            if (r.x == UNCLIPPED.x && r.y == UNCLIPPED.y && r.z == UNCLIPPED.z && r.w == UNCLIPPED.w) r = p.clip;
-        }
-    }
-    if (alpha < 1.0f) {
-        for (int i = p.vtx; i < dl->VtxBuffer.Size; ++i) {
-            ImU32 &col = dl->VtxBuffer[i].col;
-            const ImU32 a = static_cast<ImU32>(static_cast<float>((col >> IM_COL32_A_SHIFT) & 0xFF) * alpha);
-            col = (col & ~IM_COL32_A_MASK) | (a << IM_COL32_A_SHIFT);
-        }
-    }
-}
 
 static ImU32 mix(ImU32 a, ImU32 b, float t) {
     const ImVec4 x = ImGui::ColorConvertU32ToFloat4(a), y = ImGui::ColorConvertU32ToFloat4(b);
@@ -407,6 +363,38 @@ static void draw_back(ImDrawList *dl, const Box &b, const rmwork::CardLook &look
 
 namespace rmwork {
 
+CardPass begin_card_pass(ImDrawList *dl, bool rotated) {
+    CardPass p;
+    p.vtx = dl->VtxBuffer.Size;
+    p.cmd = dl->CmdBuffer.Size;
+    p.clip = dl->_ClipRectStack.back();
+    p.rotated = rotated;
+    if (rotated) dl->PushClipRect(ImVec2(UNCLIPPED.x, UNCLIPPED.y), ImVec2(UNCLIPPED.z, UNCLIPPED.w), false);
+    return p;
+}
+
+void end_card_pass(ImDrawList *dl, const CardPass &p, ImVec2 center, float alpha) {
+    if (p.rotated) {
+        dl->PopClipRect();
+        for (int i = p.vtx; i < dl->VtxBuffer.Size; ++i) {
+            ImVec2 &pos = dl->VtxBuffer[i].pos;
+            const float dx = pos.x - center.x, dy = pos.y - center.y;
+            pos = ImVec2(center.x - dy, center.y + dx);
+        }
+        for (int c = std::max(0, p.cmd - 1); c < dl->CmdBuffer.Size; ++c) {
+            ImVec4 &r = dl->CmdBuffer[c].ClipRect;
+            if (r.x == UNCLIPPED.x && r.y == UNCLIPPED.y && r.z == UNCLIPPED.z && r.w == UNCLIPPED.w) r = p.clip;
+        }
+    }
+    if (alpha < 1.0f) {
+        for (int i = p.vtx; i < dl->VtxBuffer.Size; ++i) {
+            ImU32 &col = dl->VtxBuffer[i].col;
+            const ImU32 a = static_cast<ImU32>(static_cast<float>((col >> IM_COL32_A_SHIFT) & 0xFF) * alpha);
+            col = (col & ~IM_COL32_A_MASK) | (a << IM_COL32_A_SHIFT);
+        }
+    }
+}
+
 uint8_t basic_land_mana(const std::vector<std::string> &subtypes) {
     uint8_t out = 0;
     for (const std::string &t : subtypes) {
@@ -497,7 +485,7 @@ void TextCardRenderer::draw(
     const float w = rotated ? sh : sw, h = rotated ? sw : sh;
     const ImVec2 center((slot_min.x + slot_max.x) / 2, (slot_min.y + slot_max.y) / 2);
     const Box b{center.x - w / 2, center.y - h / 2, w, h};
-    const CardPass pass = begin_pass(dl, rotated);
+    const CardPass pass = begin_card_pass(dl, rotated);
     if (!look.face) {
         draw_back(dl, b, look);
     } else {
@@ -511,7 +499,7 @@ void TextCardRenderer::draw(
             draw_compact(dl, b, look);
         }
     }
-    end_pass(dl, pass, center, alpha);
+    end_card_pass(dl, pass, center, alpha);
 }
 
 }  // namespace rmwork

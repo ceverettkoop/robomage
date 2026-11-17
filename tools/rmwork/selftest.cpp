@@ -15,6 +15,7 @@
 #include "imgui_internal.h"
 #include "implot.h"
 #include "paths.h"
+#include "selftest_images.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
 #include "theme.h"
@@ -1155,6 +1156,7 @@ int run_selftest() {
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     begin_headless();
     check_theme_contrast(&t);
+    check_image_units([&t](bool ok, const std::string &what) { check(&t, ok, "Images: " + what); }, tmp);
     destroy_ui_context();
 
     remove_tree(tmp);

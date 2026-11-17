@@ -13,7 +13,9 @@
 // it beside the engine the tier prints that it was skipped and passes. With it, `rmwork --selftest`
 // (headless: no display or GPU) must exit 0, and so must `rmwork --selftest-data --engine <engine>`
 // (Replay's data on corpus logs the engine replays; skipped with a message when the engine is
-// absent); their output is kept in <out>/workbench/selftest.txt and selftest_data.txt.
+// absent); their output is kept in <out>/workbench/selftest.txt and selftest_data.txt. Then
+// `tools/scryfall/fetch_images.py --selftest` (the card images' printing rule on canned Scryfall
+// JSON, no network) must exit 0 (skipped without python3), its output in fetch_images.txt.
 
 static std::string summary_line(const std::string &out, const char *prefix);
 static void run_selftest(const rmcheck::Options &opt, rmcheck::Report &rep, const std::vector<std::string> &argv,
@@ -60,6 +62,12 @@ void tier_workbench(const Options &opt, Report &rep) {
     }
     run_selftest(
         opt, rep, {bin, "--selftest-data", "--engine", opt.binary}, "RMWORK-SELFTEST-DATA:", "selftest_data.txt");
+    if (opt.python.empty()) {
+        rep.info("workbench: fetch_images.py --selftest skipped (no python3 on PATH)");
+        return;
+    }
+    run_selftest(opt, rep, {opt.python, path_join(opt.repo, "tools/scryfall/fetch_images.py"), "--selftest"},
+        "FETCH-IMAGES-SELFTEST:", "fetch_images.txt");
 }
 
 }  // namespace rmcheck

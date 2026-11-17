@@ -34,7 +34,7 @@ static bool read_string(
 static bool read_engine(const featurize::Json &v, rmwork::EngineSettings *out, std::string *err);
 static bool read_models(const featurize::Json &v, rmwork::ModelSettings *out, std::string *err);
 static bool read_stops(const featurize::Json &v, rmwork::StopSettings *out, std::string *err);
-static bool read_images(const featurize::Json &v, std::string *out, std::string *err);
+static bool read_images(const featurize::Json &v, std::string *out, bool *card_images, std::string *err);
 static bool read_recent(const featurize::Json &v, std::vector<std::string> *out, std::string *err);
 static bool read_bool(const featurize::Json &obj, const char *key, const char *where, bool *out, std::string *err);
 static bool read_new_game(const featurize::Json &v, rmwork::NewGameSettings *out, std::string *err);
@@ -258,12 +258,21 @@ static bool read_stops(const featurize::Json &v, rmwork::StopSettings *out, std:
     return true;
 }
 
-static bool read_images(const featurize::Json &v, std::string *out, std::string *err) {
+// {"cache": dir, "faces": "images" | "text"}.
+static bool read_images(const featurize::Json &v, std::string *out, bool *card_images, std::string *err) {
     if (!v.is_object()) {
         *err = "\"images\" is not an object";
         return false;
     }
-    return read_string(v, "cache", "images", out, err);
+    if (!read_string(v, "cache", "images", out, err)) return false;
+    std::string faces = *card_images ? "images" : "text";
+    if (!read_string(v, "faces", "images", &faces, err)) return false;
+    if (faces != "images" && faces != "text") {
+        *err = "\"images\".\"faces\" is not images or text";
+        return false;
+    }
+    *card_images = faces == "images";
+    return true;
 }
 
 // {"tabs": [tool, …], "selected": i} or {"split": "row" | "col", "sizes": [f, …], "children": […]}.
@@ -590,7 +599,8 @@ std::string settings_to_json(const Settings &s) {
     out += "]},\n";
     out += "  \"stops\": {\"own\": " + stops_json(s.stops.own) + ", \"opponent\": " + stops_json(s.stops.opponent) +
            "},\n";
-    out += "  \"images\": {\"cache\": " + json_quote(s.image_cache) + "},\n";
+    out += "  \"images\": {\"cache\": " + json_quote(s.image_cache) +
+           ", \"faces\": " + json_quote(s.card_images ? "images" : "text") + "},\n";
     const NewGameSettings &g = s.new_game;
     out += "  \"new_game\": {\"deck\": " + json_quote(g.deck) + ", \"seat\": " + json_quote(g.seat == 0 ? "a" : "b") +
            ", \"opponent\": " + json_quote(g.opponent) + ", \"model\": " + json_quote(g.model) +
@@ -646,7 +656,7 @@ bool settings_from_json(const std::string &text, Settings *out, std::string *err
     if (const featurize::Json *v = doc.get("stops"))
         if (!read_stops(*v, &out->stops, err)) return false;
     if (const featurize::Json *v = doc.get("images"))
-        if (!read_images(*v, &out->image_cache, err)) return false;
+        if (!read_images(*v, &out->image_cache, &out->card_images, err)) return false;
     if (const featurize::Json *v = doc.get("layouts"))
         if (!read_layouts(*v, &out->layouts, err)) return false;
     if (const featurize::Json *v = doc.get("recent"))

@@ -26,6 +26,7 @@
 #include "replay_cache.h"
 #include "rmlog.h"
 #include "run_browser.h"
+#include "selftest_images.h"
 #include "selftest_play.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
@@ -343,6 +344,7 @@ static void check_table(Tally *t, rmwork::App &app, const std::string &at, rmwor
     const CheckFn fn = [t](bool ok, const std::string &what) { check(t, ok, "Table: " + what); };
     check_table_frames(fn, app.table(), *app.replay().match(), at, cov);
     check_table_drawing(fn, app, [&app](int n) { run_frames(app, n); }, at, cov);
+    check_table_images(fn, app, [&app](int n) { run_frames(app, n); }, at);
     app.replay().go_to(0);
     app.replay().set_view(VIEW_A);
 }

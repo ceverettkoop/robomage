@@ -5,9 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "card_images.h"
 #include "dialogs.h"
 #include "file_picker.h"
 #include "game_log.h"
+#include "image_renderer.h"
 #include "imgui.h"
 #include "layout.h"
 #include "layout_dialogs.h"
@@ -130,6 +132,10 @@ class App {
         RunBrowser &run_browser() { return run_browser_; }
         GameLogView &game_log() { return game_log_; }
         TableView &table() { return table_; }
+        // The card images (Settings → Card Printings) the Table and the zone windows draw with.
+        CardImages &card_images() { return card_images_; }
+        // Cards drawn as their images (else as text), as Settings → Card Printings sets it.
+        void set_card_faces(bool images) { settings_.card_images = images; }
         LinkState &links() { return links_; }
         ReplayTools &tools() { return tools_; }
         // Brings tool `t`'s tab to the front of its group once the layout has settled.
@@ -176,6 +182,7 @@ class App {
         std::string play_state_text() const;
 
     private:
+        void update_card_images();
         void handle_keys();
         void run_action(Action a);
         void not_built(const char *item);
@@ -220,6 +227,8 @@ class App {
         ReplaySession replay_;
         Loader loader_;
         GameLogView game_log_;
+        CardImages card_images_;
+        ImageCardRenderer image_renderer_{&card_images_};
         TableView table_;
         LinkState links_;
         ReplayTools tools_;

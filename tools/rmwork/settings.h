@@ -95,6 +95,7 @@ struct Settings {
         ModelSettings models;
         StopSettings stops = default_stops();
         std::string image_cache;          // the card-image cache; "" = default_image_cache()
+        bool card_images = true;          // cards drawn as their images where the cache has them
         std::vector<std::string> recent;  // files and run directories opened, the latest first
         NewGameSettings new_game;
 };

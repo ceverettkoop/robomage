@@ -49,9 +49,13 @@ void draw_magnified_card(const CardRenderer &renderer, const CardLook &look, con
         box_h += lh * static_cast<float>(wrapped.back().size());
     }
     box_h += 12;
+    // A double-faced card's other face stands beside it.
+    const float gap = 8;
+    const bool both = renderer.other_face_differs(look);
+    const float total_w = both ? 2 * mw + gap : mw;
     float left = max.x + 12;
-    if (left + mw > vp->Pos.x + vp->Size.x - 8) left = min.x - mw - 12;
-    if (left < vp->Pos.x + 8) left = vp->Pos.x + (vp->Size.x - mw) / 2;
+    if (left + total_w > vp->Pos.x + vp->Size.x - 8) left = min.x - total_w - 12;
+    if (left < vp->Pos.x + 8) left = vp->Pos.x + (vp->Size.x - total_w) / 2;
     const float total = mh + 6 + box_h;
     float top = (min.y + max.y) / 2 - total / 2;
     top = std::max(vp->Pos.y + 8, std::min(top, vp->Pos.y + vp->Size.y - total - 8));
@@ -60,6 +64,18 @@ void draw_magnified_card(const CardRenderer &renderer, const CardLook &look, con
         ImVec2(left + 3, top + 5), ImVec2(left + mw + 3, top + mh + 5), hex_color(0x000000, 120), mw * 0.05f);
     renderer.draw(fg, look, ImVec2(left, top), ImVec2(left + mw, top + mh), false, 1.0f);
     if (overlay) overlay(fg, ImVec2(left, top), ImVec2(left + mw, top + mh));
+    if (both) {
+        CardLook other = look;
+        other.face = look.other;
+        other.other = look.face;
+        other.colors = look.other->colors;
+        other.land = look.other->land;
+        other.land_mana = look.other->land ? basic_land_mana(look.other->subtypes) : 0;
+        const float ox = left + mw + gap;
+        fg->AddRectFilled(
+            ImVec2(ox + 3, top + 5), ImVec2(ox + mw + 3, top + mh + 5), hex_color(0x000000, 120), mw * 0.05f);
+        renderer.draw(fg, other, ImVec2(ox, top), ImVec2(ox + mw, top + mh), false, 1.0f);
+    }
     const ImVec2 ba(left, top + mh + 6), bz(left + mw, top + mh + 6 + box_h);
     fg->AddRectFilled(ba, bz, tok().DROP, 2);
     fg->AddRect(ba, bz, tok().LINE, 2);

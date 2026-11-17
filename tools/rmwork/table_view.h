@@ -55,6 +55,8 @@ struct TableDraw {
 class TableView {
     public:
         TableView();
+        // The renderer cards are drawn with (nullptr: the text renderer); it must outlive its use.
+        void set_renderer(const CardRenderer *r);
         // Draws the Table into the current window (between Begin and End).
         void draw(const TableDraw &d);
         // A message for the status bar, "" when none.

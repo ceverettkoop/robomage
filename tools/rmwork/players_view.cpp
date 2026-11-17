@@ -180,7 +180,10 @@ void PlayersView::draw_zone_windows(ToolData &data, LinkState *links, ImGuiKeyCh
 
 CardLook PlayersView::look_of(const ToolData &data, const ZoneCard &c) const {
     CardLook look;
-    if (c.card >= 0 && !c.face_down) look.face = data.frame().book->face(c.card, c.back);
+    if (c.card >= 0 && !c.face_down) {
+        look.face = data.frame().book->face(c.card, c.back);
+        look.other = data.frame().book->face(c.card, !c.back);
+    }
     if (c.face_down && !c.name.empty()) look.note = c.name;
     look.colors = c.colors;
     look.land = c.land;
@@ -301,7 +304,7 @@ bool PlayersView::draw_zone_window(
         rects.emplace_back(a, b);
         ImDrawList *dl = ImGui::GetWindowDrawList();
         dl->AddRectFilled(ImVec2(a.x + 1, a.y + 2), ImVec2(b.x + 1, b.y + 3), hex_color(0x000000, 120), cw * 0.05f);
-        renderer_.draw(dl, hidden ? CardLook() : look_of(data, c), a, b, false, 1.0f);
+        renderer_->draw(dl, hidden ? CardLook() : look_of(data, c), a, b, false, 1.0f);
         const uint64_t id = hidden ? HIDDEN_ID : c.handle ? c.handle : KNOWN_CARD_ID + i;
         if (ImGui::IsItemHovered()) {
             under = id;
@@ -365,9 +368,9 @@ bool PlayersView::draw_zone_window(
             mx = rects.back().second;
         }
         if (card) {
-            draw_magnified_card(renderer_, look_of(data, *card), card_lines(z, *card), mn, mx);
+            draw_magnified_card(*renderer_, look_of(data, *card), card_lines(z, *card), mn, mx);
         } else if (w.mag.handle() == HIDDEN_ID) {
-            draw_magnified_card(renderer_, CardLook(),
+            draw_magnified_card(*renderer_, CardLook(),
                 {std::to_string(z.hidden) + " hidden " + (z.hidden == 1 ? "card" : "cards"),
                     std::string(view_name(data.frame().view)) + " cannot name them"},
                 mn, mx);

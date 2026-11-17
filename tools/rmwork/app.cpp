@@ -72,6 +72,7 @@ App::App(const Settings &settings, const ConfigPaths &paths, bool persist)
     status_ =
         "Drag a tab to move a tool; drag the gaps between tools to resize them. View lists every tool and the "
         "preset layouts.";
+    settings_dialog_.set_card_images(&card_images_);
 }
 
 void App::begin_frame() {
@@ -88,7 +89,17 @@ void App::begin_frame() {
     font_applied_ = true;
 }
 
+// The card images follow Settings → Card Printings: the cache, the overrides, images or text.
+void App::update_card_images() {
+    card_images_.configure(image_cache_path(settings_), printings_path(paths_.dir));
+    card_images_.new_frame();
+    const CardRenderer *r = settings_.card_images ? &image_renderer_ : nullptr;
+    table_.set_renderer(r);
+    tools_.players().set_renderer(r);
+}
+
 void App::frame() {
+    update_card_images();
     poll_loader();
     poll_play();
     replay_.tick(ImGui::GetTime());
@@ -122,6 +133,7 @@ void App::frame() {
 }
 
 bool App::working() const {
+    if (card_images_.textures().busy()) return true;
     if (loader_.busy() || (run_browser_.is_open() && !run_browser_.ready())) return true;
     if (!play_.running()) return false;
     return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||

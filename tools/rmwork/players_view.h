@@ -33,6 +33,8 @@ class PlayersView {
         // The open zone windows, as floating windows (call after the tools).
         void draw_zone_windows(ToolData &data, LinkState *links, ImGuiKeyChord magnify);
         void open_zone(int seat, ZoneKind z);
+        // The renderer cards are drawn with (nullptr: the text renderer); it must outlive its use.
+        void set_renderer(const CardRenderer *r) { renderer_ = r ? r : &text_renderer_; }
         void close_zone(int seat, ZoneKind z);
         bool zone_open(int seat, ZoneKind z) const;
         size_t open_zones() const { return windows_.size(); }
@@ -64,7 +66,8 @@ class PlayersView {
         static std::vector<std::string> card_lines(const ZoneList &z, const ZoneCard &c);
 
         std::vector<ZoneWindow> windows_;
-        TextCardRenderer renderer_;
+        TextCardRenderer text_renderer_;
+        const CardRenderer *renderer_ = &text_renderer_;
         std::string force_mag_;
 };
 

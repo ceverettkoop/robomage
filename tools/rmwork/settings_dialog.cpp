@@ -64,7 +64,7 @@ void SettingsDialog::draw(Settings *s, const std::string &settings_path) {
         ImGui::OpenPopup(SETTINGS_POPUP);
         want_open_ = false;
     }
-    begin_modal_frame(ImVec2(760, 470));
+    begin_modal_frame(ImVec2(860, 600));
     bool keep = true;
     const bool visible = ImGui::BeginPopupModal(SETTINGS_POPUP, &keep, ImGuiWindowFlags_NoSavedSettings);
     ImGui::PopStyleColor(3);
@@ -173,13 +173,11 @@ void SettingsDialog::draw_table_tab(Settings *s, const std::string &settings_pat
 
 void SettingsDialog::draw_printings_tab(Settings *s) {
     note(
-        "Each card will be drawn with its oldest paper printing unless you choose another here. The choices arrive "
-        "with card images (docs/workbench_plan.md §2.4) and are kept in ~/.config/robomage/printings.json.");
-    ImGui::Spacing();
-    ImGui::TextDisabled("Image cache");
-    ImGui::Spacing();
-    path_field("Directory", &s->image_cache, default_image_cache(), Want::DIRECTORY, 11 * char_width(),
+        "Each card is drawn with its oldest paper printing unless you choose another here; the choices are kept in "
+        "printings.json beside the settings.");
+    path_field("Image cache", &s->image_cache, default_image_cache(), Want::DIRECTORY, 11 * char_width(),
         "missing: tools/scryfall/fetch_images.py creates it when it fetches the first image");
+    printings_.draw(s, images_);
 }
 
 // The bindings, a row each: click a row and press the new chord (Esc cancels); each row resets to

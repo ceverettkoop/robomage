@@ -12,7 +12,7 @@
 //
 // A CardRenderer draws what a card looks like and nothing of its state on the table (the Table
 // draws P/T, counters, damage and the rest over it), so the text renderer here and the image
-// renderer of the card-image stage (docs/workbench_plan.md §2.4) are interchangeable. A card is
+// renderer (image_renderer.h, docs/workbench_plan.md §2.4) are interchangeable. A card is
 // drawn into `slot`: upright it fills the slot (width × CARD_ASPECT tall); `rotated` (tapped) it
 // lies on its side, turned a quarter clockwise, in a slot as wide as the card is tall.
 //
@@ -32,6 +32,9 @@ struct CardLook {
         bool token = false;
         uint8_t land_mana = 0;  // a land's basic land types, as WUBRG bits
         std::string note;       // printed on a back
+        // A double-faced card's other face (nullptr: none, or not known to the viewer); the
+        // magnifier shows it beside the face drawn.
+        const CardFace *other = nullptr;
 };
 
 class CardRenderer {
@@ -40,6 +43,9 @@ class CardRenderer {
         // Draws `look` into `slot` (screen coordinates), faded by `alpha`.
         virtual void draw(ImDrawList *dl, const CardLook &look, ImVec2 slot_min, ImVec2 slot_max, bool rotated,
             float alpha) const = 0;
+        // Whether `look.other` looks different from `look` (a card printed with both halves on one
+        // face draws the same either way).
+        virtual bool other_face_differs(const CardLook &look) const { return look.other != nullptr; }
 };
 
 class TextCardRenderer : public CardRenderer {
@@ -47,6 +53,19 @@ class TextCardRenderer : public CardRenderer {
         void draw(ImDrawList *dl, const CardLook &look, ImVec2 slot_min, ImVec2 slot_max, bool rotated,
             float alpha) const override;
 };
+
+// One drawing pass of a card: the draw list's state at its start. A rotated card is drawn upright
+// between begin_card_pass and end_card_pass (unclipped: the font's line culling and the window's
+// clip rectangle are in upright coordinates), then turned a quarter clockwise about `center` and
+// given the clip rectangle back; everything added is faded by `alpha`.
+struct CardPass {
+        int vtx = 0;
+        int cmd = 0;
+        ImVec4 clip;
+        bool rotated = false;
+};
+CardPass begin_card_pass(ImDrawList *dl, bool rotated);
+void end_card_pass(ImDrawList *dl, const CardPass &p, ImVec2 center, float alpha);
 
 // A colour swatch of a card's frame colours over the rectangle: one colour, two split down the
 // middle, gold for more, colourless grey, a land (with no colour) tan.
