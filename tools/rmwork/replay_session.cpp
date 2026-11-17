@@ -1,12 +1,19 @@
 #include "replay_session.h"
 
+static unsigned next_generation();
+
+static unsigned next_generation() {
+    static unsigned counter = 0;
+    return ++counter;
+}
+
 namespace rmwork {
 
 void ReplaySession::set_match(std::unique_ptr<Match> m, size_t cursor) {
     match_ = std::move(m);
     cursor_ = 0;
     playing_ = false;
-    ++generation_;
+    generation_ = next_generation();
     go_to(cursor);
 }
 
@@ -14,7 +21,7 @@ void ReplaySession::clear() {
     match_.reset();
     cursor_ = 0;
     playing_ = false;
-    ++generation_;
+    generation_ = next_generation();
 }
 
 const DecisionInfo *ReplaySession::current() const {
@@ -25,9 +32,13 @@ const DecisionInfo *ReplaySession::current() const {
 bool ReplaySession::go_to(size_t index) {
     if (count() == 0) return false;
     const size_t to = index >= count() ? count() - 1 : index;
-    if (to != cursor_) ++generation_;
+    if (to != cursor_) generation_ = next_generation();
     cursor_ = to;
     return true;
+}
+
+void ReplaySession::touch() {
+    generation_ = next_generation();
 }
 
 bool ReplaySession::step(int delta) {
@@ -39,7 +50,7 @@ bool ReplaySession::step(int delta) {
 void ReplaySession::set_view(int view) {
     if (view < 0 || view >= VIEW_COUNT || view == view_) return;
     view_ = view;
-    ++generation_;
+    generation_ = next_generation();
 }
 
 void ReplaySession::set_playing(bool on, double now) {

@@ -5,8 +5,9 @@
 
 // ── rmwork --selftest-data: Replay's data, headless, on real replays ─────────────────────────────
 //
-// Runs the engine (`engine`, else the robomage beside rmwork) in a temporary $XDG_CACHE_HOME and
-// $XDG_CONFIG_HOME, through the App as the UI drives it (headless frames, the loader's thread):
+// Runs the engine (`engine`, else the robomage beside rmwork) in a temporary $XDG_CACHE_HOME,
+// $XDG_CONFIG_HOME and $XDG_DATA_HOME, through the App as the UI drives it (headless frames, the
+// loader's thread):
 //   - corpus logs (tests/corpus/: a bo1 game and a --no-auto-mana one) and a bo3 match the engine
 //     plays for the test (explore vs random, --trajectory-out, so its episodes lie beside its log):
 //     the decision count is the log's, every decision has A, B and omniscient STATE frames that
@@ -26,7 +27,9 @@
 //     reach the error path (or none), leaving no temporary entry;
 //   - the file picker's listing and filters, natural order, the recent files;
 //   - the Table and the other tools on every match (selftest_table.h, selftest_tools.h), and the
-//     evaluations' tools on the bo3 match with made-up evaluations added to its episodes.
+//     evaluations' tools on the bo3 match with made-up evaluations added to its episodes;
+//   - Play (selftest_play.h): games against the engine's agents and the scripted agent played to their
+//     end, the passing, concessions, the decision logs in Replay, the engine's failures.
 // Prints "RMWORK-SELFTEST-DATA: N checks, M failures"; nonzero exit on a failure.
 
 namespace rmwork {

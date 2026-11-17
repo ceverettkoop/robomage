@@ -48,6 +48,12 @@ struct CliOptions {
         bool tree_expand = false;
         std::vector<std::pair<int, rmwork::ZoneKind>> zones;
         std::string zone_magnify;
+        // Play.
+        std::string new_game;  // the --new-game spec ("" none)
+        long play_decisions = 0;
+        std::string play_until;
+        bool open_new_game = false;
+        bool game_over = false;
         rmwork::WindowOptions window;
 };
 
@@ -61,7 +67,9 @@ static rmwork::FontChoice font_override(const CliOptions &opt, const rmwork::Fon
 static void show_demo_error(rmwork::App &app);
 static int parse_view(const std::string &text);
 static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind> *out);
+static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, std::string *why);
 static void open_data(rmwork::App &app, const CliOptions &opt);
+static void open_play(rmwork::App &app, const CliOptions &opt);
 static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist);
 
 static void usage() {
@@ -74,6 +82,8 @@ static void usage() {
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
+        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|end] [--game-over]]\n"
+        "         [--open-new-game] [--engine PATH] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
@@ -104,7 +114,8 @@ static void usage() {
         "  --run DIR          list a run directory's decision logs\n"
         "  --decision N       show decision N (1-based) of the opened log\n"
         "  --view V           Replay's viewer: a, b or omni\n"
-        "  --engine PATH      replay with this engine binary instead of Settings → Engine's\n"
+        "  --engine PATH      replay and play with this engine binary instead of Settings → Engine's (an nn:\n"
+        "                     opponent plays in the robomage_nn beside it)\n"
         "  --open-picker      open File → Open Replay's file picker at start\n"
         "  --game-combo       open the toolbar's game list once the game is loaded\n"
         "  --table-hover-stack N  the Table: hover stack object N (0 = top) every frame (its targets lit)\n"
@@ -116,10 +127,20 @@ static void usage() {
         "                     object table\n"
         "  --open-zone SEAT:ZONE  open a zone window: a or b, then hand, library, graveyard or exile; repeatable\n"
         "  --zone-magnify NAME    the zone windows: open the magnifier on the first card whose name contains NAME\n"
+        "  --new-game SPEC    start a Play game: the New Game dialog's last choices changed by comma-separated items\n"
+        "                     opp=explore|random|scripted|model|server, model=EXPORT, server=SOCKET, deck=DECK,\n"
+        "                     opp-deck=DECK, seat=a|b, format=bo1|bo3, seed=N, auto-mana=on|off, read=on|off\n"
+        "                     (decks relative to the engine's resources/decks, e.g. league/burn)\n"
+        "  --play-decisions N answer your first N decisions with a seeded random row (the game's seed)\n"
+        "  --play-until COND  ... until a decision where COND holds: stack (the stack is not empty), combat (an\n"
+        "                     attacker or blocker declaration), end (none: to the match's end)\n"
+        "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
+        "  --open-new-game    open Game \xE2\x86\x92 New Game vs Model at start\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
         "                     RMWORK-SELFTEST: N checks, M failures\n"
         "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
-        "                     beside rmwork (or --engine); prints RMWORK-SELFTEST-DATA: N checks, M failures\n");
+        "                     beside rmwork (or --engine), and of Play's games against it; prints\n"
+        "                     RMWORK-SELFTEST-DATA: N checks, M failures\n");
 }
 
 static bool parse_size(const std::string &text, int *w, int *h) {
@@ -199,6 +220,26 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->zones.push_back(z);
         } else if (a == "--zone-magnify" && has_value) {
             opt->zone_magnify = argv[++i];
+        } else if (a == "--new-game" && has_value) {
+            opt->new_game = argv[++i];
+        } else if (a == "--play-decisions" && has_value) {
+            opt->play_decisions = std::atol(argv[++i]);
+            if (opt->play_decisions < 1) {
+                std::fprintf(stderr, "rmwork: --play-decisions is a number of decisions from 1\n");
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--play-until" && has_value) {
+            opt->play_until = argv[++i];
+            if (opt->play_until != "stack" && opt->play_until != "combat" && opt->play_until != "end") {
+                std::fprintf(stderr, "rmwork: --play-until is stack, combat or end, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--game-over") {
+            opt->game_over = true;
+        } else if (a == "--open-new-game") {
+            opt->open_new_game = true;
         } else if (a == "--open-settings") {
             opt->open_settings = true;
         } else if (a == "--settings-tab" && has_value) {
@@ -263,6 +304,20 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
         std::fprintf(stderr, "rmwork: --mode is play or replay, not '%s'\n", opt->mode.c_str());
         *exit_code = 2;
         return false;
+    }
+    if ((opt->play_decisions || !opt->play_until.empty() || opt->game_over) && opt->new_game.empty()) {
+        std::fprintf(stderr, "rmwork: --play-decisions, --play-until and --game-over need --new-game\n");
+        *exit_code = 2;
+        return false;
+    }
+    if (!opt->new_game.empty()) {
+        rmwork::NewGameSettings g;
+        std::string why;
+        if (!parse_new_game(opt->new_game, &g, &why)) {
+            std::fprintf(stderr, "rmwork: --new-game: %s\n", why.c_str());
+            *exit_code = 2;
+            return false;
+        }
     }
     if (!check_font_flags(*opt)) {
         *exit_code = 2;
@@ -341,6 +396,61 @@ static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind>
     return false;
 }
 
+// "opp=explore,deck=league/burn,…" over `g` (the New Game dialog's keys); false with `why`.
+static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, std::string *why) {
+    size_t start = 0;
+    while (start < spec.size()) {
+        size_t comma = spec.find(',', start);
+        if (comma == std::string::npos) comma = spec.size();
+        const std::string item = spec.substr(start, comma - start);
+        start = comma + 1;
+        if (item.empty()) continue;
+        const size_t eq = item.find('=');
+        const std::string key = item.substr(0, eq), value = eq == std::string::npos ? "" : item.substr(eq + 1);
+        const bool on = value == "on" || value == "true" || value == "1";
+        const bool off = value == "off" || value == "false" || value == "0";
+        if (key == "opp" && rmwork::find_opponent(value) >= 0) {
+            g->opponent = value;
+        } else if (key == "model" && !value.empty()) {
+            g->model = rmwork::absolute_path(value);
+        } else if (key == "server" && !value.empty()) {
+            g->server = rmwork::absolute_path(value);
+        } else if (key == "deck" && !value.empty()) {
+            g->deck = value;
+        } else if (key == "opp-deck" && !value.empty()) {
+            g->opponent_deck = value;
+        } else if (key == "seat" && (value == "a" || value == "b")) {
+            g->seat = value == "a" ? 0 : 1;
+        } else if (key == "format" && (value == "bo1" || value == "bo3")) {
+            g->bo3 = value == "bo3";
+        } else if (key == "seed" && !value.empty() && value.find_first_not_of("0123456789") == std::string::npos) {
+            g->seed = std::strtoull(value.c_str(), nullptr, 10);
+        } else if (key == "auto-mana" && (on || off)) {
+            g->auto_mana = on;
+        } else if (key == "read" && (on || off)) {
+            g->model_read = on;
+        } else {
+            *why = "bad item '" + item + "'";
+            return false;
+        }
+    }
+    return true;
+}
+
+// Play's flags: the dialog, or a game started at once and answered by the seeded rule.
+static void open_play(rmwork::App &app, const CliOptions &opt) {
+    if (opt.open_new_game) app.open_new_game();
+    if (opt.new_game.empty()) return;
+    rmwork::NewGameSettings g = app.settings().new_game;
+    std::string why;
+    if (!parse_new_game(opt.new_game, &g, &why) || !app.start_game(g)) return;
+    if (opt.game_over) {
+        app.auto_play(-1, "end");
+    } else if (opt.play_decisions || !opt.play_until.empty()) {
+        app.auto_play(opt.play_decisions ? opt.play_decisions : -1, opt.play_until);
+    }
+}
+
 // The data flags: a log (with the episodes), else an episode, a run directory, the picker.
 static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (!opt.engine.empty()) app.set_engine_override(opt.engine);
@@ -387,6 +497,7 @@ static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool
     if (opt.save_layout) app.layout_dialogs().open_save(app.mode());
     if (opt.manage_layouts) app.layout_dialogs().open_manage(app.mode());
     open_data(app, opt);
+    open_play(app, opt);
     if (!opt.layout.empty() && !app.request_named_layout(opt.layout))
         app.report_error("No such layout",
             "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +

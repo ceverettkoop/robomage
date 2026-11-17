@@ -12,13 +12,14 @@
 #include "tool_data.h"
 #include "value_views.h"
 
-// ── Replay's tools beside the Table and the Game Log ────────────────────────────────────────────
+// ── The tools beside the Table and the Game Log ─────────────────────────────────────────────────
 //
 // Players, Choices, Decision Inspector, State Tree, Swings, Value Graph and Model's Read, and the
 // zone windows the Players tool opens; each reads the cursor's decision in the current viewer's
-// frame (ToolData). begin_frame, before the tools draw, reads the decision and hands the links its
-// menu and stack targets, so the Table, Choices, the State Tree and the zone windows link the same
-// handles whichever of them are open. Also the toolbar's next swing and the status bar's V.
+// frame (ToolData) of the session it is given: Replay's, or Play's live one (whose viewer is the
+// human's seat). While the human chooses (set_choosing), Choices submits rows. begin_frame, before the tools draw,
+// reads the decision and hands the links its menu and stack targets, so the Table, Choices, the State Tree and the zone
+// windows link the same handles whichever of them are open. Also the toolbar's next swing and the status bar's V.
 
 namespace rmwork {
 
@@ -27,6 +28,9 @@ class ReplayTools {
         void begin_frame(ReplaySession &s, TableView &table, LinkState &links);
         // Draws tool `t`'s body (one of the tools above) for a loaded match.
         void draw(Tool t, ReplaySession &s, LinkState *links);
+        // Choices submits the row chosen (Play, the human's pending decision at the cursor).
+        void set_choosing(bool on) { choosing_ = on; }
+        bool choosing() const { return choosing_; }
         // The zone windows (after the tools).
         void draw_windows(LinkState *links, ImGuiKeyChord magnify);
 
@@ -53,6 +57,7 @@ class ReplayTools {
         ValueGraphView graph_;
         SwingsView swings_;
         ModelReadView model_;
+        bool choosing_ = false;
 };
 
 }  // namespace rmwork

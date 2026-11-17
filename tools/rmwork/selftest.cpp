@@ -862,10 +862,24 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
     s.stops.own.fill(false);
     s.stops.opponent[0] = s.stops.opponent[11] = true;
     s.image_cache = "/cache/images";
+    s.new_game.deck = "heldout/storm";
+    s.new_game.seat = 1;
+    s.new_game.opponent = "model";
+    s.new_game.model = "/runs/a/exports/m9.pt2";
+    s.new_game.server = "/tmp/s.sock";
+    s.new_game.opponent_deck = "delver";
+    s.new_game.bo3 = true;
+    s.new_game.seed = 424242;
+    s.new_game.auto_mana = false;
+    s.new_game.model_read = true;
     Settings back;
     std::string err;
     check(t, settings_from_json(settings_to_json(s), &back, &err) && settings_to_json(back) == settings_to_json(s),
-        "the engine, models, stops and image settings do not round-trip: " + err);
+        "the engine, models, stops, image and new-game settings do not round-trip: " + err);
+    check(t,
+        back.new_game.seat == 1 && back.new_game.bo3 && back.new_game.seed == 424242 && !back.new_game.auto_mana &&
+            back.new_game.model_read && back.new_game.opponent == "model" && back.new_game.deck == "heldout/storm",
+        "the read-back New Game choices differ");
     check(t,
         back.models.policies.size() == 2 && back.models.policies[1].id == "b.2-x_" && !back.stops.own[1] &&
             back.stops.opponent[11] && back.engine.workdir == "/tmp/work",
@@ -876,7 +890,9 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
         "{\"models\": {\"policies\": [{\"id\": \"a\", \"model\": \"x\"}, {\"id\": \"a\", \"model\": \"y\"}]}}",
         "{\"models\": {\"policies\": [{\"id\": \"a b\", \"model\": \"x\"}]}}",
         "{\"models\": {\"policies\": [{\"id\": \"a\"}]}}", "{\"images\": {\"cache\": false}}",
-        "{\"keys\": {\"replay.next\": \"Ctrl+O\"}}"};
+        "{\"keys\": {\"replay.next\": \"Ctrl+O\"}}", "{\"new_game\": {\"seat\": \"c\"}}",
+        "{\"new_game\": {\"format\": \"bo5\"}}", "{\"new_game\": {\"seed\": -1}}",
+        "{\"new_game\": {\"auto_mana\": \"yes\"}}", "{\"new_game\": []}"};
     for (const char *text : refused) check(t, !settings_from_json(text, &back, &err), std::string("accepted: ") + text);
     check(t, settings_from_json("{\"keys\": {\"play.skip_turn\": \"RightArrow\"}}", &back, &err),
         "a Play key equal to a Replay key is refused: " + err);

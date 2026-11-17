@@ -1,5 +1,7 @@
 #include "panels.h"
 
+#include <algorithm>
+
 #include "implot.h"
 #include "theme.h"
 #include "widgets.h"
@@ -8,6 +10,7 @@ static void legend_entry(const char *label, ImU32 color, bool dashed);
 static void draw_value_graph(const char *note);
 static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t);
 static bool replay_tool(rmwork::Tool t);
+static void draw_new_game_prompt(bool *pressed, float width);
 
 // A short line in the series' colour and its label, on the current line.
 static void legend_entry(const char *label, ImU32 color, bool dashed) {
@@ -79,18 +82,30 @@ static bool replay_tool(rmwork::Tool t) {
     return t != rmwork::Tool::TABLE && t != rmwork::Tool::LOG;
 }
 
+// Play with no game: what to do, and a New Game button under it.
+static void draw_new_game_prompt(bool *pressed, float width) {
+    const char *body =
+        "Play a game against a model, the scripted agent, explore or random: you choose with the Choices tool "
+        "(click a row, or \xE2\x86\x91 / \xE2\x86\x93 and Enter), F2 passes to the end of the turn and F6 skips it. "
+        "Game \xE2\x86\x92 New Game vs Model (Ctrl+N) opens the same dialog.";
+    rmwork::centered_text_block("No game", body, width);
+    ImGui::Spacing();
+    const char *label = "New Game\xE2\x80\xA6";
+    const float bw = ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2;
+    ImGui::SetCursorPosX(std::max(0.0f, (ImGui::GetWindowWidth() - bw) / 2));
+    if (ImGui::Button(label) && pressed) *pressed = true;
+}
+
 namespace rmwork {
 
 void draw_tool_body(Tool t, const ToolContext &ctx) {
-    const bool loaded = ctx.mode == Mode::REPLAY && ctx.replay && ctx.replay->loaded();
+    const bool loaded = ctx.replay && ctx.replay->loaded();
     if (loaded && replay_tool(t) && ctx.tools) {
         ctx.tools->draw(t, *ctx.replay, ctx.links);
         return;
     }
     if (t == Tool::GRAPH) {
-        draw_value_graph(ctx.mode == Mode::PLAY ? "No game: Play arrives in plan \xC2\xA7"
-                                                  "2.3"
-                                                : "No game loaded");
+        draw_value_graph(ctx.mode == Mode::PLAY ? "No game: Game \xE2\x86\x92 New Game vs Model" : "No game loaded");
         return;
     }
     if (loaded && t == Tool::LOG && ctx.log) {
@@ -111,8 +126,10 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
     const float width = 46.0f * ImGui::CalcTextSize("M").x;
     if (loaded) {
         centered_text_block("Game loaded", loaded_body(*ctx.replay, t).c_str(), width);
-    } else if (ctx.mode == Mode::REPLAY && !ctx.loading.empty()) {
+    } else if (!ctx.loading.empty()) {
         centered_text_block(ctx.loading.c_str(), tool_info(t).blurb, width);
+    } else if (ctx.mode == Mode::PLAY && t == Tool::TABLE) {
+        draw_new_game_prompt(ctx.new_game, width);
     } else {
         centered_text_block("No game loaded", tool_info(t).blurb, width);
     }

@@ -13,6 +13,9 @@
 #include "layout_dialogs.h"
 #include "links.h"
 #include "loader.h"
+#include "new_game_dialog.h"
+#include "play_dialogs.h"
+#include "play_session.h"
 #include "replay_session.h"
 #include "replay_tools.h"
 #include "run_browser.h"
@@ -34,6 +37,12 @@
 // the match it hands over becomes the ReplaySession the toolbar, the keys, the status bar and the
 // tools read (the tools beside the Table through ReplayTools, replay_tools.h). A failure opens the
 // error dialog.
+//
+// Play: Game → New Game vs Model (new_game_dialog.h) starts a PlaySession (play_session.h), whose
+// live match is the session the tools read in Play (only the human seat's frames ever reach it);
+// Choices submits rows at the human's decision, F2 / F6 and the stops pass, Game → Concede asks
+// first (play_dialogs.h), the match's end opens the result screen, and File → Save Decision Log
+// copies the game's log. The engine's failures reach the error dialog; quitting kills the engine.
 
 struct ImGuiDockNode;
 
@@ -97,12 +106,14 @@ class App {
         enum PickPurpose {
             PICK_REPLAY,
             PICK_EPISODE,
-            PICK_RUN
+            PICK_RUN,
+            PICK_SAVE_LOG
         };
         void open_file_picker(PickPurpose purpose);
         bool loading() const { return loader_.busy(); }
-        // A game is being opened or a run directory read (a screenshot waits for both).
-        bool working() const { return loader_.busy() || (run_browser_.is_open() && !run_browser_.ready()); }
+        // A game is being opened or a run directory read, or Play's engine has not asked yet or
+        // auto_play is still answering (a screenshot waits for each).
+        bool working() const;
         void cancel_load() { loader_.cancel(); }
         // The loader's phase and fraction (-1 unknown), "" when idle.
         std::string load_phase(double *fraction) const;
@@ -132,6 +143,38 @@ class App {
         // What the last finished load said (the notes), for the self-test.
         const std::vector<std::string> &load_notes() const { return load_notes_; }
 
+        // ── Play ──
+        // The session the tools read: Replay's loaded match, or Play's live one.
+        ReplaySession &session() { return mode() == Mode::PLAY ? play_.view() : replay_; }
+        PlaySession &play() { return play_; }
+        // Game → New Game vs Model, with the last choices.
+        void open_new_game();
+        NewGameDialog &new_game_dialog() { return new_game_; }
+        // Starts a game with `g` (kept as the next game's choices) and switches to Play; false after
+        // the error dialog.
+        bool start_game(const NewGameSettings &g);
+        // The engine binary a game against `o` runs ("" with `why` when there is none).
+        std::string play_engine(Opponent o, std::string *why) const;
+        // Sends `row` at the human's pending decision; false (with a status message) when none is.
+        bool play_reply(int row);
+        // F2 / F6.
+        void play_pass(PassMode mode);
+        // The concession's confirmation (Game → Concede Game / Match).
+        void open_concede(bool match);
+        ConcedeDialog &concede_dialog() { return concede_; }
+        GameOverDialog &game_over() { return game_over_; }
+        // Answers the human's next `decisions` decisions (-1: every one) with a seeded random row
+        // until `until` holds ("stack": the stack is not empty; "combat": an attacker or blocker
+        // declaration; "end": never, so to the match's end; "" none): screenshots and checks.
+        void auto_play(long decisions, const std::string &until);
+        bool auto_playing() const { return auto_left_ != 0 && play_.running(); }
+        // File → Save Decision Log: copies the session's decision log to `path`.
+        bool save_log_to(const std::string &path, std::string *err);
+        // Whether Choices submits at this frame: Play, the human's pending decision at the cursor.
+        bool choosing() const;
+        // The status bar's Play field: "Your decision", "Opponent is thinking…", "Match over", …
+        std::string play_state_text() const;
+
     private:
         void handle_keys();
         void run_action(Action a);
@@ -147,6 +190,11 @@ class App {
         void draw_replay_nav();
         void draw_load_progress(float right_edge);
         void poll_loader();
+        void poll_play();
+        void step_auto_play();
+        void draw_play_nav();
+        void draw_play_dialogs();
+        void open_save_picker();
         void install(LoadOutcome *o);
         void pick_done(const std::string &path);
         void dock_home_if_lost(Mode m, Tool t);
@@ -195,6 +243,15 @@ class App {
         SettingsDialog settings_dialog_;
         LayoutDialogs layout_dialogs_;
         ErrorDialog error_dialog_;
+        PlaySession play_;
+        NewGameDialog new_game_;
+        ConcedeDialog concede_;
+        GameOverDialog game_over_;
+        bool new_game_pressed_ = false;  // Play's empty Table's button
+        bool play_dealt_ = false;        // the live game's first decision has arrived
+        long auto_left_ = 0;             // auto_play: decisions left (-1 unbounded)
+        std::string auto_until_;
+        uint64_t auto_rng_ = 0;
         double health_checked_ = -1.0;
         std::string health_paths_;  // the engine and socket paths last checked
         bool engine_found_ = false;

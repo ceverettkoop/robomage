@@ -40,6 +40,7 @@ static bool decode_ref(const rmwork::Match &m, const agents::SeatStream &stream,
 static void read_key(const agents::Table &header, int *game, bool *sideboarding, int64_t *decision, bool *terminal);
 static std::string phase_of(const agents::DecisionView &v, bool sideboarding);
 static std::string reply_text(const agents::DecisionView &v, int reply);
+static void fill_decision(rmwork::DecisionInfo *d, const agents::DecisionView &v);
 static void add_seat_lines(Builder *b, int seat, const agents::DecisionView &v, int decision);
 static void read_results(Builder *b, const agents::SeatStream &omni, const rmstate::DecodedFrame &f);
 static bool process_triple(Builder *b, const std::array<rmwork::FrameRef, rmwork::VIEW_COUNT> &refs, std::string *err);
@@ -49,6 +50,7 @@ static bool banner_line(const std::string &line);
 static std::string header_text(const std::string &line);
 static void build_narrative(rmwork::Match *m);
 static void finish_result(rmwork::Match *m);
+static bool write_record(int fd, const std::string &payload, uint64_t *end, std::string *err);
 
 // The `seat` enum's value (1 A, 2 B) as 0 / 1, -1 for none.
 static int seat_index(uint64_t seat) {
@@ -111,6 +113,21 @@ static std::string reply_text(const agents::DecisionView &v, int reply) {
     const size_t row = reply == -1 ? n - 1 : static_cast<size_t>(reply);
     if (reply < -1 || row >= n) return "row " + std::to_string(reply) + " (outside the menu)";
     return v.description(row);
+}
+
+// The decision's turn, phase, board header, menu size and life totals, from a frame that shows the
+// menu (`v`'s seat the decider).
+static void fill_decision(rmwork::DecisionInfo *d, const agents::DecisionView &v) {
+    const agents::Table turn = v.table("turn");
+    d->turn = turn.rows() ? static_cast<int>(turn.u(0, turn.col("turn"))) : 0;
+    d->phase = phase_of(v, d->sideboarding);
+    d->header = cli::board_header(v);
+    d->menu_rows = static_cast<int>(v.n());
+    const agents::Table players = v.table("player");
+    for (size_t r = 0; r < players.rows(); ++r) {
+        const int seat = seat_index(players.u(r, players.col("player")));
+        if (seat >= 0) d->life[static_cast<size_t>(seat)] = players.s(r, players.col("life"));
+    }
 }
 
 // The seat's events at `decision`, each "T<n>: …" line under a turn header, a game event as a header.
@@ -214,18 +231,9 @@ static bool process_triple(Builder *b, const std::array<rmwork::FrameRef, rmwork
         for (int v = 0; v < 2; ++v)
             if (agents::Table(frames[static_cast<size_t>(v)], m.stream(v).schema(), "menu").rows() > 0) d.decider = v;
         const agents::DecisionView ov(m.stream(2), frames[2], d.decider < 0 ? 0 : d.decider);
-        const agents::Table turn = ov.table("turn");
-        d.turn = turn.rows() ? static_cast<int>(turn.u(0, turn.col("turn"))) : 0;
-        d.phase = phase_of(ov, sideboarding);
-        d.header = cli::board_header(ov);
-        d.menu_rows = static_cast<int>(ov.n());
+        fill_decision(&d, ov);
         d.reply = m.log.replies[index];
         d.reply_text = reply_text(ov, d.reply);
-        const agents::Table players = ov.table("player");
-        for (size_t r = 0; r < players.rows(); ++r) {
-            const int seat = seat_index(players.u(r, players.col("player")));
-            if (seat >= 0) d.life[static_cast<size_t>(seat)] = players.s(r, players.col("life"));
-        }
         m.decisions.push_back(d);
     }
     // A terminal frame's events join the last decision.
@@ -334,7 +342,31 @@ static void finish_result(rmwork::Match *m) {
     if (m->bo3()) r.text += " " + std::to_string(r.wins[0]) + "-" + std::to_string(r.wins[1]);
 }
 
+// Appends "RMSTATE <n>\n" + payload at `*end`, which moves past it; the payload starts at the new
+// end less its size.
+static bool write_record(int fd, const std::string &payload, uint64_t *end, std::string *err) {
+    const std::string record = "RMSTATE " + std::to_string(payload.size()) + "\n" + payload;
+    size_t done = 0;
+    while (done < record.size()) {
+        const ssize_t n = pwrite(fd, record.data() + done, record.size() - done, static_cast<off_t>(*end + done));
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0) {
+            *err = std::string("cannot write the stream file: ") + std::strerror(errno);
+            return false;
+        }
+        done += static_cast<size_t>(n);
+    }
+    *end += record.size();
+    return true;
+}
+
 namespace rmwork {
+
+// A live match's index state: its logs' turn headers, the event kinds, the stream file's size.
+struct LiveState {
+        Builder builder;
+        uint64_t end = 0;
+};
 
 bool split_turn_prefix(const std::string &line, int *turn, std::string *text) {
     if (line.size() < 4 || line[0] != 'T' || !std::isdigit(static_cast<unsigned char>(line[1]))) return false;
@@ -350,6 +382,8 @@ bool split_turn_prefix(const std::string &line, int *turn, std::string *text) {
 const char *view_name(int view) {
     return view >= 0 && view < VIEW_COUNT ? VIEW_NAMES[view] : "?";
 }
+
+Match::Match() = default;
 
 Match::~Match() {
     if (fd_ >= 0) close(fd_);
@@ -505,6 +539,113 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
     build_narrative(m);
     finish_result(m);
     return true;
+}
+
+bool begin_live_match(Match *m, int seat, const std::string &stream_path, std::string *err) {
+    if (seat != VIEW_A && seat != VIEW_B) {
+        *err = "a live match is a seat's";
+        return false;
+    }
+    for (auto &st : m->streams_) st.reset(new agents::SeatStream());
+    m->live = true;
+    m->live_seat = seat;
+    m->finished = false;
+    m->dump_path = stream_path;
+    m->live_state_.reset(new LiveState());
+    m->live_state_->builder.m = m;
+    if (m->fd_ >= 0) close(m->fd_);
+    m->fd_ = open(stream_path.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
+    if (m->fd_ < 0) {
+        *err = "cannot create " + stream_path + ": " + std::strerror(errno);
+        return false;
+    }
+    m->result = MatchResult();
+    finish_result(m);
+    return true;
+}
+
+bool append_live_frame(Match *m, const std::string &payload, LiveFrame *out, std::string *err) {
+    *out = LiveFrame();
+    if (!m->live || !m->live_state_ || m->fd_ < 0) {
+        *err = "not a live match";
+        return false;
+    }
+    if (payload.size() < FRAME_HEADER_BYTES) {
+        *err = "a record that is not a frame";
+        return false;
+    }
+    const uint8_t kind = static_cast<uint8_t>(payload[6]);
+    const uint8_t viewer = static_cast<uint8_t>(payload[7]);
+    if (viewer != m->live_seat) {
+        *err =
+            std::string("a frame for the ") + view_name(viewer) + " viewer on " + view_name(m->live_seat) + "'s stream";
+        return false;
+    }
+    LiveState &ls = *m->live_state_;
+    if (!write_record(m->fd_, payload, &ls.end, err)) return false;
+    agents::SeatStream &stream = *m->streams_[viewer];
+    if (kind != static_cast<uint8_t>(rmstate::FrameKind::STATE)) {
+        if (!stream.feed_match_frame(payload, err)) {
+            *err = "a once-per-match frame: " + *err;
+            return false;
+        }
+        return true;
+    }
+    FrameRef ref;
+    ref.offset = ls.end - payload.size();
+    ref.size = static_cast<uint32_t>(payload.size());
+    rmstate::DecodedFrame frame;
+    if (!decode_ref(*m, stream, ref, &frame, err)) return false;
+    out->state = true;
+    int game = 0;
+    bool sideboarding = false, terminal = false;
+    int64_t decision = 0;
+    read_key(agents::Table(frame, stream.schema(), "header"), &game, &sideboarding, &decision, &terminal);
+    const agents::DecisionView v(stream, frame, viewer);
+    const size_t index = m->decisions.size();
+    if (terminal) {
+        out->terminal = true;
+        m->terminal[viewer] = ref;
+        m->finished = true;
+    } else if (v.n() > 0) {
+        if (!m->by_key_.emplace(std::make_tuple(game, sideboarding, decision), static_cast<int>(index)).second) {
+            *err = "two frames of decision " + std::to_string(decision) + " (game " + std::to_string(game + 1) + ")";
+            return false;
+        }
+        DecisionInfo d;
+        d.game = game;
+        d.sideboarding = sideboarding;
+        d.decision = decision;
+        d.frames[viewer] = ref;
+        d.decider = viewer;
+        fill_decision(&d, v);
+        d.reply = REPLY_PENDING;
+        m->decisions.push_back(d);
+        out->decision = true;
+        out->index = index;
+    }
+    add_seat_lines(&ls.builder, viewer, v, static_cast<int>(terminal && index > 0 ? index - 1 : index));
+    read_results(&ls.builder, stream, frame);
+    build_games(m);
+    finish_result(m);
+    return true;
+}
+
+void set_live_reply(Match *m, size_t index, int reply) {
+    if (index >= m->decisions.size()) return;
+    DecisionInfo &d = m->decisions[index];
+    d.reply = reply;
+    std::string err;
+    const std::shared_ptr<const rmstate::DecodedFrame> f = m->frame(index, d.decider, &err);
+    if (!f) return;
+    d.reply_text = reply_text(agents::DecisionView(m->stream(d.decider), *f, d.decider), reply);
+    // The seat's log names its own choice after the decision's events.
+    LogLine l;
+    l.decision = static_cast<int>(index);
+    l.kind = LogLine::Kind::CHOICE;
+    l.seat = d.decider;
+    l.text = "\xC2\xBB You: " + d.reply_text;
+    m->logs[static_cast<size_t>(d.decider)].push_back(l);
 }
 
 }  // namespace rmwork

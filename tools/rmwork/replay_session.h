@@ -6,10 +6,11 @@
 
 #include "match.h"
 
-// ── Replay's loaded match, its cursor and viewer ────────────────────────────────────────────────
+// ── A match the tools show, its cursor and viewer ───────────────────────────────────────────────
 //
-// The decision the tools show (the cursor, 0-based) and the viewer whose frames they read (A, B or
-// omniscient). Autoplay steps the cursor every `interval` seconds and stops at the last decision.
+// Replay's loaded match, or Play's live one (play_session.h). The decision the tools show (the
+// cursor, 0-based) and the viewer whose frames they read (A, B or omniscient; Play's is the human's
+// seat). Autoplay steps the cursor every `interval` seconds and stops at the last decision.
 // The status bar's fields come from the cursor's decision (its omniscient frame's turn and step,
 // public facts every viewer shares).
 
@@ -52,8 +53,11 @@ class ReplaySession {
         // The game combo's text for the cursor: "Game 2", "Sideboarding 2", "No game loaded".
         std::string game_label() const;
 
-        // Bumped whenever the cursor or the viewer changes (the Game Log follows it).
+        // Changes whenever the cursor, the viewer or the match changes (the tools reload what they
+        // read from it); drawn from one counter for every session, so two sessions never share one.
         unsigned generation() const { return generation_; }
+        // A new generation for a match that changed in place (Play's live match grew).
+        void touch();
 
     private:
         std::unique_ptr<Match> match_;

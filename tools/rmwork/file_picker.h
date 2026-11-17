@@ -9,7 +9,9 @@
 //
 // A path field, the places (home, the repository, its runs and replay corpus, the recent files),
 // the current directory's listing (directories first, then the files the filter admits, in natural
-// order: "a0-m2" before "a0-m10"), a filter, and Open / Cancel. A file is chosen by double-clicking
+// order: "a0-m2" before "a0-m10"), a filter, and Open / Cancel. For saving (open_save) a file name
+// field and Save take Open's place: the chosen path is the directory joined with the name, and a
+// file that exists asks first (Save becomes Replace). A file is chosen by double-clicking
 // it or selecting it and pressing Open (or Enter); a directory is entered by double-clicking it, or
 // chosen with "Choose this directory" when the filter is Directories. Generic: the caller says what
 // it is picking (`purpose`, its own tag) and with which filter it starts.
@@ -46,6 +48,10 @@ class FilePicker {
         // Opens at `dir` (the directory of `dir` when it names a file; home when it is missing).
         void open(const std::string &title, int purpose, FileFilter filter, const std::string &dir,
             const std::vector<std::string> &recent);
+        // Opens for saving as `name` in `dir`.
+        void open_save(const std::string &title, int purpose, FileFilter filter, const std::string &dir,
+            const std::string &name, const std::vector<std::string> &recent);
+        bool saving() const { return save_; }
         // Draws it while open (at the frame's top level); true in the frame a path was chosen.
         bool draw(std::string *chosen);
         bool is_open() const { return open_ || want_open_; }
@@ -63,6 +69,9 @@ class FilePicker {
         void draw_places(std::string *chosen, bool *picked);
         void draw_listing(std::string *chosen, bool *picked);
         void up();
+        void draw_save_name(std::string *chosen, bool *picked);
+        // Chooses `<dir>/<name>` for saving, unless the file exists and Replace was not pressed yet.
+        void try_save(const std::string &path, std::string *chosen, bool *picked);
 
         bool want_open_ = false, open_ = false;
         std::string title_;
@@ -76,6 +85,9 @@ class FilePicker {
         std::string selected_;
         std::string error_;
         bool scroll_top_ = false;
+        bool save_ = false;
+        std::string save_name_;
+        std::string replace_path_;  // the existing file Replace would overwrite
 };
 
 }  // namespace rmwork

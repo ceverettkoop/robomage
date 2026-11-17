@@ -14,8 +14,8 @@
 // π (ToolData::shown_policy, the Inspector's choice), with π and μ (when the episode has it) as
 // numbers (the first policy's on a decision the shown one did not evaluate). ↑ / ↓ move a highlight while the tool has
 // focus (it starts on the chosen row); hovering a row links its source and target objects and players (the Table
-// outlines them), and a row an object hovered elsewhere acts with or on is shaded. Enter or a double-click submits the
-// highlighted row (Play's choosing; take_submitted), a click selects it.
+// outlines them), and a row an object hovered elsewhere acts with or on is shaded. A click selects a row; while the
+// human chooses (Play, `play`) a click or Enter submits it (take_submitted).
 
 namespace rmwork {
 
@@ -26,7 +26,7 @@ class ChoicesView {
         int highlighted() const { return highlight_; }
         // Screenshots and checks: hover menu row `row` every frame (-1 off).
         void force_hover(int row) { force_hover_ = row; }
-        // The row Enter or a double-click submitted, -1 none; taken once.
+        // The row a click or Enter submitted while choosing, -1 none; taken once.
         int take_submitted();
         // The evaluation whose π the tool shows: the shown policy's, else the decision's first
         // (nullptr when the viewer sees none, or it is not over the menu's rows).

@@ -74,6 +74,16 @@ std::string default_image_cache() {
     return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.cache") + "/robomage/scryfall";
 }
 
+std::string default_games_dir() {
+    const char *xdg = std::getenv("XDG_DATA_HOME");
+    return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.local/share") + "/robomage/workbench/games";
+}
+
+std::string workbench_cache_dir() {
+    const char *xdg = std::getenv("XDG_CACHE_HOME");
+    return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.cache") + "/robomage/workbench";
+}
+
 std::string resolve_path(const std::string &text, const std::string &fallback) {
     if (text.empty()) return fallback;
     if (text == "~") return home_dir();

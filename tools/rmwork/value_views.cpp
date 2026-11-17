@@ -262,8 +262,9 @@ void ValueGraphView::draw_values(ToolData &data, ReplaySession &s, const std::ve
         }
     }
     if (!data.values().any())
-        ImPlot::PlotText(m.episode_files.empty() ? "No episodes: load the match's episodes for values"
-                                                 : "The episodes carry no evaluations",
+        ImPlot::PlotText(m.live                    ? "Model's Read is off or not connected: no values"
+                         : m.episode_files.empty() ? "No episodes: load the match's episodes for values"
+                                                   : "The episodes carry no evaluations",
             n / 2, 0.5);
     // The cursor.
     const float cx = ImPlot::PlotToPixels(static_cast<double>(s.cursor()), 0).x;
@@ -529,9 +530,11 @@ void ModelReadView::draw(ToolData &data, ReplaySession &s) {
         ImGui::TableNextColumn();
         ImGui::TextDisabled("Model");
         ImGui::TableNextColumn();
-        const std::string agent = agent_label(*f.match, seat);
+        // Play's evaluations are Model's Read's of the human's seat, not the seat's agent.
+        const std::string agent = f.match->live ? "Model's Read" : agent_label(*f.match, seat);
         std::string model = agent.empty() ? std::string("\xE2\x80\x94") : agent;
         if (policy >= 0) model += " \xC2\xB7 " + policy_label(policy, data.values().versions.at(policy));
+        if (f.match->live && policy < 0) model += " off or not connected";
         ImGui::TextWrapped("%s", model.c_str());
         ImGui::EndTable();
     }

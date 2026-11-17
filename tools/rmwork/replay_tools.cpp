@@ -19,7 +19,7 @@ void ReplayTools::draw(Tool t, ReplaySession &s, LinkState *links) {
             players_.draw(data_, s, links);
             return;
         case Tool::CHOICES:
-            choices_.draw(data_, links, false);
+            choices_.draw(data_, links, choosing_);
             return;
         case Tool::INSPECTOR:
             inspector_.draw(data_, links);

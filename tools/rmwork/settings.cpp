@@ -36,6 +36,8 @@ static bool read_models(const featurize::Json &v, rmwork::ModelSettings *out, st
 static bool read_stops(const featurize::Json &v, rmwork::StopSettings *out, std::string *err);
 static bool read_images(const featurize::Json &v, std::string *out, std::string *err);
 static bool read_recent(const featurize::Json &v, std::vector<std::string> *out, std::string *err);
+static bool read_bool(const featurize::Json &obj, const char *key, const char *where, bool *out, std::string *err);
+static bool read_new_game(const featurize::Json &v, rmwork::NewGameSettings *out, std::string *err);
 static bool read_layout_node(const featurize::Json &v, int depth, rmwork::LayoutNode *out, std::string *err);
 static bool read_layouts(
     const featurize::Json &v, std::array<rmwork::NamedLayouts, rmwork::MODE_COUNT> *out, std::string *err);
@@ -135,6 +137,55 @@ static bool read_string(
         return false;
     }
     *out = v->as_string();
+    return true;
+}
+
+// `obj`.`key`, when present, as a boolean; `where` names `obj` in the error.
+static bool read_bool(const featurize::Json &obj, const char *key, const char *where, bool *out, std::string *err) {
+    const featurize::Json *v = obj.get(key);
+    if (!v) return true;
+    if (!v->is_bool()) {
+        *err = std::string("\"") + where + "\".\"" + key + "\" is not true or false";
+        return false;
+    }
+    *out = v->as_bool();
+    return true;
+}
+
+// {"deck", "seat": "a"|"b", "opponent", "model", "server", "opponent_deck", "format": "bo1"|"bo3",
+// "seed", "auto_mana", "model_read"}.
+static bool read_new_game(const featurize::Json &v, rmwork::NewGameSettings *out, std::string *err) {
+    if (!v.is_object()) {
+        *err = "\"new_game\" is not an object";
+        return false;
+    }
+    std::string seat = out->seat == 0 ? "a" : "b", format = out->bo3 ? "bo3" : "bo1";
+    if (!read_string(v, "deck", "new_game", &out->deck, err) || !read_string(v, "seat", "new_game", &seat, err) ||
+        !read_string(v, "opponent", "new_game", &out->opponent, err) ||
+        !read_string(v, "model", "new_game", &out->model, err) ||
+        !read_string(v, "server", "new_game", &out->server, err) ||
+        !read_string(v, "opponent_deck", "new_game", &out->opponent_deck, err) ||
+        !read_string(v, "format", "new_game", &format, err) ||
+        !read_bool(v, "auto_mana", "new_game", &out->auto_mana, err) ||
+        !read_bool(v, "model_read", "new_game", &out->model_read, err))
+        return false;
+    if (seat != "a" && seat != "b") {
+        *err = "\"new_game\".\"seat\" is \"a\" or \"b\"";
+        return false;
+    }
+    if (format != "bo1" && format != "bo3") {
+        *err = "\"new_game\".\"format\" is \"bo1\" or \"bo3\"";
+        return false;
+    }
+    out->seat = seat == "a" ? 0 : 1;
+    out->bo3 = format == "bo3";
+    if (const featurize::Json *seed = v.get("seed")) {
+        if (!seed->is_number() || !seed->is_integer() || seed->as_number() < 0) {
+            *err = "\"new_game\".\"seed\" is not a whole number from 0";
+            return false;
+        }
+        out->seed = static_cast<uint64_t>(seed->as_int());
+    }
     return true;
 }
 
@@ -388,6 +439,15 @@ const StepInfo &stop_step(int index) {
     return STOP_STEPS[index];
 }
 
+int stop_step_of(const std::string &step_name) {
+    static const std::pair<const char *, int> STEPS[] = {{"UNTAP", 0}, {"UPKEEP", 1}, {"DRAW", 2}, {"FIRST_MAIN", 3},
+        {"BEGIN_COMBAT", 4}, {"DECLARE_ATTACKERS", 5}, {"DECLARE_BLOCKERS", 6}, {"FIRST_STRIKE_DAMAGE", 7},
+        {"COMBAT_DAMAGE", 7}, {"END_OF_COMBAT", 8}, {"SECOND_MAIN", 9}, {"END_STEP", 10}, {"CLEANUP", 11}};
+    for (const auto &s : STEPS)
+        if (step_name == s.first) return s.second;
+    return -1;
+}
+
 int find_stop_step(const std::string &key) {
     for (int i = 0; i < STOP_STEP_COUNT; ++i)
         if (key == STOP_STEPS[i].key) return i;
@@ -531,6 +591,13 @@ std::string settings_to_json(const Settings &s) {
     out += "  \"stops\": {\"own\": " + stops_json(s.stops.own) + ", \"opponent\": " + stops_json(s.stops.opponent) +
            "},\n";
     out += "  \"images\": {\"cache\": " + json_quote(s.image_cache) + "},\n";
+    const NewGameSettings &g = s.new_game;
+    out += "  \"new_game\": {\"deck\": " + json_quote(g.deck) + ", \"seat\": " + json_quote(g.seat == 0 ? "a" : "b") +
+           ", \"opponent\": " + json_quote(g.opponent) + ", \"model\": " + json_quote(g.model) +
+           ", \"server\": " + json_quote(g.server) + ", \"opponent_deck\": " + json_quote(g.opponent_deck) +
+           ", \"format\": " + json_quote(g.bo3 ? "bo3" : "bo1") + ", \"seed\": " + std::to_string(g.seed) +
+           ", \"auto_mana\": " + (g.auto_mana ? "true" : "false") +
+           ", \"model_read\": " + (g.model_read ? "true" : "false") + "},\n";
     out += "  \"recent\": [";
     for (size_t i = 0; i < s.recent.size(); ++i) out += std::string(i ? ", " : "") + json_quote(s.recent[i]);
     out += "],\n";
@@ -584,6 +651,8 @@ bool settings_from_json(const std::string &text, Settings *out, std::string *err
         if (!read_layouts(*v, &out->layouts, err)) return false;
     if (const featurize::Json *v = doc.get("recent"))
         if (!read_recent(*v, &out->recent, err)) return false;
+    if (const featurize::Json *v = doc.get("new_game"))
+        if (!read_new_game(*v, &out->new_game, err)) return false;
     return true;
 }
 

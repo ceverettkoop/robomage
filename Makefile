@@ -301,19 +301,24 @@ RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
 # ── make workbench — bin/<config>/rmwork, the workbench GUI (docs/workbench_plan.md), NOT in the default build ──
 # tools/rmwork/ on the vendored Dear ImGui (docking), ImPlot and stb (third_party/, unmodified), GLFW and
 # OpenGL 3; linked with the std-only RMSTATE decoder and schema, the agents' std-only frame reader, the
-# CLI's std-only renderer (src/cli/board: the seat logs' event lines) and src/featurize/ (std only: the
-# JSON reader, the episode reader), no engine TU, no libtorch; the engine runs as a subprocess. The vendored sources
-# are compiled with the configuration's flags minus $(CHECKFLAGS); tools/rmwork/ with all of them,
-# the vendored headers included as system headers so their warnings stay theirs.
+# CLI's std-only renderer (src/cli/board: the seat logs' event lines), src/featurize/ (std only: the
+# JSON reader, the episode reader, the featurizer for Model's Read), and the torch-free remote evaluator
+# (src/actor/remote_evaluator.cpp, compiled here with the engine's flags into its own object, not the
+# actor's) with src/inference/ (std + POSIX, the inference protocol); no engine TU, no libtorch; the
+# engine runs as a subprocess. The vendored sources are compiled with the configuration's flags minus
+# $(CHECKFLAGS); tools/rmwork/ with all of them, the vendored headers included as system headers so their
+# warnings stay theirs.
 WORKBENCH_SRCS := $(wildcard tools/rmwork/*.cpp)
 WORKBENCH_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(WORKBENCH_SRCS))
 WORKBENCH_VENDOR_SRCS := $(addprefix third_party/imgui/,imgui.cpp imgui_draw.cpp imgui_tables.cpp imgui_widgets.cpp \
                          backends/imgui_impl_glfw.cpp backends/imgui_impl_opengl3.cpp) \
                          $(addprefix third_party/implot/,implot.cpp implot_items.cpp)
 WORKBENCH_VENDOR_OBJ := $(patsubst third_party/%.cpp,$(ODIR)/third_party/%.o,$(WORKBENCH_VENDOR_SRCS))
+WORKBENCH_REMOTE_OBJ := $(ODIR)/rmwork_lib/remote_evaluator.o
 WORKBENCH_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
                      $(ODIR)/agents/seat_frames.o $(ODIR)/agents/decision_view.o $(ODIR)/cli/board.o \
-                     $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp))
+                     $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp)) \
+                     $(WORKBENCH_REMOTE_OBJ) $(INFERENCE_OBJ)
 WORKBENCH_FONTS := $(wildcard third_party/fonts/*/*.ttf)
 ifneq (,$(filter workbench,$(MAKECMDGOALS)))
 GLFW_CFLAGS := $(shell pkg-config --cflags glfw3 2>/dev/null)
@@ -339,6 +344,12 @@ $(ODIR)/third_party/%.o: third_party/%.cpp
 $(ODIR)/tools/rmwork/%.o: tools/rmwork/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(WORKBENCH_IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+# The remote evaluator is torch-free (its header names the in-process evaluator only by declaration):
+# compiled with the engine's flags, exceptions off, apart from the actor's object.
+$(WORKBENCH_REMOTE_OBJ): $(SRCDIR)/actor/remote_evaluator.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
 # tools/rmwork/fonts.cpp compiles the UI fonts in (the assembler's .incbin, like src/featurize/registry.cpp);
 # the compiler's dependency file does not see .incbin, so the object depends on every font file here.
@@ -429,3 +440,4 @@ clean:
 -include $(INFERENCE_OBJ:.o=.d)
 -include $(WORKBENCH_OBJ:.o=.d)
 -include $(WORKBENCH_VENDOR_OBJ:.o=.d)
+-include $(WORKBENCH_REMOTE_OBJ:.o=.d)

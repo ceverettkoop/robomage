@@ -25,6 +25,12 @@
 // small LRU cache, so a whole match is never held decoded. The decoded frames' tables point into
 // the Match's schemas: a frame must not outlive its Match.
 //
+// Play's live match (begin_live_match, append_live_frame) is built the same way from one seat's
+// RMSTATE stream as it arrives: its decisions are that seat's, each with only that viewer's frame
+// (a frame of another viewer is refused), the records written to a file of the session's that
+// serves as the match's dump; its log is that seat's own (its frames' events, and after each
+// decision the row the seat chose), its result from that seat's game_end and match_end events.
+//
 // The logs, per viewer:
 //   - seat A / seat B: that seat's own log, built only from its own STATE frames' event tables
 //     (80–82: what the seat saw happen since its previous frame), rendered by the CLI's renderer
@@ -109,9 +115,12 @@ struct MatchResult {
         std::string text;               // "Player B wins 0-2"
 };
 
+struct LiveFrame;
+struct LiveState;
+
 class Match {
     public:
-        Match() = default;
+        Match();
         Match(const Match &) = delete;
         Match &operator=(const Match &) = delete;
         ~Match();
@@ -130,6 +139,9 @@ class Match {
         std::vector<EpisodeStepInfo> episode_steps;
         std::vector<std::string> episode_files;
         std::array<std::string, 2> agents;  // per seat the agent its episodes name (`agent_a` / `agent_b`), "" none
+        bool live = false;                  // Play's match: one seat's frames, still growing (append_live_frame)
+        int live_seat = -1;                 // its seat
+        bool finished = false;              // a live match's terminal frame has arrived
 
         bool bo3() const { return log.has_flag("bo3"); }
         const agents::SeatStream &stream(int view) const { return *streams_[static_cast<size_t>(view)]; }
@@ -147,7 +159,10 @@ class Match {
 
     private:
         friend bool index_match(Match *m, const std::function<bool(double)> &progress, std::string *err);
+        friend bool begin_live_match(Match *m, int seat, const std::string &stream_path, std::string *err);
+        friend bool append_live_frame(Match *m, const std::string &payload, LiveFrame *out, std::string *err);
         std::array<std::unique_ptr<agents::SeatStream>, VIEW_COUNT> streams_;
+        std::unique_ptr<LiveState> live_state_;
         std::map<std::tuple<int, bool, int64_t>, int> by_key_;
         int fd_ = -1;
         static constexpr size_t LRU_CAPACITY = 48;
@@ -164,6 +179,30 @@ bool split_turn_prefix(const std::string &line, int *turn, std::string *text);
 // decode, STATE frames out of the A, B, omniscient order, a decision whose three frames disagree
 // on its key, or a decision count other than the log's.
 bool index_match(Match *m, const std::function<bool(double)> &progress, std::string *err);
+
+// ── Play's live match ──
+
+// A live decision's reply before it is answered.
+inline constexpr int REPLY_PENDING = -1000;
+
+// What one appended record was.
+struct LiveFrame {
+        bool state = false;     // a STATE frame (else a once-per-match frame)
+        bool decision = false;  // a decision of the seat (a STATE frame with a menu)
+        bool terminal = false;  // the match's terminal frame
+        size_t index = 0;       // the decision's index (decision)
+};
+
+// Starts `m` (fresh) as the live match of seat `seat` (0 A, 1 B), its records written to
+// `stream_path` (created or truncated; the match's dump_path). False with `err`.
+bool begin_live_match(Match *m, int seat, const std::string &stream_path, std::string *err);
+// Appends one record of the seat's stream: a once-per-match frame feeds the seat's stream; a STATE
+// frame becomes a decision of the seat (its reply REPLY_PENDING) or, terminal, ends the match; its
+// events extend the seat's log and the result. False with `err` for a frame of another viewer, one
+// that does not decode, or a decision key seen before.
+bool append_live_frame(Match *m, const std::string &payload, LiveFrame *out, std::string *err);
+// Records the reply sent at live decision `index` (a row, -1, or a concession).
+void set_live_reply(Match *m, size_t index, int reply);
 
 }  // namespace rmwork
 

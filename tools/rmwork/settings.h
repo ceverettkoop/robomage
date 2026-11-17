@@ -57,6 +57,9 @@ struct StepInfo {
 const StepInfo &stop_step(int index);
 // The step with settings key `key`, or -1.
 int find_stop_step(const std::string &key);
+// The stop step of the state format's `step` enum value name ("FIRST_MAIN" -> main1; first-strike
+// and regular combat damage share one), or -1.
+int stop_step_of(const std::string &step_name);
 
 // Play's default stops: per step, whether priority stops there with an empty stack.
 struct StopSettings {
@@ -65,6 +68,20 @@ struct StopSettings {
 };
 // The mock-up's: upkeep, main 1, declare attackers, declare blockers and end step, in both turns.
 StopSettings default_stops();
+
+// The New Game dialog's last choices (Play; play_session.h names the opponents).
+struct NewGameSettings {
+        std::string deck = "league/burn";  // your deck, relative to the engine's resources/decks (no .dk)
+        int seat = 0;                      // your seat: 0 A, 1 B
+        std::string opponent = "explore";  // the opponent's kind (its key: model, server, explore, random, scripted)
+        std::string model;                 // model: the export (nn:<model>)
+        std::string server;                // server: the inference server's socket (nn:remote:<socket>)
+        std::string opponent_deck = "league/bug";
+        bool bo3 = false;
+        uint64_t seed = 1;
+        bool auto_mana = true;
+        bool model_read = false;  // evaluate your decisions through the inference server
+};
 
 struct Settings {
         Mode mode = Mode::REPLAY;
@@ -79,6 +96,7 @@ struct Settings {
         StopSettings stops = default_stops();
         std::string image_cache;          // the card-image cache; "" = default_image_cache()
         std::vector<std::string> recent;  // files and run directories opened, the latest first
+        NewGameSettings new_game;
 };
 
 // How many recent files and directories are kept.

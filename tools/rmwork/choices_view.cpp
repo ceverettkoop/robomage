@@ -95,8 +95,7 @@ void ChoicesView::draw(ToolData &data, LinkState *links, bool play) {
             ImGui::PushID(row);
             const bool selected = row == highlight_;
             if (ImGui::Selectable("##row", selected,
-                    ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap |
-                        ImGuiSelectableFlags_AllowDoubleClick,
+                    ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
                     ImVec2(0, ImGui::GetTextLineHeight() + 4))) {
                 highlight_ = row;
                 if (links) {
@@ -105,7 +104,7 @@ void ChoicesView::draw(ToolData &data, LinkState *links, bool play) {
                     item.row = row;
                     links->select(item);
                 }
-                if (play && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) submitted_ = row;
+                if (play) submitted_ = row;
             }
             if (ImGui::IsItemHovered() && links) links->hover_menu_row(row);
             if (selected && scroll_to_) {
@@ -145,7 +144,7 @@ void ChoicesView::draw(ToolData &data, LinkState *links, bool play) {
     }
     std::string note;
     if (play) {
-        note = "Enter or double-click to choose \xC2\xB7 F2 / F6 pass";
+        note = "Click a row, or \xE2\x86\x91 / \xE2\x86\x93 and Enter, to choose \xC2\xB7 F2 / F6 pass";
     } else {
         note = menu.chosen >= 0 ? std::string("\xE2\x96\xBA the row ") + seat_name(menu.decider) + " chose" : "";
         if (const featurize::PolicyEvalRecord *r = shown_record(data)) {

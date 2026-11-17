@@ -1,7 +1,9 @@
 #include "app.h"
 
 #include <algorithm>
+#include <cstdlib>
 
+#include "../../src/agents/decision_view.h"
 #include "episodes.h"
 #include "files.h"
 #include "imgui_internal.h"
@@ -22,6 +24,8 @@ const float PROGRESS_EMS = 9.0f;
 
 static std::string file_name(const std::string &path);
 static std::string seconds_text(double s);
+static uint64_t next_random(uint64_t *state);
+static bool auto_play_holds(const std::string &until, const agents::DecisionView &v);
 
 static std::string file_name(const std::string &path) {
     const size_t slash = path.rfind('/');
@@ -32,6 +36,27 @@ static std::string seconds_text(double s) {
     char buf[32];
     std::snprintf(buf, sizeof buf, "%.1f s", s);
     return buf;
+}
+
+// splitmix64: the auto_play rule's generator.
+static uint64_t next_random(uint64_t *state) {
+    uint64_t z = (*state += 0x9E3779B97F4A7C15ull);
+    z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
+    z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
+    return z ^ (z >> 31);
+}
+
+// Whether auto_play stops at decision `v`: "stack", the stack holds an object; "combat", the menu
+// declares attackers or blockers.
+static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
+    if (until == "stack") return v.stack().rows() > 0;
+    if (until != "combat") return false;
+    for (size_t i = 0; i < v.n(); ++i) {
+        const std::string &c = v.category(i);
+        if (c == "SELECT_ATTACKER" || c == "CONFIRM_ATTACKERS" || c == "SELECT_BLOCKER" || c == "CONFIRM_BLOCKERS")
+            return true;
+    }
+    return false;
 }
 
 namespace rmwork {
@@ -65,10 +90,12 @@ void App::begin_frame() {
 
 void App::frame() {
     poll_loader();
+    poll_play();
     replay_.tick(ImGui::GetTime());
     handle_keys();
     // The toolbar and the status bar read the tools' data: it follows the match, cursor and viewer.
-    tools_.begin_frame(replay_, table_, links_);
+    tools_.set_choosing(choosing());
+    tools_.begin_frame(session(), table_, links_);
     draw_menu_bar();
     draw_toolbar();
     draw_status_bar();
@@ -81,12 +108,234 @@ void App::frame() {
         set_mode(show_mode);
         request_named_layout(show_name);
     }
+    draw_play_dialogs();
     if (error_dialog_.draw()) status("Diagnostics copied to the clipboard");
     std::string picked;
     if (picker_.draw(&picked)) pick_done(picked);
     std::string run_log;
     if (run_browser_.draw(&run_log)) open_replay(run_log);
+    if (new_game_pressed_) {
+        new_game_pressed_ = false;
+        open_new_game();
+    }
     save_if_changed();
+}
+
+bool App::working() const {
+    if (loader_.busy() || (run_browser_.is_open() && !run_browser_.ready())) return true;
+    if (!play_.running()) return false;
+    return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||
+           play_.model_read().state() == ModelReader::State::CONNECTING;
+}
+
+void App::open_new_game() {
+    new_game_.open(
+        settings_.new_game, settings_, engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+}
+
+std::string App::play_engine(Opponent o, std::string *why) const {
+    const std::string configured = engine_override_.empty() ? engine_binary_path(settings_) : engine_override_;
+    return absolute_path(play_engine_binary(absolute_path(configured), o, why));
+}
+
+bool App::start_game(const NewGameSettings &g) {
+    settings_.new_game = g;
+    PlayConfig c;
+    std::string why;
+    if (!play_config_from(g, &c, &why)) {
+        report_error("The game could not start", why, "");
+        return false;
+    }
+    // A model or socket typed as a relative path is the repository's, as Settings' paths are.
+    if (!c.model.empty()) c.model = resolve_path(c.model, "");
+    PlayPaths p;
+    p.engine = play_engine(c.opponent, &why);
+    if (p.engine.empty()) {
+        report_error("No engine for this opponent", why, "");
+        return false;
+    }
+    p.workdir = engine_workdir_path(settings_);
+    p.games_dir = default_games_dir();
+    p.repo = repo_root();
+    p.model_read.socket = socket_path(settings_);
+    std::vector<std::string> ids;
+    for (const PolicyEntry &e : settings_.models.policies) ids.push_back(e.id);
+    p.model_read.policies = model_read_policies(ids);
+    std::string err;
+    if (!play_.start(c, p, &err)) {
+        report_error("The game could not start", err, "$ " + p.engine + "\n");
+        return false;
+    }
+    auto_left_ = 0;
+    set_mode(Mode::PLAY);
+    status("New game: " + c.deck + " vs " + c.opponent_deck + " (" + opponent_key(c.opponent) + "), seed " +
+           std::to_string(c.seed) + "; the engine is dealing");
+    return true;
+}
+
+bool App::choosing() const {
+    return mode() == Mode::PLAY && play_.deciding() && play_.view().loaded() &&
+           static_cast<long>(play_.view().cursor()) == play_.pending_index();
+}
+
+std::string App::play_state_text() const {
+    std::string out;
+    switch (play_.state()) {
+        case PlaySession::State::NONE:
+            return "No game";
+        case PlaySession::State::RUNNING:
+            out = !play_.view().loaded() ? "Starting the engine\xE2\x80\xA6"
+                  : play_.deciding()     ? "Your decision"
+                                         : "Opponent is thinking\xE2\x80\xA6";
+            break;
+        case PlaySession::State::FINISHED:
+            out = "Match over";
+            break;
+        case PlaySession::State::FAILED:
+            out = "Game ended: the engine failed";
+            break;
+        case PlaySession::State::STOPPED:
+            out = "Game stopped";
+            break;
+    }
+    if (play_.running() && play_.pass_mode() != PassMode::NONE)
+        out += play_.pass_mode() == PassMode::SKIP_TURN ? " \xC2\xB7 F6" : " \xC2\xB7 F2";
+    if (play_.concede_queued()) out += " \xC2\xB7 conceding";
+    if (play_.model_read().thinking()) out += " \xC2\xB7 the model is reading\xE2\x80\xA6";
+    return out;
+}
+
+bool App::play_reply(int row) {
+    if (!choosing()) {
+        status(play_.deciding() ? "An earlier decision: go to your decision (the toolbar's Latest) to choose"
+                                : "Not your decision");
+        return false;
+    }
+    std::string err;
+    if (!play_.reply(row, &err)) {
+        status(err);
+        return false;
+    }
+    return true;
+}
+
+void App::play_pass(PassMode mode) {
+    const char *label =
+        action_info(mode == PassMode::SKIP_TURN ? Action::PLAY_SKIP_TURN : Action::PLAY_TO_END_OF_TURN).label;
+    std::string why;
+    if (!play_.pass(mode, settings_.stops, &why)) {
+        status(std::string("No game loaded: ") + label);
+        return;
+    }
+    if (play_.pass_mode() == mode)
+        status(mode == PassMode::SKIP_TURN ? "F6: taking the first choice at every decision until the turn ends"
+                                           : "F2: passing until the end of the turn");
+}
+
+void App::open_concede(bool match) {
+    if (!play_.running()) {
+        status("No game to concede");
+        return;
+    }
+    concede_.open(match);
+}
+
+void App::auto_play(long decisions, const std::string &until) {
+    auto_left_ = decisions;
+    auto_until_ = until;
+    auto_rng_ = play_.config().seed * 0x2545F4914F6CDD1Dull + 7;
+}
+
+// Answers the pending decision with auto_play's rule, unless its condition holds there.
+void App::step_auto_play() {
+    if (auto_left_ == 0 || !play_.deciding() || !choosing()) return;
+    const Match *m = play_.match();
+    const size_t index = static_cast<size_t>(play_.pending_index());
+    std::string err;
+    const std::shared_ptr<const rmstate::DecodedFrame> f = m->frame(index, play_.config().seat, &err);
+    if (!f) return;
+    const agents::DecisionView v(m->stream(play_.config().seat), *f, play_.config().seat);
+    if (auto_play_holds(auto_until_, v)) {
+        auto_left_ = 0;
+        status("Stopped at decision " + std::to_string(index + 1) + " (" + auto_until_ + ")");
+        return;
+    }
+    const int rows = static_cast<int>(v.n());
+    if (rows <= 0) return;
+    if (play_reply(static_cast<int>(next_random(&auto_rng_) % static_cast<uint64_t>(rows))) && auto_left_ > 0)
+        --auto_left_;
+}
+
+void App::poll_play() {
+    play_.poll(settings_.stops);
+    if (play_.running() && play_.view().loaded() && !play_dealt_)
+        status("The game has begun: choose in Choices (a click, or \xE2\x86\x91 / \xE2\x86\x93 and Enter); " +
+               shortcut(Action::PLAY_TO_END_OF_TURN) + " passes to the end of the turn, " +
+               shortcut(Action::PLAY_SKIP_TURN) + " skips it");
+    play_dealt_ = play_.view().loaded();
+    for (const std::string &n : play_.take_notes()) status(n);
+    std::string title, message, detail;
+    if (play_.take_failure(&title, &message, &detail)) {
+        auto_left_ = 0;
+        status(title);
+        report_error(title, message, detail);
+    }
+    if (play_.take_model_failure(&message))
+        report_error("Model's Read stopped",
+            "Model's Read could not go on, so your decisions are no longer evaluated; the game goes on without it.",
+            message + "\n");
+    if (play_.take_finished() && play_.match()) {
+        const MatchSummary s = summarize_match(*play_.match(), play_.config().seat);
+        add_recent(&settings_.recent, play_.log_path());
+        status("Match over: " + s.title + (s.score.empty() ? "" : " " + s.score));
+        game_over_.open(s);
+    }
+    step_auto_play();
+}
+
+void App::draw_play_dialogs() {
+    NewGameSettings g;
+    if (new_game_.draw(&g)) start_game(g);
+    bool match = false;
+    if (concede_.draw(&match)) {
+        play_.concede(match);
+        if (!play_.concede_queued()) status(std::string("Conceded the ") + (match ? "match" : "game"));
+    }
+    switch (game_over_.draw()) {
+        case GameOverDialog::Choice::OPEN_REPLAY:
+            open_replay(game_over_.summary().log_path);
+            break;
+        case GameOverDialog::Choice::NEW_GAME:
+            open_new_game();
+            break;
+        case GameOverDialog::Choice::NONE:
+            break;
+    }
+}
+
+void App::open_save_picker() {
+    const ReplaySession &s = session();
+    const std::string log = mode() == Mode::PLAY ? play_.log_path() : s.loaded() ? s.match()->log_path : "";
+    if (log.empty() || (mode() == Mode::PLAY && !play_.started())) {
+        status("No game to save: start one (Game \xE2\x86\x92 New Game vs Model) or open a replay");
+        return;
+    }
+    const char *home = std::getenv("HOME");
+    picker_.open_save("Save Decision Log", PICK_SAVE_LOG, FileFilter::DECISION_LOGS, home ? home : repo_root(),
+        file_name(log), settings_.recent);
+}
+
+bool App::save_log_to(const std::string &path, std::string *err) {
+    const ReplaySession &s = session();
+    const std::string log = mode() == Mode::PLAY ? play_.log_path() : s.loaded() ? s.match()->log_path : "";
+    std::string bytes;
+    if (log.empty() || !read_file(log, &bytes)) {
+        *err = log.empty() ? "no decision log" : "cannot read " + log;
+        return false;
+    }
+    if (!write_file_atomic(path, bytes, err)) return false;
+    add_recent(&settings_.recent, path);
+    return true;
 }
 
 bool App::open_replay(const std::string &log, const std::vector<std::string> &episodes) {
@@ -143,6 +392,15 @@ void App::open_file_picker(PickPurpose purpose) {
 }
 
 void App::pick_done(const std::string &path) {
+    if (picker_.purpose() == PICK_SAVE_LOG) {
+        std::string err;
+        if (save_log_to(path, &err)) {
+            status("Saved the decision log to " + path);
+        } else {
+            report_error("The decision log was not saved", "It could not be copied to " + path + ".", err + "\n");
+        }
+        return;
+    }
     if (path_kind(path) == PathKind::DIRECTORY) {
         open_run(path);
         return;
@@ -224,7 +482,12 @@ bool App::next_swing() {
 }
 
 std::string App::status_mode_text() const {
-    if (mode() == Mode::PLAY) return "Play · no game";
+    if (mode() == Mode::PLAY) {
+        if (!play_.started()) return "Play \xC2\xB7 no game";
+        const PlayConfig &c = play_.config();
+        return std::string("Play \xC2\xB7 you are ") + (c.seat == 0 ? "A" : "B") + " \xC2\xB7 vs " +
+               opponent_key(c.opponent);
+    }
     return std::string("Replay · view ") + view_name(replay_.view());
 }
 
@@ -343,8 +606,10 @@ void App::run_action(Action a) {
             replay_.last();
             break;
         case Action::PLAY_TO_END_OF_TURN:
+            play_pass(PassMode::END_OF_TURN);
+            break;
         case Action::PLAY_SKIP_TURN:
-            status(std::string("No game loaded: ") + info.label);
+            play_pass(PassMode::SKIP_TURN);
             break;
         case Action::MAGNIFY:
             break;
@@ -355,7 +620,11 @@ void App::run_action(Action a) {
             open_file_picker(PICK_REPLAY);
             break;
         case Action::SAVE_DECISION_LOG:
+            open_save_picker();
+            break;
         case Action::NEW_GAME:
+            open_new_game();
+            break;
         case Action::FIND_IN_LOG:
             not_built(info.label);
             break;
@@ -402,11 +671,11 @@ void App::draw_menu_bar() {
         ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Game")) {
-        if (ImGui::MenuItem("New Game vs Model…", shortcut(Action::NEW_GAME).c_str())) not_built("New Game vs Model");
-        if (ImGui::MenuItem("Sideboard…")) not_built("Sideboard");
+        if (ImGui::MenuItem("New Game vs Model…", shortcut(Action::NEW_GAME).c_str())) open_new_game();
+        if (ImGui::MenuItem("Sideboard…")) not_built("Sideboard (sideboard with the Choices tool for now)");
         ImGui::Separator();
-        if (ImGui::MenuItem("Concede Game", "-2")) not_built("Concede Game");
-        if (ImGui::MenuItem("Concede Match", "-3")) not_built("Concede Match");
+        if (ImGui::MenuItem("Concede Game", "-2", false, play_.running())) open_concede(false);
+        if (ImGui::MenuItem("Concede Match", "-3", false, play_.running())) open_concede(true);
         ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Analysis")) {
@@ -448,8 +717,7 @@ void App::draw_file_menu() {
         }
         ImGui::EndMenu();
     }
-    if (ImGui::MenuItem("Save Decision Log…", shortcut(Action::SAVE_DECISION_LOG).c_str()))
-        not_built("Save Decision Log");
+    if (ImGui::MenuItem("Save Decision Log…", shortcut(Action::SAVE_DECISION_LOG).c_str())) open_save_picker();
     ImGui::Separator();
     if (ImGui::MenuItem("Exit")) quit_ = true;
 }
@@ -508,7 +776,7 @@ void App::draw_toolbar() {
     if (ImGui::BeginViewportSideBar("##rmwork.toolbar", vp, ImGuiDir_Up, height, flags)) {
         if (icon_button("##open", Icon::OPEN, "Open a replay (.rmlog)")) open_file_picker(PICK_REPLAY);
         ImGui::SameLine();
-        if (icon_button("##save", Icon::SAVE, "Save decision log")) not_built("Save Decision Log");
+        if (icon_button("##save", Icon::SAVE, "Save decision log")) open_save_picker();
         toolbar_separator();
         const Segment modes[] = {{"Play", true, Icon::MODE_PLAY, "A live game against a model"},
             {"Replay", true, Icon::MODE_REPLAY, "A recorded game"}};
@@ -520,16 +788,7 @@ void App::draw_toolbar() {
         if (mode() == Mode::REPLAY) {
             draw_replay_nav();
         } else {
-            const std::string f2 = shortcut(Action::PLAY_TO_END_OF_TURN) + " To end of turn";
-            const std::string f6 = shortcut(Action::PLAY_SKIP_TURN) + " Skip turn";
-            if (ImGui::Button(f2.c_str())) run_action(Action::PLAY_TO_END_OF_TURN);
-            ImGui::SetItemTooltip("Pass to the end of the turn; stops if something goes on the stack");
-            ImGui::SameLine();
-            if (ImGui::Button(f6.c_str())) run_action(Action::PLAY_SKIP_TURN);
-            ImGui::SetItemTooltip("Pass to the end of the turn no matter what; first choice at every decision");
-            ImGui::SameLine();
-            if (ImGui::Button("Concede…")) not_built("Concede");
-            ImGui::SetItemTooltip("Concede (-2 game, -3 match)");
+            draw_play_nav();
         }
         bottom_rule(tok().LINE);
     }
@@ -538,23 +797,51 @@ void App::draw_toolbar() {
     ImGui::PopStyleVar(3);
 }
 
-// Replay: the match's games and sideboarding phases (choosing one goes to its first decision);
-// Play: no game yet.
+// F2, F6, the newest decision, Concede…; each needs a running game.
+void App::draw_play_nav() {
+    const bool running = play_.running();
+    ImGui::BeginDisabled(!running);
+    const std::string f2 = shortcut(Action::PLAY_TO_END_OF_TURN) + " To end of turn";
+    const std::string f6 = shortcut(Action::PLAY_SKIP_TURN) + " Skip turn";
+    if (ImGui::Button(f2.c_str())) run_action(Action::PLAY_TO_END_OF_TURN);
+    ImGui::SetItemTooltip("Pass to the end of the turn; stops if something goes on the stack");
+    ImGui::SameLine();
+    if (ImGui::Button(f6.c_str())) run_action(Action::PLAY_SKIP_TURN);
+    ImGui::SetItemTooltip("Pass to the end of the turn no matter what; first choice at every decision");
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    const bool behind = play_.view().loaded() && play_.view().cursor() + 1 < play_.view().count();
+    if (icon_button("##latest", Icon::LAST, "Your newest decision (an earlier one is shown read-only)", behind))
+        play_.view().last();
+    ImGui::SameLine();
+    ImGui::BeginDisabled(!running);
+    if (ImGui::Button("Concede…")) open_concede(false);
+    ImGui::SetItemTooltip("Concede (-2 game, -3 match)");
+    ImGui::EndDisabled();
+}
+
+// The session's games and sideboarding phases (choosing one goes to its first decision).
 void App::draw_game_combo() {
     const bool replay = mode() == Mode::REPLAY;
-    const std::string preview = replay ? (loader_.busy() ? "Opening…" : replay_.game_label()) : "No game loaded";
+    ReplaySession &live = session();
+    const std::string preview = replay && loader_.busy() ? "Opening…"
+                                : live.loaded()          ? live.game_label()
+                                : replay                 ? "No game loaded"
+                                : play_.running()        ? "Starting…"
+                                                         : "No game";
     ImGui::SetNextItemWidth(GAME_COMBO_EMS * ImGui::GetFontSize());
     ImGui::PushStyleColor(ImGuiCol_Button, tok().BTN_HOVER);
-    if (open_game_combo_ && replay && replay_.loaded()) {
+    if (open_game_combo_ && live.loaded()) {
         ImGui::OpenPopupEx(ImHashStr("##ComboPopup", 0, ImGui::GetID("##game")));
         open_game_combo_ = false;
     }
     if (ImGui::BeginCombo("##game", preview.c_str())) {
-        if (!replay || !replay_.loaded()) {
-            ImGui::TextDisabled(replay ? "No game loaded: File → Open Replay" : "No game: Play arrives in plan §2.3.");
+        if (!live.loaded()) {
+            ImGui::TextDisabled(replay ? "No game loaded: File \xE2\x86\x92 Open Replay"
+                                       : "No game: Game \xE2\x86\x92 New Game vs Model");
         } else {
-            const Match &m = *replay_.match();
-            const int cur = m.span_of(replay_.cursor());
+            const Match &m = *live.match();
+            const int cur = m.span_of(live.cursor());
             ImGui::TextDisabled("%s", m.title().c_str());
             for (size_t g = 0; g < m.games.size(); ++g) {
                 const GameSpan &span = m.games[g];
@@ -566,8 +853,8 @@ void App::draw_game_combo() {
                 label += ")";
                 ImGui::PushID(static_cast<int>(g));
                 if (ImGui::Selectable(label.c_str(), static_cast<int>(g) == cur)) {
-                    replay_.set_playing(false, ImGui::GetTime());
-                    replay_.go_to(span.first);
+                    live.set_playing(false, ImGui::GetTime());
+                    live.go_to(span.first);
                 }
                 ImGui::PopID();
             }
@@ -577,7 +864,7 @@ void App::draw_game_combo() {
         ImGui::EndCombo();
     }
     ImGui::PopStyleColor();
-    if (replay && replay_.loaded()) ImGui::SetItemTooltip("%s", replay_.match()->log_path.c_str());
+    if (live.loaded()) ImGui::SetItemTooltip("%s", live.match()->log_path.c_str());
 }
 
 // First, previous, play / pause, next, last, next swing (enabled when the viewer sees a later
@@ -661,15 +948,15 @@ void App::draw_status_bar() {
         const ImGuiWindow *w = ImGui::GetCurrentWindow();
         ImGui::GetWindowDrawList()->AddLine(w->Pos, ImVec2(w->Pos.x + w->Size.x, w->Pos.y), tok().LINE);
         status_segment(status_mode_text().c_str());
+        const ReplaySession &live = session();
+        status_segment(live.decision_text().c_str());
+        status_segment(live.turn_text().c_str());
         if (mode() == Mode::REPLAY) {
-            status_segment(replay_.decision_text().c_str());
-            status_segment(replay_.turn_text().c_str());
             status_segment(replay_.decider_text().c_str());
         } else {
-            status_segment("Decision —");
-            status_segment("Turn —");
+            status_segment(play_state_text().c_str());
         }
-        status_segment(mode() == Mode::REPLAY ? tools_.status_value().c_str() : "V —");
+        status_segment(tools_.status_value().c_str());
         const std::string engine_text = engine_health(), server_text = inference_health();
         const char *engine = engine_text.c_str();
         const char *server = server_text.c_str();
@@ -750,10 +1037,10 @@ void App::draw_dock() {
 
 void App::draw_tools() {
     const int mi = mode_index(mode());
-    links_.set_context(replay_.generation());
+    ReplaySession &live = session();
+    links_.set_context(live.generation());
     links_.new_frame();
-    const bool replay_loaded = mode() == Mode::REPLAY && replay_.loaded();
-    tools_.begin_frame(replay_, table_, links_);
+    tools_.begin_frame(live, table_, links_);
     // A layout being built or its tabs ordered would undo a focus.
     const bool settled = !pending_[mi] && tab_order_frames_[mi] == 0;
     for (Tool tool : submit_order_[mi]) {
@@ -774,19 +1061,24 @@ void App::draw_tools() {
         if (tool == Tool::TABLE) flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         ToolContext ctx;
         ctx.mode = mode();
-        ctx.replay = mode() == Mode::REPLAY ? &replay_ : nullptr;
+        ctx.replay = &live;
         ctx.log = &game_log_;
         ctx.table = &table_;
         ctx.links = &links_;
         ctx.tools = &tools_;
         ctx.settings = &settings_;
         double fraction = -1;
-        ctx.loading = load_phase(&fraction);
+        ctx.loading = mode() == Mode::REPLAY                      ? load_phase(&fraction)
+                      : play_.running() && !play_.view().loaded() ? "Starting the game: the engine is dealing"
+                                                                  : "";
+        ctx.new_game = &new_game_pressed_;
         if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
         ImGui::End();
     }
     if (settled) focus_tools_.clear();
-    if (replay_loaded) tools_.draw_windows(&links_, settings_.keys[action_index(Action::MAGNIFY)]);
+    if (live.loaded()) tools_.draw_windows(&links_, settings_.keys[action_index(Action::MAGNIFY)]);
+    const int submitted = tools_.choices().take_submitted();
+    if (submitted >= 0) play_reply(submitted);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
 }

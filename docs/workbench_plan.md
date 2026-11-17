@@ -46,8 +46,7 @@ directory), Models (server socket, the `id = model` policies, run directory), St
 stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
 in `settings.json` for the stages that use them; the error dialog (`App::report_error`). Checked by
 `rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
-for later stages by design: Enter in Choices (§2.3; ↑ / ↓ came with §2.6); the data links
-followed in §2.2.
+for later stages by design: the data links followed in §2.2.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -113,6 +112,64 @@ files (`bench/`, `metrics.jsonl`, §3).
 | Per-viewer log | A seat view builds its log from that seat's event tables (80–82); omniscient view uses the narrative. The mock-up shows the narrative in every view, which leaks hidden information in a seat view | M |
 
 ### 2.3 Data: live games (Play)
+
+**Status: done** (`tools/rmwork/`: `play_session`, `autopass`, `model_read`, `new_game_dialog`,
+`play_dialogs`; the live match in `match`). Game → New Game vs Model (Ctrl+N, the button on Play's empty
+Table, `rmwork --open-new-game`) chooses your deck (the engine's top-level, `league/` and `heldout/`
+decks) and seat, the opponent (a model export: Settings → Models' policies and every run's
+`exports/*.pt2`, `*.ts.pt`; an inference server's socket; explore; random; the scripted agent) and its
+deck, best of one or three, the seed (with Random), auto-mana and Model's Read, checked as they are made
+(an `nn:` opponent needs `robomage_nn`) and kept in `settings.json` (`new_game`). A game runs `<engine>
+--machine --game-seed N --deck-a … --deck-b … [--bo3] [--no-auto-mana] --decision-log <games>/<time>-<seed>.rmlog
+--agent-<opponent's seat> <spec>` in the engine's working directory, the games directory
+`$XDG_DATA_HOME/robomage/workbench/games` (default `~/.local/share/…`): the human's seat has no agent, so
+it reads the RMSTATE stream; the opponent is `nn:<export>` or `nn:remote:<socket>` (in the `robomage_nn`
+beside Settings → Engine's binary, its absence named), `explore`, `random`, or `first` taught by `python3
+python/teacher.py --tier hard --seed N` at `--teacher-mix 1` (the scripted agent playing the seat through
+the teacher channel); every other opponent runs the plain `robomage`. The engine's stdin and stdout are
+pipes (`posix_spawn`, its own process group, killed whole with what it started), its stderr
+`<stem>.stderr`; a thread reads the RMSTATE records and the UI thread appends them to the live match (one
+seat's frames, kept in `<stem>.seat-a.rmstate` / `.seat-b.rmstate` as its dump), which Play's tools read
+through the session: the Table, Players and zone windows, Choices, Inspector, State Tree, the Game Log
+(the seat's own log, with the row chosen after each decision), Value Graph, Swings and Model's Read, the
+same views as Replay's, at the newest decision; earlier decisions are browsable read-only (the Game Log,
+the Value Graph; the toolbar's Latest goes back). Only the human seat's frames reach them: at the match's
+end the engine writes every seat's terminal frame to the stream, the other seat's with its once-per-match
+frames, and the session drops a record of another viewer unread, by its header. Choosing: a click on a
+Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
+row, the `-1` of `docs/state_format.md` §9); nothing is sent while the engine runs ("Opponent is
+thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
+from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
+step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
+new object on the stack; F6 takes row 0 until a later turn; with neither, a plain priority pass with an
+empty stack in a step without a stop (Settings → Stops, for the turn's player) is answered. Game →
+Concede Game / Match asks first and sends `-2` / `-3` (while the opponent thinks, at your next decision).
+The match's end opens the result screen (the winner, the bo3 score and each game's winner, your values'
+curve when Model's Read ran; Open in Replay through Replay's loader, New Game, Close); File → Save
+Decision Log (Ctrl+S, the file picker's save mode) copies the game's log (in Replay, the loaded one's).
+Model's Read, asked for per game: on its own thread the engine's `--cards-frame` file and the
+oracle-text table load the featurizer's inputs, the torch-free remote evaluator (`src/actor/
+remote_evaluator`, `src/inference/protocol`, linked into `rmwork`) connects to Settings → Models' socket
+for the policies listed there with numeric ids (else policy 0), and each of your decisions is featurized
+with `featurize_seat` (without recent-event history) and evaluated; the values and π join the decisions
+as episode steps, so Choices' π, the Model's Read, the Value Graph and the status bar's V show them. No
+server is "not connected" (a note, and the game goes on); a refused handshake or a lost server opens the
+error dialog. The engine's exit mid-game, a stream that breaks, a record that does not decode and a failed
+write open the error dialog with the command and the stderr tail and end the session; quitting kills and
+reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
+auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|end` (a seeded random row at
+each of your decisions until then), `--game-over`. Checked by `rmwork --selftest-data` (`selftest_play`:
+the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
+connected, every kept record the seat's and the other seat's only after its last decision, the stops'
+answers, the result screen, its log in Replay with the seat's decisions, replies and frames (event tables
+aside), Save Decision Log; F2, F6 and the stops on that game's frames and on made-up facts, and given live;
+a bo3 with sideboarding as seat B; the concession dialog, `-2` then a queued `-3`; the scripted opponent;
+a killed engine, a broken stream and a record that is no frame) and `rmwork --selftest` (the `new_game`
+settings). Model's Read was checked by hand against `rmserve` serving `runs/league26-24h/exports/final.ts.pt`
+(not in the gate: it needs a server and a model). Waiting for later stages: the direct-manipulation
+decisions of §4.2 (every decision goes through the Choices list), the sideboarding screen of §4.3 (the
+Choices list's `SIDEBOARD_*` rows for now; Game → Sideboard… is not built), toggling stops on the Table's
+step bar (Settings → Stops sets them), and the start page of §4.1.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -240,7 +297,7 @@ every tool open, a Choices hover lighting the Table, zone windows opened, magnif
 the bo3 match with evaluations added to its episodes: the Value Graph's series, Swings and disagreements
 recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status bar). Not done:
 re-evaluation (§2.7), so a second policy's series and the seats' disagreement come only from episodes that
-recorded them (a self-play match evaluates both seats); Play's tools (§2.3).
+recorded them (a self-play match evaluates both seats).
 
 | Tool | Real implementation | Size |
 |---|---|---|

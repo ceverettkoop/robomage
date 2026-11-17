@@ -161,6 +161,8 @@ void FilePicker::open(const std::string &title, int purpose, FileFilter filter, 
     recent_ = recent;
     selected_.clear();
     error_.clear();
+    save_ = false;
+    replace_path_.clear();
     std::string start = normalize(dir.empty() ? current_dir() : dir);
     if (path_kind(start) == PathKind::FILE) {
         selected_ = base_name(start);
@@ -168,6 +170,52 @@ void FilePicker::open(const std::string &title, int purpose, FileFilter filter, 
     }
     if (path_kind(start) != PathKind::DIRECTORY || !navigate(start)) navigate(home());
     want_open_ = true;
+}
+
+void FilePicker::open_save(const std::string &title, int purpose, FileFilter filter, const std::string &dir,
+    const std::string &name, const std::vector<std::string> &recent) {
+    open(title, purpose, filter, dir, recent);
+    save_ = true;
+    save_name_ = name;
+}
+
+void FilePicker::try_save(const std::string &path, std::string *chosen, bool *picked) {
+    if (path_kind(path) == PathKind::DIRECTORY) {
+        error_ = path + " is a directory";
+        return;
+    }
+    if (path_kind(path) != PathKind::MISSING && replace_path_ != path) {
+        replace_path_ = path;
+        error_ = base_name(path) + " exists: press Replace to overwrite it";
+        return;
+    }
+    *chosen = path;
+    *picked = true;
+}
+
+// The file name field and Save (Replace once a name that exists was asked about).
+void FilePicker::draw_save_name(std::string *chosen, bool *picked) {
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted("File name");
+    ImGui::SameLine();
+    char buf[1024];
+    std::snprintf(buf, sizeof buf, "%s", save_name_.c_str());
+    const float bw =
+        ImGui::CalcTextSize("Replace").x + ImGui::CalcTextSize("Cancel").x + ImGui::GetStyle().FramePadding.x * 4 + 36;
+    ImGui::SetNextItemWidth(std::max(10 * char_width(), ImGui::GetContentRegionAvail().x - bw));
+    const bool enter = ImGui::InputText("##save_name", buf, sizeof buf, ImGuiInputTextFlags_EnterReturnsTrue);
+    if (std::string(buf) != save_name_) {
+        save_name_ = buf;
+        replace_path_.clear();
+        error_.clear();
+    }
+    ImGui::SameLine();
+    const std::string path = join_path(dir_, save_name_);
+    ImGui::BeginDisabled(save_name_.empty());
+    if (ImGui::Button(replace_path_ == path && !replace_path_.empty() ? "Replace" : "Save") ||
+        (enter && !save_name_.empty()))
+        try_save(path, chosen, picked);
+    ImGui::EndDisabled();
 }
 
 bool FilePicker::navigate(const std::string &dir) {
@@ -241,6 +289,8 @@ bool FilePicker::draw(std::string *chosen) {
         const std::string p = normalize(buf);
         if (path_kind(p) == PathKind::DIRECTORY) {
             navigate(p);
+        } else if (save_ && path_kind(parent_dir(p)) == PathKind::DIRECTORY) {
+            try_save(p, chosen, &picked);
         } else if (path_kind(p) == PathKind::FILE) {
             *chosen = p;
             picked = true;
@@ -267,6 +317,20 @@ bool FilePicker::draw(std::string *chosen) {
         ImGui::TextDisabled("%zu shown of %zu in %s", entries_.size(), all_.size(), dir_.c_str());
     }
     ImGui::Separator();
+    if (save_) {
+        draw_save_name(chosen, &picked);
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel") || close_requested() || !keep) {
+            ImGui::CloseCurrentPopup();
+            open_ = false;
+        }
+        if (picked) {
+            ImGui::CloseCurrentPopup();
+            open_ = false;
+        }
+        ImGui::EndPopup();
+        return picked;
+    }
     ImGui::SetNextItemWidth(30 * char_width());
     if (ImGui::BeginCombo("##filter", file_filter_label(filter_))) {
         for (int f = 0; f < FILE_FILTER_COUNT; ++f)
@@ -360,9 +424,15 @@ void FilePicker::draw_listing(std::string *chosen, bool *picked) {
             if (e.dir) ImGui::PopStyleColor();
             if (clicked) {
                 selected_ = e.name;
+                if (save_ && !e.dir) {
+                    save_name_ = e.name;
+                    error_.clear();
+                }
                 if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                     if (e.dir) {
                         enter_dir = join_path(dir_, e.name);
+                    } else if (save_) {
+                        try_save(join_path(dir_, e.name), chosen, picked);
                     } else {
                         *chosen = join_path(dir_, e.name);
                         *picked = true;

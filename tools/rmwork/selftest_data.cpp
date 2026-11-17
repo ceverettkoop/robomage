@@ -26,6 +26,7 @@
 #include "replay_cache.h"
 #include "rmlog.h"
 #include "run_browser.h"
+#include "selftest_play.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
 #include "subprocess.h"
@@ -810,6 +811,7 @@ int run_selftest_data(const std::string &engine) {
     }
     setenv("XDG_CONFIG_HOME", (env.tmp + "/config").c_str(), 1);
     setenv("XDG_CACHE_HOME", (env.tmp + "/cache").c_str(), 1);
+    setenv("XDG_DATA_HOME", (env.tmp + "/data").c_str(), 1);
     begin_headless();
     {
         App app(default_settings(), config_paths(""), false);
@@ -850,6 +852,13 @@ int run_selftest_data(const std::string &engine) {
         check_errors(&t, app, env);
         check_table_coverage(&t, cov);
         check_tools_coverage(&t, tools);
+        PlayTestEnv play_env;
+        play_env.engine = env.engine;
+        play_env.workdir = env.workdir;
+        play_env.tmp = env.tmp + "/play";
+        make_dirs(play_env.tmp);
+        const CheckFn play_check = [&t](bool ok, const std::string &what) { check(&t, ok, what); };
+        check_play(play_check, app, [&app](int n) { run_frames(app, n); }, play_env);
     }
     destroy_ui_context();
     remove_tree(env.tmp);

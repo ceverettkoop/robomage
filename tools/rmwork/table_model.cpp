@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "../../src/agents/decision_view.h"
+#include "settings.h"
 
 namespace {
 
@@ -371,13 +372,10 @@ static void read_turn(const Frame &f, rmwork::TableModel *m) {
     if (!t.rows()) return;
     m->turn = static_cast<int>(t.u(0, t.col("turn"))) + 1;
     m->active = seat_of(t.u(0, t.col("active")));
-    static const std::pair<const char *, int> STEPS[] = {{"UNTAP", 0}, {"UPKEEP", 1}, {"DRAW", 2}, {"FIRST_MAIN", 3},
-        {"BEGIN_COMBAT", 4}, {"DECLARE_ATTACKERS", 5}, {"DECLARE_BLOCKERS", 6}, {"FIRST_STRIKE_DAMAGE", 7},
-        {"COMBAT_DAMAGE", 7}, {"END_OF_COMBAT", 8}, {"SECOND_MAIN", 9}, {"END_STEP", 10}, {"CLEANUP", 11}};
     const std::string step = f.s.enum_name("step", t.u(0, t.col("step")));
-    for (const auto &s : STEPS) {
-        if (step != s.first) continue;
-        m->step = s.second;
+    const int stop = rmwork::stop_step_of(step);
+    if (stop >= 0) {
+        m->step = stop;
         m->step_name = step == "FIRST_STRIKE_DAMAGE" ? "First-strike damage"
                        : step == "FIRST_MAIN"        ? "Main 1"
                        : step == "SECOND_MAIN"       ? "Main 2"

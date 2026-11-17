@@ -24,6 +24,10 @@ std::string default_engine_workdir();
 std::string default_run_dir();
 // $XDG_CACHE_HOME/robomage/scryfall, else ~/.cache/robomage/scryfall.
 std::string default_image_cache();
+// $XDG_DATA_HOME/robomage/workbench/games, else ~/.local/share/…: Play's games (decision logs).
+std::string default_games_dir();
+// $XDG_CACHE_HOME/robomage/workbench, else ~/.cache/robomage/workbench.
+std::string workbench_cache_dir();
 // `text` as a path: `fallback` when empty, "~/…" under $HOME, a relative path under repo_root().
 std::string resolve_path(const std::string &text, const std::string &fallback);
 
