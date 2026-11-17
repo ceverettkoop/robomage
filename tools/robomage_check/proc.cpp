@@ -25,6 +25,7 @@ struct ChildImage {
 
 static void build_image(const rmcheck::ProcSpec &spec, ChildImage *img);
 static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *err_fd, bool merge, std::string *err);
+static int pipe_cloexec(int fds[2]);
 static void set_nonblocking(int fd);
 static bool read_some(int fd, std::string *into);
 static void close_fd(int *fd);
@@ -59,7 +60,7 @@ static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *
     ChildImage img;
     build_image(spec, &img);
     int in_p[2], out_p[2], err_p[2] = {-1, -1};
-    if (pipe2(in_p, O_CLOEXEC) != 0 || pipe2(out_p, O_CLOEXEC) != 0 || (!merge && pipe2(err_p, O_CLOEXEC) != 0)) {
+    if (pipe_cloexec(in_p) != 0 || pipe_cloexec(out_p) != 0 || (!merge && pipe_cloexec(err_p) != 0)) {
         *err = std::string("pipe: ") + std::strerror(errno);
         return -1;
     }
@@ -69,8 +70,15 @@ static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *
     posix_spawn_file_actions_adddup2(&actions, out_p[1], 1);
     posix_spawn_file_actions_adddup2(&actions, merge ? out_p[1] : err_p[1], 2);
     if (!spec.cwd.empty()) posix_spawn_file_actions_addchdir_np(&actions, spec.cwd.c_str());
+    posix_spawnattr_t attr;
+    posix_spawnattr_init(&attr);
+#ifdef POSIX_SPAWN_CLOEXEC_DEFAULT
+    // Without pipe2 a pipe is close-on-exec only after it is made; the child gets only 0, 1 and 2.
+    posix_spawnattr_setflags(&attr, POSIX_SPAWN_CLOEXEC_DEFAULT);
+#endif
     pid_t pid = -1;
-    const int rc = posix_spawn(&pid, img.argv[0], &actions, nullptr, img.argv.data(), img.envp.data());
+    const int rc = posix_spawn(&pid, img.argv[0], &actions, &attr, img.argv.data(), img.envp.data());
+    posix_spawnattr_destroy(&attr);
     posix_spawn_file_actions_destroy(&actions);
     if (rc != 0) {
         *err = std::string("spawn: ") + std::strerror(rc);
@@ -88,6 +96,18 @@ static pid_t spawn(const rmcheck::ProcSpec &spec, int *in_fd, int *out_fd, int *
     set_nonblocking(*out_fd);
     if (*err_fd >= 0) set_nonblocking(*err_fd);
     return pid;
+}
+
+// A pipe whose ends are close-on-exec (atomically where pipe2 exists).
+static int pipe_cloexec(int fds[2]) {
+#ifdef __APPLE__
+    if (pipe(fds) != 0) return -1;
+    fcntl(fds[0], F_SETFD, FD_CLOEXEC);
+    fcntl(fds[1], F_SETFD, FD_CLOEXEC);
+    return 0;
+#else
+    return pipe2(fds, O_CLOEXEC);
+#endif
 }
 
 static void set_nonblocking(int fd) {

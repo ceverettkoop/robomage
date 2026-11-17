@@ -140,8 +140,15 @@ static void spawn(int s) {
     TeacherProc &p = teacher->proc[s];
     p.command = teacher_command[s];
     int sv[2];
+#ifdef SOCK_CLOEXEC
     if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, sv) != 0)
         fatal_error(std::string("--teacher-") + (s == 0 ? "a" : "b") + ": socketpair: " + std::strerror(errno));
+#else
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) != 0)
+        fatal_error(std::string("--teacher-") + (s == 0 ? "a" : "b") + ": socketpair: " + std::strerror(errno));
+    fcntl(sv[0], F_SETFD, FD_CLOEXEC);
+    fcntl(sv[1], F_SETFD, FD_CLOEXEC);
+#endif
     const long open_max = sysconf(_SC_OPEN_MAX);
     const int bound = open_max > 0 && open_max < 65536 ? static_cast<int>(open_max) : 65536;
     std::fflush(stdout);

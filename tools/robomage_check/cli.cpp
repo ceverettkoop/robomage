@@ -2,6 +2,9 @@
 
 #include <signal.h>
 #include <unistd.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 #include <cstdio>
 #include <cstdlib>
@@ -45,10 +48,17 @@ static bool parse_int(const char *s, long *out);
 // The directory of this executable (bin/<config>/).
 static std::string self_dir() {
     char buf[4096];
+#ifdef __APPLE__
+    uint32_t size = sizeof buf;
+    char resolved[PATH_MAX];
+    if (_NSGetExecutablePath(buf, &size) != 0 || !realpath(buf, resolved)) return ".";
+    return rmcheck::dirname_of(resolved);
+#else
     const ssize_t n = readlink("/proc/self/exe", buf, sizeof buf - 1);
     if (n <= 0) return ".";
     buf[n] = '\0';
     return rmcheck::dirname_of(buf);
+#endif
 }
 
 static const TierEntry *find_tier(const std::string &name) {

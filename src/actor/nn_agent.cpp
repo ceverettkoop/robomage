@@ -108,7 +108,12 @@ ModelStamp model_stamp(const std::string &path) {
     struct stat st;
     if (stat(path.c_str(), &st) != 0) return m;
     m.ok = true;
-    m.mtime_ns = static_cast<int64_t>(st.st_mtim.tv_sec) * 1000000000 + static_cast<int64_t>(st.st_mtim.tv_nsec);
+#ifdef __APPLE__
+    const struct timespec &mtime = st.st_mtimespec;
+#else
+    const struct timespec &mtime = st.st_mtim;
+#endif
+    m.mtime_ns = static_cast<int64_t>(mtime.tv_sec) * 1000000000 + static_cast<int64_t>(mtime.tv_nsec);
     m.size = static_cast<int64_t>(st.st_size);
     m.ino = static_cast<uint64_t>(st.st_ino);
     m.dev = static_cast<uint64_t>(st.st_dev);

@@ -322,6 +322,12 @@ ifeq ($(strip $(GLFW_LIBS)),)
 $(error make workbench: pkg-config finds no glfw3. Install GLFW 3 (e.g. the glfw package))
 endif
 endif
+# OpenGL: the system framework on macOS, libGL elsewhere.
+ifeq ($(PLATFORM), OSX)
+GL_LIBS := -framework OpenGL
+else
+GL_LIBS := -lGL
+endif
 WORKBENCH_IFLAGS = -isystem third_party/imgui -isystem third_party/imgui/backends -isystem third_party/implot \
                    -isystem third_party/stb $(GLFW_CFLAGS)
 
@@ -342,7 +348,7 @@ $(ODIR)/tools/rmwork/fonts.o: CXXFLAGS += -DRM_FONT_DIR='"$(abspath third_party/
 workbench: $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmwork $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ) $(LDFLAGS) $(LDLIBS) \
-		$(GLFW_LIBS) -lGL -pthread $(PLATFLAGS)
+		$(GLFW_LIBS) $(GL_LIBS) -pthread $(PLATFLAGS)
 
 $(ODIR)/tools/%.o: tools/%.cpp
 	@mkdir -p $(dir $@)

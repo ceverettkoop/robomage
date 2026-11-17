@@ -51,7 +51,12 @@ static uint64_t tree_bytes(const std::string &path) {
 }
 
 static int64_t mtime_ns(const struct stat &st) {
-    return static_cast<int64_t>(st.st_mtim.tv_sec) * 1000000000 + st.st_mtim.tv_nsec;
+#ifdef __APPLE__
+    const struct timespec &mtime = st.st_mtimespec;
+#else
+    const struct timespec &mtime = st.st_mtim;
+#endif
+    return static_cast<int64_t>(mtime.tv_sec) * 1000000000 + mtime.tv_nsec;
 }
 
 // "<key>.tmp-<pid>" of a process that no longer runs.

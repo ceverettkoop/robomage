@@ -3,6 +3,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef __APPLE__
+#include <limits.h>
+#include <mach-o/dyld.h>
+#endif
 
 #include <cerrno>
 #include <cstdio>
@@ -51,9 +55,16 @@ bool is_executable(const std::string &path) {
 
 std::string executable_path() {
     std::vector<char> buf(4096);
+#ifdef __APPLE__
+    uint32_t size = static_cast<uint32_t>(buf.size());
+    char resolved[PATH_MAX];
+    if (_NSGetExecutablePath(buf.data(), &size) != 0 || !realpath(buf.data(), resolved)) return "";
+    return std::string(resolved);
+#else
     const ssize_t n = readlink("/proc/self/exe", buf.data(), buf.size() - 1);
     if (n <= 0) return "";
     return std::string(buf.data(), static_cast<size_t>(n));
+#endif
 }
 
 std::string current_dir() {
