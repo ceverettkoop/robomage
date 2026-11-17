@@ -46,6 +46,7 @@ MenuModel build_menu_model(const DecisionFrame &f) {
         m.rows.push_back(row);
     }
     if (f.info && f.info->reply >= 0 && static_cast<size_t>(f.info->reply) < m.rows.size()) m.chosen = f.info->reply;
+    m.unanswered = f.info && f.info->reply == REPLY_PENDING;
     return m;
 }
 

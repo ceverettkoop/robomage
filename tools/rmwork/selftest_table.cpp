@@ -390,7 +390,8 @@ namespace rmwork {
 
 void check_table_frames(
     const CheckFn &check, TableView &view, const Match &m, const std::string &at, TableCoverage *cov) {
-    for (size_t i = 0; i <= m.decisions.size(); ++i) {
+    const size_t frames = m.decisions.size() + (m.has_terminal() ? 1 : 0);
+    for (size_t i = 0; i < frames; ++i) {
         for (int v = 0; v < VIEW_COUNT; ++v) {
             std::string err;
             const auto f = m.frame(i, v, &err);

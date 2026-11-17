@@ -49,6 +49,7 @@ static bool marker_line(const std::string &line);
 static bool banner_line(const std::string &line);
 static std::string header_text(const std::string &line);
 static void build_narrative(rmwork::Match *m);
+static size_t decided_count(const rmwork::Match &m);
 static void finish_result(rmwork::Match *m);
 static bool write_record(int fd, const std::string &payload, uint64_t *end, std::string *err);
 
@@ -216,10 +217,15 @@ static bool process_triple(Builder *b, const std::array<rmwork::FrameRef, rmwork
         }
     }
     const size_t index = m.decisions.size();
+    if (m.stopped) {
+        *err = "the replay has frames after decision " + std::to_string(index) +
+               ", where the run stopped without a reply";
+        return false;
+    }
     if (terminal) {
         m.terminal = refs;
     } else {
-        if (index >= m.log.replies.size()) {
+        if (index > m.log.replies.size()) {
             *err = "the replay has more decisions than the log's " + std::to_string(m.log.replies.size());
             return false;
         }
@@ -232,8 +238,13 @@ static bool process_triple(Builder *b, const std::array<rmwork::FrameRef, rmwork
             if (agents::Table(frames[static_cast<size_t>(v)], m.stream(v).schema(), "menu").rows() > 0) d.decider = v;
         const agents::DecisionView ov(m.stream(2), frames[2], d.decider < 0 ? 0 : d.decider);
         fill_decision(&d, ov);
-        d.reply = m.log.replies[index];
-        d.reply_text = reply_text(ov, d.reply);
+        if (index < m.log.replies.size()) {
+            d.reply = m.log.replies[index];
+            d.reply_text = reply_text(ov, d.reply);
+        } else {
+            d.reply = rmwork::REPLY_PENDING;
+            m.stopped = true;
+        }
         m.decisions.push_back(d);
     }
     // A terminal frame's events join the last decision.
@@ -325,13 +336,20 @@ static void build_narrative(rmwork::Match *m) {
         }
         out.push_back(l);
     }
-    m->narrative_mapped = markers == n;
+    m->narrative_mapped = markers == decided_count(*m);
+}
+
+// The decisions that were answered: all of them, less the one a stopped run did not decide.
+static size_t decided_count(const rmwork::Match &m) {
+    return m.decisions.size() - (m.stopped ? 1 : 0);
 }
 
 static void finish_result(rmwork::Match *m) {
     rmwork::MatchResult &r = m->result;
     if (!r.known) {
-        r.text = "no result";
+        r.text = m->stopped ? "no result: the run stopped at decision " + std::to_string(m->decisions.size()) +
+                                  (m->log.quit ? " (quit)" : " (--max-decisions)")
+                            : "no result";
         return;
     }
     if (r.winner < 0) {
@@ -451,6 +469,7 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
     for (auto &l : m->logs) l.clear();
     m->result = MatchResult();
     m->terminal = {};
+    m->stopped = false;
     if (m->fd_ >= 0) close(m->fd_);
     m->fd_ = open(m->dump_path.c_str(), O_RDONLY | O_CLOEXEC);
     FILE *f = std::fopen(m->dump_path.c_str(), "rb");
@@ -522,7 +541,7 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
         *err = "the dump ends inside a decision's frames";
         return false;
     }
-    if (m->decisions.size() != m->log.replies.size()) {
+    if (decided_count(*m) != m->log.replies.size()) {
         *err = "the replay produced " + std::to_string(m->decisions.size()) + " decisions; the log holds " +
                std::to_string(m->log.replies.size());
         return false;

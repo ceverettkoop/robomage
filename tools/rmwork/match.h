@@ -135,6 +135,10 @@ class Match {
         std::array<FrameRef, VIEW_COUNT> terminal;
         std::array<std::vector<LogLine>, VIEW_COUNT> logs;
         bool narrative_mapped = false;  // the narrative's decision markers matched the decisions
+        // The run stopped at its last decision before anyone decided it (the log's --max-decisions
+        // cap or a recorded QUIT): that decision's frames were written, its reply is REPLY_PENDING,
+        // and the match has no result.
+        bool stopped = false;
         MatchResult result;
         std::vector<EpisodeStepInfo> episode_steps;
         std::vector<std::string> episode_files;
@@ -144,6 +148,8 @@ class Match {
         bool finished = false;              // a live match's terminal frame has arrived
 
         bool bo3() const { return log.has_flag("bo3"); }
+        // The match ended with terminal frames (frame index decisions.size()); a stopped run has none.
+        bool has_terminal() const { return terminal[VIEW_OMNI].valid(); }
         const agents::SeatStream &stream(int view) const { return *streams_[static_cast<size_t>(view)]; }
         // The decoded STATE frame of `view` at decision `index` (index == decisions.size(): the
         // terminal frame); nullptr with `err` when it cannot be read or decoded.
@@ -177,12 +183,15 @@ bool split_turn_prefix(const std::string &line, int *turn, std::string *text);
 // builds the logs: every frame decoded once with its viewer's schema. `progress` gets the fraction
 // done and returns false to cancel. False with `err` on an unreadable dump, a frame that does not
 // decode, STATE frames out of the A, B, omniscient order, a decision whose three frames disagree
-// on its key, or a decision count other than the log's.
+// on its key, or a decision count other than the log's. A run that stopped without a result (the
+// log's --max-decisions cap, a recorded QUIT) wrote one decision more than the log, the last record
+// of the dump: it is kept as the match's last decision, unanswered (Match::stopped).
 bool index_match(Match *m, const std::function<bool(double)> &progress, std::string *err);
 
 // ── Play's live match ──
 
-// A live decision's reply before it is answered.
+// The reply of a decision nobody has answered: a live decision before it is answered, or the
+// decision a replayed run stopped at (Match::stopped).
 inline constexpr int REPLY_PENDING = -1000;
 
 // What one appended record was.

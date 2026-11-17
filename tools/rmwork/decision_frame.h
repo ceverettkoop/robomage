@@ -60,6 +60,8 @@ struct MenuModel {
         std::vector<MenuRow> rows;
         // The decision log's reply when it is a row of the menu and the viewer sees it, else -1.
         int chosen = -1;
+        // Nobody answered it (REPLY_PENDING): a live decision, or the one a replayed run stopped at.
+        bool unanswered = false;
 };
 
 MenuModel build_menu_model(const DecisionFrame &f);

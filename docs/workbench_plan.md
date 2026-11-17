@@ -74,7 +74,9 @@ corpus directories are not ours to write. The dump is indexed once: per decision
 `STATE` frame offsets (A, B, omniscient, in the dump's order, their headers' decision keys checked to
 agree), the deciding seat (the seat frame that carries the menu), game and sideboarding, turn, step,
 life, the reply; frames are decoded again on demand through a small LRU cache, never a whole match. The
-decision count must be the log's. Best-of-three: the toolbar's game list holds the games and their
+decision count must be the log's, except for a run that stopped without a result (its `--max-decisions`
+cap, a recorded `QUIT`): the engine wrote the frames of the decision it stopped at, which Replay shows as
+the last decision, unanswered, with the result "no result: the run stopped at decision N". Best-of-three: the toolbar's game list holds the games and their
 sideboarding phases ("Game 1", "Sideboarding 2", "Game 2"), each game's winner and the match result (from
 the omniscient frames' `game_end` / `match_end` events); choosing one goes to its first decision. The
 viewer toggle (A / B / Omni, seat A at start) selects the frames the tools read. The Game Log shows, in a

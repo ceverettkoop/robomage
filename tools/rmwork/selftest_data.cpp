@@ -85,6 +85,8 @@ static std::string make_bo3(Tally *t, const Env &env);
 static void check_bo3(
     Tally *t, rmwork::App &app, const std::string &log, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools);
 static void check_errors(Tally *t, rmwork::App &app, const Env &env);
+static void check_stopped_run(
+    Tally *t, rmwork::App &app, const Env &env, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools);
 static void check_run_directory(Tally *t, const Env &env, const std::string &bo3_log);
 static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::string &bo3_log);
 
@@ -195,7 +197,8 @@ static void check_frames(Tally *t, const rmwork::Match &m, const std::string &at
     using namespace rmwork;
     bool all_refs = true, decoded = true, keys = true, viewers = true, menus = true;
     std::string first_problem;
-    for (size_t i = 0; i <= m.decisions.size(); ++i) {
+    const size_t frames = m.decisions.size() + (m.has_terminal() ? 1 : 0);
+    for (size_t i = 0; i < frames; ++i) {
         const bool terminal = i == m.decisions.size();
         for (int v = 0; v < VIEW_COUNT; ++v) {
             const FrameRef &ref =
@@ -302,9 +305,10 @@ static void check_narrative(Tally *t, const rmwork::Match &m, const std::string 
         if (l.decision != static_cast<int>(choices)) in_order = false;
         ++choices;
     }
-    check(t, choices == m.decisions.size(),
-        at + ": the narrative has " + std::to_string(choices) + " chosen-row lines for " +
-            std::to_string(m.decisions.size()) + " decisions");
+    const size_t answered = m.decisions.size() - (m.stopped ? 1 : 0);
+    check(t, choices == answered,
+        at + ": the narrative has " + std::to_string(choices) + " chosen-row lines for " + std::to_string(answered) +
+            " answered decisions");
     check(t, in_order, at + ": the narrative's lines are out of decision order");
 }
 
@@ -330,6 +334,7 @@ static void check_match(Tally *t, rmwork::App &app, const std::string &log, cons
     check(t, deciders, at + ": a decision has no deciding seat");
     check(t, replies, at + ": a decision's reply is not the log's");
     check(t, m.result.known, at + ": no match result");
+    check(t, m.has_terminal(), at + ": no terminal frames");
     check_frames(t, m, at);
     check_seat_logs(t, m, at);
     check_narrative(t, m, at);
@@ -718,6 +723,44 @@ static void check_errors(Tally *t, rmwork::App &app, const Env &env) {
     check(t, cache_entries(root) == entries, "a cancelled replay is cached");
 }
 
+// A run stopped by --max-decisions: its log has the decisions taken, its replay one more (the
+// position it stopped at, never answered), and no result. It opens, that decision last.
+static void check_stopped_run(
+    Tally *t, rmwork::App &app, const Env &env, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools) {
+    using namespace rmwork;
+    const int CAP = 12;
+    const std::string log = env.tmp + "/stopped.rmlog";
+    std::string err;
+    const bool ran = run_engine(env,
+        {"--deck-a", "league/burn", "--deck-b", "league/bug", "--agent-a", "explore", "--agent-b", "explore",
+            "--game-seed", "3", "--max-decisions", std::to_string(CAP), "--decision-log", log},
+        env.tmp + "/stopped.out", &err);
+    check(t, ran, "stopped run: the engine run failed: " + err);
+    if (!ran || !open_and_wait(t, app, log, "stopped run")) return;
+    check(t, app.replay().loaded() && !app.error_open(),
+        "stopped run: not loaded (" + app.error_title() + ": " + app.error_message() + ")");
+    if (!app.replay().loaded()) return;
+    const Match &m = *app.replay().match();
+    check(t, m.log.replies.size() == static_cast<size_t>(CAP),
+        "stopped run: the log holds " + std::to_string(m.log.replies.size()) + " replies");
+    check(t, !m.has_terminal(), "stopped run: terminal frames after the decision it stopped at");
+    check(t, m.stopped && m.decisions.size() == static_cast<size_t>(CAP) + 1,
+        "stopped run: " + std::to_string(m.decisions.size()) + " decisions, not the log's and the one it stopped at");
+    bool replies = true;
+    for (size_t i = 0; i < m.decisions.size(); ++i) {
+        const int want = i < m.log.replies.size() ? m.log.replies[i] : REPLY_PENDING;
+        if (m.decisions[i].reply != want) replies = false;
+    }
+    check(t, replies, "stopped run: a reply is not the log's, or the last decision has one");
+    check(t, !m.result.known && m.result.text.find("stopped at decision") != std::string::npos,
+        "stopped run: the result is \"" + m.result.text + "\"");
+    check_frames(t, m, "stopped run");
+    check_seat_logs(t, m, "stopped run");
+    check_narrative(t, m, "stopped run");
+    check_table(t, app, "stopped run", cov);
+    check_tools(t, app, "stopped run", tools);
+}
+
 // A run directory: its logs by purpose with the games their episodes cover; the log ↔ episode
 // correspondence by name in both directions.
 static void check_run_directory(Tally *t, const Env &env, const std::string &bo3_log) {
@@ -852,6 +895,7 @@ int run_selftest_data(const std::string &engine) {
             check_picker(&t, app, env, bo3);
         }
         check_errors(&t, app, env);
+        check_stopped_run(&t, app, env, &cov, &tools);
         check_table_coverage(&t, cov);
         check_tools_coverage(&t, tools);
         PlayTestEnv play_env;

@@ -146,7 +146,9 @@ void ChoicesView::draw(ToolData &data, LinkState *links, bool play) {
     if (play) {
         note = "Click a row, or \xE2\x86\x91 / \xE2\x86\x93 and Enter, to choose \xC2\xB7 F2 / F6 pass";
     } else {
-        note = menu.chosen >= 0 ? std::string("\xE2\x96\xBA the row ") + seat_name(menu.decider) + " chose" : "";
+        note = menu.chosen >= 0   ? std::string("\xE2\x96\xBA the row ") + seat_name(menu.decider) + " chose"
+               : menu.unanswered ? "the run stopped here: no row was chosen"
+                                 : "";
         if (const featurize::PolicyEvalRecord *r = shown_record(data)) {
             note +=
                 std::string(note.empty() ? "" : " \xC2\xB7 ") + "bars: \xCF\x80 of " + policy_label(r->id, r->version);
