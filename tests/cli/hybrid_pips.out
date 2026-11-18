@@ -1,0 +1,240 @@
+robomage 0.3
+Decision log: hybrid_pips.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Hogaak, Arisen Necropolis, Swamp, Swamp, Swamp, Swamp, Swamp, Swamp
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Hogaak, Arisen Necropolis  #1  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Swamp                      #2                 Basic Land - Swamp
+  Swamp                      #3                 Basic Land - Swamp
+  Swamp                      #4                 Basic Land - Swamp
+  Swamp                      #5                 Basic Land - Swamp
+  Swamp                      #6                 Basic Land - Swamp
+  Swamp                      #7                 Basic Land - Swamp
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Stitcher's Supplier: created on the battlefield
+  T1: Player A's Orcish Bowmasters: created on the battlefield
+  T1: Player A's Dryad Arbor: created on the battlefield
+  T1: Player A's Mockingbird: created on Player A's graveyard
+  T1: Player A's Brainstorm: created on Player A's graveyard
+  T1: Player A's Cabal Therapy: created on Player A's graveyard
+  T1: Player A's Misty Rainforest: created on Player A's graveyard
+  T1: Player A's Lightning Bolt: created on Player A's graveyard
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 5   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Stitcher's Supplier  1/1  #8
+  Orcish Bowmasters    1/1  #9
+  Dryad Arbor          1/1  #10
+Your hand (7):
+  Hogaak, Arisen Necropolis  #1  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Swamp                      #2                 Basic Land - Swamp
+  Swamp                      #3                 Basic Land - Swamp
+  Swamp                      #4                 Basic Land - Swamp
+  Swamp                      #5                 Basic Land - Swamp
+  Swamp                      #6                 Basic Land - Swamp
+  Swamp                      #7                 Basic Land - Swamp
+Player A's graveyard: Mockingbird, Brainstorm, Cabal Therapy, Misty Rainforest, Lightning Bolt
+Player B's graveyard: (empty)
+Effects:
+  Player A may play Cabal Therapy #13 (flashback)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Swamp; 2nd from the top: Swamp; 3rd from the top: Swamp; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Tap Dryad Arbor for (G)
+Player A [0-1, help]> 
+Game 1, turn 1, Draw: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Tap Dryad Arbor for (G)
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Swamp
+  2: Play Swamp
+  3: Play Swamp
+  4: Play Swamp
+  5: Play Swamp
+  6: Play Swamp
+  7: Cast Hogaak, Arisen Necropolis
+  8: Cast Cabal Therapy (flashback)
+  9: Tap Dryad Arbor for (G)
+Player A [0-9, help]> 
+Since your last decision:
+  T1: Player A casts Hogaak, Arisen Necropolis from hand
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 5   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Stitcher's Supplier  1/1  #8
+  Orcish Bowmasters    1/1  #9
+  Dryad Arbor          1/1  #10
+Stack (top first):
+  1. Hogaak, Arisen Necropolis #16 (Player A)
+Your hand (6):
+  Swamp  #2  Basic Land - Swamp
+  Swamp  #3  Basic Land - Swamp
+  Swamp  #4  Basic Land - Swamp
+  Swamp  #5  Basic Land - Swamp
+  Swamp  #6  Basic Land - Swamp
+  Swamp  #7  Basic Land - Swamp
+Player A's graveyard: Mockingbird, Brainstorm, Cabal Therapy, Misty Rainforest, Lightning Bolt
+Player B's graveyard: (empty)
+Effects:
+  Player A may play Cabal Therapy #13 (flashback)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Swamp; 2nd from the top: Swamp; 3rd from the top: Swamp; ...
+Decision: Hogaak, Arisen Necropolis: pay the cost
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {5}{B/G}{B/G} left to pay
+  0: Pay {B}
+  1: Pay {G}
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: Hogaak, Arisen Necropolis: pay the cost
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {5}{B}{B/G} left to pay
+  0: Pay {B}
+  1: Pay {G}
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose how many cards to exile from your graveyard (delve)
+Cost: Hogaak, Arisen Necropolis #16 (additional cost): {5}{B}{G} left to pay
+  0: Exile 4 cards from graveyard (Delve)
+  1: Exile 5 cards from graveyard (Delve)
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #16 (additional cost): {5}{B}{G} left to pay
+  0: Exile Mockingbird (Delve)
+  1: Exile Brainstorm (Delve)
+  2: Exile Cabal Therapy (Delve)
+  3: Exile Misty Rainforest (Delve)
+  4: Exile Lightning Bolt (Delve)
+Player A [0-4, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #16 (additional cost): {4}{B}{G} left to pay
+  0: Exile Brainstorm (Delve)
+  1: Exile Cabal Therapy (Delve)
+  2: Exile Misty Rainforest (Delve)
+  3: Exile Lightning Bolt (Delve)
+Player A [0-3, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #16 (additional cost): {3}{B}{G} left to pay
+  0: Exile Cabal Therapy (Delve)
+  1: Exile Misty Rainforest (Delve)
+  2: Exile Lightning Bolt (Delve)
+Player A [0-2, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #16 (additional cost): {2}{B}{G} left to pay
+  0: Exile Misty Rainforest (Delve)
+  1: Exile Lightning Bolt (Delve)
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: pay the cost
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {1}{B}{G} left to pay
+  0: Tap Stitcher's Supplier (Convoke)
+  1: Tap Orcish Bowmasters (Convoke)
+  2: Tap Dryad Arbor (Convoke)
+Player A [0-2, help]> 
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 5   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Stitcher's Supplier  1/1  #8   tapped
+  Orcish Bowmasters    1/1  #9
+  Dryad Arbor          1/1  #10
+Stack (top first):
+  1. Hogaak, Arisen Necropolis #16 (Player A)
+Your hand (6):
+  Swamp  #2  Basic Land - Swamp
+  Swamp  #3  Basic Land - Swamp
+  Swamp  #4  Basic Land - Swamp
+  Swamp  #5  Basic Land - Swamp
+  Swamp  #6  Basic Land - Swamp
+  Swamp  #7  Basic Land - Swamp
+Player A's graveyard: Mockingbird, Brainstorm, Cabal Therapy, Misty Rainforest, Lightning Bolt
+Player B's graveyard: (empty)
+Effects:
+  Player A may play Cabal Therapy #13 (flashback)
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Swamp; 2nd from the top: Swamp; 3rd from the top: Swamp; ...
+Decision: casting Hogaak, Arisen Necropolis: pay the cost
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {1}{G} left to pay
+  0: Tap Orcish Bowmasters (Convoke)
+  1: Tap Dryad Arbor (Convoke)
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Mockingbird: graveyard -> exile
+  T1: Player A's Brainstorm: graveyard -> exile
+  T1: Player A's Cabal Therapy: graveyard -> exile
+  T1: Player A's Misty Rainforest: graveyard -> exile
+  T1: Player A's Hogaak, Arisen Necropolis: stack -> battlefield
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 1   exile 4
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Stitcher's Supplier        1/1  #8   tapped
+  Orcish Bowmasters          1/1  #9   tapped
+  Dryad Arbor                1/1  #10  tapped
+  Hogaak, Arisen Necropolis  8/8  #21  summoning sick
+Your hand (6):
+  Swamp  #2  Basic Land - Swamp
+  Swamp  #3  Basic Land - Swamp
+  Swamp  #4  Basic Land - Swamp
+  Swamp  #5  Basic Land - Swamp
+  Swamp  #6  Basic Land - Swamp
+  Swamp  #7  Basic Land - Swamp
+Player A's graveyard: Lightning Bolt
+Player B's graveyard: (empty)
+Player A's exile: Misty Rainforest, Cabal Therapy, Brainstorm, Mockingbird
+You know:
+  Player B's hand holds Forest x7
+  Player B's library: top: Forest; 2nd from the top: Forest; 3rd from the top: Forest; ...
+  Player A's library: top: Swamp; 2nd from the top: Swamp; 3rd from the top: Swamp; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Swamp
+  2: Play Swamp
+  3: Play Swamp
+  4: Play Swamp
+  5: Play Swamp
+  6: Play Swamp
+Player A [0-6, help]> 
+Input closed; quitting.

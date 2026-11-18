@@ -1,0 +1,4 @@
+{"name": "hybrid_pips",
+ "why": "--no-auto-mana: a human (A) casting Hogaak, Arisen Necropolis announces its two hybrid pips one at a time (CR 601.2b, 107.4e); each pending cost shows the pips announced so far as plain mana and only the pips still to announce as hybrid ({5}{B/G}{B/G}, then {5}{B}{B/G}), then delve and convoke pay it",
+ "args": ["--no-auto-mana", "--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Hogaak Arisen Necropolis", "--library-a", "Swamp", "--graveyard-a", "Mockingbird,Brainstorm,Cabal Therapy,Misty Rainforest,Lightning Bolt", "--battlefield-a", "Stitcher's Supplier,Orcish Bowmasters,Dryad Arbor", "--hand-b", "Forest", "--library-b", "Forest"],
+ "input": ["0", "0", "0", "7", "0", "1", "0", "0", "0", "0", "0", "0", "0"]}
