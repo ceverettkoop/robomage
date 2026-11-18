@@ -39,7 +39,7 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         std::vector<LegalAction> color_actions;
         for (auto c : ab.def->mana_choices) {
             std::string desc = "Add " + std::to_string(mana_amount) + "{" + mana_symbol(c) + "}";
-            LegalAction la(PASS_PRIORITY, std::string(desc));
+            LegalAction la(CHOICE, std::string(desc));
             la.category = ActionCategory::CHOOSE_MANA_COLOR;
             la.option_ordinal = static_cast<int>(c);  // color index (WHITE=0..COLORLESS=5)
             color_actions.push_back(la);

@@ -15,7 +15,8 @@ values on the omniscient frames against ``critic_value_nolists``. Twice: with th
 the fixtures' card ids (a test-only copy: the old function, within ``TOL`` on every decision), and with
 the run's true seen set (within ``TOL`` on the decisions holding no card outside it; on the others the
 mask's effect, an unseen card reading ``unknown_id``, is reported, not bounded). A checkpoint already
-migrated by the cut-over (the file at the manifest's path, with ``migrated`` in it) must equal the
+migrated by the cut-over (the file at the manifest's path, with ``migrated`` in it), as a load over today's
+tables gives it (the enum values appended since inherited, ``spec.INHERITED_VALUES``), must equal the
 in-memory migration with its true mask parameter for parameter.
 
 **(b) An expansion.** The migrated networks over a copy of today's tables with one card appended
@@ -321,7 +322,8 @@ def evaluate(job):
     if job["kind"] == "params":
         lm = MG.layout_map(job["old_tables"], job["old_cards"], ctx["tables_dir"])[0]
         cfg, sd = networks_of(torch.load(job["original"], map_location="cpu", weights_only=False))[job["role"]]
-        same = cutover_equal(job["cutover"], job["role"], MG.build_network(lm, cfg, sd, tables, job["seen"]))
+        same = cutover_equal(job["cutover"], job["role"], MG.build_network(lm, cfg, sd, tables, job["seen"]),
+                             tables)
         return {"kind": "params", "checkpoint": job["path"], "role": job["role"], "network": job["net_id"],
                 "cutover_equal": same,
                 "fails": [] if same else ["%s %s: the cut-over file differs from the migration" % (job["path"],
@@ -357,7 +359,7 @@ def evaluate(job):
                 r["unseen_max_dvalue"], r["unseen_max_dlogit"] = ev, el
                 r["unseen_argmax_moved"] = argmax_moves(lg, want_l, a, other)
             if job.get("cutover"):
-                r["cutover_equal"] = cutover_equal(job["cutover"], job["role"], model)
+                r["cutover_equal"] = cutover_equal(job["cutover"], job["role"], model, tables)
                 if not r["cutover_equal"]:
                     res["fails"].append("%s %s: the cut-over file differs from the migration" % (job["path"], job["role"]))
         if max(dv, dl) > TOL:
@@ -378,9 +380,12 @@ def evaluate(job):
     return res
 
 
-def cutover_equal(path, role, model):
+def cutover_equal(path, role, model, tables):
+    """Whether the cut-over file's network `role`, as a load over `tables` gives it (its manifest checked,
+    the enum values appended since inherited: model.checkpoint_state), is `model` parameter for parameter."""
     data = torch.load(path, map_location="cpu", weights_only=False)
-    got = networks_of(data)[role][1]
+    hashes = (data["learner"] if "learner" in data else data)["hashes"]
+    got = M.checkpoint_state(hashes, networks_of(data)[role][1], tables, path)
     want = model.state_dict()
     return set(got) == set(want) and all(torch.equal(got[k].cpu(), want[k].cpu()) for k in want)
 

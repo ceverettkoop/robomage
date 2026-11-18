@@ -795,7 +795,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
 | | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |
 | `menu` (46): row = action index of the menu as offered (after the interchangeable-choice collapse); only in the deciding seat's and the omniscient frame | `category` | u8 | `enum:action_category` | |
-| | `type` | u8 | `enum:action_type` | |
+| | `type` | u8 | `enum:action_type` | the action taken with priority: pass, cast, activate (a mana ability's row in a payment too), special action; CHOICE for a row of any other decision (a target, a mode, a cost, a mulligan, sideboarding …) |
 | | `source`, `target` | u32 | `handle` | |
 | | `source_card` | u16 | `card` | `visible_card_id` of the source, or for a `card_public` choice the card it makes public (a name in a name-a-card menu) |
 | | `source_player`, `target_player` | seat | | when the source / target is a player |

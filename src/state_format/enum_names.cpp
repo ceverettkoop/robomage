@@ -133,6 +133,7 @@ static const char *action_type_name(ActionType v) {
         C(CAST_SPELL)
         C(ACTIVATE_ABILITY)
         C(SPECIAL_ACTION)
+        C(CHOICE)
     }
 #undef C
     return nullptr;
@@ -324,7 +325,7 @@ std::vector<rmstate::EnumTable> engine_enums() {
     std::vector<rmstate::EnumTable> out;
     out.push_back(enum_table("step", UNTAP, CLEANUP, step_name));
     out.push_back(enum_table("action_category", 0, ACTION_CATEGORY_MAX, action_category_name));
-    out.push_back(enum_table("action_type", PASS_PRIORITY, SPECIAL_ACTION, action_type_name));
+    out.push_back(enum_table("action_type", PASS_PRIORITY, CHOICE, action_type_name));
     out.push_back(enum_table("zone", Zone::LIBRARY, Zone::SIDEBOARD, zone_name));
     out.push_back(enum_table("seat", Zone::UNKNOWN, Zone::PLAYER_B, seat_name));
     out.push_back(enum_table("color", WHITE, NO_COLOR, color_name));

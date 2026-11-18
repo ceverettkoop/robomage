@@ -18,8 +18,8 @@ static std::vector<LegalAction> tap_or_untap_menu(Entity object);
 // in the chosen state stays as it is, as either row is legal on it.
 static std::vector<LegalAction> tap_or_untap_menu(Entity object) {
     const std::string name = entity_name(object);
-    std::vector<LegalAction> menu = {LegalAction(PASS_PRIORITY, object, "Tap " + name),
-                                     LegalAction(PASS_PRIORITY, object, "Untap " + name)};
+    std::vector<LegalAction> menu = {
+        LegalAction(CHOICE, object, "Tap " + name), LegalAction(CHOICE, object, "Untap " + name)};
     for (size_t i = 0; i < menu.size(); i++) {
         menu[i].category = ActionCategory::CHOOSE_MODE;
         menu[i].option_ordinal = static_cast<int>(i);

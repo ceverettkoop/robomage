@@ -111,7 +111,7 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
         // only by the raw option_ordinal scalar, which reads as "all modes
         // identical" to the policy/search. The distinct option_ordinal still
         // separates the modes from one another.
-        LegalAction la(PASS_PRIORITY, modal.source.lki_entity(), mode_desc(modal, i));
+        LegalAction la(CHOICE, modal.source.lki_entity(), mode_desc(modal, i));
         la.category = ActionCategory::CHOOSE_MODE;
         la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
         mode_actions.push_back(la);
@@ -121,8 +121,7 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
 }
 
 static LegalAction confirm_modes_action(const Ability &modal, int chosen) {
-    LegalAction la(
-        PASS_PRIORITY, modal.source.lki_entity(), "Done choosing modes (" + std::to_string(chosen) + " chosen)");
+    LegalAction la(CHOICE, modal.source.lki_entity(), "Done choosing modes (" + std::to_string(chosen) + " chosen)");
     la.category = ActionCategory::CONFIRM_MODES;
     la.option_ordinal = chosen;  // how many modes are chosen
     return la;
@@ -182,7 +181,7 @@ static std::vector<LegalAction> division_menu(const Ability &ab) {
     for (size_t i = 0; i < chosen.size(); i++) {
         const Entity target = chosen[i].get();
         const int share = ab.target_shares[i];
-        LegalAction la(PASS_PRIORITY, target,
+        LegalAction la(CHOICE, target,
             target_display_name(cur_game, target) + ": one more damage (" + std::to_string(share) + " so far)");
         la.category = ActionCategory::DIVIDE_DAMAGE;
         la.option_ordinal = share;

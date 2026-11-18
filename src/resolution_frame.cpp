@@ -52,7 +52,7 @@ void arm_flow_query(PendingQuery::Tag tag, std::vector<LegalAction> &&menu, Zone
     pq.tag = tag;
     pq.menu = std::move(menu);
     if (offer_cast_cancel && cancellable) {
-        LegalAction cancel(PASS_PRIORITY, "Cancel");
+        LegalAction cancel(CHOICE, "Cancel");
         cancel.category = ActionCategory::PAYING_COSTS;
         cancel.cancel_proposal = true;
         pq.menu.push_back(cancel);

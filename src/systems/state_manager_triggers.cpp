@@ -1095,7 +1095,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
             } else {
                 std::vector<LegalAction> choices;
                 for (size_t gi = 0; gi < group_size; gi++) {
-                    LegalAction la(PASS_PRIORITY, tp.queue[gi].source, tp.queue[gi].label);
+                    LegalAction la(CHOICE, tp.queue[gi].source, tp.queue[gi].label);
                     la.category = ActionCategory::ORDER_TRIGGERS;
                     // Menu position disambiguates two triggers that share one source
                     // permanent (same-entity collision).

@@ -108,7 +108,9 @@ stopped run. `retable` (refused while the run runs; `orchestrator/retable.py`):
    oldest first): the window and R-NaD's episode filter accept the lineage's spec hashes
    (`spec.Tables.accepted_spec_hashes`);
 5. rebuilds every export of `state.json` (the latest per name: phase ends, fixed points, `final`)
-   in `checkpoint.export_formats`, and removes the evaluations' and live exports;
+   in `checkpoint.export_formats`, and removes the evaluations' and live exports (each from its
+   checkpoint loaded over the new tables, so an enum value appended to take over an earlier value's
+   inputs starts as that value, `docs/featurizer.md` §6.1; the resumed learner state does the same);
 6. records the change in `state.json` (`tables`; `retables`: from, to, kept directory, checkpoints
    checked, drift, exports rebuilt) and a `retable` metrics line.
 

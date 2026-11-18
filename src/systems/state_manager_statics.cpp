@@ -969,7 +969,7 @@ static void choose_color_on_entry(Entity entity, Permanent &perm, bool *parked) 
     } kColors[] = {{WHITE, "White"}, {BLUE, "Blue"}, {BLACK, "Black"}, {RED, "Red"}, {GREEN, "Green"}};
     std::vector<LegalAction> menu;
     for (const auto &c : kColors) {
-        LegalAction la(PASS_PRIORITY, std::string("Choose color: ") + c.name);
+        LegalAction la(CHOICE, std::string("Choose color: ") + c.name);
         la.category = ActionCategory::CHOOSE_COLOR;
         la.option_ordinal = static_cast<int>(menu.size());
         menu.push_back(la);
@@ -1009,12 +1009,12 @@ static void choose_copy_on_entry(Entity entity, const CardData &card, const Enti
     if (originals.empty()) return;
     std::vector<LegalAction> menu;
     for (Entity e : originals) {
-        LegalAction la(PASS_PRIORITY, e, "Enter as a copy of " + entity_name(e));
+        LegalAction la(CHOICE, e, "Enter as a copy of " + entity_name(e));
         la.category = ActionCategory::CHOOSE_CARD;
         menu.push_back(la);
     }
     if (card.enters_as_copy_optional) {
-        LegalAction la(PASS_PRIORITY, entity, "Enter as " + card.name);
+        LegalAction la(CHOICE, entity, "Enter as " + card.name);
         la.category = ActionCategory::CHOOSE_CARD;
         menu.push_back(la);
     }
@@ -1339,7 +1339,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
 
                     std::vector<LegalAction> type_choices;
                     for (size_t idx : order) {
-                        LegalAction la(PASS_PRIORITY, entity, "Choose creature type: " + subtype_names[idx]);
+                        LegalAction la(CHOICE, entity, "Choose creature type: " + subtype_names[idx]);
                         la.category = ActionCategory::CHOOSE_TYPE;
                         // Menu position distinguishes the same-entity options (all carry the
                         // naming permanent). Bounded by the normalizer; the list is small.

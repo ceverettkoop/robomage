@@ -74,7 +74,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     // the pre-ask log is arm-only.
     std::vector<LegalAction> picks;
     for (auto e : candidates) {
-        LegalAction la(PASS_PRIORITY, e, "Vote to exile " + permanent_label(e));
+        LegalAction la(CHOICE, e, "Vote to exile " + permanent_label(e));
         la.category = ActionCategory::CHOOSE_CARD;
         la.card_is_public = true;
         picks.push_back(la);

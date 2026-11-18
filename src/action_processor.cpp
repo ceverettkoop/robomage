@@ -532,7 +532,7 @@ static const std::vector<HybridPip> &mana_cost_hybrid_pips(const Game::PendingCa
 static std::vector<LegalAction> additional_choice_menu(const CardData &card_data, const std::vector<size_t> &payable) {
     std::vector<LegalAction> menu;
     for (size_t i : payable) {
-        LegalAction la(PASS_PRIORITY, cost_label(card_data.additional_choices[i]));
+        LegalAction la(CHOICE, cost_label(card_data.additional_choices[i]));
         la.category = ActionCategory::PAYING_COSTS;
         la.option_ordinal = static_cast<int>(i);
         menu.push_back(la);
@@ -683,13 +683,13 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         for (auto entity : not_yet_attacking) {
             std::string ename = entity_name(entity);
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            LegalAction la(PASS_PRIORITY, entity,
-                ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            LegalAction la(
+                CHOICE, entity, ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
             la.category = ActionCategory::SELECT_ATTACKER;
             atk_actions.push_back(la);
         }
         {
-            LegalAction confirm(PASS_PRIORITY, std::string("Confirm attackers"));
+            LegalAction confirm(CHOICE, std::string("Confirm attackers"));
             confirm.category = ActionCategory::CONFIRM_ATTACKERS;
             atk_actions.push_back(confirm);
         }
@@ -719,7 +719,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
                 auto &p = global_coordinator.GetComponent<Permanent>(t_entity);
                 label = p.name + " (loyalty " + std::to_string(get_counters(t_entity, "LOYALTY")) + ")";
             }
-            LegalAction la(PASS_PRIORITY, t_entity, label);
+            LegalAction la(CHOICE, t_entity, label);
             la.category = ActionCategory::ATTACK_TARGET;
             tgt_actions.push_back(la);
         }
@@ -886,13 +886,13 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         for (auto entity : unblocked) {
             std::string ename = entity_name(entity);
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            LegalAction la(PASS_PRIORITY, entity,
-                ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            LegalAction la(
+                CHOICE, entity, ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
             la.category = ActionCategory::SELECT_BLOCKER;
             blk_actions.push_back(la);
         }
         {
-            LegalAction confirm(PASS_PRIORITY, std::string("Confirm blockers"));
+            LegalAction confirm(CHOICE, std::string("Confirm blockers"));
             confirm.category = ActionCategory::CONFIRM_BLOCKERS;
             blk_actions.push_back(confirm);
         }
@@ -924,7 +924,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         for (auto atk_entity : legal_attackers) {
             std::string aname = entity_name(atk_entity);
             auto &acr = global_coordinator.GetComponent<Creature>(atk_entity);
-            LegalAction la(PASS_PRIORITY, atk_entity,
+            LegalAction la(CHOICE, atk_entity,
                 aname + " [" + std::to_string(acr.power) + "/" + std::to_string(acr.toughness) + "]");
             la.category = ActionCategory::BLOCK_TARGET;
             blk_tgt_actions.push_back(la);
@@ -1124,7 +1124,7 @@ int select_single_target(Ability &ability, const std::vector<Entity> &valid_targ
     std::vector<LegalAction> tgt_actions;
     if (ability.target_min == 0 || allow_done) {
         std::string label = allow_done ? "Done selecting targets" : "No target";
-        LegalAction la(PASS_PRIORITY, label);
+        LegalAction la(CHOICE, label);
         la.category = ActionCategory::SELECT_TARGET;
         tgt_actions.push_back(la);
     }
@@ -1137,7 +1137,7 @@ int select_single_target(Ability &ability, const std::vector<Entity> &valid_targ
         } else {
             desc = entity_name(target);
         }
-        LegalAction la(PASS_PRIORITY, target, desc);
+        LegalAction la(CHOICE, target, desc);
         la.category = ActionCategory::SELECT_TARGET;
         tgt_actions.push_back(la);
     }
@@ -1592,7 +1592,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 std::vector<LegalAction> x_actions;
                 for (size_t xv = 0; xv <= max_x; xv++) {
                     if (!x_leaves_a_target(pa, xv, orderer)) continue;
-                    LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                    LegalAction la(CHOICE, std::string("X = " + std::to_string(xv)));
                     la.category = ActionCategory::CHOOSE_X;
                     la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                     x_actions.push_back(la);
@@ -1636,7 +1636,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     game_log("Choose X value (0-%d):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (int xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        LegalAction la(CHOICE, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
@@ -2021,7 +2021,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        LegalAction la(CHOICE, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
@@ -2111,14 +2111,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
                     std::vector<LegalAction> phyrex_actions;
                     if (life_payable) {
-                        LegalAction pay_life_action(PASS_PRIORITY,
-                            "Pay 2 life (instead of {" + color_name + "})");
+                        LegalAction pay_life_action(CHOICE, "Pay 2 life (instead of {" + color_name + "})");
                         pay_life_action.category = ActionCategory::PAYING_COSTS;
                         pay_life_action.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
                         phyrex_actions.push_back(pay_life_action);
                     }
                     if (can_pay_colored) {
-                        LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
+                        LegalAction pay_mana(CHOICE, "Pay {" + color_name + "}");
                         pay_mana.category = ActionCategory::PAYING_COSTS;
                         pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
                         phyrex_actions.push_back(pay_mana);
@@ -2161,7 +2160,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        LegalAction la(CHOICE, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
@@ -2734,6 +2733,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             run_cast_flow(pc, game, orderer, -1);
             break;
         }
+
+        case CHOICE:
+            fatal_error("process_action given a choice's row: " + action.description);
     }
 }
 
@@ -2782,14 +2784,14 @@ static bool arm_damage_assign_query(Game &game) {
         uint32_t need = lethal_needed_for_blocker(pd.attacker, b);
         if (need == 0 || need > pd.remaining) continue;
         auto &bcr = global_coordinator.GetComponent<Creature>(b);
-        LegalAction la(PASS_PRIORITY, b,
-            entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
-                std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
+        LegalAction la(CHOICE, b,
+            entity_name(b) + " [" + std::to_string(bcr.power) + "/" + std::to_string(bcr.toughness) + "] (lethal " +
+                std::to_string(need) + ")");
         la.category = ActionCategory::ASSIGN_DAMAGE;
         actions.push_back(la);
     }
     if (actions.empty()) return false;  // can't kill any more blockers
-    LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
+    LegalAction done(CHOICE, std::string("Done assigning ") + attacker_name);
     done.category = ActionCategory::ASSIGN_DAMAGE;
     actions.push_back(done);
 
@@ -3100,7 +3102,7 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             std::vector<LegalAction> discard_actions;
             for (auto card : hand) {
                 auto &cd = global_coordinator.GetComponent<CardData>(card);
-                LegalAction la(PASS_PRIORITY, card, cd.name);
+                LegalAction la(CHOICE, card, cd.name);
                 la.category = ActionCategory::DISCARD;
                 discard_actions.push_back(la);
             }

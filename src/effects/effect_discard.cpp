@@ -151,14 +151,14 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         std::vector<LegalAction> discard_actions;
         for (auto e : valid) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, cd.name);
+            LegalAction la(CHOICE, e, cd.name);
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
         // Optional$ True (Fable of the Mirror-Breaker: "you may discard up to two cards"): each pick
         // may instead end the discarding.
         if (ab.def->optional_choice) {
-            LegalAction stop(PASS_PRIORITY, std::string("Discard no more"));
+            LegalAction stop(CHOICE, std::string("Discard no more"));
             stop.category = ActionCategory::DISCARD;
             discard_actions.push_back(stop);
         }

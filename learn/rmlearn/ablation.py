@@ -79,15 +79,13 @@ def load_network(path, tables):
     ``m<k>.pt``, ``final-model.pt``) or a learner checkpoint (``rnad-*.pt``: its online network)."""
     import torch
     from . import model as M
-    from . import spec as S
     data = torch.load(path, map_location="cpu", weights_only=False)
     if "learner" in data:
         cfg, hashes, sd = data["learner"]["model_config"], data["learner"]["hashes"], data["learner"]["model"]
     else:
         cfg, hashes, sd = data["config"], data["hashes"], data["state_dict"]
-    S.require_compatible(hashes, tables, path)
     net = M.RMNet(M.ModelConfig.from_dict(cfg), tables)
-    net.load_state_dict(sd)
+    net.load_state_dict(M.checkpoint_state(hashes, sd, tables, path))
     return net
 
 

@@ -325,11 +325,11 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
             std::vector<LegalAction> picks;
             for (auto e : cands) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
-                LegalAction la(PASS_PRIORITY, e, std::string("Put ") + cd.name + " onto the battlefield");
+                LegalAction la(CHOICE, e, std::string("Put ") + cd.name + " onto the battlefield");
                 la.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(la);
             }
-            LegalAction none(PASS_PRIORITY, std::string("Put nothing"));
+            LegalAction none(CHOICE, std::string("Put nothing"));
             none.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(none);
 
@@ -644,13 +644,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
                 const char *where = (loc == Zone::BATTLEFIELD) ? " (the chosen creature)" : " (from hand)";
-                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + cd.name + where);
+                LegalAction la(CHOICE, e, std::string("Exile ") + cd.name + where);
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
             }
             if (optional) {
-                LegalAction none(PASS_PRIORITY, std::string("Exile nothing"));
+                LegalAction none(CHOICE, std::string("Exile nothing"));
                 none.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(none);
             }
@@ -781,12 +781,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             for (auto e : cands) {
                 // A token among the candidates (e.g. an Orc Army you control when Yorion blinks)
                 // has no CardData — name it from its Permanent instead of crashing.
-                LegalAction la(PASS_PRIORITY, e, std::string(verb.imperative) + " " + object_display_name(e));
+                LegalAction la(CHOICE, e, std::string(verb.imperative) + " " + object_display_name(e));
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
             }
-            LegalAction done(PASS_PRIORITY, std::string("Done (") + verb.bare + " no more)");
+            LegalAction done(CHOICE, std::string("Done (") + verb.bare + " no more)");
             done.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(done);
             int choice = fctx.ask(std::move(picks), owner, ab.source.lki_entity());

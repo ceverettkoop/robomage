@@ -49,12 +49,12 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
 
     std::vector<LegalAction> choices;
     if (optional) {
-        LegalAction la(PASS_PRIORITY, std::string("Don't sacrifice"));
+        LegalAction la(CHOICE, std::string("Don't sacrifice"));
         la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }
     for (auto e : candidates) {
-        LegalAction la(PASS_PRIORITY, e, "Sacrifice " + permanent_label(e));
+        LegalAction la(CHOICE, e, "Sacrifice " + permanent_label(e));
         la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }

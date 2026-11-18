@@ -455,6 +455,19 @@ the schema no longer makes is a hole that reads 0; an engine enum may be reorder
   spec of one layout whatever was appended. A change that is not an append (a capacity, a moved
   entry) raises `layout_version`; checkpoints are migrated by name (`learn/rmlearn/migrate.py`,
   `docs/rmtrain.md` §1.2).
+- **An appended value that takes over inputs** an earlier value encoded (a split: menu rows of any
+  decision but priority's are `action_type` `CHOICE`, typed `PASS_PRIORITY` before, sideboarding's
+  `SPECIAL_ACTION`) is a row of `INHERITED_VALUES` (`learn/rmlearn/spec.py`: the enum, the appended
+  value, the earlier value, and the tokens it took over from another value, named by a value of another
+  categorical slot of the same token). A network whose manifest's registry lacks the value starts its
+  learned positions (`cat_emb` rows of every categorical slot of the enum, `num_proj` columns of its
+  masks, table columns' projection weights; the critic's too) as copies of the earlier value's, and
+  the other slot's rows of the tokens taken over from another value add that value's row less the
+  earlier one's (their rows are summed), so it computes on the new encoding what it computed on the
+  old. Applied wherever such a network is loaded (`model.checkpoint_state`: `load_checkpoint`, the
+  R-NaD learner's state with its target, regularisation networks and Adam's moments, the exporter,
+  exploiter and ablation loads) and in a migration (`migrate.LayoutMap.inherited`); a network saved
+  afterwards carries today's registry and is not changed again.
 - **A capacity bump** (`rmfeat --registry-raise FILE ENUM=CAPACITY[,…]`,
   `Registry::raise_capacities`): each named enum's capacity raised and the enum made open; every
   block of it (numeric masks, table columns, categorical ranges) widens, later positions in the same

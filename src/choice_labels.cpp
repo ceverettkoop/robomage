@@ -58,8 +58,8 @@ std::string unless_cost_text(UnlessPayKind kind, size_t cost, const ManaValue *c
 LegalAction unless_pay_action(const UnlessSubject &subject, UnlessPayKind kind, size_t cost,
                               const ManaValue *cost_pips) {
     const char *verb = (kind == UnlessPayKind::DISCARD) ? "Discard " : "Pay ";
-    LegalAction pay(PASS_PRIORITY, verb + unless_cost_text(kind, cost, cost_pips) + " (" +
-                                       unless_outcome_text(subject, /*paid=*/true) + ")");
+    LegalAction pay(CHOICE,
+        verb + unless_cost_text(kind, cost, cost_pips) + " (" + unless_outcome_text(subject, /*paid=*/true) + ")");
     pay.category = ActionCategory::PAY_UNLESS;
     pay.option_ordinal = 1;  // 1 = pay
     return pay;
@@ -69,7 +69,7 @@ LegalAction unless_decline_action(const UnlessSubject &subject, UnlessPayKind ki
     const char *verb = kind == UnlessPayKind::DISCARD     ? "Don't discard ("
                        : kind == UnlessPayKind::SACRIFICE ? "Don't sacrifice ("
                                                           : "Don't pay (";
-    LegalAction decline(PASS_PRIORITY, verb + unless_outcome_text(subject, /*paid=*/false) + ")");
+    LegalAction decline(CHOICE, verb + unless_outcome_text(subject, /*paid=*/false) + ")");
     decline.category = ActionCategory::PAY_UNLESS;
     decline.option_ordinal = 0;  // 0 = don't pay
     return decline;
@@ -78,11 +78,11 @@ LegalAction unless_decline_action(const UnlessSubject &subject, UnlessPayKind ki
 std::vector<LegalAction> yesno_menu(const std::string &decline_label, const std::string &accept_label,
                                     Entity accept_source) {
     std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, decline_label);
+    LegalAction decline(CHOICE, decline_label);
     decline.category = ActionCategory::OPTIONAL_YESNO;
     decline.option_ordinal = 0;  // 0 = decline
     yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, accept_source, accept_label);
+    LegalAction accept(CHOICE, accept_source, accept_label);
     accept.category = ActionCategory::OPTIONAL_YESNO;
     accept.option_ordinal = 1;  // 1 = accept
     yn.push_back(accept);

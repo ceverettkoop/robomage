@@ -191,15 +191,14 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         if (rt.optional) {
             // The decline entry names where the picks and the unchosen rest go (Fateseal: "Put
             // nothing on the bottom of library (rest stay on top of library)").
-            LegalAction la(PASS_PRIORITY, dig_decline_label(dig_chosen_destination(ab), dig_chosen_on_bottom(ab),
-                                                            dig_rest_destination(ab), dig_rest_on_bottom(ab),
-                                                            !rt.chosen.empty()));
+            LegalAction la(CHOICE, dig_decline_label(dig_chosen_destination(ab), dig_chosen_on_bottom(ab),
+                                       dig_rest_destination(ab), dig_rest_on_bottom(ab), !rt.chosen.empty()));
             la.category = ActionCategory::DIG_CHOICE;
             dig_actions.push_back(la);
         }
         for (auto e : rt.pool) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, cd.name);
+            LegalAction la(CHOICE, e, cd.name);
             la.category = ActionCategory::DIG_CHOICE;
             dig_actions.push_back(la);
         }

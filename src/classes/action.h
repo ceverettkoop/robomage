@@ -11,7 +11,9 @@ enum ActionType {
     PASS_PRIORITY,
     CAST_SPELL,
     ACTIVATE_ABILITY,
-    SPECIAL_ACTION  // Includes: play land, turn face-up morph, etc.
+    SPECIAL_ACTION,  // Includes: play land, turn face-up morph, etc.
+    CHOICE           // A row of a choice (a target, a mode, a cost, a mulligan, sideboarding, ...):
+                     // no action taken with priority
 };
 
 // Semantic category of each legal action, emitted per-action in machine mode

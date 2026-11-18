@@ -573,13 +573,11 @@ void apply_discard_else_graveyard(ReplacementEvent &ev, const Candidate &c) {
     std::vector<LegalAction> choices;
     for (Entity e : discardable) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        LegalAction la(PASS_PRIORITY, e,
-                       "Discard " + cd.name + " (put " + self_name + " onto the battlefield)");
+        LegalAction la(CHOICE, e, "Discard " + cd.name + " (put " + self_name + " onto the battlefield)");
         la.category = ActionCategory::CHOOSE_CARD;
         choices.push_back(la);
     }
-    LegalAction decline(PASS_PRIORITY,
-                        std::string("Don't discard (put ") + self_name + " into graveyard)");
+    LegalAction decline(CHOICE, std::string("Don't discard (put ") + self_name + " into graveyard)");
     decline.category = ActionCategory::CHOOSE_CARD;
     choices.push_back(decline);
     // Blocking decision seated on the owner — this MOVE_TO_ZONE dispatch fires inside
@@ -673,7 +671,7 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
 
     std::vector<LegalAction> choices;
     for (size_t i : eligible) {
-        LegalAction la(PASS_PRIORITY, cands[i].menu_entity ? cands[i].menu_entity : cands[i].source, cands[i].label);
+        LegalAction la(CHOICE, cands[i].menu_entity ? cands[i].menu_entity : cands[i].source, cands[i].label);
         la.category = ActionCategory::CHOOSE_REPLACEMENT;
         choices.push_back(la);
     }
@@ -719,7 +717,7 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
             if ((src.controller == player) == r.draw_by_opponent) return;
             if (r.draw_from_empty_library && lib != 0) return;
             if (r.draw_not_first_in_step && first_draw_of_draw_step(player)) return;
-            LegalAction la(PASS_PRIORITY, src.menu_entity(), src.name() + ": replace the draw");
+            LegalAction la(CHOICE, src.menu_entity(), src.name() + ": replace the draw");
             la.category = ActionCategory::CHOOSE_REPLACEMENT;
             actions.push_back(la);
             opts->push_back({src.entity, 0, r.replace_with, src.controller});
@@ -734,15 +732,14 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
     if (dredges.empty()) return actions;
 
     if (!must_replace) {
-        LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
+        LegalAction draw_act(CHOICE, std::string("Draw a card"));
         draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
         actions.push_back(draw_act);
         opts->push_back({});
     }
     for (const DrawReplacementOption &o : dredges) {
         auto &cd = global_coordinator.GetComponent<CardData>(o.source);
-        LegalAction la(PASS_PRIORITY, o.source,
-                       "Dredge " + cd.name + " (mill " + std::to_string(o.mill) + ")");
+        LegalAction la(CHOICE, o.source, "Dredge " + cd.name + " (mill " + std::to_string(o.mill) + ")");
         la.category = ActionCategory::CHOOSE_REPLACEMENT;
         actions.push_back(la);
         opts->push_back(o);

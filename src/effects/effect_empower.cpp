@@ -75,7 +75,7 @@ static Entity create_empower_token(const std::string &script, Zone::Ownership ct
 static std::vector<LegalAction> empower_menu(const std::vector<Entity> &tokens, int n) {
     std::vector<LegalAction> menu;
     for (Entity e : tokens) {
-        LegalAction la(PASS_PRIORITY, e,
+        LegalAction la(CHOICE, e,
             "Put " + std::to_string(n) + " loyalty counters on " + entity_name(e) + " (loyalty " +
                 std::to_string(get_counters(e, "LOYALTY")) + ")");
         la.category = ActionCategory::CHOOSE_CARD;

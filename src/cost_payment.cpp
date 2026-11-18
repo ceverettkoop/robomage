@@ -353,7 +353,7 @@ PayStatus announce_hybrid_pips(const HybridAnnouncement &a, FrameCtx &ctx, const
             if (auto_mana && !resolve_hybrid_cost(a.payer, with_it, later, a.payee, orderer, a.delve, a.tap_to_pay,
                                                   nullptr, 0, a.exclude))
                 return;
-            LegalAction row(PASS_PRIORITY, label);
+            LegalAction row(CHOICE, label);
             row.category = ActionCategory::PAYING_COSTS;
             menu.push_back(row);
             adds.push_back(add);
@@ -559,7 +559,7 @@ static PayStatus pick_items(
         if (!rule.takes_forced || pool.size() > static_cast<size_t>(left)) {
             std::vector<LegalAction> menu;
             for (Entity e : pool) {
-                LegalAction la(PASS_PRIORITY, e, rule.label + item_name(rule, e) + rule.label_tail);
+                LegalAction la(CHOICE, e, rule.label + item_name(rule, e) + rule.label_tail);
                 la.category = rule.category;
                 menu.push_back(la);
             }
@@ -726,7 +726,7 @@ static PayStatus choose_delve_count(const CostPayer &who, FrameCtx &ctx, const s
     }
     std::vector<LegalAction> count_menu;
     for (size_t n = min_needed; n <= max_exiles; n++) {
-        LegalAction la(PASS_PRIORITY, who.source,
+        LegalAction la(CHOICE, who.source,
             "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") + " from graveyard (Delve)");
         la.category = ActionCategory::CHOOSE_X;
         la.option_ordinal = static_cast<int>(n);  // the delve exile count
@@ -754,7 +754,7 @@ static PayStatus choose_delve_cards(const CostPayer &who, FrameCtx &ctx, const s
         for (auto e : orderer->mEntities) {
             if (!is_delve_eligible(e, who.payer) || chosen_as_cost(run, e)) continue;
             auto &ecd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
+            LegalAction la(CHOICE, e, "Exile " + ecd.name + " (Delve)");
             la.category = ActionCategory::CHOOSE_CARD;
             la.card_is_public = true;  // graveyards are public zones
             picks.push_back(la);
@@ -808,7 +808,7 @@ static PayStatus choose_taps(const CostPayer &who, FrameCtx &ctx, const std::sha
         }
         const size_t taps = rows.size();
         if (mana_pays_the_rest) {
-            LegalAction done(PASS_PRIORITY, "Tap nothing more");
+            LegalAction done(CHOICE, "Tap nothing more");
             done.category = ActionCategory::PAYING_COSTS;
             rows.push_back(done);
         }
@@ -837,12 +837,12 @@ static PayStatus tap_others(const CostPayer &who, FrameCtx &ctx, const std::shar
         if (pool.empty()) return paid ? PayStatus::PAID : PayStatus::FAILED;
         std::vector<LegalAction> rows;
         for (Entity e : pool) {
-            LegalAction row(PASS_PRIORITY, e, "Tap " + entity_name(e) + " (Crew)");
+            LegalAction row(CHOICE, e, "Tap " + entity_name(e) + " (Crew)");
             row.category = ActionCategory::PAYING_COSTS;
             rows.push_back(row);
         }
         if (paid) {
-            LegalAction done(PASS_PRIORITY, "Tap nothing more");
+            LegalAction done(CHOICE, "Tap nothing more");
             done.category = ActionCategory::PAYING_COSTS;
             rows.push_back(done);
         }
@@ -1114,7 +1114,7 @@ static PayStatus offer_unless_sacrifice(const CostPayer &who, FrameCtx &ctx, con
     if (pool.empty()) return PayStatus::DECLINED;
     std::vector<LegalAction> menu;
     for (Entity e : pool) {
-        LegalAction la(PASS_PRIORITY, e, "Sacrifice " + entity_name(e));
+        LegalAction la(CHOICE, e, "Sacrifice " + entity_name(e));
         la.category = ActionCategory::SACRIFICE_PERMANENT;
         menu.push_back(la);
     }
@@ -1153,7 +1153,7 @@ static PayStatus offer_unless_discard(const CostPayer &who, FrameCtx &ctx, const
         if (cur_hand.empty()) break;
         std::vector<LegalAction> dactions;
         for (auto e : cur_hand) {
-            LegalAction la(PASS_PRIORITY, e, global_coordinator.GetComponent<CardData>(e).name);
+            LegalAction la(CHOICE, e, global_coordinator.GetComponent<CardData>(e).name);
             la.category = ActionCategory::DISCARD;
             dactions.push_back(la);
         }

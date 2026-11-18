@@ -109,6 +109,7 @@ static uint64_t cell(const DecodedTable &t, size_t row, int col);
 static size_t rows_of(const DecodedFrame &f, TableId id);
 static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t menu_rows);
 static void check_pool_mana(Zone::Ownership viewer, const DecodedFrame &f);
+static void check_menu_types(Zone::Ownership viewer, const DecodedFrame &f);
 static void check_references(Zone::Ownership viewer, const DecodedFrame &f, const std::set<uint64_t> &handles);
 static bool is_word_char(char ch);
 static const std::vector<std::vector<std::string>> &vocab_names_by_initial();
@@ -499,7 +500,28 @@ static void check_complete(Zone::Ownership viewer, const DecodedFrame &f, size_t
     if (rows_of(f, TableId::MENU) != menu_rows)
         report("complete", viewer,
             std::to_string(rows_of(f, TableId::MENU)) + " menu rows for " + std::to_string(menu_rows) + " actions");
+    check_menu_types(viewer, f);
     check_references(viewer, f, handles);
+}
+
+// A menu row's type says what the row does: at a priority decision, the action taken with
+// priority (its PASS_PRIORITY row is the pass and the only one); at any other decision, CHOICE,
+// or ACTIVATE_ABILITY for a mana ability activated while a cost is paid.
+static void check_menu_types(Zone::Ownership viewer, const DecodedFrame &f) {
+    const DecodedTable *menu = f.table(static_cast<uint16_t>(TableId::MENU));
+    if (!menu) return;
+    const bool window = priority_window_open();
+    const int cc = column(*menu, "category"), tc = column(*menu, "type");
+    for (size_t r = 0; r < menu->rows.size(); ++r) {
+        const uint64_t type = cell(*menu, r, tc);
+        const bool pass = cell(*menu, r, cc) == static_cast<uint64_t>(ActionCategory::PASS_PRIORITY);
+        const bool fits =
+            window ? type != CHOICE && (type == PASS_PRIORITY) == pass : type == CHOICE || type == ACTIVATE_ABILITY;
+        if (!fits)
+            report("complete", viewer,
+                "menu row " + std::to_string(r) + " has type " + std::to_string(type) + " at " +
+                    (window ? "a priority decision" : "a choice") + (pass ? " (the pass)" : ""));
+    }
 }
 
 // Every handle a snapshot table names is an object row's, and every row: reference is in range.
