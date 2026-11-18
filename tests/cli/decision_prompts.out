@@ -1,0 +1,372 @@
+robomage 0.3
+Decision log: decision_prompts.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Ponder, Prismari Charm, Hogaak, Arisen Necropolis, Plains, Plains, Plains, Plains
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Ponder                     #1  {U}            Sorcery
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x6
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Volcanic Island: created on the battlefield (x3)
+  T1: Player A's Llanowar Elves: created on the battlefield (x5)
+  T1: Player B's Grizzly Bears: created on the battlefield
+  T1: Player A's Mountain: created on Player A's graveyard (x7)
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 7   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island x3       #8 #9 #10
+Your hand (7):
+  Ponder                     #1  {U}            Sorcery
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Prismari Charm
+Player A [0-1, help]> 
+Game 1, turn 1, Draw: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Prismari Charm
+Player A [0-1, help]> 
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Plains
+  2: Play Plains
+  3: Play Plains
+  4: Play Plains
+  5: Cast Ponder
+  6: Cast Prismari Charm
+  7: Cast Hogaak, Arisen Necropolis
+Player A [0-7, help]> 
+Since your last decision:
+  T1: Player A casts Ponder from hand
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 8   graveyard 7   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Stack (top first):
+  1. Ponder #24 (Player A)
+Your hand (6):
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Prismari Charm
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A looks at 3 cards of Player A's library (within the top 1-3): Mountain, Forest, Island (by Ponder)
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 7   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Stack (top first):
+  1. Ponder #24 (Player A)
+Your hand (6):
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+Revealed:
+  Mountain #25 (Player A's library, 1st from the top): look, to Player A
+  Forest #26 (Player A's library, 2nd from the top): look, to Player A
+  Island #27 (Player A's library, 3rd from the top): look, to Player A
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Mountain; 2nd from the top: Forest; 3rd from the top: Island
+Decision: Ponder resolving: choose a card to put 3rd from the top of the library
+  0: Mountain
+  1: Forest
+  2: Island
+Player A [0-2, help]> 
+Since your last decision:
+  T1: Player A's Mountain: library (top) -> library (top) (by Ponder)
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 7   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Stack (top first):
+  1. Ponder #24 (Player A)
+Your hand (6):
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+Revealed:
+  Forest #26 (Player A's library, 2nd from the top): look, to Player A
+  Island #27 (Player A's library, 3rd from the top): look, to Player A
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Mountain; 2nd from the top: Forest; 3rd from the top: Island
+Decision: Ponder resolving: choose a card to put 2nd from the top of the library
+  0: Forest
+  1: Island
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Forest: library (2nd from the top) -> library (top) (by Ponder)
+  T1: Player A's Island: library (3rd from the top) -> library (top) (by Ponder)
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 7   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Stack (top first):
+  1. Ponder #24 (Player A)
+Your hand (6):
+  Prismari Charm             #2  {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3  {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                 Basic Land - Plains
+  Plains                     #5                 Basic Land - Plains
+  Plains                     #6                 Basic Land - Plains
+  Plains                     #7                 Basic Land - Plains
+Player A's graveyard: Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Forest; 3rd from the top: Mountain
+Decision: Ponder resolving: shuffle or not
+  0: Don't shuffle
+  1: Shuffle
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A draws a card: Island (by Ponder)
+  T1: Player A's Ponder: stack -> graveyard
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 7   graveyard 8   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Your hand (7):
+  Prismari Charm             #2   {U}{R}         Instant
+  Hogaak, Arisen Necropolis  #3   {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                  Basic Land - Plains
+  Plains                     #5                  Basic Land - Plains
+  Plains                     #6                  Basic Land - Plains
+  Plains                     #7                  Basic Land - Plains
+  Island                     #28                 Basic Land - Island
+Player A's graveyard: Ponder, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Forest; 2nd from the top: Mountain
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Plains
+  2: Play Plains
+  3: Play Plains
+  4: Play Plains
+  5: Play Island
+  6: Cast Prismari Charm
+  7: Cast Hogaak, Arisen Necropolis
+Player A [0-7, help]> 
+Since your last decision:
+  T1: Player A casts Prismari Charm from hand
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 6   library 7   graveyard 8   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island          #8                   tapped
+  Volcanic Island x2       #9 #10
+Stack (top first):
+  1. Prismari Charm #30 (Player A)
+Your hand (6):
+  Hogaak, Arisen Necropolis  #3   {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                  Basic Land - Plains
+  Plains                     #5                  Basic Land - Plains
+  Plains                     #6                  Basic Land - Plains
+  Plains                     #7                  Basic Land - Plains
+  Island                     #28                 Basic Land - Island
+Player A's graveyard: Ponder, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Forest; 2nd from the top: Mountain
+Decision: casting Prismari Charm: choose a mode
+  0: Surveil 2, then draw a card.
+  1: Prismari Charm deals 1 damage to each of one or two targets.
+  2: Return target nonland permanent to its owner's hand.
+Player A [0-2, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Prismari Charm: choose a target
+  0: Player B (20 life)
+  1: Player A (20 life)
+  2: Grizzly Bears
+  3: Llanowar Elves
+  4: Llanowar Elves
+  5: Llanowar Elves
+  6: Llanowar Elves
+  7: Llanowar Elves
+Player A [0-7, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Prismari Charm: choose a target
+  0: Done selecting targets
+  1: Player B (20 life)
+  2: Player A (20 life)
+  3: Llanowar Elves
+  4: Llanowar Elves
+  5: Llanowar Elves
+  6: Llanowar Elves
+  7: Llanowar Elves
+Player A [0-7, help]> 
+Since your last decision:
+  T1: Player A's Prismari Charm: stack -> graveyard
+Game 1, turn 1, First main: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 6   library 7   graveyard 9   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16  damage 1
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island x3       #8 #9 #10            tapped
+Your hand (6):
+  Hogaak, Arisen Necropolis  #3   {5}{B/G}{B/G}  Legendary Creature - Avatar
+  Plains                     #4                  Basic Land - Plains
+  Plains                     #5                  Basic Land - Plains
+  Plains                     #6                  Basic Land - Plains
+  Plains                     #7                  Basic Land - Plains
+  Island                     #28                 Basic Land - Island
+Player A's graveyard: Prismari Charm, Ponder, Mountain, Mountain, Mountain, Mountain, Mountain,
+    Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Forest; 2nd from the top: Mountain
+Decision: act or pass priority
+  0: Pass priority
+  1: Play Plains
+  2: Play Plains
+  3: Play Plains
+  4: Play Plains
+  5: Play Island
+  6: Cast Hogaak, Arisen Necropolis
+Player A [0-6, help]> 
+Since your last decision:
+  T1: Player A casts Hogaak, Arisen Necropolis from hand
+Game 1, turn 1, First main: Player A's turn
+  Player A (you)  life 20   hand 5   library 7   graveyard 9   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  Grizzly Bears  2/2  #16  damage 1
+Player A's battlefield:
+  Llanowar Elves x5   1/1  #11 #12 #13 #14 #15
+  Volcanic Island x3       #8 #9 #10            tapped
+Stack (top first):
+  1. Hogaak, Arisen Necropolis #32 (Player A)
+Your hand (5):
+  Plains  #4   Basic Land - Plains
+  Plains  #5   Basic Land - Plains
+  Plains  #6   Basic Land - Plains
+  Plains  #7   Basic Land - Plains
+  Island  #28  Basic Land - Island
+Player A's graveyard: Prismari Charm, Ponder, Mountain, Mountain, Mountain, Mountain, Mountain,
+    Mountain, Mountain
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Forest; 2nd from the top: Mountain
+Decision: casting Hogaak, Arisen Necropolis: choose how many cards to exile from your graveyard (delve)
+Cost: Hogaak, Arisen Necropolis #32 (additional cost): {5}{G}{G} left to pay
+  0: Exile 2 cards from graveyard (Delve)
+  1: Exile 3 cards from graveyard (Delve)
+  2: Exile 4 cards from graveyard (Delve)
+  3: Exile 5 cards from graveyard (Delve)
+Player A [0-3, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #32 (additional cost): {5}{G}{G} left to pay
+  0: Exile Ponder (Delve)
+  1: Exile Prismari Charm (Delve)
+  2: Exile Mountain (Delve)
+Player A [0-2, help]> 
+Game 1, turn 1, First main: Player A's turn
+Decision: casting Hogaak, Arisen Necropolis: choose a card
+Cost: Hogaak, Arisen Necropolis #32 (additional cost): {4}{G}{G} left to pay
+  0: Exile Prismari Charm (Delve)
+  1: Exile Mountain (Delve)
+Player A [0-1, help]> 
+Input closed; quitting.

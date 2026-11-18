@@ -2238,7 +2238,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     }
                 } else {
                     std::string gname = card_data.gift_description.empty()
-                                            ? std::string("the gift") : card_data.gift_description;
+                                            ? std::string("the gift")
+                                            : script_text_for(card_data.gift_description, spell_entity);
                     // CR 601.2c / 702.176b: the gift promise switches which target the spell requires
                     // (Into the Flood Maw: a creature when declined, a nonland permanent when promised).
                     // If the not-promised mode has no legal target — e.g. the opponent controls no

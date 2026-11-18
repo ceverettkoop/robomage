@@ -1,0 +1,13 @@
+{
+  "name": "cr201_5_cant_block_grant_names_the_creature",
+  "why": "CR 201.5: Untimely Malfunction's KW$ HIDDEN CARDNAME can't block. is a rule the target is under, told of that creature ('Grizzly Bears can't block until end of turn'), not a keyword named with Forge's placeholder",
+  "hand_a": ["Untimely Malfunction"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Untimely Malfunction", "A:mode:can't block", "A:target:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect_order": ["Player A casts Untimely Malfunction", "^Grizzly Bears can't block until end of turn\\.$"],
+  "expect_not": ["CARDNAME", "HIDDEN"]
+}

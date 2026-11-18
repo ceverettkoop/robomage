@@ -55,7 +55,7 @@
   ],
   "expect_order": [
     "chooses mode \u2014 Destroy target land",
-    "chooses mode \u2014 CARDNAME deals 3 damage",
+    "chooses mode \u2014 Avengers Disassembled deals 3 damage",
     "Player A casts Avengers Disassembled",
     "Avengers Disassembled deals 3 damage to Grizzly Bears",
     "Tropical Island is destroyed",

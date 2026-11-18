@@ -73,4 +73,8 @@ std::vector<LegalAction> optional_yesno_menu(const std::string &prompt);
 std::string dig_decline_label(Zone::ZoneValue chosen_dest, bool chosen_on_bottom,
                               Zone::ZoneValue rest_dest, bool rest_on_bottom, bool any_chosen);
 
+// Where a card put back into a library at `depth` (0 = the top) sits, as a prepositional phrase:
+// "on top of library", "2nd from the top of library".
+std::string library_depth_phrase(size_t depth);
+
 #endif /* CHOICE_LABELS_H */

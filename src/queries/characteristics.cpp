@@ -18,6 +18,8 @@ static bool named_vocab_idx(Entity e, int *idx);
 static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<const AbilityDef *> &defs);
 static void append_ability_defs(std::vector<const AbilityDef *> &out, const std::vector<Ability> &abilities);
 static std::set<Colors> colors_before_layer5(Entity e);
+// Replace every occurrence of `placeholder` in `text` with `value`.
+static void replace_placeholder(std::string &text, const std::string &placeholder, const std::string &value);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -229,6 +231,23 @@ std::vector<std::string> card_names(const CardData &cd) {
 std::string permanent_label(Entity e) {
     const std::string &name = global_coordinator.GetComponent<Permanent>(e).name;
     return name.empty() ? entity_name(e) : name;
+}
+
+std::string script_text_for(const std::string &text, Entity source) {
+    if (source == 0 || text.find("NAME") == std::string::npos) return text;
+    const std::string name =
+        global_coordinator.entity_has_component<Permanent>(source) ? permanent_label(source) : entity_name(source);
+    const std::string nickname = name.substr(0, name.find(", "));
+    std::string out = text;
+    replace_placeholder(out, "CARDNAME", name);
+    replace_placeholder(out, "NICKNAME", nickname);
+    return out;
+}
+
+static void replace_placeholder(std::string &text, const std::string &placeholder, const std::string &value) {
+    for (size_t at = text.find(placeholder); at != std::string::npos; at = text.find(placeholder, at + value.size())) {
+        text.replace(at, placeholder.size(), value);
+    }
 }
 
 std::string entity_name(Entity e) {

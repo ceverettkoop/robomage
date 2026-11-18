@@ -61,7 +61,11 @@ void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const Pum
         for (const auto &kw : pp->grant_keywords) {
             add_keyword_instance(cr.eot_keywords, kw);
             add_keyword_instance(cr.keywords, kw);
-            game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
+            const std::string rule = hidden_keyword_rule(kw, target);
+            if (rule.empty())
+                game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
+            else
+                game_log("%s until end of turn.\n", rule.c_str());
         }
     }
 }

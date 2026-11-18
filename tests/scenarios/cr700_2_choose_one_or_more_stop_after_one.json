@@ -51,7 +51,7 @@
     "^Done choosing modes \\(1 chosen\\)$"
   ],
   "expect_order": [
-    "chooses mode \u2014 CARDNAME deals 3 damage",
+    "chooses mode \u2014 Avengers Disassembled deals 3 damage",
     "Player A chooses no further mode \u2014 1 chosen",
     "Player A casts Avengers Disassembled",
     "Avengers Disassembled deals 3 damage to Air Elemental"

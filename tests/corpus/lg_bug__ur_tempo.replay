@@ -218,10 +218,10 @@ Scry: looking at Brainstorm
 | >> Player B: 0 (Put Ponder on top of library)
 | decision 18: Player B (game 0, turn 3, FIRST_MAIN, Player B active)
 | menu:
-|   0: Put Brainstorm on top of library
+|   0: Put Brainstorm 2nd from the top of library
 |   1: Put Brainstorm on the bottom of library
 (REPLAY) [T3 | First Main | Player B] Input: 0
-| >> Player B: 0 (Put Brainstorm on top of library)
+| >> Player B: 0 (Put Brainstorm 2nd from the top of library)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Ponder
 No creatures eligible to attack.

@@ -311,18 +311,18 @@ Surveil: looking at Ponder
 | >> Player A: 0 (Put Thoughtseize on top of library)
 | decision 26: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
-|   0: Put Brainstorm on top of library
-|   1: Put Ponder on top of library
+|   0: Put Brainstorm 2nd from the top of library
+|   1: Put Ponder 2nd from the top of library
 |   2: Put Brainstorm into graveyard
 |   3: Put Ponder into graveyard
 (REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Put Brainstorm on top of library)
+| >> Player A: 0 (Put Brainstorm 2nd from the top of library)
 | decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
-|   0: Put Ponder on top of library
+|   0: Put Ponder 3rd from the top of library
 |   1: Put Ponder into graveyard
 (REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Put Ponder on top of library)
+| >> Player A: 0 (Put Ponder 3rd from the top of library)
 No creatures eligible to attack.
 
 -------- TURN 4 (Player B) --------
@@ -435,18 +435,18 @@ Surveil: looking at Ponder
 | >> Player A: 0 (Put Thoughtseize on top of library)
 | decision 37: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
-|   0: Put Brainstorm on top of library
-|   1: Put Ponder on top of library
+|   0: Put Brainstorm 2nd from the top of library
+|   1: Put Ponder 2nd from the top of library
 |   2: Put Brainstorm into graveyard
 |   3: Put Ponder into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Brainstorm on top of library)
+| >> Player A: 0 (Put Brainstorm 2nd from the top of library)
 | decision 38: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
-|   0: Put Ponder on top of library
+|   0: Put Ponder 3rd from the top of library
 |   1: Put Ponder into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Ponder on top of library)
+| >> Player A: 0 (Put Ponder 3rd from the top of library)
 Otherworldly Gaze is exiled (flashback)
 Player A draws Thoughtseize
 | decision 39: Player A (game 0, turn 4, FIRST_MAIN, Player A active)

@@ -284,10 +284,10 @@ Scry: looking at Wasteland
 | >> Player A: 0 (Put Prismari Charm on top of library)
 | decision 27: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
-|   0: Put Wasteland on top of library
+|   0: Put Wasteland 2nd from the top of library
 |   1: Put Wasteland on the bottom of library
 (REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Put Wasteland on top of library)
+| >> Player A: 0 (Put Wasteland 2nd from the top of library)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Prismari Charm
 | decision 28: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
@@ -469,7 +469,7 @@ Choose mode:
 | decision 46: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
 |   0: Surveil 2, then draw a card.
-|   1: CARDNAME deals 1 damage to each of one or two targets.
+|   1: Prismari Charm deals 1 damage to each of one or two targets.
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Surveil 2, then draw a card.)
 Player A chooses mode — Surveil 2, then draw a card.

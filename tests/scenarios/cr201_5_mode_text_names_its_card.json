@@ -1,0 +1,15 @@
+{
+  "name": "cr201_5_mode_text_names_its_card",
+  "why": "CR 201.5: a mode's text that refers to its card by name means that card: Prismari Charm's damage mode reads 'Prismari Charm deals 1 damage', in the menu and the narrative, never Forge's CARDNAME placeholder",
+  "hand_a": ["Prismari Charm"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Volcanic Island", "Volcanic Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Prismari Charm", "A:mode:deals 1 damage", "A:target:Grizzly Bears", "A:target:Done"],
+  "max_decisions": 8,
+  "expect_menu": ["^Prismari Charm deals 1 damage to each of one or two targets\\.$"],
+  "expect_menu_not": ["CARDNAME"],
+  "expect_order": ["Player A chooses mode — Prismari Charm deals 1 damage to each of one or two targets\\.", "Player A casts Prismari Charm"],
+  "expect_not": ["CARDNAME"]
+}

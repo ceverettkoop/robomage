@@ -106,3 +106,10 @@ std::string dig_decline_label(Zone::ZoneValue chosen_dest, bool chosen_on_bottom
         label += " (rest go " + zone_destination_phrase(rest_dest, rest_on_bottom) + ")";
     return label;
 }
+
+std::string library_depth_phrase(size_t depth) {
+    if (depth == 0) return "on top of library";
+    const size_t n = depth + 1, t = n % 100, d = n % 10;
+    const char *suffix = (t >= 11 && t <= 13) ? "th" : d == 1 ? "st" : d == 2 ? "nd" : d == 3 ? "rd" : "th";
+    return std::to_string(n) + suffix + " from the top of library";
+}

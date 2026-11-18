@@ -9,10 +9,12 @@
 #include "classes/game.h"
 #include "cli_output.h"
 #include "coverage.h"
+#include "queries/characteristics.h"
 #include "systems/state_manager_internal.h"
 #include "targeting.h"
 
-// The display label for mode `idx` of `modal`: its script description, else a positional fallback.
+// The display label for mode `idx` of `modal`: its script description as shown for the modal
+// object's source, else a positional fallback.
 static std::string mode_desc(const Ability &modal, size_t idx);
 
 // Record the pick of printed mode `idx` in modal.charm_chosen and return the mode instance its
@@ -67,7 +69,7 @@ static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker 
 static std::string mode_desc(const Ability &modal, size_t idx) {
     return (idx < modal.def->charm_choice_descriptions.size() &&
             !modal.def->charm_choice_descriptions[idx].empty())
-               ? modal.def->charm_choice_descriptions[idx]
+               ? script_text_for(modal.def->charm_choice_descriptions[idx], modal.source.lki_entity())
                : ("Mode " + std::to_string(idx + 1));
 }
 
