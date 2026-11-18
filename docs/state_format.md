@@ -787,7 +787,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `source_controller` | seat | | |
 | `pending_cost` (44): `pending_cost` (`src/queries/pending_cost.h`): the cast flow at a cost step (not while choosing modes or targets), the activation flow at its X or cost steps, the interactive mana payment loop, an unless-cost offer, a triggered ability's offered cost | `for` | u32 | `handle` | spell or ability paid for (an unless offer: the spell it governs, else the asking source) |
 | | `for_card` | u16 | `card` | |
-| | `part` | u8 | `enum:cost_part` | mana, alternative, additional, unless, X, activation, a triggered ability's cost |
+| | `part` | u8 | `enum:cost_part` | mana (a cast's delve and convoke too, CR 702.66b, 702.51b), alternative (flashback's and escape's non-mana parts too, CR 702.34a, 702.138a), additional, unless, X, activation, a triggered ability's cost |
 | | `rem_w`, `rem_u`, `rem_b`, `rem_r`, `rem_g`, `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips; `rem_x` = {X} pips still to announce |
 | | `rem_life` | u16 | `count` | |
 | | `rem_energy`, `rem_discard` | u8 | `count` | an energy cost; cards to discard (unless offers, a spell's escalate, a triggered ability's cost; a whole hand's, the hand's size) |

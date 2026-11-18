@@ -350,7 +350,7 @@ You know:
   Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
   Player A's library: top: Forest; 2nd from the top: Mountain
 Decision: casting Hogaak, Arisen Necropolis: choose how many cards to exile from your graveyard (delve)
-Cost: Hogaak, Arisen Necropolis #32 (additional cost): {5}{G}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #32 (mana cost): {5}{G}{G} left to pay
   0: Exile 2 cards from graveyard (Delve)
   1: Exile 3 cards from graveyard (Delve)
   2: Exile 4 cards from graveyard (Delve)
@@ -358,14 +358,14 @@ Cost: Hogaak, Arisen Necropolis #32 (additional cost): {5}{G}{G} left to pay
 Player A [0-3, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #32 (additional cost): {5}{G}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #32 (mana cost): {5}{G}{G} left to pay
   0: Exile Ponder (Delve)
   1: Exile Prismari Charm (Delve)
   2: Exile Mountain (Delve)
 Player A [0-2, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #32 (additional cost): {4}{G}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #32 (mana cost): {4}{G}{G} left to pay
   0: Exile Prismari Charm (Delve)
   1: Exile Mountain (Delve)
 Player A [0-1, help]> 

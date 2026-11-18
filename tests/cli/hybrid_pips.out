@@ -126,13 +126,13 @@ Cost: Hogaak, Arisen Necropolis #16 (mana cost): {5}{B}{B/G} left to pay
 Player A [0-1, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose how many cards to exile from your graveyard (delve)
-Cost: Hogaak, Arisen Necropolis #16 (additional cost): {5}{B}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {5}{B}{G} left to pay
   0: Exile 4 cards from graveyard (Delve)
   1: Exile 5 cards from graveyard (Delve)
 Player A [0-1, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #16 (additional cost): {5}{B}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {5}{B}{G} left to pay
   0: Exile Mockingbird (Delve)
   1: Exile Brainstorm (Delve)
   2: Exile Cabal Therapy (Delve)
@@ -141,7 +141,7 @@ Cost: Hogaak, Arisen Necropolis #16 (additional cost): {5}{B}{G} left to pay
 Player A [0-4, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #16 (additional cost): {4}{B}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {4}{B}{G} left to pay
   0: Exile Brainstorm (Delve)
   1: Exile Cabal Therapy (Delve)
   2: Exile Misty Rainforest (Delve)
@@ -149,14 +149,14 @@ Cost: Hogaak, Arisen Necropolis #16 (additional cost): {4}{B}{G} left to pay
 Player A [0-3, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #16 (additional cost): {3}{B}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {3}{B}{G} left to pay
   0: Exile Cabal Therapy (Delve)
   1: Exile Misty Rainforest (Delve)
   2: Exile Lightning Bolt (Delve)
 Player A [0-2, help]> 
 Game 1, turn 1, First main: Player A's turn
 Decision: casting Hogaak, Arisen Necropolis: choose a card
-Cost: Hogaak, Arisen Necropolis #16 (additional cost): {2}{B}{G} left to pay
+Cost: Hogaak, Arisen Necropolis #16 (mana cost): {2}{B}{G} left to pay
   0: Exile Misty Rainforest (Delve)
   1: Exile Lightning Bolt (Delve)
 Player A [0-1, help]> 
