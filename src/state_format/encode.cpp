@@ -1092,9 +1092,9 @@ static void write_stack(const Ctx &c, const std::vector<Entity> &stack) {
         int x = -1;
         if (sp) {
             const CardData *cd = object_card_data(e);
-            if (cd && active_face(e, *cd).has_x_cost) x = sp->chosen.x;
+            if (cd && active_face(e, *cd).has_x_cost) x = stack_object_x(e);
         } else if (ab) {
-            x = ab->x_paid;
+            x = stack_object_x(e);
         }
         r.i16(std::max(-1, std::min(x, 32767))).u16(ab ? u16_count(static_cast<int64_t>(ab->def->amount)) : 0);
         const int kicked = sp ? static_cast<int>(std::count(sp->chosen.kicked.begin(), sp->chosen.kicked.end(), true)) : 0;

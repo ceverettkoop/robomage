@@ -129,6 +129,7 @@ static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat);
 static std::vector<std::string> player_lines(const Frame &f, bool sideboarding);
 static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t controller);
 static std::string stack_item(const Frame &f, size_t row);
+static bool x_unannounced(const Frame &f, uint64_t handle);
 static std::vector<std::string> stack_lines(const Frame &f);
 static std::vector<std::string> hand_lines(const Frame &f);
 static std::vector<size_t> zone_rows(const Frame &f, int zone, uint64_t owner);
@@ -504,6 +505,15 @@ static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t contr
 // The key of the ability a player's speed brings: it has no source to name it by.
 static const char *const kSpeedTriggerKey = "triggered:IncreaseSpeed";
 
+// Whether the cost being paid for this stack object still owes an {X} whose value is not yet
+// announced (CR 601.2b / 602.2b): the object has no X yet.
+static bool x_unannounced(const Frame &f, uint64_t handle) {
+    const agents::Table &c = f.cost;
+    for (size_t r = 0; r < c.rows(); ++r)
+        if (c.u(r, c.col("for")) == handle && c.u(r, c.col("rem_x")) > 0) return true;
+    return false;
+}
+
 // One stack object: name, kind and controller, X / modes / kicker, targets.
 static std::string stack_item(const Frame &f, size_t row) {
     const agents::Table &s = f.stack;
@@ -524,7 +534,7 @@ static std::string stack_item(const Frame &f, size_t row) {
     line += " " + ref(h) + " (" + seat_name(f.v, s.u(row, s.col("controller"))) + ")";
     std::vector<std::string> extra;
     const int64_t x = s.s(row, s.col("x"));
-    if (x >= 0 && kind == "SPELL") extra.push_back("X=" + std::to_string(x));
+    if (x >= 0 && kind == "SPELL" && !x_unannounced(f, h)) extra.push_back("X=" + std::to_string(x));
     std::vector<std::string> modes;
     for (size_t r = 0; r < f.smode.rows(); ++r)
         if (f.smode.u(r, f.smode.col("stack")) == h)

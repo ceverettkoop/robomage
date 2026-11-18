@@ -16,7 +16,7 @@ struct Frame {
         const rmwork::CardBook &book;
         const rmstate::DecodedFrame &frame;
         agents::Table obj, subtype, counter, player, pcounter, turn, stack, starget, smode, combat, menu, lki, emblem,
-            peffect, header;
+            peffect, header, cost;
         int z_battlefield, z_hand;
         int k_spell, k_activated, k_triggered, k_copy, t_player;
         uint64_t back_face_bit = 0;
@@ -43,6 +43,7 @@ static void read_players(const Frame &f, rmwork::TableModel *m);
 static std::string effect_label(const Frame &f, size_t row);
 static void read_turn(const Frame &f, rmwork::TableModel *m);
 static std::string object_label(const Frame &f, uint64_t handle);
+static bool x_unannounced(const Frame &f, uint64_t handle);
 static void read_stack(const Frame &f, const agents::DecisionView &dv, rmwork::TableModel *m);
 static void read_combat(const Frame &f, rmwork::TableModel *m);
 static void read_menu(const Frame &f, rmwork::TableModel *m);
@@ -64,6 +65,7 @@ Frame::Frame(const agents::SeatStream &stream, const rmwork::CardBook &b, const 
     emblem = table("emblem");
     peffect = table("player_effect");
     header = table("header");
+    cost = table("pending_cost");
     z_battlefield = s.enum_value("zone", "BATTLEFIELD");
     z_hand = s.enum_value("zone", "HAND");
     k_spell = s.enum_value("stack_kind", "SPELL");
@@ -399,6 +401,14 @@ static std::string object_label(const Frame &f, uint64_t handle) {
     return face ? face->name : f.s.cards().name(card, back);
 }
 
+// The object is being cast or activated and its X is not chosen yet: its cost still has X to announce.
+static bool x_unannounced(const Frame &f, uint64_t handle) {
+    const agents::Table &c = f.cost;
+    for (size_t r = 0; r < c.rows(); ++r)
+        if (c.u(r, c.col("for")) == handle && c.u(r, c.col("rem_x")) > 0) return true;
+    return false;
+}
+
 static void read_stack(const Frame &f, const agents::DecisionView &dv, rmwork::TableModel *m) {
     const agents::Table &s = f.stack;
     for (size_t r : dv.stack_order()) {
@@ -432,7 +442,7 @@ static void read_stack(const Frame &f, const agents::DecisionView &dv, rmwork::T
             parts.push_back(face ? face->type_line : "Spell");
         }
         const int64_t x = s.s(r, s.col("x"));
-        if (x >= 0 && kind == f.k_spell) parts.push_back("X=" + std::to_string(x));
+        if (x >= 0 && kind == f.k_spell && !x_unannounced(f, item.handle)) parts.push_back("X=" + std::to_string(x));
         if (const uint64_t k = s.u(r, s.col("kicked")))
             parts.push_back(k == 1 ? "kicked" : "kicked ×" + std::to_string(k));
         int modes = 0;

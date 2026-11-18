@@ -721,7 +721,7 @@ tokens make. A token script with no token-band vocab entry or no script file is 
 | | `source` | u32 | `handle` | an ability's source; 0 if gone, and for a spell |
 | | `source_card` | u16 | `card` | as `object.card` (a spell's own card) |
 | | ability | abref | | |
-| | `x` | i16 | `signed` | −1 = no X |
+| | `x` | i16 | `signed` | −1 = no X; the spell being cast or the ability being activated: the X announced so far, its X not yet announced while the `pending_cost` row for it has `rem_x` > 0 (a spell's `x` is then 0, an ability's −1) |
 | | `amount` | u16 | `count` | `Ability::amount` |
 | | `kicked`, `replicate` | u8 | `count` | |
 | | `variant` | u32 | `mask:cast_variant` | the `Spell` flags: flashback, evoke, escape, offspring, impending, warp, back face, fused, and its overlay (overload, adventure, bestow, prepared, face down) |

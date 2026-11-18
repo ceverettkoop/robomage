@@ -1,0 +1,129 @@
+robomage 0.3
+Decision log: x_spell.rmlog
+
+So far:
+  Game 1 begins; Player A plays first
+  T1: Player A draws 7 cards (opening hand): Kozilek's Command, Island, Island, Island, Island, Island, Island
+  T1: Player B draws 7 cards (opening hand)
+Game 1, opening hand (Player A plays first)
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  (no permanents)
+Your hand (7):
+  Kozilek's Command  #1  {X}{C}{C}  Instant Kindred - Eldrazi
+  Island             #2             Basic Land - Island
+  Island             #3             Basic Land - Island
+  Island             #4             Basic Land - Island
+  Island             #5             Basic Land - Island
+  Island             #6             Basic Land - Island
+  Island             #7             Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: keep this hand or take a mulligan
+  0: Keep
+  1: Mulligan
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A's Urza's Mine: created on the battlefield
+  T1: Player A's Urza's Power Plant: created on the battlefield
+  T1: Player A's Ancient Tomb: created on the battlefield
+  T1: Player A's Underground Sea: created on the battlefield
+Game 1, turn 1, Upkeep: Player A's turn; Player A has priority
+  Player A (you)  life 20   hand 7   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Urza's Mine         #8
+  Urza's Power Plant  #9
+  Ancient Tomb        #10
+  Underground Sea     #11
+Your hand (7):
+  Kozilek's Command  #1  {X}{C}{C}  Instant Kindred - Eldrazi
+  Island             #2             Basic Land - Island
+  Island             #3             Basic Land - Island
+  Island             #4             Basic Land - Island
+  Island             #5             Basic Land - Island
+  Island             #6             Basic Land - Island
+  Island             #7             Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: act or pass priority
+  0: Pass priority
+  1: Cast Kozilek's Command
+Player A [0-1, help]> 
+Since your last decision:
+  T1: Player A casts Kozilek's Command from hand
+Game 1, turn 1, Upkeep: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Urza's Mine         #8
+  Urza's Power Plant  #9
+  Ancient Tomb        #10
+  Underground Sea     #11
+Stack (top first):
+  1. Kozilek's Command #12 (Player A)
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: casting Kozilek's Command: choose X
+Cost: Kozilek's Command #12 (x cost): {X}{C}{C} left to pay
+  0: X = 0
+  1: X = 1
+  2: X = 2
+  3: X = 3
+Player A [0-3, help]> 
+Game 1, turn 1, Upkeep: Player A's turn
+  Player A (you)  life 20   hand 6   library 8   graveyard 0   exile 0
+  Player B        life 20   hand 7   library 8   graveyard 0   exile 0
+Player B's battlefield:
+  (no permanents)
+Player A's battlefield:
+  Urza's Mine         #8
+  Urza's Power Plant  #9
+  Ancient Tomb        #10
+  Underground Sea     #11
+Stack (top first):
+  1. Kozilek's Command #12 (Player A), X=2
+Your hand (6):
+  Island  #2  Basic Land - Island
+  Island  #3  Basic Land - Island
+  Island  #4  Basic Land - Island
+  Island  #5  Basic Land - Island
+  Island  #6  Basic Land - Island
+  Island  #7  Basic Land - Island
+Player A's graveyard: (empty)
+Player B's graveyard: (empty)
+You know:
+  Player B's hand holds Island x7
+  Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+  Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
+Decision: casting Kozilek's Command: choose a mode
+  0: Target player creates X 0/1 colorless Eldrazi Spawn creature tokens with "Sacrifice this creature: Add {C}."
+  1: Target player scries X, then draws a card.
+  2: Exile up to X target cards from graveyards.
+Player A [0-2, help]> 
+Input closed; quitting.
