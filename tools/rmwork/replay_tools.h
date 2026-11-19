@@ -8,14 +8,15 @@
 #include "layout.h"
 #include "links.h"
 #include "players_view.h"
+#include "sideboard_view.h"
 #include "state_tree_view.h"
 #include "tool_data.h"
 #include "value_views.h"
 
 // ── The tools beside the Table and the Game Log ─────────────────────────────────────────────────
 //
-// Players, Choices, Decision Inspector, State Tree, Swings, Value Graph and Model's Read, and the
-// zone windows the Players tool opens; each reads the cursor's decision in the current viewer's
+// Players, Choices, Decision Inspector, State Tree, Swings, Value Graph, Model's Read and Sideboard,
+// and the zone windows the Players tool opens; each reads the cursor's decision in the current viewer's
 // frame (ToolData) of the session it is given: Replay's, or Play's live one (whose viewer is the
 // human's seat). While the human chooses (set_choosing), Choices submits rows. begin_frame, before the tools draw,
 // reads the decision and hands the links its menu and stack targets, so the Table, Choices, the State Tree and the zone
@@ -31,6 +32,8 @@ class ReplayTools {
         // Choices submits the row chosen (Play, the human's pending decision at the cursor).
         void set_choosing(bool on) { choosing_ = on; }
         bool choosing() const { return choosing_; }
+        // The magnify chord the Sideboard tool's cards follow.
+        void set_magnify(ImGuiKeyChord k) { magnify_ = k; }
         // The zone windows (after the tools).
         void draw_windows(LinkState *links, ImGuiKeyChord magnify);
 
@@ -47,6 +50,7 @@ class ReplayTools {
         InspectorView &inspector() { return inspector_; }
         StateTreeView &tree() { return tree_; }
         ValueGraphView &graph() { return graph_; }
+        SideboardView &sideboard() { return sideboard_; }
 
     private:
         ToolData data_;
@@ -57,7 +61,9 @@ class ReplayTools {
         ValueGraphView graph_;
         SwingsView swings_;
         ModelReadView model_;
+        SideboardView sideboard_;
         bool choosing_ = false;
+        ImGuiKeyChord magnify_ = 0;
 };
 
 }  // namespace rmwork

@@ -33,9 +33,10 @@ enum class Tool {
     LOG,
     SWINGS,
     GRAPH,
-    MODEL
+    MODEL,
+    SIDEBOARD
 };
-inline constexpr int TOOL_COUNT = 9;
+inline constexpr int TOOL_COUNT = 10;
 
 // Per tool: open (true) or closed.
 using ToolFlags = std::array<bool, TOOL_COUNT>;

@@ -14,6 +14,7 @@
 #include "files.h"
 #include "new_game_dialog.h"
 #include "rmlog.h"
+#include "selftest_sideboard.h"
 
 namespace {
 
@@ -671,6 +672,7 @@ void check_play(const CheckFn &check, App &app, const std::function<void(int)> &
     check_dialog(check, app, frames, env);
     check_bo1(check, app, frames, env);
     check_bo3(check, app, frames);
+    check_sideboard(check, app, frames, env);
     check_live_passing(check, app, frames);
     check_step_bar(check, app, frames);
     check_concede(check, app, frames);

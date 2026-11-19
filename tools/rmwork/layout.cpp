@@ -29,6 +29,9 @@ const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
     {"swings", "Swings", "The decisions where the value moved the most."},
     {"graph", "Value Graph", "V per seat and per policy across the game, with life totals."},
     {"model", "Model's Read", "What the model expects here: V, π over the menu and its top choices."},
+    {"sideboard", "Sideboard",
+        "A seat's 75 as cards; between the games of a best of three, the sideboarding: a plan of swaps, the league "
+        "guide's and the model's."},
 };
 
 const char *const MODE_KEYS[rmwork::MODE_COUNT] = {"play", "replay"};
@@ -74,18 +77,20 @@ static std::vector<rmwork::Preset> make_presets() {
     using K = LayoutNode::Kind;
     const LayoutNode replay = split(K::ROW, {0.7f, 0.3f},
         {split(K::COL, {0.7f, 0.3f},
-             {split(K::ROW, {0.66f, 0.34f}, {group({Tool::TABLE}), group({Tool::INSPECTOR, Tool::PLAYERS})}),
+             {split(K::ROW, {0.66f, 0.34f},
+                  {group({Tool::TABLE, Tool::SIDEBOARD}), group({Tool::INSPECTOR, Tool::PLAYERS})}),
                  group({Tool::TREE, Tool::SWINGS})}),
             split(K::COL, {0.46f, 0.54f}, {group({Tool::LOG, Tool::CHOICES, Tool::MODEL}), group({Tool::GRAPH})})});
     const LayoutNode play = split(K::ROW, {0.17f, 0.58f, 0.25f},
-        {split(K::COL, {0.6f, 0.4f}, {group({Tool::PLAYERS}), group({Tool::MODEL})}), group({Tool::TABLE}),
+        {split(K::COL, {0.6f, 0.4f}, {group({Tool::PLAYERS}), group({Tool::MODEL})}),
+            group({Tool::TABLE, Tool::SIDEBOARD}),
             split(K::COL, {0.62f, 0.38f}, {group({Tool::LOG, Tool::TREE}), group({Tool::CHOICES})})});
     const LayoutNode analysis = split(K::COL, {0.52f, 0.48f},
         {split(K::ROW, {0.36f, 0.32f, 0.32f},
              {group({Tool::INSPECTOR}), group({Tool::CHOICES, Tool::LOG}), group({Tool::SWINGS, Tool::TREE})}),
             split(K::ROW, {0.75f, 0.25f}, {group({Tool::GRAPH}), group({Tool::MODEL, Tool::PLAYERS})})});
     const LayoutNode table_only =
-        split(K::ROW, {0.78f, 0.22f}, {group({Tool::TABLE}), group({Tool::CHOICES, Tool::LOG})});
+        split(K::ROW, {0.78f, 0.22f}, {group({Tool::TABLE, Tool::SIDEBOARD}), group({Tool::CHOICES, Tool::LOG})});
     return {{"Replay (ImHex)", "replay", replay}, {"Play", "play", play}, {"Analysis", "analysis", analysis},
         {"Table only", "table", table_only}};
 }

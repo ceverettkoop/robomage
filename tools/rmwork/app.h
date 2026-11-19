@@ -44,7 +44,9 @@
 // live match is the session the tools read in Play (only the human seat's frames ever reach it);
 // Choices submits rows at the human's decision, F2 / F6 and the stops pass, Game → Concede asks
 // first (play_dialogs.h), the match's end opens the result screen, and File → Save Decision Log
-// copies the game's log. The engine's failures reach the error dialog; quitting kills the engine.
+// copies the game's log. The human's sideboarding phase brings the Sideboard tool to the front (and
+// the next game the Table), and the tool sends its confirmed plan after each poll
+// (sideboard_view.h). The engine's failures reach the error dialog; quitting kills the engine.
 
 struct ImGuiDockNode;
 
@@ -171,8 +173,12 @@ class App {
         GameOverDialog &game_over() { return game_over_; }
         // Answers the human's next `decisions` decisions (-1: every one) with a seeded random row
         // until `until` holds ("stack": the stack is not empty; "combat": an attacker or blocker
-        // declaration; "end": never, so to the match's end; "" none): screenshots and checks.
+        // declaration; "sideboard": a sideboarding decision; "end": never, so to the match's end; ""
+        // none): screenshots and checks.
         void auto_play(long decisions, const std::string &until);
+        // Applies a Sideboard tool plan spec (SideboardView::apply_spec) at the human's first sideboarding
+        // decision: the screenshot flags'.
+        void set_sideboard_spec(const std::string &spec);
         bool auto_playing() const { return auto_left_ != 0 && play_.running(); }
         // File → Save Decision Log: copies the session's decision log to `path`.
         bool save_log_to(const std::string &path, std::string *err);
@@ -199,6 +205,8 @@ class App {
         void poll_loader();
         void poll_play();
         void step_auto_play();
+        void follow_sideboarding();
+        void apply_sideboard_spec();
         void draw_play_nav();
         void draw_play_dialogs();
         void open_save_picker();
@@ -260,6 +268,10 @@ class App {
         bool play_dealt_ = false;        // the live game's first decision has arrived
         long auto_left_ = 0;             // auto_play: decisions left (-1 unbounded)
         std::string auto_until_;
+        int sideboard_phase_ = -1;      // the game of the sideboarding phase the human last decided in, -1 none
+        bool sideboard_front_ = false;  // the Sideboard tool was brought to the front for it
+        std::string sideboard_spec_;
+        std::array<bool, MODE_COUNT> homed_{{false, false}};
         uint64_t auto_rng_ = 0;
         double health_checked_ = -1.0;
         std::string health_paths_;  // the engine and socket paths last checked

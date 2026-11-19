@@ -23,6 +23,8 @@
 //     seat's previous frame); File → Save Decision Log's copy;
 //   - F2, F6 and the stops (autopass.h) on that game's recorded frames and on made-up facts;
 //   - a bo3 match as seat B against random to its end, its sideboarding decisions in Choices' list;
+//   - the Sideboard tool (selftest_sideboard.h): its plan, guides and steps, a bo3 sideboarded through
+//     it, and that match in Replay;
 //   - the concession dialog, a game conceded (-2) and the match conceded while the opponent thinks
 //     (-3, queued to the next decision), both in the decision log;
 //   - the scripted opponent through the teacher channel, when python3 runs;

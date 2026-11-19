@@ -47,9 +47,13 @@ static uint64_t next_random(uint64_t *state) {
 }
 
 // Whether auto_play stops at decision `v`: "stack", the stack holds an object; "combat", the menu
-// declares attackers or blockers.
+// declares attackers or blockers; "sideboard", it is a sideboarding decision.
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
+    if (until == "sideboard") {
+        const agents::Table header = v.table("header");
+        return header.rows() && header.u(0, header.col("sideboarding")) != 0;
+    }
     if (until != "combat") return false;
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
@@ -96,6 +100,7 @@ void App::update_card_images() {
     const CardRenderer *r = settings_.card_images ? &image_renderer_ : nullptr;
     table_.set_renderer(r);
     tools_.players().set_renderer(r);
+    tools_.sideboard().set_renderer(r);
 }
 
 void App::frame() {
@@ -106,7 +111,10 @@ void App::frame() {
     handle_keys();
     // The toolbar and the status bar read the tools' data: it follows the match, cursor and viewer.
     tools_.set_choosing(choosing());
+    tools_.set_magnify(settings_.keys[action_index(Action::MAGNIFY)]);
+    tools_.sideboard().set_play(mode() == Mode::PLAY ? &play_ : nullptr);
     tools_.begin_frame(session(), table_, links_);
+    apply_sideboard_spec();
     draw_menu_bar();
     draw_toolbar();
     draw_status_bar();
@@ -179,6 +187,8 @@ bool App::start_game(const NewGameSettings &g) {
         return false;
     }
     auto_left_ = 0;
+    sideboard_phase_ = -1;
+    sideboard_front_ = false;
     set_mode(Mode::PLAY);
     status("New game: " + c.deck + " vs " + c.opponent_deck + " (" + opponent_key(c.opponent) + "), seed " +
            std::to_string(c.seed) + "; the engine is dealing");
@@ -260,7 +270,7 @@ void App::auto_play(long decisions, const std::string &until) {
 
 // Answers the pending decision with auto_play's rule, unless its condition holds there.
 void App::step_auto_play() {
-    if (auto_left_ == 0 || !play_.deciding() || !choosing()) return;
+    if (auto_left_ == 0 || !play_.deciding() || !choosing() || tools_.sideboard().sending()) return;
     const Match *m = play_.match();
     const size_t index = static_cast<size_t>(play_.pending_index());
     std::string err;
@@ -302,7 +312,45 @@ void App::poll_play() {
         status("Match over: " + s.title + (s.score.empty() ? "" : " " + s.score));
         game_over_.open(s);
     }
+    tools_.sideboard().step(play_);
+    follow_sideboarding();
     step_auto_play();
+}
+
+// The Sideboard tool comes to the front when the human's sideboarding phase begins, the Table when
+// the next game's first decision arrives.
+void App::follow_sideboarding() {
+    const Match *m = play_.match();
+    if (!play_.deciding() || !m || mode() != Mode::PLAY) return;
+    const DecisionInfo &d = m->decisions[static_cast<size_t>(play_.pending_index())];
+    const int phase = d.sideboarding ? d.game : -1;
+    if (d.sideboarding && phase != sideboard_phase_) {
+        set_tool_open(Mode::PLAY, Tool::SIDEBOARD, true);
+        focus_tool(Tool::SIDEBOARD);
+        sideboard_front_ = true;
+        status("Sideboarding before game " + std::to_string(d.game + 1) +
+               ": plan your swaps in the Sideboard tool (or choose rows in Choices)");
+    } else if (!d.sideboarding && sideboard_front_) {
+        focus_tool(Tool::TABLE);
+        sideboard_front_ = false;
+    }
+    sideboard_phase_ = phase;
+}
+
+void App::set_sideboard_spec(const std::string &spec) {
+    sideboard_spec_ = spec;
+}
+
+// A --sideboard-plan spec, applied at the human's first sideboarding decision.
+void App::apply_sideboard_spec() {
+    if (sideboard_spec_.empty() || mode() != Mode::PLAY || !choosing() || tools_.sideboard().sending()) return;
+    SideboardView &v = tools_.sideboard();
+    v.set_choosing(true);
+    v.update(tools_.data(), session());
+    if (!v.model().seat_decides) return;
+    std::string why;
+    if (!v.apply_spec(sideboard_spec_, &why)) status("--sideboard-plan: " + why);
+    sideboard_spec_.clear();
 }
 
 void App::draw_play_dialogs() {
@@ -684,7 +732,10 @@ void App::draw_menu_bar() {
     }
     if (ImGui::BeginMenu("Game")) {
         if (ImGui::MenuItem("New Game vs Model…", shortcut(Action::NEW_GAME).c_str())) open_new_game();
-        if (ImGui::MenuItem("Sideboard…")) not_built("Sideboard (sideboard with the Choices tool for now)");
+        if (ImGui::MenuItem("Sideboard…")) {
+            set_tool_open(mode(), Tool::SIDEBOARD, true);
+            focus_tool(Tool::SIDEBOARD);
+        }
         ImGui::Separator();
         if (ImGui::MenuItem("Concede Game", "-2", false, play_.running())) open_concede(false);
         if (ImGui::MenuItem("Concede Match", "-3", false, play_.running())) open_concede(true);
@@ -1055,13 +1106,28 @@ void App::draw_tools() {
     tools_.begin_frame(live, table_, links_);
     // A layout being built or its tabs ordered would undo a focus.
     const bool settled = !pending_[mi] && tab_order_frames_[mi] == 0;
+    // A tool open in the settings that this dockspace has never held (a tool newer than the saved
+    // layout) finds its home once.
+    if (settled && !homed_[mi]) {
+        homed_[mi] = true;
+        for (int t = 0; t < TOOL_COUNT; ++t)
+            if (settings_.tools[mi][t]) dock_home_if_lost(mode(), static_cast<Tool>(t));
+    }
     for (Tool tool : submit_order_[mi]) {
         const int t = tool_index(tool);
         if (!settings_.tools[mi][t]) continue;
         if (rehome_[mi][t]) {
             rehome_[mi][t] = false;
-            if (ImGuiDockNode *root = ImGui::DockBuilderGetNode(dockspace_id(mode())))
-                ImGui::SetNextWindowDockID(first_leaf(root)->ID, ImGuiCond_Always);
+            if (ImGuiDockNode *root = ImGui::DockBuilderGetNode(dockspace_id(mode()))) {
+                ImGuiID home = first_leaf(root)->ID;
+                // The Sideboard tool's home is the Table's tab group.
+                const ImGuiWindow *table =
+                    ImGui::FindWindowByID(ImHashStr(window_names_[mi][tool_index(Tool::TABLE)].c_str()));
+                if (tool == Tool::SIDEBOARD && table && table->DockNode &&
+                    ImGui::DockNodeGetRootNode(table->DockNode)->ID == root->ID)
+                    home = table->DockNode->ID;
+                ImGui::SetNextWindowDockID(home, ImGuiCond_Always);
+            }
         }
         if (settled && std::find(focus_tools_.begin(), focus_tools_.end(), t) != focus_tools_.end())
             ImGui::SetNextWindowFocus();

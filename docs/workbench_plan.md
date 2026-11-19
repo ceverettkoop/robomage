@@ -27,7 +27,7 @@ or two), L (more).
 ### 2.1 The application shell
 
 **Status: done** (`tools/rmwork/`, `make workbench`, `bin/<config>/rmwork`). Play and Replay, each with
-its own dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the nine tools as
+its own dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the tools as
 placeholders, the Value Graph's empty axes in ImPlot; the four presets (DockBuilder, the mock-up's split
 ratios) and the user's named layouts per mode (View → Save Layout As…, asking before it overwrites; the
 saved names under the presets; Manage Layouts… to show, rename or delete), each saved as its tree of
@@ -160,7 +160,7 @@ server is "not connected" (a note, and the game goes on); a refused handshake or
 error dialog. The engine's exit mid-game, a stream that breaks, a record that does not decode and a failed
 write open the error dialog with the command and the stderr tail and end the session; quitting kills and
 reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
-auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|end` (a seeded random row at
+auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|end` (a seeded random row at
 each of your decisions until then), `--game-over`. Checked by `rmwork --selftest-data` (`selftest_play`:
 the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
 connected, every kept record the seat's and the other seat's only after its last decision, the stops'
@@ -169,9 +169,42 @@ aside), Save Decision Log; F2, F6 and the stops on that game's frames and on mad
 a bo3 with sideboarding as seat B; the concession dialog, `-2` then a queued `-3`; the scripted opponent;
 a killed engine, a broken stream and a record that is no frame) and `rmwork --selftest` (the `new_game`
 settings). Model's Read was checked by hand against `rmserve` serving `runs/league26-24h/exports/final.ts.pt`
-(not in the gate: it needs a server and a model). Waiting for later stages: the direct-manipulation
-decisions of §4.2 (every decision goes through the Choices list), the sideboarding screen of §4.3 (the
-Choices list's `SIDEBOARD_*` rows for now; Game → Sideboard… is not built), and the start page of §4.1.
+(not in the gate: it needs a server and a model). Sideboarding (§4.3, item 14; `sideboard_plan`,
+`sideboard_view`): the Sideboard tool, a tab beside the Table in the Play, Replay and Table-only presets
+(a layout saved before it existed gets it in the Table's tab group), brought to the front when the human's
+sideboarding phase begins (Game → Sideboard… too) and the Table given back at the next game. The engine's
+phase is one swap at a time, IN first: at a balanced deck "Done sideboarding" (`SIDEBOARD_DONE`, row 0) and
+a `SIDEBOARD_IN` row per sideboard card; an IN makes `match.sb_drift` 1 (the card in `pending.source_card`)
+and the next menu a `SIDEBOARD_OUT` row per deck card, Done withheld; the OUT completes the swap
+(`sb_swaps` + 1); a card brought in is never offered out again in the phase, nor a cut card back in; at 15
+swaps the phase ends with no Done; a one-row menu is the engine's own. Every STATE frame carries the
+viewer's 75 (`own_deck`) and the DECKLISTS frame both registered lists and deck names. The tool shows one
+seat's 75 as card images (the viewer's own; the omniscient viewer's the deciding seat's; during the
+opponent's phase a seat's view says so and shows its own): the deck grouped by type and the sideboard, a
+card once with its count, IN / OUT on the phase's locked cards, the header's coming game, the opponent and
+its deck, the games so far, play or draw, and the deck, sideboard and swap counts. A docked tool rather than
+a modal, as the mock-up has it: Choices, the Game Log and Model's Read stay beside it, and in Replay the
+same tool follows the cursor. At the human's decision, clicks plan (a sideboard card in, a deck card out, a
+planned card clicked again taken back; Undo, Reset) with the result's counts in the header; Confirm, once
+balanced, sends it: at each of the human's decisions of the phase the reply is found in the live menu by
+category and source card toward the planned deck (`next_sideboard_step`), each step checked in the frame
+that follows, Done last; the next game's frame must show the planned deck. A menu without the row the plan
+needs, a reply the session refuses or a step the next frame does not show stops the sending with the reason
+in the tool. Plans: the league guide for the matchup, play or draw as `match.plays_first` says
+(`python/sideboard_guides.json` from the repository: a `league/<stem>` deck against another; what the other
+of play and draw changes; a held-out pair noted; no row, a non-league deck or a missing file said), each
+line ticked when the plan meets it, Use This Plan (the moves from the current deck to the guide's target);
+the model's π over this decision's rows when Model's Read evaluated it, listed and under each card (the
+model decides one swap at a time, so the tool says π is for the decision in front of you; off, not
+connected or failed said, never blocking); the phase's swaps so far, in Replay the phase in all (the deck
+at its first decision against the viewer's frame after it), and the deck against its registered list.
+Screenshot flags `--play-until sideboard`, `--sideboard-plan guide|+CARD;-CARD…`, `--tool sideboard`.
+Checked by `rmwork --selftest-data` (`selftest_sideboard`: the plan's rules and the steps on made-up
+decisions, a menu without the planned row refused; the guides file against its JSON; a live bo3 as seat A
+sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
+stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
+the match in Replay in seat A's view and seat B's). Waiting for later stages: the direct-manipulation
+decisions of §4.2 (every decision goes through the Choices list) and the start page of §4.1.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -437,7 +470,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 
 ### 4.3 Between and after games
 
-14. **Sideboarding** (best-of-three): main deck and sideboard lists with counts, swap in/out, the model's suggested plan, Done.
+14. ~~**Sideboarding**~~ (best-of-three): built (§2.3, the Sideboard tool): main deck and sideboard as cards with counts, a plan of swaps sent one decision at a time, the league guide's and the model's plans, Done.
 15. **Game over / match result**: winner, score, the game's value curve and big swings, buttons to open the game in Replay or play again.
 16. **Concede confirmation**: game (`-2`) or match (`-3`).
 

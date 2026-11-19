@@ -36,6 +36,9 @@ void ReplayTools::draw(Tool t, ReplaySession &s, LinkState *links) {
         case Tool::MODEL:
             model_.draw(data_, s);
             return;
+        case Tool::SIDEBOARD:
+            sideboard_.draw(data_, s, choosing_, magnify_);
+            return;
         case Tool::TABLE:
         case Tool::LOG:
             return;

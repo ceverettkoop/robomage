@@ -55,6 +55,7 @@ struct CliOptions {
         std::string new_game;  // the --new-game spec ("" none)
         long play_decisions = 0;
         std::string play_until;
+        std::string sideboard_plan;
         bool open_new_game = false;
         bool game_over = false;
         rmwork::WindowOptions window;
@@ -86,7 +87,8 @@ static void usage() {
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
-        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|end] [--game-over]]\n"
+        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|sideboard|end] [--game-over]]\n"
+        "         [--sideboard-plan SPEC]\n"
         "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
@@ -127,7 +129,7 @@ static void usage() {
         "  --table-hover-stack N  the Table: hover stack object N (0 = top) every frame (its targets lit)\n"
         "  --table-magnify NAME   the Table: open the magnifier on the first card whose name contains NAME\n"
         "  --tool NAME        bring a tool's tab to the front (table, players, choices, inspector, tree, log,\n"
-        "                     swings, graph, model); repeatable\n"
+        "                     swings, graph, model, sideboard); repeatable\n"
         "  --choices-hover N  Choices: hover menu row N (0-based) every frame (its objects lit on the Table)\n"
         "  --tree-expand      the State Tree: expand the players' zones, the stack, the frame's tables and its\n"
         "                     object table\n"
@@ -141,7 +143,10 @@ static void usage() {
         "  --table-hover-step N  Play's Table: hover step N (0 = untap) of the step bar every frame (its stop's\n"
         "                     tooltip)\n"
         "  --play-until COND  ... until a decision where COND holds: stack (the stack is not empty), combat (an\n"
-        "                     attacker or blocker declaration), end (none: to the match's end)\n"
+        "                     attacker or blocker declaration), sideboard (a sideboarding decision), end (none:\n"
+        "                     to the match's end)\n"
+        "  --sideboard-plan SPEC  at your first sideboarding decision, plan in the Sideboard tool: guide (the\n"
+        "                     league guide's plan) or ';'-separated +CARD (bring in) and -CARD (cut) items\n"
         "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
         "  --open-new-game    open Game \xE2\x86\x92 New Game vs Model at start\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
@@ -241,11 +246,14 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             }
         } else if (a == "--play-until" && has_value) {
             opt->play_until = argv[++i];
-            if (opt->play_until != "stack" && opt->play_until != "combat" && opt->play_until != "end") {
-                std::fprintf(stderr, "rmwork: --play-until is stack, combat or end, not '%s'\n", argv[i]);
+            if (opt->play_until != "stack" && opt->play_until != "combat" && opt->play_until != "sideboard" &&
+                opt->play_until != "end") {
+                std::fprintf(stderr, "rmwork: --play-until is stack, combat, sideboard or end, not '%s'\n", argv[i]);
                 *exit_code = 2;
                 return false;
             }
+        } else if (a == "--sideboard-plan" && has_value) {
+            opt->sideboard_plan = argv[++i];
         } else if (a == "--game-over") {
             opt->game_over = true;
         } else if (a == "--open-new-game") {
@@ -465,6 +473,7 @@ static void open_play(rmwork::App &app, const CliOptions &opt) {
     rmwork::NewGameSettings g = app.settings().new_game;
     std::string why;
     if (!parse_new_game(opt.new_game, &g, &why) || !app.start_game(g)) return;
+    if (!opt.sideboard_plan.empty()) app.set_sideboard_spec(opt.sideboard_plan);
     if (opt.game_over) {
         app.auto_play(-1, "end");
     } else if (opt.play_decisions || !opt.play_until.empty()) {
