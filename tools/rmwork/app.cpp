@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <utility>
 
 #include "../../src/agents/decision_view.h"
 #include "episodes.h"
@@ -57,9 +58,42 @@ static uint64_t next_random(uint64_t *state) {
 // "target", it chooses a target or a point of divided damage; "mana", it pays a cost with a mana
 // ability (--no-auto-mana); "pick", it is a card picker's (card_picker.h: a search, a card put on top
 // or the bottom, a dig's …; not the London mulligan's bottom pick); "mulligan", it keeps or mulligans
-// the opening hand; "bottom", it puts a card of a kept hand on the bottom (the London mulligan).
+// the opening hand; "bottom", it puts a card of a kept hand on the bottom (the London mulligan); "mode",
+// it chooses a mode; "x", an X or a delve count; "order", the next trigger to put on the stack; "name",
+// a card to name; "discard", "sacrifice", "return", "legend": a card to discard, a permanent to
+// sacrifice, to return, the legend to keep; "unless", whether to pay an unless cost; "choice", a yes/no
+// or another row-only decision (table_decision.h's CHOICE); "cost", a non-mana cost paid with a card
+// (an alternative cost's exile, convoke's tap).
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
+    static const std::pair<const char *, const char *> CATEGORY[] = {{"mode", "CHOOSE_MODE"}, {"x", "CHOOSE_X"},
+        {"order", "ORDER_TRIGGERS"}, {"name", "NAME_CARD"}, {"discard", "DISCARD"},
+        {"sacrifice", "SACRIFICE_PERMANENT"}, {"return", "RETURN_PERMANENT"}, {"legend", "KEEP_LEGEND"},
+        {"unless", "PAY_UNLESS"}};
+    for (const auto &c : CATEGORY)
+        if (until == c.first) {
+            for (size_t i = 0; i < v.n(); ++i)
+                if (v.category(i) == c.second) return true;
+            return false;
+        }
+    if (until == "choice") {
+        static const char *const ROW_ONLY[] = {"OPTIONAL_YESNO", "SHUFFLE", "CHOOSE_REPLACEMENT", "OTHER_CHOICE",
+            "CHOOSE_COLOR", "CHOOSE_TYPE", "CHOOSE_MANA_COLOR"};
+        for (size_t i = 0; i < v.n(); ++i)
+            for (const char *c : ROW_ONLY)
+                if (v.category(i) == c) return true;
+        return false;
+    }
+    if (until == "cost") {
+        const agents::Table menu = v.table("menu");
+        for (size_t i = 0; i < v.n(); ++i)
+            if (v.category(i) == "PAYING_COSTS" && menu.u(i, menu.col("source")) != 0 &&
+                v.description(i).rfind("Tap ", 0) != 0 && v.description(i).find(" for (") == std::string::npos)
+                return true;
+        for (size_t i = 0; i < v.n(); ++i)
+            if (v.category(i) == "PAYING_COSTS" && v.description(i).find("(Convoke)") != std::string::npos) return true;
+        return false;
+    }
     if (until == "pick") return rmwork::card_pick_menu(v) && !rmwork::london_bottom_menu(v);
     if (until == "bottom") return rmwork::london_bottom_menu(v);
     if (until == "mulligan") {

@@ -34,14 +34,34 @@
 //     prompt line) and BOTTOM (the London mulligan's BOTTOM_DECK_CARD picks from the hand, CR 103.5,
 //     planned on the Table and sent on confirm: mulligan_plan.h), with the player's MulliganFacts;
 //   - CARDS (card_picker.h: a library search, a card put on top or the bottom of a library, a dig's,
-//     a tutor's, a graveyard card for a cost): rows naming a card the Table shows (the hand: Brainstorm's
-//     put-back) are its picks, the rest the card picker's (card_picker_view.h).
+//     a tutor's, a graveyard card for a cost, a card discarded, a permanent sacrificed or returned, the
+//     legend kept): rows naming a card the Table shows (the hand: Brainstorm's put-back, a discard; the
+//     battlefield: a sacrifice, Daze's Island, the legend kept) are its picks, the rest the card
+//     picker's (card_picker_view.h: Thoughtseize's pick from the opponent's revealed hand). A discard
+//     of several cards (the cleanup discard, an escalate cost's) is planned on the hand and sent on
+//     confirm (`plan_owed`, card_plan.h);
+//   - MODES (CHOOSE_MODE rows, CONFIRM_MODES: a modal spell's modes, one decision per mode, "Done
+//     choosing modes" once the fewest are chosen), ORDER (ORDER_TRIGGERS: the next of the player's
+//     simultaneous triggers to put on the stack) and NAME (NAME_CARD: the engine's limited candidate
+//     set, src/name_card_choices.h): their rows in the choice panel (choice_panel.h), a window over the
+//     opponent's half as the card picker is; CONFIRM_MODES a button of the prompt line;
+//   - NUMBER (CHOOSE_X: an X, a delve count; a row per value): a stepper on the prompt line, bounded
+//     by the rows, with the cost the value leaves (number_pips);
+//   - UNLESS (PAY_UNLESS: an unless cost, CR 118.12, with the mana rows that pay it): Pay / Don't pay
+//     on the prompt line, the cost as pips, the lands that pay it lit;
+//   - CHOICE: any other decision that is not a priority decision or sideboarding (a yes/no, an optional
+//     cost, a shuffle, a colour or creature type, a replacement to apply, …): its rows as prompt-line
+//     buttons (an object's row a pick when the Table shows the object), in the choice panel's list when
+//     there are more than MAX_PROMPT_ROWS of them.
+// Every decision but a priority decision and sideboarding (its tool, sideboard_view.h) has an answer on
+// the Table; Choices stays available for all of them.
 // A row naming an object shown on the Table (a battlefield or hand card, a stack object) or a player
 // is a pick of that object or player: a click on it answers with the row, or, when it names several
 // (a dual land's two colours), offers them in a popup. A row naming nothing (Done selecting targets,
 // Cancel casting, Pay 2 life, Pay {B}, Confirm attackers, Done assigning) is a button on the
 // decision's prompt line in the middle strip, beside the prompt and the cost still to pay; a row naming
-// an object the Table does not show (a card in a graveyard) is answered in Choices only.
+// an object the Table does not show (a card in a graveyard) is a button too, except at a card-picker
+// decision (the picker shows it). Buttons beyond MAX_PROMPT_ROWS go to the choice panel's list.
 //
 // The frame lists no target chosen so far while a spell is being cast or an ability activated or put
 // on the stack (its `stack_target` rows are written once the targets are announced), so the targets
@@ -61,8 +81,17 @@ enum class DecisionKind {
     DAMAGE,
     MULLIGAN,
     BOTTOM,
-    CARDS
+    CARDS,
+    MODES,
+    NUMBER,
+    ORDER,
+    NAME,
+    UNLESS,
+    CHOICE
 };
+
+// The most buttons a decision's prompt line offers; more go to the choice panel's list.
+inline constexpr size_t MAX_PROMPT_ROWS = 6;
 
 // Whether `k` is part of declaring attackers (ATTACKERS, ATTACK_TARGET) / blockers (BLOCKERS,
 // BLOCK_TARGET).
@@ -110,9 +139,16 @@ struct TableDecision {
         std::vector<std::string> row_text;  // every menu row's description
         std::vector<DecisionPick> picks;    // in menu order of their first row
         std::vector<int> buttons;           // the rows the prompt line offers as buttons, in menu order
+        std::vector<int> panel_rows;        // the rows the choice panel offers (MODES' modes, ORDER, NAME, a
+                                            // decision's buttons beyond MAX_PROMPT_ROWS), in menu order
         std::vector<std::string> pips;      // the cost still to pay as mana symbols: "2", "W", "B/P", "U/R", "X", "S"
         std::string owed;                   // the rest of it and what is paid: "2 life · 1 mana paid"; MULLIGAN
-                                            // and BOTTOM: play or draw, the opponent's mulligans
+                                            // and BOTTOM: play or draw, the opponent's mulligans; a discard plan:
+                                            // the hand and the cards to discard; TARGET: divided damage given
+        std::string cost_part;              // which cost is paid: "alternative cost", "additional cost", "", …
+        std::vector<int> numbers;           // NUMBER: each row's value (the X, the cards delve exiles)
+        bool delve = false;                 // NUMBER: a delve count (each card exiled pays {1})
+        int plan_owed = 0;                  // CARDS: the cards a discard plan holds (planned when more than 1)
         std::vector<ChosenTarget> chosen;   // TARGET: the targets chosen so far (chosen_targets)
         int confirm = -1;                   // ATTACKERS / BLOCKERS: the confirm row (the menu's last)
         BlockFacts block;                   // BLOCKERS
@@ -123,6 +159,10 @@ struct TableDecision {
 
         // The prompt line shows (every kind but MANA).
         bool prompted() const { return kind != DecisionKind::NONE && kind != DecisionKind::MANA; }
+        // The choice panel shows (choice_panel.h).
+        bool paneled() const { return !panel_rows.empty(); }
+        // NUMBER: the row of value `value`, -1 none.
+        int number_row(int value) const;
         // The pick of object `handle` / player `seat`, nullptr when none.
         const DecisionPick *pick_of_object(uint64_t handle) const;
         const DecisionPick *pick_of_seat(int seat) const;
@@ -145,6 +185,13 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
 // they chose a target (SELECT_TARGET) or a point of divided damage (DIVIDE_DAMAGE, skipped), oldest
 // first; a row naming nothing (Done) is no target.
 std::vector<ChosenTarget> chosen_targets(const Match &m, size_t index, int view, uint64_t source);
+
+// NUMBER: the cost left to pay once value `value` is chosen, as mana symbols: the X pips counted as
+// `value` each (an X), or the generic part less `value` (a delve count).
+std::vector<std::string> number_pips(const TableDecision &d, int value);
+
+// The mana a list of symbols comes to ("2", "U", "B/P" … each 1 but a number's value).
+int mana_count(const std::vector<std::string> &pips);
 
 }  // namespace rmwork
 

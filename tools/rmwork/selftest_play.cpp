@@ -14,6 +14,7 @@
 #include "files.h"
 #include "new_game_dialog.h"
 #include "rmlog.h"
+#include "selftest_choices.h"
 #include "selftest_decisions.h"
 #include "selftest_sideboard.h"
 #include "selftest_start.h"
@@ -679,6 +680,7 @@ void check_play(const CheckFn &check, App &app, const std::function<void(int)> &
     check_live_passing(check, app, frames);
     check_step_bar(check, app, frames);
     check_table_decisions(check, app, frames);
+    check_table_choices(check, app, frames);
     check_concede(check, app, frames);
     check_scripted(check, app, frames);
     check_failures(check, app, frames, env);

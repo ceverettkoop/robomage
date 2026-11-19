@@ -111,7 +111,9 @@ static void usage() {
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
         "       rmwork [--new-game SPEC [--play-decisions N]\n"
-        "              [--play-until stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|end]\n"
+        "              [--play-until "
+        "stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|mode|x|\n"
+        "                            order|name|discard|sacrifice|return|legend|unless|choice|cost|end]\n"
         "              [--play-setup FLAGS] [--play-rows R,R,...] [--table-pick NAME] [--table-plan SPEC]\n"
         "              [--picker-filter TEXT] [--picker-list]\n"
         "              [--game-over]]\n"
@@ -177,7 +179,12 @@ static void usage() {
         "                     target or a point of divided damage to choose), mana (a cost to pay with a mana\n"
         "                     ability: auto-mana=off), pick (a card picker's: a search, a card put on top or\n"
         "                     the bottom, a dig's), mulligan (keep or mulligan), bottom (the London mulligan's\n"
-        "                     bottom pick), end (none: to the match's end)\n"
+        "                     bottom pick), mode (a mode to choose), x (an X or a delve count), order (a trigger\n"
+        "                     to put on the stack), name (a card to name), discard, sacrifice, return, legend (a\n"
+        "                     card to discard, a permanent to sacrifice or return, the legend to keep), unless\n"
+        "                     (pay an unless cost or not), choice (a yes/no or another row-only choice), cost (a\n"
+        "                     cost paid with a card: an alternative cost's exile, convoke), end (none: to the\n"
+        "                     match's end)\n"
         "  --play-setup FLAGS the engine's test-setup flags for the --new-game game, ';'-separated (e.g.\n"
         "                     --hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears,Delver of Secrets)\n"
         "  --play-rows R,R,...  answer your first decisions with these menu rows, before --play-decisions or\n"
@@ -187,7 +194,8 @@ static void usage() {
         "                     planeswalker TARGET or \"player\" / blocks the attacker TARGET) or NAME>? (planned\n"
         "                     and armed); NAME and TARGET name substrings. At the London mulligan's bottom\n"
         "                     pick: the hand cards to put on the bottom, NAME,NAME\n"
-        "  --picker-filter TEXT  the card picker: filter its cards by TEXT (name or type) at each resolution\n"
+        "  --picker-filter TEXT  the card picker and the choice panel: filter by TEXT (a name or type) at each\n"
+        "                     decision\n"
         "  --picker-list      the card picker: the list in place of the cards\n"
         "  --table-pick NAME  Play's Table: open the popup of the first card whose name contains NAME that\n"
         "                     the decision's rows name more than once (a dual land's colours)\n"
@@ -295,13 +303,15 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
         } else if (a == "--play-until" && has_value) {
             opt->play_until = argv[++i];
             static const char *const UNTIL[] = {"stack", "combat", "attack", "block", "damage", "sideboard", "target",
-                "mana", "pick", "mulligan", "bottom", "end"};
+                "mana", "pick", "mulligan", "bottom", "mode", "x", "order", "name", "discard", "sacrifice", "return",
+                "legend", "unless", "choice", "cost", "end"};
             bool known = false;
             for (const char *u : UNTIL) known = known || opt->play_until == u;
             if (!known) {
                 std::fprintf(stderr,
                     "rmwork: --play-until is stack, combat, attack, block, damage, sideboard, target, mana, pick, "
-                    "mulligan, bottom or end, not '%s'\n",
+                    "mulligan, bottom, mode, x, order, name, discard, sacrifice, return, legend, unless, choice, "
+                    "cost or end, not '%s'\n",
                     argv[i]);
                 *exit_code = 2;
                 return false;
@@ -573,6 +583,7 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.table().force_pick(opt.table_pick);
     app.table().force_plan(opt.table_plan);
     app.table().picker_view().force_filter(opt.picker_filter);
+    app.table().panel_view().force_filter(opt.picker_filter);
     app.table().picker_view().set_list(opt.picker_list);
     for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
     app.tools().choices().force_hover(opt.choices_hover);

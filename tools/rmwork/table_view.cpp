@@ -69,6 +69,8 @@ static const char *source_tag(rmwork::DecisionKind k);
 static std::string stop_text(rmwork::PlanStop stop, const std::string &creature);
 static std::string lower_text(std::string s);
 static std::vector<std::string> split_names(const std::string &spec);
+static bool dims_board(const rmwork::TableDecision &d);
+static std::string join_names(const std::vector<std::string> &names);
 
 static ImVec2 at(ImVec2 o, float x, float y) {
     return ImVec2(o.x + x, o.y + y);
@@ -131,6 +133,31 @@ static const char *source_tag(rmwork::DecisionKind k) {
 static std::string lower_text(std::string s) {
     for (char &ch : s) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
     return s;
+}
+
+// Whether the decision dims what it does not act with: a decision answered by clicking the Table's
+// objects (targets, payments, combat, the opening hand, cards); one answered in the choice panel or on
+// the prompt line only when some of its rows name objects on the Table.
+static bool dims_board(const rmwork::TableDecision &d) {
+    using rmwork::DecisionKind;
+    if (!d.prompted()) return false;
+    switch (d.kind) {
+        case DecisionKind::MODES:
+        case DecisionKind::NUMBER:
+        case DecisionKind::ORDER:
+        case DecisionKind::NAME:
+        case DecisionKind::UNLESS:
+        case DecisionKind::CHOICE:
+            return !d.picks.empty();
+        default:
+            return true;
+    }
+}
+
+static std::string join_names(const std::vector<std::string> &names) {
+    std::string out;
+    for (const std::string &n : names) out += (out.empty() ? "" : ", ") + n;
+    return out;
 }
 
 // A plan spec's comma-separated items.
@@ -336,6 +363,7 @@ TableView::TableView() : renderer_(&text_renderer_) {}
 void TableView::set_renderer(const CardRenderer *r) {
     renderer_ = r ? r : &text_renderer_;
     picker_view_.set_renderer(r);
+    panel_view_.set_renderer(r);
 }
 
 const CardBook &TableView::book(const Match &m, int view) {
@@ -399,7 +427,21 @@ bool TableView::refresh(ReplaySession &s, bool answer) {
             build_zone_model(m->stream(s.view()), b, *frame, s.view()), decision_.chosen_row);
         picker_view_.request_scroll();
     }
-    if (answer && decision_.kind == DecisionKind::BOTTOM) bottom_.follow(d ? d->game : -1);
+    panel_ = read_choice_panel(*m, s.cursor(), s.view(), dv, decision_, book(*m, s.view()), decision_.chosen_row);
+    // The stepper starts at the value chosen here (Replay), else at the first row, at each new decision.
+    const std::string number_key = std::to_string(reinterpret_cast<uintptr_t>(m)) + "/" + std::to_string(s.cursor()) +
+                                   "/" + std::to_string(s.view());
+    if (number_key != number_key_ || (decision_.chosen_row >= 0 && decision_.kind == DecisionKind::NUMBER)) {
+        number_key_ = number_key;
+        number_index_ = decision_.chosen_row >= 0 && decision_.kind == DecisionKind::NUMBER ? decision_.chosen_row : 0;
+    }
+    if (answer && (decision_.kind == DecisionKind::BOTTOM || decision_.plan_owed > 1)) {
+        CardPlanKey key;
+        key.game = d ? d->game : -1;
+        key.turn = decision_.kind == DecisionKind::BOTTOM ? -1 : model_.turn;
+        key.purpose = decision_.kind == DecisionKind::BOTTOM ? "bottom" : "discard";
+        card_plan_.follow(key);
+    }
     model_answer_ = answer;
     if (answer && (declares_attackers(decision_.kind) || declares_blockers(decision_.kind))) {
         PlanKey key;
@@ -585,6 +627,7 @@ void TableView::draw(const TableDraw &d) {
     draw_chips(dl, o, d);
     dl->PopClipRect();
     draw_picker(d);
+    draw_panel(d);
     update_magnifier(hit, d, over);
     apply_force_pick(d);
     draw_pick_popup(d);
@@ -609,7 +652,7 @@ const DecisionPick *TableView::pick_at(const Hit &hit) const {
 bool TableView::answer_click(const Hit &hit) {
     if (hit.button >= 0) return press_button(buttons_[static_cast<size_t>(hit.button)]);
     if (planning()) return plan_press(hit);
-    if (decision_.kind == DecisionKind::BOTTOM) return bottom_press(hit);
+    if (card_planning()) return card_plan_press(hit);
     const DecisionPick *p = pick_at(hit);
     if (!p || p->rows.empty()) return false;
     if (p->rows.size() == 1) {
@@ -663,6 +706,10 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
                     ImGui::SetTooltip("Click: put the planned cards on the bottom, one decision at a time");
                     break;
                 }
+                if (card_planning()) {
+                    ImGui::SetTooltip("Click: discard the planned cards, one decision at a time");
+                    break;
+                }
                 ImGui::SetTooltip(blockers ? "Click: declare the planned blocks (each blocker, then the attacker it "
                                              "blocks), then confirm"
                                            : "Click: declare the planned attackers (each with what it attacks), then "
@@ -673,12 +720,17 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
                     model_.players[static_cast<size_t>(model_.top)].name.c_str());
                 break;
             case PromptButton::Act::CLEAR:
-                ImGui::SetTooltip(decision_.kind == DecisionKind::BOTTOM
-                                      ? "Click: drop the plan"
-                                      : "Click: drop the plan (creatures declared already stay declared)");
+                ImGui::SetTooltip(card_planning() ? "Click: drop the plan"
+                                                  : "Click: drop the plan (creatures declared already stay declared)");
                 break;
             case PromptButton::Act::UNDO:
                 ImGui::SetTooltip("Click: take back the last card planned");
+                break;
+            case PromptButton::Act::DEC:
+                ImGui::SetTooltip("Click: one less (the rows offered bound it)");
+                break;
+            case PromptButton::Act::INC:
+                ImGui::SetTooltip("Click: one more (the rows offered bound it)");
                 break;
             case PromptButton::Act::ROW:
                 ImGui::SetTooltip("Click: %s", b.label.c_str());
@@ -710,10 +762,12 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
     }
     const DecisionPick *p = pick_at(hit);
     if (!p || p->rows.empty()) return;
-    if (decision_.kind == DecisionKind::BOTTOM) {
+    if (card_planning()) {
         const uint64_t h = hit_object(hit);
-        ImGui::SetTooltip(bottom_.order_of(h) ? "Click: keep %s (take it back from the plan)"
-                                              : "Click: put %s on the bottom (sent with the others)",
+        const bool bottom = decision_.kind == DecisionKind::BOTTOM;
+        ImGui::SetTooltip(card_plan_.order_of(h) ? "Click: keep %s (take it back from the plan)"
+                                                 : (bottom ? "Click: put %s on the bottom (sent with the others)"
+                                                           : "Click: discard %s (sent with the others)"),
             name_of(h).c_str());
         return;
     }
@@ -758,7 +812,7 @@ void TableView::draw_pick_popup(const TableDraw &d) {
 // nor the decision's source is dimmed.
 void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     const bool glow = model_.viewer < 2 && model_.viewer == model_.decider;
-    const bool focus = decision_.prompted();
+    const bool focus = dims_board(decision_);
     const bool combat = combat_kind(decision_.kind);
     const bool plan_shown = d.answer && (declares_attackers(decision_.kind) || declares_blockers(decision_.kind));
     const PlannedAttack *armed_attack = answering_ ? plan_.attack_of(plan_.armed()) : nullptr;
@@ -791,7 +845,7 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
                 armed = armed || (answering_ && h == plan_.armed());
             }
             aimed = aimed || (armed_attack && armed_attack->target == h);
-            planned = planned || (decision_.kind == DecisionKind::BOTTOM && answering_ && bottom_.order_of(h) > 0);
+            planned = planned || (card_planning() && card_plan_.order_of(h) > 0);
         }
         if (focus && !source && !keep) dl->AddRectFilled(a, b, DIM_OVER, cw * 0.05f);
         if (source && !planned && !aimed) outline(dl, a, b, cw * 0.05f, tok().GLOW, 2, 3);
@@ -817,9 +871,10 @@ void TableView::draw_decision_marks(ImDrawList *dl, const PlacedCard &c, ImVec2 
         const float r = std::max(7.0f, fs * 0.8f);
         number_badge(dl, ImVec2(b.x - 1, a.y + 1), r, order, tok().ACCENT);
     }
-    if (decision_.kind == DecisionKind::BOTTOM && answering_)
-        if (const int k = bottom_.order_of(h))
-            badge(dl, ImVec2(a.x + 2, a.y + 2), false, false, "Bottom " + std::to_string(k), fs, tok().ACCENT,
+    if (card_planning())
+        if (const int k = card_plan_.order_of(h))
+            badge(dl, ImVec2(a.x + 2, a.y + 2), false, false,
+                (decision_.kind == DecisionKind::BOTTOM ? "Bottom " : "Discard ") + std::to_string(k), fs, tok().ACCENT,
                 tok().TEXT, 0, 2);
     if (const DecisionPick *p = decision_.pick_of_object(h))
         if (decision_.holds_chosen(*p)) {
@@ -1012,14 +1067,21 @@ void TableView::draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     ImFont *font = ImGui::GetFont();
     const float fs = ImGui::GetFontSize();
     x += draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().TEXT, prompt_text(), right - x);
-    if (!decision_.pips.empty() && x + lh * 2 < right) {
+    const std::vector<std::string> pips = prompt_pips();
+    if (!pips.empty() && x + lh * 2 < right) {
         x += 10;
         const float pd = lh * 1.15f;
-        const float pw = mana_symbols_width(decision_.pips.size(), pd);
-        if (x + pw < right) x += draw_mana_symbols(dl, decision_.pips, ImVec2(x, cy), pd) + 6;
-        x += draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().DIM, "left to pay", right - x);
+        const float pw = mana_symbols_width(pips.size(), pd);
+        if (x + pw < right) x += draw_mana_symbols(dl, pips, ImVec2(x, cy), pd) + 6;
+        const int mana = mana_count(pips);
+        const std::string tail =
+            decision_.kind != DecisionKind::NUMBER
+                ? std::string("left to pay")
+                : std::string(decision_.delve ? "left after delve" : "to pay") + " = " + std::to_string(mana) + " mana";
+        x += draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().DIM, tail, right - x);
     }
-    std::string rest = decision_.owed;
+    std::string rest = decision_.cost_part;
+    if (!decision_.owed.empty()) rest += (rest.empty() ? "" : " \xC2\xB7 ") + decision_.owed;
     if (!decision_.chosen.empty())
         rest += (rest.empty() ? "" : " \xC2\xB7 ") + std::string("chosen: ") + join_labels(decision_.chosen);
     if (!rest.empty() && x + 20 < right)
@@ -1321,17 +1383,31 @@ void TableView::apply_plan_to_model() {
 void TableView::build_buttons() {
     buttons_.clear();
     if (!decision_.prompted()) return;
-    if (decision_.kind == DecisionKind::BOTTOM) {
-        if (!answering_) return;
-        const int owed = decision_.mulligan.to_bottom;
-        const int n = static_cast<int>(bottom_.cards().size());
+    if (decision_.kind == DecisionKind::BOTTOM && !answering_) return;
+    if (card_planning()) {
+        const int owed = card_plan_owed();
+        const int n = static_cast<int>(card_plan_.cards().size());
+        const bool bottom = decision_.kind == DecisionKind::BOTTOM;
         if (owed > 0 && n == owed)
             buttons_.push_back(
-                PromptButton{"Put " + std::to_string(n) + " on the bottom", -1, PromptButton::Act::SEND});
+                PromptButton{bottom ? "Put " + std::to_string(n) + " on the bottom" : "Discard " + std::to_string(n),
+                    -1, PromptButton::Act::SEND});
         if (n > 0) {
             buttons_.push_back(PromptButton{"Undo", -1, PromptButton::Act::UNDO});
             buttons_.push_back(PromptButton{"Clear", -1, PromptButton::Act::CLEAR});
         }
+        return;
+    }
+    if (decision_.kind == DecisionKind::NUMBER) {
+        // The stepper: down, the value (it sends its row), up.
+        const size_t i =
+            static_cast<size_t>(std::max(0, std::min(number_index_, static_cast<int>(decision_.numbers.size()) - 1)));
+        if (decision_.numbers.empty()) return;
+        const std::string value = std::to_string(decision_.numbers[i]);
+        buttons_.push_back(PromptButton{"\xE2\x88\x92", -1, PromptButton::Act::DEC});
+        buttons_.push_back(PromptButton{
+            decision_.delve ? "Exile " + value : "X = " + value, static_cast<int>(i), PromptButton::Act::ROW});
+        buttons_.push_back(PromptButton{"+", -1, PromptButton::Act::INC});
         return;
     }
     if (!planning()) {
@@ -1368,11 +1444,13 @@ void TableView::build_buttons() {
 // While the human plans: the declaration so far (declared and planned) and what a click does next;
 // else the decision's own prompt.
 std::string TableView::prompt_text() const {
-    if (decision_.kind == DecisionKind::BOTTOM && answering_) {
-        std::string planned;
-        for (uint64_t h : bottom_.cards()) planned += (planned.empty() ? "" : ", ") + name_of(h);
-        return decision_.prompt + (planned.empty() ? std::string(" \xC2\xB7 click the cards to put there")
-                                                   : " \xC2\xB7 planned: " + planned);
+    if (card_planning()) {
+        std::vector<std::string> planned;
+        for (uint64_t h : card_plan_.cards()) planned.push_back(name_of(h));
+        const bool bottom = decision_.kind == DecisionKind::BOTTOM;
+        return decision_.prompt + (planned.empty() ? std::string(bottom ? " \xC2\xB7 click the cards to put there"
+                                                                        : " \xC2\xB7 click the cards to discard")
+                                                   : " \xC2\xB7 planned: " + join_names(planned));
     }
     if (!planning()) return decision_.prompt;
     const bool blockers = decision_.kind == DecisionKind::BLOCKERS;
@@ -1423,22 +1501,30 @@ bool TableView::press_button(const PromptButton &b) {
             plan_all();
             return true;
         case PromptButton::Act::CLEAR:
-            if (decision_.kind == DecisionKind::BOTTOM) {
-                bottom_.clear();
+            if (card_planning()) {
+                card_plan_.clear();
             } else {
                 plan_.clear();
             }
             return true;
         case PromptButton::Act::UNDO:
-            bottom_.undo();
+            card_plan_.undo();
+            return true;
+        case PromptButton::Act::DEC:
+            number_index_ = std::max(0, number_index_ - 1);
+            return true;
+        case PromptButton::Act::INC:
+            number_index_ = std::min(static_cast<int>(decision_.numbers.size()) - 1, number_index_ + 1);
             return true;
         case PromptButton::Act::SEND:
             break;
     }
-    if (decision_.kind == DecisionKind::BOTTOM) {
-        bottom_.start_sending();
-        status_ = "Putting " + std::to_string(bottom_.cards().size()) +
-                  " cards on the bottom as planned, one decision at a time";
+    if (card_planning()) {
+        card_plan_.start_sending();
+        status_ = (decision_.kind == DecisionKind::BOTTOM ? "Putting " : "Discarding ") +
+                  std::to_string(card_plan_.cards().size()) +
+                  (decision_.kind == DecisionKind::BOTTOM ? " cards on the bottom" : " cards") +
+                  " as planned, one decision at a time";
         return true;
     }
     // Nothing planned left to send: the confirm row alone.
@@ -1521,16 +1607,36 @@ bool TableView::plan_press(const Hit &hit) {
     return false;
 }
 
-// A click on a hand card at the London mulligan's bottom pick: planned, or taken back. False when it
-// is no pick (the click selects).
-bool TableView::bottom_press(const Hit &hit) {
+// A click on a hand card while the human plans cards (the London mulligan's bottom pick, a discard of
+// several cards): planned, or taken back. False when it is no pick (the click selects).
+bool TableView::card_plan_press(const Hit &hit) {
     const uint64_t h = hit_object(hit);
     if (!h || !decision_.pick_of_object(h)) return false;
-    const int owed = decision_.mulligan.to_bottom;
-    if (!bottom_.toggle(h, owed))
+    const int owed = card_plan_owed();
+    if (!card_plan_.toggle(h, owed))
         status_ = std::to_string(owed) + (owed == 1 ? " card is" : " cards are") +
                   " planned already: click a planned card (or Undo) to take one back";
     return true;
+}
+
+bool TableView::card_planning() const {
+    return answering_ && (decision_.kind == DecisionKind::BOTTOM || decision_.plan_owed > 1);
+}
+
+int TableView::card_plan_owed() const {
+    return decision_.kind == DecisionKind::BOTTOM ? decision_.mulligan.to_bottom : decision_.plan_owed;
+}
+
+int TableView::number_value() const {
+    if (decision_.kind != DecisionKind::NUMBER || decision_.numbers.empty()) return -1;
+    return decision_.numbers[static_cast<size_t>(
+        std::max(0, std::min(number_index_, static_cast<int>(decision_.numbers.size()) - 1)))];
+}
+
+std::vector<std::string> TableView::prompt_pips() const {
+    if (decision_.kind != DecisionKind::NUMBER) return decision_.pips;
+    const int value = number_value();
+    return value < 0 ? decision_.pips : number_pips(decision_, value);
 }
 
 // The card picker over the opponent's half, when the decision has one: its click answers as the Table's.
@@ -1550,6 +1656,25 @@ void TableView::draw_picker(const TableDraw &d) {
     pl.prompt = decision_.prompt;
     const int row =
         picker_view_.draw(picker_, books_[static_cast<size_t>(model_view_)], pl, answering_, d.magnify, d.links);
+    if (row >= 0) answer_ = row;
+}
+
+// The choice panel where the picker goes, when the decision has one: its click answers as the Table's.
+void TableView::draw_panel(const TableDraw &d) {
+    if (!panel_.active) {
+        panel_view_.hide();
+        return;
+    }
+    const ImVec2 o = ImGui::GetCurrentWindow()->InnerRect.Min;
+    CardPickerView::Place pl;
+    pl.x0 = o.x + layout_.panel.x0 + 10;
+    pl.x1 = o.x + layout_.panel.x1 - 10;
+    pl.y0 = o.y + layout_.top_band.y1 + 2;
+    pl.y_long = o.y + (layout_.prompt.w() > 0 ? layout_.prompt.y0 - 4 : layout_.mid.y1 - 4);
+    pl.y_short = std::min(pl.y_long, o.y + layout_.mid.y0 - 6);
+    pl.y_tall = std::max(pl.y_long, o.y + layout_.bottom_band.y0 - 4);
+    pl.prompt = decision_.prompt;
+    const int row = panel_view_.draw(panel_, books_[static_cast<size_t>(model_view_)], pl, answering_, d.links);
     if (row >= 0) answer_ = row;
 }
 
@@ -1590,16 +1715,15 @@ void TableView::plan_all() {
 
 // Screenshots: force_plan_'s items, once per declaration.
 void TableView::apply_force_plan() {
-    if (!force_plan_.empty() && answering_ && decision_.kind == DecisionKind::BOTTOM && bottom_.empty() &&
-        !bottom_.sending()) {
-        // The bottom picks: each name plans the first hand card of that name not planned yet.
+    if (!force_plan_.empty() && card_planning() && card_plan_.empty() && !card_plan_.sending()) {
+        // The bottom picks, a discard: each name plans the first hand card of that name not planned yet.
         for (const std::string &want : split_names(force_plan_))
             for (const DecisionPick &p : decision_.picks) {
                 const int i = model_.find(p.handle);
-                if (i < 0 || bottom_.order_of(p.handle) ||
+                if (i < 0 || card_plan_.order_of(p.handle) ||
                     lower_text(model_.objects[static_cast<size_t>(i)].name).find(lower_text(want)) == std::string::npos)
                     continue;
-                bottom_.toggle(p.handle, decision_.mulligan.to_bottom);
+                card_plan_.toggle(p.handle, card_plan_owed());
                 break;
             }
         return;
@@ -1648,22 +1772,25 @@ void TableView::apply_force_plan() {
 }
 
 int TableView::plan_reply(const Match &m, long index, int seat) {
-    if (bottom_.sending()) {
-        if (index < 0 || index == bottom_.answered()) return -1;
+    if (card_plan_.sending()) {
+        if (index < 0 || index == card_plan_.answered()) return -1;
         std::string err;
         const std::shared_ptr<const rmstate::DecodedFrame> f = m.frame(static_cast<size_t>(index), seat, &err);
         if (!f) {
-            bottom_.clear();
+            card_plan_.clear();
             status_ = "Sending stopped: decision " + std::to_string(index + 1) + "'s frame does not read: " + err;
             return -1;
         }
-        const int row = next_bottom_row(bottom_, agents::DecisionView(m.stream(seat), *f, seat), nullptr);
+        const agents::DecisionView v(m.stream(seat), *f, seat);
+        const bool bottom = card_plan_.key().purpose == "bottom";
+        const int row =
+            bottom ? next_bottom_row(card_plan_, v, nullptr) : next_planned_row(card_plan_, v, "DISCARD", nullptr);
         if (row < 0) {
-            status_ = "Put on the bottom as planned";
-            bottom_.clear();
+            status_ = bottom ? "Put on the bottom as planned" : "Discarded as planned";
+            card_plan_.clear();
             return -1;
         }
-        bottom_.record(index);
+        card_plan_.record(index);
         return row;
     }
     if (!plan_.sending() || index < 0 || index == plan_.answered()) return -1;

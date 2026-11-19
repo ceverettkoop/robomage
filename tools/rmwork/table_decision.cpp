@@ -30,6 +30,18 @@ static bool holds(const std::vector<uint64_t> &v, uint64_t h);
 static rmwork::MulliganFacts read_mulligan(const agents::DecisionView &v, int seat);
 static std::string mulligan_prompt(const rmwork::MulliganFacts &f, bool bottom);
 static std::string mulligan_note(const rmwork::MulliganFacts &f);
+static bool has(const agents::DecisionView &v, const char *category);
+static bool all(const agents::DecisionView &v, const char *category);
+static bool priority_category(const std::string &category);
+static bool button_category(const std::string &category);
+static bool panel_row(rmwork::DecisionKind k, const std::string &category);
+static std::string cost_part_text(const agents::DecisionView &v);
+static void read_numbers(const agents::DecisionView &v, rmwork::TableDecision *d);
+static int number_of(const agents::DecisionView &v, size_t row);
+static void read_discard(const agents::DecisionView &v, int seat, rmwork::TableDecision *d);
+static std::string divided_so_far(const rmwork::TableDecision &d);
+static std::string card_cost_hint(
+    const agents::DecisionView &v, const rmwork::TableModel &m, const rmwork::TableDecision &d);
 
 // The `seat` enum (1 A, 2 B) as 0 A, 1 B; -1 for none.
 static int seat_of(uint64_t seat) {
@@ -40,10 +52,44 @@ static bool is_mana_category(const std::string &category) {
     return category.rfind("MANA_", 0) == 0;
 }
 
+static bool has(const agents::DecisionView &v, const char *category) {
+    for (size_t i = 0; i < v.n(); ++i)
+        if (v.category(i) == category) return true;
+    return false;
+}
+
+static bool all(const agents::DecisionView &v, const char *category) {
+    for (size_t i = 0; i < v.n(); ++i)
+        if (v.category(i) != category) return false;
+    return v.n() > 0;
+}
+
+// A row of a priority decision (an action taken with priority) or of sideboarding: no decision of
+// these is answered on the Table but its mana rows.
+static bool priority_category(const std::string &c) {
+    return c == "PASS_PRIORITY" || c == "CAST_SPELL" || c == "ACTIVATE_ABILITY" || c == "PLAY_LAND" ||
+           c == "TURN_FACE_UP" || c == "COMPANION" || c.rfind("SIDEBOARD_", 0) == 0;
+}
+
+// A row the prompt line offers as a button even when it names an object (a yes/no's accept names the
+// permanent it is about; a replacement names the card it applies to).
+static bool button_category(const std::string &c) {
+    return c == "OPTIONAL_YESNO" || c == "PAY_UNLESS" || c == "SHUFFLE" || c == "DONT_SHUFFLE" ||
+           c == "CHOOSE_REPLACEMENT" || c == "OTHER_CHOICE" || c == "CHOOSE_COLOR" || c == "CHOOSE_TYPE" ||
+           c == "CHOOSE_MANA_COLOR" || c == "CONFIRM_MODES";
+}
+
+// A row the choice panel offers for a decision of kind `k`, or (NUMBER) the prompt line's stepper.
+static bool panel_row(rmwork::DecisionKind k, const std::string &c) {
+    using rmwork::DecisionKind;
+    return (k == DecisionKind::MODES && c == "CHOOSE_MODE") || k == DecisionKind::ORDER || k == DecisionKind::NAME ||
+           k == DecisionKind::NUMBER;
+}
+
 static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
     using rmwork::DecisionKind;
     if (v.n() == 0) return DecisionKind::NONE;
-    bool targets = true, mana = false;
+    bool targets = true, mana = false, priority = false;
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
         if (c == "PAYING_COSTS") return DecisionKind::PAY;
@@ -53,13 +99,118 @@ static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
         if (c == "BLOCK_TARGET") return DecisionKind::BLOCK_TARGET;
         if (c == "ASSIGN_DAMAGE") return DecisionKind::DAMAGE;
         if (c == "KEEP_HAND" || c == "MULLIGAN") return DecisionKind::MULLIGAN;
+        if (c == "PAY_UNLESS") return DecisionKind::UNLESS;
+        if (c == "CHOOSE_MODE" || c == "CONFIRM_MODES") return DecisionKind::MODES;
         if (c != "SELECT_TARGET" && c != "DIVIDE_DAMAGE") targets = false;
         if (is_mana_category(c)) mana = true;
+        if (priority_category(c)) priority = true;
     }
     if (targets) return DecisionKind::TARGET;
+    if (all(v, "CHOOSE_X")) return DecisionKind::NUMBER;
+    if (all(v, "ORDER_TRIGGERS")) return DecisionKind::ORDER;
+    if (all(v, "NAME_CARD")) return DecisionKind::NAME;
     if (mana) return DecisionKind::MANA;
     if (rmwork::london_bottom_menu(v)) return DecisionKind::BOTTOM;
-    return rmwork::card_pick_menu(v) ? DecisionKind::CARDS : DecisionKind::NONE;
+    if (rmwork::card_pick_menu(v)) return DecisionKind::CARDS;
+    return priority ? DecisionKind::NONE : DecisionKind::CHOICE;
+}
+
+// The pending cost's part when it is not a plain mana cost: "alternative cost", "additional cost",
+// "unless cost", …; "" for none, mana or X.
+static std::string cost_part_text(const agents::DecisionView &v) {
+    const agents::Table c = v.table("pending_cost");
+    if (c.rows() == 0) return "";
+    const std::string part = v.stream().enum_name("cost_part", c.u(0, c.col("part")));
+    if (part == "ALTERNATIVE") return "alternative cost";
+    if (part == "ADDITIONAL") return "additional cost";
+    if (part == "UNLESS") return "unless cost";
+    if (part == "ACTIVATION") return "activation cost";
+    if (part == "TRIGGER") return "the trigger's cost";
+    return "";
+}
+
+// A CHOOSE_X row's value: its ordinal, else the number in its description ("X = 2", "Exile 4 cards …").
+static int number_of(const agents::DecisionView &v, size_t row) {
+    const agents::Table menu = v.table("menu");
+    const int64_t ord = menu.s(row, menu.col("ordinal"));
+    if (ord >= 0) return static_cast<int>(ord);
+    const std::string &t = v.description(row);
+    const size_t at = t.find_first_of("0123456789");
+    return at == std::string::npos ? 0 : std::atoi(t.c_str() + at);
+}
+
+// NUMBER: each row's value, whether the rows count delve's exiles (they name the spell), and the range
+// offered for the prompt.
+static void read_numbers(const agents::DecisionView &v, rmwork::TableDecision *d) {
+    const agents::Table menu = v.table("menu");
+    for (size_t i = 0; i < v.n(); ++i) {
+        d->numbers.push_back(number_of(v, i));
+        d->delve =
+            d->delve || (menu.u(i, menu.col("source")) != 0 && v.description(i).find("Delve") != std::string::npos);
+    }
+    if (d->numbers.empty()) return;
+    const auto mm = std::minmax_element(d->numbers.begin(), d->numbers.end());
+    const std::string range = std::to_string(*mm.first) + " to " + std::to_string(*mm.second);
+    d->owed = d->delve ? range + " cards" : "X from " + range;
+}
+
+// A discard of seat `seat`'s hand cards: how many the plan holds (an unless offer's or an escalate
+// cost's `rem_discard`; at the cleanup step, the hand beyond seven, CR 402.2 and 514.1: the frame names
+// no maximum hand size) and what the prompt adds.
+static void read_discard(const agents::DecisionView &v, int seat, rmwork::TableDecision *d) {
+    if (!all(v, "DISCARD")) return;
+    const agents::Table c = v.table("pending_cost");
+    if (c.rows() && c.u(0, c.col("rem_discard")) > 0) {
+        d->plan_owed = static_cast<int>(c.u(0, c.col("rem_discard")));
+        d->owed = "discard " + std::to_string(d->plan_owed) + (d->plan_owed == 1 ? " card" : " cards");
+        return;
+    }
+    const agents::Table t = v.table("turn");
+    if (v.table("pending").rows() || !t.rows() || v.stream().enum_name("step", t.u(0, t.col("step"))) != "CLEANUP")
+        return;
+    const agents::Table p = v.table("player");
+    for (size_t r = 0; r < p.rows(); ++r) {
+        if (seat_of(p.u(r, p.col("player"))) != seat) continue;
+        const int hand = static_cast<int>(p.u(r, p.col("hand")));
+        d->plan_owed = std::max(1, hand - 7);
+        d->owed = std::to_string(hand) + " in hand, " + std::to_string(d->plan_owed) + " to discard (hand size 7)";
+    }
+}
+
+// PAY by a card rather than mana (an alternative cost's exile, convoke's tap): what a click does, from the
+// rows' shared verb and where their cards are: "exile a card from your hand", "tap a creature (convoke)";
+// "" for a mana payment.
+static std::string card_cost_hint(
+    const agents::DecisionView &v, const rmwork::TableModel &m, const rmwork::TableDecision &d) {
+    if (d.picks.empty()) return "";
+    std::string verb;
+    bool convoke = true;
+    for (size_t i = 0; i < v.n(); ++i) {
+        const std::string &t = v.description(i);
+        if (v.category(i) != "PAYING_COSTS" || t.find(" for (") != std::string::npos) return "";
+        const std::string w = t.substr(0, t.find(' '));
+        if (!verb.empty() && w != verb) return "";
+        verb = w;
+        convoke = convoke && t.find("(Convoke)") != std::string::npos;
+    }
+    if (convoke) return "tap a creature to pay (convoke)";
+    bool hand = true, field = true;
+    for (const rmwork::DecisionPick &p : d.picks) {
+        const int o = m.find(p.handle);
+        const bool in_hand = o >= 0 && m.objects[static_cast<size_t>(o)].in_hand;
+        hand = hand && in_hand;
+        field = field && o >= 0 && !in_hand;
+    }
+    std::string w = verb;
+    for (char &ch : w) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return hand ? w + " a card from your hand" : field ? w + " a permanent" : w + " a card";
+}
+
+// TARGET at a divided-damage decision: the points given so far (the frame gives no total).
+static std::string divided_so_far(const rmwork::TableDecision &d) {
+    int given = 0;
+    for (const rmwork::DecisionPick &p : d.picks) given += std::max(0, p.so_far);
+    return given > 0 ? std::to_string(given) + " of the damage given so far" : "";
 }
 
 // Seat `seat`'s mulligans and cards owed to the bottom, its hand, play or draw, the other seat's mulligans.
@@ -276,6 +427,12 @@ int TableDecision::chosen_order_of_seat(int seat) const {
     return 0;
 }
 
+int TableDecision::number_row(int value) const {
+    for (size_t i = 0; i < numbers.size(); ++i)
+        if (numbers[i] == value) return static_cast<int>(i);
+    return -1;
+}
+
 TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m) {
     TableDecision d;
     d.kind = decision_kind(v);
@@ -287,10 +444,17 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &category = v.category(i);
         if (d.kind == DecisionKind::MANA && !is_mana_category(category)) continue;
+        if (panel_row(d.kind, category)) {
+            if (d.kind != DecisionKind::NUMBER) d.panel_rows.push_back(static_cast<int>(i));
+            continue;
+        }
         const uint64_t object = menu.u(i, c_src) ? menu.u(i, c_src) : menu.u(i, c_tgt);
         const int seat = seat_of(menu.u(i, c_sp)) >= 0 ? seat_of(menu.u(i, c_sp)) : seat_of(menu.u(i, c_tp));
         if (category == "CONFIRM_ATTACKERS" || category == "CONFIRM_BLOCKERS") d.confirm = static_cast<int>(i);
-        if (object == 0 && seat < 0) {
+        // A row naming nothing, a row of a button category, and (but at a card picker's decision) a row
+        // naming an object the Table does not show: a button.
+        if ((object == 0 && seat < 0) || button_category(category) ||
+            (object != 0 && !shown_object(m, object) && d.kind != DecisionKind::CARDS)) {
             if (d.prompted()) d.buttons.push_back(static_cast<int>(i));
             continue;
         }
@@ -308,6 +472,13 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
         if (category == "DIVIDE_DAMAGE") pick->so_far = static_cast<int>(menu.s(i, c_ord));
         if (category == "ASSIGN_DAMAGE") pick->lethal = lethal_of(d.row_text[i]);
     }
+    // Too many buttons for the prompt line: the choice panel lists them.
+    if (d.buttons.size() > MAX_PROMPT_ROWS && d.kind != DecisionKind::ATTACKERS && d.kind != DecisionKind::BLOCKERS &&
+        d.kind != DecisionKind::CARDS) {
+        d.panel_rows.insert(d.panel_rows.end(), d.buttons.begin(), d.buttons.end());
+        std::sort(d.panel_rows.begin(), d.panel_rows.end());
+        d.buttons.clear();
+    }
     d.source = pending_source(v);
     if (d.prompted()) d.prompt = prompt_of(v);
     if (d.kind == DecisionKind::MULLIGAN || d.kind == DecisionKind::BOTTOM) {
@@ -315,10 +486,49 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
         d.prompt = mulligan_prompt(d.mulligan, d.kind == DecisionKind::BOTTOM);
         d.owed = mulligan_note(d.mulligan);
     }
-    if (d.kind == DecisionKind::PAY) read_cost(v, &d);
+    d.cost_part = cost_part_text(v);
+    if (d.kind == DecisionKind::PAY || d.kind == DecisionKind::UNLESS || d.kind == DecisionKind::NUMBER ||
+        d.kind == DecisionKind::CARDS)
+        read_cost(v, &d);
+    if (d.kind == DecisionKind::PAY) {
+        const std::string hint = card_cost_hint(v, m, d);
+        if (!hint.empty()) d.owed = hint + (d.owed.empty() ? "" : " \xC2\xB7 then " + d.owed);
+    }
+    if (d.kind == DecisionKind::NUMBER) read_numbers(v, &d);
+    if (d.kind == DecisionKind::CARDS) read_discard(v, m.decider >= 0 ? m.decider : v.seat(), &d);
+    if (d.kind == DecisionKind::TARGET && has(v, "DIVIDE_DAMAGE")) d.owed = divided_so_far(d);
     if (d.kind == DecisionKind::BLOCKERS) read_block_facts(v, &d.block);
     if (d.kind == DecisionKind::DAMAGE) read_damage(m, &d);
     return d;
+}
+
+std::vector<std::string> number_pips(const TableDecision &d, int value) {
+    std::vector<std::string> out;
+    int generic = 0, xs = 0;
+    for (const std::string &p : d.pips) {
+        if (p == "X") {
+            ++xs;
+        } else if (!p.empty() && std::isdigit(static_cast<unsigned char>(p[0])) && p.find('/') == std::string::npos) {
+            generic += std::atoi(p.c_str());
+        }
+    }
+    generic = d.delve ? std::max(0, generic - value) : generic + xs * value;
+    if (generic > 0) out.push_back(std::to_string(generic));
+    for (const std::string &p : d.pips) {
+        const bool plain_generic =
+            !p.empty() && std::isdigit(static_cast<unsigned char>(p[0])) && p.find('/') == std::string::npos;
+        if (p != "X" && !plain_generic) out.push_back(p);
+    }
+    return out;
+}
+
+int mana_count(const std::vector<std::string> &pips) {
+    int n = 0;
+    for (const std::string &p : pips)
+        n += !p.empty() && std::isdigit(static_cast<unsigned char>(p[0])) && p.find('/') == std::string::npos
+                 ? std::atoi(p.c_str())
+                 : 1;
+    return n;
 }
 
 std::vector<ChosenTarget> chosen_targets(const Match &m, size_t index, int view, uint64_t source) {

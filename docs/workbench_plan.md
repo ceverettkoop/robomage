@@ -144,7 +144,8 @@ frames, and the session drops a record of another viewer unread, by its header. 
 Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
 row, the `-1` of `docs/state_format.md` §9); at a targeting or payment decision, and at a priority decision
 offering mana abilities, a click on the Table does too (§4.2, items 6 and 11), as do a click in the card picker and on
-the opening hand (items 5 and 8), through the same reply; nothing is sent while the engine runs ("Opponent is
+the opening hand (items 5 and 8), in the choice panel and on the prompt line's buttons (items 9, 10, 12 and 13), through
+the same reply; nothing is sent while the engine runs ("Opponent is
 thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
 from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
 step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
@@ -166,7 +167,8 @@ error dialog. The engine's exit mid-game, a stream that breaks, a record that do
 write open the error dialog with the command and the stderr tail and end the session; quitting kills and
 reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
 auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|target|mana|end` (a seeded
-random row at each of your decisions until then), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
+random row at each of your decisions until then; §4.2 adds `pick`, `mulligan`, `bottom`, `mode`, `x`, `order`, `name`,
+`discard`, `sacrifice`, `return`, `legend`, `unless`, `choice` and `cost`), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
 engine's test-setup flags, `;`-separated, as `PlayConfig::setup`, which the decision log's header records) and
 `--play-rows R,R,…` (your first decisions' rows). Checked by `rmwork --selftest-data` (`selftest_play`:
 the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
@@ -210,9 +212,9 @@ Checked by `rmwork --selftest-data` (`selftest_sideboard`: the plan's rules and 
 decisions, a menu without the planned row refused; the guides file against its JSON; a live bo3 as seat A
 sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
 stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
-the match in Replay in seat A's view and seat B's). Waiting for later stages: the rest of §4.2's
-direct-manipulation decisions (targeting, mana payment, combat, the card picker and the opening hand are answered
-on the Table; every other decision goes through the Choices list). Beside each game's decision log Play
+the match in Replay in seat A's view and seat B's). Every decision but a priority decision's casts, activations and
+land plays (and sideboarding, its tool) has an answer on the Table (§4.2); Choices answers all of them. Beside each
+game's decision log Play
 writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
 seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
 game or quitting, or its engine gone) gets the `QUIT` line appended to its log, as a human seat's quit
@@ -389,8 +391,9 @@ given lethal damage with "lethal N" (the row's), counts what each has been assig
 table's `assigned`), tags the attacker "Assigning", says what is left ("2 of 2 left to assign"), and a click gives a
 blocker its lethal damage; Done is a button. For screenshots `--play-until attack|block|damage` stops at those
 decisions and `--table-plan SPEC` plans a declaration. The opening hand and the card picker (§4.2, items 5 and 8;
-`mulligan_plan`, `card_picker`, `card_picker_view`) are described there. Waiting for later stages: the rest of direct
-manipulation in Play (§4.2), the Choices tool's side of the linking (§2.6).
+`mulligan_plan`, `card_picker`, `card_picker_view`) are described there, as are the modes, numbers, names, costs
+and pickers (§4.2, items 9, 10, 12 and 13; `choice_panel`, `choice_panel_view`, `card_plan`). Waiting for later
+stages: casting and activating from the Table at a priority decision, the Choices tool's side of the linking (§2.6).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -611,8 +614,36 @@ Ordered roughly by value against effort. Each is one dockable tool.
    not empty places for the rest; and the card a pick put back (the pile is read from the earlier decisions' replies).
    Checked by `rmwork --selftest-data` (`selftest_decisions`: a fetchland's search, Ponder, Preordain's scry,
    Doomsday's five picks with the filter, Replay).
-9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
-10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.
+9. ~~**Modal and numeric choices**~~: built (mock-ups `decisions.html#modes-numbers`, `-x`, `-divide`, `-order`;
+   `table_decision`'s MODES, NUMBER and ORDER, `choice_panel`, `choice_panel_view`). Modes (CHOOSE_MODE, one decision
+   per mode, CONFIRM_MODES once the fewest are chosen) and the triggers to order (ORDER_TRIGGERS) are rows of the
+   **choice panel**, a window inside the Table where the card picker goes (over the opponent's half, below its chip,
+   down to the middle strip, or to the prompt line when its rows need it, scrolling past that; its title bar's button
+   collapses it), for the picker's reason: the stack, the prompt line and the board stay in view and nothing is brought
+   to the front. A modal spell's card is drawn at its left; each mode a row with a tick box, its text (the mode's text
+   names the card, 36a5897a) and "row N"; the engine leaves the modes chosen out of the next menu, so the modes chosen
+   earlier in the cast are read from the decisions just before (the same pending source) and listed in the card's order
+   (each row's `ordinal`), ticked, "chosen 1st → Player B (20 life)" with the targets chosen for them. "Done choosing
+   modes" is a button of the prompt line and of the panel's foot. The triggers are a row each with their source card
+   small at the left; the note says the one chosen goes on the stack now, above those put there before (the stack shows
+   them), so the last resolves first (open question: the pending triggers are not drawn in the strip where the stack
+   goes; the panel lists them). X and delve's count (CHOOSE_X, a row per value, its `ordinal`): a **stepper on the
+   prompt line** — "−", the value's button ("X = 2", "Exile 4"; it sends that row), "+" — bounded by the rows (open
+   question 1: the stepper, not a row of value buttons), the cost the value leaves as pips with the mana it comes to
+   ("{2}{C}{C} to pay = 4 mana"; delve: the generic part less the cards exiled, "left after delve"), the range offered
+   ("X from 0 to 3"). The frame gives no mana available (the mock-up's "5 mana available"), so the stepper is bounded
+   by the rows alone. Divided damage stays item 6's (one click per point, the points so far on each target, "3 of the
+   damage given so far"; open question 2: no typed split); the frame has no total to divide, so the prompt counts what
+   is given and not what is left. Replay: the panel read-only with the row chosen outlined and "Chosen", the stepper at
+   the value chosen.
+10. ~~**Name a card**~~: built (mock-up `decisions.html#name-card`; NAME, the choice panel). The candidates (the engine's
+   limited set, CLAUDE.md "Name-a-card candidate set"; every vocab card under `--closed-decklist`) in the panel as a
+   searchable list (a search box over the name and type line, "n of N"), each row its menu row number, name and type
+   line, grouped by the DECKLISTS frame (open question 1: the opponent's main deck, the opponent's sideboard, your deck,
+   other cards; alphabetical within a group; "seen this game" not marked), the card's face magnified beside the panel
+   while a name is hovered; a click names it. Under `--closed-decklist` the same list holds every vocab card (open
+   question 2: it starts full, not empty; the search narrows it). `--picker-filter TEXT` fills the search box for
+   screenshots.
 11. ~~**Mana payment**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#mana-payment`,
     `#mana-payment-phyrexian`). Under `--no-auto-mana` (New Game's auto-mana, `auto-mana=off`): the remaining
     cost from `pending_cost` / `pending_cost_pip` as pips on the prompt line (life, energy and the mana paid
@@ -621,8 +652,53 @@ Ordered roughly by value against effort. Each is one dockable tool.
     {B})" and "Pay {B}" buttons beside it; at a priority decision a click on a land taps it for mana, the floating
     pool shown on the player chip and the Players tool. Checked by `rmwork --selftest-data`
     (`selftest_decisions`).
-12. **Optional costs and alternative costs**: e.g. Force of Will's pitch, kicker, convoke and crew pickers.
-13. **Discard / sacrifice / return pickers** for mandatory choices.
+12. ~~**Optional costs and alternative costs**~~: built (mock-ups `decisions.html#costs`, `-daze`, `-delve`, `-convoke`).
+    A cost paid with a card is a pick on the Table: Force of Will's and Fury's exile (PAYING_COSTS rows naming hand
+    cards: the blue / red cards lit, the rest dimmed) and convoke's tap (PAYING_COSTS "Tap … (Convoke)": the creatures
+    lit) were already answered by item 11's payment; the prompt line now names the cost being paid ("alternative cost",
+    "additional cost", "unless cost", from `pending_cost.part`) and what a click does ("exile a card from your hand",
+    "tap a creature to pay (convoke)"), the life still owed after it. Daze's return (RETURN_PERMANENT) lights the
+    Islands; Cabal Therapy's flashback sacrifice (SACRIFICE_PERMANENT) the creatures (item 13). Delve: the count by the
+    stepper (item 9), then each card exiled in the card picker (CHOOSE_CARD, item 8), a click per card as the engine
+    asks (open question 1: sent per click, the pile listing the cards chosen so far; the graveyard keeps them until the
+    cast completes). The choice between a spell's costs (Cast Daze / Cast Daze (alternate cost)) is a priority row, so
+    still Choices' (open question 2). Optional costs and every yes/no (OPTIONAL_YESNO: a shockland's 2 life, kicker,
+    bargain, replicate …), an unless cost (PAY_UNLESS: Pay / Don't pay, the cost as pips, the lands that pay it lit), a
+    shuffle, a colour, a creature type, a replacement to apply (dredge or draw) and the other row-only decisions
+    (OTHER_CHOICE: reveal or not) are the prompt line's buttons, each row's text spelling the cost out ("Accept: pay 2
+    life so it enters untapped"); more than six go to the choice panel's searchable list (a creature type).
+13. ~~**Discard / sacrifice / return pickers**~~: built (mock-ups `decisions.html#pickers`, `-discard`,
+    `-thoughtseize`; the card picker's categories now include DISCARD, SACRIFICE_PERMANENT, RETURN_PERMANENT and
+    KEEP_LEGEND). Rows naming a card the Table shows are its picks (the hand's cards to discard, the permanents to
+    sacrifice or return, the legends of which to keep one), lit with the rest dimmed, a click answering; an opponent's
+    edict lights yours in the same glow (open question 2: no separate "forced" colour). Rows naming cards off the Table
+    go to the card picker: Thoughtseize's pick from Player B's revealed hand ("Player B's hand", the cards the viewer's
+    frame shows, the ones no row picks — its lands — dimmed). A discard of several cards — the cleanup discard (CR 514.1;
+    the frame names no maximum hand size, so the cards owed are the hand beyond seven at the cleanup step) and an
+    escalate cost's (`pending_cost.rem_discard`) — is planned on the hand like the London mulligan's bottom picks
+    (open question 1: staged, then confirmed; `card_plan`): "Discard 1", "Discard 2" on the cards, a click on a planned
+    card takes it back, Undo, Clear, and "Discard N" once the plan holds every card owed sends it one reply per
+    decision; one card owed is a click. `--play-until discard|sacrifice|return|legend` and `--table-plan NAME,NAME` (the
+    discard plan) for screenshots.
+
+Checked by `rmwork --selftest-data` (`selftest_choices`, on sculpted live games against explore): Kozilek's Command's
+X by the stepper (+ twice, "X = 2", the pips the value leaves) and two modes clicked in the panel (the second
+decision's panel marking the first chosen with its target; once resolved Player B has the two Spawn tokens);
+Collective Brutality's mode and "Done choosing modes" by the prompt line's button (the bears die); Fury's evoke exile
+clicked on the hand, its two triggers ordered in the panel, three targets, a point of divided damage (the next decision
+counting 2); Cabal Therapy's name searched ("pon") and clicked in the panel (Player B discards it), its flashback's
+sacrifice clicked; Daze's Island returned by a click and its unless cost declined by the button (the Bolt countered),
+Force of Will's blue card exiled by a click (only the blue cards lit); Murktide Regent's delve count by the stepper
+(+, + past the last row, −) and a graveyard card exiled in the picker (the next pick listing it chosen); a cleanup
+discard of two cards planned on the hand and sent (both gone from the hand); Thoughtseize's pick from Player B's
+revealed hand in the picker (its Mountains dimmed; the card discarded); Watery Grave's 2 life accepted by its button
+(life 18, untapped) and the legend rule's Thalia kept by a click; and the Kozilek game in Replay (the stepper at X 2,
+the panel read-only with the mode chosen marked, nothing answered by a click, nothing in seat B's view). Each reply is
+checked to be the row naming what was clicked. Remaining Choices-only: a priority decision's casts, activations and land
+plays (§4.2's direct manipulation stops at decisions within a cast, an ability, a resolution or a turn-based action);
+sideboarding has its tool (§4.3). Not in the frame (the engine was not changed): the mana available (the X stepper's
+bound is the rows'), a divided-damage spell's total, the maximum hand size (seven is assumed at cleanup), and how many
+modes a spell may still take beyond the rows offered.
 
 ### 4.3 Between and after games
 

@@ -27,6 +27,7 @@ struct Spot {
 }  // namespace
 
 static bool pick_category(const std::string &c);
+static bool table_category(const std::string &c);
 static int object_row(const agents::DecisionView &v, uint64_t handle);
 static bool on_stack(const agents::DecisionView &v, uint64_t handle);
 static uint64_t pending_source(const agents::DecisionView &v);
@@ -47,7 +48,13 @@ static void build_pile(const agents::DecisionView &v, const std::vector<PastPick
 
 static bool pick_category(const std::string &c) {
     return c == "SEARCH_LIBRARY" || c == "TOP_LIBRARY" || c == "BOTTOM_DECK_CARD" || c == "DIG_CHOICE" ||
-           c == "CHOOSE_CARD" || c == "EXILE_FROM_YARD" || c == "SYLVAN_CHOICE";
+           c == "CHOOSE_CARD" || c == "EXILE_FROM_YARD" || c == "SYLVAN_CHOICE" || table_category(c);
+}
+
+// A pick whose cards are mostly on the Table (a discard from the hand, a permanent sacrificed or returned,
+// the legend kept): it builds no pile.
+static bool table_category(const std::string &c) {
+    return c == "DISCARD" || c == "SACRIFICE_PERMANENT" || c == "RETURN_PERMANENT" || c == "KEEP_LEGEND";
 }
 
 // The object table's row of `handle`, -1 when the frame lists no such object.
@@ -218,6 +225,7 @@ static rmwork::CardPickEntry entry_of(
 // The library's top as the picks so far leave it, the place the next pick fills, and the other piles.
 static void build_pile(const agents::DecisionView &v, const std::vector<PastPick> &past, rmwork::PickerPile *pile) {
     const int depth = menu_depth(v);
+    if (v.n() && table_category(v.category(0))) return;
     if (depth == -2 && !has_category(v, "BOTTOM_DECK_CARD")) {
         for (const PastPick &p : past) pile->chosen.push_back(p.card);
         pile->shown = !pile->chosen.empty();
@@ -408,7 +416,8 @@ CardPicker read_card_picker(const Match &m, size_t index, int view, const agents
         }
         add_row(*e, static_cast<int>(i), action);
     }
-    // The other copies of each entry in its zone, and a library's other cards a window shows.
+    // The other copies of each entry in its zone, and the other cards a window shows of a library or of the
+    // other seat's hand (Thoughtseize's reveal).
     std::set<uint64_t> windows;
     const agents::Table rev = v.table("reveal");
     for (size_t r = 0; r < rev.rows(); ++r) windows.insert(rev.u(r, rev.col("handle")));
@@ -433,7 +442,8 @@ CardPicker read_card_picker(const Match &m, size_t index, int view, const agents
                     break;
                 }
             }
-            if (!placed && g.zone == ZoneKind::LIBRARY) g.entries.push_back(entry_of(g.seat, g.zone, c, book));
+            if (!placed && (g.zone == ZoneKind::LIBRARY || (g.zone == ZoneKind::HAND && g.seat != bottom)))
+                g.entries.push_back(entry_of(g.seat, g.zone, c, book));
         }
         if (g.zone == ZoneKind::LIBRARY || g.zone == ZoneKind::GRAVEYARD)
             std::stable_sort(g.entries.begin(), g.entries.end(),

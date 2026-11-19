@@ -17,15 +17,18 @@
 // ordering, Brainstorm's put-back, scry's and surveil's keep), on the bottom at a resolution
 // (BOTTOM_DECK_CARD: scry's other pile), a dig's pick (DIG_CHOICE), a card chosen for a zone change
 // (CHOOSE_CARD: surveil's graveyard, a tutor's pick, Delve), a graveyard card exiled for a cost
-// (EXILE_FROM_YARD) or Sylvan Library's (SYLVAN_CHOICE), or a row of those categories naming no card
-// (Fail to find, Take nothing). A row names its card as its `source`. Rows naming a card the Table
-// shows (the viewer's hand, the battlefield) are answered on the Table; the picker gathers the rest:
+// (EXILE_FROM_YARD), Sylvan Library's (SYLVAN_CHOICE), a card discarded (DISCARD), a permanent sacrificed
+// or returned (SACRIFICE_PERMANENT, RETURN_PERMANENT) or the legend kept (KEEP_LEGEND), or a row of
+// those categories naming no card (Fail to find, Take nothing). A row names its card as its `source`.
+// Rows naming a card the Table shows (the viewer's hand, the battlefield) are answered on the Table; the
+// picker gathers the rest (Thoughtseize's pick from the opponent's revealed hand):
 //   - grouped by zone (the viewer's library first, then its graveyard, exile, the other seat's zones,
 //     anything else), each card as the viewer's frame shows it (zone_model.h: only what the viewer may
 //     see), identical cards of one zone one entry with their count (the engine offers one row for
 //     interchangeable cards, src/queries/zones.h), a library's cards in order from the top. The other
-//     cards a reveal window shows in a library with a pick (a search's whole library) are entries with
-//     no row, shown dimmed;
+//     cards a reveal window shows in a library with a pick (a search's whole library) and the other cards
+//     the frame shows of the other seat's hand (Thoughtseize's lands) are entries with no row, shown
+//     dimmed;
 //   - an entry's rows are its placements when it has several (scry: "Top", "Bottom"; surveil: "Top",
 //     "Graveyard"), else one pick;
 //   - the pile being built in its final order: the picks this resolution made so far (the replies of
@@ -35,7 +38,8 @@
 //     with none puts the card on top of the cards put there before (Doomsday's five picks, Brainstorm's
 //     put-back), so the first ends deepest. A pass ends where the menu's kind changes (Doomsday's picks,
 //     then its ordering of the five). Cards put on the bottom (scry) and into the graveyard (surveil) are
-//     listed apart, and the other categories' picks as chosen so far (a dig choosing two).
+//     listed apart, and the other categories' picks as chosen so far (a dig choosing two, delve's exiles);
+//     a discard, sacrifice, return or legend pick builds none.
 
 namespace rmwork {
 

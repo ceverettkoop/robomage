@@ -9,7 +9,10 @@
 #include "card_book.h"
 #include "card_picker.h"
 #include "card_picker_view.h"
+#include "card_plan.h"
 #include "card_renderer.h"
+#include "choice_panel.h"
+#include "choice_panel_view.h"
 #include "keys.h"
 #include "links.h"
 #include "magnifier.h"
@@ -83,7 +86,16 @@
 // taken, what keeping costs, play or draw, and offers Keep and Mulligan. At the London mulligan's bottom
 // picks a click on a hand card plans it ("Bottom 1", "Bottom 2" in the accent colour; a click on a
 // planned card takes it back), the prompt line's Undo and Clear change the plan, and "Put N on the
-// bottom", once the plan holds every card owed, sends it one reply per decision (plan_reply).
+// bottom", once the plan holds every card owed, sends it one reply per decision (plan_reply). A discard
+// of several cards (the cleanup discard, an escalate cost's) is planned the same way ("Discard 1", …;
+// "Discard N" sends it; card_plan.h).
+//
+// Modes, triggers to order and names (table_decision.h's MODES, ORDER, NAME, and a decision with more
+// buttons than the prompt line holds): the choice panel (choice_panel_view.h), a window where the card
+// picker goes; a click on a row answers it. A number (NUMBER: an X, a delve count): a stepper on the
+// prompt line ("−", the value's button, "+"), bounded by the rows, the cost the value leaves as pips
+// with the mana it comes to; the value's button sends its row. A yes/no, an unless cost and every other
+// decision's rows: buttons on the prompt line, the objects a row names lit.
 //
 // The card picker (card_picker.h, card_picker_view.h): at a decision among cards the Table does not
 // show (a library search, Ponder's and Doomsday's ordering, scry, surveil, a dig, a graveyard card for a
@@ -109,7 +121,9 @@ struct PromptButton {
             SEND,   // sends the plan (its confirm row `row` when nothing planned is left to send)
             ALL,    // plans every creature that can attack
             CLEAR,  // drops the plan
-            UNDO    // takes the last card planned to the bottom back
+            UNDO,   // takes the last card planned back
+            DEC,    // the number stepper's value down
+            INC     // the number stepper's value up
         };
         std::string label;
         int row = -1;
@@ -143,9 +157,15 @@ class TableView {
         const std::vector<PromptButton> &prompt_buttons() const { return buttons_; }
         // The combat declaration planned (Play, while the human chooses), and whether it is being sent.
         const CombatPlan &plan() const { return plan_; }
-        bool plan_sending() const { return plan_.sending() || bottom_.sending(); }
-        // The London mulligan's bottom picks planned (Play, while the human chooses them).
-        const BottomPlan &bottom_plan() const { return bottom_; }
+        bool plan_sending() const { return plan_.sending() || card_plan_.sending(); }
+        // The cards planned (Play, while the human chooses them): the London mulligan's bottom picks, a
+        // discard of several cards.
+        const CardPlan &card_plan() const { return card_plan_; }
+        // The choice panel of the decision drawn (inactive when none), and its window.
+        const ChoicePanel &panel() const { return panel_; }
+        ChoicePanelView &panel_view() { return panel_view_; }
+        // NUMBER: the stepper's value as last drawn (-1 none).
+        int number_value() const;
         // The card picker of the decision drawn (inactive when none), and its window.
         const CardPicker &picker() const { return picker_; }
         CardPickerView &picker_view() { return picker_view_; }
@@ -181,7 +201,7 @@ class TableView {
         // items NAME (attacks the player / is armed to block), NAME>TARGET (attacks the planeswalker
         // TARGET, or "player"; blocks the attacker TARGET) or NAME>? (planned and armed); names are
         // substrings, the first creature that can attack or block ("" off). At the London mulligan's bottom
-        // pick: the hand cards to plan, comma-separated name substrings.
+        // pick and a discard of several cards: the hand cards to plan, comma-separated name substrings.
         void force_plan(const std::string &spec) { force_plan_ = spec; }
 
         // The book of `view`'s CARDS frame for `m` (built on first use).
@@ -229,8 +249,15 @@ class TableView {
         std::string prompt_text() const;
         bool press_button(const PromptButton &b);
         bool plan_press(const Hit &hit);
-        bool bottom_press(const Hit &hit);
+        bool card_plan_press(const Hit &hit);
+        // The human plans cards here (answering, at the London mulligan's bottom pick or a discard of
+        // several cards), and how many the plan holds.
+        bool card_planning() const;
+        int card_plan_owed() const;
+        // The prompt line's cost: the cost still to pay, or (NUMBER) what the stepper's value leaves.
+        std::vector<std::string> prompt_pips() const;
         void draw_picker(const TableDraw &d);
+        void draw_panel(const TableDraw &d);
         void plan_release(const Hit &hit);
         void plan_all();
         void apply_force_plan();
@@ -266,9 +293,13 @@ class TableView {
         TableModel model_;
         TableDecision decision_;
         CombatPlan plan_;
-        BottomPlan bottom_;
+        CardPlan card_plan_;
         CardPicker picker_;
         CardPickerView picker_view_;
+        ChoicePanel panel_;
+        ChoicePanelView panel_view_;
+        int number_index_ = 0;    // NUMBER: the stepper's row
+        std::string number_key_;  // the decision the stepper's row belongs to
         std::vector<PromptButton> buttons_;
         bool answering_ = false;  // the human chooses at the decision drawn (TableDraw::answer)
         unsigned model_plan_generation_ = 0;
