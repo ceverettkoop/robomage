@@ -28,6 +28,7 @@ struct ToolContext {
         LinkState *links = nullptr;
         ReplayTools *tools = nullptr;
         const Settings *settings = nullptr;
+        StopSettings *stops = nullptr;  // Play's stops, which the Table's step bar toggles
         std::string loading;       // what the loader (or Play's engine before its first frame) is doing, "" when idle
         bool *new_game = nullptr;  // Play's empty Table: set when its New Game button is pressed
 };

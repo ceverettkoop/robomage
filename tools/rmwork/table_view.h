@@ -24,21 +24,27 @@
 // Settings → Table, filling the panel edge to edge (table_layout.h's fit, every frame, so it follows
 // a resize). On the cards, over what the CardRenderer draws: the post-layer P/T (green above the
 // printed, red below, blue for one of each), loyalty, counters by kind, marked damage, summoning
-// sickness, the designations, a land stack's count; a phased-out permanent is faded. The
+// sickness, the designations, the ×n count of a stack of identical permanents (which the layout
+// makes only when the board is too wide to show each); a phased-out permanent is faded. The
 // bottom seat's hand lies on a shaded band. Attackers
 // stand forward; a line runs from each blocker to the attacker it blocks. The player chips (name,
 // deck, life, hand, poison, energy, monarch, speed) and their effect and emblem chips sit at the
 // far top and bottom left. The middle strip: turn, active player, step, deciding seat, day or
-// night, the twelve-step bar (its stop dots only in Play), and the stack when it is not empty.
+// night, the twelve-step bar, and the stack when it is not empty. In Play the step bar has a stop
+// dot under each step (filled where Settings → Stops stops for the side whose turn it is), and a
+// click on a step toggles that stop (a tooltip says which); Replay's has neither.
 //
 // Linking (links.h): the Table reports the card, stack object or player chip under the mouse and
 // outlines whatever the hovered (else the selected) item links to: a stack object, hovered here or
 // in another tool, lights itself and its targets (cards and player chips), with no line between
 // them; a menu row its source and target. A left click selects a card or chip (again: unselects). When the
-// viewer is the deciding seat, the cards some menu row acts with glow.
+// viewer is the deciding seat, the cards some menu row acts with glow. A stack's front card stands
+// for all of it: it glows and is outlined when any of its members would be, and hovering it says
+// its count.
 //
 // The magnifier: holding the Magnify key (Q) over a card, or right-clicking it, shows it large
-// beside it, with its state on the table listed under it. Releasing the key hides a key magnifier;
+// beside it (a double-faced card's both faces, the face up first), with its state on the table
+// listed under it. Releasing the key hides a key magnifier;
 // a right-click one hides when the mouse leaves the card, at a click or at Esc.
 
 namespace rmwork {
@@ -48,8 +54,8 @@ struct TableDraw {
         const TableBackground *background = nullptr;
         LinkState *links = nullptr;
         ImGuiKeyChord magnify = 0;
-        bool play = false;  // Play's Table (stop dots shown)
-        const StopSettings *stops = nullptr;
+        bool play = false;              // Play's Table (stop dots shown, a click on a step toggles its stop)
+        StopSettings *stops = nullptr;  // Play's stops (Settings → Stops), changed by the step bar's clicks
 };
 
 class TableView {
@@ -72,6 +78,8 @@ class TableView {
         // Debugging and screenshots: hover stack object `index` (0 = top; -1 off) every frame, and
         // open the magnifier on the first card whose name contains `name` ("" off).
         void force_stack_hover(int index) { force_stack_ = index; }
+        // In Play: hover step `index` of the step bar (0 = untap; -1 off) every frame, its tooltip shown.
+        void force_step_hover(int index) { force_step_ = index; }
         void force_magnify(const std::string &name) { force_mag_ = name; }
 
         // The book of `view`'s CARDS frame for `m` (built on first use).
@@ -82,19 +90,23 @@ class TableView {
                 int card = -1;   // index into layout_.cards
                 int stack = -1;  // index into model_.stack
                 int seat = -1;   // a player chip
+                int step = -1;   // a step bar's cell (Play)
         };
         bool refresh(ReplaySession &s);
-        TableMetrics measure() const;
+        TableMetrics measure(bool stop_dots) const;
+        // The pile a placed battlefield card stands in (nullptr for a hand card).
+        const TablePile *pile_of(const PlacedCard &c) const;
         CardLook look_of(const TableObject &o) const;
-        Hit hit_test(ImVec2 local) const;
+        // `steps`: the step bar's cells are hit too (Play).
+        Hit hit_test(ImVec2 local, bool steps) const;
         void draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_card_state(ImDrawList *dl, const TableObject &o, const PlacedCard &c, ImVec2 o2);
         void draw_combat(ImDrawList *dl, ImVec2 o);
         void draw_mid(ImDrawList *dl, ImVec2 o, const TableDraw &d);
-        void draw_steps(ImDrawList *dl, ImVec2 pos, const TableDraw &d);
+        void draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d);
-        void draw_magnifier(const TableObject &o, const TRect &at, ImVec2 origin);
+        void draw_magnifier(const TableObject &o, const TRect &at, ImVec2 origin, int stacked);
         void update_magnifier(const Hit &hit, const TableDraw &d, bool over);
 
         TextCardRenderer text_renderer_;
@@ -115,8 +127,10 @@ class TableView {
         std::array<TRect, 2> chip_rects_;  // by seat
         uint64_t hovered_handle_ = 0;
         int hovered_stack_ = -1;
+        int hovered_step_ = -1;
         MagnifierState mag_;
         int force_stack_ = -1;
+        int force_step_ = -1;
         std::string force_mag_;
 };
 

@@ -479,8 +479,8 @@ void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
 void SettingsDialog::draw_stops_tab(Settings *s) {
     note(
         "In Play, priority passes by itself in a step without a stop while the stack is empty; F2 and F6 pass "
-        "further (§2.3). These are the stops a game starts with. A stop at combat damage covers first-strike "
-        "damage too.");
+        "further (§2.3). A click on a step of the Table's step bar in Play toggles the same stop, for the side "
+        "whose turn it is. A stop at combat damage covers first-strike damage too.");
     ImGui::Spacing();
     const ImGuiTableFlags flags = ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_RowBg;
     if (ImGui::BeginTable("##stops", 1 + STOP_STEP_COUNT, flags)) {

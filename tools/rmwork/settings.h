@@ -68,6 +68,8 @@ struct StopSettings {
 };
 // The mock-up's: upkeep, main 1, declare attackers, declare blockers and end step, in both turns.
 StopSettings default_stops();
+// The stop of step `step` (0 .. STOP_STEP_COUNT - 1) in your turn (`own_turn`) or the opponent's.
+bool *stop_flag(StopSettings *s, bool own_turn, int step);
 
 // The New Game dialog's last choices (Play; play_session.h names the opponents).
 struct NewGameSettings {

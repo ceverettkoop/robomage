@@ -25,6 +25,8 @@ const ImU32 SHADOW = rmwork::hex_color(0x000000, 140);
 const ImU32 HAND_SHADE = rmwork::hex_color(0x000000, 46);
 const ImU32 RULE_DARK = rmwork::hex_color(0x000000, 115);
 const ImU32 RULE_LIGHT = rmwork::hex_color(0xffffff, 31);
+// Below a step's label in Play: its stop dot.
+const float STOP_DOT_H = 9;
 
 // One piece of the middle strip's first line.
 struct HeaderPart {
@@ -32,8 +34,6 @@ struct HeaderPart {
         bool dim = false;
         int seat_chip = -1;  // a seat chip after the text
 };
-
-const float STEP_GAP = 6;  // before Main 1, Beginning of combat, Main 2 and End
 
 }  // namespace
 
@@ -44,7 +44,7 @@ static std::vector<HeaderPart> header_parts(const rmwork::TableModel &m);
 static float parts_width(const std::vector<HeaderPart> &parts);
 static float seat_chip_width();
 static float step_cell_width();
-static bool step_gap_before(int i);
+static std::string stop_tooltip(int step, bool own_turn, bool on);
 static float badge(ImDrawList *dl, ImVec2 pos, bool right, bool bottom, const std::string &text, float size, ImU32 bg,
     ImU32 fg, ImU32 border, float rounding);
 static ImU32 pt_color(const rmwork::TableObject &o);
@@ -53,7 +53,7 @@ static void arrow(ImDrawList *dl, ImVec2 from, ImVec2 to, ImU32 color, float thi
 static void heart(ImDrawList *dl, ImVec2 c, float s, ImU32 color);
 static void seat_chip(ImDrawList *dl, ImVec2 pos, int seat);
 static std::string player_text(const rmwork::TablePlayer &p);
-static std::vector<std::string> state_lines(const rmwork::TableModel &m, const rmwork::TableObject &o);
+static std::vector<std::string> state_lines(const rmwork::TableModel &m, const rmwork::TableObject &o, int stacked);
 static ImVec2 rect_center(ImVec2 o, const rmwork::TRect &r);
 
 static ImVec2 at(ImVec2 o, float x, float y) {
@@ -117,8 +117,11 @@ static float step_cell_width() {
     return w + 8;
 }
 
-static bool step_gap_before(int i) {
-    return i == 3 || i == 4 || i == 9 || i == 10;
+// "Stop in Upkeep in your turn: on.", then "Click to turn it off (the same stop as Settings → Stops)."
+static std::string stop_tooltip(int step, bool own_turn, bool on) {
+    return std::string("Stop in ") + rmwork::stop_step(step).name +
+           (own_turn ? " in your turn" : " in the opponent's turn") + ": " + (on ? "on" : "off") +
+           ".\nClick to turn it " + (on ? "off" : "on") + " (the same stop as Settings \xE2\x86\x92 Stops).";
 }
 
 // A text badge with its corner at `pos` (`right` / `bottom`: `pos` is its right / bottom edge);
@@ -194,8 +197,9 @@ static std::string player_text(const rmwork::TablePlayer &p) {
     return out;
 }
 
-// What the magnifier lists under a card: its state on the table.
-static std::vector<std::string> state_lines(const rmwork::TableModel &m, const rmwork::TableObject &o) {
+// What the magnifier lists under a card: its state on the table; `stacked` is the size of the stack
+// of identical permanents it stands in (0 none).
+static std::vector<std::string> state_lines(const rmwork::TableModel &m, const rmwork::TableObject &o, int stacked) {
     std::vector<std::string> out;
     std::string first = o.in_hand ? std::string("In ") + (o.owner == 0 ? "Player A" : "Player B") + "'s hand"
                                   : std::string("Controlled by ") + (o.controller == 0 ? "Player A" : "Player B");
@@ -221,6 +225,8 @@ static std::vector<std::string> state_lines(const rmwork::TableModel &m, const r
     for (const rmwork::TableCounter &c : o.counters)
         out.push_back("Counters: " + c.kind + " \xC3\x97" + std::to_string(c.count));
     for (const std::string &t : o.tags) out.push_back(t);
+    if (stacked > 1)
+        out.push_back("One of " + std::to_string(stacked) + " identical, stacked to fit the Table's width");
     if (o.attached_to) {
         const int h = m.find(o.attached_to);
         out.push_back("Attached to " + (h >= 0 && !m.objects[static_cast<size_t>(h)].name.empty()
@@ -282,15 +288,21 @@ bool TableView::refresh(ReplaySession &s) {
     return true;
 }
 
-TableMetrics TableView::measure() const {
+TableMetrics TableView::measure(bool stop_dots) const {
     TableMetrics mx;
     mx.line_h = ImGui::GetTextLineHeight();
     mx.header_w = parts_width(header_parts(model_));
     float w = 0;
     for (int i = 0; i < STOP_STEP_COUNT; ++i) w += step_cell_width() + 1 + (step_gap_before(i) ? STEP_GAP : 0);
     mx.steps_w = w;
-    mx.steps_h = mx.line_h + 2;
+    mx.steps_h = mx.line_h + 2 + (stop_dots ? STOP_DOT_H : 0);
     return mx;
+}
+
+const TablePile *TableView::pile_of(const PlacedCard &c) const {
+    if (c.in_hand || c.row < 0) return nullptr;
+    const std::vector<TablePile> &piles = layout_.piles[static_cast<size_t>(c.row)];
+    return c.pile >= 0 && static_cast<size_t>(c.pile) < piles.size() ? &piles[static_cast<size_t>(c.pile)] : nullptr;
 }
 
 CardLook TableView::look_of(const TableObject &o) const {
@@ -310,8 +322,13 @@ CardLook TableView::look_of(const TableObject &o) const {
     return look;
 }
 
-TableView::Hit TableView::hit_test(ImVec2 p) const {
+TableView::Hit TableView::hit_test(ImVec2 p, bool steps) const {
     Hit h;
+    for (size_t i = 0; steps && i < layout_.step_cells.size(); ++i)
+        if (layout_.step_cells[i].contains(p.x, p.y)) {
+            h.step = static_cast<int>(i);
+            return h;
+        }
     for (int i = static_cast<int>(layout_.stack_items.size()) - 1; i >= 0; --i)
         if (layout_.stack_items[static_cast<size_t>(i)].contains(p.x, p.y)) {
             h.stack = i;
@@ -347,7 +364,8 @@ void TableView::draw(const TableDraw &d) {
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->PushClipRect(win->InnerRect.Min, win->InnerRect.Max, false);
     backdrop_.draw(dl, win->InnerRect.Min, win->InnerRect.Max, *d.background);
-    layout_ = layout_table(model_, W, H, measure());
+    const bool stop_dots = d.play && d.stops;
+    layout_ = layout_table(model_, W, H, measure(stop_dots));
 
     if (d.links) {
         d.links->set_menu(model_.menu);
@@ -359,16 +377,36 @@ void TableView::draw(const TableDraw &d) {
     const bool over =
         ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && win->InnerRect.Contains(mouse);
     // Chip rectangles are laid out as the chips draw; last frame's serve the hit test.
-    Hit hit = over ? hit_test(ImVec2(mouse.x - o.x, mouse.y - o.y)) : Hit();
+    Hit hit = over ? hit_test(ImVec2(mouse.x - o.x, mouse.y - o.y), stop_dots) : Hit();
     if (force_stack_ >= 0 && static_cast<size_t>(force_stack_) < layout_.stack_items.size()) {
         hit = Hit();
         hit.stack = force_stack_;
+    }
+    if (stop_dots && force_step_ >= 0 && static_cast<size_t>(force_step_) < layout_.step_cells.size()) {
+        hit = Hit();
+        hit.step = force_step_;
     }
     hovered_handle_ =
         hit.card >= 0 ? model_.objects[static_cast<size_t>(layout_.cards[static_cast<size_t>(hit.card)].object)].handle
                       : 0;
     hovered_stack_ = hit.stack;
-    if (d.links) {
+    hovered_step_ = hit.step;
+    if (hit.step >= 0) {
+        // A click on a step toggles its stop for the side whose turn the Table shows.
+        const bool own = model_.active == model_.bottom;
+        bool *stop = stop_flag(d.stops, own, hit.step);
+        if (over && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) *stop = !*stop;
+        ImGui::SetTooltip("%s", stop_tooltip(hit.step, own, *stop).c_str());
+    } else if (hit.card >= 0) {
+        const PlacedCard &c = layout_.cards[static_cast<size_t>(hit.card)];
+        const TablePile *p = pile_of(c);
+        if (p && p->stacked) {
+            const std::string &name = model_.objects[static_cast<size_t>(c.object)].name;
+            ImGui::SetTooltip("%s \xC3\x97%d: identical permanents stacked to fit the Table's width", name.c_str(),
+                static_cast<int>(p->objects.size()));
+        }
+    }
+    if (d.links && hit.step < 0) {
         if (hit.card >= 0) d.links->hover_object(hovered_handle_);
         if (hit.stack >= 0) d.links->hover_object(model_.stack[static_cast<size_t>(hit.stack)].handle);
         if (hit.seat >= 0) d.links->hover_player(hit.seat);
@@ -401,6 +439,7 @@ void TableView::draw(const TableDraw &d) {
     update_magnifier(hit, d, over);
 }
 
+// A stack's members behind its front card take no outline: the front card shows the whole stack's.
 void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     const bool glow = model_.viewer < 2 && model_.viewer == model_.decider;
     for (const PlacedCard &c : layout_.cards) {
@@ -410,11 +449,20 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         dl->AddRectFilled(ImVec2(a.x + 1, a.y + 2), ImVec2(b.x + 1, b.y + 3), SHADOW, cw * 0.05f);
         renderer_->draw(dl, look_of(obj), a, b, c.rotated, obj.phased_out ? 0.35f : 1.0f);
         draw_card_state(dl, obj, c, o);
-        bool source = false;
-        if (glow)
-            for (const MenuLink &m : model_.menu) source = source || (m.source == obj.handle);
+        const TablePile *pile = pile_of(c);
+        const bool stacked = pile && pile->stacked;
+        if (stacked && !c.front) continue;
+        std::vector<uint64_t> members{obj.handle};
+        if (stacked)
+            for (int k : pile->objects) members.push_back(model_.objects[static_cast<size_t>(k)].handle);
+        bool source = false, linked = false;
+        for (uint64_t h : members) {
+            if (glow)
+                for (const MenuLink &m : model_.menu) source = source || (m.source == h);
+            linked = linked || (d.links && d.links->object_linked(h));
+        }
         if (source) outline(dl, a, b, cw * 0.05f, tok().GLOW, 2, 3);
-        if (d.links && d.links->object_linked(obj.handle)) {
+        if (linked) {
             outline(dl, a, b, cw * 0.05f, hex_color(0x000000), 2, 3);
             outline(dl, a, b, cw * 0.05f, tok().LINK, 5, 3);
         }
@@ -497,38 +545,31 @@ void TableView::draw_mid(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         }
         x += 14;
     }
-    if (model_.turn > 0 && !model_.pregame && !model_.sideboarding && !model_.terminal && model_.step >= 0) {
-        const float sw = measure().steps_w;
-        const float sx = o.x + layout_.mid_header.x1 - sw;
-        const float sy = layout_.steps_wrapped ? y + ImGui::GetTextLineHeight() + 4 : y;
-        draw_steps(dl, ImVec2(layout_.steps_wrapped ? o.x + layout_.mid_header.x0 : sx, sy), d);
-    }
+    draw_steps(dl, o, d);
     if (!model_.stack.empty()) draw_stack(dl, o, d);
 }
 
-// The twelve steps, the current one highlighted; in Play a stop dot under each (filled where Play's
-// default stops stop for the turn's player).
-void TableView::draw_steps(ImDrawList *dl, ImVec2 pos, const TableDraw &d) {
-    const float cw = step_cell_width(), h = ImGui::GetTextLineHeight();
-    float x = pos.x;
-    for (int i = 0; i < STOP_STEP_COUNT; ++i) {
-        if (step_gap_before(i)) x += STEP_GAP;
-        const bool on = i == model_.step;
-        dl->AddRectFilled(ImVec2(x, pos.y), ImVec2(x + cw, pos.y + h + 2), on ? tok().TAB_ACTIVE : tok().FIELD);
-        const char *ab = stop_step(i).abbrev;
+// The twelve steps, the current one highlighted; in Play a stop dot under each (filled where the
+// stops stop for the side whose turn it is), the step under the mouse outlined (a click toggles it).
+void TableView::draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
+    const float h = ImGui::GetTextLineHeight();
+    const bool own = model_.active == model_.bottom;
+    for (size_t i = 0; i < layout_.step_cells.size(); ++i) {
+        const TRect &r = layout_.step_cells[i];
+        const ImVec2 a = rmin(o, r), z = rmax(o, r);
+        const bool on = static_cast<int>(i) == model_.step;
+        dl->AddRectFilled(a, ImVec2(z.x, a.y + h + 2), on ? tok().TAB_ACTIVE : tok().FIELD);
+        const char *ab = stop_step(static_cast<int>(i)).abbrev;
         const float tw = ImGui::CalcTextSize(ab).x;
-        dl->AddText(ImVec2(x + (cw - tw) / 2, pos.y + 1), on ? tok().TEXT : tok().DIM, ab);
-        if (d.play && d.stops) {
-            const bool own = model_.active == model_.bottom;
-            const bool stop = own ? d.stops->own[static_cast<size_t>(i)] : d.stops->opponent[static_cast<size_t>(i)];
-            const ImVec2 c(x + cw / 2, pos.y + h + 6);
-            if (stop) {
-                dl->AddCircleFilled(c, 3, tok().BAD);
-            } else {
-                dl->AddCircle(c, 3, tok().DIM);
-            }
+        dl->AddText(ImVec2(a.x + (r.w() - tw) / 2, a.y + 1), on ? tok().TEXT : tok().DIM, ab);
+        if (!d.play || !d.stops) continue;
+        const ImVec2 c((a.x + z.x) / 2, a.y + h + 2 + STOP_DOT_H / 2);
+        if (*stop_flag(d.stops, own, static_cast<int>(i))) {
+            dl->AddCircleFilled(c, 3, tok().BAD);
+        } else {
+            dl->AddCircle(c, 3, tok().DIM);
         }
-        x += cw + 1;
+        if (static_cast<int>(i) == hovered_step_) dl->AddRect(a, z, tok().LINK, 2, 0, 1.5f);
     }
 }
 
@@ -648,7 +689,9 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
     if (obj >= 0) {
         for (const PlacedCard &c : layout_.cards)
             if (c.object == obj) {
-                draw_magnifier(model_.objects[static_cast<size_t>(obj)], c.rect, origin);
+                const TablePile *p = pile_of(c);
+                draw_magnifier(model_.objects[static_cast<size_t>(obj)], c.rect, origin,
+                    p && p->stacked ? static_cast<int>(p->objects.size()) : 0);
                 return;
             }
     }
@@ -663,16 +706,17 @@ void TableView::update_magnifier(const Hit &hit, const TableDraw &d, bool over) 
         const CardFace *f =
             face.card >= 0 ? books_[static_cast<size_t>(model_view_)].face(face.card, face.back) : nullptr;
         if (f) face.colors = f->colors;
-        draw_magnifier(face, layout_.stack_items[k], origin);
+        draw_magnifier(face, layout_.stack_items[k], origin, 0);
         return;
     }
     mag_.close();
 }
 
 // The card large beside `at`, its state under it.
-void TableView::draw_magnifier(const TableObject &o, const TRect &at_rect, ImVec2 origin) {
+void TableView::draw_magnifier(const TableObject &o, const TRect &at_rect, ImVec2 origin, int stacked) {
     const bool on_table = model_.find(o.handle) >= 0;
-    const std::vector<std::string> lines = on_table ? state_lines(model_, o) : std::vector<std::string>{o.name};
+    const std::vector<std::string> lines =
+        on_table ? state_lines(model_, o, stacked) : std::vector<std::string>{o.name};
     std::function<void(ImDrawList *, ImVec2, ImVec2)> overlay;
     if (on_table)
         overlay = [this, &o](ImDrawList *fg, ImVec2 a, ImVec2 b) {

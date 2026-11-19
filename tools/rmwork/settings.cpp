@@ -469,6 +469,10 @@ StopSettings default_stops() {
     return s;
 }
 
+bool *stop_flag(StopSettings *s, bool own_turn, int step) {
+    return &(own_turn ? s->own : s->opponent)[static_cast<size_t>(step)];
+}
+
 std::string engine_binary_path(const Settings &s) {
     return resolve_path(s.engine.binary, default_engine_binary());
 }

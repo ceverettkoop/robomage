@@ -20,11 +20,15 @@
 // Battlefield objects go into four rows: the top seat's lands (the far edge), the top seat's other
 // permanents, the bottom seat's other permanents and the bottom seat's lands. A land is an object
 // whose post-layer types include Land and not Creature (an animated land stands with the
-// creatures). A row holds piles: a permanent with the Auras and Equipment attached to it (an
-// attachment joins its host's pile, wherever its controller sits), or identical untapped lands with
-// nothing on them (same card, same controller, no attachments, counters or damage, not phased out),
-// stacked. The bottom seat's hand is listed when the frame identifies its cards (a card it shows
-// face down is a card back); the top seat's hand is a count.
+// creatures). A row holds piles, in entry (timestamp) order: a permanent with the Auras and
+// Equipment attached to it (an attachment joins its host's pile, wherever its controller sits).
+// Piles of one permanent that look the same at a glance share a `group` (interchangeable: the same
+// card and face, or the same token; tapped or not alike; no counters, damage, loyalty or
+// designations, or the same ones; the same P/T, colours, subtypes and summoning sickness; nothing
+// attached; not face down, phased out, attacking or blocking). The model never stacks them: the
+// layout (table_layout.h) stacks a group only when its row is too wide to show each. The bottom
+// seat's hand is listed when the frame identifies its cards (a card it shows face down is a card
+// back); the top seat's hand is a count.
 
 namespace rmwork {
 
@@ -61,11 +65,12 @@ struct TableObject {
         uint64_t attached_to = 0;
 };
 
-// What one place in a row holds: `objects[0]` is the host (or the stack's front land); the rest are
-// its attachments (in handle order) or the stack's other lands.
+// What one place in a row holds: `objects[0]` is the host (or a stack's front card); the rest are
+// its attachments (in handle order) or, in a stack the layout made, the group's other members.
 struct TablePile {
         std::vector<int> objects;  // indices into TableModel::objects
-        bool land_stack = false;
+        bool stacked = false;      // identical permanents shown as one pile with a ×n count (layouts only)
+        int group = -1;            // the model's: piles of one row with the same group are interchangeable; -1 none
 };
 
 enum TableRowId {

@@ -1079,6 +1079,7 @@ void App::draw_tools() {
         ctx.links = &links_;
         ctx.tools = &tools_;
         ctx.settings = &settings_;
+        ctx.stops = &settings_.stops;
         double fraction = -1;
         ctx.loading = mode() == Mode::REPLAY                      ? load_phase(&fraction)
                       : play_.running() && !play_.view().loaded() ? "Starting the game: the engine is dealing"

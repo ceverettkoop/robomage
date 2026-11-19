@@ -144,7 +144,8 @@ thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure functi
 from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
 step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
 new object on the stack; F6 takes row 0 until a later turn; with neither, a plain priority pass with an
-empty stack in a step without a stop (Settings → Stops, for the turn's player) is answered. Game →
+empty stack in a step without a stop (Settings → Stops, for the turn's player; a click on a step of the
+Table's step bar toggles the same stop, §2.5) is answered. Game →
 Concede Game / Match asks first and sends `-2` / `-3` (while the opponent thinks, at your next decision).
 The match's end opens the result screen (the winner, the bo3 score and each game's winner, your values'
 curve when Model's Read ran; Open in Replay through Replay's loader, New Game, Close); File → Save
@@ -170,8 +171,7 @@ a killed engine, a broken stream and a record that is no frame) and `rmwork --se
 settings). Model's Read was checked by hand against `rmserve` serving `runs/league26-24h/exports/final.ts.pt`
 (not in the gate: it needs a server and a model). Waiting for later stages: the direct-manipulation
 decisions of §4.2 (every decision goes through the Choices list), the sideboarding screen of §4.3 (the
-Choices list's `SIDEBOARD_*` rows for now; Game → Sideboard… is not built), toggling stops on the Table's
-step bar (Settings → Stops sets them), and the start page of §4.1.
+Choices list's `SIDEBOARD_*` rows for now; Game → Sideboard… is not built), and the start page of §4.1.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -242,17 +242,32 @@ oldest matching token, which may differ in art from the set the card came from.
 `card_renderer`, `table_backdrop`, `links`). The Table shows Replay's current decision as the viewer saw
 it, built only from that viewer's STATE frame and its own CARDS frame (the omniscient viewer sits as
 seat A): the opponent's lands at the far edge and other permanents toward the middle, the middle strip
-(turn, active player, step, deciding seat, day or night, the twelve-step bar, its stop dots only in Play;
+(turn, active player, step, deciding seat, day or night, the twelve-step bar, narrowed to the strip when that
+is narrower; in Play a stop dot under each step, filled where Settings → Stops stops for the side whose turn
+it is, and a click on a step (its label or dot) toggles that stop, saved with the settings like Settings →
+Stops' own, a tooltip saying which; Replay's bar has no dots and takes no clicks;
 the stack, top first, only when it is not empty: each object's card thumbnail, controller chip, kind and
 type line, X, modes and targets), the viewer's other permanents, lands and hand on a shaded band, the
 player chips (name, deck, life, hand and library counts, poison, energy, other counters, monarch, the
 city's blessing, speed) with their player-effect and emblem chips beside them; the opponent's hand is its
 chip's count. A land is an object whose post-layer types hold Land and not Creature; Auras and
-Equipment peek above their host (an attachment's attachments join the root host's pile); identical
-untapped lands with nothing on them stack with an offset and a `×n` count; rows are in entry
-(timestamp) order and centred. The fit is the mock-up's: one card width for the four rows and the hand
-(1.15×) so they fill the height and the widest row fits the width, every frame, so it follows a resize;
-a row keeps an upright card's height when empty. Cards are drawn by a `CardRenderer`: the card's image (§2.4), else
+Equipment peek above their host (an attachment's attachments join the root host's pile); rows are in
+entry (timestamp) order and centred. The fit is the mock-up's: one card width for the four rows and the
+hand (1.15×) so they fill the height and the widest row fits the width, every frame, so it follows a
+resize; a row keeps an upright card's height when empty. A wide board (`table_layout`, ImGui-free):
+every permanent is shown on its own while that fit gives cards at least 69 px wide (`LEGIBLE_CARD_W`:
+the text renderer prints the type line from 6.5 px text at 0.095 of a card's width, so below 69 px a
+card shows its name alone and an image's text is unreadable). Below it, while a row's width (not the
+panel's height, nor the hand) is what holds the cards down, the widest row gets room: its largest group
+of interchangeable permanents is stacked into one pile with an offset and a `×n` count (the model's
+groups: the same card and face, or the same token, and controller; tapped or not alike; the same P/T,
+damage, loyalty, counters, designations, colours, subtypes and summoning sickness; nothing attached and
+not attached; identified, face up, not phased out, attacking or blocking: lands, tokens, creatures and
+other permanents alike), then its next largest, and once it has none left it wraps onto another line
+(up to three, its piles in order, split evenly) when that widens its cards without narrowing another
+row's; it stops once the cards are 69 px wide, and what is left shrinks. A stack's front card stands for
+it: hovering it says the count, it glows when a menu row acts with any of its cards and is outlined when
+any of them is linked, and the magnifier on any of its cards adds "One of n identical". Cards are drawn by a `CardRenderer`: the card's image (§2.4), else
 the text renderer, which prints the CARDS face in a rounded card in its frame colour (one colour, two
 split, gold, colourless grey, a land tan with a land glyph and pips for its basic land types; a token
 silver-bordered and "Token" in its type line): the name (wrapped on a small card), the cost as pips, the
@@ -268,22 +283,32 @@ it links to, hovering a stack object lights itself and its targets (`stack_targe
 line drawn between them), a click selects;
 when the viewer is the deciding seat the cards some menu row acts with glow. The magnifier: Q held over a
 card (or a stack object), or a right-click, shows it large beside it with its state listed under it
-(release Q; a right-click one closes on leaving the card, a click or Esc). The background is Settings →
+(release Q; a right-click one closes on leaving the card, a click or Esc); a double-faced card (its
+`CardBook` has both faces) shows both side by side, the face up first, outlined and captioned "Face up",
+the other captioned "Back face" / "Front face", on the Table, the stack and the zone windows; a card the
+viewer cannot identify stays a back. It is placed to the card's right, else its left, else centred, and
+shrunk to stay on screen. The background is Settings →
 Table's colour, one of the five textures generated as GPU tiles on first use, or an image (stb_image,
 drawn covering the panel; one that cannot be read shows the wood and says so in the status bar). The
 twelve-step bar's "Opening hand" phase now counts a bottom-of-library pick only while a player owes
-London-mulligan cards (a scry-like effect's bottom pick was taken for the opening hands). `--table-hover-stack N`
-and `--table-magnify NAME` force a hover and the magnifier for screenshots. Checked by `rmwork --selftest`
-(the layout and fit of synthetic boards, the links, the tiles, the new colour tokens' contrast) and
-`rmwork --selftest-data` (every decision of five corpus logs and the played bo3 in every view against its
-frame, drawn headless, and the hover and magnifier interactions; `docs/ci.md`). Waiting for later stages:
-direct manipulation in Play (§4.2) and the stop dots' toggling, the Choices tool's
-side of the linking (§2.6), damage assignment order (the frame has none). Not done: rows never wrap, so a
-very wide board shrinks every card; identical tokens do not stack (only lands do).
+London-mulligan cards (a scry-like effect's bottom pick was taken for the opening hands). `--table-hover-stack N`,
+`--table-hover-step N` (Play) and `--table-magnify NAME` force a hover, a step's tooltip and the magnifier
+for screenshots. Checked by `rmwork --selftest` (the layout and fit of synthetic boards: identical lands and
+tokens stacked one pile a row on a narrow panel and not on a wide one, different creatures wrapped onto two
+lines in order, tokens stacked before a row wraps, nothing wrapped on a panel too short for it; the step
+bar's cells; a step's stop toggled and kept in the settings file; the magnifier's two faces side by side on
+screen and shrunk on a small one; the links, the tiles, the new colour tokens' contrast) and `rmwork
+--selftest-data` (every decision of five corpus logs and the played bo3 in every view against its frame at
+four panel sizes, a narrow one among them: a stack's members interchangeable and identified, stacks and
+wrapped rows only where the full-detail cards would be narrower than 69 px, a row wrapped only with no group
+left to stack; drawn headless, and the hover and magnifier interactions, a click on Replay's step bar
+toggling nothing; in Play, a click on a step's dot toggling its stop, settings.json keeping it, a second
+click turning it back; `docs/ci.md`). Waiting for later stages: direct manipulation in Play (§4.2), the
+Choices tool's side of the linking (§2.6), damage assignment order (the frame has none).
 
 | Feature | Notes | Size |
 |---|---|---|
-| Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical untapped lands stacked; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
+| Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical permanents stacked, and rows wrapped, only when the board is too wide to show each legibly; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
 | Object state | Tapped, counters by kind, effective P/T (post-layer, from `object`), damage marked, summoning sickness, loyalty, designations (monarch, day/night, speed …; `designations.def`), energy and poison on the player | M |
 | Combat | Attackers set forward; arrows from blockers to attackers; damage assignment order | M |
 | Targets | Hovering a stack object highlights it and its targets (`stack_target` rows, not text matching as in the mock-up); no arrows: both ends are highlighted | S |
@@ -403,7 +428,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 5. **Mulligan**: the opening hand large, Keep / Mulligan, and for London mulligan the bottoming choice.
 6. **Targeting**: legal targets highlighted on the Table and players, click to choose, arrows from the spell.
 7. **Declare attackers / blockers**: click creatures to attack or block, arrows to their opponents, confirm (`-1`).
-8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find.
+8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find; it must also handle a whole-zone pick such as Doomsday (five picks in turn from the library and graveyard, each put on top so the first ends up fifth): rows grouped by zone, identical cards one entry with a count, a name/type filter, a compact list beside the image grid, and the pile being built shown in its final order.
 9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
 10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.
 11. **Mana payment**: under `--no-auto-mana`, tap lands and sources on the Table to pay, with the remaining cost (`pending_cost`).
@@ -433,7 +458,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 26. **Settings**, the remaining tabs: Engine (binary, flags), Models (rmserve socket, policies), Keys, Stops (defaults per step), Appearance (font size, UI scale).
 27. **Layout manager**: save, rename and delete named layouts per mode.
 28. **Error dialog**: engine or inference-server failure with the stderr tail.
-29. **Card detail** (optional): the magnifier extended with oracle text, rulings links and the card's parse report, if a text view beside the image is wanted.
+29. ~~**Card detail**~~: dropped (user, 2026-11-18). The magnifier is the enlargement: the card's image (its printing's set symbol and year are printed on it), and both faces side by side for a double-faced card (§2.5).
 
 ## 5. Suggested order
 

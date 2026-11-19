@@ -119,7 +119,7 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
         d.links = ctx.links;
         d.magnify = ctx.settings->keys[action_index(Action::MAGNIFY)];
         d.play = ctx.mode == Mode::PLAY;
-        d.stops = &ctx.settings->stops;
+        d.stops = ctx.stops;
         ctx.table->draw(d);
         return;
     }

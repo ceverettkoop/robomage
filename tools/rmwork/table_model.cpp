@@ -37,7 +37,8 @@ static void read_counters(const Frame &f, std::vector<rmwork::TableObject> *obje
 static void read_subtypes(const Frame &f, std::vector<rmwork::TableObject> *objects);
 static void read_tags(const Frame &f, size_t row, rmwork::TableObject *o);
 static bool stackable(const rmwork::TableObject &o);
-static bool same_land(const rmwork::TableObject &a, const rmwork::TableObject &b);
+static bool same_counters(const std::vector<rmwork::TableCounter> &a, const std::vector<rmwork::TableCounter> &b);
+static bool interchangeable(const rmwork::TableObject &a, const rmwork::TableObject &b);
 static void place_piles(rmwork::TableModel *m, const std::vector<int> &order);
 static void read_players(const Frame &f, rmwork::TableModel *m);
 static std::string effect_label(const Frame &f, size_t row);
@@ -209,18 +210,33 @@ static void read_tags(const Frame &f, size_t row, rmwork::TableObject *o) {
     if (x >= 0 && t.u(row, x) > 0) o->tags.push_back("X=" + std::to_string(t.u(row, x)));
 }
 
-// A land that may stand in a stack of identical lands: untapped, identified, with nothing on it.
+// A permanent that may stand in a stack of identical ones: identified, face up, not phased out,
+// attacking or blocking, attached to nothing.
 static bool stackable(const rmwork::TableObject &o) {
-    return o.land && o.card >= 0 && !o.tapped && !o.phased_out && !o.face_down && o.counters.empty() && o.loyalty < 0 &&
-           o.damage == 0 && o.tags.empty() && !o.attacking && !o.blocking;
+    return o.card >= 0 && !o.face_down && !o.phased_out && !o.attacking && !o.blocking && o.attached_to == 0;
 }
 
-static bool same_land(const rmwork::TableObject &a, const rmwork::TableObject &b) {
-    return a.card == b.card && a.back == b.back && a.controller == b.controller && a.token == b.token;
+static bool same_counters(const std::vector<rmwork::TableCounter> &a, const std::vector<rmwork::TableCounter> &b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (a[i].kind != b[i].kind || a[i].count != b[i].count) return false;
+    return true;
 }
 
-// Battlefield objects (in `order`) into their rows' piles: each host with its attachments, the
-// identical lands stacked.
+// Two stackable permanents that look the same at a glance: the same card and face (a token's card
+// is its token script's), controller, tapped state, P/T, damage, loyalty, counters, designations,
+// colours, subtypes and summoning sickness.
+static bool interchangeable(const rmwork::TableObject &a, const rmwork::TableObject &b) {
+    return a.card == b.card && a.back == b.back && a.name == b.name && a.token == b.token &&
+           a.controller == b.controller && a.tapped == b.tapped && a.sick == b.sick && a.land == b.land &&
+           a.creature == b.creature && a.has_pt == b.has_pt && a.power == b.power && a.toughness == b.toughness &&
+           a.pt_differs == b.pt_differs && a.damage == b.damage && a.deathtouch_damage == b.deathtouch_damage &&
+           a.loyalty == b.loyalty && a.colors == b.colors && a.subtypes == b.subtypes && a.tags == b.tags &&
+           same_counters(a.counters, b.counters);
+}
+
+// Battlefield objects (in `order`) into their rows' piles: each host with its attachments; a pile
+// of one stackable permanent joins the group of the first interchangeable one in its row.
 static void place_piles(rmwork::TableModel *m, const std::vector<int> &order) {
     std::map<uint64_t, int> on_field;
     for (int i : order) on_field[m->objects[static_cast<size_t>(i)].handle] = i;
@@ -245,6 +261,7 @@ static void place_piles(rmwork::TableModel *m, const std::vector<int> &order) {
             sub->second.clear();
         }
     }
+    int groups = 0;
     for (int h : hosts) {
         const rmwork::TableObject &o = m->objects[static_cast<size_t>(h)];
         const bool top = o.controller == m->top;
@@ -252,32 +269,19 @@ static void place_piles(rmwork::TableModel *m, const std::vector<int> &order) {
                                               : (top ? rmwork::ROW_TOP_OTHER : rmwork::ROW_BOTTOM_OTHER);
         std::vector<rmwork::TablePile> &piles = m->rows[row];
         const std::vector<int> &att = attachments[h];
-        if (att.empty() && stackable(o)) {
-            bool joined = false;
-            for (rmwork::TablePile &p : piles) {
-                if (!p.land_stack) continue;
-                if (same_land(m->objects[static_cast<size_t>(p.objects[0])], o)) {
-                    p.objects.push_back(h);
-                    joined = true;
-                    break;
-                }
-            }
-            if (joined) continue;
-            rmwork::TablePile p;
-            p.objects.push_back(h);
-            p.land_stack = true;
-            piles.push_back(p);
-            continue;
-        }
         rmwork::TablePile p;
         p.objects.push_back(h);
         for (int a : att) p.objects.push_back(a);
+        if (att.empty() && stackable(o)) {
+            for (const rmwork::TablePile &q : piles)
+                if (q.group >= 0 && interchangeable(m->objects[static_cast<size_t>(q.objects[0])], o)) {
+                    p.group = q.group;
+                    break;
+                }
+            if (p.group < 0) p.group = groups++;
+        }
         piles.push_back(p);
     }
-    // A "stack" of one land is a plain pile.
-    for (auto &row : m->rows)
-        for (rmwork::TablePile &p : row)
-            if (p.land_stack && p.objects.size() == 1) p.land_stack = false;
 }
 
 static void read_players(const Frame &f, rmwork::TableModel *m) {

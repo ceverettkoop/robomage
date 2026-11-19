@@ -384,7 +384,8 @@ static void check_tools_coverage(Tally *t, const rmwork::ToolsCoverage &cov) {
 // The logs' frames met each thing the Table draws.
 static void check_table_coverage(Tally *t, const rmwork::TableCoverage &cov) {
     check(t, cov.frames > 0, "Table: no frame checked");
-    check(t, cov.land_stacks > 0, "Table: no stack of identical lands met");
+    check(t, cov.identical > 0, "Table: no identical permanents met");
+    check(t, cov.stacked > 0, "Table: no identical permanents stacked on the narrow panel");
     check(t, cov.attachments > 0, "Table: no attachment met");
     check(t, cov.stack_targets > 0, "Table: no stack target met");
     check(t, cov.blocks > 0, "Table: no block met");
@@ -392,11 +393,13 @@ static void check_table_coverage(Tally *t, const rmwork::TableCoverage &cov) {
     check(t, cov.tapped > 0, "Table: no tapped permanent met");
     check(t, cov.hover_checks > 0, "Table: no stack object's targets hovered");
     check(t, cov.magnifier_checks > 0, "Table: no card magnified");
+    check(t, cov.step_checks > 0, "Table: Replay's step bar not clicked");
     std::printf(
-        "Table: %d frames; %d land stacks, %d attachments, %d stack targets, %d blocks, %d counters, %d hidden; "
-        "%d hovers, %d magnifiers\n",
-        cov.frames, cov.land_stacks, cov.attachments, cov.stack_targets, cov.blocks, cov.counters, cov.hidden,
-        cov.hover_checks, cov.magnifier_checks);
+        "Table: %d frames; %d groups of identical permanents, %d stacked and %d rows wrapped in layouts, %d "
+        "attachments, %d stack targets, %d blocks, %d counters, %d hidden; %d hovers, %d magnifiers, %d step-bar "
+        "clicks\n",
+        cov.frames, cov.identical, cov.stacked, cov.wrapped, cov.attachments, cov.stack_targets, cov.blocks,
+        cov.counters, cov.hidden, cov.hover_checks, cov.magnifier_checks, cov.step_checks);
 }
 
 // The keys, autoplay and the viewer toggle move the cursor and update the status bar's fields.
@@ -859,7 +862,8 @@ int run_selftest_data(const std::string &engine) {
     setenv("XDG_DATA_HOME", (env.tmp + "/data").c_str(), 1);
     begin_headless();
     {
-        App app(default_settings(), config_paths(""), false);
+        // It persists (into the temporary configuration), so Play's step bar is checked writing settings.json.
+        App app(default_settings(), config_paths(""), true);
         app.set_engine_override(env.engine);
         run_frames(app, 2);
         const std::string bo1 = env.corpus + "/" + BO1_LOG;

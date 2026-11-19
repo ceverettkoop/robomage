@@ -44,6 +44,7 @@ struct CliOptions {
         bool open_picker = false;
         bool game_combo = false;
         int table_hover_stack = -1;
+        int table_hover_step = -1;
         std::string table_magnify;
         std::vector<std::string> focus_tools;
         int choices_hover = -1;
@@ -86,7 +87,7 @@ static void usage() {
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
         "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|end] [--game-over]]\n"
-        "         [--open-new-game] [--engine PATH] (with --screenshot too)\n"
+        "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
@@ -137,6 +138,8 @@ static void usage() {
         "                     opp-deck=DECK, seat=a|b, format=bo1|bo3, seed=N, auto-mana=on|off, read=on|off\n"
         "                     (decks relative to the engine's resources/decks, e.g. league/burn)\n"
         "  --play-decisions N answer your first N decisions with a seeded random row (the game's seed)\n"
+        "  --table-hover-step N  Play's Table: hover step N (0 = untap) of the step bar every frame (its stop's\n"
+        "                     tooltip)\n"
         "  --play-until COND  ... until a decision where COND holds: stack (the stack is not empty), combat (an\n"
         "                     attacker or blocker declaration), end (none: to the match's end)\n"
         "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
@@ -201,6 +204,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->game_combo = true;
         } else if (a == "--table-hover-stack" && has_value) {
             opt->table_hover_stack = std::atoi(argv[++i]);
+        } else if (a == "--table-hover-step" && has_value) {
+            opt->table_hover_step = std::atoi(argv[++i]);
         } else if (a == "--table-magnify" && has_value) {
             opt->table_magnify = argv[++i];
         } else if (a == "--tool" && has_value) {
@@ -482,6 +487,7 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (opt.open_picker) app.open_file_picker(rmwork::App::PICK_REPLAY);
     if (opt.game_combo) app.open_game_combo();
     app.table().force_stack_hover(opt.table_hover_stack);
+    app.table().force_step_hover(opt.table_hover_step);
     app.table().force_magnify(opt.table_magnify);
     for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
     app.tools().choices().force_hover(opt.choices_hover);

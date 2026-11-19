@@ -830,9 +830,11 @@ handshake JSON, the shared region, request / response layouts.
   Game Log tool), `file_picker` (the modal file browser; its save mode), `run_browser` (a run directory's logs),
   `panels` (the tools' contents), `selftest_data` (`--selftest-data`); the Table: `table_model` (one
   viewer's frame as rows of piles: lands, other permanents, attachments with their host, identical
-  lands stacked; the hand, the players, the stack and its targets, blocks, menu links), `table_layout`
-  (the fit and every card's, strip's and stack object's rectangle, ImGui-free), `table_view` (the
-  tool: drawing, state badges, combat lines, the middle strip, hover and selection, the magnifier),
+  permanents grouped; the hand, the players, the stack and its targets, blocks, menu links), `table_layout`
+  (the fit; on a board too wide for legible cards, groups stacked and rows wrapped; every card's, strip's,
+  step-bar cell's and stack object's rectangle, ImGui-free), `table_view` (the tool: drawing, state
+  badges, combat lines, the middle strip, the step bar's stop toggles in Play, hover and selection, the
+  magnifier),
   `card_book` (a viewer's CARDS faces), `card_renderer` (`CardRenderer`, the text-face renderer, the
   rotate-and-fade pass), card images: `card_images` (the Scryfall cache's manifest, the printing
   overrides `printings.json`, which image a face shows, the cache's status), `image_textures` (the

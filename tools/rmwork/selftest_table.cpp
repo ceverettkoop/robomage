@@ -1,19 +1,25 @@
 #include "selftest_table.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
 #include <map>
 #include <set>
 
 #include "imgui_internal.h"
+#include "magnifier.h"
+#include "settings.h"
 #include "table_backdrop.h"
 #include "table_layout.h"
 #include "table_model.h"
 
 namespace {
 
-// The panel sizes the fit is checked at, and the text sizes of a 14 px UI font.
-const float SIZES[][2] = {{640, 480}, {900, 700}, {1600, 1000}};
+// The panel sizes the fit is checked at (the last a narrow, tall one: a Table docked beside other
+// tools), and the text sizes of a 14 px UI font (Replay's step bar; Play's with its stop dots).
+const float SIZES[][2] = {{640, 480}, {900, 700}, {1600, 1000}, {480, 1000}};
 const rmwork::TableMetrics METRICS = {17, 420, 430, 19};
+const rmwork::TableMetrics PLAY_METRICS = {17, 420, 430, 28};
 
 // Where a handle was placed in a layout.
 struct Place {
@@ -27,18 +33,29 @@ struct Place {
 static int seat_of(uint64_t seat);
 static std::string where(const std::string &at, size_t decision, int view);
 static void check_layout(const rmwork::CheckFn &check, const rmwork::TableModel &model,
-    const std::set<uint64_t> &battlefield, const std::set<uint64_t> &hand, const std::string &at);
+    const std::set<uint64_t> &battlefield, const std::set<uint64_t> &hand, const std::string &at,
+    rmwork::TableCoverage *cov);
+static void check_crowding_rules(const rmwork::CheckFn &check, const rmwork::TableModel &model,
+    const rmwork::TableLayout &L, const std::string &here, rmwork::TableCoverage *cov);
 static void check_objects(const rmwork::CheckFn &check, const agents::SeatStream &st, const rmstate::DecodedFrame &f,
     const rmwork::TableModel &model, int view, const std::string &at, rmwork::TableCoverage *cov);
 static void check_stack(const rmwork::CheckFn &check, const agents::SeatStream &st, const rmstate::DecodedFrame &f,
     const rmwork::TableModel &model, const std::string &at, rmwork::TableCoverage *cov);
 static rmwork::TableObject synthetic(uint64_t handle, int controller, int card, bool land);
 static rmwork::TableModel synthetic_board(int extra_per_row, int hand);
+static rmwork::TableModel crowded_board(int lands, int tokens, int distinct);
 static void check_synthetic_layout(const rmwork::CheckFn &check, const rmwork::TableModel &m, const std::string &at);
+static int stacked_count(const rmwork::TableLayout &L, int row);
+static void check_crowding(const rmwork::CheckFn &check);
+static void check_step_cells(const rmwork::CheckFn &check);
+static void check_stop_flags(const rmwork::CheckFn &check);
+static void check_magnifier_rects(const rmwork::CheckFn &check);
+static bool rect_in(ImVec2 a, ImVec2 b, ImVec2 lo, ImVec2 hi);
 static void check_links(const rmwork::CheckFn &check);
 static void check_tiles(const rmwork::CheckFn &check);
-static ImVec2 table_origin();
+static ImVec2 table_origin(rmwork::Mode m);
 static void move_mouse(ImVec2 p, const std::function<void(int)> &frames);
+static void click(ImVec2 p, const std::function<void(int)> &frames);
 
 static int seat_of(uint64_t seat) {
     return seat == 1 ? 0 : seat == 2 ? 1 : -1;
@@ -49,9 +66,10 @@ static std::string where(const std::string &at, size_t decision, int view) {
 }
 
 // At each panel size: inside the panel, every battlefield and hand object placed once, each
-// attachment in its host's pile, each land stack's count its pile's size.
+// attachment in its host's pile, each stack's count its pile's size, and the crowding rules.
 static void check_layout(const rmwork::CheckFn &check, const rmwork::TableModel &model,
-    const std::set<uint64_t> &battlefield, const std::set<uint64_t> &hand, const std::string &at) {
+    const std::set<uint64_t> &battlefield, const std::set<uint64_t> &hand, const std::string &at,
+    rmwork::TableCoverage *cov) {
     using namespace rmwork;
     for (const auto &size : SIZES) {
         const TableLayout L = layout_table(model, size[0], size[1], METRICS);
@@ -92,7 +110,62 @@ static void check_layout(const rmwork::CheckFn &check, const rmwork::TableModel 
             if (c.stack_count > 1 && pile_sizes[{c.row, c.pile}] != c.stack_count) stacks = false;
         }
         check(hosts, here + "an attachment is not in its host's pile");
-        check(stacks, here + "a land stack's count is not its pile's size");
+        check(stacks, here + "a stack's count is not its pile's size");
+        check_crowding_rules(check, model, L, here, cov);
+    }
+}
+
+// A stack holds two or more identified, face-up members of one model group, each a pile of its own
+// in the model; stacks and wrapped rows only where the full-detail cards are narrower than
+// LEGIBLE_CARD_W, never narrowing them; a row wrapped only with no group left to stack; each card
+// inside its row.
+static void check_crowding_rules(const rmwork::CheckFn &check, const rmwork::TableModel &model,
+    const rmwork::TableLayout &L, const std::string &here, rmwork::TableCoverage *cov) {
+    using namespace rmwork;
+    std::map<int, int> group_of;  // object -> its model pile's group (-1 none; absent: not alone in its pile)
+    for (const auto &row : model.rows)
+        for (const TablePile &p : row)
+            if (p.objects.size() == 1) group_of[p.objects[0]] = p.group;
+    int stacks = 0, wraps = 0;
+    bool members = true, wrap_ok = true;
+    for (int r = 0; r < ROW_COUNT; ++r) {
+        std::map<int, int> left;  // unstacked piles per group
+        for (const TablePile &p : L.piles[static_cast<size_t>(r)]) {
+            if (!p.stacked) {
+                if (p.group >= 0) ++left[p.group];
+                continue;
+            }
+            ++stacks;
+            const auto g0 = group_of.find(p.objects[0]);
+            if (p.objects.size() < 2 || g0 == group_of.end() || g0->second < 0) members = false;
+            for (int o : p.objects) {
+                const auto g = group_of.find(o);
+                const TableObject &obj = model.objects[static_cast<size_t>(o)];
+                if (g == group_of.end() || g0 == group_of.end() || g->second != g0->second || obj.card < 0 ||
+                    obj.face_down || obj.name.empty())
+                    members = false;
+            }
+        }
+        if (L.lines[static_cast<size_t>(r)] > 1) {
+            ++wraps;
+            for (const auto &g : left)
+                if (g.second > 1) wrap_ok = false;
+        }
+    }
+    check(members, here + "a stack's members are not interchangeable, identified piles of their own");
+    check(wrap_ok, here + "a row is wrapped though it has identical piles left to stack");
+    if (stacks || wraps)
+        check(L.detail_w < LEGIBLE_CARD_W,
+            here + "permanents are stacked or a row wrapped though every card is legible on its own (" +
+                std::to_string(L.detail_w) + " px)");
+    check(L.card_w + 1e-3f >= L.detail_w, here + "stacking or wrapping made the cards smaller");
+    bool in_row = true;
+    for (const PlacedCard &c : L.cards)
+        if (!c.in_hand && !c.rect.inside(L.rows[c.row], 1.0f)) in_row = false;
+    check(in_row, here + "a card stands outside its row");
+    if (cov) {
+        cov->stacked += stacks;
+        cov->wrapped += wraps;
     }
 }
 
@@ -173,12 +246,14 @@ static void check_objects(const rmwork::CheckFn &check, const agents::SeatStream
         const agents::Table menu(f, st.schema(), "menu");
         check(model.menu.size() == menu.rows(), at + "the menu links are not one per menu row");
     }
-    for (const auto &row : model.rows)
+    for (const auto &row : model.rows) {
+        std::map<int, int> groups;
         for (const TablePile &p : row) {
-            if (p.land_stack) ++cov->land_stacks;
-            if (!p.land_stack) cov->attachments += static_cast<int>(p.objects.size()) - 1;
+            cov->attachments += static_cast<int>(p.objects.size()) - 1;
+            if (p.group >= 0 && ++groups[p.group] == 2) ++cov->identical;
         }
-    check_layout(check, model, battlefield, hand, at);
+    }
+    check_layout(check, model, battlefield, hand, at, cov);
 }
 
 // The stack top first, each object's targets in announcement order, resolved to the table's
@@ -241,7 +316,7 @@ static rmwork::TableObject synthetic(uint64_t handle, int controller, int card, 
     return o;
 }
 
-// A board: per row a land stack of three, a tapped land, a creature wearing two attachments,
+// A board: per row three identical lands, a tapped land, a creature wearing two attachments,
 // an attacking creature and `extra_per_row` more; `hand` cards in the bottom hand.
 static rmwork::TableModel synthetic_board(int extra_per_row, int hand) {
     using namespace rmwork;
@@ -251,16 +326,16 @@ static rmwork::TableModel synthetic_board(int extra_per_row, int hand) {
         const bool top = seat == m.top;
         std::vector<TablePile> &lands = m.rows[top ? ROW_TOP_LANDS : ROW_BOTTOM_LANDS];
         std::vector<TablePile> &other = m.rows[top ? ROW_TOP_OTHER : ROW_BOTTOM_OTHER];
-        TablePile stack;
-        stack.land_stack = true;
         for (int k = 0; k < 3; ++k) {
             m.objects.push_back(synthetic(h++, seat, 1, true));
-            stack.objects.push_back(static_cast<int>(m.objects.size()) - 1);
+            TablePile p;
+            p.objects.push_back(static_cast<int>(m.objects.size()) - 1);
+            p.group = seat;
+            lands.push_back(p);
         }
-        lands.push_back(stack);
         m.objects.push_back(synthetic(h++, seat, 2, true));
         m.objects.back().tapped = true;
-        lands.push_back({{static_cast<int>(m.objects.size()) - 1}, false});
+        lands.push_back({{static_cast<int>(m.objects.size()) - 1}, false, -1});
         TablePile worn;
         m.objects.push_back(synthetic(h++, seat, 3, false));
         const uint64_t host = m.objects.back().handle;
@@ -274,10 +349,10 @@ static rmwork::TableModel synthetic_board(int extra_per_row, int hand) {
         other.push_back(worn);
         m.objects.push_back(synthetic(h++, seat, 5, false));
         m.objects.back().attacking = m.objects.back().tapped = true;
-        other.push_back({{static_cast<int>(m.objects.size()) - 1}, false});
+        other.push_back({{static_cast<int>(m.objects.size()) - 1}, false, -1});
         for (int k = 0; k < extra_per_row; ++k) {
             m.objects.push_back(synthetic(h++, seat, 6 + k, k % 2 == 0));
-            (k % 2 == 0 ? lands : other).push_back({{static_cast<int>(m.objects.size()) - 1}, false});
+            (k % 2 == 0 ? lands : other).push_back({{static_cast<int>(m.objects.size()) - 1}, false, -1});
         }
     }
     for (int k = 0; k < hand; ++k) {
@@ -303,7 +378,7 @@ static void check_synthetic_layout(const rmwork::CheckFn &check, const rmwork::T
     using namespace rmwork;
     std::set<uint64_t> battlefield, hand;
     for (const TableObject &o : m.objects) (o.in_hand ? hand : battlefield).insert(o.handle);
-    check_layout(check, m, battlefield, hand, at);
+    check_layout(check, m, battlefield, hand, at, nullptr);
     const TableLayout small = layout_table(m, 640, 480, METRICS), big = layout_table(m, 1600, 1000, METRICS);
     check(big.card_w > small.card_w, at + "a larger panel does not give larger cards");
     check(small.stack_items.size() <= m.stack.size() && small.stack_items.empty() == m.stack.empty(),
@@ -317,8 +392,196 @@ static void check_synthetic_layout(const rmwork::CheckFn &check, const rmwork::T
         check(top ? c.rect.y0 > row.y0 + 1 : c.rect.y1 < row.y1 - 1, at + "an attacker does not stand forward");
         check(c.rotated && c.rect.w() > c.rect.h(), at + "a tapped attacker is not on its side");
     }
-    for (const PlacedCard &c : big.cards)
-        if (c.stack_count) check(c.stack_count == 3 && c.front, at + "the land stack's count is not 3");
+    for (const PlacedCard &c : big.cards) check(c.stack_count == 0, at + "a wide panel stacks identical permanents");
+}
+
+// Per seat `lands` identical untapped lands, `tokens` identical tokens and `distinct` creatures of
+// different cards, the tokens and creatures in one row, in turns; a turn in progress.
+static rmwork::TableModel crowded_board(int lands, int tokens, int distinct) {
+    using namespace rmwork;
+    TableModel m;
+    uint64_t h = 1;
+    for (int seat = 0; seat < 2; ++seat) {
+        const bool top = seat == m.top;
+        std::vector<TablePile> &land_row = m.rows[top ? ROW_TOP_LANDS : ROW_BOTTOM_LANDS];
+        std::vector<TablePile> &other = m.rows[top ? ROW_TOP_OTHER : ROW_BOTTOM_OTHER];
+        for (int k = 0; k < lands; ++k) {
+            m.objects.push_back(synthetic(h++, seat, 1, true));
+            land_row.push_back({{static_cast<int>(m.objects.size()) - 1}, false, 10 * seat});
+        }
+        for (int k = 0; k < std::max(tokens, distinct); ++k) {
+            if (k < tokens) {
+                m.objects.push_back(synthetic(h++, seat, 900, false));
+                m.objects.back().token = true;
+                other.push_back({{static_cast<int>(m.objects.size()) - 1}, false, 10 * seat + 1});
+            }
+            if (k < distinct) {
+                m.objects.push_back(synthetic(h++, seat, 100 + k, false));
+                other.push_back({{static_cast<int>(m.objects.size()) - 1}, false, -1});
+            }
+        }
+    }
+    m.turn = 7;
+    m.step = 3;
+    m.active = 0;
+    m.decider = 0;
+    m.index();
+    return m;
+}
+
+// How many piles of row `row` are stacks.
+static int stacked_count(const rmwork::TableLayout &L, int row) {
+    int n = 0;
+    for (const rmwork::TablePile &p : L.piles[static_cast<size_t>(row)]) n += p.stacked ? 1 : 0;
+    return n;
+}
+
+// Identical lands and tokens stack only on a narrow panel, each row's group into one stack; a row
+// of different creatures wraps; a row with both stacks its tokens first, then wraps; the
+// general rules (check_layout) on each.
+static void check_crowding(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    const TableModel crowd = crowded_board(12, 10, 0);
+    std::set<uint64_t> battlefield;
+    for (const TableObject &o : crowd.objects) battlefield.insert(o.handle);
+    check_layout(check, crowd, battlefield, {}, "crowding, lands and tokens: ", nullptr);
+    const TableLayout wide = layout_table(crowd, 1600, 1000, METRICS);
+    bool none = true;
+    for (int r = 0; r < ROW_COUNT; ++r) none = none && stacked_count(wide, r) == 0 && wide.lines[r] == 1;
+    check(none && wide.card_w >= LEGIBLE_CARD_W && wide.card_w == wide.detail_w,
+        "crowding: a wide panel stacks or wraps 12 lands and 10 tokens");
+    const TableLayout narrow = layout_table(crowd, 640, 1000, METRICS);
+    bool stacked = narrow.detail_w < LEGIBLE_CARD_W && narrow.card_w >= LEGIBLE_CARD_W && narrow.fits;
+    for (int r = 0; r < ROW_COUNT; ++r) {
+        const bool lands = r == ROW_TOP_LANDS || r == ROW_BOTTOM_LANDS;
+        stacked = stacked && stacked_count(narrow, r) == 1 && narrow.piles[r].size() == 1 && narrow.lines[r] == 1 &&
+                  narrow.piles[r][0].objects.size() == static_cast<size_t>(lands ? 12 : 10);
+    }
+    check(stacked, "crowding: a narrow panel does not stack 12 lands and 10 tokens into one pile a row (card width " +
+                       std::to_string(narrow.card_w) + ", at full detail " + std::to_string(narrow.detail_w) + ")");
+    int counted = 0;
+    for (const PlacedCard &c : narrow.cards) counted += c.stack_count;
+    check(counted == 44, "crowding: the stacks' counts are not their sizes");
+
+    const TableModel creatures = crowded_board(0, 0, 14);
+    battlefield.clear();
+    for (const TableObject &o : creatures.objects) battlefield.insert(o.handle);
+    check_layout(check, creatures, battlefield, {}, "crowding, creatures: ", nullptr);
+    const TableLayout wrapped = layout_table(creatures, 900, 1000, METRICS);
+    check(wrapped.lines[ROW_TOP_OTHER] == 2 && wrapped.lines[ROW_BOTTOM_OTHER] == 2 &&
+              stacked_count(wrapped, ROW_TOP_OTHER) == 0 && wrapped.card_w >= LEGIBLE_CARD_W &&
+              wrapped.detail_w < LEGIBLE_CARD_W && wrapped.fits,
+        "crowding: 14 different creatures on a narrow panel do not wrap onto two lines (card width " +
+            std::to_string(wrapped.card_w) + ")");
+    bool lines_ok = true;
+    for (const PlacedCard &c : wrapped.cards)
+        if (c.row == ROW_TOP_OTHER) lines_ok = lines_ok && (c.line == (c.pile < 7 ? 0 : 1));
+    check(lines_ok, "crowding: a wrapped row's piles are not in order, seven a line");
+    check(layout_table(creatures, 1600, 1000, METRICS).lines[ROW_TOP_OTHER] == 1,
+        "crowding: a wide panel wraps 14 creatures");
+
+    const TableModel both = crowded_board(0, 10, 12);
+    battlefield.clear();
+    for (const TableObject &o : both.objects) battlefield.insert(o.handle);
+    check_layout(check, both, battlefield, {}, "crowding, tokens and creatures: ", nullptr);
+    const TableLayout mixed = layout_table(both, 900, 1000, METRICS);
+    check(stacked_count(mixed, ROW_BOTTOM_OTHER) == 1 && mixed.lines[ROW_BOTTOM_OTHER] == 2 &&
+              mixed.piles[ROW_BOTTOM_OTHER].size() == 13 && mixed.card_w >= LEGIBLE_CARD_W,
+        "crowding: 10 tokens and 12 creatures do not stack the tokens, then wrap (" +
+            std::to_string(mixed.piles[ROW_BOTTOM_OTHER].size()) + " piles, " +
+            std::to_string(mixed.lines[ROW_BOTTOM_OTHER]) + " lines)");
+    // A short panel: the height holds the cards down, so nothing wraps.
+    const TableLayout short_panel = layout_table(both, 900, 480, METRICS);
+    check(short_panel.lines[ROW_BOTTOM_OTHER] == 1, "crowding: a row wraps on a panel too short for it");
+}
+
+// The step bar: twelve cells left to right, apart, inside the middle strip's header (narrowed on a
+// panel narrower than the bar), right-aligned on a wide panel and on their own line at its left on a
+// narrow one; taller in Play (the stop dots); none before the first turn.
+static void check_step_cells(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    const TableModel m = synthetic_board(2, 3);
+    for (const TableMetrics &mx : {METRICS, PLAY_METRICS})
+        for (float w : {1600.0f, 600.0f, 340.0f}) {
+            const TableLayout L = layout_table(m, w, 1000, mx);
+            const std::string at = std::string("step bar, ") + (mx.steps_h > METRICS.steps_h ? "Play" : "Replay") +
+                                   ", " + std::to_string(static_cast<int>(w)) + " px: ";
+            check(L.step_cells.size() == STOP_STEP_COUNT, at + "not twelve cells");
+            bool ordered = true, inside = true, tall = true;
+            for (size_t i = 0; i < L.step_cells.size(); ++i) {
+                const TRect &c = L.step_cells[i];
+                inside = inside && c.inside(L.mid_header);
+                tall = tall && std::fabs(c.h() - mx.steps_h) < 0.01f;
+                if (i > 0) ordered = ordered && c.x0 > L.step_cells[i - 1].x1;
+            }
+            check(ordered && inside && tall, at + "the cells overlap, leave the header or are not the bar's height");
+            if (!L.step_cells.empty())
+                check(L.steps_wrapped ? std::fabs(L.step_cells[0].x0 - L.mid_header.x0) < 0.5f
+                                      : std::fabs(L.step_cells.back().x1 - L.mid_header.x1) < 1.5f,
+                    at + "the bar is not where its line puts it");
+        }
+    TableModel pregame = m;
+    pregame.pregame = true;
+    check(layout_table(pregame, 1600, 1000, PLAY_METRICS).step_cells.empty(), "step bar: cells before the first turn");
+}
+
+// A step's stop toggles in the turn it names only, and the settings file keeps it.
+static void check_stop_flags(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    Settings s = default_settings();
+    const StopSettings before = s.stops;
+    bool *flag = stop_flag(&s.stops, false, 2);
+    *flag = !*flag;
+    check(s.stops.opponent[2] != before.opponent[2] && s.stops.own == before.own,
+        "stops: toggling the opponent's draw step changes another stop");
+    *stop_flag(&s.stops, true, 8) = !before.own[8];
+    Settings back;
+    std::string err;
+    check(settings_from_json(settings_to_json(s), &back, &err) && back.stops.own == s.stops.own &&
+              back.stops.opponent == s.stops.opponent,
+        "stops: toggled stops do not round-trip through the settings file " + err);
+}
+
+static bool rect_in(ImVec2 a, ImVec2 b, ImVec2 lo, ImVec2 hi) {
+    return a.x >= lo.x - 0.5f && a.y >= lo.y - 0.5f && b.x <= hi.x + 0.5f && b.y <= hi.y + 0.5f;
+}
+
+// The magnifier: a double-faced card's two faces side by side, the face up first, as large, with the
+// box under both, on the screen, beside the card when there is room; shrunk on a small screen.
+static void check_magnifier_rects(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    struct Case {
+            ImVec2 vp, card_min, card_max;
+            int faces;
+            const char *what;
+    };
+    const Case cases[] = {{ImVec2(1600, 1000), ImVec2(300, 400), ImVec2(380, 510), 2, "two faces, card at the left"},
+        {ImVec2(1600, 1000), ImVec2(1450, 800), ImVec2(1530, 910), 2, "two faces, card at the bottom right"},
+        {ImVec2(1600, 1000), ImVec2(300, 400), ImVec2(380, 510), 1, "one face"},
+        {ImVec2(520, 420), ImVec2(200, 150), ImVec2(260, 230), 2, "two faces, small screen"}};
+    for (const Case &c : cases) {
+        const std::string at = std::string("magnifier, ") + c.what + ": ";
+        const MagnifierRects r = magnifier_rects(c.card_min, c.card_max, ImVec2(0, 0), c.vp, c.faces, 21, 80);
+        check(r.faces == c.faces, at + "the number of faces");
+        bool on_screen = rect_in(r.box_min, r.box_max, ImVec2(0, 0), c.vp);
+        for (int i = 0; i < r.faces; ++i)
+            on_screen = on_screen && rect_in(r.face_min[i], r.face_max[i], ImVec2(0, 0), c.vp);
+        check(on_screen, at + "a face or the box is off the screen");
+        const float w0 = r.face_max[0].x - r.face_min[0].x, h0 = r.face_max[0].y - r.face_min[0].y;
+        check(std::fabs(h0 / w0 - CARD_ASPECT) < 0.01f, at + "a face is not card-shaped");
+        if (r.faces == 2) {
+            const float w1 = r.face_max[1].x - r.face_min[1].x;
+            check(std::fabs(w0 - w1) < 0.01f && r.face_min[1].x > r.face_max[0].x &&
+                      std::fabs(r.face_min[1].y - r.face_min[0].y) < 0.01f,
+                at + "the other face is not as large, to the right of the face up");
+            check(r.caption_min[0].y < r.face_min[0].y, at + "no caption above the faces");
+            check(std::fabs(r.box_min.x - r.face_min[0].x) < 0.01f && std::fabs(r.box_max.x - r.face_max[1].x) < 0.01f,
+                at + "the box is not under both faces");
+        }
+        check(r.box_min.y >= r.face_max[0].y, at + "the box is not under the faces");
+        const bool beside = r.box_max.x <= c.card_min.x || r.box_min.x >= c.card_max.x;
+        if (c.vp.x >= 1600) check(beside && w0 >= 200, at + "not beside the card, at least 200 px wide");
+    }
 }
 
 static void check_links(const rmwork::CheckFn &check) {
@@ -374,16 +637,25 @@ static void check_tiles(const rmwork::CheckFn &check) {
     }
 }
 
-// The Table window's inner top-left corner.
-static ImVec2 table_origin() {
-    const ImGuiWindow *w =
-        ImGui::FindWindowByName(rmwork::tool_window_name(rmwork::Mode::REPLAY, rmwork::Tool::TABLE).c_str());
+// The Table window's inner top-left corner in mode `m`.
+static ImVec2 table_origin(rmwork::Mode m) {
+    const ImGuiWindow *w = ImGui::FindWindowByName(rmwork::tool_window_name(m, rmwork::Tool::TABLE).c_str());
     return w ? w->InnerRect.Min : ImVec2(0, 0);
 }
 
 static void move_mouse(ImVec2 p, const std::function<void(int)> &frames) {
     ImGui::GetIO().AddMousePosEvent(p.x, p.y);
     frames(2);
+}
+
+// A left click at `p`.
+static void click(ImVec2 p, const std::function<void(int)> &frames) {
+    move_mouse(p, frames);
+    ImGuiIO &io = ImGui::GetIO();
+    io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
+    frames(1);
+    io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+    frames(1);
 }
 
 namespace rmwork {
@@ -447,7 +719,7 @@ void check_table_drawing(
         frames(2);
         const TableModel &model = *app.table().model();
         const TableLayout &L = app.table().layout();
-        const ImVec2 o = table_origin();
+        const ImVec2 o = table_origin(Mode::REPLAY);
         size_t k = 0;
         uint64_t target = 0;
         for (size_t j = 0; j < model.stack.size() && !target; ++j)
@@ -468,7 +740,7 @@ void check_table_drawing(
         frames(2);
         const TableModel &model = *app.table().model();
         const TableLayout &L = app.table().layout();
-        const ImVec2 o = table_origin();
+        const ImVec2 o = table_origin(Mode::REPLAY);
         for (const PlacedCard &c : L.cards) {
             const uint64_t h = model.objects[static_cast<size_t>(c.object)].handle;
             int row = -1;
@@ -498,6 +770,55 @@ void check_table_drawing(
             break;
         }
     }
+    // Replay's step bar shows no stops; a click on it toggles none.
+    if (app.table().model() && !app.table().layout().step_cells.empty()) {
+        const StopSettings before = app.settings().stops;
+        const TRect &r = app.table().layout().step_cells[5];
+        const ImVec2 o = table_origin(Mode::REPLAY);
+        click(ImVec2(o.x + (r.x0 + r.x1) / 2, o.y + (r.y0 + r.y1) / 2), frames);
+        check(app.settings().stops.own == before.own && app.settings().stops.opponent == before.opponent,
+            at + ": a click on Replay's step bar toggles a stop");
+        ++cov->step_checks;
+    }
+    move_mouse(ImVec2(-1000, -1000), frames);
+}
+
+void check_step_bar_clicks(
+    const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &settings_path) {
+    frames(2);
+    const TableModel *model = app.table().model();
+    const TableLayout &L = app.table().layout();
+    check(app.mode() == Mode::PLAY && model && L.step_cells.size() == STOP_STEP_COUNT,
+        "Step bar: Play's Table shows no step bar at the human's decision");
+    if (!model || L.step_cells.size() != STOP_STEP_COUNT) return;
+    const bool own = model->active == model->bottom;
+    const int step = 8;  // end of combat: not a default stop
+    const StopSettings before = app.settings().stops;
+    const ImVec2 o = table_origin(Mode::PLAY);
+    const TRect r = L.step_cells[step];
+    const ImVec2 dot(o.x + (r.x0 + r.x1) / 2, o.y + r.y1 - 3);
+    click(dot, frames);
+    StopSettings want = before;
+    bool *flag = stop_flag(&want, own, step);
+    *flag = !*flag;
+    check(app.settings().stops.own == want.own && app.settings().stops.opponent == want.opponent,
+        std::string("Step bar: a click on End of combat's dot does not toggle its stop in ") +
+            (own ? "your turn" : "the opponent's turn") + " alone");
+    frames(2);
+    Settings saved;
+    std::string err;
+    check(load_settings(settings_path, &saved, &err) && saved.stops.own == want.own &&
+              saved.stops.opponent == want.opponent,
+        "Step bar: the toggled stop is not in settings.json " + err);
+    click(ImVec2(o.x + (r.x0 + r.x1) / 2, o.y + r.y0 + 3), frames);
+    check(app.settings().stops.own == before.own && app.settings().stops.opponent == before.opponent,
+        "Step bar: a second click on the step does not turn the stop back");
+    frames(2);
+    check(load_settings(settings_path, &saved, &err) && saved.stops.own == before.own &&
+              saved.stops.opponent == before.opponent,
+        "Step bar: the stop turned back is not in settings.json " + err);
+    std::printf("rmwork: Step bar: End of combat's stop in %s toggled by a click, saved, and back\n",
+        own ? "your turn" : "the opponent's turn");
     move_mouse(ImVec2(-1000, -1000), frames);
 }
 
@@ -508,6 +829,10 @@ void check_table_units(const CheckFn &check) {
     TableModel empty;
     empty.index();
     check_synthetic_layout(check, empty, "an empty table: ");
+    check_crowding(check);
+    check_step_cells(check);
+    check_stop_flags(check);
+    check_magnifier_rects(check);
     check_links(check);
     check_tiles(check);
 }

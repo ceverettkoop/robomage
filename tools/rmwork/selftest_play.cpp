@@ -51,6 +51,7 @@ static void check_passing_units(const CheckFn &check);
 static void check_bo1(const CheckFn &check, rmwork::App &app, const Frames &frames, const rmwork::PlayTestEnv &env);
 static void check_bo3(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_live_passing(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_step_bar(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_concede(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_scripted(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_failures(
@@ -558,6 +559,33 @@ static void check_live_passing(const CheckFn &check, rmwork::App &app, const Fra
     s.stop();
 }
 
+// Play's step bar on a live game: at the first of the human's decisions in a turn's step, clicks on
+// a step toggle its stop and settings.json keeps it (selftest_table.h).
+static void check_step_bar(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    PlaySession &s = app.play();
+    check(app.start_game(game("explore", "league/burn", "league/bug", 0, false, 21)),
+        "Step bar: the game does not start");
+    uint64_t rng = 7;
+    bool reached = false;
+    while (run_until(frames, [&s] { return s.deciding() || !s.running(); }, GAME_TIMEOUT_S) && s.running()) {
+        frames(2);
+        if (app.table().model() && !app.table().layout().step_cells.empty()) {
+            reached = true;
+            break;
+        }
+        std::string err;
+        const auto f = s.match()->frame(static_cast<size_t>(s.pending_index()), s.config().seat, &err);
+        const int rows =
+            f ? read_pass_facts(agents::DecisionView(s.match()->stream(s.config().seat), *f, s.config().seat)).rows : 1;
+        rng = rng * 6364136223846793005ull + 1442695040888963407ull;
+        app.play_reply(static_cast<int>((rng >> 33) % static_cast<uint64_t>(std::max(1, rows))));
+    }
+    check(reached, "Step bar: the game ended before a decision in a turn's step");
+    if (reached) check_step_bar_clicks(check, app, frames, config_paths("").settings);
+    s.stop();
+}
+
 // The concession dialog; a game conceded at a decision, the match conceded while the opponent
 // thinks (queued).
 static void check_concede(const CheckFn &check, rmwork::App &app, const Frames &frames) {
@@ -644,6 +672,7 @@ void check_play(const CheckFn &check, App &app, const std::function<void(int)> &
     check_bo1(check, app, frames, env);
     check_bo3(check, app, frames);
     check_live_passing(check, app, frames);
+    check_step_bar(check, app, frames);
     check_concede(check, app, frames);
     check_scripted(check, app, frames);
     check_failures(check, app, frames, env);
