@@ -50,6 +50,7 @@ static void check_crowding(const rmwork::CheckFn &check);
 static void check_step_cells(const rmwork::CheckFn &check);
 static void check_stop_flags(const rmwork::CheckFn &check);
 static void check_prompt_line(const rmwork::CheckFn &check);
+static void check_combat_plan(const rmwork::CheckFn &check);
 static void check_magnifier_rects(const rmwork::CheckFn &check);
 static bool rect_in(ImVec2 a, ImVec2 b, ImVec2 lo, ImVec2 hi);
 static void check_links(const rmwork::CheckFn &check);
@@ -526,6 +527,64 @@ static void check_step_cells(const rmwork::CheckFn &check) {
     check(layout_table(pregame, 1600, 1000, PLAY_METRICS).step_cells.empty(), "step bar: cells before the first turn");
 }
 
+// A combat plan's bookkeeping (table_combat.h), and a planned attacker standing forward like an attacker.
+static void check_combat_plan(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    CombatPlan plan;
+    PlanKey attack;
+    attack.game = 0;
+    attack.turn = 3;
+    plan.follow(attack);
+    const unsigned g0 = plan.generation();
+    plan.plan_attack(PlannedAttack{7, 0, 1});
+    plan.arm(7);
+    plan.plan_attack(PlannedAttack{7, 20, -1});
+    plan.plan_attack(PlannedAttack{8, 0, 1});
+    check(plan.attacks().size() == 2 && plan.attack_of(7)->target == 20 && plan.armed() == 7 && plan.generation() != g0,
+        "combat plan: a second plan of a creature does not replace its first");
+    plan.drop(7);
+    check(!plan.attack_of(7) && plan.armed() == 0 && plan.attacks().size() == 1,
+        "combat plan: a dropped attacker stays planned or armed");
+    plan.follow(attack);
+    check(plan.attacks().size() == 1, "combat plan: following its own declaration drops it");
+    PlanKey block = attack;
+    block.blockers = true;
+    plan.follow(block);
+    check(plan.empty() && plan.key() == block, "combat plan: another declaration keeps the old plan");
+    plan.plan_block(PlannedBlock{5, 9});
+    plan.start_sending();
+    PlanStep step;
+    step.row = 0;
+    step.creature = 5;
+    plan.record(step, 12);
+    check(plan.sending() && plan.answered() == 12 && plan.sent(5) && !plan.sent(9),
+        "combat plan: a sent reply is not recorded");
+    plan.clear();
+    check(plan.empty() && !plan.sending() && plan.answered() == -1 && !plan.sent(5) && plan.key() == block,
+        "combat plan: clear leaves something planned or sending");
+
+    TableModel m = synthetic_board(2, 3);
+    int creature = -1;
+    for (size_t i = 0; i < m.objects.size() && creature < 0; ++i)
+        if (m.objects[i].creature && !m.objects[i].in_hand && m.objects[i].controller == m.bottom)
+            creature = static_cast<int>(i);
+    check(creature >= 0, "combat plan: the synthetic board has no creature of the bottom seat");
+    if (creature < 0) return;
+    const auto top_of = [creature](const TableLayout &L) {
+        for (const PlacedCard &c : L.cards)
+            if (c.object == creature) return c.rect.y0;
+        return -1.0f;
+    };
+    const float home = top_of(layout_table(m, 1600, 1000, PLAY_METRICS));
+    m.objects[static_cast<size_t>(creature)].planned_attack = true;
+    const float planned = top_of(layout_table(m, 1600, 1000, PLAY_METRICS));
+    m.objects[static_cast<size_t>(creature)].planned_attack = false;
+    m.objects[static_cast<size_t>(creature)].attacking = true;
+    const float attacking = top_of(layout_table(m, 1600, 1000, PLAY_METRICS));
+    check(home >= 0 && planned < home && std::fabs(planned - attacking) < 0.5f,
+        "combat plan: a planned attacker does not stand forward as an attacker does");
+}
+
 // The decision's prompt line at the middle strip's foot, below the stack: its buttons in order, right-
 // aligned on it while they leave the prompt half the line, else on lines of their own below it; all inside.
 static void check_prompt_line(const rmwork::CheckFn &check) {
@@ -715,6 +774,20 @@ void mouse_click(ImVec2 p, const std::function<void(int)> &frames) {
     click(p, frames);
 }
 
+void mouse_drag(ImVec2 from, ImVec2 to, const std::function<void(int)> &frames) {
+    move_mouse(from, frames);
+    ImGuiIO &io = ImGui::GetIO();
+    io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
+    frames(1);
+    for (int k = 1; k <= 4; ++k) {
+        const float t = static_cast<float>(k) / 4;
+        io.AddMousePosEvent(from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t);
+        frames(1);
+    }
+    io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+    frames(2);
+}
+
 void check_table_frames(
     const CheckFn &check, TableView &view, const Match &m, const std::string &at, TableCoverage *cov) {
     const size_t frames = m.decisions.size() + (m.has_terminal() ? 1 : 0);
@@ -888,6 +961,7 @@ void check_table_units(const CheckFn &check) {
     check_step_cells(check);
     check_stop_flags(check);
     check_prompt_line(check);
+    check_combat_plan(check);
     check_magnifier_rects(check);
     check_links(check);
     check_tiles(check);

@@ -52,8 +52,10 @@ static uint64_t next_random(uint64_t *state) {
 }
 
 // Whether auto_play stops at decision `v`: "stack", the stack holds an object; "combat", the menu
-// declares attackers or blockers; "sideboard", it is a sideboarding decision; "target", it chooses a
-// target or a point of divided damage; "mana", it pays a cost with a mana ability (--no-auto-mana).
+// declares attackers or blockers ("attack" / "block": attackers / blockers only); "damage", it assigns
+// an attacker's combat damage among its blockers; "sideboard", it is a sideboarding decision;
+// "target", it chooses a target or a point of divided damage; "mana", it pays a cost with a mana
+// ability (--no-auto-mana).
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
     if (until == "target" || until == "mana") {
@@ -69,11 +71,12 @@ static bool auto_play_holds(const std::string &until, const agents::DecisionView
         const agents::Table header = v.table("header");
         return header.rows() && header.u(0, header.col("sideboarding")) != 0;
     }
-    if (until != "combat") return false;
+    const bool attack = until == "combat" || until == "attack", block = until == "combat" || until == "block";
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
-        if (c == "SELECT_ATTACKER" || c == "CONFIRM_ATTACKERS" || c == "SELECT_BLOCKER" || c == "CONFIRM_BLOCKERS")
-            return true;
+        if (attack && (c == "SELECT_ATTACKER" || c == "CONFIRM_ATTACKERS")) return true;
+        if (block && (c == "SELECT_BLOCKER" || c == "CONFIRM_BLOCKERS")) return true;
+        if (until == "damage" && c == "ASSIGN_DAMAGE") return true;
     }
     return false;
 }
@@ -294,7 +297,7 @@ void App::auto_play(long decisions, const std::string &until) {
 
 // Answers the pending decision with auto_play's rule, unless its condition holds there.
 void App::step_auto_play() {
-    if (!play_.deciding() || !choosing() || tools_.sideboard().sending()) return;
+    if (!play_.deciding() || !choosing() || tools_.sideboard().sending() || table_.plan_sending()) return;
     if (!script_.empty()) {
         const int row = script_.front();
         script_.pop_front();
@@ -345,6 +348,12 @@ void App::poll_play() {
     }
     tools_.sideboard().step(play_);
     follow_sideboarding();
+    if (choosing() && play_.match()) {
+        const int planned = table_.plan_reply(*play_.match(), play_.pending_index(), play_.config().seat);
+        if (planned >= 0) play_reply(planned);
+        const std::string plan_status = table_.take_status();
+        if (!plan_status.empty()) status(plan_status);
+    }
     step_auto_play();
 }
 

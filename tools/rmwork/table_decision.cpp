@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 
 #include "../../src/cli/board.h"
 
@@ -20,6 +21,10 @@ static std::string prompt_of(const agents::DecisionView &v);
 static void read_cost(const agents::DecisionView &v, rmwork::TableDecision *d);
 static std::string pip_symbol(const agents::DecisionView &v, const agents::Table &p, size_t row);
 static uint64_t pending_source(const agents::DecisionView &v);
+static int lethal_of(const std::string &description);
+static void read_block_facts(const agents::DecisionView &v, rmwork::BlockFacts *b);
+static void read_damage(const rmwork::TableModel &m, rmwork::TableDecision *d);
+static bool holds(const std::vector<uint64_t> &v, uint64_t h);
 
 // The `seat` enum (1 A, 2 B) as 0 A, 1 B; -1 for none.
 static int seat_of(uint64_t seat) {
@@ -37,11 +42,63 @@ static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
         if (c == "PAYING_COSTS") return DecisionKind::PAY;
+        if (c == "SELECT_ATTACKER" || c == "CONFIRM_ATTACKERS") return DecisionKind::ATTACKERS;
+        if (c == "ATTACK_TARGET") return DecisionKind::ATTACK_TARGET;
+        if (c == "SELECT_BLOCKER" || c == "CONFIRM_BLOCKERS") return DecisionKind::BLOCKERS;
+        if (c == "BLOCK_TARGET") return DecisionKind::BLOCK_TARGET;
+        if (c == "ASSIGN_DAMAGE") return DecisionKind::DAMAGE;
         if (c != "SELECT_TARGET" && c != "DIVIDE_DAMAGE") targets = false;
         if (is_mana_category(c)) mana = true;
     }
     if (targets) return DecisionKind::TARGET;
     return mana ? DecisionKind::MANA : DecisionKind::NONE;
+}
+
+static bool holds(const std::vector<uint64_t> &v, uint64_t h) {
+    return std::find(v.begin(), v.end(), h) != v.end();
+}
+
+// An ASSIGN_DAMAGE row's "(lethal 2)": 2; -1 when it has none (Done assigning).
+static int lethal_of(const std::string &description) {
+    const std::string key = "(lethal ";
+    const size_t at = description.rfind(key);
+    if (at == std::string::npos) return -1;
+    const size_t from = at + key.size();
+    size_t end = from;
+    while (end < description.size() && std::isdigit(static_cast<unsigned char>(description[end]))) ++end;
+    return end > from ? std::atoi(description.substr(from, end - from).c_str()) : -1;
+}
+
+// The attackers (the combat table), and the objects with flying, with reach (object_keyword) and
+// that can't be blocked (object.cant_be_blocked).
+static void read_block_facts(const agents::DecisionView &v, rmwork::BlockFacts *b) {
+    const agents::Table c = v.table("combat");
+    for (size_t r = 0; r < c.rows(); ++r) {
+        const uint64_t a = c.u(r, c.col("attacker"));
+        if (!holds(b->attackers, a)) b->attackers.push_back(a);
+    }
+    const agents::Table k = v.table("object_keyword");
+    const int c_obj = k.col("obj"), c_kw = k.col("kw");
+    for (size_t r = 0; r < k.rows(); ++r) {
+        const std::string kw = v.stream().enum_name("keyword", k.u(r, c_kw));
+        if (kw == "Flying") b->flying.push_back(k.u(r, c_obj));
+        if (kw == "Reach") b->reach.push_back(k.u(r, c_obj));
+    }
+    const agents::Table o = v.table("object");
+    const int c_h = o.col("handle"), c_cbb = o.col("cant_be_blocked");
+    for (size_t r = 0; c_cbb >= 0 && r < o.rows(); ++r)
+        if (o.u(r, c_cbb)) b->unblockable.push_back(o.u(r, c_h));
+}
+
+// DAMAGE: what the attacker (the decision's source) has left to assign, after the prompt.
+static void read_damage(const rmwork::TableModel &m, rmwork::TableDecision *d) {
+    const int obj = m.find(d->source);
+    if (obj < 0) return;
+    const int power = m.objects[static_cast<size_t>(obj)].power;
+    int assigned = 0;
+    for (const rmwork::CombatBlock &b : m.blocks)
+        if (b.attacker == d->source) assigned += b.assigned;
+    d->owed = std::to_string(std::max(0, power - assigned)) + " of " + std::to_string(power) + " left to assign";
 }
 
 // An object the Table draws: a battlefield or hand card of its model, or a stack object.
@@ -130,6 +187,26 @@ int TableDecision::chosen_order_of_object(uint64_t handle) const {
     return 0;
 }
 
+bool declares_attackers(DecisionKind k) {
+    return k == DecisionKind::ATTACKERS || k == DecisionKind::ATTACK_TARGET;
+}
+
+bool declares_blockers(DecisionKind k) {
+    return k == DecisionKind::BLOCKERS || k == DecisionKind::BLOCK_TARGET;
+}
+
+bool TableDecision::may_block(uint64_t blocker, uint64_t attacker, std::string *why) const {
+    if (holds(block.unblockable, attacker)) {
+        *why = "it can't be blocked";
+        return false;
+    }
+    if (holds(block.flying, attacker) && !holds(block.flying, blocker) && !holds(block.reach, blocker)) {
+        *why = "it has flying";
+        return false;
+    }
+    return true;
+}
+
 int TableDecision::chosen_order_of_seat(int seat) const {
     for (const ChosenTarget &c : chosen)
         if (seat >= 0 && c.handle == 0 && c.seat == seat) return c.order;
@@ -149,6 +226,7 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
         if (d.kind == DecisionKind::MANA && !is_mana_category(category)) continue;
         const uint64_t object = menu.u(i, c_src) ? menu.u(i, c_src) : menu.u(i, c_tgt);
         const int seat = seat_of(menu.u(i, c_sp)) >= 0 ? seat_of(menu.u(i, c_sp)) : seat_of(menu.u(i, c_tp));
+        if (category == "CONFIRM_ATTACKERS" || category == "CONFIRM_BLOCKERS") d.confirm = static_cast<int>(i);
         if (object == 0 && seat < 0) {
             if (d.prompted()) d.buttons.push_back(static_cast<int>(i));
             continue;
@@ -165,10 +243,13 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
         }
         pick->rows.push_back(static_cast<int>(i));
         if (category == "DIVIDE_DAMAGE") pick->so_far = static_cast<int>(menu.s(i, c_ord));
+        if (category == "ASSIGN_DAMAGE") pick->lethal = lethal_of(d.row_text[i]);
     }
     d.source = pending_source(v);
     if (d.prompted()) d.prompt = prompt_of(v);
     if (d.kind == DecisionKind::PAY) read_cost(v, &d);
+    if (d.kind == DecisionKind::BLOCKERS) read_block_facts(v, &d.block);
+    if (d.kind == DecisionKind::DAMAGE) read_damage(m, &d);
     return d;
 }
 

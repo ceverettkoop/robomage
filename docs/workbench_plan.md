@@ -362,15 +362,39 @@ at the human's pending decision a click on a lit card, stack object or player ch
 object several rows name (a dual land's two colours) opens a popup of them; at a priority decision offering
 mana abilities a click on a land or source taps it (its `MANA_*` rows only); hovering a pick says what a click
 does and shades its Choices row. In Replay, an earlier decision or while the opponent thinks the highlights show
-and a click only selects. The player chips (and the Players tool) show floating mana as `pool {U}{R}`. Waiting
-for later stages: the rest of direct manipulation in Play (§4.2), the Choices tool's side of the linking (§2.6),
-damage assignment order (the frame has none).
+and a click only selects. The player chips (and the Players tool) show floating mana as `pool {U}{R}`. Combat on
+the Table (§4.2, item 7; `table_decision`'s combat kinds, `table_combat`): every attacker is labelled with what it
+attacks ("→ Player B", "→ Kaito") during the combat decisions and whenever it attacks a planeswalker; at declare
+attackers the creatures that can attack glow, at declare blockers those that can block, the attackers kept lit.
+The engine declares a creature as soon as its row is answered and has no row taking it back, so in Play the human
+plans the declaration and nothing is sent until the confirm button: a click plans an attacker against the defending
+player (it stands forward, outlined in the accent colour); with a planeswalker to attack it stays armed, the
+planeswalkers glowing and the player's chip outlined, and a click on a planeswalker (or the chip) changes what it
+attacks; a click on a planned attacker takes it back. A click on a creature that can block arms it (a line follows
+the mouse) and a click on an attacker, or a drag from the blocker onto it, plans the block, an accent arrow blocker →
+attacker beside the declared blocks' red ones; a click on a planned blocker takes it back. Attackers a blocker cannot
+block by the frame's evasion (flying without flying or reach, can't be blocked) are not lit and refuse the click,
+saying why. The prompt line lists the declaration so far, and its buttons are "Attack with N" / "No attack" ("Block
+with N" / "No blocks"), "Attack with all" and "Clear"; the confirm sends the plan one reply per decision (each
+creature's row, its target's or attacker's row, the confirm row last, the engine taking a menu left with one row
+itself), and stops where the engine's rows lack what was planned (a blocker that cannot block that attacker), the
+rest of the plan kept, for the human to choose there. A creature declared in Choices stays declared. At
+ATTACK_TARGET and BLOCK_TARGET (after a row answered in Choices, or a stopped plan) the player chip, the planeswalkers
+or the attackers are picks, the attacker under the mouse joined to the blocker by an arrow. Damage assignment order:
+the current rules have none (CR 510.1c: a creature blocked by two or more creatures divides its combat damage among
+them as its controller chooses), and neither has the engine: when an attacker cannot kill all its blockers it asks
+`ASSIGN_DAMAGE`, lethal damage to one blocker at a time, then Done. The Table lights the blockers that can still be
+given lethal damage with "lethal N" (the row's), counts what each has been assigned ("N assigned", the `combat`
+table's `assigned`), tags the attacker "Assigning", says what is left ("2 of 2 left to assign"), and a click gives a
+blocker its lethal damage; Done is a button. For screenshots `--play-until attack|block|damage` stops at those
+decisions and `--table-plan SPEC` plans a declaration. Waiting for later stages: the rest of direct manipulation in Play
+(§4.2), the Choices tool's side of the linking (§2.6).
 
 | Feature | Notes | Size |
 |---|---|---|
 | Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical permanents stacked, and rows wrapped, only when the board is too wide to show each legibly; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
 | Object state | Tapped, counters by kind, effective P/T (post-layer, from `object`), damage marked, summoning sickness, loyalty, designations (monarch, day/night, speed …; `designations.def`), energy and poison on the player | M |
-| Combat | Attackers set forward; arrows from blockers to attackers; damage assignment order | M |
+| Combat | Attackers set forward; arrows from blockers to attackers; damage assignment among blockers (no damage assignment order in the current rules, CR 510.1c) | M |
 | Targets | Hovering a stack object highlights it and its targets (`stack_target` rows, not text matching as in the mock-up); no arrows: both ends are highlighted | S |
 | Card-to-choice linking | Use each menu row's `source` / `target` handles (`menu` table) to link rows and objects, replacing the mock-up's name matching | S |
 | Auto-fit | Size cards to fill the panel, as mocked | S |
@@ -524,7 +548,16 @@ Ordered roughly by value against effort. Each is one dockable tool.
    stack) and `DIVIDE_DAMAGE` (one more point to a target, the points so far counted on it); `ATTACK_TARGET` and
    `BLOCK_TARGET` belong to combat (item 7). A target the Table does not show (a card in a graveyard) is chosen
    in Choices. Checked by `rmwork --selftest-data` (`selftest_decisions`).
-7. **Declare attackers / blockers**: click creatures to attack or block, arrows to their opponents, confirm (`-1`).
+7. ~~**Declare attackers / blockers**~~: built (§2.5's combat on the Table; mock-ups `decisions.html#combat`,
+   `#combat-attackers`, `#combat-blockers`, `#combat-damage`). The engine declares a creature as its row is
+   answered and cannot take it back, so the Table plans the declaration and sends it on confirm: a click plans or
+   takes back an attacker (with a planeswalker to attack, a second click on it or on the player's chip says what it
+   attacks), a blocker then an attacker (or a drag) plans a block, drawn as an arrow blocker → attacker (user,
+   2026-11-18: arrows for blocks only); "Attack with N" / "Block with N", "Attack with all" and "Clear" on the prompt
+   line; the plan sent one reply per decision, stopping where the engine refuses a planned block. Combat damage
+   assignment among blockers (`ASSIGN_DAMAGE`): the blockers lit with their lethal damage, the damage assigned so
+   far on each, a click gives one its lethal damage, Done a button. Checked by `rmwork --selftest-data`
+   (`selftest_decisions`).
 8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find; it must also handle a whole-zone pick such as Doomsday (five picks in turn from the library and graveyard, each put on top so the first ends up fifth): rows grouped by zone, identical cards one entry with a count, a name/type filter, a compact list beside the image grid, and the pile being built shown in its final order.
 9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
 10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.

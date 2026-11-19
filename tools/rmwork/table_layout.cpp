@@ -97,7 +97,7 @@ static PileShape pile_shape(const rmwork::TableModel &m, const rmwork::TablePile
         s.w = std::max(s.w, a.tapped ? CARD_ASPECT : 1.0f);
         s.h = std::max(s.h, static_cast<float>(k - i) * peek + (a.tapped ? 1 : CARD_ASPECT));
     }
-    if (host.attacking) s.shift = ATTACK_SHIFT * CARD_ASPECT;
+    if (host.attacking || host.planned_attack) s.shift = ATTACK_SHIFT * CARD_ASPECT;
     return s;
 }
 

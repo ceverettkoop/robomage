@@ -58,6 +58,7 @@ struct CliOptions {
         std::vector<std::string> play_setup;  // --play-setup's engine flags
         std::vector<int> play_rows;
         std::string table_pick;
+        std::string table_plan;
         std::string sideboard_plan;
         bool open_new_game = false;
         bool game_over = false;
@@ -107,8 +108,10 @@ static void usage() {
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
-        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|sideboard|target|mana|end]\n"
-        "              [--play-setup FLAGS] [--play-rows R,R,...] [--table-pick NAME] [--game-over]]\n"
+        "       rmwork [--new-game SPEC [--play-decisions N]\n"
+        "              [--play-until stack|combat|attack|block|damage|sideboard|target|mana|end]\n"
+        "              [--play-setup FLAGS] [--play-rows R,R,...] [--table-pick NAME] [--table-plan SPEC]\n"
+        "              [--game-over]]\n"
         "         [--sideboard-plan SPEC]\n"
         "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
         "       rmwork [--start-page] (with --screenshot too)\n"
@@ -165,13 +168,19 @@ static void usage() {
         "  --table-hover-step N  Play's Table: hover step N (0 = untap) of the step bar every frame (its stop's\n"
         "                     tooltip)\n"
         "  --play-until COND  ... until a decision where COND holds: stack (the stack is not empty), combat (an\n"
-        "                     attacker or blocker declaration), sideboard (a sideboarding decision), target (a\n"
+        "                     attacker or blocker declaration), attack (an attacker declaration), block (a\n"
+        "                     blocker declaration), damage (combat damage to assign among blockers),\n"
+        "                     sideboard (a sideboarding decision), target (a\n"
         "                     target or a point of divided damage to choose), mana (a cost to pay with a mana\n"
         "                     ability: auto-mana=off), end (none: to the match's end)\n"
         "  --play-setup FLAGS the engine's test-setup flags for the --new-game game, ';'-separated (e.g.\n"
         "                     --hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears,Delver of Secrets)\n"
         "  --play-rows R,R,...  answer your first decisions with these menu rows, before --play-decisions or\n"
         "                     --play-until's rule\n"
+        "  --table-plan SPEC  Play's Table, at your attacker or blocker declaration: plan it, comma-separated\n"
+        "                     NAME (attacks the player / a blocker armed), NAME>TARGET (attacks the\n"
+        "                     planeswalker TARGET or \"player\" / blocks the attacker TARGET) or NAME>? (planned\n"
+        "                     and armed); NAME and TARGET name substrings\n"
         "  --table-pick NAME  Play's Table: open the popup of the first card whose name contains NAME that\n"
         "                     the decision's rows name more than once (a dual land's colours)\n"
         "  --sideboard-plan SPEC  at your first sideboarding decision, plan in the Sideboard tool: guide (the\n"
@@ -277,10 +286,15 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             }
         } else if (a == "--play-until" && has_value) {
             opt->play_until = argv[++i];
-            if (opt->play_until != "stack" && opt->play_until != "combat" && opt->play_until != "sideboard" &&
-                opt->play_until != "target" && opt->play_until != "mana" && opt->play_until != "end") {
+            static const char *const UNTIL[] = {
+                "stack", "combat", "attack", "block", "damage", "sideboard", "target", "mana", "end"};
+            bool known = false;
+            for (const char *u : UNTIL) known = known || opt->play_until == u;
+            if (!known) {
                 std::fprintf(stderr,
-                    "rmwork: --play-until is stack, combat, sideboard, target, mana or end, not '%s'\n", argv[i]);
+                    "rmwork: --play-until is stack, combat, attack, block, damage, sideboard, target, mana or end, "
+                    "not '%s'\n",
+                    argv[i]);
                 *exit_code = 2;
                 return false;
             }
@@ -290,6 +304,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             for (const std::string &r : split_list(argv[++i], ',')) opt->play_rows.push_back(std::atoi(r.c_str()));
         } else if (a == "--table-pick" && has_value) {
             opt->table_pick = argv[++i];
+        } else if (a == "--table-plan" && has_value) {
+            opt->table_plan = argv[++i];
         } else if (a == "--sideboard-plan" && has_value) {
             opt->sideboard_plan = argv[++i];
         } else if (a == "--game-over") {
@@ -543,6 +559,7 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.table().force_step_hover(opt.table_hover_step);
     app.table().force_magnify(opt.table_magnify);
     app.table().force_pick(opt.table_pick);
+    app.table().force_plan(opt.table_plan);
     for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
     app.tools().choices().force_hover(opt.choices_hover);
     if (opt.tree_expand) app.tools().tree().expand_overview();

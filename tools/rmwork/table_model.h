@@ -63,6 +63,9 @@ struct TableObject {
         std::vector<TableCounter> counters;  // every other kind
         std::vector<std::string> tags;       // designations: "Monstrous", "Exerted", "Named: Island"
         uint64_t attached_to = 0;
+        // Play: a creature the human plans to attack with (table_combat.h), shown standing forward like
+        // an attacker; never set by build_table_model.
+        bool planned_attack = false;
 };
 
 // What one place in a row holds: `objects[0]` is the host (or a stack's front card); the rest are
@@ -118,6 +121,14 @@ struct TableStackItem {
 
 struct CombatBlock {
         uint64_t blocker = 0, attacker = 0;
+        int assigned = 0;  // the attacker's combat damage assigned to the blocker so far
+};
+
+// What an attacking creature attacks: a player (target 0) or a planeswalker.
+struct CombatAttack {
+        uint64_t attacker = 0;
+        uint64_t target = 0;   // a planeswalker's handle, 0 for a player
+        int target_seat = -1;  // the player's: 0 A, 1 B
 };
 
 // One menu row's links: the object or player it acts with (source) and on (target).
@@ -144,11 +155,14 @@ struct TableModel {
         std::string step_name;              // "Declare blockers", "First-strike damage"
         std::string day_night;              // "Day", "Night", "" for neither
         std::vector<TableStackItem> stack;  // top first
+        std::vector<CombatAttack> attacks;  // one per attacking creature, in the combat table's order
         std::vector<CombatBlock> blocks;
         std::vector<MenuLink> menu;  // one per menu row of the frame (none in a seat frame without the menu)
 
         // The object of `handle`, -1 when it is not on the table.
         int find(uint64_t handle) const;
+        // What attacker `handle` attacks, nullptr when it is not attacking.
+        const CombatAttack *attack_of(uint64_t handle) const;
         // Sorts the handle index (build_table_model does; a hand-built model calls it once filled).
         void index();
 

@@ -482,12 +482,20 @@ static void read_stack(const Frame &f, const agents::DecisionView &dv, rmwork::T
     }
 }
 
+// The combat table: a row per blocker of each attacker (blocker 0 for an unblocked one).
 static void read_combat(const Frame &f, rmwork::TableModel *m) {
     const agents::Table &c = f.combat;
-    const int c_att = c.col("attacker"), c_blk = c.col("blocker");
+    const int c_att = c.col("attacker"), c_blk = c.col("blocker"), c_tgt = c.col("target"),
+              c_tp = c.col("target_player"), c_as = c.col("assigned");
     for (size_t r = 0; r < c.rows(); ++r) {
-        const uint64_t blocker = c.u(r, c_blk);
-        if (blocker != 0) m->blocks.push_back({blocker, c.u(r, c_att)});
+        const uint64_t attacker = c.u(r, c_att), blocker = c.u(r, c_blk);
+        if (blocker != 0) m->blocks.push_back({blocker, attacker, static_cast<int>(c.u(r, c_as))});
+        if (m->attack_of(attacker)) continue;
+        rmwork::CombatAttack a;
+        a.attacker = attacker;
+        a.target = c.u(r, c_tgt);
+        a.target_seat = a.target ? -1 : seat_of(c.u(r, c_tp));
+        m->attacks.push_back(a);
     }
 }
 
@@ -518,6 +526,12 @@ std::string pool_text(const TablePlayer &p) {
 int TableModel::find(uint64_t handle) const {
     auto it = std::lower_bound(by_handle_.begin(), by_handle_.end(), std::make_pair(handle, -1));
     return it != by_handle_.end() && it->first == handle ? it->second : -1;
+}
+
+const CombatAttack *TableModel::attack_of(uint64_t handle) const {
+    for (const CombatAttack &a : attacks)
+        if (a.attacker == handle) return &a;
+    return nullptr;
 }
 
 void TableModel::index() {

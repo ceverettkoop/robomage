@@ -56,9 +56,11 @@ void check_step_bar_clicks(
 
 // The Table window's inner top-left corner in mode `m` (screen coordinates; (0, 0) when it is not open).
 ImVec2 table_window_origin(Mode m);
-// Moves the mouse to `p` / left-clicks at `p` (screen coordinates), with frames between.
+// Moves the mouse to `p` / left-clicks at `p` / presses the left button at `from`, moves to `to` and
+// releases it there (screen coordinates), with frames between.
 void mouse_to(ImVec2 p, const std::function<void(int)> &frames);
 void mouse_click(ImVec2 p, const std::function<void(int)> &frames);
+void mouse_drag(ImVec2 from, ImVec2 to, const std::function<void(int)> &frames);
 
 // Engine-free: the layout and fit of synthetic models (stacking identical permanents and wrapping
 // rows only when a narrow panel needs it), the step bar's cells, a decision's prompt line and buttons, the magnifier's rectangles, the

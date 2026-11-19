@@ -14,6 +14,7 @@
 #include "replay_session.h"
 #include "settings.h"
 #include "table_backdrop.h"
+#include "table_combat.h"
 #include "table_decision.h"
 #include "table_layout.h"
 #include "table_model.h"
@@ -56,12 +57,44 @@
 // them; hovering a pick says what a click does. Otherwise (Replay, an earlier decision, the opponent
 // thinking) the same highlights show and a click only selects.
 //
+// Combat (table_decision.h's combat kinds, table_combat.h): at declare attackers the creatures that can
+// attack glow; at declare blockers the creatures that can block, with the attackers kept lit. Every
+// attacker is labelled with what it attacks ("→ Player B", "→ Kaito") during the declarations and
+// whenever it attacks a planeswalker. While the human chooses, a click plans instead of answering: a
+// creature that can attack is planned to attack the defending player (it stands forward, outlined in the
+// accent colour) and, when the defending player has a planeswalker, stays armed so that a click on a
+// planeswalker (or the player's chip) changes what it attacks; a click on a planned attacker takes it
+// back. A click on a creature that can block arms it (a line follows the mouse), a click on an attacker
+// (or a drag from the blocker onto it) plans the block, drawn as an accent arrow blocker → attacker; a
+// click on a planned blocker takes the block back. The prompt line's buttons: "Attack with N" / "No
+// attack" (or "Block with N" / "No blocks") sends the plan (CombatPlan, one reply per decision through
+// plan_reply), "Attack with all" plans every creature that can attack, "Clear" drops the plan. At
+// ATTACK_TARGET and BLOCK_TARGET (asked when a row was answered in Choices, or when sending stopped) a
+// click on the player chip, a planeswalker or an attacker answers, the attacker under the mouse joined
+// to the blocker by an arrow; at DAMAGE the blockers that can still be given lethal damage glow with
+// "lethal N", the damage given so far is counted on each blocker ("N assigned"), the prompt says how much
+// is left, and a click gives a blocker its lethal damage.
+//
 // The magnifier: holding the Magnify key (Q) over a card, or right-clicking it, shows it large
 // beside it (a double-faced card's both faces, the face up first), with its state on the table
 // listed under it. Releasing the key hides a key magnifier;
 // a right-click one hides when the mouse leaves the card, at a click or at Esc.
 
 namespace rmwork {
+
+// A button of the prompt line: a menu row (Done selecting targets, Confirm attackers …) or, while the
+// human plans a combat declaration, the plan's.
+struct PromptButton {
+        enum class Act {
+            ROW,   // answers `row`
+            SEND,  // sends the plan (its confirm row `row` when nothing planned is left to send)
+            ALL,   // plans every creature that can attack
+            CLEAR  // drops the plan
+        };
+        std::string label;
+        int row = -1;
+        Act act = Act::ROW;
+};
 
 struct TableDraw {
         ReplaySession *replay = nullptr;
@@ -86,6 +119,14 @@ class TableView {
         int take_answer();
         // The decision the Table answers, as last drawn (NONE when the viewer does not see its menu).
         const TableDecision &decision() const { return decision_; }
+        // The prompt line's buttons as last drawn, in order (their rectangles: layout().prompt_buttons).
+        const std::vector<PromptButton> &prompt_buttons() const { return buttons_; }
+        // The combat declaration planned (Play, while the human chooses), and whether it is being sent.
+        const CombatPlan &plan() const { return plan_; }
+        bool plan_sending() const { return plan_.sending(); }
+        // While a plan is being sent: the reply to decision `index` of `m` (the human's pending one, in
+        // seat `seat`'s frames), -1 none; a stop or the end of the plan is said in the status bar.
+        int plan_reply(const Match &m, long index, int seat);
         // A player chip's rectangle as last drawn (panel coordinates), by seat.
         const TRect &chip_rect(int seat) const { return chip_rects_[seat == 1 ? 1 : 0]; }
         // The popup offering one object's rows: whether it is open, its rows, and its items' rectangles
@@ -110,6 +151,11 @@ class TableView {
         // While the human chooses: open the pick popup of the first card whose name contains `name` and
         // that a decision's rows name more than once, once per decision ("" off).
         void force_pick(const std::string &name) { force_pick_ = name; }
+        // While the human plans a combat declaration: plan `spec` once per declaration, comma-separated
+        // items NAME (attacks the player / is armed to block), NAME>TARGET (attacks the planeswalker
+        // TARGET, or "player"; blocks the attacker TARGET) or NAME>? (planned and armed); names are
+        // substrings, the first creature that can attack or block ("" off).
+        void force_plan(const std::string &spec) { force_plan_ = spec; }
 
         // The book of `view`'s CARDS frame for `m` (built on first use).
         const CardBook &book(const Match &m, int view);
@@ -122,7 +168,7 @@ class TableView {
                 int step = -1;    // a step bar's cell (Play)
                 int button = -1;  // a button of the prompt line (index into layout_.prompt_buttons)
         };
-        bool refresh(ReplaySession &s);
+        bool refresh(ReplaySession &s, bool answer);
         TableMetrics measure(bool stop_dots) const;
         // The pile a placed battlefield card stands in (nullptr for a hand card).
         const TablePile *pile_of(const PlacedCard &c) const;
@@ -131,7 +177,34 @@ class TableView {
         Hit hit_test(ImVec2 local, bool steps) const;
         void draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_card_state(ImDrawList *dl, const TableObject &o, const PlacedCard &c, ImVec2 o2);
-        void draw_combat(ImDrawList *dl, ImVec2 o);
+        void draw_combat(ImDrawList *dl, ImVec2 o, const TableDraw &d);
+        void draw_attack_labels(ImDrawList *dl, ImVec2 o);
+        void draw_combat_marks(ImDrawList *dl, const PlacedCard &c, ImVec2 a, ImVec2 b, float cw);
+        // An arrow from object `from_h`'s card to object `to_h`'s (their facing edges), or to the point
+        // `to` when `to_h` is 0.
+        void block_arrow(ImDrawList *dl, ImVec2 o, uint64_t from_h, uint64_t to_h, ImVec2 to, ImU32 color, float t);
+        // The placed card of object `h` (its pile's front card when stacked), nullptr when not drawn.
+        const PlacedCard *placed(uint64_t h) const;
+        // The object of a hit card (a stack's member that is a pick, else its front card), 0 none.
+        uint64_t hit_object(const Hit &hit) const;
+        std::string name_of(uint64_t h) const;
+        // ── Combat planning (table_combat.h) ──
+        // The human plans a declaration here (answering, at ATTACKERS or BLOCKERS).
+        bool planning() const;
+        // Object `h` stays lit at a combat decision (an attacker, a blocker, a planeswalker attacked or
+        // planned to be) / is what the armed creature's second click may name.
+        bool combat_kept(uint64_t h) const;
+        bool armed_target(uint64_t h) const;
+        // The defending player's planeswalkers (the top seat's).
+        std::vector<uint64_t> planeswalkers() const;
+        void apply_plan_to_model();
+        void build_buttons();
+        std::string prompt_text() const;
+        bool press_button(const PromptButton &b);
+        bool plan_press(const Hit &hit);
+        void plan_release(const Hit &hit);
+        void plan_all();
+        void apply_force_plan();
         void draw_mid(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d);
@@ -163,6 +236,13 @@ class TableView {
         int model_view_ = -1;
         TableModel model_;
         TableDecision decision_;
+        CombatPlan plan_;
+        std::vector<PromptButton> buttons_;
+        bool answering_ = false;  // the human chooses at the decision drawn (TableDraw::answer)
+        unsigned model_plan_generation_ = 0;
+        bool model_answer_ = false;
+        uint64_t press_handle_ = 0;     // the blocker a press armed (a drag from it may plan its block)
+        bool press_was_armed_ = false;  // it was armed before the press (a click without a drag disarms it)
         TableLayout layout_;
         std::string error_;
         std::string status_;
@@ -185,6 +265,8 @@ class TableView {
         std::string force_pick_;
         bool force_picked_ = false;  // force_pick_ opened the popup at this decision
         unsigned force_pick_generation_ = 0;
+        std::string force_plan_;
+        PlanKey force_planned_;  // the declaration force_plan_ was applied to
 };
 
 }  // namespace rmwork

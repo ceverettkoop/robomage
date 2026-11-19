@@ -20,8 +20,9 @@
 // fits its width, never above MAX_CARD_W. A tapped card lies on its side (as wide as a card is
 // tall); an attachment peeks ATTACH_PEEK of a card's height above the one before it; a stack of
 // identical permanents shows up to three more cards STACK_STEP of a width apart; an attacking
-// permanent's edge facing the middle stands ATTACK_SHIFT of a card's height beyond an upright
-// card's (a tapped attacker too, so it shows forward of its untapped neighbours). A row is never
+// permanent's edge facing the middle (and a planned attacker's, TableObject::planned_attack) stands
+// ATTACK_SHIFT of a card's height beyond an upright card's (a tapped attacker too, so it shows forward
+// of its untapped neighbours). A row is never
 // shorter than one upright card, so the halves keep their place when a row empties.
 //
 // A wide board: every permanent is shown on its own while the fit at full detail gives cards at
