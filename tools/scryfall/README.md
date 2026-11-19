@@ -31,7 +31,19 @@ that is printed on paper and not digital, not a promo, not oversized, not from a
 `funny`, `minigame`, `alchemy`, `vanguard`, `planechase`, `archenemy` or `treasure_chest` set (gold
 borders, Collectors' Edition, un-sets) and has an image on Scryfall. When no printing passes, the
 oldest paper printing with an image. Its `normal` image (488 × 680 JPEG) is downloaded; a double-faced
-card's two faces each. The workbench lists every paper printing (promos too) in Edit → Settings →
+card's two faces each.
+
+A **token** is chosen by the same rule, except that a printing from the token set of a card that makes
+it comes first: the vocab cards whose scripts make the token (`bin/resources/cardsfolder/`, scanned as
+`tools/forge_fetch/provision_decks.py` does: `TokenScript$` stems, Amass armies, Investigate's Clue, …)
+each give the set of their own default printing, and Scryfall prints set `S`'s tokens in set `t<S>`,
+so Orcish Bowmasters (`ltr`) gets its Orc Army from `tltr` and Tamiyo, Inquisitive Student (`mh3`) her
+Clue from `tmh3` rather than the oldest Clue (`tsoi`). The oldest such printing that may be the default
+wins; when no maker's set has one (or no script makes the token, or its maker is not listed yet), the
+oldest as for a card. The manifest keeps a token's makers and their sets as `sources`; a token listed
+before this rule (no `sources`) is listed again by the next run.
+
+The workbench lists every paper printing (promos too) in Edit → Settings →
 Card Printings, where a card's printing can be changed (`~/.config/robomage/printings.json`); a chosen
 printing whose image is not cached is fetched with `--printing`, which the tab runs for you.
 
@@ -42,7 +54,8 @@ elsewhere (Settings → Card Printings' "Image cache" must then name it).
 
 ```
 manifest.json               per card: key, vocab index, names, every paper printing (set, set name,
-                            number, date, set type, promo, faces: name, URL, file) and the default
+                            number, date, set type, promo, faces: name, URL, file) and the default;
+                            a token's sources (the cards that make it, their sets)
 images/<set>/<number>.jpg   a printing's image (a double-faced card: <number>-0.jpg, <number>-1.jpg)
 ```
 

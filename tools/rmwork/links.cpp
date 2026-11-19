@@ -20,7 +20,7 @@ void LinkState::new_frame() {
     objects_.clear();
     players_.clear();
     rows_.clear();
-    link(hovered_.kind != LinkItem::Kind::NONE ? hovered_ : selected_);
+    link(active());
 }
 
 void LinkState::hover_object(uint64_t handle) {

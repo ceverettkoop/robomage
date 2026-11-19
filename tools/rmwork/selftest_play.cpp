@@ -303,6 +303,9 @@ static void check_replay(const CheckFn &check, rmwork::App &app, const Frames &f
     const Match *live = app.play().match();
     const std::string log = app.play().log_path();
     const int seat = app.play().config().seat;
+    if (live)
+        check(!live->index_cached && !file_exists(parent_dir(live->dump_path) + "/index.bin"),
+            at + ": Play's live match has a cached index");
     check(app.open_replay(log), at + ": the decision log does not open in Replay");
     run_until(frames, [&app] { return !app.loading(); }, GAME_TIMEOUT_S);
     check(app.mode() == Mode::REPLAY && app.replay().loaded(),

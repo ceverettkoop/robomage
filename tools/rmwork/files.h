@@ -1,6 +1,7 @@
 #ifndef RMWORK_FILES_H
 #define RMWORK_FILES_H
 
+#include <cstdint>
 #include <string>
 
 // ── File helpers (POSIX) ─────────────────────────────────────────────────────────────────────────
@@ -12,6 +13,15 @@ bool make_dirs(const std::string &path);
 // The directory part of `path` ("" for a bare name).
 std::string parent_dir(const std::string &path);
 bool file_exists(const std::string &path);
+
+// A file's size and modification time (nanoseconds), following symbolic links.
+struct FileStamp {
+        bool found = false;
+        bool regular = false;
+        uint64_t size = 0;
+        int64_t mtime_ns = 0;
+};
+FileStamp file_stamp(const std::string &path);
 
 enum class PathKind {
     MISSING,

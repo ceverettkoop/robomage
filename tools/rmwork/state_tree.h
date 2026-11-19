@@ -72,6 +72,12 @@ class StateTreeModel {
         std::vector<TreeRow> flatten(const std::set<std::string> &open) const;
         // The name the frame gives the object of `handle` ("" when it does not identify it).
         std::string object_name(uint64_t handle) const;
+        // The keys from a root down to the node of the object of `handle` (a stack object's under
+        // "stack", any other under its player's zone: the battlefield's controller, another zone's
+        // owner), the node's own key last; empty when the frame has no such object.
+        std::vector<std::string> object_path(uint64_t handle) const;
+        // The key of player `seat`'s node (0 A, 1 B).
+        static std::string player_key(int seat);
         // A cell's value as the tree shows it.
         std::string cell_text(const rmstate::DecodedTable &t, size_t row, size_t col) const;
 

@@ -77,6 +77,12 @@ corpus directories are not ours to write. The dump is indexed once: per decision
 `STATE` frame offsets (A, B, omniscient, in the dump's order, their headers' decision keys checked to
 agree), the deciding seat (the seat frame that carries the menu), game and sideboarding, turn, step,
 life, the reply; frames are decoded again on demand through a small LRU cache, never a whole match. The
+index is cached too, as the entry's `index.bin` (`match_index`: the once-per-match frames' offsets, every
+decision's fields, the seats' logs, the result; a format version, the dump's size and modification time
+and the log's hash, and a hash of the whole), so reopening a cached replay decodes no frame but the
+once-per-match ones: a 549-decision corpus log in 0.01 s instead of 0.83 s, a 3 178-decision bo3 (an 85 MB
+dump) in 0.03 s instead of 4.3 s (debug build); an index that is stale, of another version or corrupt is
+rebuilt from the dump and written again. The
 decision count must be the log's, except for a run that stopped without a result (its `--max-decisions`
 cap, a recorded `QUIT`): the engine wrote the frames of the decision it stopped at, which Replay shows as
 the last decision, unanswered, with the result "no result: the run stopped at decision N". Best-of-three: the toolbar's game list holds the games and their
@@ -274,9 +280,12 @@ and its refusals, the overrides file, the printing and face each card shows, the
 levels, the decode thread's hand-over, a file that does not decode, eviction, the renderer's image and
 fallbacks), `rmwork --selftest-data` (the Table over sampled corpus decisions in every view with images
 for half the cards: each card an image or text as the cache says, every image decoding) and
-`fetch_images.py --selftest` (the choice rule on canned Scryfall JSON), all in the `workbench` tier. Not
-done: "flip on hover" on the Table (the magnifier shows both faces instead); token images are Scryfall's
-oldest matching token, which may differ in art from the set the card came from.
+`fetch_images.py --selftest` (the choice rule on canned Scryfall JSON), all in the `workbench` tier. A
+token's default is first the oldest that passes the rule from the token set (`t<set>`) of a card that
+makes it, by that card's own default printing (the makers read from the card scripts as
+`provision_decks.py` finds them: Orcish Bowmasters' Orc Army from `tltr`, Tamiyo's Clue from `tmh3`);
+the manifest keeps them as the token's `sources`. Not done: "flip on hover" on the Table (the magnifier
+shows both faces instead).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -438,7 +447,11 @@ with π per policy as bars, μ, ► chosen. State Tree: generic over the SCHEMA 
 with every table and row, every column by its schema name, storage and semantic tag, its value by the
 tag (enums and masks by their string tables, cards by name, a handle named only where the viewer's
 object table identifies it); Col swatches in the card's colours (lands tan, colourless grey); nodes
-expanded lazily and kept expanded across decisions by their keys; hover linked both ways with the Table.
+expanded lazily and kept expanded across decisions by their keys; hover linked both ways with the Table,
+and when the links' item changes to one another tool reported (a card hovered on the Table, a Choices row,
+a zone window's card, a player), the tree expands the nodes above its object's row (a menu row's source,
+else its target) and scrolls that row to the middle when it is off-screen, once per change, so the user's
+own scrolling is left alone.
 Value Graph (ImPlot): V per seat and policy on Player A's scale, turn bands, game boundaries,
 sideboarding shaded, each game's z with a line from the last value, a life strip, the cursor, click / drag
 to scrub, a hover tooltip, a wrapping legend of toggles; without evaluations the life strip and a note.
@@ -459,7 +472,11 @@ nothing in a non-deciding seat's view, the chosen row the reply, the Inspector's
 tables, rows and handle names, the links between Choices, the Table and the tree; a sample drawn with
 every tool open, a Choices hover lighting the Table, zone windows opened, magnified in and closed by Esc;
 the bo3 match with evaluations added to its episodes: the Value Graph's series, Swings and disagreements
-recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status bar). Not done:
+recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status bar; the State Tree's scroll
+target after a link changes, and a card hovered on the Table scrolling the tree to its row once) and, opt-in
+like the gate's `actor` tier, `rmwork --selftest-evals MODEL` (the same evaluation checks on an `nn:`
+self-play bo3 recorded with real evaluations: every decision evaluated, π a distribution, a series point
+per decision). Not done:
 re-evaluation (§2.7), so a second policy's series and the seats' disagreement come only from episodes that
 recorded them (a self-play match evaluates both seats).
 
@@ -478,7 +495,7 @@ recorded them (a self-play match evaluates both seats).
 
 | Feature | Notes | Size |
 |---|---|---|
-| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes. **Done** with §2.6 (`evaluations`: per seat and policy, shown by the Value Graph, Swings, the Inspector, Choices and the Model's Read) | S |
+| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes. **Done** with §2.6 (`evaluations`: per seat and policy, shown by the Value Graph, Swings, the Inspector, Choices and the Model's Read; checked on made-up evaluations and, `--selftest-evals`, on an `nn:` match's real ones) | S |
 | Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk | M |
 | Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest) | M |
 

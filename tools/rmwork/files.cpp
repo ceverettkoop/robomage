@@ -40,6 +40,22 @@ bool file_exists(const std::string &path) {
     return stat(path.c_str(), &st) == 0;
 }
 
+FileStamp file_stamp(const std::string &path) {
+    FileStamp f;
+    struct stat st;
+    if (stat(path.c_str(), &st) != 0) return f;
+#ifdef __APPLE__
+    const struct timespec &mtime = st.st_mtimespec;
+#else
+    const struct timespec &mtime = st.st_mtim;
+#endif
+    f.found = true;
+    f.regular = S_ISREG(st.st_mode);
+    f.size = static_cast<uint64_t>(st.st_size);
+    f.mtime_ns = static_cast<int64_t>(mtime.tv_sec) * 1000000000 + mtime.tv_nsec;
+    return f;
+}
+
 PathKind path_kind(const std::string &path) {
     struct stat st;
     if (path.empty() || stat(path.c_str(), &st) != 0) return PathKind::MISSING;

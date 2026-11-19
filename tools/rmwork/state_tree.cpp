@@ -104,7 +104,7 @@ void StateTreeModel::build(const DecisionFrame &f, const TableModel &tm) {
         TreeRow p;
         p.kind = TreeRow::Kind::PLAYER;
         p.seat = s;
-        p.key = std::string("player/") + (s == 0 ? "A" : "B");
+        p.key = player_key(s);
         p.name = std::string("player ") + (s == 0 ? "A" : "B");
         p.type = "struct Player";
         p.expandable = true;
@@ -287,6 +287,28 @@ std::string StateTreeModel::object_name(uint64_t handle) const {
     const int card = static_cast<int>(v.bits);
     const CardFace *face = book_->face(card, false);
     return face ? face->name : stream_->cards().name(card);
+}
+
+std::vector<std::string> StateTreeModel::object_path(uint64_t handle) const {
+    if (!frame_ || handle == 0) return {};
+    if (const rmstate::DecodedTable *s = table("stack"))
+        for (size_t i = 0; i < s->rows.size(); ++i)
+            if (cell(*s, i, "handle") == handle) return {"stack", "stack/" + std::to_string(handle)};
+    auto it = std::lower_bound(objects_.begin(), objects_.end(), std::make_pair(handle, size_t(0)));
+    if (it == objects_.end() || it->first != handle) return {};
+    const rmstate::DecodedTable *o = table("object");
+    const int z = static_cast<int>(cell(*o, it->second, "zone"));
+    if (z == stream_->enum_value("zone", "STACK")) return {};
+    const bool battlefield = z == stream_->enum_value("zone", "BATTLEFIELD");
+    const uint64_t seat = cell(*o, it->second, battlefield ? "controller" : "owner");
+    if (seat != 1 && seat != 2) return {};
+    const std::string player = player_key(static_cast<int>(seat) - 1);
+    const std::string zone = player + "/" + lower(stream_->enum_name("zone", static_cast<uint64_t>(z)));
+    return {player, zone, zone + "/" + std::to_string(handle)};
+}
+
+std::string StateTreeModel::player_key(int seat) {
+    return std::string("player/") + (seat == 0 ? "A" : "B");
 }
 
 std::string StateTreeModel::cell_text(const rmstate::DecodedTable &t, size_t row, size_t c) const {

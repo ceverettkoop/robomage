@@ -128,8 +128,9 @@ class Match {
         std::string log_path;  // the decision log, absolute
         RmlogInfo log;
         std::string dump_path, narrative_path, stderr_path;
-        std::string engine;       // the engine binary that replayed it
-        bool from_cache = false;  // the replay's files came from the cache
+        std::string engine;         // the engine binary that replayed it
+        bool from_cache = false;    // the replay's files came from the cache
+        bool index_cached = false;  // the index was read from the cache entry's (match_index.h)
         std::vector<DecisionInfo> decisions;
         std::vector<GameSpan> games;
         std::array<FrameRef, VIEW_COUNT> terminal;
@@ -165,9 +166,13 @@ class Match {
 
     private:
         friend bool index_match(Match *m, const std::function<bool(double)> &progress, std::string *err);
+        friend bool finish_match_index(Match *m, std::string *err);
+        friend bool write_match_index(const Match &m, const std::string &path, uint64_t log_hash, std::string *err);
+        friend bool read_match_index(Match *m, const std::string &path, uint64_t log_hash, std::string *err);
         friend bool begin_live_match(Match *m, int seat, const std::string &stream_path, std::string *err);
         friend bool append_live_frame(Match *m, const std::string &payload, LiveFrame *out, std::string *err);
         std::array<std::unique_ptr<agents::SeatStream>, VIEW_COUNT> streams_;
+        std::vector<std::pair<int, FrameRef>> match_frames_;  // the dump's once-per-match frames: viewer, frame
         std::unique_ptr<LiveState> live_state_;
         std::map<std::tuple<int, bool, int64_t>, int> by_key_;
         int fd_ = -1;
@@ -187,6 +192,10 @@ bool split_turn_prefix(const std::string &line, int *turn, std::string *text);
 // log's --max-decisions cap, a recorded QUIT) wrote one decision more than the log, the last record
 // of the dump: it is kept as the match's last decision, unanswered (Match::stopped).
 bool index_match(Match *m, const std::function<bool(double)> &progress, std::string *err);
+// The rest of the index from its decisions (index_match's and read_match_index's last step): the
+// decision count against the log's, the decisions by key, the games, the omniscient log from the
+// narrative, the result's text. False with `err`.
+bool finish_match_index(Match *m, std::string *err);
 
 // ── Play's live match ──
 

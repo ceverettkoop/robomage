@@ -15,10 +15,10 @@
 // start() reads and checks the log, then on its own thread: finds the replay in the cache
 // (replay_cache.h) or runs the engine (`<engine> --replay LOG --rmstate-dump DUMP --narrative`, in
 // the engine's working directory, stdout and stderr into the cache entry's files) and caches it,
-// indexes the dump (match.h), and joins the log's episodes (episodes.h) and any opened with it.
-// The UI thread polls: progress() while it runs, take() once finished() — the thread hands the
-// Match over whole, so the UI never sees one half built. cancel() kills the engine or stops the
-// indexing; the destructor cancels and joins.
+// reads the entry's index (match_index.h) or indexes the dump (match.h) and caches that, and joins
+// the log's episodes (episodes.h) and any opened with it. The UI thread polls: progress() while
+// it runs, take() once finished() — the thread hands the Match over whole, so the UI never sees
+// one half built. cancel() kills the engine or stops the indexing; the destructor cancels and joins.
 
 namespace rmwork {
 
@@ -70,6 +70,7 @@ class Loader {
         void run();
         void set_phase(const std::string &phase, double fraction);
         bool replay(const std::string &log_bytes, Match *m, LoadOutcome *out);
+        bool index(const std::string &log_bytes, Match *m, LoadOutcome *out, std::string *err);
         void join_episodes(Match *m, LoadOutcome *out);
         void fail(LoadOutcome *out, const std::string &title, const std::string &message, const std::string &detail);
 
@@ -81,6 +82,7 @@ class Loader {
         double fraction_ = -1;
         LoadRequest req_;
         LoadOutcome out_;
+        std::string index_path_;  // the cache entry's index (match_index.h)
 };
 
 }  // namespace rmwork

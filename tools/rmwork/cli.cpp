@@ -41,6 +41,7 @@ struct CliOptions {
         int view = -1;
         std::string engine;
         bool selftest_data = false;
+        std::string selftest_evals;  // --selftest-evals' model ("" none)
         bool open_picker = false;
         bool game_combo = false;
         int table_hover_stack = -1;
@@ -124,6 +125,7 @@ static void usage() {
         "       rmwork [--start-page] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
+        "       rmwork --selftest-evals MODEL [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
         "(default ~/.config/robomage), the layout beside it in workbench/imgui.ini.\n"
         "  --mode MODE        start in Play or Replay\n"
@@ -214,7 +216,10 @@ static void usage() {
         "                     RMWORK-SELFTEST: N checks, M failures\n"
         "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
         "                     beside rmwork (or --engine), and of Play's games against it; prints\n"
-        "                     RMWORK-SELFTEST-DATA: N checks, M failures\n");
+        "                     RMWORK-SELFTEST-DATA: N checks, M failures\n"
+        "  --selftest-evals MODEL  headless checks of the evaluations' tools on an nn: match the robomage_nn\n"
+        "                     beside the engine plays with MODEL on both seats (make actor); prints\n"
+        "                     RMWORK-SELFTEST-EVALS: N checks, M failures\n");
 }
 
 static bool parse_size(const std::string &text, int *w, int *h) {
@@ -242,6 +247,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->selftest = true;
         } else if (a == "--selftest-data") {
             opt->selftest_data = true;
+        } else if (a == "--selftest-evals" && has_value) {
+            opt->selftest_evals = argv[++i];
         } else if (a == "--open" && has_value) {
             opt->open_log = argv[++i];
         } else if (a == "--episode" && has_value) {
@@ -653,6 +660,7 @@ int workbench_main(int argc, char **argv) {
     if (!parse_args(argc, argv, &opt, &exit_code)) return exit_code;
     if (opt.selftest) return run_selftest();
     if (opt.selftest_data) return run_selftest_data(opt.engine);
+    if (!opt.selftest_evals.empty()) return run_selftest_evals(opt.engine, opt.selftest_evals);
 
     create_ui_context();
     const ConfigPaths paths = config_paths(opt.config_dir);

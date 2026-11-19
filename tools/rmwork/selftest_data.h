@@ -17,7 +17,8 @@
 //   - the narrative cut at every decision; each seat's log exactly its own frames' events (frame by
 //     frame, the terminal frame's at the last decision), the opponent's opening draws unnamed;
 //   - the cache: a second open replays nothing, an engine of another identity replays again, a
-//     cached dump that no longer decodes reaches the error dialog;
+//     cached dump that no longer decodes reaches the error dialog; the match index kept beside the
+//     cached dump (selftest_index.h);
 //   - episodes: a --replay --trajectory-out episode opened on its own finds its log and joins every
 //     decision (seat and reply), the bo3 match's own episodes join by name, μ where the random seat
 //     gave one; a run directory's listing and the log ↔ episode correspondence by name;
@@ -35,6 +36,17 @@
 namespace rmwork {
 
 int run_selftest_data(const std::string &engine);
+
+// rmwork --selftest-evals: the evaluations' tools on real evaluations. The robomage_nn beside the
+// engine plays a bo3 match with the nn: agent of `model` (a TorchScript or .pt2 export, such as the
+// gate's reference policy) on both seats, recorded with --trajectory-out, on the CPU; Replay opens it
+// with its episodes (every decision joined) and check_tools_values (selftest_tools.h) runs on it:
+// every decision evaluated, π a distribution over its menu, the Value Graph's series a point per
+// decision of the seat, Swings, seat disagreement and next swing recomputed from the values, the
+// Inspector, Choices' π and the Model's Read. Same temporary directories as --selftest-data. Prints
+// "RMWORK-SELFTEST-EVALS: N checks, M failures"; nonzero exit on a failure or a missing
+// robomage_nn or model.
+int run_selftest_evals(const std::string &engine, const std::string &model);
 
 }  // namespace rmwork
 

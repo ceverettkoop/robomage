@@ -42,6 +42,8 @@ static void check_choices(
     const rmwork::CheckFn &check, const rmwork::ToolData &td, const std::string &here, rmwork::ToolsCoverage *cov);
 static void check_inspector(
     const rmwork::CheckFn &check, const rmwork::ToolData &td, const std::string &here, rmwork::ToolsCoverage *cov);
+static void check_tree_follow(
+    const rmwork::CheckFn &check, const rmwork::ToolData &td, const std::string &here, rmwork::ToolsCoverage *cov);
 static void check_tree(const rmwork::CheckFn &check, const rmwork::DecisionFrame &f, const rmwork::StateTreeModel &tm,
     const std::string &here, rmwork::ToolsCoverage *cov);
 static void check_links(const rmwork::CheckFn &check, const rmwork::FrameModels &fm, const rmwork::StateTreeModel &tm,
@@ -405,6 +407,45 @@ static void check_links(const rmwork::CheckFn &check, const rmwork::FrameModels 
     }
 }
 
+// A Table object or a menu row linked from elsewhere: the State Tree's scroll target is that
+// object's row, shown with the nodes above it expanded; a menu row reveals its source's row.
+static void check_tree_follow(
+    const rmwork::CheckFn &check, const rmwork::ToolData &td, const std::string &here, rmwork::ToolsCoverage *cov) {
+    using namespace rmwork;
+    const TableModel &tm = td.models().table;
+    StateTreeView view;
+    view.refresh(td);
+    const auto shown = [&](uint64_t handle, const std::string &what) {
+        const std::vector<std::string> path = view.model().object_path(handle);
+        if (path.empty()) return;
+        check(view.scroll_target() == path.back(), here + what + " does not make its State Tree row the scroll target");
+        bool found = false;
+        for (const TreeRow &r : view.rows())
+            if (r.key == path.back()) found = r.handle == handle;
+        for (size_t k = 0; k + 1 < path.size(); ++k) found = found && view.expanded().count(path[k]) > 0;
+        check(found, here + what + "'s State Tree row is not shown with its nodes expanded");
+        ++cov->tree_reveals;
+    };
+    view.expanded().clear();
+    LinkState ls;
+    ls.set_menu(tm.menu);
+    const size_t n = tm.objects.size();
+    for (size_t k = 0; k < n; k += std::max<size_t>(1, n / 3)) {
+        ls.hover_object(tm.objects[k].handle);
+        ls.new_frame();
+        view.follow_links(ls);
+        shown(tm.objects[k].handle, "hovering a Table object");
+    }
+    for (size_t r = 0; r < tm.menu.size(); ++r) {
+        if (!tm.menu[r].source || view.model().object_path(tm.menu[r].source).empty()) continue;
+        ls.hover_menu_row(static_cast<int>(r));
+        ls.new_frame();
+        view.follow_links(ls);
+        shown(tm.menu[r].source, "hovering menu row " + std::to_string(r));
+        break;
+    }
+}
+
 static void key_press(ImGuiKey key, const std::function<void(int)> &frames) {
     ImGuiIO &io = ImGui::GetIO();
     io.AddKeyEvent(key, true);
@@ -486,7 +527,10 @@ void check_tools_frames(const CheckFn &check, App &app, const std::string &at, T
             check_inspector(check, td, here, cov);
             StateTreeModel tm;
             tm.build(f, fm.table);
-            if (i % 4 == 0 || i + 1 == n) check_tree(check, f, tm, here, cov);
+            if (i % 4 == 0 || i + 1 == n) {
+                check_tree(check, f, tm, here, cov);
+                check_tree_follow(check, td, here, cov);
+            }
             if (fm.menu.shown) check_links(check, fm, tm, here, cov);
             ++cov->frames;
         }
@@ -538,6 +582,42 @@ void check_tools_drawing(
         frames(1);
         break;
     }
+    // A card hovered on the Table, with the State Tree scrolled to its end: the tree scrolls its row
+    // into view once, then leaves the scrolling alone while the hover stays.
+    app.focus_tool(Tool::TREE);
+    StateTreeView &tree = app.tools().tree();
+    for (size_t i = n; i-- > 0;) {
+        s.go_to(i);
+        s.set_view(VIEW_OMNI);
+        frames(2);
+        const TableModel *model = app.table().model();
+        if (!model) continue;
+        std::string name;
+        for (const TableObject &o : model->objects)
+            if (!o.name.empty() && !tree.model().object_path(o.handle).empty()) name = o.name;
+        if (name.empty()) continue;
+        tree.expand_overview();
+        tree.force_scroll_to_end();
+        frames(2);
+        app.table().force_card_hover(name);
+        frames(3);
+        const LinkItem &h = app.links().hovered();
+        const std::vector<std::string> path =
+            h.kind == LinkItem::Kind::OBJECT ? tree.model().object_path(h.handle) : std::vector<std::string>();
+        check(!path.empty() && tree.revealed() == path.back() && tree.revealed_on_screen() &&
+                  tree.scroll_target().empty(),
+            where(at, i, VIEW_OMNI) + "hovering " + name +
+                " on the Table does not scroll its State Tree row into view");
+        tree.force_scroll_to_end();
+        frames(2);
+        check(!tree.revealed_on_screen() || tree.rows().size() < 40,
+            where(at, i, VIEW_OMNI) + "the State Tree scrolls back to a hover that did not change");
+        app.table().force_card_hover("");
+        frames(1);
+        ++cov->tree_scrolls;
+        break;
+    }
+
     // Zone windows at the last decision: seat A's graveyard and B's hand, in A's view.
     PlayersView &p = app.tools().players();
     s.go_to(n - 1);
@@ -593,8 +673,8 @@ void check_tools_drawing(
     s.set_view(VIEW_A);
 }
 
-void check_tools_values(
-    const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at, ToolsCoverage *cov) {
+void check_tools_values(const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at,
+    const ValuesExpect &want_values, ToolsCoverage *cov) {
     ReplaySession &s = app.replay();
     if (!s.loaded()) return;
     const Match &m = *s.match();
@@ -607,7 +687,29 @@ void check_tools_values(
     s.set_view(VIEW_OMNI);
     td.refresh(s, app.table());
     const MatchValues &mv = td.values();
-    check(mv.policies.size() == 2, at + ": " + std::to_string(mv.policies.size()) + " policies evaluated, not 2");
+    check(mv.policies.size() == want_values.policies, at + ": " + std::to_string(mv.policies.size()) +
+                                                          " policies evaluated, not " +
+                                                          std::to_string(want_values.policies));
+    if (want_values.every_decision) {
+        // Every decision evaluated by every policy, each π a distribution over its menu.
+        size_t missing = 0, not_distribution = 0;
+        for (size_t i = 0; i < m.decisions.size(); ++i) {
+            auto it = steps.find(i);
+            if (it == steps.end() || it->second.policies.size() != want_values.policies) {
+                ++missing;
+                continue;
+            }
+            for (const featurize::PolicyEvalRecord &r : it->second.policies) {
+                double sum = 0;
+                for (float l : r.log_pi) sum += std::exp(static_cast<double>(l));
+                if (static_cast<int>(r.log_pi.size()) != m.decisions[i].menu_rows || std::fabs(sum - 1) > 1e-4)
+                    ++not_distribution;
+            }
+        }
+        check(missing == 0, at + ": " + std::to_string(missing) + " decisions without every policy's evaluation");
+        check(not_distribution == 0, at + ": " + std::to_string(not_distribution) +
+                                         " evaluations whose \xCF\x80 is not a distribution over the menu");
+    }
     // The Value Graph: every view's series are its seats', each the episodes' values on A's scale.
     for (int v = 0; v < VIEW_COUNT; ++v) {
         const std::vector<GraphSeries> series = ValueGraphView::series_for(td, v);
@@ -626,6 +728,13 @@ void check_tools_values(
                     if (r.id == pol) want.emplace_back(kv.first, seat == 1 ? -r.value : r.value);
             }
             const std::vector<std::pair<size_t, double>> got = ValueGraphView::points(td, seat, pol);
+            if (want_values.every_decision) {
+                size_t decided = 0;
+                for (const DecisionInfo &d : m.decisions) decided += d.decider == seat ? 1 : 0;
+                check(got.size() == decided, at + ": the Value Graph's " + seat_name(seat) + " series has " +
+                                                 std::to_string(got.size()) + " points for " + std::to_string(decided) +
+                                                 " decisions");
+            }
             bool same = got.size() == want.size();
             for (size_t k = 0; same && k < got.size(); ++k)
                 same = got[k].first == want[k].first && std::fabs(got[k].second - want[k].second) < 1e-6;
@@ -698,7 +807,9 @@ void check_tools_values(
         check_inspector(check, td, where(at, i, VIEW_OMNI) + "(A's scale) ", cov);
         td.scale_a = false;
         const StepFacts &f = it->second;
-        for (int64_t pol : {int64_t(-1), int64_t(1)}) {
+        std::vector<int64_t> shown = {-1};
+        shown.insert(shown.end(), mv.policies.begin(), mv.policies.end());
+        for (int64_t pol : shown) {
             td.policy = pol;
             const featurize::PolicyEvalRecord *want = nullptr;
             for (const featurize::PolicyEvalRecord &r : f.policies)
@@ -730,7 +841,7 @@ void check_tools_values(
                 where(at, i, 1 - f.seat) + "the status bar shows the decider's V in the other seat's view");
         }
     }
-    check(m.agents[0] == "explore" && m.agents[1] == "random",
+    check(m.agents == want_values.agents,
         at + ": the seats' agents are not the episodes' (" + m.agents[0] + ", " + m.agents[1] + ")");
     s.go_to(0);
     s.set_view(VIEW_A);

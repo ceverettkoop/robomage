@@ -14,6 +14,8 @@
 //   <root>/<key>/narrative.txt  the engine's stdout: the --narrative log and its result lines
 //   <root>/<key>/stderr.txt     the engine's stderr
 //   <root>/<key>/entry.json     written last: the entry is complete (the log, the engine, sizes)
+//   <root>/<key>/index.bin      the match's index (match_index.h), written after the first open
+//                               indexes the dump, rewritten when it is stale or unreadable
 //
 // A replay writes into <key>.tmp-<pid> and renames it into place once the engine has exited 0.
 // After each new entry the oldest entries (by entry.json's modification time) are removed while the
@@ -39,7 +41,7 @@ uint64_t fnv1a64(const std::string &data, uint64_t h = 0xcbf29ce484222325ull);
 std::string replay_cache_key(const std::string &log_bytes, const EngineIdentity &engine);
 
 struct CacheEntry {
-        std::string dir, dump, narrative, stderr_path, entry_json;
+        std::string dir, dump, narrative, stderr_path, entry_json, index;
 };
 CacheEntry cache_entry(const std::string &root, const std::string &key);
 // The entry is complete (entry.json and the dump present).

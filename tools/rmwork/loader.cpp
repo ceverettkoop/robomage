@@ -11,6 +11,7 @@
 
 #include "episodes.h"
 #include "files.h"
+#include "match_index.h"
 #include "replay_cache.h"
 #include "subprocess.h"
 
@@ -164,14 +165,7 @@ void Loader::run() {
         fail(&out, "Not a decision log",
             base_name(req_.log_path) + " is not a decision log the engine can replay (RMLOG v3).", err);
     } else if (replay(bytes, m.get(), &out)) {
-        set_phase("Indexing " + base_name(req_.log_path), 0);
-        const bool ok = index_match(
-            m.get(),
-            [this](double f) {
-                set_phase("Indexing " + base_name(req_.log_path), f);
-                return !cancel_.load();
-            },
-            &err);
+        const bool ok = index(bytes, m.get(), &out, &err);
         if (!ok) {
             fail(&out, "Replay not decoded",
                 "The frames the engine wrote while replaying " + base_name(req_.log_path) +
@@ -205,6 +199,7 @@ bool Loader::replay(const std::string &log_bytes, Match *m, LoadOutcome *out) {
     m->dump_path = entry.dump;
     m->narrative_path = entry.narrative;
     m->stderr_path = entry.stderr_path;
+    index_path_ = entry.index;
     if (cache_entry_complete(entry)) {
         m->from_cache = true;
         utimensat(AT_FDCWD, entry.entry_json.c_str(), nullptr, 0);
@@ -276,6 +271,26 @@ bool Loader::replay(const std::string &log_bytes, Match *m, LoadOutcome *out) {
     out->replayed = true;
     prune_replay_cache(req_.cache_root, CACHE_MAX_BYTES, entry.dir);
     return true;
+}
+
+// The match's index: the cache entry's when it is current, else the dump indexed and the entry's
+// index written (a cache that cannot take it is a note). False with `err`.
+bool Loader::index(const std::string &log_bytes, Match *m, LoadOutcome *out, std::string *err) {
+    const uint64_t log_hash = fnv1a64(log_bytes);
+    std::string why;
+    set_phase("Reading the index of " + base_name(req_.log_path), -1);
+    if (read_match_index(m, index_path_, log_hash, &why)) return true;
+    set_phase("Indexing " + base_name(req_.log_path), 0);
+    const bool ok = index_match(
+        m,
+        [this](double f) {
+            set_phase("Indexing " + base_name(req_.log_path), f);
+            return !cancel_.load();
+        },
+        err);
+    if (ok && !write_match_index(*m, index_path_, log_hash, &why))
+        out->notes.push_back("the index was not cached: " + why);
+    return ok;
 }
 
 // The log's own episodes, then those opened with it. A problem with an episode opened with the log

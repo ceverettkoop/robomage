@@ -27,6 +27,7 @@
 #include "rmlog.h"
 #include "run_browser.h"
 #include "selftest_images.h"
+#include "selftest_index.h"
 #include "selftest_play.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
@@ -89,6 +90,8 @@ static void check_stopped_run(
     Tally *t, rmwork::App &app, const Env &env, rmwork::TableCoverage *cov, rmwork::ToolsCoverage *tools);
 static void check_run_directory(Tally *t, const Env &env, const std::string &bo3_log);
 static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::string &bo3_log);
+static bool make_env(const std::string &engine, const char *tmp_prefix, Env *env);
+static std::string make_nn_match(Tally *t, const Env &env, const std::string &nn, const std::string &model);
 
 static void check(Tally *t, bool ok, const std::string &what) {
     ++t->checks;
@@ -372,13 +375,15 @@ static void check_tools_coverage(Tally *t, const rmwork::ToolsCoverage &cov) {
     check(t, cov.pending > 0 && cov.pending_costs > 0, "Tools: no pending query or cost met");
     check(t, cov.trees > 0 && cov.tree_handles > 0, "Tools: no State Tree walked");
     check(t, cov.links > 0, "Tools: no menu row linked");
+    check(t, cov.tree_reveals > 0 && cov.tree_scrolls > 0, "Tools: no link followed into the State Tree");
     check(t, cov.episode_decisions > 0, "Tools: no decision checked against its evaluations");
     std::printf(
         "Tools: %d frames (%d menus, %d withheld), %d drawn; %d zone cards (%d known hand, %d known library, %d linked "
-        "exile); %d pending, %d costs; %d trees, %d handles; %d links; %d evaluated decisions\n",
+        "exile); %d pending, %d costs; %d trees, %d handles; %d links, %d tree reveals, %d scrolls; %d evaluated "
+        "decisions\n",
         cov.frames, cov.menus, cov.withheld, cov.drawn, cov.zone_cards, cov.known_hand, cov.known_library,
-        cov.linked_exile, cov.pending, cov.pending_costs, cov.trees, cov.tree_handles, cov.links,
-        cov.episode_decisions);
+        cov.linked_exile, cov.pending, cov.pending_costs, cov.trees, cov.tree_handles, cov.links, cov.tree_reveals,
+        cov.tree_scrolls, cov.episode_decisions);
 }
 
 // The logs' frames met each thing the Table draws.
@@ -838,28 +843,101 @@ static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::
         "the opened logs are not remembered as recent files");
 }
 
+// The engine (`engine`, else the robomage beside rmwork) resolved, the corpus, and a temporary
+// directory holding $XDG_CONFIG_HOME, $XDG_CACHE_HOME and $XDG_DATA_HOME; false with a message.
+static bool make_env(const std::string &engine, const char *tmp_prefix, Env *env) {
+    using namespace rmwork;
+    env->engine = engine.empty() ? parent_dir(executable_path()) + "/robomage" : engine;
+    if (!is_executable(env->engine)) {
+        std::fprintf(stderr, "rmwork: no engine at %s (build it with make, or pass --engine)\n", env->engine.c_str());
+        return false;
+    }
+    char buf[PATH_MAX];
+    if (realpath(env->engine.c_str(), buf)) env->engine = buf;
+    env->workdir = default_engine_workdir();
+    env->corpus = repo_root() + "/tests/corpus";
+    env->tmp = make_temp_dir(tmp_prefix);
+    if (env->tmp.empty()) {
+        std::fprintf(stderr, "rmwork: cannot make a temporary directory\n");
+        return false;
+    }
+    setenv("XDG_CONFIG_HOME", (env->tmp + "/config").c_str(), 1);
+    setenv("XDG_CACHE_HOME", (env->tmp + "/cache").c_str(), 1);
+    setenv("XDG_DATA_HOME", (env->tmp + "/data").c_str(), 1);
+    return true;
+}
+
+// A bo3 match of `nn` (robomage_nn) with `model` on both seats, recorded with --trajectory-out (each
+// decision's evaluation by the deciding seat's policy); its decision log, "" after a failed check.
+static std::string make_nn_match(Tally *t, const Env &env, const std::string &nn, const std::string &model) {
+    const std::string dir = env.tmp + "/nn";
+    Env nn_env = env;
+    nn_env.engine = nn;
+    std::string err;
+    const bool ok = run_engine(nn_env,
+        {"--agent-a", "nn:" + model, "--agent-b", "nn:" + model, "--deck-a", "league/burn", "--deck-b",
+            "league/ur_tempo", "--bo3", "--game-seed", "3", "--trajectory-out", dir},
+        env.tmp + "/nn.out", &err);
+    check(t, ok, "robomage_nn does not play the nn: match: " + err);
+    const std::vector<std::string> logs = files_with(dir, ".rmlog");
+    check(t, logs.size() == 1, "the nn: match wrote " + std::to_string(logs.size()) + " decision logs");
+    check(t, files_with(dir, ".rmtraj").size() >= 2, "the nn: match wrote fewer than two episodes");
+    return logs.size() == 1 ? logs[0] : "";
+}
+
 namespace rmwork {
+
+int run_selftest_evals(const std::string &engine, const std::string &model) {
+    Tally t;
+    Env env;
+    if (!make_env(engine, "rmwork_selftest_evals_", &env)) return 1;
+    const std::string nn = parent_dir(env.engine) + "/robomage_nn";
+    char buf[PATH_MAX];
+    const std::string model_path = realpath(model.c_str(), buf) ? std::string(buf) : model;
+    if (!is_executable(nn) || path_kind(model_path) != PathKind::FILE) {
+        std::fprintf(stderr, "rmwork: --selftest-evals needs %s (make actor) and a model (%s)\n", nn.c_str(),
+            model_path.c_str());
+        remove_tree(env.tmp);
+        return 1;
+    }
+    // A CPU evaluation: never the GPU.
+    setenv("HIP_VISIBLE_DEVICES", "-1", 1);
+    setenv("CUDA_VISIBLE_DEVICES", "-1", 1);
+    begin_headless();
+    ToolsCoverage tools;
+    {
+        App app(default_settings(), config_paths(""), true);
+        app.set_engine_override(env.engine);
+        run_frames(app, 2);
+        const std::string log = make_nn_match(&t, env, nn, model_path);
+        if (!log.empty() && open_and_wait(&t, app, log, "nn: match")) {
+            check(&t, app.replay().loaded(), "the nn: match does not open: " + app.error_message());
+            if (app.replay().loaded()) {
+                const Match &m = *app.replay().match();
+                check(&t, m.bo3() && m.episode_steps.size() == m.decisions.size(),
+                    "the nn: match's episodes join " + std::to_string(m.episode_steps.size()) + " of " +
+                        std::to_string(m.decisions.size()) + " decisions");
+                const CheckFn fn = [&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); };
+                ValuesExpect want;
+                want.policies = 1;
+                want.agents = {"nn:" + model_path, "nn:" + model_path};
+                want.every_decision = true;
+                check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "nn: match", want, &tools);
+            }
+        }
+        check(&t, tools.episode_decisions > 0, "Tools: no decision of the nn: match checked against its evaluations");
+    }
+    destroy_ui_context();
+    remove_tree(env.tmp);
+    std::printf("Tools: %d evaluated decisions of an nn: match (%s)\n", tools.episode_decisions, model_path.c_str());
+    std::printf("RMWORK-SELFTEST-EVALS: %d checks, %d failures\n", t.checks, t.failures);
+    return t.failures == 0 ? 0 : 1;
+}
 
 int run_selftest_data(const std::string &engine) {
     Tally t;
     Env env;
-    env.engine = engine.empty() ? parent_dir(executable_path()) + "/robomage" : engine;
-    if (!is_executable(env.engine)) {
-        std::fprintf(stderr, "rmwork: no engine at %s (build it with make, or pass --engine)\n", env.engine.c_str());
-        return 1;
-    }
-    char buf[PATH_MAX];
-    if (realpath(env.engine.c_str(), buf)) env.engine = buf;
-    env.workdir = default_engine_workdir();
-    env.corpus = repo_root() + "/tests/corpus";
-    env.tmp = make_temp_dir("rmwork_selftest_data_");
-    if (env.tmp.empty()) {
-        std::fprintf(stderr, "rmwork: cannot make a temporary directory\n");
-        return 1;
-    }
-    setenv("XDG_CONFIG_HOME", (env.tmp + "/config").c_str(), 1);
-    setenv("XDG_CACHE_HOME", (env.tmp + "/cache").c_str(), 1);
-    setenv("XDG_DATA_HOME", (env.tmp + "/data").c_str(), 1);
+    if (!make_env(engine, "rmwork_selftest_data_", &env)) return 1;
     begin_headless();
     {
         // It persists (into the temporary configuration), so Play's step bar is checked writing settings.json.
@@ -885,6 +963,8 @@ int run_selftest_data(const std::string &engine) {
             const std::string log = env.corpus + "/" + name;
             if (open_and_wait(&t, app, log, name)) check_match(&t, app, log, name, &cov, &tools);
         }
+        check_match_index([&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, bo1,
+            [&t, &app, &bo1] { return open_and_wait(&t, app, bo1, "index"); });
         check_cache(&t, app, env);
         check_corpus_episode(&t, app, env);
         const std::string bo3 = make_bo3(&t, env);
@@ -893,7 +973,10 @@ int run_selftest_data(const std::string &engine) {
             const std::string eval = make_eval_match(&t, env, bo3);
             if (!eval.empty() && open_and_wait(&t, app, eval, "evaluations")) {
                 const CheckFn fn = [&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); };
-                check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "evaluations", &tools);
+                ValuesExpect want;
+                want.policies = 2;
+                want.agents = {"explore", "random"};
+                check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "evaluations", want, &tools);
             }
             check_run_directory(&t, env, bo3);
             check_picker(&t, app, env, bo3);

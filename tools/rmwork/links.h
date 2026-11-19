@@ -63,6 +63,9 @@ class LinkState {
         bool row_linked(int row) const;
         // The menu rows acting with object `handle` as their source.
         bool is_source(uint64_t handle) const;
+        // The hovered item, else the selected one: what the links come from.
+        const LinkItem &active() const { return hovered_.kind != LinkItem::Kind::NONE ? hovered_ : selected_; }
+        const std::vector<MenuLink> &menu() const { return menu_; }
 
     private:
         void link(const LinkItem &item);

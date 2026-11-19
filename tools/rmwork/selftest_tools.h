@@ -1,6 +1,7 @@
 #ifndef RMWORK_SELFTEST_TOOLS_H
 #define RMWORK_SELFTEST_TOOLS_H
 
+#include <array>
 #include <functional>
 #include <string>
 
@@ -23,6 +24,8 @@ struct ToolsCoverage {
         int pending = 0, pending_costs = 0;
         int trees = 0, tree_handles = 0;  // frames whose State Tree was walked; handle cells checked
         int links = 0;                    // menu rows linked both ways
+        int tree_reveals = 0;             // links followed to their State Tree rows
+        int tree_scrolls = 0;             // State Tree rows scrolled into view while drawn
         int drawn = 0;                    // decisions drawn with every tool open
         int episode_decisions = 0;        // decisions checked against their evaluations
 };
@@ -39,12 +42,23 @@ void check_tools_frames(const CheckFn &check, App &app, const std::string &at, T
 void check_tools_drawing(
     const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at, ToolsCoverage *cov);
 
+// What check_tools_values expects of the loaded match's evaluations.
+struct ValuesExpect {
+        size_t policies = 0;                // how many policies the episodes evaluate
+        std::array<std::string, 2> agents;  // the agents the episodes name, per seat
+        // Recorded by nn: agents on both seats: every decision evaluated by every policy, each π a
+        // distribution over the menu rows.
+        bool every_decision = false;
+};
+
 // The loaded match with evaluations in its episodes (`episode_files`, read again here): the Value
 // Graph's series are the episodes' values (on Player A's scale; a seat view only its own seat's),
 // Swings and seat disagreement recomputed independently, the toolbar's next swing, the
-// Inspector's values and π, Choices' π bars (the shown policy's, else the first), the Model's Read.
-void check_tools_values(
-    const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at, ToolsCoverage *cov);
+// Inspector's values and π, Choices' π bars (the shown policy's, else the first, and each policy's),
+// the Model's Read; with `want.every_decision`, a series point and a π summing to 1 at every
+// decision.
+void check_tools_values(const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at,
+    const ValuesExpect &want, ToolsCoverage *cov);
 
 // Engine-free: the evaluations' series, swings, disagreements, turn bands and value text on a
 // synthetic match.

@@ -26,7 +26,12 @@ treasure_chest (gold-bordered World Championship decks, Collectors' Edition, un-
 cards), and whose image Scryfall has (image_status not missing / placeholder). When no printing
 passes, the oldest paper printing with an image is chosen. A token is searched by its script's
 name, colours, power / toughness, artifact type and keywords (relaxed in that order — keywords,
-then P/T, then colours — until a token matches) and chosen by the same rule. The printing list
+then P/T, then colours — until a token matches) and chosen by the same rule, except that a token
+printed in the token set of a card that makes it comes first: the cards whose scripts make the
+token (bin/resources/cardsfolder/, as tools/forge_fetch/provision_decks.py finds them: TokenScript$,
+Amass, Investigate, …), each with the set of its own default printing; Scryfall prints set S's
+tokens in set "t" + S (Orcish Bowmasters, ltr: its Orc Army from tltr). The oldest such printing
+that may be the default wins; with none, the oldest as for any card. The printing list
 kept for the Settings picker is every paper printing (promos and the excluded set types too).
 
 manifest.json:
@@ -34,6 +39,7 @@ manifest.json:
      "cards": [{"key": "Delver of Secrets",      # the vocab name (a token: "token:<script stem>")
                 "index": 16,                     # vocab index (an unregistered token: -1)
                 "token": false, "stem": "",      # a token's script stem
+                                                 # a token: "sources": [{"card": "<vocab key>", "set": "ltr"}]
                 "names": ["Delver of Secrets"],  # every vocab name of the index
                 "scryfall_name": "Delver of Secrets // Insectile Aberration",
                 "chosen": 0,                     # index into printings
@@ -49,8 +55,9 @@ A face's "file" is where its image goes in the cache; the workbench checks the f
 Scryfall's API rules are kept: a generic User-Agent and Accept header, API requests 500 ms apart
 (its search and named-card endpoints take two a second) and image downloads 100 ms apart, a retry
 with backoff on 429 and 5xx (Retry-After honoured). A run is resumable: a card
-already in the manifest is not listed again (unless named with --cards or --refresh), an image
-already in the cache is not downloaded again. Exit code: the number of cards or tokens with no
+already in the manifest is not listed again (unless named with --cards or --refresh; a token listed
+before the source-set rule, without "sources", is listed again), an image already in the cache is
+not downloaded again. Exit code: the number of cards or tokens with no
 image (0 = all), 2 on a usage error.
 """
 
@@ -80,12 +87,15 @@ TIMEOUT_S = 30
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 VOCAB_H = os.path.join(_REPO_ROOT, "src", "card_vocab.h")
 TOKENS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "tokenscripts")
+CARDS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
+PROVISION_PY = os.path.join(_REPO_ROOT, "tools", "forge_fetch", "provision_decks.py")
 
 EXCLUDED_SET_TYPES = {"memorabilia", "funny", "minigame", "alchemy", "vanguard", "planechase", "archenemy",
                       "treasure_chest"}
 RULE = ("oldest paper printing (released date, set code, collector number) that is not digital, not a promo, "
         "not oversized, not from a memorabilia / funny / minigame / alchemy / vanguard / planechase / archenemy / "
-        "treasure_chest set, with an image; else the oldest paper printing with an image")
+        "treasure_chest set, with an image; else the oldest paper printing with an image; a token: first the "
+        "oldest such printing from the token set (t<set>) of the default printing of a card that makes it")
 COLOR_LETTERS = {"white": "w", "blue": "u", "black": "b", "red": "r", "green": "g"}
 
 
@@ -126,9 +136,20 @@ def printing_order(card):
     return (card.get("released_at", "9999-99-99"), card.get("set", ""), number_key(card.get("collector_number", "")))
 
 
-def choose_printing(cards, token=False):
-    """The default printing among `cards` (Scryfall card objects), or None."""
+def token_set(card_set):
+    """The code of the token set of a card set: Scryfall prints a set's tokens in "t<set>"."""
+    return "t" + card_set
+
+
+def choose_printing(cards, token=False, source_sets=()):
+    """The default printing among `cards` (Scryfall card objects), or None. A token made by cards
+    printed in `source_sets` takes the oldest printing that may be the default from one of their
+    token sets first."""
     paper = sorted((c for c in cards if is_paper(c) and has_image(c)), key=printing_order)
+    wanted = {token_set(s) for s in source_sets}
+    for c in paper:
+        if c.get("set", "") in wanted and default_ok(c, token):
+            return c
     for c in paper:
         if default_ok(c, token):
             return c
@@ -180,14 +201,16 @@ def printing_entry(card, token=False, face_name=None):
     }
 
 
-def build_entry(key, index, names, cards, token=False, stem="", face_name=None):
-    """The manifest entry of a card or token from its Scryfall printings (None when it has none)."""
+def build_entry(key, index, names, cards, token=False, stem="", face_name=None, sources=()):
+    """The manifest entry of a card or token from its Scryfall printings (None when it has none).
+    A token's `sources` are (vocab key, set of its default printing) of the cards that make it;
+    the entry keeps them as "sources" (a token listed before this rule has none)."""
     paper = sorted((c for c in cards if is_paper(c)), key=printing_order)
-    chosen = choose_printing(paper, token)
+    chosen = choose_printing(paper, token, [s for _, s in sources])
     if chosen is None:
         return None
     printings = [printing_entry(c, token, face_name) for c in paper]
-    return {
+    entry = {
         "key": key,
         "index": index,
         "token": token,
@@ -197,6 +220,9 @@ def build_entry(key, index, names, cards, token=False, stem="", face_name=None):
         "chosen": paper.index(chosen),
         "printings": printings,
     }
+    if token:
+        entry["sources"] = [{"card": k, "set": s} for k, s in sources]
+    return entry
 
 
 # ── The vocab and the token scripts ──────────────────────────────────────────────────────────────
@@ -266,6 +292,37 @@ def token_queries(info):
               " ".join(p for p in (name, types) if p)):
         if q not in out:
             out.append(q)
+    return out
+
+
+def token_makers(vocab, cards_dir=CARDS_DIR, provision_py=PROVISION_PY):
+    """{token script stem: [vocab keys of the cards whose scripts make it]}, in vocab order, from the
+    card scripts (tools/forge_fetch/provision_decks.py's collect_tokens: TokenScript$ stems, Amass
+    armies, Investigate's Clue, …); {} when the scripts or that tool are absent."""
+    if not os.path.isdir(cards_dir) or not os.path.isfile(provision_py):
+        return {}
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("provision_decks", provision_py)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    makers = {}
+    for _, names in vocab:
+        key = vocab_key(names)
+        for stem in sorted(mod.collect_tokens(names, cards_dir)):
+            makers.setdefault(stem, [])
+            if key not in makers[stem]:
+                makers[stem].append(key)
+    return makers
+
+
+def token_sources(stem, makers, by_key):
+    """[(vocab key, set)] of the cards that make token `stem` with the set of each one's default
+    printing, from the manifest entries `by_key` (a card not listed yet is left out)."""
+    out = []
+    for key in makers.get(stem, []):
+        e = by_key.get(key)
+        if e and e.get("printings"):
+            out.append((key, e["printings"][e["chosen"]]["set"]))
     return out
 
 
@@ -435,13 +492,19 @@ def targets(vocab, token_index, tokens_dir, only):
     return out
 
 
-def list_entry(client, key, idx, names, token, stem, info, log):
-    """The manifest entry for a target (None with the reason)."""
+def relist_needed(entry, token, refresh, named):
+    """Whether a target's printings are listed (again): not in the manifest, --refresh, named with
+    --cards (and no --printing), or a token listed before the source-set rule (no "sources")."""
+    return entry is None or refresh or named or (token and "sources" not in entry)
+
+
+def list_entry(client, key, idx, names, token, stem, info, log, sources=()):
+    """The manifest entry for a target (None with the reason); a token's `sources` as build_entry's."""
     if token:
         for q in token_queries(info):
             cards = client.search(q)
             if cards:
-                entry = build_entry(key, idx, names, cards, True, stem, info["name"])
+                entry = build_entry(key, idx, names, cards, True, stem, info["name"], sources)
                 if entry:
                     return entry, ""
         return None, "Scryfall has no paper token %s" % info["name"]
@@ -473,6 +536,7 @@ def run(args):
     by_key = {e["key"]: e for e in manifest["cards"]}
     missing = {m["key"]: m for m in manifest.get("missing", [])}
     todo = targets(vocab, token_index, args.tokens_dir, only)
+    makers = token_makers(vocab, args.cards_dir) if any(t[3] for t in todo) else {}
     if only and not todo:
         print("fetch_images: no vocab card or token named %s" % ", ".join(sorted(only)), file=sys.stderr)
         return 2
@@ -480,11 +544,12 @@ def run(args):
     images = 0
     for n, (key, idx, names, token, stem, info) in enumerate(todo, 1):
         entry = by_key.get(key)
-        relist = entry is None or args.refresh or (args.cards and not overrides)
+        relist = relist_needed(entry, token, args.refresh, bool(args.cards) and not overrides)
         try:
             if relist:
                 log("[%d/%d] %s" % (n, len(todo), key))
-                entry, why = list_entry(client, key, idx, names, token, stem, info, log)
+                sources = token_sources(stem, makers, by_key) if token else ()
+                entry, why = list_entry(client, key, idx, names, token, stem, info, log, sources)
                 if entry is None:
                     log("  MISSING: " + why)
                     missing[key] = {"key": key, "why": why}
@@ -518,8 +583,13 @@ def run(args):
                     failed += 1
             if args.dry_run and relist:
                 c = entry["printings"][entry["chosen"]]
-                log("  %s: %s (%s) #%s, %s; %d paper printings" % (entry["scryfall_name"], c["set_name"], c["set"],
-                                                                   c["number"], c["released"], len(entry["printings"])))
+                made = ""
+                if token:
+                    made = "; made by %s" % (", ".join("%s (%s)" % (x["card"], x["set"]) for x in entry["sources"])
+                                             or "no listed card")
+                log("  %s: %s (%s) #%s, %s; %d paper printings%s" % (entry["scryfall_name"], c["set_name"], c["set"],
+                                                                     c["number"], c["released"],
+                                                                     len(entry["printings"]), made))
         except RuntimeError as e:
             log("  ERROR: %s" % e)
             failed += 1
@@ -614,6 +684,38 @@ def selftest():
     check(len(token_queries({"name": "Illusion", "colors": "u", "types": ["Creature", "Illusion"], "power": "*",
                              "toughness": "*", "keywords": []})) == 2, "a */* token's queries")
     check(safe_part("★12") == "_u12" and safe_part("12a") == "12a", "file name parts")
+    # Tokens: the token set of a card that makes it first, else the oldest.
+    army = [_canned("tltr", "12", "2023-06-23", name="Orc Army", set_type="token"),
+            _canned("twar", "17", "2019-05-03", name="Zombie Army", set_type="token"),
+            _canned("tmh3", "5", "2024-06-14", name="Orc Army", set_type="token", promo=True),
+            _canned("tlci", "3", "2023-11-17", name="Orc Army", set_type="token")]
+    check(choose_printing(army, True)["set"] == "twar", "a token with no source: not the oldest")
+    check(choose_printing(army, True, ["ltr"])["set"] == "tltr", "a token's source set (ltr) is not preferred")
+    check(choose_printing(army, True, ["lci", "ltr"])["set"] == "tltr", "the oldest source-set token is not chosen")
+    check(choose_printing(army, True, ["mh3"])["set"] == "twar", "a promo token of the source set is preferred")
+    check(choose_printing(army, True, ["lea"])["set"] == "twar", "no token of the source set: not the oldest")
+    e = build_entry("token:b_0_0_orc_army", 901, ["Orc Army"], army, True, "b_0_0_orc_army", "Orc Army",
+                    [("Orcish Bowmasters", "ltr")])
+    check(e["printings"][e["chosen"]]["set"] == "tltr" and
+          e["sources"] == [{"card": "Orcish Bowmasters", "set": "ltr"}], "a token entry's sources and choice")
+    check("sources" not in build_entry("Lightning Bolt", 2, ["Lightning Bolt"], prints), "a card has sources")
+    by_key = {"Orcish Bowmasters": {"chosen": 1, "printings": [{"set": "plst"}, {"set": "ltr"}]}}
+    check(token_sources("b_0_0_orc_army", {"b_0_0_orc_army": ["Orcish Bowmasters", "Unlisted Card"]}, by_key) ==
+          [("Orcish Bowmasters", "ltr")], "a token's sources from the manifest")
+    check(relist_needed({"key": "token:x"}, True, False, False) and
+          not relist_needed({"key": "token:x", "sources": []}, True, False, False) and
+          not relist_needed({"key": "Bolt"}, False, False, False), "a token listed before the source rule")
+    with tempfile.TemporaryDirectory() as cards_dir:
+        os.makedirs(os.path.join(cards_dir, "o"))
+        os.makedirs(os.path.join(cards_dir, "t"))
+        with open(os.path.join(cards_dir, "o", "orcish_bowmasters.txt"), "w") as f:
+            f.write("Name:Orcish Bowmasters\nSVar:DBAmass:DB$ Amass | Type$ Orc | Num$ 1\n")
+        with open(os.path.join(cards_dir, "t", "thraben_inspector.txt"), "w") as f:
+            f.write("Name:Thraben Inspector\nT:Mode$ ChangesZone | Execute$ TrigInvestigate\n"
+                    "SVar:TrigInvestigate:DB$ Investigate\n")
+        makers = token_makers([(1, ["Orcish Bowmasters"]), (2, ["Thraben Inspector"]), (3, ["No Script"])], cards_dir)
+        check(makers == {"b_0_0_orc_army": ["Orcish Bowmasters"], "c_a_clue_draw": ["Thraben Inspector"]},
+              "the token makers from the card scripts: %r" % makers)
     # The vocab: split cards keep one key, the token band reads.
     vocab, token_index = read_vocab()
     by = dict(vocab)
@@ -638,6 +740,7 @@ def main(argv=None):
     ap.add_argument("--selftest", action="store_true", help="check the choice rule on canned JSON (no network)")
     ap.add_argument("--vocab", default=VOCAB_H, help=argparse.SUPPRESS)
     ap.add_argument("--tokens-dir", default=TOKENS_DIR, help=argparse.SUPPRESS)
+    ap.add_argument("--cards-dir", default=CARDS_DIR, help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     if args.selftest:
         return selftest()

@@ -465,6 +465,7 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
     for (auto &s : m->streams_) s.reset(new agents::SeatStream());
     m->decisions.clear();
     m->by_key_.clear();
+    m->match_frames_.clear();
     m->lru_.clear();
     for (auto &l : m->logs) l.clear();
     m->result = MatchResult();
@@ -510,6 +511,10 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
             break;
         }
         if (kind != static_cast<uint8_t>(rmstate::FrameKind::STATE)) {
+            FrameRef ref;
+            ref.offset = static_cast<uint64_t>(end) - payload.size();
+            ref.size = static_cast<uint32_t>(payload.size());
+            m->match_frames_.emplace_back(viewer, ref);
             if (!m->streams_[viewer]->feed_match_frame(payload, err)) {
                 *err = std::string(VIEW_NAMES[viewer]) + "'s once-per-match frame: " + *err;
                 ok = false;
@@ -541,6 +546,11 @@ bool index_match(Match *m, const std::function<bool(double)> &progress, std::str
         *err = "the dump ends inside a decision's frames";
         return false;
     }
+    return finish_match_index(m, err);
+}
+
+bool finish_match_index(Match *m, std::string *err) {
+    m->by_key_.clear();
     if (decided_count(*m) != m->log.replies.size()) {
         *err = "the replay produced " + std::to_string(m->decisions.size()) + " decisions; the log holds " +
                std::to_string(m->log.replies.size());

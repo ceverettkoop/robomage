@@ -26,7 +26,6 @@ struct Entry {
 
 static std::string hex64(uint64_t v);
 static uint64_t tree_bytes(const std::string &path);
-static int64_t mtime_ns(const struct stat &st);
 static bool stale_tmp(const std::string &name);
 
 static std::string hex64(uint64_t v) {
@@ -50,15 +49,6 @@ static uint64_t tree_bytes(const std::string &path) {
     return total;
 }
 
-static int64_t mtime_ns(const struct stat &st) {
-#ifdef __APPLE__
-    const struct timespec &mtime = st.st_mtimespec;
-#else
-    const struct timespec &mtime = st.st_mtim;
-#endif
-    return static_cast<int64_t>(mtime.tv_sec) * 1000000000 + mtime.tv_nsec;
-}
-
 // "<key>.tmp-<pid>" of a process that no longer runs.
 static bool stale_tmp(const std::string &name) {
     const size_t at = name.rfind(".tmp-");
@@ -73,11 +63,11 @@ EngineIdentity engine_identity(const std::string &binary) {
     EngineIdentity id;
     char buf[PATH_MAX];
     id.path = realpath(binary.c_str(), buf) ? std::string(buf) : binary;
-    struct stat st;
-    if (stat(id.path.c_str(), &st) != 0) return id;
-    id.found = S_ISREG(st.st_mode);
-    id.size = static_cast<uint64_t>(st.st_size);
-    id.mtime_ns = mtime_ns(st);
+    const FileStamp st = file_stamp(id.path);
+    if (!st.found) return id;
+    id.found = st.regular;
+    id.size = st.size;
+    id.mtime_ns = st.mtime_ns;
     return id;
 }
 
@@ -108,6 +98,7 @@ CacheEntry cache_entry(const std::string &root, const std::string &key) {
     e.narrative = e.dir + "/narrative.txt";
     e.stderr_path = e.dir + "/stderr.txt";
     e.entry_json = e.dir + "/entry.json";
+    e.index = e.dir + "/index.bin";
     return e;
 }
 
@@ -148,8 +139,7 @@ void prune_replay_cache(const std::string &root, uint64_t max_bytes, const std::
         en.dir = dir;
         en.bytes = tree_bytes(dir);
         total += en.bytes;
-        struct stat st;
-        en.mtime_ns = stat((dir + "/entry.json").c_str(), &st) == 0 ? mtime_ns(st) : 0;
+        en.mtime_ns = file_stamp(dir + "/entry.json").mtime_ns;
         if (dir != keep) entries.push_back(en);
     }
     std::sort(entries.begin(), entries.end(), [](const Entry &a, const Entry &b) { return a.mtime_ns < b.mtime_ns; });
