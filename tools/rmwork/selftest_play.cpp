@@ -16,6 +16,7 @@
 #include "rmlog.h"
 #include "selftest_choices.h"
 #include "selftest_decisions.h"
+#include "selftest_priority.h"
 #include "selftest_sideboard.h"
 #include "selftest_start.h"
 
@@ -681,6 +682,7 @@ void check_play(const CheckFn &check, App &app, const std::function<void(int)> &
     check_step_bar(check, app, frames);
     check_table_decisions(check, app, frames);
     check_table_choices(check, app, frames);
+    check_table_priority(check, app, frames);
     check_concede(check, app, frames);
     check_scripted(check, app, frames);
     check_failures(check, app, frames, env);

@@ -6,21 +6,29 @@
 #include <vector>
 
 #include "../../src/agents/decision_view.h"
+#include "card_book.h"
 #include "match.h"
+#include "priority_costs.h"
 #include "table_model.h"
 
 // ── What a click on the Table answers: a decision's menu rows by the object or player they name ──
 //
-// Direct manipulation on the Table (docs/workbench_plan.md §4.2, items 6, 7 and 11). Read from the
-// viewer's STATE frame only (its menu, pending, pending_cost, combat and object tables), so a seat view
-// of the other seat's decision has none. These kinds of decision are answered on the Table:
+// Direct manipulation on the Table (docs/workbench_plan.md §4.2). Read from the viewer's STATE frame
+// only (its menu, pending, pending_cost, combat and object tables), so a seat view of the other seat's
+// decision has none. These kinds of decision are answered on the Table:
 //   - TARGET: every row is SELECT_TARGET or DIVIDE_DAMAGE (a spell's or ability's targets, a trigger's
 //     as it is put on the stack, one more point of divided damage). A target row names its candidate
 //     as its source (a player as its source player);
 //   - PAY: a PAYING_COSTS row in the menu: the interactive mana payment of --no-auto-mana (a mana
 //     ability's row names its permanent) and a Phyrexian pip paid with life or mana;
-//   - MANA: a priority decision offering mana abilities (MANA_* rows, --no-auto-mana): only those rows
-//     are picks, so a click on a land taps it for mana;
+//   - PRIORITY: a priority decision (the PASS_PRIORITY row, CAST_SPELL, PLAY_LAND, ACTIVATE_ABILITY,
+//     TURN_FACE_UP, COMPANION and, under --no-auto-mana, MANA_* rows). A row naming a card the Table
+//     shows (a hand card cast or played, a permanent activated or tapped for mana) is that card's pick,
+//     a card with several (Daze's two casts, a land's mana and its other ability, a cycling card) its
+//     popup; each row's cost (priority_costs.h) is in `costs`. The pass row is `pass`, a button of the
+//     prompt line with the rows naming a card off the Table (a flashback or escape from the graveyard, a
+//     companion); the prompt says what may be done ("Respond to Player B's Lightning Bolt: cast a spell
+//     or activate an ability, or pass");
 //   - combat (CR 508.1, 509.1, 510.1c): ATTACKERS (SELECT_ATTACKER rows, one per creature that can
 //     still attack, and CONFIRM_ATTACKERS), ATTACK_TARGET (what the creature just chosen attacks: the
 //     defending player or one of their planeswalkers), BLOCKERS (SELECT_BLOCKER rows and
@@ -53,8 +61,8 @@
 //     cost, a shuffle, a colour or creature type, a replacement to apply, …): its rows as prompt-line
 //     buttons (an object's row a pick when the Table shows the object), in the choice panel's list when
 //     there are more than MAX_PROMPT_ROWS of them.
-// Every decision but a priority decision and sideboarding (its tool, sideboard_view.h) has an answer on
-// the Table; Choices stays available for all of them.
+// Every decision but sideboarding (its tool, sideboard_view.h) has an answer on the Table; Choices stays
+// available for all of them.
 // A row naming an object shown on the Table (a battlefield or hand card, a stack object) or a player
 // is a pick of that object or player: a click on it answers with the row, or, when it names several
 // (a dual land's two colours), offers them in a popup. A row naming nothing (Done selecting targets,
@@ -73,7 +81,7 @@ enum class DecisionKind {
     NONE,
     TARGET,
     PAY,
-    MANA,
+    PRIORITY,
     ATTACKERS,
     ATTACK_TARGET,
     BLOCKERS,
@@ -151,14 +159,16 @@ struct TableDecision {
         int plan_owed = 0;                  // CARDS: the cards a discard plan holds (planned when more than 1)
         std::vector<ChosenTarget> chosen;   // TARGET: the targets chosen so far (chosen_targets)
         int confirm = -1;                   // ATTACKERS / BLOCKERS: the confirm row (the menu's last)
+        int pass = -1;                      // PRIORITY: the PASS_PRIORITY row
+        std::vector<WayCost> costs;         // PRIORITY: each row's cost (empty without the CARDS book)
         BlockFacts block;                   // BLOCKERS
         MulliganFacts mulligan;             // MULLIGAN, BOTTOM
         // The row chosen at this decision (Replay, an earlier decision of Play: the log's reply), -1 none;
         // set by the Table.
         int chosen_row = -1;
 
-        // The prompt line shows (every kind but MANA).
-        bool prompted() const { return kind != DecisionKind::NONE && kind != DecisionKind::MANA; }
+        // The prompt line shows (every kind but NONE).
+        bool prompted() const { return kind != DecisionKind::NONE; }
         // The choice panel shows (choice_panel.h).
         bool paneled() const { return !panel_rows.empty(); }
         // NUMBER: the row of value `value`, -1 none.
@@ -178,7 +188,8 @@ struct TableDecision {
 
 // The decision of `v`, a STATE frame of the Table's viewer, against the Table's model of it (the
 // objects and stack objects it shows); NONE when the frame has no menu or the menu is of another kind.
-TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m);
+// `book` (`v`'s stream's CARDS faces) gives a priority decision's costs; nullptr leaves them out.
+TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m, const CardBook *book = nullptr);
 
 // The targets chosen so far in the targeting decision `index` of `m` (in `view`'s frames): the rows
 // chosen at the decisions just before it of the same seat for the same source (`source`), as long as

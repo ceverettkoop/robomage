@@ -28,6 +28,10 @@ const ImU32 DIM_OVER = rmwork::hex_color(0x000000, 125);
 const ImU32 HAND_SHADE = rmwork::hex_color(0x000000, 46);
 const ImU32 RULE_DARK = rmwork::hex_color(0x000000, 115);
 const ImU32 RULE_LIGHT = rmwork::hex_color(0xffffff, 31);
+// A priority decision's playable card: a thin outline of GLOW at this alpha, thicker under the mouse.
+const unsigned WAY_ALPHA = 200;
+const float WAY_THICKNESS = 1.25f;
+const float WAY_HOT_THICKNESS = 2.5f;
 // Below a step's label in Play: its stop dot.
 const float STOP_DOT_H = 9;
 // The prompt line: its height beyond a line of text, and a button's padding beyond its label.
@@ -71,6 +75,7 @@ static std::string lower_text(std::string s);
 static std::vector<std::string> split_names(const std::string &spec);
 static bool dims_board(const rmwork::TableDecision &d);
 static std::string join_names(const std::vector<std::string> &names);
+static ImU32 with_alpha(ImU32 color, unsigned alpha);
 
 static ImVec2 at(ImVec2 o, float x, float y) {
     return ImVec2(o.x + x, o.y + y);
@@ -149,9 +154,15 @@ static bool dims_board(const rmwork::TableDecision &d) {
         case DecisionKind::UNLESS:
         case DecisionKind::CHOICE:
             return !d.picks.empty();
+        case DecisionKind::PRIORITY:
+            return false;
         default:
             return true;
     }
+}
+
+static ImU32 with_alpha(ImU32 color, unsigned alpha) {
+    return (color & ~IM_COL32_A_MASK) | (static_cast<ImU32>(alpha) << IM_COL32_A_SHIFT);
 }
 
 static std::string join_names(const std::vector<std::string> &names) {
@@ -414,7 +425,7 @@ bool TableView::refresh(ReplaySession &s, bool answer) {
     model_view_ = s.view();
     have_model_ = true;
     const agents::DecisionView dv(m->stream(s.view()), *frame, model_.bottom);
-    decision_ = read_table_decision(dv, model_);
+    decision_ = read_table_decision(dv, model_, &book(*m, s.view()));
     if (decision_.kind == DecisionKind::TARGET)
         decision_.chosen = chosen_targets(*m, s.cursor(), s.view(), decision_.source);
     // The row chosen here, once it is (Replay, an earlier decision of Play).
@@ -568,6 +579,14 @@ void TableView::draw(const TableDraw &d) {
         hit = Hit();
         hit.step = force_step_;
     }
+    bool forced_card = false;
+    for (size_t i = 0; !force_card_.empty() && !forced_card && i < layout_.cards.size(); ++i) {
+        const std::string &n = model_.objects[static_cast<size_t>(layout_.cards[i].object)].name;
+        if (n.empty() || lower_text(n).find(lower_text(force_card_)) == std::string::npos) continue;
+        hit = Hit();
+        hit.card = static_cast<int>(i);
+        forced_card = true;
+    }
     hovered_handle_ =
         hit.card >= 0 ? model_.objects[static_cast<size_t>(layout_.cards[static_cast<size_t>(hit.card)].object)].handle
                       : 0;
@@ -577,7 +596,7 @@ void TableView::draw(const TableDraw &d) {
     const bool clicked = over && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     const bool answered = clicked && answering_ && hit.step < 0 && answer_click(hit);
     if (answering_ && planning() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) plan_release(hit);
-    if (over) hover_hint(hit, d);
+    if (over || forced_card) hover_hint(hit, d);
     if (hit.step >= 0) {
         // A click on a step toggles its stop for the side whose turn the Table shows.
         const bool own = model_.active == model_.bottom;
@@ -665,14 +684,24 @@ bool TableView::answer_click(const Hit &hit) {
 
 // The popup of `p`'s rows, titled with the object's name (or the player's).
 void TableView::open_pick_popup(const DecisionPick &p) {
-    popup_rows_ = p.rows;
     const int obj = p.handle ? model_.find(p.handle) : -1;
-    popup_title_ = obj >= 0 && !model_.objects[static_cast<size_t>(obj)].name.empty()
-                       ? model_.objects[static_cast<size_t>(obj)].name
-                   : p.handle == 0 ? model_.players[static_cast<size_t>(p.seat == 1 ? 1 : 0)].name
-                                   : std::string("Choose");
+    open_rows_popup(p.rows, obj >= 0 && !model_.objects[static_cast<size_t>(obj)].name.empty()
+                                ? model_.objects[static_cast<size_t>(obj)].name
+                            : p.handle == 0 ? model_.players[static_cast<size_t>(p.seat == 1 ? 1 : 0)].name
+                                            : std::string("Choose"));
+}
+
+void TableView::open_rows_popup(const std::vector<int> &rows, const std::string &title) {
+    popup_rows_ = rows;
+    popup_title_ = title;
     popup_generation_ = model_generation_;
     open_popup_ = true;
+}
+
+std::string TableView::row_label(int row) const {
+    const std::string &text = decision_.row_text[static_cast<size_t>(row)];
+    if (decision_.kind != DecisionKind::PRIORITY || static_cast<size_t>(row) >= decision_.costs.size()) return text;
+    return way_label(text, decision_.costs[static_cast<size_t>(row)]);
 }
 
 // Screenshots: the pick popup of the first card named like force_pick_ with several rows.
@@ -695,7 +724,7 @@ void TableView::apply_force_pick(const TableDraw &d) {
 }
 
 // While the human chooses: what a click on a pick or a button does.
-void TableView::hover_hint(const Hit &hit, const TableDraw &) {
+void TableView::hover_hint(const Hit &hit, const TableDraw &d) {
     if (!answering_ || hit.step >= 0) return;
     if (hit.button >= 0) {
         const PromptButton &b = buttons_[static_cast<size_t>(hit.button)];
@@ -732,8 +761,21 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
             case PromptButton::Act::INC:
                 ImGui::SetTooltip("Click: one more (the rows offered bound it)");
                 break;
+            case PromptButton::Act::POPUP:
+                ImGui::SetTooltip("Click to choose one of %d ways to cast or activate a card off the Table",
+                    static_cast<int>(b.rows.size()));
+                break;
             case PromptButton::Act::ROW:
-                ImGui::SetTooltip("Click: %s", b.label.c_str());
+                if (decision_.kind == DecisionKind::PRIORITY && b.row == decision_.pass) {
+                    std::string keys;
+                    if (d.pass) keys = chord_label(d.pass);
+                    if (d.to_end_of_turn)
+                        keys += (keys.empty() ? "" : "; ") + chord_label(d.to_end_of_turn) +
+                                " passes to the end of the turn";
+                    ImGui::SetTooltip("Click: pass priority%s", keys.empty() ? "" : (" (" + keys + ")").c_str());
+                } else {
+                    ImGui::SetTooltip("Click: %s", row_label(b.row).c_str());
+                }
                 break;
         }
         return;
@@ -772,7 +814,11 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
         return;
     }
     if (p->rows.size() == 1) {
-        ImGui::SetTooltip("Click: %s", decision_.row_text[static_cast<size_t>(p->rows[0])].c_str());
+        ImGui::SetTooltip("Click: %s", row_label(p->rows[0]).c_str());
+    } else if (decision_.kind == DecisionKind::PRIORITY) {
+        std::string ways;
+        for (int row : p->rows) ways += "\n  " + row_label(row);
+        ImGui::SetTooltip("Click to choose one of %d:%s", static_cast<int>(p->rows.size()), ways.c_str());
     } else {
         ImGui::SetTooltip("Click to choose one of %d: %s \xE2\x80\xA6", static_cast<int>(p->rows.size()),
             decision_.row_text[static_cast<size_t>(p->rows[0])].c_str());
@@ -796,11 +842,35 @@ void TableView::draw_pick_popup(const TableDraw &d) {
     }
     ImGui::TextDisabled("%s", popup_title_.c_str());
     ImGui::Separator();
+    // At a priority decision each way's cost follows it in a column: pips, then the rest in words.
+    const bool costs = decision_.kind == DecisionKind::PRIORITY;
+    const float lh = ImGui::GetTextLineHeight();
+    const float pd = lh * 0.95f, gap = 18;
+    float text_w = 0, cost_w = 0;
     for (int row : popup_rows_) {
+        const size_t r = static_cast<size_t>(row);
+        text_w = std::max(text_w, ImGui::CalcTextSize(decision_.row_text[r].c_str()).x);
+        if (!costs || r >= decision_.costs.size()) continue;
+        const WayCost &c = decision_.costs[r];
+        float w = c.pips.empty() ? 0 : mana_symbols_width(c.pips.size(), pd);
+        if (!c.text.empty()) w += (w > 0 ? 6 : 0) + ImGui::CalcTextSize(c.text.c_str()).x;
+        cost_w = std::max(cost_w, w);
+    }
+    const float width = text_w + (cost_w > 0 ? gap + cost_w : 0);
+    for (int row : popup_rows_) {
+        const size_t r = static_cast<size_t>(row);
         ImGui::PushID(row);
-        const bool chosen = ImGui::Selectable(decision_.row_text[static_cast<size_t>(row)].c_str());
+        const bool chosen = ImGui::Selectable(decision_.row_text[r].c_str(), false, 0, ImVec2(width, 0));
         const ImVec2 a = ImGui::GetItemRectMin(), b = ImGui::GetItemRectMax();
         popup_items_.push_back(TRect{a.x, a.y, b.x, b.y});
+        if (costs && r < decision_.costs.size()) {
+            const WayCost &c = decision_.costs[r];
+            ImDrawList *dl = ImGui::GetWindowDrawList();
+            float x = a.x + text_w + gap;
+            const float cy = (a.y + b.y) / 2;
+            if (!c.pips.empty()) x += draw_mana_symbols(dl, c.pips, ImVec2(x, cy), pd) + 6;
+            if (!c.text.empty()) dl->AddText(ImVec2(x, cy - lh / 2), tok().DIM, c.text.c_str());
+        }
         if (chosen) answer_ = row;
         ImGui::PopID();
     }
@@ -809,10 +879,13 @@ void TableView::draw_pick_popup(const TableDraw &d) {
 
 // A stack's members behind its front card take no outline: the front card shows the whole stack's.
 // At a targeting or payment decision only its picks glow, and what is neither a pick, a chosen target
-// nor the decision's source is dimmed.
+// nor the decision's source is dimmed. At a priority decision, the most common, a card that can be cast,
+// played or activated has a thin outline (thicker under the mouse while the human chooses) and nothing
+// is dimmed.
 void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     const bool glow = model_.viewer < 2 && model_.viewer == model_.decider;
     const bool focus = dims_board(decision_);
+    const bool priority = decision_.kind == DecisionKind::PRIORITY;
     const bool combat = combat_kind(decision_.kind);
     const bool plan_shown = d.answer && (declares_attackers(decision_.kind) || declares_blockers(decision_.kind));
     const PlannedAttack *armed_attack = answering_ ? plan_.attack_of(plan_.armed()) : nullptr;
@@ -830,9 +903,13 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         if (stacked)
             for (int k : pile->objects) members.push_back(model_.objects[static_cast<size_t>(k)].handle);
         bool source = false, linked = false, keep = false, planned = false, armed = false, aimed = false;
+        bool way = false, hot = false;
         for (uint64_t h : members) {
             if (focus) {
                 source = source || decision_.pick_of_object(h) != nullptr || (answering_ && armed_target(h));
+            } else if (priority) {
+                way = way || decision_.pick_of_object(h) != nullptr;
+                hot = hot || (answering_ && h == hovered_handle_);
             } else if (glow) {
                 for (const MenuLink &m : model_.menu) source = source || (m.source == h);
             }
@@ -849,6 +926,9 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         }
         if (focus && !source && !keep) dl->AddRectFilled(a, b, DIM_OVER, cw * 0.05f);
         if (source && !planned && !aimed) outline(dl, a, b, cw * 0.05f, tok().GLOW, 2, 3);
+        if (way)
+            outline(dl, a, b, cw * 0.05f, hot ? tok().GLOW : with_alpha(tok().GLOW, WAY_ALPHA), hot ? 2 : 1,
+                hot ? WAY_HOT_THICKNESS : WAY_THICKNESS);
         if (planned || aimed) outline(dl, a, b, cw * 0.05f, tok().ACCENT, 2, 3);
         if (armed) outline(dl, a, b, cw * 0.05f, tok().GLOW, 5, 2);
         draw_decision_marks(dl, c, a, b, cw);
@@ -1091,7 +1171,10 @@ void TableView::draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         const ImVec2 ba = rmin(o, b), bz = rmax(o, b);
         const bool hot = answering_ && static_cast<int>(i) == hovered_button_;
         const bool send = buttons_[i].act == PromptButton::Act::SEND;
-        const bool chosen = buttons_[i].row >= 0 && buttons_[i].row == decision_.chosen_row;
+        const std::vector<int> &rows = buttons_[i].rows;
+        const bool chosen =
+            (buttons_[i].row >= 0 && buttons_[i].row == decision_.chosen_row) ||
+            (decision_.chosen_row >= 0 && std::find(rows.begin(), rows.end(), decision_.chosen_row) != rows.end());
         dl->AddRectFilled(ba, bz, hot ? tok().BTN_HOVER : chosen ? tok().SEL : send ? tok().TAB_ACTIVE : tok().BTN, 2);
         const bool row_linked = buttons_[i].row >= 0 && d.links && d.links->row_linked(buttons_[i].row);
         dl->AddRect(ba, bz, row_linked ? tok().LINK : tok().LINE, 2);
@@ -1410,6 +1493,23 @@ void TableView::build_buttons() {
         buttons_.push_back(PromptButton{"+", -1, PromptButton::Act::INC});
         return;
     }
+    if (decision_.kind == DecisionKind::PRIORITY) {
+        // The ways off the Table (a flashback, an escape, a companion), one button opening their popup
+        // when they are many, then Pass at the right.
+        std::vector<int> off;
+        for (int row : decision_.buttons)
+            if (row != decision_.pass) off.push_back(row);
+        if (off.size() < MAX_PROMPT_ROWS) {
+            for (int row : off)
+                buttons_.push_back(
+                    PromptButton{decision_.row_text[static_cast<size_t>(row)], row, PromptButton::Act::ROW, {}});
+        } else {
+            buttons_.push_back(PromptButton{
+                std::to_string(off.size()) + " ways off the Table\xE2\x80\xA6", -1, PromptButton::Act::POPUP, off});
+        }
+        if (decision_.pass >= 0) buttons_.push_back(PromptButton{"Pass", decision_.pass, PromptButton::Act::ROW, {}});
+        return;
+    }
     if (!planning()) {
         // The card picker shows the rows naming no card under its cards.
         if (decision_.kind == DecisionKind::CARDS && picker_.active && picker_.off_table()) return;
@@ -1515,6 +1615,9 @@ bool TableView::press_button(const PromptButton &b) {
             return true;
         case PromptButton::Act::INC:
             number_index_ = std::min(static_cast<int>(decision_.numbers.size()) - 1, number_index_ + 1);
+            return true;
+        case PromptButton::Act::POPUP:
+            open_rows_popup(b.rows, "Off the Table");
             return true;
         case PromptButton::Act::SEND:
             break;

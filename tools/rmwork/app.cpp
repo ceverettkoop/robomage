@@ -63,9 +63,19 @@ static uint64_t next_random(uint64_t *state) {
 // a card to name; "discard", "sacrifice", "return", "legend": a card to discard, a permanent to
 // sacrifice, to return, the legend to keep; "unless", whether to pay an unless cost; "choice", a yes/no
 // or another row-only decision (table_decision.h's CHOICE); "cost", a non-mana cost paid with a card
-// (an alternative cost's exile, convoke's tap).
+// (an alternative cost's exile, convoke's tap); "priority", a priority decision offering more than a pass
+// and mana (a land to play, a spell to cast, an ability to activate).
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
+    if (until == "priority") {
+        for (size_t i = 0; i < v.n(); ++i) {
+            const std::string &c = v.category(i);
+            if (c == "PLAY_LAND" || c == "CAST_SPELL" || c == "ACTIVATE_ABILITY" || c == "TURN_FACE_UP" ||
+                c == "COMPANION")
+                return true;
+        }
+        return false;
+    }
     static const std::pair<const char *, const char *> CATEGORY[] = {{"mode", "CHOOSE_MODE"}, {"x", "CHOOSE_X"},
         {"order", "ORDER_TRIGGERS"}, {"name", "NAME_CARD"}, {"discard", "DISCARD"},
         {"sacrifice", "SACRIFICE_PERMANENT"}, {"return", "RETURN_PERMANENT"}, {"legend", "KEEP_LEGEND"},
@@ -324,6 +334,29 @@ void App::play_pass(PassMode mode) {
                                            : "F2: passing until the end of the turn");
 }
 
+void App::play_pass_priority() {
+    if (!choosing()) {
+        status(play_.deciding() ? "An earlier decision: go to your decision (the toolbar's Latest) to pass"
+                                : "Not your decision");
+        return;
+    }
+    const Match *m = play_.match();
+    std::string err;
+    const std::shared_ptr<const rmstate::DecodedFrame> f =
+        m->frame(static_cast<size_t>(play_.pending_index()), play_.config().seat, &err);
+    if (!f) {
+        status("Your decision's frame does not read: " + err);
+        return;
+    }
+    const PassFacts facts =
+        read_pass_facts(agents::DecisionView(m->stream(play_.config().seat), *f, play_.config().seat));
+    if (facts.pass_row < 0) {
+        status("Nothing to pass: this decision is not a priority decision");
+        return;
+    }
+    play_reply(facts.pass_row);
+}
+
 void App::open_concede(bool match) {
     if (!play_.running()) {
         status("No game to concede");
@@ -368,9 +401,11 @@ void App::step_auto_play() {
 void App::poll_play() {
     play_.poll(settings_.stops);
     if (play_.running() && play_.view().loaded() && !play_dealt_)
-        status("The game has begun: choose in Choices (a click, or \xE2\x86\x91 / \xE2\x86\x93 and Enter); " +
-               shortcut(Action::PLAY_TO_END_OF_TURN) + " passes to the end of the turn, " +
-               shortcut(Action::PLAY_SKIP_TURN) + " skips it");
+        status(
+            "The game has begun: click the Table's cards, or choose in Choices (a click, or \xE2\x86\x91 / "
+            "\xE2\x86\x93 and Enter); " +
+            shortcut(Action::PLAY_PASS) + " passes priority, " + shortcut(Action::PLAY_TO_END_OF_TURN) +
+            " passes to the end of the turn, " + shortcut(Action::PLAY_SKIP_TURN) + " skips it");
     play_dealt_ = play_.view().loaded();
     for (const std::string &n : play_.take_notes()) status(n);
     std::string title, message, detail;
@@ -781,6 +816,9 @@ void App::run_action(Action a) {
             break;
         case Action::CLOSE:
             close_session();
+            break;
+        case Action::PLAY_PASS:
+            play_pass_priority();
             break;
     }
 }
@@ -1355,6 +1393,7 @@ StartContext App::start_context() {
             "A training run (runs/<name>): its decision logs by purpose, with their episodes."},
     };
     c.keys = {
+        {shortcut(Action::PLAY_PASS), "pass priority"},
         {shortcut(Action::PLAY_TO_END_OF_TURN), "to the end of the turn (stops on the stack)"},
         {shortcut(Action::PLAY_SKIP_TURN), "skip the turn"},
         {shortcut(Action::MAGNIFY), "hold: magnify the card under the mouse"},

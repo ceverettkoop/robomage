@@ -70,6 +70,9 @@ class CardBook {
 std::string type_line_of(
     const agents::SeatStream &s, uint64_t supertypes, uint64_t types, const std::vector<std::string> &subtypes);
 
+// A mana cost's symbols: "{2}{U}{U}" -> {"2", "U", "U"}; "{W/U}" -> {"W/U"}.
+std::vector<std::string> mana_symbols(const std::string &cost);
+
 }  // namespace rmwork
 
 #endif /* RMWORK_CARD_BOOK_H */

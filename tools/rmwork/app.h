@@ -176,6 +176,8 @@ class App {
         bool play_reply(int row);
         // F2 / F6.
         void play_pass(PassMode mode);
+        // Space: passes priority once at the human's pending priority decision (its PASS_PRIORITY row).
+        void play_pass_priority();
         // The concession's confirmation (Game → Concede Game / Match).
         void open_concede(bool match);
         ConcedeDialog &concede_dialog() { return concede_; }

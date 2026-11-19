@@ -142,10 +142,13 @@ the Value Graph; the toolbar's Latest goes back). Only the human seat's frames r
 end the engine writes every seat's terminal frame to the stream, the other seat's with its once-per-match
 frames, and the session drops a record of another viewer unread, by its header. Choosing: a click on a
 Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
-row, the `-1` of `docs/state_format.md` §9); at a targeting or payment decision, and at a priority decision
-offering mana abilities, a click on the Table does too (§4.2, items 6 and 11), as do a click in the card picker and on
-the opening hand (items 5 and 8), in the choice panel and on the prompt line's buttons (items 9, 10, 12 and 13), through
-the same reply; nothing is sent while the engine runs ("Opponent is
+row, the `-1` of `docs/state_format.md` §9); at a priority decision a click on a card in the hand or a permanent casts,
+plays, activates or taps it for mana (a popup naming each way with its cost when it has several), a flashback or escape
+from the graveyard is a button of the prompt line, and its Pass button or Space (Settings → Keys, "Pass priority")
+passes once (§4.2, "Priority decisions"); at a targeting or payment decision a click on the Table answers too (§4.2,
+items 6 and 11), as do a click in the card picker and on the opening hand (items 5 and 8), in the choice panel and on
+the prompt line's buttons (items 9, 10, 12 and 13), through the same reply; nothing is sent while the engine runs
+("Opponent is
 thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
 from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
 step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
@@ -168,7 +171,7 @@ write open the error dialog with the command and the stderr tail and end the ses
 reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
 auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|target|mana|end` (a seeded
 random row at each of your decisions until then; §4.2 adds `pick`, `mulligan`, `bottom`, `mode`, `x`, `order`, `name`,
-`discard`, `sacrifice`, `return`, `legend`, `unless`, `choice` and `cost`), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
+`discard`, `sacrifice`, `return`, `legend`, `unless`, `choice`, `cost` and `priority`), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
 engine's test-setup flags, `;`-separated, as `PlayConfig::setup`, which the decision log's header records) and
 `--play-rows R,R,…` (your first decisions' rows). Checked by `rmwork --selftest-data` (`selftest_play`:
 the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
@@ -212,8 +215,8 @@ Checked by `rmwork --selftest-data` (`selftest_sideboard`: the plan's rules and 
 decisions, a menu without the planned row refused; the guides file against its JSON; a live bo3 as seat A
 sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
 stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
-the match in Replay in seat A's view and seat B's). Every decision but a priority decision's casts, activations and
-land plays (and sideboarding, its tool) has an answer on the Table (§4.2); Choices answers all of them. Beside each
+the match in Replay in seat A's view and seat B's). Every decision but sideboarding (its tool) has an answer on the
+Table (§4.2); Choices answers all of them. Beside each
 game's decision log Play
 writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
 seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
@@ -362,9 +365,9 @@ line), the cost still to pay as pips with the life, energy and mana paid after i
 and the rows naming nothing (Done selecting targets, Cancel casting, Pay 2 life (instead of {B}), Pay {B}) as
 buttons on its right (on lines of their own when they would leave the prompt less than half the line). In Play
 at the human's pending decision a click on a lit card, stack object or player chip answers with its row, and an
-object several rows name (a dual land's two colours) opens a popup of them; at a priority decision offering
-mana abilities a click on a land or source taps it (its `MANA_*` rows only); hovering a pick says what a click
-does and shades its Choices row. In Replay, an earlier decision or while the opponent thinks the highlights show
+object several rows name (a dual land's two colours) opens a popup of them; at a priority decision a click on a
+playable card casts, plays, activates or taps it for mana (§4.2, "Priority decisions"); hovering a pick says what
+a click does and shades its Choices row. In Replay, an earlier decision or while the opponent thinks the highlights show
 and a click only selects. The player chips (and the Players tool) show floating mana as `pool {U}{R}`. Combat on
 the Table (§4.2, item 7; `table_decision`'s combat kinds, `table_combat`): every attacker is labelled with what it
 attacks ("→ Player B", "→ Kaito") during the combat decisions and whenever it attacks a planeswalker; at declare
@@ -392,8 +395,9 @@ table's `assigned`), tags the attacker "Assigning", says what is left ("2 of 2 l
 blocker its lethal damage; Done is a button. For screenshots `--play-until attack|block|damage` stops at those
 decisions and `--table-plan SPEC` plans a declaration. The opening hand and the card picker (§4.2, items 5 and 8;
 `mulligan_plan`, `card_picker`, `card_picker_view`) are described there, as are the modes, numbers, names, costs
-and pickers (§4.2, items 9, 10, 12 and 13; `choice_panel`, `choice_panel_view`, `card_plan`). Waiting for later
-stages: casting and activating from the Table at a priority decision, the Choices tool's side of the linking (§2.6).
+and pickers (§4.2, items 9, 10, 12 and 13; `choice_panel`, `choice_panel_view`, `card_plan`), and priority decisions:
+casting, playing and activating from the Table (§4.2, "Priority decisions"; `priority_costs`). Waiting for later
+stages: the Choices tool's side of the linking (§2.6).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -661,8 +665,8 @@ Ordered roughly by value against effort. Each is one dockable tool.
     Islands; Cabal Therapy's flashback sacrifice (SACRIFICE_PERMANENT) the creatures (item 13). Delve: the count by the
     stepper (item 9), then each card exiled in the card picker (CHOOSE_CARD, item 8), a click per card as the engine
     asks (open question 1: sent per click, the pile listing the cards chosen so far; the graveyard keeps them until the
-    cast completes). The choice between a spell's costs (Cast Daze / Cast Daze (alternate cost)) is a priority row, so
-    still Choices' (open question 2). Optional costs and every yes/no (OPTIONAL_YESNO: a shockland's 2 life, kicker,
+    cast completes). The choice between a spell's costs (Cast Daze / Cast Daze (alternate cost)) is a priority row:
+    the card's popup names each way with its cost ("Priority decisions" below). Optional costs and every yes/no (OPTIONAL_YESNO: a shockland's 2 life, kicker,
     bargain, replicate …), an unless cost (PAY_UNLESS: Pay / Don't pay, the cost as pips, the lands that pay it lit), a
     shuffle, a colour, a creature type, a replacement to apply (dredge or draw) and the other row-only decisions
     (OTHER_CHOICE: reveal or not) are the prompt line's buttons, each row's text spelling the cost out ("Accept: pay 2
@@ -694,11 +698,50 @@ discard of two cards planned on the hand and sent (both gone from the hand); Tho
 revealed hand in the picker (its Mountains dimmed; the card discarded); Watery Grave's 2 life accepted by its button
 (life 18, untapped) and the legend rule's Thalia kept by a click; and the Kozilek game in Replay (the stepper at X 2,
 the panel read-only with the mode chosen marked, nothing answered by a click, nothing in seat B's view). Each reply is
-checked to be the row naming what was clicked. Remaining Choices-only: a priority decision's casts, activations and land
-plays (§4.2's direct manipulation stops at decisions within a cast, an ability, a resolution or a turn-based action);
-sideboarding has its tool (§4.3). Not in the frame (the engine was not changed): the mana available (the X stepper's
-bound is the rows'), a divided-damage spell's total, the maximum hand size (seven is assumed at cleanup), and how many
-modes a spell may still take beyond the rows offered.
+checked to be the row naming what was clicked. Sideboarding has its tool (§4.3); every other decision has an answer on
+the Table, priority decisions included (below). Not in the frame (the engine was not changed): the mana available (the
+X stepper's bound is the rows'), a divided-damage spell's total, the maximum hand size (seven is assumed at cleanup), and
+how many modes a spell may still take beyond the rows offered.
+
+**Priority decisions** (casting, playing and activating; built: `table_decision`'s PRIORITY, `priority_costs`). A
+priority decision is one with the PASS_PRIORITY row or CAST_SPELL, PLAY_LAND, ACTIVATE_ABILITY, TURN_FACE_UP, COMPANION
+or (`--no-auto-mana`) MANA_* rows; each row names its card by `source` / `source_card`. Being the most common decision
+it does not dim the board: the hand cards that can be cast or played and the permanents with an ability to activate (or
+to tap for mana) get a thin outline in the glow colour, MTGO-like, thicker under the mouse. A click answers the card's
+row: a land played, a spell cast (its targeting, payment and modes follow on the Table as before), an ability
+activated. A card with several rows — Daze's "Cast Daze" and "Cast Daze (alternate cost)", Force of Will's two, a
+cycling card's cast and cycle, a land's mana and its other ability (Wasteland under `--no-auto-mana`), an adventure or
+a back face, morph's face-down cast, suspend — opens a popup naming each way with its cost beside it (pips, then the
+rest in words). The costs are read from the viewer's stream alone (the frame names how a card is cast, not what that
+costs): a cast's mana cost from CARDS (a back face's or an Adventure's from the back face; {3} face down or for a
+companion; nothing without paying its mana cost), a keyword's from the oracle text's line of that keyword (flashback,
+escape, evoke, warp, impending, overload, bestow, suspend; morph, megamorph and disguise to turn a permanent face
+up: "Escape—{G}{G}{U}{U}, Exile five other cards from your graveyard."), a plain alternative cost from the oracle's "You
+may … rather than pay this spell's mana cost" ("return an Island you control to its owner's hand"), an activated
+ability's from `card_ability.cost` (the row's `ab_card` / `ab_index`) in the script's cost syntax ("T PayLife<1>
+Sac<1/CARDNAME>": {T}, pay 1 life, sacrifice it). Hovering a playable card says what a click does with the cost ("Click:
+Cast Lightning Bolt {R}"; a card with several ways lists them) and, through the links, shades its Choices row. The
+prompt line says what may be done ("Play a land, cast a spell or activate an ability, or pass"; with the stack not
+empty "Respond to Player B's Lightning Bolt: …") and holds the rows naming a card off the Table as buttons — a
+flashback or escape from the graveyard, a companion from the sideboard (the cheap choice over the zone windows: the
+same rule as every decision's rows naming an object the Table does not show; past five of them one button opens their
+popup) — and Pass at its right. Passing: the Pass button, the new key "Pass priority" (Space, Settings → Keys) at a
+plain priority decision, F2, F6 and the stops (`autopass`, unchanged). Only the human's pending decision in Play
+answers; in Replay (and at an earlier decision of Play, or while the opponent thinks) the same lights show read-only,
+the row chosen marked (its card "Chosen" in the accent colour, a chosen Pass or off-Table button highlighted), and a
+click only selects. Hover and the magnifier (Q, right-click) are unchanged, and the other decisions' clicks are not
+affected (a priority decision is never one of theirs). `--play-until priority` stops at a priority decision offering
+more than a pass and mana, `--table-pick NAME` opens a card's popup and `--table-hover-card NAME` hovers a card for
+screenshots. Checked by `rmwork --selftest` (`selftest_priority`'s units: the costs from script costs and oracle text,
+the labels) and `rmwork --selftest-data` (`selftest_priority`, on sculpted live games against explore: a Mountain played
+and Lightning Bolt cast by clicks on the hand, its target clicked, Pass by the button with the Bolt on the stack and
+Space at the next priority decision; Daze's popup with both costs and its alternative chosen; Polluted Delta activated
+by a click ({T}, pay 1 life, sacrifice it), its search once it resolves; Wasteland's mana and ability in one popup under
+`--no-auto-mana`, the ability chosen and its target clicked; Cabal Therapy's flashback by the prompt line's button; the
+first game in Replay with the cast and a pass marked chosen, a click answering nothing, nothing in seat B's view). Not
+in the frame (the engine was not changed): a way's cost (read from CARDS and the oracle text as above, so an alternative
+cost an oracle words otherwise shows as "its alternative cost") and the cost after reductions or increases (Thalia's tax,
+a cost reducer: the printed cost is shown).
 
 ### 4.3 Between and after games
 

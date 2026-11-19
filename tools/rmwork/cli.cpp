@@ -46,6 +46,7 @@ struct CliOptions {
         int table_hover_stack = -1;
         int table_hover_step = -1;
         std::string table_magnify;
+        std::string table_hover_card;
         std::vector<std::string> focus_tools;
         int choices_hover = -1;
         bool tree_expand = false;
@@ -108,12 +109,13 @@ static void usage() {
         "         [--card-faces images|text] [--printings-card NAME]\n"
         "       rmwork [--open LOG.rmlog] [--episode FILE.rmtraj]… [--run DIR] [--decision N] [--view a|b|omni]\n"
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
+        "         [--table-hover-card NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
         "       rmwork [--new-game SPEC [--play-decisions N]\n"
         "              [--play-until "
         "stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|mode|x|\n"
-        "                            order|name|discard|sacrifice|return|legend|unless|choice|cost|end]\n"
+        "                            order|name|discard|sacrifice|return|legend|unless|choice|cost|priority|end]\n"
         "              [--play-setup FLAGS] [--play-rows R,R,...] [--table-pick NAME] [--table-plan SPEC]\n"
         "              [--picker-filter TEXT] [--picker-list]\n"
         "              [--game-over]]\n"
@@ -158,6 +160,8 @@ static void usage() {
         "  --game-combo       open the toolbar's game list once the game is loaded\n"
         "  --table-hover-stack N  the Table: hover stack object N (0 = top) every frame (its targets lit)\n"
         "  --table-magnify NAME   the Table: open the magnifier on the first card whose name contains NAME\n"
+        "  --table-hover-card NAME  the Table: hover the first card whose name contains NAME every frame (what\n"
+        "                     a click does, in Play at your decision)\n"
         "  --tool NAME        bring a tool's tab to the front (table, players, choices, inspector, tree, log,\n"
         "                     swings, graph, model, sideboard); repeatable\n"
         "  --choices-hover N  Choices: hover menu row N (0-based) every frame (its objects lit on the Table)\n"
@@ -183,8 +187,9 @@ static void usage() {
         "                     to put on the stack), name (a card to name), discard, sacrifice, return, legend (a\n"
         "                     card to discard, a permanent to sacrifice or return, the legend to keep), unless\n"
         "                     (pay an unless cost or not), choice (a yes/no or another row-only choice), cost (a\n"
-        "                     cost paid with a card: an alternative cost's exile, convoke), end (none: to the\n"
-        "                     match's end)\n"
+        "                     cost paid with a card: an alternative cost's exile, convoke), priority (a\n"
+        "                     priority decision offering a land to play, a spell to cast or an ability to\n"
+        "                     activate), end (none: to the match's end)\n"
         "  --play-setup FLAGS the engine's test-setup flags for the --new-game game, ';'-separated (e.g.\n"
         "                     --hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears,Delver of Secrets)\n"
         "  --play-rows R,R,...  answer your first decisions with these menu rows, before --play-decisions or\n"
@@ -269,6 +274,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->table_hover_step = std::atoi(argv[++i]);
         } else if (a == "--table-magnify" && has_value) {
             opt->table_magnify = argv[++i];
+        } else if (a == "--table-hover-card" && has_value) {
+            opt->table_hover_card = argv[++i];
         } else if (a == "--tool" && has_value) {
             opt->focus_tools.push_back(argv[++i]);
             if (rmwork::find_tool(opt->focus_tools.back()) < 0) {
@@ -304,14 +311,14 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->play_until = argv[++i];
             static const char *const UNTIL[] = {"stack", "combat", "attack", "block", "damage", "sideboard", "target",
                 "mana", "pick", "mulligan", "bottom", "mode", "x", "order", "name", "discard", "sacrifice", "return",
-                "legend", "unless", "choice", "cost", "end"};
+                "legend", "unless", "choice", "cost", "priority", "end"};
             bool known = false;
             for (const char *u : UNTIL) known = known || opt->play_until == u;
             if (!known) {
                 std::fprintf(stderr,
                     "rmwork: --play-until is stack, combat, attack, block, damage, sideboard, target, mana, pick, "
                     "mulligan, bottom, mode, x, order, name, discard, sacrifice, return, legend, unless, choice, "
-                    "cost or end, not '%s'\n",
+                    "cost, priority or end, not '%s'\n",
                     argv[i]);
                 *exit_code = 2;
                 return false;
@@ -580,6 +587,7 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.table().force_stack_hover(opt.table_hover_stack);
     app.table().force_step_hover(opt.table_hover_step);
     app.table().force_magnify(opt.table_magnify);
+    app.table().force_card_hover(opt.table_hover_card);
     app.table().force_pick(opt.table_pick);
     app.table().force_plan(opt.table_plan);
     app.table().picker_view().force_filter(opt.picker_filter);

@@ -115,4 +115,16 @@ const CardFace *CardBook::face(int card, bool back) const {
     return it == faces_.end() ? nullptr : &it->second;
 }
 
+std::vector<std::string> mana_symbols(const std::string &cost) {
+    std::vector<std::string> out;
+    size_t i = 0;
+    while ((i = cost.find('{', i)) != std::string::npos) {
+        const size_t j = cost.find('}', i);
+        if (j == std::string::npos) break;
+        out.push_back(cost.substr(i + 1, j - i - 1));
+        i = j + 1;
+    }
+    return out;
+}
+
 }  // namespace rmwork

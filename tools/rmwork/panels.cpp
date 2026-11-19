@@ -121,6 +121,8 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
         d.play = ctx.mode == Mode::PLAY;
         d.stops = ctx.stops;
         d.answer = ctx.choosing;
+        d.pass = ctx.settings->keys[action_index(Action::PLAY_PASS)];
+        d.to_end_of_turn = ctx.settings->keys[action_index(Action::PLAY_TO_END_OF_TURN)];
         ctx.table->draw(d);
         return;
     }

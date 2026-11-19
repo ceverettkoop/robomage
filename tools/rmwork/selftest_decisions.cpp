@@ -266,9 +266,9 @@ static void check_mana(const CheckFn &check, rmwork::App &app, const Frames &fra
     p = pending(s);
     const uint64_t swamp = object_named(app, "Swamp", true);
     const TableDecision &dm = app.table().decision();
-    check(dm.kind == DecisionKind::MANA && dm.pick_of_object(swamp) && !dm.prompted() &&
-              app.table().layout().prompt.w() == 0,
-        at + ": a priority decision with a mana ability does not light the untapped swamp");
+    check(dm.kind == DecisionKind::PRIORITY && dm.pick_of_object(swamp) && dm.pass >= 0 &&
+              app.table().layout().prompt.w() > 0,
+        at + ": a priority decision with a mana ability does not light the untapped swamp (with Pass)");
     const int mana_row = row_naming(p, swamp, -1, "(B)");
     if (!click_object(check, app, frames, swamp, mana_row, at + ": the swamp for mana") || !wait_decision(frames, s))
         return;

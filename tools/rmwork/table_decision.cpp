@@ -33,6 +33,7 @@ static std::string mulligan_note(const rmwork::MulliganFacts &f);
 static bool has(const agents::DecisionView &v, const char *category);
 static bool all(const agents::DecisionView &v, const char *category);
 static bool priority_category(const std::string &category);
+static std::string priority_prompt(const agents::DecisionView &v, const rmwork::TableModel &m);
 static bool button_category(const std::string &category);
 static bool panel_row(rmwork::DecisionKind k, const std::string &category);
 static std::string cost_part_text(const agents::DecisionView &v);
@@ -64,11 +65,38 @@ static bool all(const agents::DecisionView &v, const char *category) {
     return v.n() > 0;
 }
 
-// A row of a priority decision (an action taken with priority) or of sideboarding: no decision of
-// these is answered on the Table but its mana rows.
+// A row of a priority decision: an action taken with priority (a mana ability's MANA_* rows aside).
 static bool priority_category(const std::string &c) {
     return c == "PASS_PRIORITY" || c == "CAST_SPELL" || c == "ACTIVATE_ABILITY" || c == "PLAY_LAND" ||
-           c == "TURN_FACE_UP" || c == "COMPANION" || c.rfind("SIDEBOARD_", 0) == 0;
+           c == "TURN_FACE_UP" || c == "COMPANION";
+}
+
+// What a priority decision offers, as the prompt: "Play a land or cast a spell, or pass"; with the stack
+// not empty, what is responded to first ("Respond to Player B's Lightning Bolt: cast a spell, or pass").
+static std::string priority_prompt(const agents::DecisionView &v, const rmwork::TableModel &m) {
+    static const std::pair<const char *, const char *> VERBS[] = {{"PLAY_LAND", "play a land"},
+        {"CAST_SPELL", "cast a spell"}, {"ACTIVATE_ABILITY", "activate an ability"},
+        {"TURN_FACE_UP", "turn a permanent face up"}, {"COMPANION", "put your companion into your hand"},
+        {"MANA_", "tap for mana"}};
+    std::vector<std::string> verbs;
+    for (const auto &verb : VERBS)
+        for (size_t i = 0; i < v.n(); ++i)
+            if (v.category(i).rfind(verb.first, 0) == 0) {
+                verbs.push_back(verb.second);
+                break;
+            }
+    std::string what;
+    for (size_t k = 0; k < verbs.size(); ++k) what += (k == 0 ? "" : k + 1 == verbs.size() ? " or " : ", ") + verbs[k];
+    std::string p = what.empty() ? std::string("pass") : what + ", or pass";
+    if (!m.stack.empty()) {
+        const rmwork::TableStackItem &top = m.stack[0];
+        const std::string whose = top.controller == m.decider
+                                      ? std::string("your")
+                                      : m.players[static_cast<size_t>(top.controller)].name + "'s";
+        p = "Respond to " + whose + " " + top.name + ": " + p;
+    }
+    p[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(p[0])));
+    return p;
 }
 
 // A row the prompt line offers as a button even when it names an object (a yes/no's accept names the
@@ -92,6 +120,7 @@ static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
     bool targets = true, mana = false, priority = false;
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &c = v.category(i);
+        if (c.rfind("SIDEBOARD_", 0) == 0) return DecisionKind::NONE;
         if (c == "PAYING_COSTS") return DecisionKind::PAY;
         if (c == "SELECT_ATTACKER" || c == "CONFIRM_ATTACKERS") return DecisionKind::ATTACKERS;
         if (c == "ATTACK_TARGET") return DecisionKind::ATTACK_TARGET;
@@ -109,10 +138,10 @@ static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
     if (all(v, "CHOOSE_X")) return DecisionKind::NUMBER;
     if (all(v, "ORDER_TRIGGERS")) return DecisionKind::ORDER;
     if (all(v, "NAME_CARD")) return DecisionKind::NAME;
-    if (mana) return DecisionKind::MANA;
+    if (mana || priority) return DecisionKind::PRIORITY;
     if (rmwork::london_bottom_menu(v)) return DecisionKind::BOTTOM;
     if (rmwork::card_pick_menu(v)) return DecisionKind::CARDS;
-    return priority ? DecisionKind::NONE : DecisionKind::CHOICE;
+    return DecisionKind::CHOICE;
 }
 
 // The pending cost's part when it is not a plain mana cost: "alternative cost", "additional cost",
@@ -433,7 +462,7 @@ int TableDecision::number_row(int value) const {
     return -1;
 }
 
-TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m) {
+TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m, const CardBook *book) {
     TableDecision d;
     d.kind = decision_kind(v);
     if (d.kind == DecisionKind::NONE) return d;
@@ -443,7 +472,7 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
     for (size_t i = 0; i < v.n(); ++i) d.row_text.push_back(v.description(i));
     for (size_t i = 0; i < v.n(); ++i) {
         const std::string &category = v.category(i);
-        if (d.kind == DecisionKind::MANA && !is_mana_category(category)) continue;
+        if (category == "PASS_PRIORITY") d.pass = static_cast<int>(i);
         if (panel_row(d.kind, category)) {
             if (d.kind != DecisionKind::NUMBER) d.panel_rows.push_back(static_cast<int>(i));
             continue;
@@ -474,13 +503,15 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
     }
     // Too many buttons for the prompt line: the choice panel lists them.
     if (d.buttons.size() > MAX_PROMPT_ROWS && d.kind != DecisionKind::ATTACKERS && d.kind != DecisionKind::BLOCKERS &&
-        d.kind != DecisionKind::CARDS) {
+        d.kind != DecisionKind::CARDS && d.kind != DecisionKind::PRIORITY) {
         d.panel_rows.insert(d.panel_rows.end(), d.buttons.begin(), d.buttons.end());
         std::sort(d.panel_rows.begin(), d.panel_rows.end());
         d.buttons.clear();
     }
     d.source = pending_source(v);
-    if (d.prompted()) d.prompt = prompt_of(v);
+    if (d.prompted()) d.prompt = d.kind == DecisionKind::PRIORITY ? priority_prompt(v, m) : prompt_of(v);
+    if (d.kind == DecisionKind::PRIORITY && book)
+        for (size_t i = 0; i < v.n(); ++i) d.costs.push_back(way_cost(v, *book, i));
     if (d.kind == DecisionKind::MULLIGAN || d.kind == DecisionKind::BOTTOM) {
         d.mulligan = read_mulligan(v, m.decider >= 0 ? m.decider : v.seat());
         d.prompt = mulligan_prompt(d.mulligan, d.kind == DecisionKind::BOTTOM);

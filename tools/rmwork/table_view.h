@@ -103,6 +103,15 @@
 // a click there answers as a click on the Table does. Rows naming a hand card (Brainstorm's put-back)
 // are picked on the hand, the picker showing the pile beside them.
 //
+// A priority decision (table_decision.h's PRIORITY): the hand cards that can be cast or played and the
+// permanents with an ability to activate (or, under --no-auto-mana, to tap for mana) have a thin outline,
+// thicker under the mouse; nothing is dimmed. While the human chooses a click casts, plays or activates
+// (answers the card's row), and a card with several ways (Daze's two casts, a land's mana and its other
+// ability, a cycling card) opens a popup naming each with its cost (priority_costs.h); hovering says what
+// a click does with the cost ("Cast Lightning Bolt {R}"). The prompt line says what may be done and has
+// the rows naming a card off the Table (a flashback or escape from the graveyard, a companion) as buttons
+// (more than MAX_PROMPT_ROWS − 1 of them: one button opening their popup) and Pass, the pass row.
+//
 // In Replay and at an earlier decision of Play the row chosen there (the log's reply) is marked: its
 // card outlined in the accent colour with "Chosen", its button highlighted.
 //
@@ -123,11 +132,13 @@ struct PromptButton {
             CLEAR,  // drops the plan
             UNDO,   // takes the last card planned back
             DEC,    // the number stepper's value down
-            INC     // the number stepper's value up
+            INC,    // the number stepper's value up
+            POPUP   // opens the popup of `rows` (a priority decision's ways off the Table, when many)
         };
         std::string label;
         int row = -1;
         Act act = Act::ROW;
+        std::vector<int> rows;  // POPUP: the rows it offers
 };
 
 struct TableDraw {
@@ -135,9 +146,11 @@ struct TableDraw {
         const TableBackground *background = nullptr;
         LinkState *links = nullptr;
         ImGuiKeyChord magnify = 0;
-        bool play = false;              // Play's Table (stop dots shown, a click on a step toggles its stop)
-        StopSettings *stops = nullptr;  // Play's stops (Settings → Stops), changed by the step bar's clicks
-        bool answer = false;            // the human chooses here: a click on a pick or a button answers
+        bool play = false;                 // Play's Table (stop dots shown, a click on a step toggles its stop)
+        StopSettings *stops = nullptr;     // Play's stops (Settings → Stops), changed by the step bar's clicks
+        bool answer = false;               // the human chooses here: a click on a pick or a button answers
+        ImGuiKeyChord pass = 0;            // Play: the key that passes priority (named in the Pass button's tooltip)
+        ImGuiKeyChord to_end_of_turn = 0;  // Play: F2's key (named there too)
 };
 
 class TableView {
@@ -194,6 +207,9 @@ class TableView {
         // In Play: hover step `index` of the step bar (0 = untap; -1 off) every frame, its tooltip shown.
         void force_step_hover(int index) { force_step_ = index; }
         void force_magnify(const std::string &name) { force_mag_ = name; }
+        // Hover the first card on the Table whose name contains `name` every frame, its hover hint shown
+        // ("" off).
+        void force_card_hover(const std::string &name) { force_card_ = name; }
         // While the human chooses: open the pick popup of the first card whose name contains `name` and
         // that a decision's rows name more than once, once per decision ("" off).
         void force_pick(const std::string &name) { force_pick_ = name; }
@@ -273,6 +289,9 @@ class TableView {
         // false when it answers nothing (the click selects).
         bool answer_click(const Hit &hit);
         void open_pick_popup(const DecisionPick &p);
+        void open_rows_popup(const std::vector<int> &rows, const std::string &title);
+        // A row's text as the popup and the hover say it: at a priority decision with its cost.
+        std::string row_label(int row) const;
         void apply_force_pick(const TableDraw &d);
         void hover_hint(const Hit &hit, const TableDraw &d);
         void draw_pick_popup(const TableDraw &d);
@@ -325,6 +344,7 @@ class TableView {
         int force_stack_ = -1;
         int force_step_ = -1;
         std::string force_mag_;
+        std::string force_card_;
         std::string force_pick_;
         bool force_picked_ = false;  // force_pick_ opened the popup at this decision
         unsigned force_pick_generation_ = 0;

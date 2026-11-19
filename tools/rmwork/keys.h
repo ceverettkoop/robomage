@@ -29,9 +29,10 @@ enum class Action {
     FIND_IN_LOG,
     OPEN_RUN,
     START_PAGE,
-    CLOSE
+    CLOSE,
+    PLAY_PASS
 };
-inline constexpr int ACTION_COUNT = 15;
+inline constexpr int ACTION_COUNT = 16;
 
 // Where an action's key works.
 enum class Scope {

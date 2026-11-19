@@ -47,7 +47,6 @@ static int color_count(uint8_t colors);
 static ImFont *card_font(bool heavy);
 static void draw_frame(ImDrawList *dl, const Box &b, const rmwork::CardLook &look, float inset, float rounding);
 static ImU32 main_frame(const rmwork::CardLook &look);
-static std::vector<std::string> mana_symbols(const std::string &cost);
 static ImU32 pip_color(const std::string &sym);
 static float pips_width(size_t count, float d);
 static void draw_pips(ImDrawList *dl, const std::vector<std::string> &syms, ImVec2 right_center, float d);
@@ -123,19 +122,6 @@ static void draw_frame(ImDrawList *dl, const Box &b, const rmwork::CardLook &loo
         return;
     }
     dl->AddRectFilled(a, z, main_frame(look), rounding);
-}
-
-// "{2}{U}{U}" -> {"2", "U", "U"}; "{W/U}" -> {"W/U"}.
-static std::vector<std::string> mana_symbols(const std::string &cost) {
-    std::vector<std::string> out;
-    size_t i = 0;
-    while ((i = cost.find('{', i)) != std::string::npos) {
-        const size_t j = cost.find('}', i);
-        if (j == std::string::npos) break;
-        out.push_back(cost.substr(i + 1, j - i - 1));
-        i = j + 1;
-    }
-    return out;
 }
 
 static ImU32 pip_color(const std::string &sym) {
@@ -230,7 +216,7 @@ static void draw_compact(ImDrawList *dl, const Box &b, const rmwork::CardLook &l
     const float x = b.x + inner, w = b.w - 2 * inner;
     const float pad = std::max(1.0f, b.w * 0.025f);
     const std::vector<std::string> name = rmwork::wrap_text(heavy, fs, look.face->name, w - 2 * pad, 3);
-    const std::vector<std::string> cost = mana_symbols(look.face->mana_cost);
+    const std::vector<std::string> cost = rmwork::mana_symbols(look.face->mana_cost);
     const float d = std::max(4.0f, std::min(13.0f, b.w * 0.115f));
     const bool show_cost = !cost.empty() && b.w >= 36;
     const float name_h = static_cast<float>(name.size()) * fs * 1.18f + (show_cost ? d + pad : 0) + 2 * pad;
@@ -281,7 +267,7 @@ static void draw_full(ImDrawList *dl, const Box &b, const rmwork::CardLook &look
     const float nb = fs * 1.7f;
     dl->AddRectFilled(ImVec2(x, y), ImVec2(x + w, y + nb), bar, nb * 0.25f);
     dl->AddRect(ImVec2(x, y), ImVec2(x + w, y + nb), bar_edge, nb * 0.25f);
-    const std::vector<std::string> cost = mana_symbols(look.face->mana_cost);
+    const std::vector<std::string> cost = rmwork::mana_symbols(look.face->mana_cost);
     const float d = fs * 1.05f;
     const float cost_w = cost.empty() ? 0 : pips_width(cost.size(), d) + fs * 0.4f;
     rmwork::draw_fitted_text(

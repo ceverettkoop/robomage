@@ -20,6 +20,7 @@ const rmwork::ActionInfo ACTIONS[rmwork::ACTION_COUNT] = {
     {"file.open_run", "Open Run Directory", ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_O, rmwork::Scope::ANY, false},
     {"file.start_page", "Start Page", ImGuiMod_Alt | ImGuiKey_Home, rmwork::Scope::ANY, false},
     {"file.close", "Close the game or replay", ImGuiMod_Ctrl | ImGuiKey_W, rmwork::Scope::ANY, false},
+    {"play.pass", "Pass priority", ImGuiKey_Space, rmwork::Scope::PLAY, false},
 };
 
 struct ModName {

@@ -16,6 +16,7 @@
 #include "implot.h"
 #include "paths.h"
 #include "selftest_images.h"
+#include "selftest_priority.h"
 #include "selftest_start.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
@@ -1155,6 +1156,7 @@ int run_selftest() {
     check_later_settings(&t, tmp);
     check_key_resets(&t);
     check_table_units([&t](bool ok, const std::string &what) { check(&t, ok, "Table: " + what); });
+    check_priority_units([&t](bool ok, const std::string &what) { check(&t, ok, "Priority costs: " + what); });
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     begin_headless();
