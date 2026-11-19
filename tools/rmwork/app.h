@@ -23,6 +23,7 @@
 #include "run_browser.h"
 #include "settings.h"
 #include "settings_dialog.h"
+#include "start_page.h"
 #include "table_view.h"
 
 // ── The application shell: menu bar, toolbar, the mode's dockspace and tools, status bar ────────
@@ -47,6 +48,13 @@
 // copies the game's log. The human's sideboarding phase brings the Sideboard tool to the front (and
 // the next game the Table), and the tool sends its confirmed plan after each poll
 // (sideboard_view.h). The engine's failures reach the error dialog; quitting kills the engine.
+//
+// The start page (start_page.h) takes the place of the mode's dockspace and tools while it is shown,
+// so neither mode's layout changes under it: at start when its setting is on and nothing was opened,
+// from File → Start Page, and when File → Close closes the open replay or a game that is over.
+// Opening a replay, starting a game, the Start tab's ✕, the toolbar's mode switch and View's tools and
+// layouts go back to the dockspace. Its lists are scanned on its thread when it is shown and every
+// few seconds while it is; its status blocks look at the paths at most once a second.
 
 struct ImGuiDockNode;
 
@@ -187,6 +195,19 @@ class App {
         // The status bar's Play field: "Your decision", "Opponent is thinking…", "Match over", …
         std::string play_state_text() const;
 
+        // ── The start page ──
+        // Shows it in place of the mode's dockspace (its lists scanned again), or the dockspace.
+        void show_start_page(bool on);
+        bool start_page_shown() const { return start_shown_; }
+        StartPage &start_page() { return start_page_; }
+        // Does what the page asked for: an action, a recent game or run, a Settings tab, its ✕.
+        void run_start_request(const StartRequest &r);
+        // File → Close: Replay's log (a load cancelled), or Play's game once it is not running; then
+        // the start page when its setting is on. False (a status message) while Play's game runs.
+        bool close_session();
+        // The page's status blocks (engine, card images, inference server, files) as they are now.
+        std::vector<StartStatus> start_status();
+
     private:
         void update_card_images();
         void handle_keys();
@@ -199,6 +220,11 @@ class App {
         void draw_status_bar();
         void draw_dock();
         void draw_tools();
+        void draw_start_page();
+        void refresh_start_page();
+        StartContext start_context();
+        StartScanRequest start_scan_request() const;
+        void show_tool(Tool t);
         void draw_game_combo();
         void draw_replay_nav();
         void draw_load_progress(float right_edge);
@@ -277,6 +303,12 @@ class App {
         std::string health_paths_;  // the engine and socket paths last checked
         bool engine_found_ = false;
         bool socket_present_ = false;
+        StartPage start_page_;
+        bool start_shown_ = false;
+        double start_scanned_at_ = -1;  // when the page's last scan was asked for
+        std::string start_recent_;      // the recent list it was asked with
+        double start_status_at_ = -1;
+        std::vector<StartStatus> start_status_;
 };
 
 }  // namespace rmwork

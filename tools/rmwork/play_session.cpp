@@ -12,6 +12,7 @@
 #include "files.h"
 #include "loader.h"
 #include "paths.h"
+#include "start_data.h"
 
 namespace {
 
@@ -27,6 +28,7 @@ static std::string base_name(const std::string &path);
 static std::string shell_quote(const std::string &s);
 static std::string timestamp();
 static std::string game_stem(const std::string &dir, uint64_t seed);
+static void append_quit(const std::string &log);
 
 static std::string base_name(const std::string &path) {
     const size_t slash = path.rfind('/');
@@ -56,6 +58,20 @@ static std::string game_stem(const std::string &dir, uint64_t seed) {
     std::string stem = base;
     for (int i = 2; rmwork::file_exists(stem + ".rmlog"); ++i) stem = base + "-" + std::to_string(i);
     return stem;
+}
+
+// A game that ended without a result (stopped, or the engine gone): its decision log gets the QUIT
+// line a human seat's quit writes, so it replays to the decision it stopped at (rmlog.h). Nothing
+// for a log that is missing, does not read or already ends with QUIT.
+static void append_quit(const std::string &log) {
+    std::string text, err;
+    rmwork::RmlogInfo info;
+    if (log.empty() || !rmwork::read_file(log, &text) || !rmwork::parse_rmlog(text, &info, &err) || info.quit) return;
+    FILE *f = std::fopen(log.c_str(), "ab");
+    if (!f) return;
+    if (!text.empty() && text.back() != '\n') std::fputc('\n', f);
+    std::fputs("QUIT\n", f);
+    std::fclose(f);
 }
 
 namespace rmwork {
@@ -170,6 +186,15 @@ bool PlaySession::start(const PlayConfig &c, const PlayPaths &p, std::string *er
     log_path_ = stem + ".rmlog";
     stream_path_ = stem + (c.seat == 0 ? ".seat-a.rmstate" : ".seat-b.rmstate");
     stderr_path_ = stem + ".stderr";
+    GameSidecar side;
+    side.seat = c.seat;
+    side.opponent = opponent_key(c.opponent);
+    side.model = c.model;
+    side.deck = c.deck;
+    side.opponent_deck = c.opponent_deck;
+    side.bo3 = c.bo3;
+    side.seed = c.seed;
+    if (!write_file_atomic(sidecar_path(log_path_), sidecar_json(side), err)) return false;
     starting_.reset(new Match());
     Match &m = *starting_;
     if (!begin_live_match(&m, c.seat, stream_path_, err)) return false;
@@ -373,6 +398,7 @@ void PlaySession::fail(const std::string &title, const std::string &message) {
     child_.kill_and_reap();
     close_pipes();
     model_.stop();
+    if (!match() || !match()->finished) append_quit(log_path_);
     std::string cmd;
     for (const std::string &a : command_) cmd += (cmd.empty() ? "" : " ") + a;
     fail_detail_ = "$ " + cmd + "\n" + stderr_tail();
@@ -389,11 +415,22 @@ void PlaySession::close_pipes() {
 }
 
 void PlaySession::stop() {
-    if (state_ == State::RUNNING) state_ = State::STOPPED;
+    const bool was_running = state_ == State::RUNNING;
+    if (was_running) state_ = State::STOPPED;
     child_.kill_and_reap();
     close_pipes();
     model_.stop();
     pending_ = -1;
+    if (was_running && (!match() || !match()->finished)) append_quit(log_path_);
+}
+
+void PlaySession::close_game() {
+    stop();
+    view_.clear();
+    starting_.reset();
+    state_ = State::NONE;
+    queued_concede_ = 0;
+    autopass_ = AutoPass();
 }
 
 bool PlaySession::write_reply(int reply, std::string *err) {

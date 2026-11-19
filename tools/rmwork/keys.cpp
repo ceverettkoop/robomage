@@ -17,6 +17,9 @@ const rmwork::ActionInfo ACTIONS[rmwork::ACTION_COUNT] = {
     {"file.save_decision_log", "Save Decision Log", ImGuiMod_Ctrl | ImGuiKey_S, rmwork::Scope::ANY, false},
     {"game.new", "New Game vs Model", ImGuiMod_Ctrl | ImGuiKey_N, rmwork::Scope::ANY, false},
     {"edit.find_in_log", "Find in Log", ImGuiMod_Ctrl | ImGuiKey_F, rmwork::Scope::ANY, false},
+    {"file.open_run", "Open Run Directory", ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_O, rmwork::Scope::ANY, false},
+    {"file.start_page", "Start Page", ImGuiMod_Alt | ImGuiKey_Home, rmwork::Scope::ANY, false},
+    {"file.close", "Close the game or replay", ImGuiMod_Ctrl | ImGuiKey_W, rmwork::Scope::ANY, false},
 };
 
 struct ModName {

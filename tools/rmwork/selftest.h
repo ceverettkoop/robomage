@@ -11,8 +11,8 @@
 // frame's font at the size asked for, the bars and presets at the smallest and largest font sizes,
 // every colour theme drawing both modes with its palette's colours and meeting the contrast
 // minimums, and the settings file (the font and theme and their fallbacks too) round-tripped in a
-// temporary $XDG_CONFIG_HOME. Prints "RMWORK-SELFTEST: N checks, M failures"; nonzero exit on a
-// failure.
+// temporary $XDG_CONFIG_HOME, and the start page (selftest_start.h). Prints "RMWORK-SELFTEST: N
+// checks, M failures"; nonzero exit on a failure.
 
 namespace rmwork {
 

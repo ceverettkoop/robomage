@@ -612,6 +612,7 @@ std::string settings_to_json(const Settings &s) {
            ", \"format\": " + json_quote(g.bo3 ? "bo3" : "bo1") + ", \"seed\": " + std::to_string(g.seed) +
            ", \"auto_mana\": " + (g.auto_mana ? "true" : "false") +
            ", \"model_read\": " + (g.model_read ? "true" : "false") + "},\n";
+    out += std::string("  \"start_page\": ") + (s.start_page ? "true" : "false") + ",\n";
     out += "  \"recent\": [";
     for (size_t i = 0; i < s.recent.size(); ++i) out += std::string(i ? ", " : "") + json_quote(s.recent[i]);
     out += "],\n";
@@ -667,6 +668,13 @@ bool settings_from_json(const std::string &text, Settings *out, std::string *err
         if (!read_recent(*v, &out->recent, err)) return false;
     if (const featurize::Json *v = doc.get("new_game"))
         if (!read_new_game(*v, &out->new_game, err)) return false;
+    if (const featurize::Json *v = doc.get("start_page")) {
+        if (!v->is_bool()) {
+            *err = "\"start_page\" is not true or false";
+            return false;
+        }
+        out->start_page = v->as_bool();
+    }
     return true;
 }
 

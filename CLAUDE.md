@@ -120,7 +120,8 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   NAME`, `--choices-hover N`, `--tree-expand`, `--open-zone SEAT:ZONE`: once the game is loaded; Play:
   `--new-game "opp=explore,deck=league/burn,opp-deck=league/bug,seed=3"` with `--play-decisions N`,
   `--play-until stack|combat|sideboard|end` or `--game-over` (a seeded random row at each of your decisions), `--sideboard-plan guide|+CARD;-CARD`, and
-  `--open-new-game`; set `$XDG_DATA_HOME` to keep a screenshot's games out of `~/.local/share`; card
+  `--open-new-game`; the start page shows when no flag opens or names something, `--start-page` forces it;
+  set `$XDG_DATA_HOME` to keep a screenshot's games out of `~/.local/share`; card
   images: `--card-faces images|text`, `--printings-card NAME`; `python3 tools/scryfall/fetch_images.py`
   fills the image cache, without which cards are drawn as text)
 - `make clean`
@@ -818,7 +819,7 @@ handshake JSON, the shared region, request / response layouts.
   and the stops: a pure function of a decision's `PassFacts`), `model_read` (Model's Read: the featurizer's inputs
   from the engine's `--cards-frame`, the torch-free remote evaluator to rmserve, on a thread), `new_game_dialog`
   (decks, opponents, models, the choices kept as `new_game` in `settings.json`), `play_dialogs` (the concession's
-  confirmation, the match result screen), `selftest_play` (Play's `--selftest-data` checks); the Sideboard tool (plan §4.3 item 14): `sideboard_plan` (a seat's 75 and sideboarding facts from a frame, the plan's locks and balance, the next reply toward the planned deck by category and source card, `python/sideboard_guides.json`'s guides and a matchup's plan), `sideboard_view` (the tool: the 75 as cards, the plan, its sending through the play session, the guide's and the model's plans, Replay read-only), `selftest_sideboard` (its `--selftest-data` checks); Replay's data: `loader` (a decision log opened on a thread:
+  confirmation, the match result screen), `selftest_play` (Play's `--selftest-data` checks); the start page (plan §4.1 item 1): `start_data` (Play's recent games from the games directory with their `<stem>.game.json` sidecars and stderr result lines, recent replays with the replay cache's results, recent runs from `status.json`, the status blocks; never a replay), `start_page` (the page in place of the dockspace, its scan thread, the actions, lists and status), `selftest_start` (its checks in both self-tests); the Sideboard tool (plan §4.3 item 14): `sideboard_plan` (a seat's 75 and sideboarding facts from a frame, the plan's locks and balance, the next reply toward the planned deck by category and source card, `python/sideboard_guides.json`'s guides and a matchup's plan), `sideboard_view` (the tool: the 75 as cards, the plan, its sending through the play session, the guide's and the model's plans, Replay read-only), `selftest_sideboard` (its `--selftest-data` checks); Replay's data: `loader` (a decision log opened on a thread:
   the cached replay or the engine's `--replay --rmstate-dump --narrative`, the index, the episodes;
   progress, cancel), `subprocess` (`posix_spawn`, output into files, or Play's pipes in a process group), `replay_cache`
   (`$XDG_CACHE_HOME/robomage/workbench/replays/<log hash>-<engine hash>`), `rmlog` (the RMLOG v3

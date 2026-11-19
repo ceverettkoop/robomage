@@ -19,6 +19,11 @@ namespace {
 const float GAME_COMBO_EMS = 21.5f;
 // The status bar's load progress bar, in font heights.
 const float PROGRESS_EMS = 9.0f;
+// The start page's window.
+const char *const START_PAGE_WINDOW = "##rmwork.start";
+// How often the start page scans its lists again while shown, and looks at its status paths.
+const double START_SCAN_S = 5.0;
+const double START_STATUS_S = 1.0;
 
 }  // namespace
 
@@ -118,8 +123,13 @@ void App::frame() {
     draw_menu_bar();
     draw_toolbar();
     draw_status_bar();
-    draw_dock();
-    draw_tools();
+    if (start_page_.poll()) start_status_at_ = -1;
+    if (start_shown_) {
+        draw_start_page();
+    } else {
+        draw_dock();
+        draw_tools();
+    }
     settings_dialog_.draw(&settings_, paths_.settings);
     Mode show_mode = mode();
     std::string show_name;
@@ -143,6 +153,7 @@ void App::frame() {
 bool App::working() const {
     if (card_images_.textures().busy()) return true;
     if (loader_.busy() || (run_browser_.is_open() && !run_browser_.ready())) return true;
+    if (start_shown_ && !start_page_.fresh()) return true;
     if (!play_.running()) return false;
     return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||
            play_.model_read().state() == ModelReader::State::CONNECTING;
@@ -189,6 +200,7 @@ bool App::start_game(const NewGameSettings &g) {
     auto_left_ = 0;
     sideboard_phase_ = -1;
     sideboard_front_ = false;
+    show_start_page(false);
     set_mode(Mode::PLAY);
     status("New game: " + c.deck + " vs " + c.opponent_deck + " (" + opponent_key(c.opponent) + "), seed " +
            std::to_string(c.seed) + "; the engine is dealing");
@@ -414,6 +426,7 @@ bool App::open_replay(const std::string &log, const std::vector<std::string> &ep
     replay_.set_playing(false, ImGui::GetTime());
     load_started_ = ImGui::GetTime();
     loader_.start(req);
+    show_start_page(false);
     set_mode(Mode::REPLAY);
     status("Opening " + file_name(log) + " …");
     return true;
@@ -578,6 +591,7 @@ void App::request_layout(const LayoutNode &root, const std::string &label) {
     const int mi = mode_index(mode());
     pending_[mi] = true;
     pending_root_[mi] = root;
+    show_start_page(false);
     status("Layout: " + label);
 }
 
@@ -688,6 +702,15 @@ void App::run_action(Action a) {
         case Action::FIND_IN_LOG:
             not_built(info.label);
             break;
+        case Action::OPEN_RUN:
+            open_file_picker(PICK_RUN);
+            break;
+        case Action::START_PAGE:
+            show_start_page(true);
+            break;
+        case Action::CLOSE:
+            close_session();
+            break;
     }
 }
 
@@ -732,10 +755,7 @@ void App::draw_menu_bar() {
     }
     if (ImGui::BeginMenu("Game")) {
         if (ImGui::MenuItem("New Game vs Model…", shortcut(Action::NEW_GAME).c_str())) open_new_game();
-        if (ImGui::MenuItem("Sideboard…")) {
-            set_tool_open(mode(), Tool::SIDEBOARD, true);
-            focus_tool(Tool::SIDEBOARD);
-        }
+        if (ImGui::MenuItem("Sideboard…")) show_tool(Tool::SIDEBOARD);
         ImGui::Separator();
         if (ImGui::MenuItem("Concede Game", "-2", false, play_.running())) open_concede(false);
         if (ImGui::MenuItem("Concede Match", "-3", false, play_.running())) open_concede(true);
@@ -744,10 +764,7 @@ void App::draw_menu_bar() {
     if (ImGui::BeginMenu("Analysis")) {
         if (ImGui::MenuItem("Re-evaluate With Checkpoint…")) not_built("Re-evaluate With Checkpoint");
         if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
-        if (ImGui::MenuItem("Biggest Swings")) {
-            set_tool_open(mode(), Tool::SWINGS, true);
-            focus_tool(Tool::SWINGS);
-        }
+        if (ImGui::MenuItem("Biggest Swings")) show_tool(Tool::SWINGS);
         if (ImGui::MenuItem("Batch Over Episodes…")) not_built("Batch Over Episodes");
         ImGui::EndMenu();
     }
@@ -766,9 +783,11 @@ void App::draw_menu_bar() {
 }
 
 void App::draw_file_menu() {
+    if (ImGui::MenuItem("Start Page", shortcut(Action::START_PAGE).c_str(), start_shown_)) show_start_page(true);
+    ImGui::Separator();
     if (ImGui::MenuItem("Open Replay (.rmlog)…", shortcut(Action::OPEN_REPLAY).c_str())) open_file_picker(PICK_REPLAY);
     if (ImGui::MenuItem("Open Trajectory Episode…")) open_file_picker(PICK_EPISODE);
-    if (ImGui::MenuItem("Open Run Directory…")) open_file_picker(PICK_RUN);
+    if (ImGui::MenuItem("Open Run Directory…", shortcut(Action::OPEN_RUN).c_str())) open_file_picker(PICK_RUN);
     if (ImGui::BeginMenu("Open Recent", !settings_.recent.empty())) {
         for (size_t i = 0; i < settings_.recent.size(); ++i) {
             const std::string path = settings_.recent[i];
@@ -781,6 +800,12 @@ void App::draw_file_menu() {
         ImGui::EndMenu();
     }
     if (ImGui::MenuItem("Save Decision Log…", shortcut(Action::SAVE_DECISION_LOG).c_str())) open_save_picker();
+    const bool play = mode() == Mode::PLAY;
+    if (ImGui::MenuItem(
+            play ? "Close Game" : "Close Replay", shortcut(Action::CLOSE).c_str(), false, !play || !play_.running()))
+        close_session();
+    if (play && play_.running())
+        ImGui::SetItemTooltip("The game is running: concede it first (Game \xE2\x86\x92 Concede)");
     ImGui::Separator();
     if (ImGui::MenuItem("Exit")) quit_ = true;
 }
@@ -792,8 +817,10 @@ void App::draw_view_menu() {
     ImGui::PushID("tools");
     for (int t = 0; t < TOOL_COUNT; ++t) {
         const bool open = settings_.tools[mode_index(m)][t];
-        if (ImGui::MenuItem(tool_info(static_cast<Tool>(t)).title, nullptr, open))
+        if (ImGui::MenuItem(tool_info(static_cast<Tool>(t)).title, nullptr, open)) {
             set_tool_open(m, static_cast<Tool>(t), !open);
+            show_start_page(false);
+        }
     }
     ImGui::PopID();
     ImGui::Separator();
@@ -822,8 +849,14 @@ void App::draw_view_menu() {
     ImGui::Separator();
     ImGui::TextDisabled("Mode");
     ImGui::PushID("mode");
-    if (ImGui::MenuItem("Play", nullptr, m == Mode::PLAY)) set_mode(Mode::PLAY);
-    if (ImGui::MenuItem("Replay", nullptr, m == Mode::REPLAY)) set_mode(Mode::REPLAY);
+    if (ImGui::MenuItem("Play", nullptr, m == Mode::PLAY && !start_shown_)) {
+        set_mode(Mode::PLAY);
+        show_start_page(false);
+    }
+    if (ImGui::MenuItem("Replay", nullptr, m == Mode::REPLAY && !start_shown_)) {
+        set_mode(Mode::REPLAY);
+        show_start_page(false);
+    }
     ImGui::PopID();
 }
 
@@ -844,7 +877,10 @@ void App::draw_toolbar() {
         const Segment modes[] = {{"Play", true, Icon::MODE_PLAY, "A live game against a model"},
             {"Replay", true, Icon::MODE_REPLAY, "A recorded game"}};
         int sel = mode() == Mode::PLAY ? 0 : 1;
-        if (segmented("##mode", modes, 2, &sel)) set_mode(sel == 0 ? Mode::PLAY : Mode::REPLAY);
+        if (segmented("##mode", modes, 2, &sel)) {
+            set_mode(sel == 0 ? Mode::PLAY : Mode::REPLAY);
+            show_start_page(false);
+        }
         ImGui::SameLine(0, 6);
         draw_game_combo();
         toolbar_separator();
@@ -1160,6 +1196,179 @@ void App::draw_tools() {
     if (submitted >= 0) play_reply(submitted);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
+}
+
+// A tool from the Game or Analysis menu: opened, brought to the front, the dockspace shown.
+void App::show_tool(Tool t) {
+    set_tool_open(mode(), t, true);
+    focus_tool(t);
+    show_start_page(false);
+}
+
+void App::show_start_page(bool on) {
+    if (on == start_shown_) return;
+    start_shown_ = on;
+    if (!on) return;
+    start_scanned_at_ = -1;
+    start_status_at_ = -1;
+    start_page_.invalidate();
+    status("Start page: " + shortcut(Action::NEW_GAME) + " new game \xC2\xB7 " + shortcut(Action::OPEN_REPLAY) +
+           " open a replay \xC2\xB7 a double-click on a recent row opens it");
+}
+
+StartScanRequest App::start_scan_request() const {
+    StartScanRequest r;
+    r.games_dir = default_games_dir();
+    r.recent = settings_.recent;
+    r.run_dir = run_dir_path(settings_);
+    r.replay_engine = replay_engine();
+    r.cache_root = replay_cache_root();
+    r.live_log = play_.running() ? play_.log_path() : "";
+    return r;
+}
+
+// A scan when the page is shown, every few seconds while it is, and when the recent list changes.
+void App::refresh_start_page() {
+    std::string recent;
+    for (const std::string &r : settings_.recent) recent += r + '\n';
+    const double now = ImGui::GetTime();
+    if (start_scanned_at_ >= 0 && now - start_scanned_at_ < START_SCAN_S && recent == start_recent_) return;
+    if (start_page_.scanning()) return;
+    start_page_.refresh(start_scan_request());
+    start_scanned_at_ = now;
+    start_recent_ = recent;
+}
+
+std::vector<StartStatus> App::start_status() {
+    const double now = ImGui::GetTime();
+    if (start_status_at_ >= 0 && now - start_status_at_ < START_STATUS_S) return start_status_;
+    start_status_at_ = now;
+    const std::string engine = engine_override_.empty() ? engine_binary_path(settings_) : engine_override_;
+    std::vector<StartStatus> out(4);
+    out[0].block = engine_status(engine, engine_workdir_path(settings_));
+    out[0].settings_tab = SettingsDialog::ENGINE;
+    out[0].settings_label = "Settings \xE2\x86\x92 Engine";
+    out[1].block = image_status(card_images_.cache_dir(), card_images_.status());
+    out[1].settings_tab = SettingsDialog::PRINTINGS;
+    out[1].settings_label = "Settings \xE2\x86\x92 Card Printings";
+    const ModelReader &read = play_.model_read();
+    const ModelReader::State rs = read.state();
+    std::string read_state;
+    if (rs != ModelReader::State::OFF) {
+        read_state = read.status_text();
+        if (!read.error().empty()) read_state += ": " + read.error();
+    }
+    out[2].block = inference_status(
+        socket_path(settings_), settings_.models.policies.size(), engine, read_state, rs == ModelReader::State::FAILED);
+    out[2].settings_tab = SettingsDialog::MODELS;
+    out[2].settings_label = "Settings \xE2\x86\x92 Models";
+    out[3].block = files_status(start_page_.data(), default_games_dir(), replay_cache_root());
+    start_status_ = out;
+    return out;
+}
+
+StartContext App::start_context() {
+    StartContext c;
+    c.actions = {
+        {StartRequest::Kind::NEW_GAME, Icon::MODE_PLAY, "New Game\xE2\x80\xA6", shortcut(Action::NEW_GAME),
+            "Your deck and seat; a model export, a server's policy, the scripted agent, explore or random; bo1 or "
+            "bo3."},
+        {StartRequest::Kind::OPEN_REPLAY, Icon::MODE_REPLAY, "Open Replay\xE2\x80\xA6", shortcut(Action::OPEN_REPLAY),
+            "A decision log (.rmlog); its episodes join when they lie beside it or in the run's episodes/."},
+        {StartRequest::Kind::OPEN_EPISODE, Icon::OPEN, "Open Trajectory Episode\xE2\x80\xA6", "",
+            "An .rmtraj with its decision log: \xCE\xBC, versions, evaluations, teacher labels."},
+        {StartRequest::Kind::PICK_RUN, Icon::OPEN, "Open Run\xE2\x80\xA6", shortcut(Action::OPEN_RUN),
+            "A training run (runs/<name>): its decision logs by purpose, with their episodes."},
+    };
+    c.keys = {
+        {shortcut(Action::PLAY_TO_END_OF_TURN), "to the end of the turn (stops on the stack)"},
+        {shortcut(Action::PLAY_SKIP_TURN), "skip the turn"},
+        {shortcut(Action::MAGNIFY), "hold: magnify the card under the mouse"},
+        {shortcut(Action::REPLAY_PREV) + " " + shortcut(Action::REPLAY_NEXT), "previous / next decision (Replay)"},
+        {shortcut(Action::OPEN_SETTINGS), "Settings"},
+        {shortcut(Action::START_PAGE), "this page"},
+        {shortcut(Action::CLOSE), "close the game or replay"},
+    };
+    c.status = start_status();
+    c.games_dir = default_games_dir();
+    c.show_at_start = &settings_.start_page;
+    return c;
+}
+
+// The page over the work area, where the mode's dockspace would be.
+void App::draw_start_page() {
+    refresh_start_page();
+    ImGuiViewportP *vp = static_cast<ImGuiViewportP *>(ImGui::GetMainViewport());
+    const ImRect area = vp->GetBuildWorkRect();
+    ImGui::SetNextWindowPos(area.Min);
+    ImGui::SetNextWindowSize(area.GetSize());
+    ImGui::SetNextWindowViewport(vp->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 6));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, tok().PANEL);
+    const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking |
+                                   ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoSavedSettings |
+                                   ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    ImGui::Begin(START_PAGE_WINDOW, nullptr, flags);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
+    const StartRequest r = start_page_.draw(start_context());
+    ImGui::End();
+    if (r.kind != StartRequest::Kind::NONE) run_start_request(r);
+}
+
+void App::run_start_request(const StartRequest &r) {
+    switch (r.kind) {
+        case StartRequest::Kind::NONE:
+            break;
+        case StartRequest::Kind::NEW_GAME:
+            open_new_game();
+            break;
+        case StartRequest::Kind::OPEN_REPLAY:
+            open_file_picker(PICK_REPLAY);
+            break;
+        case StartRequest::Kind::OPEN_EPISODE:
+            open_file_picker(PICK_EPISODE);
+            break;
+        case StartRequest::Kind::PICK_RUN:
+            open_file_picker(PICK_RUN);
+            break;
+        case StartRequest::Kind::OPEN_LOG:
+            open_replay(r.path);
+            break;
+        case StartRequest::Kind::OPEN_RUN:
+            open_run(r.path);
+            break;
+        case StartRequest::Kind::SETTINGS:
+            open_settings(static_cast<SettingsDialog::Tab>(r.settings_tab));
+            break;
+        case StartRequest::Kind::HIDE:
+            show_start_page(false);
+            status(std::string("The ") + mode_title(mode()) + " layout; File \xE2\x86\x92 Start Page (" +
+                   shortcut(Action::START_PAGE) + ") shows the start page again");
+            break;
+    }
+}
+
+bool App::close_session() {
+    std::string closed;
+    if (mode() == Mode::PLAY) {
+        if (play_.running()) {
+            status("The game is running: concede it first (Game \xE2\x86\x92 Concede), then close it");
+            return false;
+        }
+        if (play_.started()) closed = "Closed the game; its decision log stays in the games directory";
+        play_.close_game();
+        auto_left_ = 0;
+    } else {
+        if (loader_.busy()) cancel_load();
+        if (replay_.loaded()) closed = "Closed the replay";
+        replay_.clear();
+    }
+    if (settings_.start_page) show_start_page(true);
+    if (!closed.empty()) status(closed);
+    return true;
 }
 
 // A tool reopened with no home in the mode's dockspace (never docked, or its node is gone) is

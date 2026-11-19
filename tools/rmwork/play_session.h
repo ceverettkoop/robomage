@@ -38,11 +38,18 @@
 // tool show; without a server it says so (a note) and the game goes on, and a failure of it is
 // reported once (take_model_failure) while the game goes on without it.
 //
+// Beside the decision log (<stem>.rmlog) go the engine's stderr (<stem>.stderr), the human seat's
+// stream (<stem>.seat-a.rmstate / .seat-b.rmstate) and the game's sidecar (<stem>.game.json: the
+// human's seat, the opponent, the decks, the format and the seed, start_data.h), which the start
+// page reads.
+//
 // The engine's end: once it has exited and the stream has ended, a match with its terminal frame is
 // finished (take_finished); anything else (an exit mid-game, a frame that does not decode, a frame
 // of another viewer, a failed write) ends the session with a failure (take_failure: title, message
 // and the stderr tail). stop() kills and reaps the engine and joins the thread; so does the
-// destructor.
+// destructor. A game that ends without its result (stopped, or the engine gone) gets the QUIT line
+// appended to its decision log, as a human seat's quit writes it, so Replay opens it to the decision
+// it stopped at.
 
 namespace rmwork {
 
@@ -124,6 +131,8 @@ class PlaySession {
         void poll(const StopSettings &stops);
         // Kills and reaps the engine, joins the reader (no failure reported).
         void stop();
+        // Stops it and forgets the game: no game started (File → Close; the files stay).
+        void close_game();
 
         State state() const { return state_; }
         bool running() const { return state_ == State::RUNNING; }

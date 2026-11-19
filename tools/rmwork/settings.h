@@ -100,6 +100,7 @@ struct Settings {
         bool card_images = true;          // cards drawn as their images where the cache has them
         std::vector<std::string> recent;  // files and run directories opened, the latest first
         NewGameSettings new_game;
+        bool start_page = true;  // the start page shows at start and when the open game or replay is closed
 };
 
 // How many recent files and directories are kept.

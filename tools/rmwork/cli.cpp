@@ -58,6 +58,7 @@ struct CliOptions {
         std::string sideboard_plan;
         bool open_new_game = false;
         bool game_over = false;
+        bool start_page = false;  // --start-page
         rmwork::WindowOptions window;
 };
 
@@ -74,6 +75,7 @@ static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind>
 static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, std::string *why);
 static void open_data(rmwork::App &app, const CliOptions &opt);
 static void open_play(rmwork::App &app, const CliOptions &opt);
+static bool start_page_at_start(const CliOptions &opt, const rmwork::Settings &s);
 static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist);
 
 static void usage() {
@@ -90,6 +92,7 @@ static void usage() {
         "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|sideboard|end] [--game-over]]\n"
         "         [--sideboard-plan SPEC]\n"
         "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
+        "       rmwork [--start-page] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
         "The Robomage workbench (docs/workbench_plan.md). Settings: $XDG_CONFIG_HOME/robomage/settings.json\n"
@@ -149,6 +152,8 @@ static void usage() {
         "                     league guide's plan) or ';'-separated +CARD (bring in) and -CARD (cut) items\n"
         "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
         "  --open-new-game    open Game \xE2\x86\x92 New Game vs Model at start\n"
+        "  --start-page       show the start page at start, whatever its setting (it shows by default when no\n"
+        "                     flag opens a game, replay or run or names a mode, preset, layout or tool)\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
         "                     RMWORK-SELFTEST: N checks, M failures\n"
         "  --selftest-data    headless checks of Replay's data on corpus logs, replayed by the engine\n"
@@ -258,6 +263,8 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->game_over = true;
         } else if (a == "--open-new-game") {
             opt->open_new_game = true;
+        } else if (a == "--start-page") {
+            opt->start_page = true;
         } else if (a == "--open-settings") {
             opt->open_settings = true;
         } else if (a == "--settings-tab" && has_value) {
@@ -505,6 +512,16 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.tools().players().force_magnify(opt.zone_magnify);
 }
 
+// The start page shows at start when asked for, else when its setting is on and no flag opens a game,
+// replay or run, or names a mode, preset, layout or tool to look at.
+static bool start_page_at_start(const CliOptions &opt, const rmwork::Settings &s) {
+    if (opt.start_page) return true;
+    const bool names = !opt.mode.empty() || !opt.preset.empty() || !opt.layout.empty() || opt.save_layout ||
+                       opt.manage_layouts || !opt.focus_tools.empty() || !opt.open_log.empty() ||
+                       !opt.episodes.empty() || !opt.run_dir.empty() || !opt.new_game.empty();
+    return s.start_page && !names;
+}
+
 // The workbench's window until it closes; the App is gone before the ImGui context is destroyed
 // (its textures unregister themselves).
 static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist) {
@@ -531,6 +548,7 @@ static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool
     if (opt.manage_layouts) app.layout_dialogs().open_manage(app.mode());
     open_data(app, opt);
     open_play(app, opt);
+    if (start_page_at_start(opt, app.settings())) app.show_start_page(true);
     if (!opt.layout.empty() && !app.request_named_layout(opt.layout))
         app.report_error("No such layout",
             "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +

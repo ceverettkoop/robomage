@@ -16,6 +16,7 @@
 #include "implot.h"
 #include "paths.h"
 #include "selftest_images.h"
+#include "selftest_start.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
 #include "theme.h"
@@ -1144,6 +1145,7 @@ int run_selftest() {
     check_rebinding(&t, paths);
     check_ini_round_trip(&t, paths);
     check_app_persists(&t, paths);
+    check_start_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
     destroy_ui_context();
     check_settings_file(&t, paths, tmp);
     check_font_settings(&t);
@@ -1154,6 +1156,7 @@ int run_selftest() {
     check_key_resets(&t);
     check_table_units([&t](bool ok, const std::string &what) { check(&t, ok, "Table: " + what); });
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
+    check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     begin_headless();
     check_theme_contrast(&t);
     check_image_units([&t](bool ok, const std::string &what) { check(&t, ok, "Images: " + what); }, tmp);

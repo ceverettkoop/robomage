@@ -44,7 +44,10 @@ Mono Medium 14), chosen in Settings → Appearance and applied live; Settings' o
 background, the printings placeholder and the image cache directory, Engine (binary, working
 directory), Models (server socket, the `id = model` policies, run directory), Stops (Play's default
 stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
-in `settings.json` for the stages that use them; the error dialog (`App::report_error`). Checked by
+in `settings.json` for the stages that use them; the error dialog (`App::report_error`). At start, when no
+flag opens a game, replay or run or names a mode, preset, layout or tool, the start page (§4.1, item 1)
+takes the work area in place of the mode's dockspace (Settings' `start_page`, "Show this page when nothing
+is open"; `--start-page` forces it). Checked by
 `rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
 for later stages by design: the data links followed in §2.2.
 
@@ -204,7 +207,11 @@ decisions, a menu without the planned row refused; the guides file against its J
 sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
 stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
 the match in Replay in seat A's view and seat B's). Waiting for later stages: the direct-manipulation
-decisions of §4.2 (every decision goes through the Choices list) and the start page of §4.1.
+decisions of §4.2 (every decision goes through the Choices list). Beside each game's decision log Play
+writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
+seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
+game or quitting, or its engine gone) gets the `QUIT` line appended to its log, as a human seat's quit
+writes it, so Replay opens it to the decision it stopped at.
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -451,7 +458,36 @@ Ordered roughly by value against effort. Each is one dockable tool.
 
 ### 4.1 Starting and loading
 
-1. **Start page**: recent games and runs, New Game, Open Replay, Open Run, inference-server status.
+1. ~~**Start page**~~: built (`start_data`, `start_page`; mock-up `start.html#start`). A page over the whole
+   work area in place of the mode's dockspace rather than a docked tool: with nothing open no tool has
+   anything to show, and neither mode's layout (tabs, splits, the saved layouts) is touched while it is
+   up, since the dockspace is simply not drawn, as for the other mode. It shows at start (setting
+   `start_page`, its checkbox on the page; `--start-page`), from File → Start Page (Alt+Home) and after
+   File → Close (Ctrl+W: the replay, or a Play game that is over; a running game is conceded first);
+   opening a replay or run log, starting a game, the Start tab's ✕, the toolbar's mode switch and View's
+   tools and layouts give the dockspace back. Left: New Game, Open Replay, Open Trajectory Episode, Open
+   Run (Ctrl+Shift+O) with their keys, the keys to know, the setting. Middle (double-click opens): Play's
+   recent games (the games directory's newest 40: when, your seat and deck, the opponent's agent from the
+   game's sidecar and deck, format, result, decisions; "playing", "no result (stopped)", a malformed log
+   named), the recent replays (settings' recent decision logs outside the games directory: decks, result,
+   decisions, modified) and the recent runs (the recent run directories, then the runs directory's by
+   last update: phase and running, updated, hours, games from `status.json`); each opens in Replay or the
+   run browser. Results are never replayed for the page: a Play game's from its stderr's `GAME_RESULT` /
+   `MATCH_RESULT` lines, else the replay cache's narrative of the log under the engine replays run with,
+   else "…" until it is opened; the scan runs on the page's thread when shown and every 5 s while it is.
+   Right: the engine (binary, built, working directory and `resources/`, the replays' plain engine or the
+   `robomage_nn` beside it, older than the engine said, `make actor`), card images (cards and tokens
+   cached, the fetch command), the inference server (socket configured and present, policies listed,
+   `rmserve` beside the engine, Model's Read's last state, a refused or lost connection in red), files
+   (the games directory, the replay cache's size), each linking its Settings tab. The model's
+   compatibility check stays with the Model manager (item 4). Checked by `rmwork --selftest`
+   (`selftest_start`: the result lines, the sidecar, a synthetic games directory with finished, stopped,
+   malformed, running and unread games and more than the page lists, recent replays with and without a
+   cached result, runs with and without `status.json`, the status blocks with and without engine,
+   `robomage_nn`, working directory, images and socket; the App: the page in place of the dockspace, ✕,
+   the key, Close with the setting on and off, a Settings link) and `--selftest-data` (Play's bo1 and bo3
+   listed with their seats, opponents and results, the bo1 opened in Replay from the page, Close bringing
+   it back; the game whose engine was killed listed as stopped and opened in Replay).
 2. **New Game dialog**: your deck and seat, opponent (model / checkpoint, scripted tier, explore), best-of-one or best-of-three, seed, auto-mana, Model's Read on or off, knowledge level.
 3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3).
 4. **Model manager**: exports and checkpoints, rmserve start/attach, compatibility check.
