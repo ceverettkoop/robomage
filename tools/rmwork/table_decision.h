@@ -29,7 +29,13 @@
 //     damage to one blocker at a time, then Done). The engine declares an attacker or blocker as its
 //     row is answered and has no row to take one back, so the Table plans a declaration and sends it
 //     (table_combat.h). The current rules have no damage assignment order (CR 510.1c), and neither
-//     has the engine: the attacking player divides the damage among the blockers as it chooses.
+//     has the engine: the attacking player divides the damage among the blockers as it chooses;
+//   - MULLIGAN (KEEP_HAND and MULLIGAN rows: the opening hand kept or mulliganed, their buttons on the
+//     prompt line) and BOTTOM (the London mulligan's BOTTOM_DECK_CARD picks from the hand, CR 103.5,
+//     planned on the Table and sent on confirm: mulligan_plan.h), with the player's MulliganFacts;
+//   - CARDS (card_picker.h: a library search, a card put on top or the bottom of a library, a dig's,
+//     a tutor's, a graveyard card for a cost): rows naming a card the Table shows (the hand: Brainstorm's
+//     put-back) are its picks, the rest the card picker's (card_picker_view.h).
 // A row naming an object shown on the Table (a battlefield or hand card, a stack object) or a player
 // is a pick of that object or player: a click on it answers with the row, or, when it names several
 // (a dual land's two colours), offers them in a popup. A row naming nothing (Done selecting targets,
@@ -52,7 +58,10 @@ enum class DecisionKind {
     ATTACK_TARGET,
     BLOCKERS,
     BLOCK_TARGET,
-    DAMAGE
+    DAMAGE,
+    MULLIGAN,
+    BOTTOM,
+    CARDS
 };
 
 // Whether `k` is part of declaring attackers (ATTACKERS, ATTACK_TARGET) / blockers (BLOCKERS,
@@ -77,6 +86,15 @@ struct BlockFacts {
         std::vector<uint64_t> flying, reach, unblockable;
 };
 
+// The deciding player's opening-hand facts (the `player` and `match` tables).
+struct MulliganFacts {
+        int mulligans = 0;  // taken so far
+        int to_bottom = 0;  // cards still owed to the bottom of the library
+        int hand = 0;       // the hand's size
+        int on_play = -1;   // 1 on the play, 0 on the draw, -1 unknown
+        int opponent_mulligans = 0;
+};
+
 // A target chosen earlier in the same targeting (`order` from 1).
 struct ChosenTarget {
         uint64_t handle = 0;
@@ -93,10 +111,15 @@ struct TableDecision {
         std::vector<DecisionPick> picks;    // in menu order of their first row
         std::vector<int> buttons;           // the rows the prompt line offers as buttons, in menu order
         std::vector<std::string> pips;      // the cost still to pay as mana symbols: "2", "W", "B/P", "U/R", "X", "S"
-        std::string owed;                   // the rest of it and what is paid: "2 life · 1 mana paid"
+        std::string owed;                   // the rest of it and what is paid: "2 life · 1 mana paid"; MULLIGAN
+                                            // and BOTTOM: play or draw, the opponent's mulligans
         std::vector<ChosenTarget> chosen;   // TARGET: the targets chosen so far (chosen_targets)
         int confirm = -1;                   // ATTACKERS / BLOCKERS: the confirm row (the menu's last)
         BlockFacts block;                   // BLOCKERS
+        MulliganFacts mulligan;             // MULLIGAN, BOTTOM
+        // The row chosen at this decision (Replay, an earlier decision of Play: the log's reply), -1 none;
+        // set by the Table.
+        int chosen_row = -1;
 
         // The prompt line shows (every kind but MANA).
         bool prompted() const { return kind != DecisionKind::NONE && kind != DecisionKind::MANA; }
@@ -106,6 +129,8 @@ struct TableDecision {
         // Object `handle` / player `seat` was chosen earlier in this targeting: its order, else 0.
         int chosen_order_of_object(uint64_t handle) const;
         int chosen_order_of_seat(int seat) const;
+        // Whether pick `p` holds the chosen row.
+        bool holds_chosen(const DecisionPick &p) const;
         // BLOCKERS: whether `blocker` may block `attacker` as far as the frame shows (BlockFacts); when
         // not, `why` says why: "it has flying" or "it can't be blocked" (it: the attacker).
         bool may_block(uint64_t blocker, uint64_t attacker, std::string *why) const;

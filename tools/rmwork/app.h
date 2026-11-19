@@ -183,8 +183,9 @@ class App {
         // Answers the human's next `decisions` decisions (-1: every one) with a seeded random row
         // until `until` holds ("stack": the stack is not empty; "combat": an attacker or blocker
         // declaration; "sideboard": a sideboarding decision; "target": a target or a point of divided
-        // damage to choose; "mana": a cost to pay with a mana ability; "end": never, so to the match's
-        // end; "" none): screenshots and checks.
+        // damage to choose; "mana": a cost to pay with a mana ability; "pick": a card picker's decision;
+        // "mulligan": keep or mulligan; "bottom": the London mulligan's bottom pick; "end": never, so to
+        // the match's end; "" none): screenshots and checks.
         void auto_play(long decisions, const std::string &until);
         // Answers the human's next decisions with `rows`, one each, before auto_play's rule: a scripted
         // line for screenshots (with a sculpted game's setup flags).

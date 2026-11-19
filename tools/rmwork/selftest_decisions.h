@@ -21,7 +21,16 @@
 //   - at every decision the Table answers, its picks only objects the human's frame shows on the Table
 //     (its battlefield and hand, the stack) or players;
 //   - the targeting game in Replay: the same highlights in seat A's view, none in seat B's, and a click on
-//     a target selects it and answers nothing.
+//     a target selects it and answers nothing;
+//   - combat: attackers and blockers planned and sent, a damage assignment, the game in Replay;
+//   - the card picker (card_picker.h): a fetchland's search (the finds lit, the rest of the library dimmed,
+//     Fail to find), Ponder's picks (the pile in its final order; the next frame's knowledge of the library's
+//     top three), Preordain's scry (a card's Bottom button, the pile's bottom), Doomsday's five picks from the
+//     library and the graveyard with the filter typed and set (the pile at the last pick the next frame's top
+//     five), and that game in Replay (read-only, the chosen card marked, none in seat B's view);
+//   - the opening hand: Keep and Mulligan by the prompt line's buttons, the London bottom picks planned on the
+//     hand (taken back, refused past the cards owed, Undo) and sent one reply per decision, and the bottom pick
+//     in Replay (the chosen card marked, nothing planned).
 
 namespace rmwork {
 

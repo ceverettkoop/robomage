@@ -67,6 +67,8 @@ static std::string short_name(const std::string &name);
 static bool combat_kind(rmwork::DecisionKind k);
 static const char *source_tag(rmwork::DecisionKind k);
 static std::string stop_text(rmwork::PlanStop stop, const std::string &creature);
+static std::string lower_text(std::string s);
+static std::vector<std::string> split_names(const std::string &spec);
 
 static ImVec2 at(ImVec2 o, float x, float y) {
     return ImVec2(o.x + x, o.y + y);
@@ -124,6 +126,24 @@ static const char *source_tag(rmwork::DecisionKind k) {
         default:
             return "Source";
     }
+}
+
+static std::string lower_text(std::string s) {
+    for (char &ch : s) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return s;
+}
+
+// A plan spec's comma-separated items.
+static std::vector<std::string> split_names(const std::string &spec) {
+    std::vector<std::string> out;
+    size_t from = 0;
+    while (from <= spec.size()) {
+        size_t end = spec.find(',', from);
+        if (end == std::string::npos) end = spec.size();
+        if (end > from) out.push_back(spec.substr(from, end - from));
+        from = end + 1;
+    }
+    return out;
 }
 
 // Why sending a plan stopped, for the status bar.
@@ -315,6 +335,7 @@ TableView::TableView() : renderer_(&text_renderer_) {}
 
 void TableView::set_renderer(const CardRenderer *r) {
     renderer_ = r ? r : &text_renderer_;
+    picker_view_.set_renderer(r);
 }
 
 const CardBook &TableView::book(const Match &m, int view) {
@@ -364,9 +385,21 @@ bool TableView::refresh(ReplaySession &s, bool answer) {
     model_generation_ = s.generation();
     model_view_ = s.view();
     have_model_ = true;
-    decision_ = read_table_decision(agents::DecisionView(m->stream(s.view()), *frame, model_.bottom), model_);
+    const agents::DecisionView dv(m->stream(s.view()), *frame, model_.bottom);
+    decision_ = read_table_decision(dv, model_);
     if (decision_.kind == DecisionKind::TARGET)
         decision_.chosen = chosen_targets(*m, s.cursor(), s.view(), decision_.source);
+    // The row chosen here, once it is (Replay, an earlier decision of Play).
+    if (!answer && d && d->reply >= 0 && static_cast<size_t>(d->reply) < decision_.row_text.size())
+        decision_.chosen_row = d->reply;
+    picker_ = CardPicker();
+    if (decision_.kind == DecisionKind::CARDS) {
+        const CardBook &b = book(*m, s.view());
+        picker_ = read_card_picker(*m, s.cursor(), s.view(), dv, b,
+            build_zone_model(m->stream(s.view()), b, *frame, s.view()), decision_.chosen_row);
+        picker_view_.request_scroll();
+    }
+    if (answer && decision_.kind == DecisionKind::BOTTOM) bottom_.follow(d ? d->game : -1);
     model_answer_ = answer;
     if (answer && (declares_attackers(decision_.kind) || declares_blockers(decision_.kind))) {
         PlanKey key;
@@ -551,6 +584,7 @@ void TableView::draw(const TableDraw &d) {
     draw_combat(dl, o, d);
     draw_chips(dl, o, d);
     dl->PopClipRect();
+    draw_picker(d);
     update_magnifier(hit, d, over);
     apply_force_pick(d);
     draw_pick_popup(d);
@@ -575,6 +609,7 @@ const DecisionPick *TableView::pick_at(const Hit &hit) const {
 bool TableView::answer_click(const Hit &hit) {
     if (hit.button >= 0) return press_button(buttons_[static_cast<size_t>(hit.button)]);
     if (planning()) return plan_press(hit);
+    if (decision_.kind == DecisionKind::BOTTOM) return bottom_press(hit);
     const DecisionPick *p = pick_at(hit);
     if (!p || p->rows.empty()) return false;
     if (p->rows.size() == 1) {
@@ -624,6 +659,10 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
         const bool blockers = decision_.kind == DecisionKind::BLOCKERS;
         switch (b.act) {
             case PromptButton::Act::SEND:
+                if (decision_.kind == DecisionKind::BOTTOM) {
+                    ImGui::SetTooltip("Click: put the planned cards on the bottom, one decision at a time");
+                    break;
+                }
                 ImGui::SetTooltip(blockers ? "Click: declare the planned blocks (each blocker, then the attacker it "
                                              "blocks), then confirm"
                                            : "Click: declare the planned attackers (each with what it attacks), then "
@@ -634,7 +673,12 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
                     model_.players[static_cast<size_t>(model_.top)].name.c_str());
                 break;
             case PromptButton::Act::CLEAR:
-                ImGui::SetTooltip("Click: drop the plan (creatures declared already stay declared)");
+                ImGui::SetTooltip(decision_.kind == DecisionKind::BOTTOM
+                                      ? "Click: drop the plan"
+                                      : "Click: drop the plan (creatures declared already stay declared)");
+                break;
+            case PromptButton::Act::UNDO:
+                ImGui::SetTooltip("Click: take back the last card planned");
                 break;
             case PromptButton::Act::ROW:
                 ImGui::SetTooltip("Click: %s", b.label.c_str());
@@ -666,6 +710,13 @@ void TableView::hover_hint(const Hit &hit, const TableDraw &) {
     }
     const DecisionPick *p = pick_at(hit);
     if (!p || p->rows.empty()) return;
+    if (decision_.kind == DecisionKind::BOTTOM) {
+        const uint64_t h = hit_object(hit);
+        ImGui::SetTooltip(bottom_.order_of(h) ? "Click: keep %s (take it back from the plan)"
+                                              : "Click: put %s on the bottom (sent with the others)",
+            name_of(h).c_str());
+        return;
+    }
     if (p->rows.size() == 1) {
         ImGui::SetTooltip("Click: %s", decision_.row_text[static_cast<size_t>(p->rows[0])].c_str());
     } else {
@@ -731,8 +782,8 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
             } else if (glow) {
                 for (const MenuLink &m : model_.menu) source = source || (m.source == h);
             }
-            keep =
-                keep || decision_.chosen_order_of_object(h) > 0 || h == decision_.source || (combat && combat_kept(h));
+            keep = keep || decision_.chosen_order_of_object(h) > 0 || h == decision_.source ||
+                   (combat && combat_kept(h)) || (decision_.kind == DecisionKind::MULLIGAN && obj.in_hand);
             linked = linked || (d.links && d.links->object_linked(h));
             if (plan_shown) {
                 const PlannedAttack *pa = plan_.attack_of(h);
@@ -740,6 +791,7 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
                 armed = armed || (answering_ && h == plan_.armed());
             }
             aimed = aimed || (armed_attack && armed_attack->target == h);
+            planned = planned || (decision_.kind == DecisionKind::BOTTOM && answering_ && bottom_.order_of(h) > 0);
         }
         if (focus && !source && !keep) dl->AddRectFilled(a, b, DIM_OVER, cw * 0.05f);
         if (source && !planned && !aimed) outline(dl, a, b, cw * 0.05f, tok().GLOW, 2, 3);
@@ -765,6 +817,15 @@ void TableView::draw_decision_marks(ImDrawList *dl, const PlacedCard &c, ImVec2 
         const float r = std::max(7.0f, fs * 0.8f);
         number_badge(dl, ImVec2(b.x - 1, a.y + 1), r, order, tok().ACCENT);
     }
+    if (decision_.kind == DecisionKind::BOTTOM && answering_)
+        if (const int k = bottom_.order_of(h))
+            badge(dl, ImVec2(a.x + 2, a.y + 2), false, false, "Bottom " + std::to_string(k), fs, tok().ACCENT,
+                tok().TEXT, 0, 2);
+    if (const DecisionPick *p = decision_.pick_of_object(h))
+        if (decision_.holds_chosen(*p)) {
+            outline(dl, a, b, cw * 0.05f, tok().ACCENT, 2, 3);
+            badge(dl, ImVec2(a.x + 2, b.y - 2), false, true, "Chosen", fs, tok().ACCENT, tok().TEXT, 0, 2);
+        }
     if (const DecisionPick *p = decision_.pick_of_object(h))
         if (p->so_far > 0)
             badge(dl, ImVec2(a.x + 2, a.y + 2), false, false, std::to_string(p->so_far) + " dmg", fs, DAMAGE_BG, WHITE,
@@ -968,7 +1029,8 @@ void TableView::draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         const ImVec2 ba = rmin(o, b), bz = rmax(o, b);
         const bool hot = answering_ && static_cast<int>(i) == hovered_button_;
         const bool send = buttons_[i].act == PromptButton::Act::SEND;
-        dl->AddRectFilled(ba, bz, hot ? tok().BTN_HOVER : send ? tok().TAB_ACTIVE : tok().BTN, 2);
+        const bool chosen = buttons_[i].row >= 0 && buttons_[i].row == decision_.chosen_row;
+        dl->AddRectFilled(ba, bz, hot ? tok().BTN_HOVER : chosen ? tok().SEL : send ? tok().TAB_ACTIVE : tok().BTN, 2);
         const bool row_linked = buttons_[i].row >= 0 && d.links && d.links->row_linked(buttons_[i].row);
         dl->AddRect(ba, bz, row_linked ? tok().LINK : tok().LINE, 2);
         draw_fitted_text(dl, font, fs, ImVec2(ba.x + BUTTON_PAD / 2, ba.y + (b.h() - lh) / 2),
@@ -1259,7 +1321,22 @@ void TableView::apply_plan_to_model() {
 void TableView::build_buttons() {
     buttons_.clear();
     if (!decision_.prompted()) return;
+    if (decision_.kind == DecisionKind::BOTTOM) {
+        if (!answering_) return;
+        const int owed = decision_.mulligan.to_bottom;
+        const int n = static_cast<int>(bottom_.cards().size());
+        if (owed > 0 && n == owed)
+            buttons_.push_back(
+                PromptButton{"Put " + std::to_string(n) + " on the bottom", -1, PromptButton::Act::SEND});
+        if (n > 0) {
+            buttons_.push_back(PromptButton{"Undo", -1, PromptButton::Act::UNDO});
+            buttons_.push_back(PromptButton{"Clear", -1, PromptButton::Act::CLEAR});
+        }
+        return;
+    }
     if (!planning()) {
+        // The card picker shows the rows naming no card under its cards.
+        if (decision_.kind == DecisionKind::CARDS && picker_.active && picker_.off_table()) return;
         for (int row : decision_.buttons)
             buttons_.push_back(PromptButton{decision_.row_text[static_cast<size_t>(row)], row, PromptButton::Act::ROW});
         return;
@@ -1291,6 +1368,12 @@ void TableView::build_buttons() {
 // While the human plans: the declaration so far (declared and planned) and what a click does next;
 // else the decision's own prompt.
 std::string TableView::prompt_text() const {
+    if (decision_.kind == DecisionKind::BOTTOM && answering_) {
+        std::string planned;
+        for (uint64_t h : bottom_.cards()) planned += (planned.empty() ? "" : ", ") + name_of(h);
+        return decision_.prompt + (planned.empty() ? std::string(" \xC2\xB7 click the cards to put there")
+                                                   : " \xC2\xB7 planned: " + planned);
+    }
     if (!planning()) return decision_.prompt;
     const bool blockers = decision_.kind == DecisionKind::BLOCKERS;
     const uint64_t armed = plan_.armed();
@@ -1340,10 +1423,23 @@ bool TableView::press_button(const PromptButton &b) {
             plan_all();
             return true;
         case PromptButton::Act::CLEAR:
-            plan_.clear();
+            if (decision_.kind == DecisionKind::BOTTOM) {
+                bottom_.clear();
+            } else {
+                plan_.clear();
+            }
+            return true;
+        case PromptButton::Act::UNDO:
+            bottom_.undo();
             return true;
         case PromptButton::Act::SEND:
             break;
+    }
+    if (decision_.kind == DecisionKind::BOTTOM) {
+        bottom_.start_sending();
+        status_ = "Putting " + std::to_string(bottom_.cards().size()) +
+                  " cards on the bottom as planned, one decision at a time";
+        return true;
     }
     // Nothing planned left to send: the confirm row alone.
     bool unsent = false;
@@ -1425,6 +1521,38 @@ bool TableView::plan_press(const Hit &hit) {
     return false;
 }
 
+// A click on a hand card at the London mulligan's bottom pick: planned, or taken back. False when it
+// is no pick (the click selects).
+bool TableView::bottom_press(const Hit &hit) {
+    const uint64_t h = hit_object(hit);
+    if (!h || !decision_.pick_of_object(h)) return false;
+    const int owed = decision_.mulligan.to_bottom;
+    if (!bottom_.toggle(h, owed))
+        status_ = std::to_string(owed) + (owed == 1 ? " card is" : " cards are") +
+                  " planned already: click a planned card (or Undo) to take one back";
+    return true;
+}
+
+// The card picker over the opponent's half, when the decision has one: its click answers as the Table's.
+void TableView::draw_picker(const TableDraw &d) {
+    if (!picker_.active) {
+        picker_view_.hide();
+        return;
+    }
+    const ImVec2 o = ImGui::GetCurrentWindow()->InnerRect.Min;
+    CardPickerView::Place pl;
+    pl.x0 = o.x + layout_.panel.x0 + 10;
+    pl.x1 = o.x + layout_.panel.x1 - 10;
+    pl.y0 = o.y + layout_.top_band.y1 + 2;
+    pl.y_long = o.y + (layout_.prompt.w() > 0 ? layout_.prompt.y0 - 4 : layout_.mid.y1 - 4);
+    pl.y_short = std::min(pl.y_long, o.y + layout_.mid.y0 - 6);
+    pl.y_tall = std::max(pl.y_long, o.y + layout_.bottom_band.y0 - 4);
+    pl.prompt = decision_.prompt;
+    const int row =
+        picker_view_.draw(picker_, books_[static_cast<size_t>(model_view_)], pl, answering_, d.magnify, d.links);
+    if (row >= 0) answer_ = row;
+}
+
 // A release after a press on a blocker: dragged onto an attacker it may block, the block is planned;
 // a click without a drag on a blocker armed before disarms it.
 void TableView::plan_release(const Hit &hit) {
@@ -1462,6 +1590,20 @@ void TableView::plan_all() {
 
 // Screenshots: force_plan_'s items, once per declaration.
 void TableView::apply_force_plan() {
+    if (!force_plan_.empty() && answering_ && decision_.kind == DecisionKind::BOTTOM && bottom_.empty() &&
+        !bottom_.sending()) {
+        // The bottom picks: each name plans the first hand card of that name not planned yet.
+        for (const std::string &want : split_names(force_plan_))
+            for (const DecisionPick &p : decision_.picks) {
+                const int i = model_.find(p.handle);
+                if (i < 0 || bottom_.order_of(p.handle) ||
+                    lower_text(model_.objects[static_cast<size_t>(i)].name).find(lower_text(want)) == std::string::npos)
+                    continue;
+                bottom_.toggle(p.handle, decision_.mulligan.to_bottom);
+                break;
+            }
+        return;
+    }
     if (force_plan_.empty() || !planning() || plan_.key() == force_planned_) return;
     force_planned_ = plan_.key();
     const auto lower = [](std::string t) {
@@ -1506,6 +1648,24 @@ void TableView::apply_force_plan() {
 }
 
 int TableView::plan_reply(const Match &m, long index, int seat) {
+    if (bottom_.sending()) {
+        if (index < 0 || index == bottom_.answered()) return -1;
+        std::string err;
+        const std::shared_ptr<const rmstate::DecodedFrame> f = m.frame(static_cast<size_t>(index), seat, &err);
+        if (!f) {
+            bottom_.clear();
+            status_ = "Sending stopped: decision " + std::to_string(index + 1) + "'s frame does not read: " + err;
+            return -1;
+        }
+        const int row = next_bottom_row(bottom_, agents::DecisionView(m.stream(seat), *f, seat), nullptr);
+        if (row < 0) {
+            status_ = "Put on the bottom as planned";
+            bottom_.clear();
+            return -1;
+        }
+        bottom_.record(index);
+        return row;
+    }
     if (!plan_.sending() || index < 0 || index == plan_.answered()) return -1;
     std::string err;
     const std::shared_ptr<const rmstate::DecodedFrame> f = m.frame(static_cast<size_t>(index), seat, &err);

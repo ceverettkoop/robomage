@@ -5,6 +5,8 @@
 #include <cstdlib>
 
 #include "../../src/cli/board.h"
+#include "card_picker.h"
+#include "mulligan_plan.h"
 
 namespace {
 
@@ -25,6 +27,9 @@ static int lethal_of(const std::string &description);
 static void read_block_facts(const agents::DecisionView &v, rmwork::BlockFacts *b);
 static void read_damage(const rmwork::TableModel &m, rmwork::TableDecision *d);
 static bool holds(const std::vector<uint64_t> &v, uint64_t h);
+static rmwork::MulliganFacts read_mulligan(const agents::DecisionView &v, int seat);
+static std::string mulligan_prompt(const rmwork::MulliganFacts &f, bool bottom);
+static std::string mulligan_note(const rmwork::MulliganFacts &f);
 
 // The `seat` enum (1 A, 2 B) as 0 A, 1 B; -1 for none.
 static int seat_of(uint64_t seat) {
@@ -47,11 +52,65 @@ static rmwork::DecisionKind decision_kind(const agents::DecisionView &v) {
         if (c == "SELECT_BLOCKER" || c == "CONFIRM_BLOCKERS") return DecisionKind::BLOCKERS;
         if (c == "BLOCK_TARGET") return DecisionKind::BLOCK_TARGET;
         if (c == "ASSIGN_DAMAGE") return DecisionKind::DAMAGE;
+        if (c == "KEEP_HAND" || c == "MULLIGAN") return DecisionKind::MULLIGAN;
         if (c != "SELECT_TARGET" && c != "DIVIDE_DAMAGE") targets = false;
         if (is_mana_category(c)) mana = true;
     }
     if (targets) return DecisionKind::TARGET;
-    return mana ? DecisionKind::MANA : DecisionKind::NONE;
+    if (mana) return DecisionKind::MANA;
+    if (rmwork::london_bottom_menu(v)) return DecisionKind::BOTTOM;
+    return rmwork::card_pick_menu(v) ? DecisionKind::CARDS : DecisionKind::NONE;
+}
+
+// Seat `seat`'s mulligans and cards owed to the bottom, its hand, play or draw, the other seat's mulligans.
+static rmwork::MulliganFacts read_mulligan(const agents::DecisionView &v, int seat) {
+    rmwork::MulliganFacts f;
+    const agents::Table p = v.table("player");
+    for (size_t r = 0; r < p.rows(); ++r) {
+        const int s = seat_of(p.u(r, p.col("player")));
+        if (s == seat) {
+            f.mulligans = static_cast<int>(p.u(r, p.col("mulligans")));
+            f.to_bottom = static_cast<int>(p.u(r, p.col("to_bottom")));
+            f.hand = static_cast<int>(p.u(r, p.col("hand")));
+        } else if (s >= 0) {
+            f.opponent_mulligans = static_cast<int>(p.u(r, p.col("mulligans")));
+        }
+    }
+    const agents::Table m = v.table("match");
+    if (m.rows() && seat >= 0) {
+        const int first = seat_of(m.u(0, m.col("plays_first")));
+        if (first >= 0) f.on_play = first == seat ? 1 : 0;
+    }
+    return f;
+}
+
+// "Mulligan 2: keep these 7 and put 2 on the bottom, or mulligan" / "Keeping 5: put 1 more card on the
+// bottom of your library (1 of 2 done)".
+static std::string mulligan_prompt(const rmwork::MulliganFacts &f, bool bottom) {
+    std::string p;
+    if (bottom) {
+        const int done = std::max(0, f.mulligans - f.to_bottom);
+        p = "Keeping " + std::to_string(f.hand - f.to_bottom) + ": put " + std::to_string(f.to_bottom) +
+            (done ? " more" : "") + (f.to_bottom == 1 ? " card" : " cards") + " on the bottom of your library";
+        if (done) p += " (" + std::to_string(done) + " of " + std::to_string(f.mulligans) + " done)";
+    } else if (f.mulligans == 0) {
+        p = "Opening hand: keep these " + std::to_string(f.hand) + ", or mulligan (draw 7, then put 1 on the bottom)";
+    } else {
+        p = "Mulligan " + std::to_string(f.mulligans) + ": keep these " + std::to_string(f.hand) + " and put " +
+            std::to_string(f.mulligans) + " on the bottom, or mulligan to " +
+            std::to_string(std::max(0, f.hand - f.mulligans - 1));
+    }
+    return p;
+}
+
+// "on the play · the opponent took 2 mulligans".
+static std::string mulligan_note(const rmwork::MulliganFacts &f) {
+    std::string n;
+    if (f.on_play >= 0) n = f.on_play ? "on the play" : "on the draw";
+    if (f.opponent_mulligans > 0)
+        n += (n.empty() ? "" : " \xC2\xB7 ") + std::string("the opponent took ") +
+             std::to_string(f.opponent_mulligans) + (f.opponent_mulligans == 1 ? " mulligan" : " mulligans");
+    return n;
 }
 
 static bool holds(const std::vector<uint64_t> &v, uint64_t h) {
@@ -207,6 +266,10 @@ bool TableDecision::may_block(uint64_t blocker, uint64_t attacker, std::string *
     return true;
 }
 
+bool TableDecision::holds_chosen(const DecisionPick &p) const {
+    return chosen_row >= 0 && std::find(p.rows.begin(), p.rows.end(), chosen_row) != p.rows.end();
+}
+
 int TableDecision::chosen_order_of_seat(int seat) const {
     for (const ChosenTarget &c : chosen)
         if (seat >= 0 && c.handle == 0 && c.seat == seat) return c.order;
@@ -247,6 +310,11 @@ TableDecision read_table_decision(const agents::DecisionView &v, const TableMode
     }
     d.source = pending_source(v);
     if (d.prompted()) d.prompt = prompt_of(v);
+    if (d.kind == DecisionKind::MULLIGAN || d.kind == DecisionKind::BOTTOM) {
+        d.mulligan = read_mulligan(v, m.decider >= 0 ? m.decider : v.seat());
+        d.prompt = mulligan_prompt(d.mulligan, d.kind == DecisionKind::BOTTOM);
+        d.owed = mulligan_note(d.mulligan);
+    }
     if (d.kind == DecisionKind::PAY) read_cost(v, &d);
     if (d.kind == DecisionKind::BLOCKERS) read_block_facts(v, &d.block);
     if (d.kind == DecisionKind::DAMAGE) read_damage(m, &d);

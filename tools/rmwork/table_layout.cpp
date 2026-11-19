@@ -143,7 +143,7 @@ static float row_gaps_h(const RowPlan &plan, int row) {
 static FitLimits fit_limits(const rmwork::TableModel &m, const RowPlan &plan, float w, float h, float fixed_h) {
     using namespace rmwork;
     FitLimits lim;
-    float units_h = HAND_SCALE * CARD_ASPECT, gaps_h = 0;
+    float units_h = hand_scale(m) * CARD_ASPECT, gaps_h = 0;
     for (int r = 0; r < ROW_COUNT; ++r) {
         units_h += row_units_h(m, plan, r);
         gaps_h += row_gaps_h(plan, r);
@@ -159,7 +159,7 @@ static FitLimits fit_limits(const rmwork::TableModel &m, const RowPlan &plan, fl
         }
     if (!m.hand.empty()) {
         const float n = static_cast<float>(m.hand.size());
-        lim.hand = (avail - HAND_GAP * (n - 1)) / (n * HAND_SCALE);
+        lim.hand = (avail - HAND_GAP * (n - 1)) / (n * hand_scale(m));
     }
     return lim;
 }
@@ -448,6 +448,10 @@ static void place_steps(
 
 namespace rmwork {
 
+float hand_scale(const TableModel &m) {
+    return m.pregame ? PREGAME_HAND_SCALE : HAND_SCALE;
+}
+
 bool step_gap_before(int i) {
     return i == 3 || i == 4 || i == 9 || i == 10;
 }
@@ -466,7 +470,7 @@ TableLayout layout_table(const TableModel &m, float w, float h, const TableMetri
     L.detail_w = limited_width(fit_limits(m, plan, w, h, fixed));
     const float bw = give_rows_room(m, &plan, w, h, fixed);
     L.card_w = bw;
-    L.hand_w = bw * HAND_SCALE;
+    L.hand_w = bw * hand_scale(m);
     float rows_h[ROW_COUNT];
     float content = fixed + L.hand_w * CARD_ASPECT;
     for (int r = 0; r < ROW_COUNT; ++r) {

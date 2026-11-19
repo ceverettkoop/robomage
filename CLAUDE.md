@@ -119,11 +119,13 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   LOG --decision N --view a|b|omni`, `--episode`, `--run DIR`, `--open-picker`, `--game-combo`, `--tool
   NAME`, `--choices-hover N`, `--tree-expand`, `--open-zone SEAT:ZONE`: once the game is loaded; Play:
   `--new-game "opp=explore,deck=league/burn,opp-deck=league/bug,seed=3"` with `--play-decisions N`,
-  `--play-until stack|combat|attack|block|damage|sideboard|target|mana|end` or `--game-over` (a seeded random row
+  `--play-until stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|end` or `--game-over` (a seeded random row
   at each of your decisions), `--play-setup "--hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears"` (a sculpted
   game, the engine's setup flags; `--agent-b;first` makes the opponent attack with everything and block the first
   attacker) with `--play-rows R,R,…` (your first decisions' rows), `--table-pick NAME` (a card's popup of rows),
-  `--table-plan "Goblin Guide>Kaito,Swiftspear>?"` (a combat declaration planned on the Table), `--sideboard-plan guide|+CARD;-CARD`, and `--open-new-game`; the start page shows when no flag opens or names something, `--start-page` forces it;
+  `--table-plan "Goblin Guide>Kaito,Swiftspear>?"` (a combat declaration planned on the Table; at the London
+  mulligan's bottom pick the hand cards, `"Skewer,Mountain"`), `--picker-filter TEXT` and `--picker-list` (the card
+  picker's filter and list view), `--sideboard-plan guide|+CARD;-CARD`, and `--open-new-game`; the start page shows when no flag opens or names something, `--start-page` forces it;
   set `$XDG_DATA_HOME` to keep a screenshot's games out of `~/.local/share`; card
   images: `--card-faces images|text`, `--printings-card NAME`; `python3 tools/scryfall/fetch_images.py`
   fills the image cache, without which cards are drawn as text)
@@ -840,10 +842,17 @@ handshake JSON, the shared region, request / response layouts.
   badges, combat lines, the middle strip, the step bar's stop toggles in Play, hover and selection, the
   magnifier, the decision's highlights, prompt line and buttons, clicks answering it in Play, combat
   planning: clicks and drags, attack labels, planned block arrows),
-  `table_decision` (what a click on the Table answers: a targeting, payment, mana or combat decision's rows by
-  the object or player they name, the buttons, the cost still to pay, the targets chosen so far, a damage
-  assignment's lethal damage), `table_combat` (`CombatPlan`: an attacker or blocker declaration planned on the
-  Table and sent one reply per decision, `next_plan_step`; the engine cannot take a declared creature back);
+  `table_decision` (what a click on the Table answers: a targeting, payment, mana, combat, mulligan or
+  card-picker decision's rows by the object or player they name, the buttons, the cost still to pay, the targets
+  chosen so far, a damage assignment's lethal damage, the opening hand's facts, the row chosen in Replay),
+  `table_combat` (`CombatPlan`: an attacker or blocker declaration planned on the Table and sent one reply per
+  decision, `next_plan_step`; the engine cannot take a declared creature back), `mulligan_plan` (`BottomPlan`:
+  the London mulligan's bottom picks planned on the hand and sent one reply per decision, `next_bottom_row`),
+  `card_picker` (the card picker's model, ImGui-free: a search's, dig's, scry's, surveil's, Ponder's, Doomsday's …
+  rows naming cards off the Table, grouped by zone with identical cards counted, the pile being built in its final
+  order from the earlier picks of the same resolution, the filter), `card_picker_view` (`CardPickerView`: the
+  picker as a window inside the Table over the opponent's half, growing over the middle strip for a whole-zone
+  pick; cards or a list, the filter, the pile, placement and Fail to find buttons, read-only in Replay);
   `selftest_decisions` checks them on sculpted live games),
   `card_book` (a viewer's CARDS faces), `card_renderer` (`CardRenderer`, the text-face renderer, the
   rotate-and-fade pass), card images: `card_images` (the Scryfall cache's manifest, the printing

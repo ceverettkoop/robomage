@@ -55,9 +55,18 @@ static uint64_t next_random(uint64_t *state) {
 // declares attackers or blockers ("attack" / "block": attackers / blockers only); "damage", it assigns
 // an attacker's combat damage among its blockers; "sideboard", it is a sideboarding decision;
 // "target", it chooses a target or a point of divided damage; "mana", it pays a cost with a mana
-// ability (--no-auto-mana).
+// ability (--no-auto-mana); "pick", it is a card picker's (card_picker.h: a search, a card put on top
+// or the bottom, a dig's …; not the London mulligan's bottom pick); "mulligan", it keeps or mulligans
+// the opening hand; "bottom", it puts a card of a kept hand on the bottom (the London mulligan).
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
+    if (until == "pick") return rmwork::card_pick_menu(v) && !rmwork::london_bottom_menu(v);
+    if (until == "bottom") return rmwork::london_bottom_menu(v);
+    if (until == "mulligan") {
+        for (size_t i = 0; i < v.n(); ++i)
+            if (v.category(i) == "KEEP_HAND") return true;
+        return false;
+    }
     if (until == "target" || until == "mana") {
         const agents::Table menu = v.table("menu");
         for (size_t i = 0; i < v.n(); ++i) {

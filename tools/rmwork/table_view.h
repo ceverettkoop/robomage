@@ -7,10 +7,13 @@
 #include <string>
 
 #include "card_book.h"
+#include "card_picker.h"
+#include "card_picker_view.h"
 #include "card_renderer.h"
 #include "keys.h"
 #include "links.h"
 #include "magnifier.h"
+#include "mulligan_plan.h"
 #include "replay_session.h"
 #include "settings.h"
 #include "table_backdrop.h"
@@ -75,6 +78,22 @@
 // "lethal N", the damage given so far is counted on each blocker ("N assigned"), the prompt says how much
 // is left, and a click gives a blocker its lethal damage.
 //
+// The opening hand (table_decision.h's MULLIGAN and BOTTOM, mulligan_plan.h): the hand is drawn large
+// (table_layout.h's PREGAME_HAND_SCALE) and never dimmed; the prompt line says how many mulligans were
+// taken, what keeping costs, play or draw, and offers Keep and Mulligan. At the London mulligan's bottom
+// picks a click on a hand card plans it ("Bottom 1", "Bottom 2" in the accent colour; a click on a
+// planned card takes it back), the prompt line's Undo and Clear change the plan, and "Put N on the
+// bottom", once the plan holds every card owed, sends it one reply per decision (plan_reply).
+//
+// The card picker (card_picker.h, card_picker_view.h): at a decision among cards the Table does not
+// show (a library search, Ponder's and Doomsday's ordering, scry, surveil, a dig, a graveyard card for a
+// cost), a window over the opponent's half shows them, the pile being built and the rows naming no card;
+// a click there answers as a click on the Table does. Rows naming a hand card (Brainstorm's put-back)
+// are picked on the hand, the picker showing the pile beside them.
+//
+// In Replay and at an earlier decision of Play the row chosen there (the log's reply) is marked: its
+// card outlined in the accent colour with "Chosen", its button highlighted.
+//
 // The magnifier: holding the Magnify key (Q) over a card, or right-clicking it, shows it large
 // beside it (a double-faced card's both faces, the face up first), with its state on the table
 // listed under it. Releasing the key hides a key magnifier;
@@ -86,10 +105,11 @@ namespace rmwork {
 // human plans a combat declaration, the plan's.
 struct PromptButton {
         enum class Act {
-            ROW,   // answers `row`
-            SEND,  // sends the plan (its confirm row `row` when nothing planned is left to send)
-            ALL,   // plans every creature that can attack
-            CLEAR  // drops the plan
+            ROW,    // answers `row`
+            SEND,   // sends the plan (its confirm row `row` when nothing planned is left to send)
+            ALL,    // plans every creature that can attack
+            CLEAR,  // drops the plan
+            UNDO    // takes the last card planned to the bottom back
         };
         std::string label;
         int row = -1;
@@ -123,9 +143,15 @@ class TableView {
         const std::vector<PromptButton> &prompt_buttons() const { return buttons_; }
         // The combat declaration planned (Play, while the human chooses), and whether it is being sent.
         const CombatPlan &plan() const { return plan_; }
-        bool plan_sending() const { return plan_.sending(); }
-        // While a plan is being sent: the reply to decision `index` of `m` (the human's pending one, in
-        // seat `seat`'s frames), -1 none; a stop or the end of the plan is said in the status bar.
+        bool plan_sending() const { return plan_.sending() || bottom_.sending(); }
+        // The London mulligan's bottom picks planned (Play, while the human chooses them).
+        const BottomPlan &bottom_plan() const { return bottom_; }
+        // The card picker of the decision drawn (inactive when none), and its window.
+        const CardPicker &picker() const { return picker_; }
+        CardPickerView &picker_view() { return picker_view_; }
+        // While a plan (a combat declaration, the bottom picks) is being sent: the reply to decision `index`
+        // of `m` (the human's pending one, in seat `seat`'s frames), -1 none; a stop or the end of the plan
+        // is said in the status bar.
         int plan_reply(const Match &m, long index, int seat);
         // A player chip's rectangle as last drawn (panel coordinates), by seat.
         const TRect &chip_rect(int seat) const { return chip_rects_[seat == 1 ? 1 : 0]; }
@@ -154,7 +180,8 @@ class TableView {
         // While the human plans a combat declaration: plan `spec` once per declaration, comma-separated
         // items NAME (attacks the player / is armed to block), NAME>TARGET (attacks the planeswalker
         // TARGET, or "player"; blocks the attacker TARGET) or NAME>? (planned and armed); names are
-        // substrings, the first creature that can attack or block ("" off).
+        // substrings, the first creature that can attack or block ("" off). At the London mulligan's bottom
+        // pick: the hand cards to plan, comma-separated name substrings.
         void force_plan(const std::string &spec) { force_plan_ = spec; }
 
         // The book of `view`'s CARDS frame for `m` (built on first use).
@@ -202,6 +229,8 @@ class TableView {
         std::string prompt_text() const;
         bool press_button(const PromptButton &b);
         bool plan_press(const Hit &hit);
+        bool bottom_press(const Hit &hit);
+        void draw_picker(const TableDraw &d);
         void plan_release(const Hit &hit);
         void plan_all();
         void apply_force_plan();
@@ -237,6 +266,9 @@ class TableView {
         TableModel model_;
         TableDecision decision_;
         CombatPlan plan_;
+        BottomPlan bottom_;
+        CardPicker picker_;
+        CardPickerView picker_view_;
         std::vector<PromptButton> buttons_;
         bool answering_ = false;  // the human chooses at the decision drawn (TableDraw::answer)
         unsigned model_plan_generation_ = 0;

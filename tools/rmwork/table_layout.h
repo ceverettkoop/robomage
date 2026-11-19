@@ -16,7 +16,8 @@
 // centred; the two halves share the height left over, their rows centred in it.
 //
 // The fit (the mock-up's fitTable): one card width for the four battlefield rows (the hand's is
-// HAND_SCALE times it) such that the rows and the hand fill the panel's height and the widest row
+// HAND_SCALE times it, PREGAME_HAND_SCALE at the opening hands so the hand kept or mulliganed is
+// shown large) such that the rows and the hand fill the panel's height and the widest row
 // fits its width, never above MAX_CARD_W. A tapped card lies on its side (as wide as a card is
 // tall); an attachment peeks ATTACH_PEEK of a card's height above the one before it; a stack of
 // identical permanents shows up to three more cards STACK_STEP of a width apart; an attacking
@@ -37,6 +38,7 @@ namespace rmwork {
 
 inline constexpr float CARD_ASPECT = 1.3934f;  // height / width
 inline constexpr float HAND_SCALE = 1.15f;
+inline constexpr float PREGAME_HAND_SCALE = 1.9f;
 inline constexpr float ATTACH_PEEK = 0.17f;
 inline constexpr float STACK_STEP = 0.10f;
 inline constexpr int STACK_VISIBLE = 4;
@@ -113,6 +115,8 @@ struct TableLayout {
         std::vector<PlacedCard> cards;  // in drawing order (behind first)
 };
 
+// The hand's card width over the battlefield's: PREGAME_HAND_SCALE at the opening hands, else HAND_SCALE.
+float hand_scale(const TableModel &m);
 // Whether the step bar has a gap before step `i` (Main 1, Beginning of combat, Main 2, End).
 bool step_gap_before(int i);
 // The whole layout of `m` in a `w` × `h` panel.

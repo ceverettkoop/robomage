@@ -143,7 +143,8 @@ end the engine writes every seat's terminal frame to the stream, the other seat'
 frames, and the session drops a record of another viewer unread, by its header. Choosing: a click on a
 Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
 row, the `-1` of `docs/state_format.md` §9); at a targeting or payment decision, and at a priority decision
-offering mana abilities, a click on the Table does too (§4.2, items 6 and 11), through the same reply; nothing is sent while the engine runs ("Opponent is
+offering mana abilities, a click on the Table does too (§4.2, items 6 and 11), as do a click in the card picker and on
+the opening hand (items 5 and 8), through the same reply; nothing is sent while the engine runs ("Opponent is
 thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
 from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
 step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
@@ -210,8 +211,8 @@ decisions, a menu without the planned row refused; the guides file against its J
 sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
 stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
 the match in Replay in seat A's view and seat B's). Waiting for later stages: the rest of §4.2's
-direct-manipulation decisions (targeting and mana payment are answered on the Table; every other decision goes
-through the Choices list). Beside each game's decision log Play
+direct-manipulation decisions (targeting, mana payment, combat, the card picker and the opening hand are answered
+on the Table; every other decision goes through the Choices list). Beside each game's decision log Play
 writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
 seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
 game or quitting, or its engine gone) gets the `QUIT` line appended to its log, as a human seat's quit
@@ -387,8 +388,9 @@ them as its controller chooses), and neither has the engine: when an attacker ca
 given lethal damage with "lethal N" (the row's), counts what each has been assigned ("N assigned", the `combat`
 table's `assigned`), tags the attacker "Assigning", says what is left ("2 of 2 left to assign"), and a click gives a
 blocker its lethal damage; Done is a button. For screenshots `--play-until attack|block|damage` stops at those
-decisions and `--table-plan SPEC` plans a declaration. Waiting for later stages: the rest of direct manipulation in Play
-(§4.2), the Choices tool's side of the linking (§2.6).
+decisions and `--table-plan SPEC` plans a declaration. The opening hand and the card picker (§4.2, items 5 and 8;
+`mulligan_plan`, `card_picker`, `card_picker_view`) are described there. Waiting for later stages: the rest of direct
+manipulation in Play (§4.2), the Choices tool's side of the linking (§2.6).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -538,7 +540,22 @@ Ordered roughly by value against effort. Each is one dockable tool.
 
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
-5. **Mulligan**: the opening hand large, Keep / Mulligan, and for London mulligan the bottoming choice.
+5. ~~**Mulligan**~~: built (mock-ups `decisions.html#mulligan`, `#mulligan-bottom`; `table_decision`'s MULLIGAN and
+   BOTTOM, `mulligan_plan`). At the opening hands the hand is drawn large on the Table (1.9 battlefield card widths,
+   `PREGAME_HAND_SCALE`, in place of 1.15) and never dimmed; the prompt line says what is decided from the frame's
+   `player.mulligans` / `to_bottom` ("Opening hand: keep these 7, or mulligan (draw 7, then put 1 on the bottom)",
+   "Mulligan 2: keep these 7 and put 2 on the bottom, or mulligan to 4"; play or draw and the opponent's mulligans
+   after it, dimmed) with Keep and Mulligan as buttons (rows 0 and 1). The London bottom picks (CR 103.5; one
+   BOTTOM_DECK_CARD decision per card, no pending flow, a row per hand card, no row taking a card back) are planned
+   on the hand rather than sent at each click (the mock-up's open question 1): a click on a lit hand card plans it
+   ("Bottom 1", "Bottom 2" in the accent colour), a click on a planned card takes it back, a click past the cards owed
+   is refused with a status message, Undo and Clear on the prompt line; once the plan holds every card owed, "Put N on
+   the bottom" sends it one reply per decision (`next_bottom_row`: the row naming the first planned card still in the
+   hand). The prompt says "Keeping 5: put 2 cards on the bottom of your library · planned: …" ("(1 of 2 done)" once
+   one is). The opponent's mulligans are on the prompt line, not in a window (open question 2). Replay: the same
+   highlights, the card chosen outlined in the accent colour with "Chosen" (as every pick the Table shows; a chosen
+   button is highlighted), no plan. `--play-until mulligan|bottom` stop there and `--table-plan "NAME,NAME"` plans the
+   bottom picks for screenshots. Checked by `rmwork --selftest-data` (`selftest_decisions`).
 6. ~~**Targeting**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#targeting`,
    `#targeting-second`). Legal targets lit on the Table and the player chips, everything else dimmed; the spell
    (or the ability's source) lit, linked to its targets by highlighting both, no arrow (user, 2026-11-18: arrows
@@ -558,7 +575,42 @@ Ordered roughly by value against effort. Each is one dockable tool.
    assignment among blockers (`ASSIGN_DAMAGE`): the blockers lit with their lethal damage, the damage assigned so
    far on each, a click gives one its lethal damage, Done a button. Checked by `rmwork --selftest-data`
    (`selftest_decisions`).
-8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find; it must also handle a whole-zone pick such as Doomsday (five picks in turn from the library and graveyard, each put on top so the first ends up fifth): rows grouped by zone, identical cards one entry with a count, a name/type filter, a compact list beside the image grid, and the pile being built shown in its final order.
+8. ~~**Library search, dig, scry, surveil, reveal**~~: built (mock-ups `decisions.html#card-picker`, `-ponder`,
+   `-brainstorm`, `-surveil`; `card_picker`, `card_picker_view`). A card-picker decision is one whose every row is
+   SEARCH_LIBRARY (a row per legal find, the card its `source`; "Fail to find" names none), TOP_LIBRARY (Ponder's,
+   Doomsday's ordering and scry's keep with an `ordinal`, the depth the pick fills; Doomsday's five picks
+   "Thassa's Oracle (library)" / "Daze (graveyard)" and Brainstorm's put-back from the hand with none, each on top of
+   the last), BOTTOM_DECK_CARD at a resolution (scry's other pile), DIG_CHOICE ("Take nothing (rest go to the bottom
+   of library)" names none), CHOOSE_CARD (surveil's "Put X into graveyard", a tutor's, Delve's, Mox Diamond's
+   discard), EXILE_FROM_YARD (Escape) or SYLVAN_CHOICE; interchangeable library and graveyard cards are one row
+   (`interchangeable_cards`), hand cards never. The picker is a window inside the Table rather than a docked tool
+   (open question 1): the stack object resolving, the prompt line and the board stay where they are and nothing has to
+   be brought to the front and given back. It sits over the opponent's half (below the opponent's chip, down to the
+   middle strip) as wide as its cards need, centred; when its cards need more room it takes the Table's width down to
+   the prompt line (over the strip's step bar and stack; the title names what resolves), and a whole-zone pick too large
+   for that (Doomsday with a 45-card library) takes the Table down to its foot, the prompt then at the picker's own
+   foot; its title bar's button collapses it. The cards are the rows' (only what the viewer's frame shows: its menu,
+   its objects, `zone_model`), grouped by zone (the viewer's library top first with each card's place, then its
+   graveyard, exile, the other seat's zones), identical cards one entry with ×n; a search shows the rest of the library
+   its reveal window shows, dimmed (open question 3: both, an "Unpickable" toggle hides them). A filter box (name or
+   type line, case-insensitive) and a Cards / List switch above them, the list a line per entry with its count, type
+   line and place. A click on a card answers its row; a card with several (scry's Top / Bottom, surveil's Top /
+   Graveyard) has a button per row under it; the rows naming no card (Fail to find, Take nothing) are buttons under
+   the cards. Ponder and Doomsday are answered a click per pick, as the engine asks (open question 2: the pile shows
+   where each goes before it is clicked; the engine has no row taking a pick back). Beside the cards the pile being
+   built, top first, as the library will be: the picks this resolution made so far (the replies of the deciding seat's
+   decisions just before for the same pending source, read from their frames, since the frame no longer lists a card
+   put back), each in its final place (an ordinal pick at its depth, "Top", "2nd", "3rd", the deepest first for
+   Ponder; an on-top pick above the earlier ones, so Doomsday's first ends fifth), the place the next pick fills
+   marked, then what went to the bottom or the graveyard; the pass restarts where the menus change kind (Doomsday's
+   picks, then its ordering of the five). A decision whose cards are all on the Table (Brainstorm's put-back) is picked
+   on the hand, the picker showing the pile alone at the right. Replay (and an earlier decision of Play): read-only, the
+   card chosen marked and scrolled into view; a seat's view of the other seat's pick has none. Screenshot flags
+   `--play-until pick`, `--picker-filter TEXT`, `--picker-list`. Not in the frame (the engine was not changed): how many
+   picks a resolution will ask (Doomsday's five, Brainstorm's two), so the pile shows the picks so far and the next,
+   not empty places for the rest; and the card a pick put back (the pile is read from the earlier decisions' replies).
+   Checked by `rmwork --selftest-data` (`selftest_decisions`: a fetchland's search, Ponder, Preordain's scry,
+   Doomsday's five picks with the filter, Replay).
 9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
 10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.
 11. ~~**Mana payment**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#mana-payment`,

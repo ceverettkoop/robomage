@@ -1,7 +1,9 @@
 #include "selftest_decisions.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <map>
 #include <memory>
 #include <set>
 #include <thread>
@@ -61,6 +63,25 @@ static void check_combat_replay(const CheckFn &check, rmwork::App &app, const Fr
 static void check_targeting(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_targeting_replay(const CheckFn &check, rmwork::App &app, const Frames &frames);
 static void check_mana(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static const rmwork::CardPickerView::Item *picker_card(rmwork::App &app, const std::string &name, int zone);
+static const rmwork::CardPickerView::Item *picker_button(
+    rmwork::App &app, const std::string &entry, const std::string &label);
+static bool click_item(const CheckFn &check, rmwork::App &app, const Frames &frames,
+    const rmwork::CardPickerView::Item *it, int want, const std::string &at);
+static std::string card_name(const Pending &p, int card);
+static std::vector<std::string> library_top(const Pending &p, int seat, size_t n);
+static std::vector<std::string> known_top(const Pending &p, int seat, size_t n);
+static std::vector<std::string> pile_names(const rmwork::CardPicker &p);
+static bool open_log_in_replay(const CheckFn &check, rmwork::App &app, const Frames &frames, const std::string &at);
+static long first_decision(
+    const rmwork::Match &m, int seat, const std::function<bool(const agents::DecisionView &)> &test);
+static void check_search(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_ponder(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_scry(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_doomsday(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_picker_replay(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_mulligan(const CheckFn &check, rmwork::App &app, const Frames &frames);
+static void check_mulligan_replay(const CheckFn &check, rmwork::App &app, const Frames &frames);
 
 // Frames until the human decides or the game is over; whether the human decides.
 static bool wait_decision(const Frames &frames, rmwork::PlaySession &s) {
@@ -733,12 +754,511 @@ static void check_combat_replay(const CheckFn &check, rmwork::App &app, const Fr
     frames(2);
 }
 
+// The picker's card item named `name` (in zone `zone`, -1 any), as last drawn; nullptr when none.
+static const rmwork::CardPickerView::Item *picker_card(rmwork::App &app, const std::string &name, int zone) {
+    const rmwork::CardPicker &p = app.table().picker();
+    for (const rmwork::CardPickerView::Item &it : app.table().picker_view().items()) {
+        if (!it.card || it.label != name || it.group >= p.groups.size()) continue;
+        if (zone < 0 || static_cast<int>(p.groups[it.group].zone) == zone) return &it;
+    }
+    return nullptr;
+}
+
+// The picker's button labelled `label`: a placement button of the card named `entry`, or ("" entry) a
+// button under the cards; nullptr when none.
+static const rmwork::CardPickerView::Item *picker_button(
+    rmwork::App &app, const std::string &entry, const std::string &label) {
+    const rmwork::CardPicker &p = app.table().picker();
+    for (const rmwork::CardPickerView::Item &it : app.table().picker_view().items()) {
+        if (it.card || it.label != label) continue;
+        const bool placement = it.group < p.groups.size() && it.entry < p.groups[it.group].entries.size() &&
+                               std::find(p.buttons.begin(), p.buttons.end(), it.row) == p.buttons.end();
+        if (entry.empty() ? !placement : placement && p.groups[it.group].entries[it.entry].name == entry) return &it;
+    }
+    return nullptr;
+}
+
+// A click on the picker's item `it` answers with row `want`.
+static bool click_item(const CheckFn &check, rmwork::App &app, const Frames &frames,
+    const rmwork::CardPickerView::Item *it, int want, const std::string &at) {
+    check(it != nullptr && want >= 0, at + ": the picker does not show the item to click, or no row names it");
+    if (!it || want < 0) return false;
+    const size_t index = static_cast<size_t>(app.play().pending_index());
+    const int got = click_reply(app, frames, ImVec2((it->min.x + it->max.x) / 2, (it->min.y + it->max.y) / 2), index);
+    check(got == want, at + ": the click replied " + std::to_string(got) + ", not row " + std::to_string(want));
+    return got == want;
+}
+
+static std::string card_name(const Pending &p, int card) {
+    return card >= 0 ? p.view->cards().name(card) : std::string("?");
+}
+
+// The names of seat `seat`'s library's top `n` cards as the frame's objects list them (fewer when the
+// frame does not list each of them).
+static std::vector<std::string> library_top(const Pending &p, int seat, size_t n) {
+    std::map<int64_t, std::string> at;
+    if (!p.ok()) return {};
+    const agents::Table &o = p.view->objects();
+    for (size_t r = 0; r < o.rows(); ++r)
+        if (p.view->stream().enum_name("zone", o.u(r, o.col("zone"))) == "LIBRARY" &&
+            o.u(r, o.col("owner")) == static_cast<uint64_t>(seat + 1) && !o.none(r, o.col("card")))
+            at[o.s(r, o.col("pos"))] = card_name(p, o.card(r, o.col("card")));
+    std::vector<std::string> out;
+    for (size_t k = 0; k < n && at.count(static_cast<int64_t>(k)); ++k) out.push_back(at[static_cast<int64_t>(k)]);
+    return out;
+}
+
+// The same from the seat's knowledge (`k_position` facts naming a card from the top).
+static std::vector<std::string> known_top(const Pending &p, int seat, size_t n) {
+    std::map<uint64_t, std::string> at;
+    if (!p.ok()) return {};
+    const agents::Table k = p.view->table("k_position");
+    for (size_t r = 0; r < k.rows(); ++r)
+        if (k.u(r, k.col("owner")) == static_cast<uint64_t>(seat + 1) &&
+            p.view->stream().enum_name("lib_anchor", k.u(r, k.col("at_anchor"))) == "TOP" &&
+            k.u(r, k.col("at_span")) == 1 && !k.none(r, k.col("card")))
+            at[k.u(r, k.col("at_pos"))] = card_name(p, k.card(r, k.col("card")));
+    std::vector<std::string> out;
+    for (size_t i = 0; i < n && at.count(i); ++i) out.push_back(at[i]);
+    return out;
+}
+
+// The pile's top as shown, top first: each filled slot's card, "" for the slot the next pick fills.
+static std::vector<std::string> pile_names(const rmwork::CardPicker &p) {
+    std::vector<std::string> out;
+    for (const rmwork::PileSlot &s : p.pile.top) out.push_back(s.filled ? s.card.name : std::string());
+    return out;
+}
+
+// Stops Play's game and opens its decision log in Replay; whether it loaded.
+static bool open_log_in_replay(const CheckFn &check, rmwork::App &app, const Frames &frames, const std::string &at) {
+    const std::string log = app.play().log_path();
+    app.play().stop();
+    check(app.open_replay(log), at + ": the decision log does not open");
+    const auto start = std::chrono::steady_clock::now();
+    while (app.loading() &&
+           std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() < DECISION_TIMEOUT_S)
+        frames(1);
+    frames(2);
+    check(app.replay().loaded(), at + ": the log is not loaded");
+    if (!app.replay().loaded()) return false;
+    app.set_tool_open(rmwork::Mode::REPLAY, rmwork::Tool::TABLE, true);
+    app.focus_tool(rmwork::Tool::TABLE);
+    return true;
+}
+
+// The first decision of seat `seat` whose frame `test` holds for, -1 none.
+static long first_decision(
+    const rmwork::Match &m, int seat, const std::function<bool(const agents::DecisionView &)> &test) {
+    for (size_t i = 0; i < m.decisions.size(); ++i) {
+        if (m.decisions[i].decider != seat) continue;
+        std::string err;
+        const auto f = m.frame(i, seat, &err);
+        if (!f) continue;
+        const agents::DecisionView v(m.stream(seat), *f, seat);
+        if (test(v)) return static_cast<long>(i);
+    }
+    return -1;
+}
+
+// A fetchland's search: the legal finds lit, the rest of the library dimmed, Fail to find under them,
+// a click on a find answering with its row.
+static void check_search(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Card picker: search";
+    PlaySession &s = app.play();
+    if (!start_sculpted(check, app, true,
+            {"--hand-a", "Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--library-a",
+                "Underground Sea,Lightning Bolt,Island,Mountain,Mountain,Fireblast", "--battlefield-a",
+                "Polluted Delta,Mountain", "--hand-b", "Island", "--library-b", "Island"},
+            at))
+        return;
+    const int act = drive_to(app, frames, [](const std::string &c, const std::string &t) {
+        return c == "ACTIVATE_ABILITY" && t.find("Polluted Delta") != std::string::npos;
+    });
+    check(act >= 0, at + ": no decision offers to activate Polluted Delta");
+    if (act < 0 || !app.play_reply(act)) return;
+    const int row =
+        drive_to(app, frames, [](const std::string &c, const std::string &) { return c == "SEARCH_LIBRARY"; });
+    check(row >= 0, at + ": the fetch's search did not come");
+    if (row < 0) return;
+    frames(2);
+    const Pending p = pending(s);
+    const CardPicker &pk = app.table().picker();
+    std::set<std::string> lit, dim;
+    for (const CardPickGroup &g : pk.groups)
+        for (const CardPickEntry &e : g.entries) (e.pickable() ? lit : dim).insert(e.name);
+    check(app.table().decision().kind == DecisionKind::CARDS && pk.active && pk.off_table() &&
+              lit == std::set<std::string>{"Underground Sea", "Island"} && dim.count("Lightning Bolt") &&
+              dim.count("Mountain") && picker_button(app, "", "Fail to find") && app.table().prompt_buttons().empty() &&
+              app.table().picker_view().shown(),
+        at + ": the search's picker does not light the two finds, dim the rest and offer Fail to find");
+    app.table().picker_view().set_show_unpickable(false);
+    frames(2);
+    check(app.table().picker_view().entries_shown() == 2,
+        at + ": hiding the unpickable cards leaves more than the finds");
+    app.table().picker_view().set_show_unpickable(true);
+    frames(2);
+    const int sea = find_row(p, [](const std::string &, const std::string &t) { return t == "Underground Sea"; });
+    if (!click_item(check, app, frames, picker_card(app, "Underground Sea", -1), sea, at + ": Underground Sea")) return;
+    std::printf("rmwork: %s: the finds lit, the rest dimmed, a click on a find answered\n", at.c_str());
+}
+
+// Ponder: two picks put back in the order chosen (the first 3rd from the top), the third card left on top;
+// the pile shows each pick in its final place; the shuffle decision's frame knows the top three in that order.
+static void check_ponder(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Card picker: Ponder";
+    PlaySession &s = app.play();
+    if (!start_sculpted(check, app, true,
+            {"--hand-a", "Ponder,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--library-a",
+                "Daze,Force of Will,Delver of Secrets,Mountain,Mountain", "--battlefield-a", "Island", "--hand-b",
+                "Island", "--library-b", "Island"},
+            at))
+        return;
+    const int cast = drive_to(app, frames, [](const std::string &c, const std::string &t) {
+        return c == "CAST_SPELL" && t.find("Ponder") != std::string::npos;
+    });
+    check(cast >= 0, at + ": no decision offers to cast Ponder");
+    if (cast < 0 || !app.play_reply(cast)) return;
+    if (drive_to(app, frames, [](const std::string &c, const std::string &) { return c == "TOP_LIBRARY"; }) < 0) {
+        check(false, at + ": Ponder's first pick did not come");
+        return;
+    }
+    frames(2);
+    const CardPicker &pk = app.table().picker();
+    check(pk.active && pk.pile.shown && pk.pile.ordered && pk.pile.top.size() == 3 && pk.pile.top[2].next &&
+              pk.entry_count() == 3,
+        at + ": the first pick does not show the three cards and the pile with its 3rd place next");
+    Pending p = pending(s);
+    if (!click_item(check, app, frames, picker_card(app, "Force of Will", -1),
+            find_row(p, [](const std::string &, const std::string &t) { return t == "Force of Will"; }),
+            at + ": Force of Will 3rd from the top") ||
+        !wait_decision(frames, s))
+        return;
+    frames(2);
+    check(pile_names(app.table().picker()) == std::vector<std::string>{"", "", "Force of Will"} &&
+              app.table().picker().pile.top[1].next && app.table().picker().entry_count() == 2,
+        at + ": the second pick's pile does not show Force of Will 3rd, the 2nd place next");
+    p = pending(s);
+    if (!click_item(check, app, frames, picker_card(app, "Daze", -1),
+            find_row(p, [](const std::string &, const std::string &t) { return t == "Daze"; }), at + ": Daze 2nd") ||
+        !wait_decision(frames, s))
+        return;
+    p = pending(s);
+    const std::vector<std::string> top = known_top(p, 0, 3);
+    check(find_row(p, [](const std::string &c, const std::string &) { return c == "DONT_SHUFFLE"; }) >= 0 &&
+              top == std::vector<std::string>{"Delver of Secrets", "Daze", "Force of Will"},
+        at + ": after the picks the library's top three are not Delver of Secrets, Daze, Force of Will");
+    std::printf("rmwork: %s: two picks in order, the library's top three as planned\n", at.c_str());
+}
+
+// Preordain's scry 2: Lightning Bolt to the bottom by its button, Daze kept on top; the pile lists the bottom.
+static void check_scry(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Card picker: scry";
+    PlaySession &s = app.play();
+    if (!start_sculpted(check, app, true,
+            {"--hand-a", "Preordain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--library-a",
+                "Lightning Bolt,Daze,Fireblast,Mountain,Mountain,Mountain", "--battlefield-a", "Island", "--hand-b",
+                "Island", "--library-b", "Island"},
+            at))
+        return;
+    const int cast = drive_to(app, frames, [](const std::string &c, const std::string &t) {
+        return c == "CAST_SPELL" && t.find("Preordain") != std::string::npos;
+    });
+    check(cast >= 0, at + ": no decision offers to cast Preordain");
+    if (cast < 0 || !app.play_reply(cast)) return;
+    if (drive_to(app, frames, [](const std::string &c, const std::string &) { return c == "BOTTOM_DECK_CARD"; }) < 0) {
+        check(false, at + ": the scry did not come");
+        return;
+    }
+    frames(2);
+    Pending p = pending(s);
+    check(picker_button(app, "Lightning Bolt", "Top") && picker_button(app, "Lightning Bolt", "Bottom") &&
+              picker_button(app, "Daze", "Bottom"),
+        at + ": the scry's cards do not each offer Top and Bottom");
+    if (!click_item(check, app, frames, picker_button(app, "Lightning Bolt", "Bottom"),
+            find_row(p,
+                [](const std::string &c, const std::string &t) {
+                    return c == "BOTTOM_DECK_CARD" && t.find("Lightning Bolt") != std::string::npos;
+                }),
+            at + ": Lightning Bolt to the bottom") ||
+        !wait_decision(frames, s))
+        return;
+    frames(2);
+    const CardPicker &pk = app.table().picker();
+    check(pk.pile.bottom.size() == 1 && pk.pile.bottom[0].name == "Lightning Bolt" && pk.pile.top.size() == 1 &&
+              pk.pile.top[0].next,
+        at + ": the second card's pile does not list Lightning Bolt on the bottom, the top next");
+    p = pending(s);
+    const size_t index = p.index;
+    if (!click_item(check, app, frames, picker_button(app, "Daze", "Top"),
+            find_row(
+                p, [](const std::string &c,
+                       const std::string &t) { return c == "TOP_LIBRARY" && t.find("Daze") != std::string::npos; }),
+            at + ": Daze on top") ||
+        !wait_decision(frames, s))
+        return;
+    // Preordain then draws Daze; the seat knows the Bolt at its library's bottom.
+    const Pending after = frame_after(app, index, [](const Pending &) { return true; });
+    bool daze = false, bolt_bottom = false;
+    if (after.ok()) {
+        const agents::Table &o = after.view->objects();
+        for (size_t r = 0; r < o.rows(); ++r)
+            daze = daze || (after.view->stream().enum_name("zone", o.u(r, o.col("zone"))) == "HAND" &&
+                               !o.none(r, o.col("card")) && card_name(after, o.card(r, o.col("card"))) == "Daze");
+        const agents::Table k = after.view->table("k_position");
+        const agents::Table pl = after.view->table("player");
+        uint64_t lib = 0;
+        for (size_t r = 0; r < pl.rows(); ++r)
+            if (pl.u(r, pl.col("player")) == 1) lib = pl.u(r, pl.col("library"));
+        for (size_t r = 0; r < k.rows(); ++r) {
+            if (k.u(r, k.col("owner")) != 1 || k.none(r, k.col("card")) ||
+                card_name(after, k.card(r, k.col("card"))) != "Lightning Bolt")
+                continue;
+            const std::string anchor = after.view->stream().enum_name("lib_anchor", k.u(r, k.col("at_anchor")));
+            bolt_bottom = bolt_bottom || (anchor == "BOTTOM" && k.u(r, k.col("at_pos")) == 0) ||
+                          (anchor == "TOP" && k.u(r, k.col("at_pos")) + 1 == lib);
+        }
+    }
+    check(daze && bolt_bottom, at + ": after the scry Daze was not drawn, or the Bolt is not known at the bottom");
+    std::printf("rmwork: %s: one card to the bottom by its button, one kept on top\n", at.c_str());
+}
+
+// Doomsday's five picks from the library and the graveyard, the filter used for two of them; the pile at
+// the last pick is the library's top five once it is made.
+static void check_doomsday(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Card picker: Doomsday";
+    PlaySession &s = app.play();
+    if (!start_sculpted(check, app, true,
+            {"--hand-a", "Doomsday,Swamp,Island,Island,Island,Island,Island", "--battlefield-a",
+                "Swamp,Swamp,Underground Sea", "--library-a",
+                "Thassa's Oracle,Lotus Petal,Brainstorm,Ponder,Dark Ritual,Daze,Force of Will,Island,Consider,"
+                "Street Wraith,Island,Lotus Petal,Ponder,Brainstorm,Daze,Veil of Summer",
+                "--graveyard-a", "Brainstorm,Daze", "--hand-b", "Island", "--library-b", "Island"},
+            at))
+        return;
+    const int cast = drive_to(app, frames, [](const std::string &c, const std::string &t) {
+        return c == "CAST_SPELL" && t.find("Doomsday") != std::string::npos;
+    });
+    check(cast >= 0, at + ": no decision offers to cast Doomsday");
+    if (cast < 0 || !app.play_reply(cast)) return;
+    if (drive_to(app, frames, [](const std::string &c, const std::string &) { return c == "TOP_LIBRARY"; }) < 0) {
+        check(false, at + ": Doomsday's first pick did not come");
+        return;
+    }
+    frames(2);
+    CardPickerView &view = app.table().picker_view();
+    const CardPicker &pk = app.table().picker();
+    check(pk.groups.size() == 2 && pk.groups[0].zone == ZoneKind::LIBRARY && pk.groups[1].zone == ZoneKind::GRAVEYARD &&
+              pk.groups[0].entries.size() == 11 && pk.groups[1].entries.size() == 2,
+        at + ": the first pick does not group the library (11 cards, the copies counted) and the graveyard (2)");
+    bool counted = false;
+    for (const CardPickEntry &e : pk.groups[0].entries) counted = counted || (e.name == "Island" && e.count() == 2);
+    check(counted, at + ": the library's two Islands are not one entry of 2");
+    // The filter typed: "oracle".
+    mouse_click(
+        ImVec2((view.filter_min().x + view.filter_max().x) / 2, (view.filter_min().y + view.filter_max().y) / 2),
+        frames);
+    ImGui::GetIO().AddInputCharactersUTF8("oracle");
+    frames(3);
+    check(
+        view.filter() == "oracle" && view.entries_shown() == 1, at + ": typing \"oracle\" does not filter to one card");
+    const auto pick = [&](const char *name, ZoneKind zone, const char *row_text) {
+        const Pending p = pending(s);
+        const std::string want = row_text;
+        return click_item(check, app, frames, picker_card(app, name, static_cast<int>(zone)),
+                   find_row(p, [&want](const std::string &, const std::string &t) { return t == want; }),
+                   at + ": " + row_text) &&
+               wait_decision(frames, s);
+    };
+    if (!pick("Thassa's Oracle", ZoneKind::LIBRARY, "Thassa's Oracle (library)")) return;
+    frames(2);
+    view.set_filter("brain");
+    frames(2);
+    check(view.entries_shown() == 2 &&
+              pile_names(app.table().picker()) == std::vector<std::string>{"", "Thassa's Oracle"},
+        at + ": the second pick does not filter to the two Brainstorms, or its pile is not Oracle under the next pick");
+    if (!pick("Brainstorm", ZoneKind::GRAVEYARD, "Brainstorm (graveyard)")) return;
+    view.set_filter("");
+    frames(2);
+    if (!pick("Daze", ZoneKind::GRAVEYARD, "Daze (graveyard)")) return;
+    frames(2);
+    if (!pick("Lotus Petal", ZoneKind::LIBRARY, "Lotus Petal (library)")) return;
+    frames(2);
+    const std::vector<std::string> pile = pile_names(app.table().picker());
+    check(pile == std::vector<std::string>{"", "Lotus Petal", "Daze", "Brainstorm", "Thassa's Oracle"},
+        at + ": the fifth pick's pile is not the four picks, the last on top, under the next");
+    if (!pick("Brainstorm", ZoneKind::LIBRARY, "Brainstorm (library)")) return;
+    // The ordering of the five: the frame's library top five are the pile as shown, the fifth pick on top.
+    std::vector<std::string> want = pile;
+    want[0] = "Brainstorm";
+    frames(2);
+    const Pending p = pending(s);
+    check(library_top(p, 0, 5) == want, at + ": the library's top five after the picks are not the pile as shown");
+    const CardPicker &order = app.table().picker();
+    check(order.active && order.pile.ordered && order.pile.top.size() == 5 && order.pile.top[4].next,
+        at + ": Doomsday's ordering does not show its five places, the 5th next");
+    std::printf(
+        "rmwork: %s: five picks from the library and the graveyard (the filter used), the top five as "
+        "the pile showed\n",
+        at.c_str());
+    check_picker_replay(check, app, frames);
+}
+
+// The Doomsday game in Replay: the first pick from the graveyard shown read-only, the chosen card marked;
+// a click answers nothing; seat B's view has no picker.
+static void check_picker_replay(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Card picker in Replay";
+    if (!open_log_in_replay(check, app, frames, at)) return;
+    const Match &m = *app.replay().match();
+    const long i = first_decision(m, 0, [](const agents::DecisionView &v) {
+        for (size_t r = 0; r < v.n(); ++r)
+            if (v.category(r) == "TOP_LIBRARY" && v.description(r).find("(graveyard)") != std::string::npos)
+                return true;
+        return false;
+    });
+    check(i >= 0, at + ": the replay has no Doomsday pick of seat A");
+    if (i < 0) return;
+    app.replay().set_view(0);
+    app.replay().go_to(static_cast<size_t>(i));
+    frames(3);
+    const CardPicker &pk = app.table().picker();
+    size_t g = 0, e = 0;
+    check(pk.active && pk.chosen_row == m.decisions[static_cast<size_t>(i)].reply &&
+              pk.entry_of_row(pk.chosen_row, &g, &e) && pk.groups[g].entries[e].name == "Thassa's Oracle",
+        at + ": seat A's view does not show the picker with Thassa's Oracle chosen");
+    const CardPickerView::Item *it = picker_card(app, "Daze", static_cast<int>(ZoneKind::GRAVEYARD));
+    if (it) {
+        mouse_click(ImVec2((it->min.x + it->max.x) / 2, (it->min.y + it->max.y) / 2), frames);
+        check(app.table().take_answer() < 0 && app.replay().cursor() == static_cast<size_t>(i),
+            at + ": a click on a card in Replay's picker does more than nothing");
+    }
+    app.replay().set_view(1);
+    frames(3);
+    check(!app.table().picker().active && !app.table().picker_view().shown(),
+        at + ": seat B's view of seat A's pick shows the picker");
+    mouse_to(ImVec2(-1000, -1000), frames);
+    app.set_mode(Mode::PLAY);
+    frames(2);
+    std::printf("rmwork: %s: read-only, the chosen card marked, nothing in seat B's view\n", at.c_str());
+}
+
+// Two mulligans by the prompt line's buttons, then Keep; the two bottom picks planned by clicks (one taken
+// back, one refused while full, Undo) and sent by "Put 2 on the bottom".
+static void check_mulligan(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Mulligan";
+    PlaySession &s = app.play();
+    if (!start_sculpted(check, app, true, {}, at) || !wait_decision(frames, s)) return;
+    frames(2);
+    const TableDecision &d = app.table().decision();
+    const TableLayout &L = app.table().layout();
+    check(d.kind == DecisionKind::MULLIGAN && app.table().prompt_buttons().size() == 2 &&
+              app.table().prompt_buttons()[0].label == "Keep" && app.table().prompt_buttons()[1].label == "Mulligan" &&
+              d.mulligan.mulligans == 0 && L.hand_w > L.card_w * (HAND_SCALE + 0.1f),
+        at + ": the opening hand does not offer Keep and Mulligan with the hand drawn large");
+    for (int k = 0; k < 2; ++k)
+        if (!click_button(check, app, frames, "Mulligan", at + ": Mulligan") || !wait_decision(frames, s)) return;
+    frames(2);
+    check(app.table().decision().kind == DecisionKind::MULLIGAN && app.table().decision().mulligan.mulligans == 2 &&
+              app.table().decision().prompt.find("Mulligan 2") == 0,
+        at + ": after two mulligans the prompt does not say so");
+    if (!click_button(check, app, frames, "Keep", at + ": Keep") || !wait_decision(frames, s)) return;
+    frames(2);
+    const TableDecision &b = app.table().decision();
+    check(b.kind == DecisionKind::BOTTOM && b.mulligan.to_bottom == 2 && b.picks.size() == 7,
+        at + ": keeping after two mulligans does not ask for 2 cards on the bottom, the 7 hand cards lit");
+    if (b.picks.size() < 3) return;
+    const uint64_t x = b.picks[0].handle, y = b.picks[1].handle, z = b.picks[2].handle;
+    const size_t index = static_cast<size_t>(s.pending_index());
+    const BottomPlan &plan = app.table().bottom_plan();
+    click_card(app, frames, x);
+    click_card(app, frames, x);
+    check(plan.empty(), at + ": a second click on a planned card does not take it back");
+    click_card(app, frames, y);
+    click_card(app, frames, z);
+    click_card(app, frames, x);
+    check(plan.cards() == std::vector<uint64_t>{y, z}, at + ": a third card was planned with two owed");
+    if (!press_button(check, app, frames, "Undo", at)) return;
+    click_card(app, frames, x);
+    check(plan.cards() == std::vector<uint64_t>{y, x} && s.match()->decisions[index].reply == REPLY_PENDING,
+        at + ": Undo and a click do not leave the plan of the 2nd and 1st cards, or planning sent a reply");
+    const int want_y = row_naming(pending(s), y, -1, "");
+    if (!press_button(check, app, frames, "Put 2 on the bottom", at)) return;
+    if (!wait_sent(frames, app)) {
+        check(false, at + ": the plan was not sent");
+        return;
+    }
+    const Match &m = *s.match();
+    int second = -1;
+    for (size_t i = index + 1; i < m.decisions.size() && second < 0; ++i)
+        if (m.decisions[i].decider == 0) second = m.decisions[i].reply;
+    const Pending now = pending(s);
+    bool gone = now.ok();
+    if (now.ok()) {
+        const agents::Table &o = now.view->objects();
+        for (size_t r = 0; r < o.rows(); ++r)
+            gone = gone && o.u(r, o.col("handle")) != x && o.u(r, o.col("handle")) != y;
+    }
+    check(m.decisions[index].reply == want_y && second >= 0 && gone,
+        at + ": the plan's replies are not the 2nd card's row then the 1st's, or the cards stay in the hand");
+    std::printf(
+        "rmwork: %s: two mulligans and Keep by button, two cards planned (taken back, refused, undone) and "
+        "sent\n",
+        at.c_str());
+    check_mulligan_replay(check, app, frames);
+}
+
+// The mulligan game in Replay: the bottom pick's chosen card marked, no plan buttons, a click answers nothing.
+static void check_mulligan_replay(const CheckFn &check, rmwork::App &app, const Frames &frames) {
+    using namespace rmwork;
+    const std::string at = "Mulligan in Replay";
+    if (!open_log_in_replay(check, app, frames, at)) return;
+    const Match &m = *app.replay().match();
+    const long i = first_decision(m, 0, [](const agents::DecisionView &v) { return london_bottom_menu(v); });
+    check(i >= 0, at + ": the replay has no bottom pick of seat A");
+    if (i < 0) return;
+    app.replay().set_view(0);
+    app.replay().go_to(static_cast<size_t>(i));
+    frames(3);
+    const TableDecision &d = app.table().decision();
+    bool marked = false;
+    uint64_t chosen = 0;
+    for (const DecisionPick &p : d.picks)
+        if (d.holds_chosen(p)) {
+            marked = true;
+            chosen = p.handle;
+        }
+    check(d.kind == DecisionKind::BOTTOM && d.chosen_row == m.decisions[static_cast<size_t>(i)].reply && marked &&
+              app.table().prompt_buttons().empty(),
+        at + ": the bottom pick in Replay does not mark the card chosen, or offers the plan's buttons");
+    TRect r;
+    if (chosen && card_rect(app, chosen, &r)) {
+        mouse_click(screen_point(Mode::REPLAY, r), frames);
+        check(app.table().take_answer() < 0 && app.table().bottom_plan().empty(),
+            at + ": a click on a hand card in Replay plans or answers");
+    }
+    mouse_to(ImVec2(-1000, -1000), frames);
+    app.set_mode(Mode::PLAY);
+    frames(2);
+    std::printf("rmwork: %s: the chosen card marked, read-only\n", at.c_str());
+}
+
 namespace rmwork {
 
 void check_table_decisions(const CheckFn &check, App &app, const std::function<void(int)> &frames) {
     check_targeting(check, app, frames);
     check_mana(check, app, frames);
     check_attackers(check, app, frames);
+    check_search(check, app, frames);
+    check_ponder(check, app, frames);
+    check_scry(check, app, frames);
+    check_doomsday(check, app, frames);
+    check_mulligan(check, app, frames);
 }
 
 }  // namespace rmwork
