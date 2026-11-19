@@ -75,6 +75,12 @@ void draw_card_swatch(ImDrawList *dl, ImVec2 min, ImVec2 max, uint8_t colors, bo
 // Forest G).
 uint8_t basic_land_mana(const std::vector<std::string> &subtypes);
 
+// Mana symbols ("2", "W", "B/P", "U/R", "X") as the cards' pips, `d` across, left to right from
+// `left_center`; returns their width.
+float draw_mana_symbols(ImDrawList *dl, const std::vector<std::string> &syms, ImVec2 left_center, float d);
+// Their width at `d` across.
+float mana_symbols_width(size_t count, float d);
+
 // Writes `text` at `pos` with `font` at `size`, cut to `max_w` with an ellipsis; returns its width.
 float draw_fitted_text(
     ImDrawList *dl, ImFont *font, float size, ImVec2 pos, ImU32 color, const std::string &text, float max_w);

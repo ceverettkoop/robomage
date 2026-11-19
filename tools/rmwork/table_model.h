@@ -90,10 +90,14 @@ struct TablePlayer {
         int poison = 0, energy = 0;
         std::vector<TableCounter> counters;  // other player counters
         bool monarch = false, city_blessing = false;
-        int speed = -1;  // -1 none
+        int speed = -1;                               // -1 none
+        std::array<int, 6> pool{{0, 0, 0, 0, 0, 0}};  // floating mana: W, U, B, R, G, C
         // Player effects and emblems, a chip each: "Emblem: <card>", "Hexproof from blue", …
         std::vector<std::string> effects;
 };
+
+// The floating mana as symbols ("{U}{R}{R}"; "{R}×5" past four of one colour), "" when the pool is empty.
+std::string pool_text(const TablePlayer &p);
 
 struct StackTarget {
         bool player = false;

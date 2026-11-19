@@ -52,9 +52,19 @@ static uint64_t next_random(uint64_t *state) {
 }
 
 // Whether auto_play stops at decision `v`: "stack", the stack holds an object; "combat", the menu
-// declares attackers or blockers; "sideboard", it is a sideboarding decision.
+// declares attackers or blockers; "sideboard", it is a sideboarding decision; "target", it chooses a
+// target or a point of divided damage; "mana", it pays a cost with a mana ability (--no-auto-mana).
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v) {
     if (until == "stack") return v.stack().rows() > 0;
+    if (until == "target" || until == "mana") {
+        const agents::Table menu = v.table("menu");
+        for (size_t i = 0; i < v.n(); ++i) {
+            const std::string &c = v.category(i);
+            if (until == "target" && (c == "SELECT_TARGET" || c == "DIVIDE_DAMAGE")) return true;
+            if (until == "mana" && c == "PAYING_COSTS" && menu.u(i, menu.col("source")) != 0) return true;
+        }
+        return false;
+    }
     if (until == "sideboard") {
         const agents::Table header = v.table("header");
         return header.rows() && header.u(0, header.col("sideboarding")) != 0;
@@ -169,7 +179,7 @@ std::string App::play_engine(Opponent o, std::string *why) const {
     return absolute_path(play_engine_binary(absolute_path(configured), o, why));
 }
 
-bool App::start_game(const NewGameSettings &g) {
+bool App::start_game(const NewGameSettings &g, const std::vector<std::string> &setup) {
     settings_.new_game = g;
     PlayConfig c;
     std::string why;
@@ -177,6 +187,7 @@ bool App::start_game(const NewGameSettings &g) {
         report_error("The game could not start", why, "");
         return false;
     }
+    c.setup = setup;
     // A model or socket typed as a relative path is the repository's, as Settings' paths are.
     if (!c.model.empty()) c.model = resolve_path(c.model, "");
     PlayPaths p;
@@ -198,6 +209,7 @@ bool App::start_game(const NewGameSettings &g) {
         return false;
     }
     auto_left_ = 0;
+    script_.clear();
     sideboard_phase_ = -1;
     sideboard_front_ = false;
     show_start_page(false);
@@ -282,7 +294,14 @@ void App::auto_play(long decisions, const std::string &until) {
 
 // Answers the pending decision with auto_play's rule, unless its condition holds there.
 void App::step_auto_play() {
-    if (auto_left_ == 0 || !play_.deciding() || !choosing() || tools_.sideboard().sending()) return;
+    if (!play_.deciding() || !choosing() || tools_.sideboard().sending()) return;
+    if (!script_.empty()) {
+        const int row = script_.front();
+        script_.pop_front();
+        play_reply(row);
+        return;
+    }
+    if (auto_left_ == 0) return;
     const Match *m = play_.match();
     const size_t index = static_cast<size_t>(play_.pending_index());
     std::string err;
@@ -1187,6 +1206,7 @@ void App::draw_tools() {
                       : play_.running() && !play_.view().loaded() ? "Starting the game: the engine is dealing"
                                                                   : "";
         ctx.new_game = &new_game_pressed_;
+        ctx.choosing = choosing();
         if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
         ImGui::End();
     }
@@ -1194,6 +1214,8 @@ void App::draw_tools() {
     if (live.loaded()) tools_.draw_windows(&links_, settings_.keys[action_index(Action::MAGNIFY)]);
     const int submitted = tools_.choices().take_submitted();
     if (submitted >= 0) play_reply(submitted);
+    const int answered = table_.take_answer();
+    if (answered >= 0) play_reply(answered);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
 }

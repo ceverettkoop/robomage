@@ -49,6 +49,7 @@ static int stacked_count(const rmwork::TableLayout &L, int row);
 static void check_crowding(const rmwork::CheckFn &check);
 static void check_step_cells(const rmwork::CheckFn &check);
 static void check_stop_flags(const rmwork::CheckFn &check);
+static void check_prompt_line(const rmwork::CheckFn &check);
 static void check_magnifier_rects(const rmwork::CheckFn &check);
 static bool rect_in(ImVec2 a, ImVec2 b, ImVec2 lo, ImVec2 hi);
 static void check_links(const rmwork::CheckFn &check);
@@ -525,6 +526,48 @@ static void check_step_cells(const rmwork::CheckFn &check) {
     check(layout_table(pregame, 1600, 1000, PLAY_METRICS).step_cells.empty(), "step bar: cells before the first turn");
 }
 
+// The decision's prompt line at the middle strip's foot, below the stack: its buttons in order, right-
+// aligned on it while they leave the prompt half the line, else on lines of their own below it; all inside.
+static void check_prompt_line(const rmwork::CheckFn &check) {
+    using namespace rmwork;
+    TableModel m = synthetic_board(2, 3);
+    TableStackItem it;
+    it.handle = 999;
+    it.name = "Lightning Bolt";
+    m.stack.push_back(it);
+    const TableLayout none = layout_table(m, 1600, 1000, PLAY_METRICS);
+    check(none.prompt.w() == 0 && none.prompt_buttons.empty(), "prompt line: one without a decision");
+    for (const std::vector<float> &buttons :
+        {std::vector<float>{}, std::vector<float>{180}, std::vector<float>{220, 90}, std::vector<float>{500, 500, 500}})
+        for (float w : {1600.0f, 700.0f}) {
+            TableMetrics mx = PLAY_METRICS;
+            mx.prompt_h = mx.line_h + 8;
+            mx.button_w = buttons;
+            const TableLayout L = layout_table(m, w, 1000, mx);
+            const std::string at = "prompt line, " + std::to_string(buttons.size()) + " buttons, " +
+                                   std::to_string(static_cast<int>(w)) + " px: ";
+            check(L.fits && L.prompt.w() > 0 && L.prompt.inside(L.mid) && !L.stack_items.empty() &&
+                      L.prompt.y0 >= L.stack_items.back().y1,
+                at + "not inside the strip below the stack");
+            check(L.prompt_buttons.size() == buttons.size(), at + "a button missing");
+            float total = 0;
+            for (float b : buttons) total += b + 6;
+            const bool inline_ok = total <= L.prompt.w() / 2;
+            bool ordered = true, placed = true;
+            for (size_t i = 0; i < L.prompt_buttons.size(); ++i) {
+                const TRect &b = L.prompt_buttons[i];
+                placed = placed && b.inside(L.prompt) &&
+                         (inline_ok ? std::fabs(b.y0 - L.prompt.y0) < 0.5f : b.y0 >= L.prompt.y0 + mx.prompt_h);
+                if (i > 0 && std::fabs(b.y0 - L.prompt_buttons[i - 1].y0) < 0.5f)
+                    ordered = ordered && b.x0 > L.prompt_buttons[i - 1].x1;
+            }
+            check(ordered && placed, at + "the buttons overlap, leave the line or are not where their width puts them");
+            if (inline_ok && !L.prompt_buttons.empty())
+                check(std::fabs(L.prompt_buttons.back().x1 - L.prompt.x1) < 0.5f,
+                    at + "the buttons are not right-aligned");
+        }
+}
+
 // A step's stop toggles in the turn it names only, and the settings file keeps it.
 static void check_stop_flags(const rmwork::CheckFn &check) {
     using namespace rmwork;
@@ -659,6 +702,18 @@ static void click(ImVec2 p, const std::function<void(int)> &frames) {
 }
 
 namespace rmwork {
+
+ImVec2 table_window_origin(Mode m) {
+    return table_origin(m);
+}
+
+void mouse_to(ImVec2 p, const std::function<void(int)> &frames) {
+    move_mouse(p, frames);
+}
+
+void mouse_click(ImVec2 p, const std::function<void(int)> &frames) {
+    click(p, frames);
+}
 
 void check_table_frames(
     const CheckFn &check, TableView &view, const Match &m, const std::string &at, TableCoverage *cov) {
@@ -832,6 +887,7 @@ void check_table_units(const CheckFn &check) {
     check_crowding(check);
     check_step_cells(check);
     check_stop_flags(check);
+    check_prompt_line(check);
     check_magnifier_rects(check);
     check_links(check);
     check_tiles(check);

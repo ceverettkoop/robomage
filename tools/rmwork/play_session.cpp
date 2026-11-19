@@ -145,6 +145,7 @@ std::vector<std::string> play_arguments(
     if (c.bo3) a.push_back("--bo3");
     if (!c.auto_mana) a.push_back("--no-auto-mana");
     a.insert(a.end(), {"--decision-log", log_path, "--agent-" + opp, opponent_agent(c)});
+    a.insert(a.end(), c.setup.begin(), c.setup.end());
     if (c.opponent == Opponent::SCRIPTED)
         a.insert(a.end(),
             {"--teacher-" + opp,

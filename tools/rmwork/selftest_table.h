@@ -54,8 +54,14 @@ void check_table_drawing(
 void check_step_bar_clicks(
     const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &settings_path);
 
+// The Table window's inner top-left corner in mode `m` (screen coordinates; (0, 0) when it is not open).
+ImVec2 table_window_origin(Mode m);
+// Moves the mouse to `p` / left-clicks at `p` (screen coordinates), with frames between.
+void mouse_to(ImVec2 p, const std::function<void(int)> &frames);
+void mouse_click(ImVec2 p, const std::function<void(int)> &frames);
+
 // Engine-free: the layout and fit of synthetic models (stacking identical permanents and wrapping
-// rows only when a narrow panel needs it), the step bar's cells, the magnifier's rectangles, the
+// rows only when a narrow panel needs it), the step bar's cells, a decision's prompt line and buttons, the magnifier's rectangles, the
 // stops a step toggles, the links, the background tiles.
 void check_table_units(const CheckFn &check);
 

@@ -2,6 +2,7 @@
 #define RMWORK_APP_H
 
 #include <array>
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -167,8 +168,8 @@ class App {
         void open_new_game();
         NewGameDialog &new_game_dialog() { return new_game_; }
         // Starts a game with `g` (kept as the next game's choices) and switches to Play; false after
-        // the error dialog.
-        bool start_game(const NewGameSettings &g);
+        // the error dialog. `setup`: the engine's test-setup flags (PlayConfig::setup), for the checks.
+        bool start_game(const NewGameSettings &g, const std::vector<std::string> &setup = {});
         // The engine binary a game against `o` runs ("" with `why` when there is none).
         std::string play_engine(Opponent o, std::string *why) const;
         // Sends `row` at the human's pending decision; false (with a status message) when none is.
@@ -181,13 +182,17 @@ class App {
         GameOverDialog &game_over() { return game_over_; }
         // Answers the human's next `decisions` decisions (-1: every one) with a seeded random row
         // until `until` holds ("stack": the stack is not empty; "combat": an attacker or blocker
-        // declaration; "sideboard": a sideboarding decision; "end": never, so to the match's end; ""
-        // none): screenshots and checks.
+        // declaration; "sideboard": a sideboarding decision; "target": a target or a point of divided
+        // damage to choose; "mana": a cost to pay with a mana ability; "end": never, so to the match's
+        // end; "" none): screenshots and checks.
         void auto_play(long decisions, const std::string &until);
+        // Answers the human's next decisions with `rows`, one each, before auto_play's rule: a scripted
+        // line for screenshots (with a sculpted game's setup flags).
+        void script_rows(const std::vector<int> &rows) { script_.assign(rows.begin(), rows.end()); }
         // Applies a Sideboard tool plan spec (SideboardView::apply_spec) at the human's first sideboarding
         // decision: the screenshot flags'.
         void set_sideboard_spec(const std::string &spec);
-        bool auto_playing() const { return auto_left_ != 0 && play_.running(); }
+        bool auto_playing() const { return (auto_left_ != 0 || !script_.empty()) && play_.running(); }
         // File → Save Decision Log: copies the session's decision log to `path`.
         bool save_log_to(const std::string &path, std::string *err);
         // Whether Choices submits at this frame: Play, the human's pending decision at the cursor.
@@ -294,6 +299,7 @@ class App {
         bool play_dealt_ = false;        // the live game's first decision has arrived
         long auto_left_ = 0;             // auto_play: decisions left (-1 unbounded)
         std::string auto_until_;
+        std::deque<int> script_;  // script_rows' rows still to send
         int sideboard_phase_ = -1;      // the game of the sideboarding phase the human last decided in, -1 none
         bool sideboard_front_ = false;  // the Sideboard tool was brought to the front for it
         std::string sideboard_spec_;

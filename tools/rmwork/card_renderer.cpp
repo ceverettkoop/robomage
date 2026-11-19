@@ -363,6 +363,16 @@ static void draw_back(ImDrawList *dl, const Box &b, const rmwork::CardLook &look
 
 namespace rmwork {
 
+float draw_mana_symbols(ImDrawList *dl, const std::vector<std::string> &syms, ImVec2 left_center, float d) {
+    const float w = pips_width(syms.size(), d);
+    draw_pips(dl, syms, ImVec2(left_center.x + w, left_center.y), d);
+    return w;
+}
+
+float mana_symbols_width(size_t count, float d) {
+    return pips_width(count, d);
+}
+
 CardPass begin_card_pass(ImDrawList *dl, bool rotated) {
     CardPass p;
     p.vtx = dl->VtxBuffer.Size;

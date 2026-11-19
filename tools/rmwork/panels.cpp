@@ -120,6 +120,7 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
         d.magnify = ctx.settings->keys[action_index(Action::MAGNIFY)];
         d.play = ctx.mode == Mode::PLAY;
         d.stops = ctx.stops;
+        d.answer = ctx.choosing;
         ctx.table->draw(d);
         return;
     }

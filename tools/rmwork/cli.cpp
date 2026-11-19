@@ -55,6 +55,9 @@ struct CliOptions {
         std::string new_game;  // the --new-game spec ("" none)
         long play_decisions = 0;
         std::string play_until;
+        std::vector<std::string> play_setup;  // --play-setup's engine flags
+        std::vector<int> play_rows;
+        std::string table_pick;
         std::string sideboard_plan;
         bool open_new_game = false;
         bool game_over = false;
@@ -73,10 +76,25 @@ static void show_demo_error(rmwork::App &app);
 static int parse_view(const std::string &text);
 static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind> *out);
 static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, std::string *why);
+static std::vector<std::string> split_list(const std::string &text, char sep);
 static void open_data(rmwork::App &app, const CliOptions &opt);
 static void open_play(rmwork::App &app, const CliOptions &opt);
 static bool start_page_at_start(const CliOptions &opt, const rmwork::Settings &s);
 static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool persist);
+
+// `text`'s items between `sep`s (empty items dropped).
+static std::vector<std::string> split_list(const std::string &text, char sep) {
+    std::vector<std::string> out;
+    size_t start = 0;
+    while (start <= text.size()) {
+        const size_t end = text.find(sep, start);
+        const std::string item = text.substr(start, end == std::string::npos ? std::string::npos : end - start);
+        if (!item.empty()) out.push_back(item);
+        if (end == std::string::npos) break;
+        start = end + 1;
+    }
+    return out;
+}
 
 static void usage() {
     std::printf(
@@ -89,7 +107,8 @@ static void usage() {
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         (with --screenshot too)\n"
-        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|sideboard|end] [--game-over]]\n"
+        "       rmwork [--new-game SPEC [--play-decisions N] [--play-until stack|combat|sideboard|target|mana|end]\n"
+        "              [--play-setup FLAGS] [--play-rows R,R,...] [--table-pick NAME] [--game-over]]\n"
         "         [--sideboard-plan SPEC]\n"
         "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
         "       rmwork [--start-page] (with --screenshot too)\n"
@@ -146,8 +165,15 @@ static void usage() {
         "  --table-hover-step N  Play's Table: hover step N (0 = untap) of the step bar every frame (its stop's\n"
         "                     tooltip)\n"
         "  --play-until COND  ... until a decision where COND holds: stack (the stack is not empty), combat (an\n"
-        "                     attacker or blocker declaration), sideboard (a sideboarding decision), end (none:\n"
-        "                     to the match's end)\n"
+        "                     attacker or blocker declaration), sideboard (a sideboarding decision), target (a\n"
+        "                     target or a point of divided damage to choose), mana (a cost to pay with a mana\n"
+        "                     ability: auto-mana=off), end (none: to the match's end)\n"
+        "  --play-setup FLAGS the engine's test-setup flags for the --new-game game, ';'-separated (e.g.\n"
+        "                     --hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears,Delver of Secrets)\n"
+        "  --play-rows R,R,...  answer your first decisions with these menu rows, before --play-decisions or\n"
+        "                     --play-until's rule\n"
+        "  --table-pick NAME  Play's Table: open the popup of the first card whose name contains NAME that\n"
+        "                     the decision's rows name more than once (a dual land's colours)\n"
         "  --sideboard-plan SPEC  at your first sideboarding decision, plan in the Sideboard tool: guide (the\n"
         "                     league guide's plan) or ';'-separated +CARD (bring in) and -CARD (cut) items\n"
         "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
@@ -252,11 +278,18 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
         } else if (a == "--play-until" && has_value) {
             opt->play_until = argv[++i];
             if (opt->play_until != "stack" && opt->play_until != "combat" && opt->play_until != "sideboard" &&
-                opt->play_until != "end") {
-                std::fprintf(stderr, "rmwork: --play-until is stack, combat, sideboard or end, not '%s'\n", argv[i]);
+                opt->play_until != "target" && opt->play_until != "mana" && opt->play_until != "end") {
+                std::fprintf(stderr,
+                    "rmwork: --play-until is stack, combat, sideboard, target, mana or end, not '%s'\n", argv[i]);
                 *exit_code = 2;
                 return false;
             }
+        } else if (a == "--play-setup" && has_value) {
+            opt->play_setup = split_list(argv[++i], ';');
+        } else if (a == "--play-rows" && has_value) {
+            for (const std::string &r : split_list(argv[++i], ',')) opt->play_rows.push_back(std::atoi(r.c_str()));
+        } else if (a == "--table-pick" && has_value) {
+            opt->table_pick = argv[++i];
         } else if (a == "--sideboard-plan" && has_value) {
             opt->sideboard_plan = argv[++i];
         } else if (a == "--game-over") {
@@ -341,8 +374,11 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
         *exit_code = 2;
         return false;
     }
-    if ((opt->play_decisions || !opt->play_until.empty() || opt->game_over) && opt->new_game.empty()) {
-        std::fprintf(stderr, "rmwork: --play-decisions, --play-until and --game-over need --new-game\n");
+    if ((opt->play_decisions || !opt->play_until.empty() || opt->game_over || !opt->play_setup.empty() ||
+            !opt->play_rows.empty()) &&
+        opt->new_game.empty()) {
+        std::fprintf(stderr,
+            "rmwork: --play-decisions, --play-until, --play-setup, --play-rows and --game-over need --new-game\n");
         *exit_code = 2;
         return false;
     }
@@ -479,8 +515,9 @@ static void open_play(rmwork::App &app, const CliOptions &opt) {
     if (opt.new_game.empty()) return;
     rmwork::NewGameSettings g = app.settings().new_game;
     std::string why;
-    if (!parse_new_game(opt.new_game, &g, &why) || !app.start_game(g)) return;
+    if (!parse_new_game(opt.new_game, &g, &why) || !app.start_game(g, opt.play_setup)) return;
     if (!opt.sideboard_plan.empty()) app.set_sideboard_spec(opt.sideboard_plan);
+    app.script_rows(opt.play_rows);
     if (opt.game_over) {
         app.auto_play(-1, "end");
     } else if (opt.play_decisions || !opt.play_until.empty()) {
@@ -505,6 +542,7 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.table().force_stack_hover(opt.table_hover_stack);
     app.table().force_step_hover(opt.table_hover_step);
     app.table().force_magnify(opt.table_magnify);
+    app.table().force_pick(opt.table_pick);
     for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
     app.tools().choices().force_hover(opt.choices_hover);
     if (opt.tree_expand) app.tools().tree().expand_overview();

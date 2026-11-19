@@ -5,6 +5,7 @@
 #include <cfloat>
 #include <cmath>
 
+#include "../../src/agents/decision_view.h"
 #include "imgui_internal.h"
 #include "magnifier.h"
 #include "theme.h"
@@ -21,12 +22,17 @@ const ImU32 PT_MIXED = rmwork::hex_color(0x1f55b0);
 const ImU32 DAMAGE_BG = rmwork::hex_color(0xb3261e);
 const ImU32 WHITE = rmwork::hex_color(0xffffff);
 const ImU32 SHADOW = rmwork::hex_color(0x000000, 140);
+// Over a card that is no choice of a targeting or payment decision.
+const ImU32 DIM_OVER = rmwork::hex_color(0x000000, 125);
 // The hand's band over the table background (shades of it, like the cards' shadows).
 const ImU32 HAND_SHADE = rmwork::hex_color(0x000000, 46);
 const ImU32 RULE_DARK = rmwork::hex_color(0x000000, 115);
 const ImU32 RULE_LIGHT = rmwork::hex_color(0xffffff, 31);
 // Below a step's label in Play: its stop dot.
 const float STOP_DOT_H = 9;
+// The prompt line: its height beyond a line of text, and a button's padding beyond its label.
+const float PROMPT_PAD = 8;
+const float BUTTON_PAD = 16;
 
 // One piece of the middle strip's first line.
 struct HeaderPart {
@@ -55,6 +61,8 @@ static void seat_chip(ImDrawList *dl, ImVec2 pos, int seat);
 static std::string player_text(const rmwork::TablePlayer &p);
 static std::vector<std::string> state_lines(const rmwork::TableModel &m, const rmwork::TableObject &o, int stacked);
 static ImVec2 rect_center(ImVec2 o, const rmwork::TRect &r);
+static void number_badge(ImDrawList *dl, ImVec2 c, float r, int n, ImU32 bg);
+static std::string join_labels(const std::vector<rmwork::ChosenTarget> &chosen);
 
 static ImVec2 at(ImVec2 o, float x, float y) {
     return ImVec2(o.x + x, o.y + y);
@@ -70,6 +78,24 @@ static ImVec2 rmax(ImVec2 o, const rmwork::TRect &r) {
 
 static ImVec2 rect_center(ImVec2 o, const rmwork::TRect &r) {
     return ImVec2(o.x + (r.x0 + r.x1) / 2, o.y + (r.y0 + r.y1) / 2);
+}
+
+// A filled circle at `c` with `n` in it.
+static void number_badge(ImDrawList *dl, ImVec2 c, float r, int n, ImU32 bg) {
+    const std::string t = std::to_string(n);
+    dl->AddCircleFilled(c, r, bg);
+    dl->AddCircle(c, r, SHADOW, 0, 1.5f);
+    ImFont *font = ImGui::GetFont();
+    const float fs = r * 1.3f;
+    const ImVec2 ts = font->CalcTextSizeA(fs, FLT_MAX, 0, t.c_str());
+    dl->AddText(font, fs, ImVec2(c.x - ts.x / 2, c.y - ts.y / 2), rmwork::tok().TEXT, t.c_str());
+}
+
+// "Orcish Bowmasters, Player B (20 life)".
+static std::string join_labels(const std::vector<rmwork::ChosenTarget> &chosen) {
+    std::string out;
+    for (const rmwork::ChosenTarget &c : chosen) out += (out.empty() ? "" : ", ") + c.label;
+    return out;
 }
 
 // "Turn 9 · Player A's turn", the step, "Deciding:" with the seat chip, day or night; the opening
@@ -258,6 +284,12 @@ const CardBook &TableView::book(const Match &m, int view) {
     return books_[v];
 }
 
+int TableView::take_answer() {
+    const int a = answer_;
+    answer_ = -1;
+    return a;
+}
+
 std::string TableView::take_status() {
     std::string s = backdrop_.take_message();
     if (s.empty()) s.swap(status_);
@@ -283,6 +315,9 @@ bool TableView::refresh(ReplaySession &s) {
     model_generation_ = s.generation();
     model_view_ = s.view();
     have_model_ = true;
+    decision_ = read_table_decision(agents::DecisionView(m->stream(s.view()), *frame, model_.bottom), model_);
+    if (decision_.kind == DecisionKind::TARGET)
+        decision_.chosen = chosen_targets(*m, s.cursor(), s.view(), decision_.source);
     error_.clear();
     if (mag_.handle() && model_.find(mag_.handle()) < 0) mag_.close();
     return true;
@@ -296,6 +331,12 @@ TableMetrics TableView::measure(bool stop_dots) const {
     for (int i = 0; i < STOP_STEP_COUNT; ++i) w += step_cell_width() + 1 + (step_gap_before(i) ? STEP_GAP : 0);
     mx.steps_w = w;
     mx.steps_h = mx.line_h + 2 + (stop_dots ? STOP_DOT_H : 0);
+    if (decision_.prompted()) {
+        mx.prompt_h = mx.line_h + PROMPT_PAD;
+        for (int row : decision_.buttons)
+            mx.button_w.push_back(
+                ImGui::CalcTextSize(decision_.row_text[static_cast<size_t>(row)].c_str()).x + BUTTON_PAD);
+    }
     return mx;
 }
 
@@ -324,6 +365,11 @@ CardLook TableView::look_of(const TableObject &o) const {
 
 TableView::Hit TableView::hit_test(ImVec2 p, bool steps) const {
     Hit h;
+    for (size_t i = 0; i < layout_.prompt_buttons.size(); ++i)
+        if (layout_.prompt_buttons[i].contains(p.x, p.y)) {
+            h.button = static_cast<int>(i);
+            return h;
+        }
     for (size_t i = 0; steps && i < layout_.step_cells.size(); ++i)
         if (layout_.step_cells[i].contains(p.x, p.y)) {
             h.step = static_cast<int>(i);
@@ -391,6 +437,10 @@ void TableView::draw(const TableDraw &d) {
                       : 0;
     hovered_stack_ = hit.stack;
     hovered_step_ = hit.step;
+    hovered_button_ = hit.button;
+    const bool clicked = over && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+    const bool answered = clicked && d.answer && hit.step < 0 && answer_click(hit);
+    if (over) hover_hint(hit, d);
     if (hit.step >= 0) {
         // A click on a step toggles its stop for the side whose turn the Table shows.
         const bool own = model_.active == model_.bottom;
@@ -407,10 +457,11 @@ void TableView::draw(const TableDraw &d) {
         }
     }
     if (d.links && hit.step < 0) {
+        if (hit.button >= 0) d.links->hover_menu_row(decision_.buttons[static_cast<size_t>(hit.button)]);
         if (hit.card >= 0) d.links->hover_object(hovered_handle_);
         if (hit.stack >= 0) d.links->hover_object(model_.stack[static_cast<size_t>(hit.stack)].handle);
         if (hit.seat >= 0) d.links->hover_player(hit.seat);
-        if (over && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        if (clicked && !answered && hit.button < 0) {
             LinkItem item;
             if (hit.card >= 0 || hit.stack >= 0) {
                 item.kind = LinkItem::Kind::OBJECT;
@@ -437,11 +488,124 @@ void TableView::draw(const TableDraw &d) {
     draw_chips(dl, o, d);
     dl->PopClipRect();
     update_magnifier(hit, d, over);
+    apply_force_pick(d);
+    draw_pick_popup(d);
+}
+
+const DecisionPick *TableView::pick_at(const Hit &hit) const {
+    if (decision_.kind == DecisionKind::NONE) return nullptr;
+    if (hit.stack >= 0) return decision_.pick_of_object(model_.stack[static_cast<size_t>(hit.stack)].handle);
+    if (hit.seat >= 0) return decision_.pick_of_seat(hit.seat);
+    if (hit.card < 0) return nullptr;
+    // A stack of identical permanents answers with the first of its members that is a pick.
+    const PlacedCard &c = layout_.cards[static_cast<size_t>(hit.card)];
+    if (const DecisionPick *p = decision_.pick_of_object(model_.objects[static_cast<size_t>(c.object)].handle))
+        return p;
+    const TablePile *pile = pile_of(c);
+    if (!pile || !pile->stacked) return nullptr;
+    for (int k : pile->objects)
+        if (const DecisionPick *p = decision_.pick_of_object(model_.objects[static_cast<size_t>(k)].handle)) return p;
+    return nullptr;
+}
+
+bool TableView::answer_click(const Hit &hit) {
+    if (hit.button >= 0) {
+        answer_ = decision_.buttons[static_cast<size_t>(hit.button)];
+        return true;
+    }
+    const DecisionPick *p = pick_at(hit);
+    if (!p || p->rows.empty()) return false;
+    if (p->rows.size() == 1) {
+        answer_ = p->rows[0];
+        return true;
+    }
+    open_pick_popup(*p);
+    return true;
+}
+
+// The popup of `p`'s rows, titled with the object's name (or the player's).
+void TableView::open_pick_popup(const DecisionPick &p) {
+    popup_rows_ = p.rows;
+    const int obj = p.handle ? model_.find(p.handle) : -1;
+    popup_title_ = obj >= 0 && !model_.objects[static_cast<size_t>(obj)].name.empty()
+                       ? model_.objects[static_cast<size_t>(obj)].name
+                   : p.handle == 0 ? model_.players[static_cast<size_t>(p.seat == 1 ? 1 : 0)].name
+                                   : std::string("Choose");
+    popup_generation_ = model_generation_;
+    open_popup_ = true;
+}
+
+// Screenshots: the pick popup of the first card named like force_pick_ with several rows.
+void TableView::apply_force_pick(const TableDraw &d) {
+    if (force_pick_generation_ != model_generation_) force_picked_ = false;
+    if (force_pick_.empty() || force_picked_ || !d.answer) return;
+    std::string want = force_pick_;
+    for (char &ch : want) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    for (const DecisionPick &p : decision_.picks) {
+        const int obj = model_.find(p.handle);
+        if (obj < 0 || p.rows.size() < 2) continue;
+        std::string n = model_.objects[static_cast<size_t>(obj)].name;
+        for (char &ch : n) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+        if (n.find(want) == std::string::npos) continue;
+        open_pick_popup(p);
+        force_picked_ = true;
+        force_pick_generation_ = model_generation_;
+        return;
+    }
+}
+
+// While the human chooses: what a click on a pick or a button does.
+void TableView::hover_hint(const Hit &hit, const TableDraw &d) {
+    if (!d.answer || hit.step >= 0) return;
+    if (hit.button >= 0) {
+        ImGui::SetTooltip("Click: %s",
+            decision_.row_text[static_cast<size_t>(decision_.buttons[static_cast<size_t>(hit.button)])].c_str());
+        return;
+    }
+    const DecisionPick *p = pick_at(hit);
+    if (!p || p->rows.empty()) return;
+    if (p->rows.size() == 1) {
+        ImGui::SetTooltip("Click: %s", decision_.row_text[static_cast<size_t>(p->rows[0])].c_str());
+    } else {
+        ImGui::SetTooltip("Click to choose one of %d: %s \xE2\x80\xA6", static_cast<int>(p->rows.size()),
+            decision_.row_text[static_cast<size_t>(p->rows[0])].c_str());
+    }
+}
+
+// The rows of the object clicked, one to choose (Esc or a click elsewhere closes it).
+void TableView::draw_pick_popup(const TableDraw &d) {
+    if (open_popup_) {
+        ImGui::OpenPopup("##table_pick");
+        open_popup_ = false;
+    }
+    popup_items_.clear();
+    popup_shown_ = ImGui::BeginPopup("##table_pick");
+    if (!popup_shown_) return;
+    if (popup_generation_ != model_generation_ || !d.answer) {
+        ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+        popup_shown_ = false;
+        return;
+    }
+    ImGui::TextDisabled("%s", popup_title_.c_str());
+    ImGui::Separator();
+    for (int row : popup_rows_) {
+        ImGui::PushID(row);
+        const bool chosen = ImGui::Selectable(decision_.row_text[static_cast<size_t>(row)].c_str());
+        const ImVec2 a = ImGui::GetItemRectMin(), b = ImGui::GetItemRectMax();
+        popup_items_.push_back(TRect{a.x, a.y, b.x, b.y});
+        if (chosen) answer_ = row;
+        ImGui::PopID();
+    }
+    ImGui::EndPopup();
 }
 
 // A stack's members behind its front card take no outline: the front card shows the whole stack's.
+// At a targeting or payment decision only its picks glow, and what is neither a pick, a chosen target
+// nor the decision's source is dimmed.
 void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     const bool glow = model_.viewer < 2 && model_.viewer == model_.decider;
+    const bool focus = decision_.prompted();
     for (const PlacedCard &c : layout_.cards) {
         const TableObject &obj = model_.objects[static_cast<size_t>(c.object)];
         const ImVec2 a = rmin(o, c.rect), b = rmax(o, c.rect);
@@ -455,18 +619,43 @@ void TableView::draw_cards(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         std::vector<uint64_t> members{obj.handle};
         if (stacked)
             for (int k : pile->objects) members.push_back(model_.objects[static_cast<size_t>(k)].handle);
-        bool source = false, linked = false;
+        bool source = false, linked = false, keep = false;
         for (uint64_t h : members) {
-            if (glow)
+            if (focus) {
+                source = source || decision_.pick_of_object(h) != nullptr;
+            } else if (glow) {
                 for (const MenuLink &m : model_.menu) source = source || (m.source == h);
+            }
+            keep = keep || decision_.chosen_order_of_object(h) > 0 || h == decision_.source;
             linked = linked || (d.links && d.links->object_linked(h));
         }
+        if (focus && !source && !keep) dl->AddRectFilled(a, b, DIM_OVER, cw * 0.05f);
         if (source) outline(dl, a, b, cw * 0.05f, tok().GLOW, 2, 3);
+        draw_decision_marks(dl, c, a, b, cw);
         if (linked) {
             outline(dl, a, b, cw * 0.05f, hex_color(0x000000), 2, 3);
             outline(dl, a, b, cw * 0.05f, tok().LINK, 5, 3);
         }
     }
+}
+
+// A chosen target's outline and number, the divided damage given to a target so far, the decision's
+// source's tag.
+void TableView::draw_decision_marks(ImDrawList *dl, const PlacedCard &c, ImVec2 a, ImVec2 b, float cw) {
+    if (decision_.kind == DecisionKind::NONE) return;
+    const uint64_t h = model_.objects[static_cast<size_t>(c.object)].handle;
+    const float fs = std::max(8.0f, std::min(13.0f, cw * 0.15f));
+    if (const int order = decision_.chosen_order_of_object(h)) {
+        outline(dl, a, b, cw * 0.05f, tok().ACCENT, 2, 3);
+        const float r = std::max(7.0f, fs * 0.8f);
+        number_badge(dl, ImVec2(b.x - 1, a.y + 1), r, order, tok().ACCENT);
+    }
+    if (const DecisionPick *p = decision_.pick_of_object(h))
+        if (p->so_far > 0)
+            badge(dl, ImVec2(a.x + 2, a.y + 2), false, false, std::to_string(p->so_far) + " dmg", fs, DAMAGE_BG, WHITE,
+                0, 2);
+    if (h == decision_.source && decision_.prompted())
+        badge(dl, ImVec2(a.x + 2, a.y + 2), false, false, "Source", fs, tok().TABLE_SHADE, tok().GLOW, tok().GLOW, 2);
 }
 
 void TableView::draw_card_state(ImDrawList *dl, const TableObject &o, const PlacedCard &c, ImVec2 origin) {
@@ -547,6 +736,56 @@ void TableView::draw_mid(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     }
     draw_steps(dl, o, d);
     if (!model_.stack.empty()) draw_stack(dl, o, d);
+    draw_prompt(dl, o, d);
+}
+
+// The decision's prompt line: whose decision, what is decided, the cost still to pay as pips with the
+// rest of it after them, the targets chosen so far; then the buttons.
+void TableView::draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
+    const TRect &r = layout_.prompt;
+    if (!decision_.prompted() || r.w() <= 0) return;
+    const float lh = ImGui::GetTextLineHeight();
+    const float line_h = lh + PROMPT_PAD;
+    const ImVec2 a = rmin(o, r);
+    const float cy = a.y + line_h / 2;
+    const float text_y = cy - lh / 2;
+    float x = a.x;
+    const bool yours = d.play && model_.decider == model_.bottom;
+    const std::string chip = yours ? "YOUR DECISION" : std::string(model_.decider == 1 ? "B" : "A") + " DECIDES";
+    const float chip_w = ImGui::CalcTextSize(chip.c_str()).x + 12;
+    dl->AddRectFilled(ImVec2(x, text_y - 2), ImVec2(x + chip_w, text_y + lh + 2),
+        yours ? tok().GOOD : (model_.decider == 1 ? tok().SEAT_B : tok().SEAT_A), 2);
+    dl->AddText(ImVec2(x + 6, text_y), tok().TEXT, chip.c_str());
+    x += chip_w + 8;
+    // The text stops short of the first button on the same line.
+    float right = a.x + r.w();
+    for (const TRect &b : layout_.prompt_buttons)
+        if (b.y0 < r.y0 + line_h) right = std::min(right, o.x + b.x0 - 8);
+    ImFont *font = ImGui::GetFont();
+    const float fs = ImGui::GetFontSize();
+    x += draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().TEXT, decision_.prompt, right - x);
+    if (!decision_.pips.empty() && x + lh * 2 < right) {
+        x += 10;
+        const float pd = lh * 1.15f;
+        const float pw = mana_symbols_width(decision_.pips.size(), pd);
+        if (x + pw < right) x += draw_mana_symbols(dl, decision_.pips, ImVec2(x, cy), pd) + 6;
+        x += draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().DIM, "left to pay", right - x);
+    }
+    std::string rest = decision_.owed;
+    if (!decision_.chosen.empty())
+        rest += (rest.empty() ? "" : " \xC2\xB7 ") + std::string("chosen: ") + join_labels(decision_.chosen);
+    if (!rest.empty() && x + 20 < right)
+        draw_fitted_text(dl, font, fs, ImVec2(x, text_y), tok().DIM, " \xC2\xB7 " + rest, right - x);
+    for (size_t i = 0; i < layout_.prompt_buttons.size() && i < decision_.buttons.size(); ++i) {
+        const TRect &b = layout_.prompt_buttons[i];
+        const ImVec2 ba = rmin(o, b), bz = rmax(o, b);
+        const bool hot = d.answer && static_cast<int>(i) == hovered_button_;
+        dl->AddRectFilled(ba, bz, hot ? tok().BTN_HOVER : tok().BTN, 2);
+        dl->AddRect(ba, bz, d.links && d.links->row_linked(decision_.buttons[i]) ? tok().LINK : tok().LINE, 2);
+        const std::string &t = decision_.row_text[static_cast<size_t>(decision_.buttons[i])];
+        draw_fitted_text(dl, font, fs, ImVec2(ba.x + BUTTON_PAD / 2, ba.y + (b.h() - lh) / 2),
+            d.answer ? tok().TEXT : tok().DIM, t, b.w() - BUTTON_PAD);
+    }
 }
 
 // The twelve steps, the current one highlighted; in Play a stop dot under each (filled where the
@@ -590,6 +829,12 @@ void TableView::draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         dl->AddRect(a, z, i == 0 ? tok().GLOW : tok().LINE);
         const bool linked = (d.links && d.links->object_linked(it.handle)) || static_cast<int>(i) == hovered_stack_ ||
                             static_cast<int>(i) == force_stack_;
+        if (it.handle == decision_.source && decision_.prompted()) outline(dl, a, z, 0, tok().GLOW, 1, 2);
+        if (decision_.pick_of_object(it.handle)) outline(dl, a, z, 0, tok().GLOW, 3, 3);
+        if (const int order = decision_.chosen_order_of_object(it.handle)) {
+            outline(dl, a, z, 0, tok().ACCENT, 3, 3);
+            number_badge(dl, ImVec2(z.x - 1, a.y + 1), 8, order, tok().ACCENT);
+        }
         if (linked) outline(dl, a, z, 0, tok().LINK, 1, 2);
         const float th = r.h() - 6, tw = th / CARD_ASPECT;
         CardLook look;
@@ -631,13 +876,21 @@ void TableView::draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         const std::string name = p.name + (p.deck.empty() ? "" : " \xC2\xB7 " + p.deck);
         const std::string life = std::to_string(p.life);
         const std::string rest = player_text(p);
+        const std::string pool = pool_text(p);
+        const std::string pool_label = pool.empty() ? "" : "  pool " + pool;
         const float w = seat_chip_width() + 6 + ImGui::CalcTextSize(name.c_str()).x + 12 +
-                        ImGui::CalcTextSize(life.c_str()).x + 4 + lh + 10 + ImGui::CalcTextSize(rest.c_str()).x + 16;
+                        ImGui::CalcTextSize(life.c_str()).x + 4 + lh + 10 + ImGui::CalcTextSize(rest.c_str()).x +
+                        ImGui::CalcTextSize(pool_label.c_str()).x + 16;
         const TRect chip{x, cy, x + w, cy + lh + 4};
         chip_rects_[static_cast<size_t>(seat)] = chip;
         const ImVec2 a = rmin(o, chip), z = rmax(o, chip);
         dl->AddRectFilled(a, z, tok().TABLE_SHADE, 2);
         dl->AddRect(a, z, tok().LINE, 2);
+        if (decision_.pick_of_seat(seat)) outline(dl, a, z, 2, tok().GLOW, 2, 3);
+        if (const int order = decision_.chosen_order_of_seat(seat)) {
+            outline(dl, a, z, 2, tok().ACCENT, 2, 3);
+            number_badge(dl, ImVec2(z.x, a.y), 8, order, tok().ACCENT);
+        }
         if (d.links && d.links->player_linked(seat)) outline(dl, a, z, 2, tok().LINK, 1, 2);
         float tx = a.x + 8;
         seat_chip(dl, ImVec2(tx, a.y + 2), seat);
@@ -650,6 +903,8 @@ void TableView::draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         heart(dl, ImVec2(tx + lh * 0.45f, a.y + 2 + lh * 0.5f), lh * 0.7f, tok().BAD);
         tx += lh + 10;
         dl->AddText(ImVec2(tx, a.y + 2), tok().DIM, rest.c_str());
+        if (!pool_label.empty())
+            dl->AddText(ImVec2(tx + ImGui::CalcTextSize(rest.c_str()).x, a.y + 2), tok().GLOW, pool_label.c_str());
         x += w + 6;
         for (const std::string &e : p.effects) {
             const float ew = ImGui::CalcTextSize(e.c_str()).x + 12;

@@ -19,6 +19,7 @@ const float PAD = 6;       // around a chip and below the hand
 const float MID_MARGIN = 8;
 const float MID_PAD = 5;
 const float STACK_GAP = 6;
+const float BUTTON_GAP = 6;  // between the prompt line's buttons, and between its lines
 
 // A pile's size in card widths; `shift` is the attack shift (toward the middle).
 struct PileShape {
@@ -31,6 +32,7 @@ struct MidShape {
         bool wrapped = false;
         int per_line = 1, lines = 0, shown = 0;
         float item_w = 0, item_h = 0, label_h = 0;
+        float prompt_h = 0;  // the prompt line with its buttons' lines, 0 none
         float h = 0;
 };
 
@@ -72,6 +74,7 @@ static void place_line(const rmwork::TableModel &m, const RowPlan &plan, int row
     float bw, bool top, std::vector<rmwork::PlacedCard> *out);
 static void place_steps(
     const rmwork::TableModel &m, const MidShape &mid, const rmwork::TableMetrics &mx, rmwork::TableLayout *L);
+static int place_buttons(const rmwork::TableMetrics &mx, float x0, float x1, float y, std::vector<rmwork::TRect> *out);
 static rmwork::TRect card_rect(float x, float y, float bw, bool tapped);
 
 static PileShape pile_shape(const rmwork::TableModel &m, const rmwork::TablePile &p) {
@@ -287,6 +290,11 @@ static MidShape mid_shape(const rmwork::TableModel &m, float w, const rmwork::Ta
         s.header_h = mx.line_h + 4 + steps_h;
     }
     s.h = 2 * MID_PAD + s.header_h;
+    if (mx.prompt_h > 0) {
+        const int lines = place_buttons(mx, 0, inner, 0, nullptr);
+        s.prompt_h = mx.prompt_h + static_cast<float>(lines) * (mx.prompt_h + BUTTON_GAP);
+        s.h += 5 + s.prompt_h;
+    }
     if (m.stack.empty()) return s;
     const float thumb = std::round(2.0f * mx.line_h);
     s.item_h = thumb * rmwork::CARD_ASPECT + 6;
@@ -311,6 +319,45 @@ static float chip_band(const rmwork::TableMetrics &mx) {
 // space below the hand.
 static float fixed_height(float mid_h, float band) {
     return 2 * band + 5 * ROW_GAP + mid_h + PAD;
+}
+
+// The prompt line's buttons in [x0, x1] from `y` (the prompt line's top): right-aligned on it when they
+// leave the prompt at least half of it, else right-aligned on lines of their own below it, as many as
+// they need; returns those lines' count (0: on the prompt line). `out` (when given) gets their rects.
+static int place_buttons(const rmwork::TableMetrics &mx, float x0, float x1, float y, std::vector<rmwork::TRect> *out) {
+    using rmwork::TRect;
+    float total = 0;
+    for (float w : mx.button_w) total += w + BUTTON_GAP;
+    const float h = mx.prompt_h;
+    if (total <= (x1 - x0) / 2) {
+        float x = x1 - (total - BUTTON_GAP);
+        for (float w : mx.button_w) {
+            if (out) out->push_back(TRect{x, y, x + w, y + h});
+            x += w + BUTTON_GAP;
+        }
+        return 0;
+    }
+    // Lines of their own: as many buttons a line as fit, each line right-aligned.
+    int lines = 0;
+    size_t i = 0;
+    while (i < mx.button_w.size()) {
+        size_t j = i;
+        float line_w = 0;
+        while (j < mx.button_w.size() && (j == i || line_w + BUTTON_GAP + mx.button_w[j] <= x1 - x0)) {
+            line_w += (j == i ? 0 : BUTTON_GAP) + mx.button_w[j];
+            ++j;
+        }
+        ++lines;
+        const float ly = y + static_cast<float>(lines) * (h + BUTTON_GAP);
+        float x = std::max(x0, x1 - line_w);
+        for (size_t k = i; k < j; ++k) {
+            const float w = std::min(mx.button_w[k], x1 - x0);
+            if (out) out->push_back(TRect{x, ly, x + w, ly + h});
+            x += w + BUTTON_GAP;
+        }
+        i = j;
+    }
+    return lines;
 }
 
 static rmwork::TRect card_rect(float x, float y, float bw, bool tapped) {
@@ -451,6 +498,11 @@ TableLayout layout_table(const TableModel &m, float w, float h, const TableMetri
             L.stack_items.push_back(TRect{ix, iy, ix + mid.item_w, iy + mid.item_h});
         }
     }
+    if (mid.prompt_h > 0) {
+        const float py = L.mid.y1 - MID_PAD - mid.prompt_h;
+        L.prompt = TRect{L.mid_header.x0, py, L.mid_header.x1, py + mid.prompt_h};
+        place_buttons(mx, L.prompt.x0, L.prompt.x1, py, &L.prompt_buttons);
+    }
     y += mid.h + ROW_GAP + spare;
     L.rows[ROW_BOTTOM_OTHER] = TRect{SIDE, y, w - SIDE, y + rows_h[ROW_BOTTOM_OTHER]};
     y += rows_h[ROW_BOTTOM_OTHER] + ROW_GAP;
@@ -479,6 +531,7 @@ TableLayout layout_table(const TableModel &m, float w, float h, const TableMetri
     for (const PlacedCard &c : L.cards) L.fits = L.fits && c.rect.inside(L.panel);
     for (const TRect &r : L.stack_items) L.fits = L.fits && r.inside(L.panel);
     for (const TRect &r : L.step_cells) L.fits = L.fits && r.inside(L.mid);
+    for (const TRect &r : L.prompt_buttons) L.fits = L.fits && r.inside(L.mid);
     return L;
 }
 

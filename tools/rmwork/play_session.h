@@ -82,6 +82,10 @@ struct PlayConfig {
         uint64_t seed = 1;  // the engine's --game-seed
         bool auto_mana = true;
         bool model_read = false;
+        // The engine's test-setup flags after the others ("--hand-a", "Lightning Bolt", "--battlefield-b",
+        // …: a sculpted game, which the decision log's header records), for the self-test; none from the
+        // New Game dialog.
+        std::vector<std::string> setup;
 };
 
 // The configuration of the New Game dialog's choices (false with `why` for an unknown opponent).

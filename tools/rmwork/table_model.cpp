@@ -303,6 +303,8 @@ static void read_players(const Frame &f, rmwork::TableModel *m) {
         pl.city_blessing = p.u(r, p.col("city_blessing")) != 0;
         const uint64_t speed = p.u(r, p.col("speed"));
         pl.speed = speed > 0 ? static_cast<int>(speed) - 1 : -1;
+        static const char *const POOL[] = {"mana_w", "mana_u", "mana_b", "mana_r", "mana_g", "mana_c"};
+        for (size_t k = 0; k < pl.pool.size(); ++k) pl.pool[k] = static_cast<int>(p.u(r, p.col(POOL[k])));
     }
     const agents::Table &c = f.pcounter;
     for (size_t r = 0; r < c.rows(); ++r) {
@@ -498,6 +500,20 @@ static void read_menu(const Frame &f, rmwork::TableModel *m) {
 }
 
 namespace rmwork {
+
+std::string pool_text(const TablePlayer &p) {
+    static const char *const SYMS[] = {"{W}", "{U}", "{B}", "{R}", "{G}", "{C}"};
+    std::string out;
+    for (size_t k = 0; k < p.pool.size(); ++k) {
+        const int n = p.pool[k];
+        if (n > 4) {
+            out += std::string(SYMS[k]) + "\xC3\x97" + std::to_string(n);
+        } else {
+            for (int i = 0; i < n; ++i) out += SYMS[k];
+        }
+    }
+    return out;
+}
 
 int TableModel::find(uint64_t handle) const {
     auto it = std::lower_bound(by_handle_.begin(), by_handle_.end(), std::make_pair(handle, -1));

@@ -27,7 +27,7 @@ static std::string lower(std::string s) {
     return s;
 }
 
-// "poison 2 · energy 3 · monarch · speed 2", the counters and designations after the life.
+// "poison 2 · energy 3 · monarch · speed 2 · pool {U}", the counters and designations after the life.
 static std::string player_extras(const rmwork::TablePlayer &p) {
     std::vector<std::string> parts;
     if (p.poison) parts.push_back("poison " + std::to_string(p.poison));
@@ -36,6 +36,8 @@ static std::string player_extras(const rmwork::TablePlayer &p) {
     if (p.monarch) parts.push_back("monarch");
     if (p.city_blessing) parts.push_back("city's blessing");
     if (p.speed >= 0) parts.push_back("speed " + std::to_string(p.speed));
+    const std::string pool = rmwork::pool_text(p);
+    if (!pool.empty()) parts.push_back("pool " + pool);
     std::string out;
     for (const std::string &s : parts) out += (out.empty() ? "" : " \xC2\xB7 ") + s;
     return out;

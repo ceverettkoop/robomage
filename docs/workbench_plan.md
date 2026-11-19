@@ -142,7 +142,8 @@ the Value Graph; the toolbar's Latest goes back). Only the human seat's frames r
 end the engine writes every seat's terminal frame to the stream, the other seat's with its once-per-match
 frames, and the session drops a record of another viewer unread, by its header. Choosing: a click on a
 Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
-row, the `-1` of `docs/state_format.md` §9); nothing is sent while the engine runs ("Opponent is
+row, the `-1` of `docs/state_format.md` §9); at a targeting or payment decision, and at a priority decision
+offering mana abilities, a click on the Table does too (§4.2, items 6 and 11), through the same reply; nothing is sent while the engine runs ("Opponent is
 thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
 from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
 step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
@@ -163,8 +164,10 @@ server is "not connected" (a note, and the game goes on); a refused handshake or
 error dialog. The engine's exit mid-game, a stream that breaks, a record that does not decode and a failed
 write open the error dialog with the command and the stderr tail and end the session; quitting kills and
 reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
-auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|end` (a seeded random row at
-each of your decisions until then), `--game-over`. Checked by `rmwork --selftest-data` (`selftest_play`:
+auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|target|mana|end` (a seeded
+random row at each of your decisions until then), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
+engine's test-setup flags, `;`-separated, as `PlayConfig::setup`, which the decision log's header records) and
+`--play-rows R,R,…` (your first decisions' rows). Checked by `rmwork --selftest-data` (`selftest_play`:
 the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
 connected, every kept record the seat's and the other seat's only after its last decision, the stops'
 answers, the result screen, its log in Replay with the seat's decisions, replies and frames (event tables
@@ -206,8 +209,9 @@ Checked by `rmwork --selftest-data` (`selftest_sideboard`: the plan's rules and 
 decisions, a menu without the planned row refused; the guides file against its JSON; a live bo3 as seat A
 sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
 stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
-the match in Replay in seat A's view and seat B's). Waiting for later stages: the direct-manipulation
-decisions of §4.2 (every decision goes through the Choices list). Beside each game's decision log Play
+the match in Replay in seat A's view and seat B's). Waiting for later stages: the rest of §4.2's
+direct-manipulation decisions (targeting and mana payment are answered on the Table; every other decision goes
+through the Choices list). Beside each game's decision log Play
 writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
 seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
 game or quitting, or its engine gone) gets the `QUIT` line appended to its log, as a human seat's quit
@@ -343,8 +347,24 @@ four panel sizes, a narrow one among them: a stack's members interchangeable and
 wrapped rows only where the full-detail cards would be narrower than 69 px, a row wrapped only with no group
 left to stack; drawn headless, and the hover and magnifier interactions, a click on Replay's step bar
 toggling nothing; in Play, a click on a step's dot toggling its stop, settings.json keeping it, a second
-click turning it back; `docs/ci.md`). Waiting for later stages: direct manipulation in Play (§4.2), the
-Choices tool's side of the linking (§2.6), damage assignment order (the frame has none).
+click turning it back; `docs/ci.md`). Decisions on the Table (§4.2, items 6 and 11; `table_decision`): at a targeting decision (every row
+`SELECT_TARGET` or `DIVIDE_DAMAGE`) or a payment one (a `PAYING_COSTS` row: `--no-auto-mana`'s mana payment,
+a Phyrexian pip's life or mana) the objects and players a row names glow and the rest of the battlefield and
+hand is dimmed, the spell or ability chosen or paid for is lit (its stack object, else a "Source" tag on its
+permanent), targets chosen earlier in the same targeting are outlined in the accent colour with their number
+(read from the earlier decisions: the frame has no target of a spell still being cast), a point of divided
+damage given so far is counted on its target, and a prompt line at the foot of the middle strip says whose
+decision it is ("YOUR DECISION" in Play, "A DECIDES" in Replay), what is decided (the CLI's pending-decision
+line), the cost still to pay as pips with the life, energy and mana paid after it, the targets chosen so far,
+and the rows naming nothing (Done selecting targets, Cancel casting, Pay 2 life (instead of {B}), Pay {B}) as
+buttons on its right (on lines of their own when they would leave the prompt less than half the line). In Play
+at the human's pending decision a click on a lit card, stack object or player chip answers with its row, and an
+object several rows name (a dual land's two colours) opens a popup of them; at a priority decision offering
+mana abilities a click on a land or source taps it (its `MANA_*` rows only); hovering a pick says what a click
+does and shades its Choices row. In Replay, an earlier decision or while the opponent thinks the highlights show
+and a click only selects. The player chips (and the Players tool) show floating mana as `pool {U}{R}`. Waiting
+for later stages: the rest of direct manipulation in Play (§4.2), the Choices tool's side of the linking (§2.6),
+damage assignment order (the frame has none).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -495,12 +515,27 @@ Ordered roughly by value against effort. Each is one dockable tool.
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
 5. **Mulligan**: the opening hand large, Keep / Mulligan, and for London mulligan the bottoming choice.
-6. **Targeting**: legal targets highlighted on the Table and players, click to choose, arrows from the spell.
+6. ~~**Targeting**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#targeting`,
+   `#targeting-second`). Legal targets lit on the Table and the player chips, everything else dimmed; the spell
+   (or the ability's source) lit, linked to its targets by highlighting both, no arrow (user, 2026-11-18: arrows
+   only for blocks); a click on a target answers, a popup when rows share an object; the targets chosen so far
+   numbered in the accent colour; Done selecting targets (and the other rows naming nothing) a button on the
+   prompt line. Answered on the Table: `SELECT_TARGET` (a spell's, an ability's, a trigger's as it is put on the
+   stack) and `DIVIDE_DAMAGE` (one more point to a target, the points so far counted on it); `ATTACK_TARGET` and
+   `BLOCK_TARGET` belong to combat (item 7). A target the Table does not show (a card in a graveyard) is chosen
+   in Choices. Checked by `rmwork --selftest-data` (`selftest_decisions`).
 7. **Declare attackers / blockers**: click creatures to attack or block, arrows to their opponents, confirm (`-1`).
 8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find; it must also handle a whole-zone pick such as Doomsday (five picks in turn from the library and graveyard, each put on top so the first ends up fifth): rows grouped by zone, identical cards one entry with a count, a name/type filter, a compact list beside the image grid, and the pile being built shown in its final order.
 9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
 10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.
-11. **Mana payment**: under `--no-auto-mana`, tap lands and sources on the Table to pay, with the remaining cost (`pending_cost`).
+11. ~~**Mana payment**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#mana-payment`,
+    `#mana-payment-phyrexian`). Under `--no-auto-mana` (New Game's auto-mana, `auto-mana=off`): the remaining
+    cost from `pending_cost` / `pending_cost_pip` as pips on the prompt line (life, energy and the mana paid
+    after them), the sources that can pay lit, a click taps one (its row; a source with several, a dual land or a
+    Mox, opens the popup of its colours), Cancel casting a button; a Phyrexian pip's "Pay 2 life (instead of
+    {B})" and "Pay {B}" buttons beside it; at a priority decision a click on a land taps it for mana, the floating
+    pool shown on the player chip and the Players tool. Checked by `rmwork --selftest-data`
+    (`selftest_decisions`).
 12. **Optional costs and alternative costs**: e.g. Force of Will's pitch, kicker, convoke and crew pickers.
 13. **Discard / sacrifice / return pickers** for mandatory choices.
 

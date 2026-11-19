@@ -26,6 +26,7 @@
 //   - the start page (selftest_start.h) listing those two games, the bo1 opened from it in Replay;
 //   - the Sideboard tool (selftest_sideboard.h): its plan, guides and steps, a bo3 sideboarded through
 //     it, and that match in Replay;
+//   - decisions answered on the Table (selftest_decisions.h): targets and mana payment on sculpted games;
 //   - the concession dialog, a game conceded (-2) and the match conceded while the opponent thinks
 //     (-3, queued to the next decision), both in the decision log;
 //   - the scripted opponent through the teacher channel, when python3 runs;

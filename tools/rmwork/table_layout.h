@@ -10,7 +10,8 @@
 //
 // Pure geometry (no ImGui), in the panel's own coordinates ((0, 0) its top-left corner). From top
 // to bottom: the top seat's chip band, its lands row (the far edge) and other-permanents row, the
-// middle strip (the turn, step, deciding seat and step bar, and the stack when it is not empty),
+// middle strip (the turn, step, deciding seat and step bar, the stack when it is not empty, and the
+// prompt line of a decision answered on the Table),
 // the bottom seat's other-permanents and lands rows, then its hand and its chip band. Rows are
 // centred; the two halves share the height left over, their rows centred in it.
 //
@@ -66,6 +67,10 @@ struct TableMetrics {
         float header_w = 0;  // the middle strip's turn, step and decider texts, side by side
         float steps_w = 0;   // the step bar: twelve cells a pixel apart and four STEP_GAPs
         float steps_h = 0;   // its cells' height (in Play with the stop dots under the labels)
+        // The decision's prompt line (a targeting or payment decision, table_decision.h): its height, 0
+        // for none, and its buttons' widths in order.
+        float prompt_h = 0;
+        std::vector<float> button_w;
 };
 
 struct PlacedCard {
@@ -99,7 +104,12 @@ struct TableLayout {
         std::vector<TRect> step_cells;   // the step bar's twelve cells; empty when it is not shown
         TRect stack_label;               // "Stack · 3 objects, top first"
         std::vector<TRect> stack_items;  // the stack objects shown, top first
-        std::vector<PlacedCard> cards;   // in drawing order (behind first)
+        // The decision's prompt line at the strip's foot (the prompt, the cost still to pay) and its
+        // buttons, right-aligned on it in order, or on lines of their own below it when they would
+        // leave the prompt less than half the line; empty when there is none.
+        TRect prompt;
+        std::vector<TRect> prompt_buttons;
+        std::vector<PlacedCard> cards;  // in drawing order (behind first)
 };
 
 // Whether the step bar has a gap before step `i` (Main 1, Beginning of combat, Main 2, End).
