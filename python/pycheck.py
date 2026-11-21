@@ -985,6 +985,21 @@ def _ints(raw):
     return list(struct.unpack("<%d%s" % (len(b) // width, code), b))
 
 
+def _limited_log(work, name, log, limit):
+    """`log`, or with a replay limit (``inputs.json``'s ``replay_limits``: the decisions of the log that still
+    replay) a copy under `work` whose FLAGS line stops the replay there, as learn/open_vocab_baseline.py does."""
+    if limit is None:
+        return log
+    with open(log, "rb") as fp:
+        lines = fp.read().split(b"\n")
+    flags = [i for i, line in enumerate(lines) if line.startswith(b"FLAGS ")][0]
+    lines[flags] += b" max-decisions=%d" % limit
+    out = os.path.join(work, name + ".rmlog")
+    with open(out, "wb") as fp:
+        fp.write(b"\n".join(lines))
+    return out
+
+
 def _decision_digests(path):
     """{(viewer, game, sideboarding, decision): sha256 hex[:16]} of a tensors file's decisions."""
     _, arr = _rmtb_raw(path)
@@ -1035,7 +1050,8 @@ def check_open_vocab(binary, work):
     for name in inputs["gate_sources"]:
         src = sources[name]
         dump = os.path.join(work, name + ".rms")
-        if not run_([binary, "--replay", os.path.join(OPEN_VOCAB, src["log"]), "--machine", "--rmstate-dump", dump]):
+        log = _limited_log(work, name, os.path.join(OPEN_VOCAB, src["log"]), inputs["replay_limits"].get(name))
+        if not run_([binary, "--replay", log, "--machine", "--rmstate-dump", dump]):
             continue
         dig = {}
         for viewer in ("A", "B", "omniscient"):

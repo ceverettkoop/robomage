@@ -43,6 +43,7 @@
     "A:desc:Destroy target land",
     "A:target:Tropical Island",
     "A:desc:3 damage",
+    "B:choice:Search your library",
     "B:search:Forest"
   ],
   "seed": 1,

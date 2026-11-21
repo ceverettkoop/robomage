@@ -869,6 +869,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // (Doomsday), so a card already chosen is not offered again.
     search.exclude_remembered = multi_zone;
     search.picking = &ab;
+    // Optional$ True on a library search is a "may search" (Ghost Quarter: "its controller may search
+    // their library ..."): the chooser first chooses whether to search. Declining is no search, so no
+    // shuffle (CR 608.2d); a search that finds nothing still shuffles (CR 701.23).
+    if (ab.def->optional_choice && ab.def->origin == Zone::LIBRARY && !multi_zone && !rt.searching) {
+        int yc = fctx.ask(yesno_menu("Don't search", "Search your library"), chooser, ab.source.lki_entity());
+        if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (yc != 1) {
+            game_log("%s doesn't search\n", player_name(chooser).c_str());
+            cur_game.priority.player_a_has_priority = rt.prev_priority;
+            return HandlerResult::DONE_RUN_SUBS;
+        }
+        rt.searching = true;
+    }
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
         Entity chosen = search_zones(orderer, search, fctx, ab.source.lki_entity(), suspended);
@@ -877,10 +890,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (suspended) return HandlerResult::SUSPENDED;
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it.
-        // ShuffleNonMandatory$ True is a "may search ..., then shuffle": finding nothing there is
-        // declining to search, and with no search there is no shuffle (CR 608.2d). NoShuffle$ True
-        // leaves the shuffle to a later instruction of the same effect (Gamble's DB$ Shuffle).
-        if (ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle && !(chosen == 0 && ab.def->shuffle_non_mandatory)) {
+        // ShuffleNonMandatory$ True is a "may search ..., then shuffle". Without Optional$ (the "may" is
+        // the trigger's, OptionalDecider$) finding nothing there is taken as declining to search, and
+        // with no search there is no shuffle (CR 608.2d); an Optional$ search the chooser chose to make
+        // shuffles even when it finds nothing. NoShuffle$ True leaves the shuffle to a later
+        // instruction of the same effect (Gamble's DB$ Shuffle).
+        if (ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle &&
+            !(chosen == 0 && ab.def->shuffle_non_mandatory && !rt.searching)) {
             orderer->shuffle_library(owner);
             game_log("%s shuffles their library\n", player_name(owner).c_str());
         }
@@ -948,7 +964,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
     // A search with no card left to find (The Stone Brain's four found already, Ugin's ChangeNum$ X
     // of nothing) is still a search, and its library is still shuffled (CR 701.23).
-    if (rt.num_to_move == 0 && ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle && !ab.def->shuffle_non_mandatory) {
+    if (rt.num_to_move == 0 && ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle &&
+        (!ab.def->shuffle_non_mandatory || rt.searching)) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library\n", player_name(owner).c_str());
     }

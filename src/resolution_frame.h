@@ -127,6 +127,7 @@ struct ChangeZoneSearchRt {
     size_t num_to_move = 0;       // resolved ChangeNum (may be a count-SVar)
     int cmc_bound = -1;           // resolved dynamic mana-value bound (Aether Vial)
     size_t iter = 0;              // next pick index
+    bool searching = false;       // an Optional$ search's chooser chose to search
 };
 // ── Batch 7: live-menu loops (Shape C) ──────────────────────────────────────
 // change_zone's Defined$ Remembered bounded/optional selection (Cloak and

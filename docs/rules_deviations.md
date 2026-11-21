@@ -286,8 +286,11 @@ Two-player games only (`CLAUDE.md`); multiplayer rules (CR 800+) are out of scop
   alternative cost. No vocab card Mystic Forge reaches needs one. `src/cast_options.cpp`: `kCastSections`.
 - **CR 701.23 — search and shuffle sequencing** (`src/effects/effect_change_zone.cpp`: `change_zone`):
   1. A multi-card search (Buried Alive) shuffles once per pick (RNG consumption only).
-  2. A "may search" (`ShuffleNonMandatory$ True`: Stoneforge Mystic, Ghost Quarter, …) has one
-     fail-to-find row, read as declining: no shuffle. `Shuffle$ False` is not read.
+  2. A "may search" whose "may" is its trigger's (`ShuffleNonMandatory$ True` without `Optional$`:
+     Stoneforge Mystic, Goblin Engineer, Flagstones of Trokair) has one fail-to-find row, read as
+     declining: no shuffle, though the trigger was accepted. An `Optional$ True` search (Ghost
+     Quarter, Erode, Boseiju) asks whether to search first and shuffles after any search made.
+     `Shuffle$ False` is not read.
   3. The shuffle keys on the first origin zone, so a multi-zone search listing Library second never
      shuffles. Latent (Doomsday has `Shuffle$ False`).
 - **CR 701.23b — "any number of cards with the same name" finds them all** (Surgical Extraction, up
