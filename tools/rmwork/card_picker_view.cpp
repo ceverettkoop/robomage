@@ -603,7 +603,6 @@ void CardPickerView::draw_pile(const CardPicker &p, const CardBook &book, ImVec2
             }
             ImGui::Dummy(ImVec2(w, th + 4));
         }
-        ImGui::TextDisabled("then the rest of the library");
     }
     const auto list = [](const char *title, const std::vector<PileCard> &cards) {
         if (cards.empty()) return;
@@ -616,12 +615,6 @@ void CardPickerView::draw_pile(const CardPicker &p, const CardBook &book, ImVec2
     list("On the bottom", pile.bottom);
     list("Into the graveyard", pile.graveyard);
     list("Chosen so far", pile.chosen);
-    if (!pile.note.empty()) {
-        ImGui::Spacing();
-        ImGui::PushTextWrapPos(0.0f);
-        ImGui::TextDisabled("%s", pile.note.c_str());
-        ImGui::PopTextWrapPos();
-    }
     ImGui::EndChild();
     ImGui::PopStyleColor();
 }

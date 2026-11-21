@@ -97,7 +97,6 @@ struct PickerPile {
         std::vector<PileCard> bottom;  // put on the bottom, in the order put
         std::vector<PileCard> graveyard;
         std::vector<PileCard> chosen;  // the other categories' picks so far
-        std::string note;              // how the picks build it
 };
 
 struct CardPicker {

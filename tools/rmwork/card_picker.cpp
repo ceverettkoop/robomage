@@ -229,7 +229,6 @@ static void build_pile(const agents::DecisionView &v, const std::vector<PastPick
     if (depth == -2 && !has_category(v, "BOTTOM_DECK_CARD")) {
         for (const PastPick &p : past) pile->chosen.push_back(p.card);
         pile->shown = !pile->chosen.empty();
-        if (pile->shown) pile->note = "Chosen so far in this resolution";
         return;
     }
     pile->shown = true;
@@ -237,12 +236,10 @@ static void build_pile(const agents::DecisionView &v, const std::vector<PastPick
     if (pile->ordered) {
         std::map<int, rmwork::PileCard> fill;
         int deepest = depth;
-        bool descending = depth > 0;
         for (const PastPick &p : past) {
             if (p.category == "TOP_LIBRARY") {
                 fill[static_cast<int>(p.ordinal)] = p.card;
                 deepest = std::max(deepest, static_cast<int>(p.ordinal));
-                descending = descending || p.ordinal > depth;
             } else if (p.category == "BOTTOM_DECK_CARD") {
                 pile->bottom.push_back(p.card);
             } else {
@@ -260,8 +257,6 @@ static void build_pile(const agents::DecisionView &v, const std::vector<PastPick
             }
             pile->top.push_back(s);
         }
-        pile->note = descending ? "Each pick fills its place, the deepest first; the last card stays on top"
-                                : "Each card kept fills the next place down";
         return;
     }
     rmwork::PileSlot next;
@@ -281,7 +276,6 @@ static void build_pile(const agents::DecisionView &v, const std::vector<PastPick
             pile->graveyard.insert(pile->graveyard.begin(), it->card);
         }
     }
-    pile->note = "Each pick goes on top of the cards picked before it: the first ends deepest";
 }
 
 namespace rmwork {
