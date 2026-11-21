@@ -10,6 +10,7 @@
 #include "files.h"
 #include "imgui.h"
 #include "modal.h"
+#include "model_zip.h"
 #include "paths.h"
 #include "play_session.h"
 #include "theme.h"
@@ -73,7 +74,14 @@ std::vector<ModelChoice> NewGameDialog::list_models(const Settings &s) {
     for (const std::string &run : names_in(runs, true)) {
         const std::string exports = runs + "/" + run + "/exports";
         for (const std::string &n : names_in(exports, false))
-            if (has_suffix(n, ".pt2") || has_suffix(n, ".ts.pt")) out.push_back({run + "/" + n, exports + "/" + n});
+            if (is_model_export(n)) out.push_back({run + "/" + n, exports + "/" + n});
+    }
+    const std::string zips = default_models_dir();
+    for (const std::string &n : names_in(zips, false)) {
+        if (!has_suffix(n, ".zip")) continue;
+        std::string why;
+        for (const ZipEntry &e : zip_model_entries(zips + "/" + n, &why))
+            out.push_back({zip_model_label(n, e.name), zips + "/" + n + "!" + e.name});
     }
     return out;
 }
@@ -84,8 +92,11 @@ std::string NewGameDialog::check(const NewGameSettings &g, const std::string &en
     if (g.deck.empty() || g.opponent_deck.empty()) return "Choose both decks.";
     const Opponent opp = static_cast<Opponent>(o);
     const std::string model = resolve_path(g.model, ""), server = resolve_path(g.server, "");
-    if (opp == Opponent::MODEL && (model.empty() || path_kind(model) != PathKind::FILE))
-        return model.empty() ? "Choose the model the opponent plays." : "No model at " + model + ".";
+    if (opp == Opponent::MODEL) {
+        if (model.empty()) return "Choose the model the opponent plays.";
+        const std::string problem = model_problem(model);
+        if (!problem.empty()) return problem;
+    }
     if (opp == Opponent::SERVER && (server.empty() || path_kind(server) != PathKind::SOCKET))
         return server.empty() ? "Give the inference server's socket." : "No server at " + server + ".";
     std::string why;
@@ -154,13 +165,14 @@ void NewGameDialog::draw_opponent() {
             }
             if (models_.empty())
                 ImGui::TextDisabled(
-                    "No policies in Settings \xE2\x86\x92 Models and no exports under its run directory");
+                    "No policies in Settings \xE2\x86\x92 Models, no exports under its run directory and no "
+                    "zipped exports in models/");
             ImGui::EndCombo();
         }
         field_label("", field_x);
         std::snprintf(buf, sizeof buf, "%s", g_.model.c_str());
         ImGui::SetNextItemWidth(-1);
-        if (ImGui::InputTextWithHint("##model_path", "or the export's path", buf, sizeof buf)) g_.model = buf;
+        if (ImGui::InputTextWithHint("##model_path", "or the export's path (archive.zip!member for a zipped one)", buf, sizeof buf)) g_.model = buf;
     } else if (g_.opponent == opponent_key(Opponent::SERVER)) {
         field_label("Server socket", field_x);
         std::snprintf(buf, sizeof buf, "%s", g_.server.c_str());

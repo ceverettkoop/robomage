@@ -77,8 +77,10 @@ update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
-Card scripts are not tracked; provision them first on a fresh clone (the SessionStart hook does
-it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
+Card scripts are not tracked; `make` provisions them (`python3 tools/forge_fetch/provision_decks.py`,
+network) whenever the stamp `bin/resources/.provisioned` is older than `src/card_vocab.h`, `FORGE_PIN`,
+the script or a provisioned deck; `make NO_PROVISION=1` skips it (the SessionStart hook and CI run
+the script themselves, which writes the stamp).
 
 - `make` — debug build (`-ggdb`, warnings, `-D_GLIBCXX_ASSERTIONS`, no `-O2`) of the four
   binaries: `bin/debug/robomage` (the engine), `bin/debug/rmknow` (the knowledge sidecar over a
@@ -825,7 +827,7 @@ handshake JSON, the shared region, request / response layouts.
   the reader thread, the live match, replies, concessions, the engine's failures, `kill_engine`), `autopass` (F2, F6
   and the stops: a pure function of a decision's `PassFacts`), `model_read` (Model's Read: the featurizer's inputs
   from the engine's `--cards-frame`, the torch-free remote evaluator to rmserve, on a thread), `new_game_dialog`
-  (decks, opponents, models, the choices kept as `new_game` in `settings.json`), `play_dialogs` (the concession's
+  (decks, opponents, models, the choices kept as `new_game` in `settings.json`), `model_zip` (model exports read straight from the zip archives in `<repo>/models/` (git-ignored but for its README): `<archive>.zip!<member>` references, extracted for the engine into the workbench cache; zlib; `selftest_model_zip` its checks), `play_dialogs` (the concession's
   confirmation, the match result screen), `selftest_play` (Play's `--selftest-data` checks); the start page (plan §4.1 item 1): `start_data` (Play's recent games from the games directory with their `<stem>.game.json` sidecars and stderr result lines, recent replays with the replay cache's results, recent runs from `status.json`, the status blocks; never a replay), `start_page` (the page in place of the dockspace, its scan thread, the actions, lists and status), `selftest_start` (its checks in both self-tests); the Sideboard tool (plan §4.3 item 14): `sideboard_plan` (a seat's 75 and sideboarding facts from a frame, the plan's locks and balance, the next reply toward the planned deck by category and source card, `python/sideboard_guides.json`'s guides and a matchup's plan), `sideboard_view` (the tool: the 75 as cards, the plan, its sending through the play session, the guide's and the model's plans, Replay read-only), `selftest_sideboard` (its `--selftest-data` checks); Replay's data: `loader` (a decision log opened on a thread:
   the cached replay or the engine's `--replay --rmstate-dump --narrative`, the index, the episodes;
   progress, cancel), `subprocess` (`posix_spawn`, output into files, or Play's pipes in a process group), `replay_cache`

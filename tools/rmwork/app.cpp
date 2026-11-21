@@ -8,6 +8,7 @@
 #include "episodes.h"
 #include "files.h"
 #include "imgui_internal.h"
+#include "model_zip.h"
 #include "panels.h"
 #include "paths.h"
 #include "replay_cache.h"
@@ -246,6 +247,14 @@ bool App::start_game(const NewGameSettings &g, const std::vector<std::string> &s
     c.setup = setup;
     // A model or socket typed as a relative path is the repository's, as Settings' paths are.
     if (!c.model.empty()) c.model = resolve_path(c.model, "");
+    // A zipped export is extracted into the workbench cache for the engine.
+    if (c.opponent == Opponent::MODEL && !c.model.empty()) {
+        c.model = model_file(c.model, &why);
+        if (c.model.empty()) {
+            report_error("The model could not be read", why, "");
+            return false;
+        }
+    }
     PlayPaths p;
     p.engine = play_engine(c.opponent, &why);
     if (p.engine.empty()) {

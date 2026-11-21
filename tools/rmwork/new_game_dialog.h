@@ -12,7 +12,8 @@
 // scripted agent) and its deck, best of one or three, the seed (with a random one), auto-mana and
 // Model's Read. The decks are the engine's top-level, league/ and heldout/ decks (under its working
 // directory's resources/decks); the models Settings → Models' policies and every run's exports under
-// its run directory (`<run>/exports/*.pt2`, `*.ts.pt`). It opens with the last choices (Settings'
+// its run directory (`<run>/exports/*.pt2`, `*.ts.pt`), and the exports inside the zip archives in
+// the models directory (<repo>/models, model_zip.h). It opens with the last choices (Settings'
 // new_game) and hands back the new ones when Start is pressed; the App starts the game and keeps
 // them. The engine a choice needs is checked as it is made (an nn: opponent needs robomage_nn).
 
@@ -37,7 +38,8 @@ class NewGameDialog {
         // The decks under `workdir`/resources/decks: top-level, league/ and heldout/ ("delver",
         // "league/burn"), in natural order.
         static std::vector<std::string> list_decks(const std::string &workdir);
-        // Settings → Models' policies, then the exports of every run under the run directory.
+        // Settings → Models' policies, the exports of every run under the run directory, then those in
+        // the models directory's zip archives (paths `<archive>.zip!<member>`).
         static std::vector<ModelChoice> list_models(const Settings &s);
         // What keeps `g` from starting ("" when nothing does): an empty deck, an nn: opponent with no
         // model or socket, or no engine for it.

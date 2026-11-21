@@ -116,7 +116,24 @@ $(ODIR)/featurize/registry.o: CXXFLAGS += -DRM_REGISTRY_JSON='"$(abspath $(REGIS
 .DEFAULT_GOAL := all
 
 # text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
-all: program rmknow rmfeat robomage_check text-table
+# provision: the card and token scripts the engine reads at run time (below).
+all: provision program rmknow rmfeat robomage_check text-table
+
+# The Forge card and token scripts (bin/resources/cardsfolder, tokenscripts) are not tracked; they
+# are fetched from GitHub at the pinned Forge commit by tools/forge_fetch/provision_decks.py, which
+# touches $(PROVISION_STAMP) when done. The fetch runs only while the stamp is older than what decides
+# the card set (the vocab, the pin, the script, the provisioned decks), so an up-to-date tree builds
+# offline. `make NO_PROVISION=1` skips it.
+PROVISION_STAMP := bin/resources/.provisioned
+PROVISION_INPUTS := src/card_vocab.h tools/forge_fetch/FORGE_PIN tools/forge_fetch/provision_decks.py \
+                    $(wildcard bin/resources/decks/*.dk $(addprefix bin/resources/decks/,$(addsuffix /*.dk,league heldout candidates)))
+ifeq ($(NO_PROVISION),)
+provision: $(PROVISION_STAMP)
+else
+provision:
+endif
+$(PROVISION_STAMP): $(PROVISION_INPUTS)
+	$(PYTHON) tools/forge_fetch/provision_decks.py
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -127,8 +144,7 @@ program:$(C_OBJ) $(CXX_OBJ)
 # concede, rules scenarios, the human CLI's golden transcripts, byte-identical replay corpus,
 # state-format and knowledge self-checks, explore fuzz, bench, and the smoke tier through the
 # Python driver). Exits nonzero on any finding.
-# Requires the card scripts to be provisioned first (tools/forge_fetch/provision_decks.py; the
-# SessionStart hook does this).
+# `all` provisions the card scripts first when they are out of date (provision, above).
 check: all
 	$(BINDIR)/robomage_check
 
@@ -153,7 +169,8 @@ regen:
 # behavior — investigate it; if the change is intentional, run `make regen` to
 # re-record and commit the new corpus.
 refetch:
-	rm -f bin/resources/cardsfolder/*/*.txt bin/resources/tokenscripts/*.txt
+	find bin/resources/cardsfolder bin/resources/tokenscripts -name '*.txt' -type f -delete
+	rm -f $(PROVISION_STAMP)
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
@@ -257,7 +274,7 @@ TEXT_TABLE_CHECK = cd bin && ./$(CONFIG)/$(BINNAME) --text-table-check ../$(TEXT
 TEXT_TABLE_FAIL = echo "text-table: $(TEXT_TABLE) is stale (rows above) and could not be regenerated: $$step failed." \
 	"Run \`make text-table\` with network access to huggingface.co and libtorch (LIBTORCH_DIR=/path/to/torch)."; exit 1
 
-text-table: program
+text-table: program provision
 	@if ($(TEXT_TABLE_CHECK)); then exit 0; fi; \
 	mkdir -p .cache/embed $(dir $(TEXT_TABLE)); \
 	step="robomage --text-table-inputs"; \
@@ -300,7 +317,7 @@ RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
 
 # ── make workbench — bin/<config>/rmwork, the workbench GUI (docs/workbench_plan.md), NOT in the default build ──
 # tools/rmwork/ on the vendored Dear ImGui (docking), ImPlot and stb (third_party/, unmodified), GLFW and
-# OpenGL 3; linked with the std-only RMSTATE decoder and schema, the agents' std-only frame reader, the
+# OpenGL 3 (and zlib: zipped model exports, tools/rmwork/model_zip.cpp); linked with the std-only RMSTATE decoder and schema, the agents' std-only frame reader, the
 # CLI's std-only renderer (src/cli/board: the seat logs' event lines), src/featurize/ (std only: the
 # JSON reader, the episode reader, the featurizer for Model's Read), and the torch-free remote evaluator
 # (src/actor/remote_evaluator.cpp, compiled here with the engine's flags into its own object, not the
@@ -359,7 +376,7 @@ $(ODIR)/tools/rmwork/fonts.o: CXXFLAGS += -DRM_FONT_DIR='"$(abspath third_party/
 workbench: $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/rmwork $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ) $(LDFLAGS) $(LDLIBS) \
-		$(GLFW_LIBS) $(GL_LIBS) -pthread $(PLATFLAGS)
+		$(GLFW_LIBS) $(GL_LIBS) -lz -pthread $(PLATFLAGS)
 
 $(ODIR)/tools/%.o: tools/%.cpp
 	@mkdir -p $(dir $@)
@@ -399,7 +416,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo workbench
+.PHONY: all provision check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo workbench
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules

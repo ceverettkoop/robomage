@@ -69,6 +69,10 @@ std::string default_run_dir() {
     return repo_root() + "/runs";
 }
 
+std::string default_models_dir() {
+    return repo_root() + "/models";
+}
+
 std::string default_image_cache() {
     const char *xdg = std::getenv("XDG_CACHE_HOME");
     return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.cache") + "/robomage/scryfall";

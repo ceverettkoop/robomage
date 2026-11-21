@@ -22,6 +22,8 @@ std::string default_engine_binary();
 std::string default_engine_workdir();
 // <repo>/runs.
 std::string default_run_dir();
+// <repo>/models: model exports packaged as zip archives (model_zip.h).
+std::string default_models_dir();
 // $XDG_CACHE_HOME/robomage/scryfall, else ~/.cache/robomage/scryfall.
 std::string default_image_cache();
 // $XDG_DATA_HOME/robomage/workbench/games, else ~/.local/share/…: Play's games (decision logs).
