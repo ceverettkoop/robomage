@@ -559,8 +559,8 @@ Ordered roughly by value against effort. Each is one dockable tool.
    listed with their seats, opponents and results, the bo1 opened in Replay from the page, Close bringing
    it back; the game whose engine was killed listed as stopped and opened in Replay).
 2. **New Game dialog**: your deck and seat, opponent (model / checkpoint, scripted tier, explore), best-of-one or best-of-three, seed, auto-mana, Model's Read on or off, knowledge level.
-3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3).
-4. **Model manager**: exports and checkpoints, rmserve start/attach, compatibility check.
+3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3), filtered by run (§4.6).
+4. **Model manager**: exports and checkpoints by date (§4.6), rmserve start/attach, compatibility check.
 
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
@@ -784,6 +784,78 @@ a cost reducer: the printed cost is shown).
 27. **Layout manager**: save, rename and delete named layouts per mode.
 28. **Error dialog**: engine or inference-server failure with the stderr tail.
 29. ~~**Card detail**~~: dropped (user, 2026-11-18). The magnifier is the enlargement: the card's image (its printing's set symbol and year are printed on it), and both faces side by side for a double-faced card (§2.5).
+
+### 4.6 The runs directory: checkpoints by date, episodes by run, `runs/latest` (design note, 2026-11-21)
+
+`runs/` holds every run ever made (26 directories, 52 GB on 2026-11-21) and the workbench lists them all:
+New Game's opponent list is every run's exports in run-name then file-name order, and the run browser and
+the episode combo box start from whichever directory is opened. The old runs are kept on purpose (their checkpoints are the
+migration acceptance's originals and the earlier benches' baselines), so the clutter is solved in the views,
+not by deleting. Nothing here is built.
+
+**Checkpoints by date.** The Model manager (item 4) and New Game's opponent list show one flat list over
+the runs directory, newest first, in place of the order by name:
+
+- A row is a policy someone would pick: a run's `final` and its fixed points `m<k>` (`ckpt/fixed/`, the
+  phase-end checkpoints, and their exports `exports/*.pt2` / `*.ts.pt`). An export and the checkpoint it was
+  made from are one row, with the formats it exists in.
+- Columns: date, run, name, learner steps, formats, compatible with the engine or not (the Model manager's
+  manifest check; an incompatible row is greyed and says `rmtrain retable <run>`).
+- The date is when the policy was trained, not the file's modification time: a retable or a migration
+  rewrites every export and checkpoint of a run and would bring a month-old run to the top. Read it from
+  the run's `metrics.jsonl` (`rnad_iteration`, `export`, the phase transitions) and fall back to the
+  modification time for a file no metrics line names.
+- Hidden unless "Show all" is on: the periodic checkpoints (`rnad-p<step>.pt`, `bc-p<step>.pt`), the seed,
+  and the live export. Never listed: the old layouts' copies (`ckpt.v1`, `ckpt.layout1`, `exports.v1`,
+  `exports.layout1`), which no engine loads.
+- `latest` (below) is pinned as the first row and is New Game's default opponent model.
+- A filter field (run or name) and a run combo box narrow it; sorting by another column is a click on its
+  header, date descending being the default every time the list opens.
+
+**Episodes by run.** Wherever episodes or a run's logs are listed (the Episode Browser of §3, the episode
+combo box, the run browser, the file picker's episode filters when it is inside the runs directory) a Run
+combo box filters them, and its default is the most recent run alone:
+
+- The most recent run is the runs directory's by `status.json`'s `updated_at`, the order the Start page's
+  recent runs already use; a directory without `status.json` is no run and is never the default.
+- The combo box lists the runs in that order, each with its date and whether it still has episodes (a
+  finished run's replay window is often deleted; such a run says "logs only"), then "All runs".
+- The default is not remembered: every session starts on the most recent run, so a new run's games show
+  without anyone changing a setting. Choosing another run holds for the session.
+- When the most recent run has no episodes the list says so and offers its logs and the next run that has
+  some; it does not fall back silently.
+- The Start page's recent runs show the newest five, with "All runs" opening the run browser.
+
+**`runs/latest`: the most recent policy under one fixed name.** A directory `rmtrain` keeps, so a release
+or another machine takes the current policy without knowing which run made it:
+
+```
+runs/latest/
+  model.pt        the network as a model checkpoint (model.save_checkpoint: what run.start_from loads)
+  policy.ts.pt    its TorchScript export (nn:runs/latest/policy.ts.pt)
+  policy.pt2      its AOTInductor export
+  latest.json     run, name (m7, final), learner steps, when trained, when written, the engine's commit,
+                  the model manifest's hashes (spec, vocab, layout, tables digest, text model), each
+                  file's sha256
+```
+
+- A real directory of copies, not a symbolic link into a run: it is copied or archived as it stands
+  (`rsync -a runs/latest/ host:…/runs/latest/`), and it outlives the run it came from.
+- Written by the orchestrator whenever a run exports a fixed point or `final`: each file through a
+  temporary file renamed into place, `latest.json` last, so a reader that finds a `latest.json` whose
+  hashes match the files has a whole policy. It is not written per learner step: the live export changes
+  every 30 seconds and is no release.
+- "Most recent" is the last one written. A config key `run.latest` (default true) turns it off; smoke
+  runs and tests set it false so a 120-step run never replaces a real policy.
+- `rmtrain retable <run>` on the run `latest.json` names rebuilds the two exports with the run's; the
+  checkpoint needs nothing (a checkpoint loads across a grown vocab and appended enum values).
+- The name is reserved: `rmtrain start latest` is refused, the config refuses it as a run name, and the
+  run browser does not list it as a run.
+- On the other machine the exports need an engine of the same tables (`latest.json`'s hashes against
+  `rmfeat --compat`); `model.pt` alone is enough when the engine there differs, with an export made from
+  it there.
+- Until the orchestrator writes it, the same directory can be filled by hand from a finished run:
+  `final-model.pt` as `model.pt`, `exports/final.ts.pt` and `final.pt2` as the two exports.
 
 ## 5. Suggested order
 
