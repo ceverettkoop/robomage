@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "modal.h"
+#include "model_zip.h"
 #include "paths.h"
 #include "theme.h"
 #include "widgets.h"
@@ -408,8 +409,19 @@ void SettingsDialog::draw_engine_tab(Settings *s) {
 // The inference server's socket, the policies it serves and where training runs are kept.
 void SettingsDialog::draw_models_tab(Settings *s) {
     const float field_x = 16 * char_width();
-    path_field("Server socket", &s->models.socket, "", Want::SOCKET, field_x,
-        "start rmserve --socket PATH; the status bar then shows the socket present");
+    ImGui::Checkbox("Start the server with the workbench", &s->models.start_server);
+    ImGui::SetItemTooltip("Runs rmserve (make actor) with the policies below while the workbench is open, "
+                          "unless a server already listens at the socket");
+    if (s->models.start_server) {
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Restart server")) server_restart_ = true;
+        if (!server_status_.empty()) colored_note(server_status_.c_str(), server_failed_ ? tok().BAD : tok().DIM);
+    }
+    ImGui::Spacing();
+    path_field("Server socket", &s->models.socket, s->models.start_server ? default_server_socket() : "",
+        Want::SOCKET, field_x,
+        s->models.start_server ? "not listening yet: the workbench starts the server at this socket"
+                               : "start rmserve --socket PATH; the status bar then shows the socket present");
     ImGui::Spacing();
     path_field("Run directory", &s->models.run_dir, default_run_dir(), Want::DIRECTORY, field_x,
         "missing: rmtrain start creates runs here");
@@ -441,7 +453,7 @@ void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
             ImGui::TableNextColumn();
             ImGui::TextUnformatted(p.model.c_str());
             ImGui::TableNextColumn();
-            const bool found = path_found(policy_model_path(p), Want::FILE);
+            const bool found = model_problem(policy_model_path(p)).empty();
             ImGui::TextColored(
                 ImGui::ColorConvertU32ToFloat4(found ? tok().GOOD : tok().BAD), "%s", found ? "found" : "missing");
             ImGui::TableNextColumn();
@@ -463,7 +475,8 @@ void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
     ImGui::InputTextWithHint("##policy_id", "id", policy_id_, sizeof policy_id_);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(std::max(10 * cw, ImGui::GetContentRegionAvail().x - 8 * cw));
-    ImGui::InputTextWithHint("##policy_model", "model (.pt2 or TorchScript)", policy_model_, sizeof policy_model_);
+    ImGui::InputTextWithHint("##policy_model", "model (.pt2, TorchScript, or archive.zip!member)", policy_model_,
+        sizeof policy_model_);
     ImGui::SameLine();
     if (ImGui::Button("Add")) {
         if (add_policy(m, policy_id_, policy_model_, &policy_error_)) {

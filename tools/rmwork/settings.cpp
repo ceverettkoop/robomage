@@ -204,7 +204,8 @@ static bool read_models(const featurize::Json &v, rmwork::ModelSettings *out, st
         return false;
     }
     if (!read_string(v, "socket", "models", &out->socket, err) ||
-        !read_string(v, "run_dir", "models", &out->run_dir, err))
+        !read_string(v, "run_dir", "models", &out->run_dir, err) ||
+        !read_bool(v, "start_server", "models", &out->start_server, err))
         return false;
     const featurize::Json *policies = v.get("policies");
     if (!policies) return true;
@@ -490,7 +491,7 @@ std::string image_cache_path(const Settings &s) {
 }
 
 std::string socket_path(const Settings &s) {
-    return resolve_path(s.models.socket, "");
+    return resolve_path(s.models.socket, s.models.start_server ? default_server_socket() : "");
 }
 
 std::string policy_model_path(const PolicyEntry &p) {
@@ -594,7 +595,8 @@ std::string settings_to_json(const Settings &s) {
     out += "  \"engine\": {\"binary\": " + json_quote(s.engine.binary) +
            ", \"workdir\": " + json_quote(s.engine.workdir) + "},\n";
     out += "  \"models\": {\"socket\": " + json_quote(s.models.socket) +
-           ", \"run_dir\": " + json_quote(s.models.run_dir) + ", \"policies\": [";
+           ", \"run_dir\": " + json_quote(s.models.run_dir) +
+           ", \"start_server\": " + (s.models.start_server ? "true" : "false") + ", \"policies\": [";
     for (size_t i = 0; i < s.models.policies.size(); ++i) {
         const PolicyEntry &p = s.models.policies[i];
         out +=

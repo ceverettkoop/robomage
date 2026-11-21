@@ -22,6 +22,8 @@ std::string default_engine_binary();
 std::string default_engine_workdir();
 // <repo>/runs.
 std::string default_run_dir();
+// workbench_cache_dir()/rmserve.sock: the socket of the server the workbench starts, when none is set.
+std::string default_server_socket();
 // <repo>/models: model exports packaged as zip archives (model_zip.h).
 std::string default_models_dir();
 // $XDG_CACHE_HOME/robomage/scryfall, else ~/.cache/robomage/scryfall.

@@ -39,6 +39,8 @@ class ChildProcess {
         bool poll();
         // SIGKILL (to its process group when start_piped started it), then reaps it.
         void kill_and_reap();
+        // SIGTERM, then waits up to `seconds` for it to exit before kill_and_reap().
+        void terminate_and_reap(double seconds);
         bool exited() const { return reaped_; }
         // Exited normally with status 0.
         bool ok() const { return reaped_ && exit_code_ == 0 && signal_ == 0; }

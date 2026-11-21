@@ -11,6 +11,7 @@
 #include "file_picker.h"
 #include "game_log.h"
 #include "image_renderer.h"
+#include "inference_server.h"
 #include "imgui.h"
 #include "layout.h"
 #include "layout_dialogs.h"
@@ -82,6 +83,8 @@ class App {
         // docked into its first tab group.
         void set_tool_open(Mode m, Tool t, bool open);
         const Settings &settings() const { return settings_; }
+        // Settings → Models → Start the server with the workbench, as its checkbox sets it.
+        void set_start_server(bool on) { settings_.models.start_server = on; }
         // The UI font from the next frame on (sanitized, as Settings → Appearance sets it).
         void set_font(const FontChoice &c);
         // The colour theme from the next frame on (the default for an unknown id).
@@ -249,6 +252,7 @@ class App {
         void dock_home_if_lost(Mode m, Tool t);
         void save_if_changed();
         void check_health();
+        void run_server();
         void request_layout(const LayoutNode &root, const std::string &label);
         std::string shortcut(Action a) const;
         static ImGuiDockNode *first_leaf(ImGuiDockNode *node);
@@ -312,6 +316,7 @@ class App {
         std::string health_paths_;  // the engine and socket paths last checked
         bool engine_found_ = false;
         bool socket_present_ = false;
+        InferenceServer server_;  // Settings → Models → Start the server (interactive sessions only)
         StartPage start_page_;
         bool start_shown_ = false;
         double start_scanned_at_ = -1;  // when the page's last scan was asked for

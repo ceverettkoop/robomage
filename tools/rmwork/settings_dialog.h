@@ -48,6 +48,17 @@ class SettingsDialog {
         // The card images the Card Printings tab shows and changes (nullptr: none).
         void set_card_images(CardImages *images) { images_ = images; }
         PrintingsTab &printings() { return printings_; }
+        // The Models tab's line on the server the workbench starts ("server running", the failure).
+        void set_server_status(const std::string &text, bool failed) {
+            server_status_ = text;
+            server_failed_ = failed;
+        }
+        // True once after Restart server was pressed.
+        bool take_server_restart() {
+            const bool r = server_restart_;
+            server_restart_ = false;
+            return r;
+        }
 
     private:
         // What a path setting must name to count as found.
@@ -89,6 +100,9 @@ class SettingsDialog {
         char policy_id_[64] = {0};
         char policy_model_[1024] = {0};
         std::string policy_error_;
+        std::string server_status_;
+        bool server_failed_ = false;
+        bool server_restart_ = false;
         CardImages *images_ = nullptr;
         PrintingsTab printings_;
 };

@@ -138,6 +138,20 @@ void ChildProcess::kill_and_reap() {
     record(status);
 }
 
+void ChildProcess::terminate_and_reap(double seconds) {
+    if (pid_ <= 0 || reaped_) {
+        kill_and_reap();
+        return;
+    }
+    kill(group_ ? -pid_ : pid_, SIGTERM);
+    const useconds_t step_us = 20000;
+    for (double waited = 0; waited < seconds; waited += step_us / 1e6) {
+        if (!poll()) break;
+        usleep(step_us);
+    }
+    kill_and_reap();
+}
+
 std::string ChildProcess::status_text() const {
     if (!reaped_) return "running";
     if (signal_) return "killed by signal " + std::to_string(signal_);

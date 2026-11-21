@@ -179,6 +179,7 @@ void App::frame() {
     update_card_images();
     poll_loader();
     poll_play();
+    run_server();
     replay_.tick(ImGui::GetTime());
     handle_keys();
     // The toolbar and the status bar read the tools' data: it follows the match, cursor and viewer.
@@ -719,7 +720,38 @@ std::string App::engine_health() const {
 }
 
 std::string App::inference_health() const {
+    const InferenceServer::State s = server_.state();
+    if (s != InferenceServer::State::OFF && s != InferenceServer::State::EXTERNAL) return server_state_text(s);
     return socket_present_ ? "Inference: socket present" : "Inference: not connected";
+}
+
+// The server Settings → Models has the workbench start, in an interactive session: started, started
+// again when its configuration changes or Restart server is pressed, stopped when the setting is
+// turned off. A failure is reported once and not retried until the configuration or Restart changes.
+void App::run_server() {
+    const bool restart = settings_dialog_.take_server_restart();
+    if (!persist_ || !settings_.models.start_server) {
+        if (server_.state() != InferenceServer::State::OFF) server_.stop();
+        settings_dialog_.set_server_status("", false);
+        return;
+    }
+    ServerConfig c;
+    c.binary = parent_dir(absolute_path(engine_binary_path(settings_))) + "/rmserve";
+    c.socket = socket_path(settings_);
+    c.cwd = repo_root();
+    c.log_dir = workbench_cache_dir() + "/rmserve";
+    for (const PolicyEntry &p : settings_.models.policies) c.policies.push_back({p.id, policy_model_path(p)});
+    if (restart || server_.state() == InferenceServer::State::OFF || server_config_key(c) != server_.key()) {
+        server_.start(c);
+        if (server_.state() == InferenceServer::State::FAILED)
+            report_error("The inference server did not start", server_.message(), server_.detail());
+    } else if (server_.poll()) {
+        report_error("The inference server stopped", server_.message(), server_.detail());
+    }
+    const InferenceServer::State s = server_.state();
+    settings_dialog_.set_server_status(
+        s == InferenceServer::State::FAILED ? server_.message() : std::string(server_state_text(s)).substr(11),
+        s == InferenceServer::State::FAILED);
 }
 
 // The configured engine binary and socket, looked at again when their paths change or a second

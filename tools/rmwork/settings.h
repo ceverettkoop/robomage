@@ -45,6 +45,7 @@ struct ModelSettings {
         std::string socket;  // the inference server's socket ("" = none)
         std::vector<PolicyEntry> policies;
         std::string run_dir;  // where training runs live; default runs/
+        bool start_server = false;  // the workbench runs rmserve with these policies (inference_server.h)
 };
 
 // The twelve steps a stop can be set in (a stop at combat damage also covers first-strike damage).
@@ -108,7 +109,8 @@ inline constexpr size_t RECENT_MAX = 12;
 // Puts `path` first in `recent` (once), keeping at most RECENT_MAX.
 void add_recent(std::vector<std::string> *recent, const std::string &path);
 
-// The path settings resolved (paths.h): the setting, else its default; the socket has none ("").
+// The path settings resolved (paths.h): the setting, else its default; the socket's default is
+// default_server_socket() while the workbench starts the server, else none ("").
 std::string engine_binary_path(const Settings &s);
 std::string engine_workdir_path(const Settings &s);
 std::string run_dir_path(const Settings &s);

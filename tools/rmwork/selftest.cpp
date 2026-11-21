@@ -1,7 +1,10 @@
 #include "selftest.h"
 
+#include <signal.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
@@ -17,6 +20,7 @@
 #include "paths.h"
 #include "selftest_images.h"
 #include "selftest_priority.h"
+#include "selftest_inference_server.h"
 #include "selftest_model_zip.h"
 #include "selftest_start.h"
 #include "selftest_table.h"
@@ -80,6 +84,7 @@ static void check_key_resets(Tally *t);
 static void check_ini_round_trip(Tally *t, const rmwork::ConfigPaths &paths);
 static void check_settings_file(Tally *t, const rmwork::ConfigPaths &paths, const std::string &tmp);
 static void check_app_persists(Tally *t, const rmwork::ConfigPaths &paths);
+static void check_app_server(Tally *t, const rmwork::ConfigPaths &paths);
 
 static void check(Tally *t, bool ok, const std::string &what) {
     ++t->checks;
@@ -1109,6 +1114,47 @@ static void check_app_persists(Tally *t, const rmwork::ConfigPaths &paths) {
         "a changed font is not applied at the next frame");
 }
 
+// Settings → Models → Start the server in an interactive App, a stand-in rmserve beside the engine
+// binary: the status bar starting it, its socket and policy on its command line, the setting turned
+// off stopping it; an App that does not persist (a screenshot's) never starts it.
+static void check_app_server(Tally *t, const rmwork::ConfigPaths &paths) {
+    using namespace rmwork;
+    const std::string dir = make_temp_dir("rmwa_");
+    const std::string args = dir + "/args.txt", model = dir + "/m.ts.pt", pid = dir + "/pid";
+    std::string err;
+    write_file_atomic(model, "model", &err);
+    write_file_atomic(dir + "/rmserve", "#!/bin/sh\necho $$ > " + pid + "\necho \"$@\" > " + args + "\nexec sleep 30\n", &err);
+    chmod((dir + "/rmserve").c_str(), 0755);
+    Settings s = default_settings();
+    s.engine.binary = dir + "/robomage";
+    s.models.socket = dir + "/s.sock";
+    s.models.policies = {{"0", model}};
+    s.models.start_server = true;
+    {
+        App shot(s, paths, false);
+        run_frames(shot, 2);
+        check(t, shot.inference_health() == "Inference: not connected" && !file_exists(args),
+            "Server: an App that does not persist started the server");
+    }
+    App app(s, paths, true);
+    run_frames(app, 2);
+    for (int i = 0; i < 100 && !file_exists(args); ++i) usleep(20000);
+    std::string got;
+    read_file(args, &got);
+    check(t, app.inference_health() == "Inference: starting server",
+        "Server: the status bar does not show it starting: " + app.inference_health());
+    check(t, got == "--socket " + s.models.socket + " --policy 0=" + model + "\n",
+        "Server: the App's server arguments are not its settings': " + got);
+    std::string pid_text;
+    read_file(pid, &pid_text);
+    const pid_t child = static_cast<pid_t>(std::atoi(pid_text.c_str()));
+    app.set_start_server(false);
+    run_frames(app, 2);
+    check(t, app.inference_health() == "Inference: not connected" && child > 0 && kill(child, 0) != 0,
+        "Server: turning the setting off does not stop the server");
+    remove_tree(dir);
+}
+
 namespace rmwork {
 
 int run_selftest() {
@@ -1148,6 +1194,7 @@ int run_selftest() {
     check_ini_round_trip(&t, paths);
     check_app_persists(&t, paths);
     check_start_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
+    check_app_server(&t, paths);
     destroy_ui_context();
     check_settings_file(&t, paths, tmp);
     check_font_settings(&t);
@@ -1161,6 +1208,7 @@ int run_selftest() {
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_model_zip_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
+    check_inference_server_units([&t](bool ok, const std::string &what) { check(&t, ok, what); });
     begin_headless();
     check_theme_contrast(&t);
     check_image_units([&t](bool ok, const std::string &what) { check(&t, ok, "Images: " + what); }, tmp);

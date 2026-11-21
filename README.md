@@ -166,6 +166,13 @@ in `models/`: drop a packaged model (e.g. `league26-24h-model.zip`) there as it 
 needed (`models/README.md`; git ignores the folder's contents). `bin/<config>/rmwork --help` lists
 its flags, and `docs/workbench_plan.md` describes it.
 
+**Model's Read and server opponents** need an inference server (`rmserve`, built by `make actor`).
+Settings → Models → *Start the server with the workbench* runs it for you while the workbench is open,
+serving the policies listed there (a model path may be a zipped export, `models/<archive>.zip!<member>`)
+at the socket set there, or `~/.cache/robomage/workbench/rmserve.sock` when none is. A server already
+listening at the socket is used instead and left running. Otherwise start one by hand:
+`bin/release/rmserve --socket /tmp/rmserve.sock --policy 0=<model>`.
+
 ## The state format and the knowledge sidecar
 
 - [`docs/state_format.md`](docs/state_format.md): RMSTATE. Covers visibility, handles, the snapshot

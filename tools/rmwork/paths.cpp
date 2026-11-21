@@ -69,6 +69,10 @@ std::string default_run_dir() {
     return repo_root() + "/runs";
 }
 
+std::string default_server_socket() {
+    return workbench_cache_dir() + "/rmserve.sock";
+}
+
 std::string default_models_dir() {
     return repo_root() + "/models";
 }
