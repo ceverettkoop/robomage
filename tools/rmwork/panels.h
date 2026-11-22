@@ -32,6 +32,8 @@ struct ToolContext {
         std::string loading;       // what the loader (or Play's engine before its first frame) is doing, "" when idle
         bool *new_game = nullptr;  // Play's empty Table: set when its New Game button is pressed
         bool choosing = false;     // Play: the human chooses at the cursor (a click on the Table answers)
+        const AttrTints *tints = nullptr;  // Attribution's Table layer (null: none for this decision)
+        bool *attr_layer = nullptr;
 };
 
 // Draws tool `t`'s body inside its window (between Begin and End).

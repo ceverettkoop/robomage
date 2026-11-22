@@ -9,6 +9,7 @@
 #include "imgui_internal.h"
 #include "magnifier.h"
 #include "theme.h"
+#include "tool_widgets.h"
 #include "widgets.h"
 
 namespace {
@@ -644,6 +645,10 @@ void TableView::draw(const TableDraw &d) {
     // Over the middle strip: blockers and attackers face each other across it.
     draw_combat(dl, o, d);
     draw_chips(dl, o, d);
+    draw_attribution(dl, o, d);
+    if (clicked && attr_legend_.w() > 0 && d.attr_layer && mouse.x - o.x >= attr_legend_.x0 &&
+        mouse.x - o.x <= attr_legend_.x1 && mouse.y - o.y >= attr_legend_.y0 && mouse.y - o.y <= attr_legend_.y1)
+        *d.attr_layer = !*d.attr_layer;
     dl->PopClipRect();
     draw_picker(d);
     draw_panel(d);
@@ -1255,6 +1260,68 @@ void TableView::draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
             for (size_t k = 0; k < it.targets.size(); ++k) t += (k ? ", " : "") + it.targets[k].label;
             draw_fitted_text(dl, font, fs, ImVec2(tx, ty), tok().DIM, t, tmax);
         }
+    }
+}
+
+// Attribution's layer: each card, stack object and player chip with a value tinted by it (a stack of
+// identical permanents by its first member's value), the legend at the top right with its toggle (the
+// legend alone, saying "off", while the layer is hidden).
+void TableView::draw_attribution(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
+    tinted_.clear();
+    tinted_players_ = {{0, 0}};
+    attr_legend_ = TRect();
+    if (!d.tints || !d.tints->on || !d.attr_layer) return;
+    const AttrTints &t = *d.tints;
+    const bool on = *d.attr_layer;
+    const bool sign = attr_target_signed(t.target);
+    if (on) {
+        for (const PlacedCard &c : layout_.cards) {
+            const TableObject &obj = model_.objects[static_cast<size_t>(c.object)];
+            const TablePile *pile = pile_of(c);
+            if (pile && pile->stacked && !c.front) continue;
+            std::vector<uint64_t> members{obj.handle};
+            if (pile && pile->stacked)
+                for (int k : pile->objects) members.push_back(model_.objects[static_cast<size_t>(k)].handle);
+            for (uint64_t h : members) {
+                auto it = t.objects.find(h);
+                if (it == t.objects.end()) continue;
+                const ImU32 col = heat_color(it->second, t.scale, sign, 170);
+                const float cw = c.rotated ? c.rect.h() : c.rect.w();
+                dl->AddRectFilled(rmin(o, c.rect), rmax(o, c.rect), col, cw * 0.05f);
+                outline(
+                    dl, rmin(o, c.rect), rmax(o, c.rect), cw * 0.05f, heat_color(it->second, t.scale, sign, 255), 1, 2);
+                tinted_[obj.handle] = col;
+                break;
+            }
+        }
+        for (size_t i = 0; i < layout_.stack_items.size() && i < model_.stack.size(); ++i) {
+            auto it = t.objects.find(model_.stack[i].handle);
+            if (it == t.objects.end()) continue;
+            const ImU32 col = heat_color(it->second, t.scale, sign, 150);
+            dl->AddRectFilled(rmin(o, layout_.stack_items[i]), rmax(o, layout_.stack_items[i]), col);
+            tinted_[model_.stack[i].handle] = col;
+        }
+        for (int seat = 0; seat < 2; ++seat) {
+            if (!t.has_player[static_cast<size_t>(seat)]) continue;
+            const ImU32 col = heat_color(t.players[static_cast<size_t>(seat)], t.scale, sign, 150);
+            const TRect &r = chip_rects_[static_cast<size_t>(seat)];
+            dl->AddRectFilled(rmin(o, r), rmax(o, r), col, 2);
+            tinted_players_[static_cast<size_t>(seat)] = col;
+        }
+    }
+    // The legend: top right, below the top band.
+    const float lh = ImGui::GetTextLineHeight();
+    const float w = std::max(ImGui::CalcTextSize(t.legend.c_str()).x + 12, 14 * lh);
+    const float x0 = layout_.panel.x1 - w - 10, y0 = layout_.top_band.y1 + 4;
+    const std::string label = on ? t.legend : "Attribution layer off (click to show)";
+    const float h = on ? lh * 2.6f + 8 : lh + 6;
+    attr_legend_ = TRect{x0, y0, x0 + w, y0 + h};
+    dl->AddRectFilled(rmin(o, attr_legend_), rmax(o, attr_legend_), tok().TABLE_SHADE, 3);
+    dl->AddRect(rmin(o, attr_legend_), rmax(o, attr_legend_), tok().LINE, 3);
+    if (on) {
+        draw_heat_legend(dl, ImVec2(o.x + x0 + 6, o.y + y0 + 3), w - 12, t.scale, sign, label);
+    } else {
+        dl->AddText(ImVec2(o.x + x0 + 6, o.y + y0 + 3), tok().DIM, label.c_str());
     }
 }
 

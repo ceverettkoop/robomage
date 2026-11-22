@@ -26,6 +26,7 @@
 #include "replay_cache.h"
 #include "rmlog.h"
 #include "run_browser.h"
+#include "selftest_attribution.h"
 #include "selftest_images.h"
 #include "selftest_index.h"
 #include "selftest_play.h"
@@ -938,6 +939,7 @@ int run_selftest_evals(const std::string &engine, const std::string &model) {
                 want.every_decision = true;
                 check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "nn: match", want, &tools);
                 check_reevaluation_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
+                check_attribution_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
             }
         }
         check(&t, tools.episode_decisions > 0, "Tools: no decision of the nn: match checked against its evaluations");
@@ -984,6 +986,8 @@ int run_selftest_data(const std::string &engine) {
         check_corpus_episode(&t, app, env);
         check_reevaluation_data(
             [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
+        check_attribution_data(
+            [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
         const std::string bo3 = make_bo3(&t, env);
         if (!bo3.empty()) {
             check_bo3(&t, app, bo3, &cov, &tools);
@@ -1009,6 +1013,7 @@ int run_selftest_data(const std::string &engine) {
         make_dirs(play_env.tmp);
         const CheckFn play_check = [&t](bool ok, const std::string &what) { check(&t, ok, what); };
         check_play(play_check, app, [&app](int n) { run_frames(app, n); }, play_env);
+        check_attribution_play(play_check, app, reeval_hooks(&t, app, env));
     }
     destroy_ui_context();
     remove_tree(env.tmp);

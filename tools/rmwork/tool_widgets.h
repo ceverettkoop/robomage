@@ -34,6 +34,14 @@ void draw_bar(ImDrawList *dl, ImVec2 pos, float width, float height, float fract
 // `text` in the positive or negative colour by the sign of `v`.
 void signed_value(double v, const std::string &text);
 ImU32 signed_color(double v);
+// Attribution's heat colour of `v` (`scale`: the largest |value|): signed_color's positive or negative
+// colour, the accent for an unsigned target, its alpha growing with |v| / scale up to `max_alpha`.
+ImU32 heat_color(double v, double scale, bool is_signed, int max_alpha = 200);
+// A heat swatch as an item, `width` × the line height × 0.7 (an outline alone without a value).
+void heat_swatch(bool has, double v, double scale, bool is_signed, float width);
+// The heat legend at `pos`, `width` wide: the negative colour through clear to the positive (clear to
+// the accent for an unsigned target), its ends labelled with the scale, `label` above it; its height.
+float draw_heat_legend(ImDrawList *dl, ImVec2 pos, float width, double scale, bool is_signed, const std::string &label);
 // A card-colour swatch as an item, `width` × the line height × 0.8.
 void card_swatch(uint8_t colors, bool land, float width);
 // The background of a row linked to what is hovered elsewhere.

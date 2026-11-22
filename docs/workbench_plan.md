@@ -555,6 +555,51 @@ Not done:
 
 ### 2.8 Attribution: which inputs move V and π at a decision (design, 2026-11-22)
 
+**Status: done, occlusion only** (`src/featurize/perturb`, `rmfeat --perturb` / `--slot-stats`;
+`tools/rmwork/`: `attribution`, `attribution_view`, `tokens_view`, the Table layer in `table_view`, the State
+Tree's Impact column in `state_tree_view`; checks in `selftest_attribution` with the stand-in server now in
+`selftest_fake_server`). What was built, as designed below unless said otherwise:
+- **Units** (`perturb.h`): token, zone group (a player's zone: `A:hand`, `B:battlefield:lands` and
+  `:permanents`, `stack`, a player's knowledge rows and card ledger; a player's own rows as the player's group;
+  other tables' rows by table), card, slot, cell and relation type. A slot is everything one source column makes
+  in its type (an index's value and none flag, a mask block, a card slot with its current face and none flag),
+  so a slot and a cell are named by that column. Removing tokens drops them from the tensors (the rest renumbered,
+  their relations gone) rather than masking them in place; a card unit also clears the tok_ability slots of that
+  card's abilities and sets its none flag, so the card reads as a face-down one. Units compose: a list is applied
+  at once (Shapley's coalitions). Baselines `none`, `mean`, `resample` (4 draws, the metrics averaged).
+- **Staging, focus, cancel, cache** as below. The cache file is named by the decision's state-format key
+  (`g<game>[s]d<decision>`) rather than its index, so a Play game's entries (under `live-<hash of its log
+  path>/`, read by Replay after its own `<log hash>/`) are found again in Replay; an entry holds each unit and
+  its raw evaluations (value and log π per draw), so changing the target, the focus or the rival recomputes the
+  metrics with no evaluation. Jobs run at priority 10, re-evaluation's 0. A cached entry is checked against
+  the served version with a handshake before more is asked of it.
+- **Where it runs**: Replay attributes the cursor's decision while the Attribution or Tokens tool is open (or on
+  Explain), in the viewer's seat frame or, in Omni, the decider's; Play on Explain (Analysis → Explain Decision,
+  Ctrl+Shift+E, `analysis.explain`) or Auto, after Model's Read has evaluated the decision. In Omni the decider's
+  handles are mapped onto the omniscient frame's (zone, owner, controller, card and timestamp where the seat sees
+  the card; stack objects by position) for the Table and the links.
+- **Views**: the tool (header with policy, target, baseline, method, level, Table layer toggle, Explain, Auto,
+  progress and Cancel; focus and rival; Shapley's sums), the Table layer (signed tokens S_A / LIFE_B as
+  `signed_color`, TV in the accent; a legend with its toggle), the State Tree's Impact column and "sort children
+  by impact", and the Tokens tool (one token type at a time by its slots; the cells evaluated as heat, those
+  tokens first). The Analysis preset puts Attribution beside the Inspector and Tokens with the State Tree.
+- **Slot statistics**: built on first use from the first six corpus logs (replayed with `--rmstate-dump`) into
+  `$XDG_CACHE_HOME/robomage/workbench/slot_stats/<spec hash>.rmtb`; until then the tool says so and uses `none`.
+- **The cost** of occlusion per decision is measured by `rmwork --selftest-evals` (its `ATTRIBUTION-COST` lines):
+  on 2026-11-22, the debug rmwork against rmserve on the CPU serving the reference policy, a decision of 93 to
+  97 tokens took 0.08 to 0.12 s for the coarse pass (64 units with the unchanged evaluation: 1.2 to 1.9 ms a
+  unit) and 0.15 to 0.19 s for the second pass (190 to 204 units: 0.8 to 0.9 ms a unit), about 0.27 s in all;
+  Shapley's 85 coalitions took 0.11 s. A trained network of another size costs what its forward pass costs.
+- **A seat view at the other seat's decision gets nothing**: the featurizer takes a frame without a menu, but
+  RMIP v2 refuses a decision of no menu rows (a request's `A` is at least 1), so such a frame is never sent and
+  the tool says why. The metrics still treat an evaluation without a menu as V only.
+
+Not done: gradients (deferred, below); pinning a unit across the game (item 5 of the views); a choice of the
+second pass's group count or Shapley's k and M in the UI (fixed at 3, 12 and 8); the Tokens tool reads its
+featurizer inputs from the Replay evaluator, so it shows nothing until one evaluation through the server has run
+in the session; the State Tree's Impact column names cells by their source column, so a slot whose column the
+tree does not show (a ledger slot, a delta row's `removed`) has no node there.
+
 At any decision the workbench shows which of the decision's inputs move the network's value and its
 policy the most. It shows them at two levels: the **tensors** the network reads (a token, a feature
 slot of a token type, a card slot, a relation type) and the **state** they come from (an object, a
@@ -735,7 +780,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | **Card Statistics** | Per card across games: drawn, cast when castable, average ΔV after casting, win rate when drawn or in the opening hand | episodes + frames | M |
 | **Mulligan & Sideboard** | Keep rates by hand, results after a mulligan; sideboard swaps (including `sb_explore` proposals) and later game results | episodes (bo3) | M |
 | **Raw Frame** | The current frame's RMSTATE tables with SCHEMA column names and tags (the "hex editor" of the workbench), for engine and format debugging | decoder | S |
-| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph; Attribution's Tensors view (§2.8) as a heat layer | `featurize_seat` | M |
+| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph; Attribution's Tensors view (§2.8) as a heat layer. **Built with §2.8** (`tokens_view`: one type at a time by its slots, the counts of tokens, relations and menu rows; the relation graph not drawn) | `featurize_seat` | M |
 | **Bookmarks & Notes** | Mark decisions with notes, stored beside the game; list, jump, export to Markdown | sidecar file | S |
 | **Game Compare** | Two games side by side, e.g. one seed played by two checkpoints: synchronised by turn, two Tables and two value curves | two loaded games | M |
 | **Belief Spread** (research) | V re-evaluated over hidden worlds consistent with the seat's knowledge, showing how much V depends on what the opponent holds | knowledge solver worlds; needs frames built for sampled worlds (state format register 22, deferred) | L |
@@ -1009,10 +1054,10 @@ a cost reducer: the printed cost is shown).
 17. Knowledge.
 18. Policy Compare.
 19. Branch Explorer (with its rollout configuration and progress).
-20. Attribution (§2.8): the tool's ranked list at both levels, the Table layer with its legend, the State Tree's Impact column, the Tensors view.
+20. ~~Attribution~~ (§2.8): built without a mock-up: the tool's ranked list at both levels, the Table layer with its legend, the State Tree's Impact column, the Tensors view (the Tokens tool).
 21. Blunder Finder (query builder and results).
 22. Bench Matrix, Calibration, Training Curves, Card Statistics, Mulligan & Sideboard.
-23. Raw Frame and Tokens.
+23. Raw Frame (Tokens built with §2.8).
 24. Bookmarks & Notes.
 25. Game Compare.
 

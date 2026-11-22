@@ -36,6 +36,8 @@ enum class Tool {
     MODEL,
     SIDEBOARD,
     MODELS,
+    ATTRIBUTION,
+    TOKENS,
     // A player's zone as a tool: Player A's hand, library, graveyard and exile, then Player B's (the
     // order of ZoneKind, zone_model.h).
     HAND_A,
@@ -47,7 +49,7 @@ enum class Tool {
     GRAVEYARD_B,
     EXILE_B
 };
-inline constexpr int TOOL_COUNT = 19;
+inline constexpr int TOOL_COUNT = 21;
 
 // Per tool: open (true) or closed.
 using ToolFlags = std::array<bool, TOOL_COUNT>;

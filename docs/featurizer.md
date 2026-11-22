@@ -651,6 +651,11 @@ available.
   `--feature-history` equal `rmfeat --featurize --history` over the dump;
 - isolation (§3.5): an `nn:` seat's tensors equal `rmfeat`'s for that seat's stream, unchanged by the
   scramble self-check; the actor entry point refuses an omniscient or other-seat frame;
+- Attribution's perturbations (`src/featurize/perturb.h`, `rmfeat --perturb --check`; the workbench's
+  §2.8): the empty change byte-identical, every unit's change within the spec's shapes and indices
+  (`tensor_problems`, the same rules as the shapes check above), removed tokens' relations gone and the
+  rest renumbered in order, every unit naming a row of the seat's own frame; the `mean` and `resample`
+  baselines from `rmfeat --slot-stats`;
 - the reference policy's three exports give the same logits and values; in-process and `rmserve`
   evaluation agree within 1e-5 (with batches across clients); `nn:remote:` through `rmserve` and the
   Python server plays the in-process argmax games;

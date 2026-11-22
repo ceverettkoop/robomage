@@ -54,7 +54,7 @@ struct TreeRow {
         bool land = false;
         uint64_t handle = 0;  // the object the node stands for (an OBJECT or STACK_ITEM node, an object row)
         int seat = -1;        // the player a PLAYER node stands for
-        // What the node's children are made from.
+        // What the node's children are made from (a field: the table and row its cell is of).
         int table = -1;  // index into the frame's tables
         int row = -1;    // a row of that table
         int zone_id = -1;

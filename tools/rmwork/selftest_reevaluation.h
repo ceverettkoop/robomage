@@ -30,14 +30,13 @@ struct ReevalHooks {
 };
 
 // On corpus log `log`, with a stand-in RMIP server (a thread speaking the protocol, its values a
-// function of each decision's token count): no server (on open: nothing asked, no dialog; asked: the
-// "No inference server" dialog); every decision of both seats evaluated in its deciding seat's own
-// frame (its values those of that frame's tensors), in requests no larger than the server's batch;
-// the tools on the merged evaluations (check_tools_values, and every decision in every view: a seat
-// view sees only its own seat's); reopening from the cache with only a version check; a version the
-// server changed, a damaged entry and a replaced model evaluated again, the rest from the cache; a
-// cancel mid-way (no entry, no series); a refused handshake and a server lost mid-way (the error
-// dialog, no entry) and a retry after it.
+// function of each decision's tensors, selftest_fake_server.h): no server (on open: nothing asked, no dialog; asked:
+// the "No inference server" dialog); every decision of both seats evaluated in its deciding seat's own frame (its
+// values those of that frame's tensors), in requests no larger than the server's batch; the tools on the merged
+// evaluations (check_tools_values, and every decision in every view: a seat view sees only its own seat's); reopening
+// from the cache with only a version check; a version the server changed, a damaged entry and a replaced model
+// evaluated again, the rest from the cache; a cancel mid-way (no entry, no series); a refused handshake and a server
+// lost mid-way (the error dialog, no entry) and a retry after it.
 void check_reevaluation_data(const CheckFn &check, App &app, const ReevalHooks &h, const std::string &log);
 
 // The App's open match (an nn: self-play match whose episodes recorded every decision's evaluation

@@ -366,6 +366,8 @@ void StateTreeModel::add_fields(
         f.depth = depth;
         f.name = def.name;
         f.key = key + "/" + def.name;
+        f.table = static_cast<int>(&t - frame_->tables.data());
+        f.row = static_cast<int>(row);
         f.type = std::string(storage_name(def.storage)) + (def.tag.empty() ? "" : " " + def.tag);
         f.value = cell_text(t, row, c);
         out->push_back(f);

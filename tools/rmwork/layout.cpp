@@ -35,6 +35,12 @@ const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
     {"models", "Models",
         "The runs' policies by date with their compatibility with the engine; play against one, serve it, and the "
         "inference server."},
+    {"attribution", "Attribution",
+        "Which inputs move the model's V and \xCF\x80 at this decision: units of the frame changed one at a time, "
+        "ranked, linked to the Table and the State Tree."},
+    {"tokens", "Tokens",
+        "The decision's tokens as the network reads them, one type at a time by slots, with Attribution's cells as a "
+        "heat layer."},
     {"hand_a", "Player A \xC2\xB7 Hand",
         "Player A's hand as the viewer knows it: the known cards and how many are hidden."},
     {"library_a", "Player A \xC2\xB7 Library",
@@ -101,8 +107,9 @@ static std::vector<rmwork::Preset> make_presets() {
             group({Tool::TABLE, Tool::SIDEBOARD}),
             split(K::COL, {0.62f, 0.38f}, {group({Tool::LOG, Tool::TREE}), group({Tool::CHOICES})})});
     const LayoutNode analysis = split(K::COL, {0.52f, 0.48f},
-        {split(K::ROW, {0.36f, 0.32f, 0.32f},
-             {group({Tool::INSPECTOR}), group({Tool::CHOICES, Tool::LOG}), group({Tool::SWINGS, Tool::TREE})}),
+        {split(K::ROW, {0.21f, 0.39f, 0.19f, 0.21f},
+             {group({Tool::INSPECTOR}), group({Tool::ATTRIBUTION}), group({Tool::CHOICES, Tool::LOG}),
+                 group({Tool::SWINGS, Tool::TREE, Tool::TOKENS})}),
             split(K::ROW, {0.75f, 0.25f}, {group({Tool::GRAPH}), group({Tool::MODEL, Tool::PLAYERS})})});
     const LayoutNode table_only =
         split(K::ROW, {0.78f, 0.22f}, {group({Tool::TABLE, Tool::SIDEBOARD}), group({Tool::CHOICES, Tool::LOG})});

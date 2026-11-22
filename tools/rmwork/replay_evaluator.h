@@ -15,6 +15,7 @@
 
 #include "../../src/featurize/episode.h"
 #include "../../src/featurize/featurizer.h"
+#include "../../src/featurize/setup.h"
 #include "match.h"
 
 // ── The Replay evaluator: a recorded match's seat frames evaluated through the inference server ──
@@ -141,6 +142,9 @@ class ReplayEvaluator {
         Stats stats() const;
         // Stops the thread (a request in flight is waited for) and drops the connection.
         void stop();
+        // The featurizer's inputs the thread loaded last (nullptr before a job loaded them): what a client
+        // featurizes a frame with to read the same tensors the thread evaluates (Attribution's units).
+        std::shared_ptr<const featurize::Featurization> features() const;
 
     private:
         struct JobState;
@@ -161,7 +165,8 @@ class ReplayEvaluator {
         uint64_t next_id_ = 1;
         std::map<uint64_t, std::shared_ptr<JobState>> jobs_;
         Stats stats_;
-        std::unique_ptr<Thread> t_;  // what the thread owns
+        std::shared_ptr<const featurize::Featurization> features_;  // the thread's, once loaded
+        std::unique_ptr<Thread> t_;                                 // what the thread owns
 };
 
 }  // namespace rmwork

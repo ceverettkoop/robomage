@@ -53,6 +53,8 @@ struct CliOptions {
         bool tree_expand = false;
         std::vector<std::pair<int, rmwork::ZoneKind>> zones;
         std::string zone_magnify;
+        std::string attr_target, attr_level, attr_expand, tokens_type;
+        bool explain = false;
         // Play.
         std::string new_game;  // the --new-game spec ("" none)
         long play_decisions = 0;
@@ -112,7 +114,8 @@ static void usage() {
         "         [--engine PATH] [--open-picker] [--game-combo] [--table-hover-stack N] [--table-magnify NAME]\n"
         "         [--table-hover-card NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
-        "         (with --screenshot too)\n"
+        "         [--attr-target v|tv|logp|margin] [--attr-level state|tensors] [--attr-expand TEXT]\n"
+        "         [--tokens-type NAME] [--explain] (with --screenshot too)\n"
         "       rmwork [--new-game SPEC [--play-decisions N]\n"
         "              [--play-until "
         "stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|mode|x|\n"
@@ -171,6 +174,15 @@ static void usage() {
         "                     object table\n"
         "  --open-zone SEAT:ZONE  open a zone window: a or b, then hand, library, graveyard or exile; repeatable\n"
         "  --zone-magnify NAME    the zone windows: open the magnifier on the first card whose name contains NAME\n"
+        "  --attr-target T    Attribution's target: v, tv, logp (log \xCF\x80 of the focus row) or margin (focus vs\n"
+        "                     rival)\n"
+        "  --attr-level L     Attribution's labels: state (the game's names) or tensors (the spec's)\n"
+        "  --attr-expand TEXT once the attribution is done, expand the first row whose label contains TEXT (its\n"
+        "                     children evaluated: a token's cells, the Tokens tool's heat); '|'-separated, each\n"
+        "                     once the one before it is evaluated\n"
+        "  --tokens-type NAME the Tokens tool: show token type NAME (object, player, ledger, …)\n"
+        "  --explain          attribute the opened decision (Attribution) without opening its tool: the Table\n"
+        "                     layer\n"
         "  --new-game SPEC    start a Play game: the New Game dialog's last choices changed by comma-separated items\n"
         "                     opp=explore|random|scripted|model|server, model=EXPORT, server=SOCKET, deck=DECK,\n"
         "                     opp-deck=DECK, seat=a|b, format=bo1|bo3, seed=N, auto-mana=on|off, read=on|off\n"
@@ -305,6 +317,27 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->zones.push_back(z);
         } else if (a == "--zone-magnify" && has_value) {
             opt->zone_magnify = argv[++i];
+        } else if (a == "--attr-target" && has_value) {
+            opt->attr_target = argv[++i];
+            if (opt->attr_target != "v" && opt->attr_target != "tv" && opt->attr_target != "logp" &&
+                opt->attr_target != "margin") {
+                std::fprintf(stderr, "rmwork: --attr-target is v, tv, logp or margin, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--attr-level" && has_value) {
+            opt->attr_level = argv[++i];
+            if (opt->attr_level != "state" && opt->attr_level != "tensors") {
+                std::fprintf(stderr, "rmwork: --attr-level is state or tensors, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--explain") {
+            opt->explain = true;
+        } else if (a == "--attr-expand" && has_value) {
+            opt->attr_expand = argv[++i];
+        } else if (a == "--tokens-type" && has_value) {
+            opt->tokens_type = argv[++i];
         } else if (a == "--new-game" && has_value) {
             opt->new_game = argv[++i];
         } else if (a == "--play-decisions" && has_value) {
@@ -609,6 +642,15 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     if (opt.tree_expand) app.tools().tree().expand_overview();
     for (const auto &z : opt.zones) app.tools().players().open_zone(z.first, z.second);
     app.tools().players().force_magnify(opt.zone_magnify);
+    if (!opt.attr_target.empty())
+        app.attribution_view().set_target(opt.attr_target == "v"      ? rmwork::AttrTarget::V
+                                          : opt.attr_target == "tv"   ? rmwork::AttrTarget::TV
+                                          : opt.attr_target == "logp" ? rmwork::AttrTarget::LOGP
+                                                                      : rmwork::AttrTarget::MARGIN);
+    if (!opt.attr_level.empty()) app.attribution_view().set_tensors_level(opt.attr_level == "tensors");
+    app.force_attr_expand(split_list(opt.attr_expand, '|'));
+    if (opt.explain) app.request_attribution();
+    app.tokens_view().force_type(opt.tokens_type);
 }
 
 // The start page shows at start when asked for, else when its setting is on and no flag opens a game,

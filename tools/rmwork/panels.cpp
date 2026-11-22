@@ -123,6 +123,8 @@ void draw_tool_body(Tool t, const ToolContext &ctx) {
         d.answer = ctx.choosing;
         d.pass = ctx.settings->keys[action_index(Action::PLAY_PASS)];
         d.to_end_of_turn = ctx.settings->keys[action_index(Action::PLAY_TO_END_OF_TURN)];
+        d.tints = ctx.tints;
+        d.attr_layer = ctx.attr_layer;
         ctx.table->draw(d);
         return;
     }

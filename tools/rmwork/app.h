@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "attribution.h"
+#include "attribution_view.h"
 #include "card_images.h"
 #include "dialogs.h"
 #include "file_picker.h"
@@ -31,6 +33,7 @@
 #include "settings_dialog.h"
 #include "start_page.h"
 #include "table_view.h"
+#include "tokens_view.h"
 
 // ── The application shell: menu bar, toolbar, the mode's dockspace and tools, status bar ────────
 //
@@ -245,6 +248,33 @@ class App {
         Reevaluation &reevaluation() { return reeval_; }
         ReplayEvaluator &evaluator() { return evaluator_; }
 
+        // ── Attribution ──
+        Attribution &attribution() { return attribution_; }
+        AttributionView &attribution_view() { return attr_view_; }
+        TokensView &tokens_view() { return tokens_view_; }
+        // Explain: attributes the cursor's decision now (the tool opened and brought to the front).
+        void explain();
+        // The same without opening the tool (the Table layer alone, for screenshots).
+        void request_attribution() { explain_asked_ = true; }
+        // The values the Table, the State Tree and the Tokens tool show (off when the attribution is not of
+        // the decision and seat they show).
+        const AttrTints &attribution_tints() const { return attr_tints_; }
+        bool attribution_layer() const { return attr_layer_; }
+        void set_attribution_layer(bool on) { attr_layer_ = on; }
+        // The seat whose frame is attributed at the cursor (-1 none), and whether the attribution is of it.
+        int attribution_seat() const { return attr_seat_; }
+        bool attribution_current() const { return attr_current_; }
+        // The attributed seat's frame has no menu at the cursor (a seat view at the other seat's decision):
+        // RMIP v2 evaluates only decisions with a menu row, so nothing is attributed.
+        bool attribution_no_menu() const { return attr_no_menu_; }
+        // Attribution's cache root (attr_cache_root() unless a check sets another).
+        void set_attribution_cache_root(const std::string &root) { attr_cache_root_ = root; }
+        SlotStatsSource &slot_stats() { return slot_stats_; }
+        // Screenshots: once the attribution of the cursor's decision is done, expand the first row whose
+        // state label contains the first of `labels` (a token's row first; its children asked), then, once
+        // they are evaluated, the next one's.
+        void force_attr_expand(const std::vector<std::string> &labels) { attr_expand_ = labels; }
+
         // ── The start page ──
         // Shows it in place of the mode's dockspace (its lists scanned again), or the dockspace.
         void show_start_page(bool on);
@@ -272,6 +302,9 @@ class App {
         void draw_dock();
         void draw_tools();
         void draw_models_tool();
+        void draw_attribution_tool();
+        void draw_tokens_tool();
+        void update_attribution();
         void draw_start_page();
         void refresh_start_page();
         StartContext start_context();
@@ -370,6 +403,23 @@ class App {
         bool reeval_asked_ = false;  // the running re-evaluation was asked for (not the one on open)
         ReevaluateDialog reeval_dialog_;
         ModelManagerView models_;
+        // Attribution (after the evaluator: its jobs are forgotten before the evaluator stops).
+        Attribution attribution_;
+        AttributionView attr_view_;
+        TokensView tokens_view_;
+        SlotStatsSource slot_stats_;
+        AttrTints attr_tints_;
+        bool attr_layer_ = true;
+        int attr_seat_ = -1;
+        bool attr_current_ = false;
+        bool attr_no_menu_ = false;
+        bool attr_waiting_ = false;     // Play: the decision waits for Model's Read
+        bool explain_asked_ = false;    // Explain was asked this frame
+        long attr_explain_index_ = -1;  // Play: the live decision Explain was asked at
+        LinkItem attr_focus_link_;      // the menu row selection Attribution's focus last followed
+        std::string attr_cache_root_;
+        std::string attr_request_;  // what update_attribution last asked the attribution for
+        std::vector<std::string> attr_expand_;
         StartPage start_page_;
         bool start_shown_ = false;
         double start_scanned_at_ = -1;  // when the page's last scan was asked for

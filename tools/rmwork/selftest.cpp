@@ -18,6 +18,7 @@
 #include "imgui_internal.h"
 #include "implot.h"
 #include "paths.h"
+#include "selftest_attribution.h"
 #include "selftest_images.h"
 #include "selftest_inference_server.h"
 #include "selftest_model_manager.h"
@@ -1227,6 +1228,7 @@ int run_selftest() {
     check_priority_units([&t](bool ok, const std::string &what) { check(&t, ok, "Priority costs: " + what); });
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     check_reevaluation_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
+    check_attribution_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_model_zip_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_policy_catalog_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);

@@ -30,6 +30,12 @@ std::vector<double> ChoicesView::shown_pi(const ToolData &data) {
     return r ? policy_pi(*r) : std::vector<double>();
 }
 
+int ChoicesView::take_rival() {
+    const int r = rival_;
+    rival_ = -1;
+    return r;
+}
+
 int ChoicesView::take_submitted() {
     const int r = submitted_;
     submitted_ = -1;
@@ -94,9 +100,12 @@ void ChoicesView::draw(ToolData &data, LinkState *links, bool play) {
             ImGui::TableNextColumn();
             ImGui::PushID(row);
             const bool selected = row == highlight_;
-            if (ImGui::Selectable("##row", selected,
-                    ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                    ImVec2(0, ImGui::GetTextLineHeight() + 4))) {
+            const bool pressed = ImGui::Selectable("##row", selected,
+                ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
+                ImVec2(0, ImGui::GetTextLineHeight() + 4));
+            if (pressed && ImGui::GetIO().KeyShift) {
+                rival_ = row;
+            } else if (pressed) {
                 highlight_ = row;
                 if (links) {
                     LinkItem item;

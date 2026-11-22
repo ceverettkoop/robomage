@@ -15,7 +15,8 @@
 // numbers (the first policy's on a decision the shown one did not evaluate). ↑ / ↓ move a highlight while the tool has
 // focus (it starts on the chosen row); hovering a row links its source and target objects and players (the Table
 // outlines them), and a row an object hovered elsewhere acts with or on is shaded. A click selects a row; while the
-// human chooses (Play, `play`) a click or Enter submits it (take_submitted).
+// human chooses (Play, `play`) a click or Enter submits it (take_submitted). A Shift+click names the row Attribution's
+// rival (take_rival) and neither selects nor submits it.
 
 namespace rmwork {
 
@@ -28,6 +29,8 @@ class ChoicesView {
         void force_hover(int row) { force_hover_ = row; }
         // The row a click or Enter submitted while choosing, -1 none; taken once.
         int take_submitted();
+        // The row a Shift+click named, -1 none; taken once.
+        int take_rival();
         // The evaluation whose π the tool shows: the shown policy's, else the decision's first
         // (nullptr when the viewer sees none, or it is not over the menu's rows).
         static const featurize::PolicyEvalRecord *shown_record(const ToolData &data);
@@ -39,6 +42,7 @@ class ChoicesView {
         unsigned generation_ = ~0u;
         int force_hover_ = -1;
         int submitted_ = -1;
+        int rival_ = -1;
         bool scroll_to_ = false;
 };
 

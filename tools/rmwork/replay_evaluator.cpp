@@ -54,7 +54,7 @@ struct ReplayEvaluator::JobState {
 
 // What only the thread touches: the featurizer's inputs, the connection, the open source, the LRU.
 struct ReplayEvaluator::Thread {
-        featurize::Featurization features;
+        std::shared_ptr<featurize::Featurization> features;  // shared with the clients (features())
         bool have_features = false;
         std::string features_key;  // engine + workdir they were loaded for
         std::unique_ptr<actor::Evaluator> evaluator;
@@ -70,7 +70,7 @@ struct ReplayEvaluator::Thread {
         // A fresh connection for `policies` (the old one closed); false with `err`.
         bool connect(const Config &c, unsigned gen, const std::vector<uint32_t> &policies, std::string *err) {
             evaluator.reset();
-            evaluator = connect_server(c.socket, policies, c.timeout_s, c.client, features, err);
+            evaluator = connect_server(c.socket, policies, c.timeout_s, c.client, *features, err);
             if (!evaluator) return false;
             conn_policies = policies;
             conn_gen = gen;
@@ -132,7 +132,7 @@ struct ReplayEvaluator::Thread {
             std::shared_ptr<featurize::Tensors> t(new featurize::Tensors());
             if (!read_at(fd, ref, &payload, err) ||
                 !streams[static_cast<size_t>(seat)]->decode_state(payload, &frame, err) ||
-                !featurize::featurize_seat(features.spec, features.tables, frame, t.get(), err)) {
+                !featurize::featurize_seat(features->spec, features->tables, frame, t.get(), err)) {
                 *err = "decision " + std::to_string(decision + 1) + " (" + (seat == 0 ? "seat A" : "seat B") +
                        "'s frame): " + *err;
                 return nullptr;
@@ -228,6 +228,11 @@ bool ReplayEvaluator::busy() const {
     return false;
 }
 
+std::shared_ptr<const featurize::Featurization> ReplayEvaluator::features() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return features_;
+}
+
 ReplayEvaluator::Stats ReplayEvaluator::stats() const {
     std::lock_guard<std::mutex> lock(mu_);
     return stats_;
@@ -311,13 +316,15 @@ void ReplayEvaluator::step(const std::shared_ptr<JobState> &j) {
     if (!t.have_features || t.features_key != features_key) {
         t.evaluator.reset();
         t.lru.clear();
-        t.features = featurize::Featurization();
-        t.have_features = load_engine_features(c.engine, c.workdir, c.cards_path, &stop_, &t.features, &err);
+        t.features.reset(new featurize::Featurization());
+        t.have_features = load_engine_features(c.engine, c.workdir, c.cards_path, &stop_, t.features.get(), &err);
         if (!t.have_features) {
             if (!stop_.load()) fail(j, err, false);
             return;
         }
         t.features_key = features_key;
+        std::lock_guard<std::mutex> lock(mu_);
+        features_ = t.features;
     }
     // A job of no items asks what the server serves now: always a fresh handshake.
     bool fresh = false;
@@ -345,8 +352,9 @@ void ReplayEvaluator::step(const std::shared_ptr<JobState> &j) {
     size_t limit = std::max<size_t>(1, c.batch_cap);
     if (info.max_batch > 0) limit = std::min<size_t>(limit, static_cast<size_t>(info.max_batch));
     const size_t area = actor::RemoteOptions().request_bytes;
-    const inference::Dims dims = {static_cast<uint32_t>(t.features.spec.F), static_cast<uint32_t>(t.features.spec.C),
-        static_cast<uint32_t>(t.features.spec.K), static_cast<uint32_t>(t.features.spec.Q)};
+    const featurize::FeatureSpec &spec = t.features->spec;
+    const inference::Dims dims = {static_cast<uint32_t>(spec.F), static_cast<uint32_t>(spec.C),
+        static_cast<uint32_t>(spec.K), static_cast<uint32_t>(spec.Q)};
     // The batch: the job's next items, featurized (and changed), while they fit.
     size_t first = 0;
     {

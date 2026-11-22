@@ -8,6 +8,7 @@
 #include "../../src/card_vocab.h"
 #include "../../src/featurize/featurizer.h"
 #include "../../src/featurize/json.h"
+#include "../../src/featurize/perturb.h"
 #include "../../src/featurize/setup.h"
 #include "../../src/featurize/targets.h"
 #include "corpus.h"
@@ -43,14 +44,11 @@ struct DumpResult {
         std::vector<featurize::Targets> targets_of[2];
 };
 
-// Per token type which tok_num, tok_cat, tok_card and tok_ability columns are its slots'.
-struct ColumnUse {
-        std::vector<uint8_t> num, card, ability;
-        std::vector<const featurize::CatSlot *> cat;
-};
-
 // Every this many decisions of a dump, the determinism and row-order checks.
 const size_t SAMPLE_EVERY = 3;
+// Every this many frames of a seat, rmfeat --perturb --check (the slot baselines' runs: PERTURB_EVERY_STATS).
+const char *const PERTURB_EVERY = "3";
+const char *const PERTURB_EVERY_STATS = "11";
 const size_t MAX_FAILS = 20;
 
 }  // namespace
@@ -95,6 +93,8 @@ static std::string digests_json(const std::string &path, const featurize::RmtbFi
 static void python_part(const rmcheck::Options &opt, rmcheck::Report &rep, const Featurization &f,
     const std::string &tables_dir, const DumpResult &kept);
 static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep);
+static void perturb_part(const rmcheck::Options &opt, rmcheck::Report &rep, const std::string &cards,
+    const std::string &tables_dir, const std::string &dump);
 
 // Explore games under --selfcheck-featurize, with dumps: bo1 and bo3, a closed decklist, and seat A at
 // knowledge level off (no k_* tables but k_meta).
@@ -239,70 +239,7 @@ static void tables_part(const rmcheck::Options &opt, rmcheck::Report &rep, const
 // Shapes and indices against the spec and the tables; "" when they agree.
 static std::string check_shapes(
     const featurize::FeatureSpec &spec, const featurize::CardTables &tables, const Tensors &t, size_t menu_rows) {
-    const size_t n = t.n();
-    std::vector<ColumnUse> uses(spec.types.size());
-    for (size_t i = 0; i < spec.types.size(); ++i) {
-        const featurize::TokenType &type = spec.types[i];
-        ColumnUse &u = uses[i];
-        u.num.assign(spec.F, 0);
-        u.cat.assign(spec.C, nullptr);
-        u.card.assign(spec.K, 0);
-        u.ability.assign(spec.Q, 0);
-        for (const featurize::NumSlot &x : type.numeric)
-            if (x.at < spec.F) u.num[x.at] = 1;
-        for (const featurize::CatSlot &x : type.categorical)
-            if (x.col < spec.C) u.cat[x.col] = &x;
-        for (const featurize::CardSlot &x : type.cards)
-            if (x.col < spec.K) u.card[x.col] = 1;
-        for (const featurize::AbilitySlot &x : type.abilities)
-            if (x.col < spec.Q) u.ability[x.col] = 1;
-    }
-    if (t.tok_num.size() != n * spec.F || t.tok_cat.size() != n * spec.C || t.tok_card.size() != n * spec.K ||
-        t.tok_ability.size() != n * spec.Q || t.tok_mask.size() != n || t.rel.size() % 3 != 0)
-        return "a tensor's width is not the spec's";
-    if (t.a() != menu_rows || t.act_mask.size() != menu_rows) return "act_tok has not one entry per menu row";
-    for (size_t i = 0; i < n; ++i) {
-        const int64_t ty = t.tok_type[i];
-        if (ty < 0 || static_cast<size_t>(ty) >= spec.types.size() ||
-            spec.types[static_cast<size_t>(ty)].kind == featurize::TypeKind::ABSENT)
-            return "tok_type out of range";
-        const featurize::TokenType &type = spec.types[static_cast<size_t>(ty)];
-        // Every column of a kind of slot is one of the type's slots (within its range) or reserved
-        // (0 / -1); a numeric value other than 0 only at a slot's column.
-        const ColumnUse &use = uses[static_cast<size_t>(ty)];
-        for (size_t c = 0; c < spec.C; ++c) {
-            const int64_t id = t.tok_cat[i * spec.C + c];
-            const featurize::CatSlot *slot = use.cat[c];
-            if (slot ? id < slot->offset || id >= slot->offset + slot->size : id != 0)
-                return type.name + ": tok_cat column " + std::to_string(c) + " out of its slot's range";
-        }
-        for (size_t k = 0; k < spec.K; ++k) {
-            const int64_t c = t.tok_card[i * spec.K + k];
-            if (c < -1 || c >= static_cast<int64_t>(tables.card_rows) || (!use.card[k] && c != -1))
-                return type.name + ": tok_card out of the card table";
-        }
-        for (size_t q = 0; q < spec.Q; ++q) {
-            const int64_t a = t.tok_ability[i * spec.Q + q];
-            if (a < -1 || a >= static_cast<int64_t>(tables.ability_rows()) || (!use.ability[q] && a != -1))
-                return type.name + ": tok_ability out of the ability table";
-        }
-        for (size_t c = 0; c < spec.F; ++c)
-            if (t.tok_num[i * spec.F + c] != 0.0f && !use.num[c])
-                return type.name + ": tok_num column " + std::to_string(c) + " is no slot's but not 0";
-    }
-    for (size_t r = 0; r < t.r(); ++r) {
-        const int64_t s = t.rel[3 * r], d = t.rel[3 * r + 1], ty = t.rel[3 * r + 2];
-        if (s < 0 || d < 0 || static_cast<size_t>(s) >= n || static_cast<size_t>(d) >= n || ty < 0 ||
-            static_cast<size_t>(ty) >= spec.relations.size() || s == d)
-            return "a relation's token or type is out of range";
-        const featurize::RelationType &rt = spec.relations[static_cast<size_t>(ty)];
-        if (spec.types[static_cast<size_t>(t.tok_type[static_cast<size_t>(s)])].name != rt.table)
-            return "a relation of type " + rt.table + "." + rt.column + " from another table's token";
-    }
-    for (const int64_t a : t.act_tok)
-        if (a < 0 || static_cast<size_t>(a) >= n || t.tok_type[static_cast<size_t>(a)] != spec.menu_type)
-            return "act_tok is not a menu token";
-    return "";
+    return featurize::tensor_problems(spec, tables, t, menu_rows);
 }
 
 static size_t table_rows(const rmstate::DecodedFrame &frame, uint16_t id) {
@@ -883,6 +820,58 @@ static void open_vocab_part(const rmcheck::Options &opt, rmcheck::Report &rep) {
     if (!r.ok()) rep.error("featurize", "python/pycheck.py --part open_vocab " + r.status_text() + ": " + r.err);
 }
 
+// Attribution's perturbations (perturb.h) through rmfeat on the kept dump: --perturb --check over every
+// PERTURB_EVERY-th frame of each seat (the empty change byte-identical, every change within the spec's
+// shapes and indices, removed tokens' relations gone and the rest renumbered, every unit naming a row of
+// the seat's frame); the slot statistics of the dump (--slot-stats) and the same checks under the mean
+// and resample baselines.
+static void perturb_part(const rmcheck::Options &opt, rmcheck::Report &rep, const std::string &cards,
+    const std::string &tables_dir, const std::string &dump) {
+    const std::string text = rmcheck::path_join(opt.bin_dir, "resources/embeddings/oracle_text.rmtb");
+    const std::string stats = out_path(opt, "slot_stats.rmtb");
+    const std::vector<std::string> common = {"--cards", cards, "--tables", tables_dir, "--text-table", text};
+    std::vector<std::vector<std::string>> runs = {
+        {opt.rmfeat, "--perturb", dump, "--viewer", "A", "--check", "--every", PERTURB_EVERY},
+        {opt.rmfeat, "--perturb", dump, "--viewer", "B", "--check", "--every", PERTURB_EVERY},
+        {opt.rmfeat, "--slot-stats", dump, "--out", stats}};
+    std::vector<rmcheck::ProcResult> results(runs.size());
+    rmcheck::parallel_for(runs.size(), opt.jobs, [&](size_t i) {
+        rmcheck::ProcSpec spec;
+        spec.argv = runs[i];
+        spec.argv.insert(spec.argv.end(), common.begin(), common.end());
+        results[i] = rmcheck::run_process(spec);
+    });
+    if (!results[2].ok()) {
+        rep.error("featurize", "rmfeat --slot-stats " + results[2].status_text() + ": " + results[2].err);
+    } else {
+        for (const char *baseline : {"mean", "resample"})
+            runs.push_back({opt.rmfeat, "--perturb", dump, "--viewer", "A", "--check", "--every", PERTURB_EVERY_STATS,
+                "--baseline", baseline, "--reference", stats});
+        results.resize(runs.size());
+        rmcheck::parallel_for(runs.size() - 3, opt.jobs, [&](size_t i) {
+            rmcheck::ProcSpec spec;
+            spec.argv = runs[i + 3];
+            spec.argv.insert(spec.argv.end(), common.begin(), common.end());
+            results[i + 3] = rmcheck::run_process(spec);
+        });
+    }
+    for (size_t i = 0; i < runs.size(); ++i) {
+        if (i == 2) continue;
+        std::string summary;
+        for (const std::string &line : rmcheck::split_lines(results[i].out)) {
+            if (rmcheck::starts_with(line, "PERTURB-FAIL: ")) rep.error("featurize", "perturb: " + line.substr(14));
+            if (rmcheck::starts_with(line, "PERTURB: ")) summary = line.substr(9);
+        }
+        const std::string what = "rmfeat --perturb --viewer " + runs[i][4] +
+                                 (runs[i].size() > 8 ? " --baseline " + runs[i][9] : std::string());
+        if (!results[i].ok() || summary.empty())
+            rep.error("featurize", what + " " + results[i].status_text() + ": " + results[i].err);
+        else
+            rep.info("OK   " + what + ": " + summary);
+    }
+    rmcheck::remove_tree(stats);
+}
+
 namespace rmcheck {
 
 // The featurize tier (docs/featurizer.md §7): the card tables and the spec from the whole-vocab
@@ -891,7 +880,8 @@ namespace rmcheck {
 // append-only property (featurize_layout.h); the corpus's and four explore games' dumps featurized
 // with the checks of check_dump (the corpus's also with the layout variants); the engine's
 // --selfcheck-featurize on the explore games; rmfeat's tensors and targets against the in-process
-// ones; the open-vocabulary fixtures' recorded inputs (open_vocab_part).
+// ones; Attribution's perturbations (perturb_part); the open-vocabulary fixtures' recorded inputs
+// (open_vocab_part).
 void tier_featurize(const Options &opt, Report &rep) {
     const double t0 = now_seconds();
     Featurization f;
@@ -916,6 +906,7 @@ void tier_featurize(const Options &opt, Report &rep) {
     const double t3 = now_seconds();
     if (file_exists(dump)) {
         cli_part(opt, rep, f, cards, tables_dir, dump, kept);
+        perturb_part(opt, rep, cards, tables_dir, dump);
         python_part(opt, rep, f, tables_dir, kept);
         remove_tree(dump);
     }

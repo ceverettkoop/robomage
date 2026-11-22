@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 #include "card_renderer.h"
 #include "theme.h"
@@ -144,6 +145,43 @@ void value_bar(float fraction, float width, ImU32 fill) {
 ImU32 signed_color(double v) {
     if (std::fabs(v) < 0.005) return tok().TEXT;
     return v > 0 ? tok().S_A : tok().LIFE_B;
+}
+
+ImU32 heat_color(double v, double scale, bool is_signed, int max_alpha) {
+    const double f = scale > 0 ? std::min(1.0, std::fabs(v) / scale) : 0.0;
+    const ImU32 base = !is_signed ? tok().ACCENT : v >= 0 ? tok().S_A : tok().LIFE_B;
+    return with_alpha(base, static_cast<int>(20 + f * (max_alpha - 20)));
+}
+
+void heat_swatch(bool has, double v, double scale, bool is_signed, float width) {
+    const float h = ImGui::GetTextLineHeight() * 0.7f;
+    const ImVec2 p = ImGui::GetCursorScreenPos();
+    const float y = p.y + (ImGui::GetTextLineHeight() - h) / 2;
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    if (has) dl->AddRectFilled(ImVec2(p.x, y), ImVec2(p.x + width, y + h), heat_color(v, scale, is_signed, 255), 2);
+    dl->AddRect(ImVec2(p.x, y), ImVec2(p.x + width, y + h), tok().LINE, 2);
+    ImGui::Dummy(ImVec2(width, ImGui::GetTextLineHeight()));
+}
+
+float draw_heat_legend(
+    ImDrawList *dl, ImVec2 pos, float width, double scale, bool is_signed, const std::string &label) {
+    const float lh = ImGui::GetTextLineHeight();
+    dl->AddText(pos, tok().TEXT, label.c_str());
+    const float y = pos.y + lh + 2, h = lh * 0.6f;
+    const int steps = 24;
+    for (int i = 0; i < steps; ++i) {
+        const double t = is_signed ? -1.0 + 2.0 * (i + 0.5) / steps : (i + 0.5) / steps;
+        const float x0 = pos.x + width * static_cast<float>(i) / static_cast<float>(steps),
+                    x1 = pos.x + width * static_cast<float>(i + 1) / static_cast<float>(steps);
+        dl->AddRectFilled(ImVec2(x0, y), ImVec2(x1, y + h), heat_color(t, 1.0, is_signed, 255));
+    }
+    dl->AddRect(ImVec2(pos.x, y), ImVec2(pos.x + width, y + h), tok().LINE);
+    char lo[32], hi[32];
+    std::snprintf(lo, sizeof lo, is_signed ? "%+.3f" : "%.3f", is_signed ? -scale : 0.0);
+    std::snprintf(hi, sizeof hi, is_signed ? "%+.3f" : "%.3f", scale);
+    dl->AddText(ImVec2(pos.x, y + h + 1), tok().DIM, lo);
+    dl->AddText(ImVec2(pos.x + width - ImGui::CalcTextSize(hi).x, y + h + 1), tok().DIM, hi);
+    return lh * 2 + h + 3;
 }
 
 void signed_value(double v, const std::string &text) {

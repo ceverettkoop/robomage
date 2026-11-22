@@ -8,6 +8,7 @@
 
 #include "../../src/agents/decision_view.h"
 #include "episodes.h"
+#include "eval_connection.h"
 #include "files.h"
 #include "imgui_internal.h"
 #include "model_zip.h"
@@ -190,6 +191,7 @@ void App::frame() {
     tools_.set_magnify(settings_.keys[action_index(Action::MAGNIFY)]);
     tools_.sideboard().set_play(mode() == Mode::PLAY ? &play_ : nullptr);
     tools_.begin_frame(session(), table_, links_);
+    update_attribution();
     apply_sideboard_spec();
     draw_menu_bar();
     draw_toolbar();
@@ -226,6 +228,8 @@ void App::frame() {
 bool App::working() const {
     if (card_images_.textures().busy() || models_.busy()) return true;
     if (loader_.busy() || reeval_.running() || (run_browser_.is_open() && !run_browser_.ready())) return true;
+    if (attribution_.busy() || attribution_.running() || slot_stats_.building() || attr_waiting_) return true;
+    if (!attr_expand_.empty() && attribution_.base()) return true;
     if (start_shown_ && !start_page_.fresh()) return true;
     if (!play_.running()) return false;
     return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||
@@ -955,6 +959,9 @@ void App::run_action(Action a) {
         case Action::REEVALUATE:
             open_reevaluate();
             break;
+        case Action::EXPLAIN:
+            explain();
+            break;
     }
 }
 
@@ -1011,6 +1018,11 @@ void App::draw_menu_bar() {
             open_reevaluate();
         if (!can_reeval) ImGui::SetItemTooltip("Open a replay in Replay first");
         if (reeval_.running() && ImGui::MenuItem("Cancel Re-evaluation")) reeval_.cancel();
+        if (ImGui::MenuItem(
+                "Explain Decision (Attribution)", shortcut(Action::EXPLAIN).c_str(), false, session().loaded()))
+            explain();
+        if (attribution_.running() && ImGui::MenuItem("Cancel Attribution")) attribution_.cancel();
+        if (ImGui::MenuItem("Tokens")) show_tool(Tool::TOKENS);
         if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
         if (ImGui::MenuItem("Biggest Swings")) show_tool(Tool::SWINGS);
         if (ImGui::MenuItem("Models")) show_tool(Tool::MODELS);
@@ -1327,6 +1339,12 @@ void App::draw_status_bar() {
             ImGui::PushID("reeval");
             if (draw_progress(reeval_.phase(), reeval_.fraction(), progress_end)) reeval_.cancel();
             ImGui::PopID();
+        } else if (attribution_.running() && !attribution_.phase().empty()) {
+            ImGui::PushID("attribution");
+            if (draw_progress(attribution_.phase(), attribution_.fraction(), progress_end)) attribution_.cancel();
+            ImGui::PopID();
+        } else if (slot_stats_.building()) {
+            status_segment(slot_stats_.note().c_str());
         }
         const ImVec2 msg_pos = ImGui::GetCursorScreenPos();
         const float msg_end = w->Pos.x + w->Size.x - 8 - right_w - 12;
@@ -1457,9 +1475,15 @@ void App::draw_tools() {
                                                                   : "";
         ctx.new_game = &new_game_pressed_;
         ctx.choosing = choosing();
+        ctx.tints = attr_tints_.on ? &attr_tints_ : nullptr;
+        ctx.attr_layer = &attr_layer_;
         if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) {
             if (tool == Tool::MODELS)
                 draw_models_tool();
+            else if (tool == Tool::ATTRIBUTION)
+                draw_attribution_tool();
+            else if (tool == Tool::TOKENS)
+                draw_tokens_tool();
             else
                 draw_tool_body(tool, ctx);
         }
@@ -1473,6 +1497,174 @@ void App::draw_tools() {
     if (answered >= 0) play_reply(answered);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
+}
+
+void App::explain() {
+    set_tool_open(mode(), Tool::ATTRIBUTION, true);
+    focus_tool(Tool::ATTRIBUTION);
+    explain_asked_ = true;
+}
+
+// Attribution follows the session: the decision and seat the tools show, the tool's choices, the server; its
+// results polled, the focus following a Choices click, the tints of what the views show.
+void App::update_attribution() {
+    attribution_.poll();
+    attr_tints_ = AttrTints();
+    attr_current_ = false;
+    attr_waiting_ = false;
+    attr_no_menu_ = false;
+    attr_seat_ = -1;
+    // An Explain asked before the session has a decision waits for it.
+    const bool asked = explain_asked_ || attr_view_.take_explain();
+    explain_asked_ = asked;
+    ReplaySession &s = session();
+    if (!s.loaded() || !tools_.data().ok() || start_shown_) {
+        tools_.tree().set_impact(nullptr);
+        return;
+    }
+    explain_asked_ = false;
+    const int mi = mode_index(mode());
+    const bool open =
+        settings_.tools[mi][tool_index(Tool::ATTRIBUTION)] || settings_.tools[mi][tool_index(Tool::TOKENS)];
+    const Match &m = *s.match();
+    const size_t index = s.cursor();
+    if (index >= m.decisions.size()) {
+        tools_.tree().set_impact(nullptr);
+        return;
+    }
+    const DecisionInfo &d = m.decisions[index];
+    const bool play = mode() == Mode::PLAY;
+    const int seat = play ? play_.config().seat : s.view() == VIEW_OMNI ? d.decider : s.view();
+    attr_seat_ = seat >= 0 && seat <= 1 ? seat : -1;
+    attr_no_menu_ = attr_seat_ >= 0 && (d.decider != attr_seat_ || d.menu_rows <= 0);
+    // Whether the attribution in hand is of this decision and seat.
+    const std::string root = attr_cache_root_.empty() ? attr_cache_root() : attr_cache_root_;
+    const AttrKey &k = attribution_.key();
+    attr_current_ = attribution_.has_key() && attr_seat_ >= 0 && k.seat == attr_seat_ && k.game == d.game &&
+                    k.sideboarding == d.sideboarding && k.decision == d.decision &&
+                    k.dir == attr_cache_dir(root, m.log_hash, m.live, m.log_path);
+    // What to start.
+    const std::vector<ServedPolicy> served = served_policies(settings_.models);
+    if (attr_seat_ >= 0 && !served.empty() && !attr_no_menu_) {
+        if (play && asked) attr_explain_index_ = static_cast<long>(index);
+        bool want = play ? (attr_explain_index_ == static_cast<long>(index) ||
+                               (attr_view_.auto_explain() && open && play_.deciding() &&
+                                   play_.pending_index() == static_cast<long>(index)))
+                         : open || asked;
+        if (want && play) {
+            // Model's Read's evaluation of the decision goes first.
+            const ModelReader &mr = play_.model_read();
+            const bool read =
+                d.episode_step >= 0 && !m.episode_steps[static_cast<size_t>(d.episode_step)].policies.empty();
+            attr_waiting_ = mr.state() == ModelReader::State::CONNECTING ||
+                            (mr.state() == ModelReader::State::READY && (!read || mr.thinking()));
+            want = !attr_waiting_;
+        }
+        int64_t policy = attr_view_.policy();
+        const int64_t shown = tools_.data().shown_policy();
+        if (policy < 0 && is_reevaluated(shown)) policy = shown - REEVAL_ID_BASE;
+        const ServedPolicy *p = &served.front();
+        for (const ServedPolicy &sp : served)
+            if (static_cast<int64_t>(sp.id) == policy) p = &sp;
+        const bool use_server = server_absent(socket_path(settings_)).empty();
+        // What the attribution would be asked for: unchanged since the last frame, nothing to ask.
+        const std::string sig =
+            root + '\n' + std::to_string(m.log_hash) + '\n' + m.log_path + '\n' + std::to_string(index) + '\n' +
+            std::to_string(attr_seat_) + '\n' + std::to_string(p->id) + '\n' + p->model + '\n' +
+            std::to_string(static_cast<int>(attr_view_.baseline())) + '\n' +
+            std::to_string(static_cast<int>(attr_view_.method())) + '\n' + (use_server ? "server" : "cache") + '\n' +
+            std::to_string(attr_view_.baseline() != featurize::Baseline::NONE && !slot_stats_.building());
+        if (want && !asked && sig == attr_request_) want = false;
+        if (want) {
+            attr_request_ = sig;
+            configure_evaluator();
+            Attribution::Request r;
+            r.source = eval_source(m);
+            r.match = &m;
+            r.index = index;
+            r.seat = attr_seat_;
+            r.log_path = m.log_path;
+            r.policy = p->id;
+            r.model = p->model;
+            r.method = attr_view_.method();
+            r.cache_root = root;
+            r.use_server = use_server;
+            r.force = asked;
+            if (attr_view_.baseline() != featurize::Baseline::NONE) {
+                r.stats = slot_stats_.get(evaluator_.features(), replay_engine(), engine_workdir_path(settings_),
+                    repo_root() + "/tests/corpus", workbench_cache_dir() + "/slot_stats");
+                if (r.stats) r.baseline = attr_view_.baseline();
+            }
+            attribution_.start(&evaluator_, r);
+            attr_current_ = true;
+        }
+    }
+    // The next decision (Play) or another cursor or viewer (Replay) cancels the work of the one before.
+    if (!attr_current_ && attribution_.running()) attribution_.cancel();
+    if (!attr_current_) {
+        tools_.tree().set_impact(nullptr);
+        return;
+    }
+    // The focus: the menu row a Choices click or a Table menu link selected; the rival: a Shift+click.
+    const LinkItem &sel = links_.selected();
+    if (sel.kind == LinkItem::Kind::MENU_ROW && sel != attr_focus_link_)
+        attribution_.set_focus(sel.row, attribution_.rival_choice());
+    attr_focus_link_ = sel;
+    const int rival = tools_.choices().take_rival();
+    if (rival >= 0) attribution_.set_focus(attribution_.focus_choice(), rival);
+    attribution_.set_scale_a(tools_.data().scale_a);
+    if (!attr_expand_.empty() && !attribution_.running() && !attribution_.busy() && attribution_.base()) {
+        // A token's row first (its cells), else any row; its parents opened too.
+        int found = -1;
+        for (int pass = 0; pass < 2 && found < 0; ++pass)
+            for (size_t i = 0; i < attribution_.rows().size() && found < 0; ++i) {
+                const AttrRow &row = attribution_.rows()[i];
+                const featurize::Unit *u = attribution_.unit(row);
+                if (u && row.expandable && !row.asked && u->label.find(attr_expand_.front()) != std::string::npos &&
+                    (pass == 1 || u->kind == featurize::UnitKind::TOKEN))
+                    found = static_cast<int>(i);
+            }
+        for (int r = found; r >= 0; r = attribution_.rows()[static_cast<size_t>(r)].parent)
+            attr_view_.open().insert(attribution_.rows()[static_cast<size_t>(r)].key);
+        if (found >= 0) attribution_.expand(found);
+        attr_expand_.erase(attr_expand_.begin());
+    }
+    attr_tints_ = attribution_.tints(attr_view_.target(), tools_.data().frame().frame.get(), s.view());
+    tools_.tree().set_impact(attr_tints_.on ? &attr_tints_ : nullptr);
+}
+
+void App::draw_attribution_tool() {
+    AttributionContext c;
+    c.mode = mode();
+    c.att = &attribution_;
+    c.data = session().loaded() ? &tools_.data() : nullptr;
+    c.links = &links_;
+    c.policies = served_policies(settings_.models);
+    c.server = socket_present_;
+    c.seat = attr_seat_;
+    c.current = attr_current_;
+    c.waiting = attr_waiting_;
+    c.no_menu = attr_no_menu_;
+    c.tints = attr_tints_.on ? &attr_tints_ : nullptr;
+    c.layer = &attr_layer_;
+    if (attr_view_.baseline() != featurize::Baseline::NONE &&
+        attribution_.key().baseline == featurize::Baseline::NONE) {
+        c.stats_missing = true;
+        const std::string note = slot_stats_.note();
+        c.stats_note = std::string("No slot statistics for the ") + featurize::baseline_name(attr_view_.baseline()) +
+                       " baseline yet: the none baseline is used" + (note.empty() ? "" : " (" + note + ")");
+    }
+    attr_view_.draw(c);
+}
+
+void App::draw_tokens_tool() {
+    TokensContext c;
+    c.features = evaluator_.features();
+    c.data = session().loaded() ? &tools_.data() : nullptr;
+    c.seat = attr_seat_;
+    c.att = attr_current_ ? &attribution_ : nullptr;
+    c.tints = attr_tints_.on ? &attr_tints_ : nullptr;
+    tokens_view_.draw(c);
 }
 
 // The Models tool's body, against the engine replays and games run with, and what it asks for.

@@ -2,189 +2,28 @@
 
 #include <dirent.h>
 #include <fcntl.h>
-#include <poll.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <map>
-#include <mutex>
 #include <set>
 #include <thread>
 
-#include "../../src/inference/protocol.h"
 #include "eval_cache.h"
 #include "eval_connection.h"
 #include "files.h"
 #include "inference_server.h"
 #include "paths.h"
 #include "reevaluation.h"
+#include "selftest_fake_server.h"
 #include "selftest_tools.h"
 
 namespace {
 
 // How long a re-evaluation or a server may take in the checks.
 const double REEVAL_TIMEOUT_S = 600;
-
-// A stand-in inference server: one connection at a time on its own thread, speaking RMIP v2 (the
-// handshake, the shared region, requests and responses). A policy's value of a decision is a function
-// of the decision's token count (value_of) and its logits a function of the row, so the checks know
-// what each decision's own tensors must give.
-class FakeServer {
-    public:
-        struct Options {
-                uint64_t max_batch = 7;
-                std::map<uint32_t, uint64_t> versions;  // per policy id (1 for the others)
-                int delay_ms = 0;                       // before each answer
-                bool refuse = false;                    // an ERROR to every HELLO
-                long lose_after = -1;                   // requests answered before the connection drops
-        };
-        struct Counts {
-                size_t hellos = 0, requests = 0, decisions = 0, largest = 0;
-                std::vector<uint32_t> last_policies;  // the last HELLO's
-        };
-
-        ~FakeServer() { stop(); }
-        bool start(const std::string &path, const Options &o) {
-            std::string err;
-            fd_ = inference::listen_unix(path, 4, &err);
-            if (fd_ < 0) return false;
-            path_ = path;
-            set(o);
-            stop_.store(false);
-            thread_ = std::thread([this] { run(); });
-            return true;
-        }
-        void stop() {
-            stop_.store(true);
-            if (thread_.joinable()) thread_.join();
-            if (fd_ >= 0) close(fd_);
-            fd_ = -1;
-            if (!path_.empty()) unlink(path_.c_str());
-            path_.clear();
-        }
-        void set(const Options &o) {
-            std::lock_guard<std::mutex> lock(mu_);
-            opt_ = o;
-            answered_ = 0;
-        }
-        Counts counts() const {
-            std::lock_guard<std::mutex> lock(mu_);
-            return counts_;
-        }
-        static float value_of(size_t tokens, uint32_t policy) {
-            return static_cast<float>(0.9 * std::sin(0.37 * static_cast<double>(tokens) + 1.3 * policy));
-        }
-
-    private:
-        void run() {
-            while (!stop_.load()) {
-                pollfd p = {fd_, POLLIN, 0};
-                if (poll(&p, 1, 50) <= 0) continue;
-                const int c = accept(fd_, nullptr, nullptr);
-                if (c < 0) continue;
-                serve(c);
-                close(c);
-            }
-        }
-        // One connection until it closes, BYE, a refusal or a drop.
-        void serve(int c) {
-            inference::Hello h;
-            inference::SharedRegion region;
-            while (!stop_.load()) {
-                pollfd p = {c, POLLIN, 0};
-                if (poll(&p, 1, 50) <= 0) continue;
-                inference::Message msg;
-                std::string err;
-                if (inference::recv_message(c, 5.0, &msg, &err) != inference::RecvStatus::OK) return;
-                Options o;
-                {
-                    std::lock_guard<std::mutex> lock(mu_);
-                    o = opt_;
-                }
-                if (msg.type == inference::MSG_BYE) return;
-                if (msg.type == inference::MSG_HELLO) {
-                    if (!inference::parse_hello(msg.body, &h, &err)) return;
-                    {
-                        std::lock_guard<std::mutex> lock(mu_);
-                        ++counts_.hellos;
-                        counts_.last_policies = h.policies;
-                    }
-                    if (o.refuse) {
-                        inference::send_message(c, inference::MSG_ERROR,
-                            inference::error_json("policy",
-                                "policy " + std::to_string(h.policies[0]) + " is not served (the stand-in refuses)"),
-                            &err);
-                        return;
-                    }
-                    if (!region.open(h.shm, h.request_bytes + h.response_bytes, &err)) return;
-                    inference::Welcome w;
-                    w.server = "stand-in";
-                    w.max_batch = o.max_batch;
-                    for (uint32_t id : h.policies) {
-                        auto it = o.versions.find(id);
-                        w.policies.push_back({id, it == o.versions.end() ? 1 : it->second});
-                    }
-                    if (!inference::send_message(c, inference::MSG_WELCOME, inference::welcome_json(w), &err)) return;
-                    continue;
-                }
-                if (msg.type != inference::MSG_EVAL) return;
-                {
-                    std::lock_guard<std::mutex> lock(mu_);
-                    if (o.lose_after >= 0 && answered_ >= o.lose_after) return;
-                }
-                inference::Request q;
-                if (!inference::decode_request(region.data(), h.request_bytes, &q, &err)) return;
-                if (o.delay_ms > 0) std::this_thread::sleep_for(std::chrono::milliseconds(o.delay_ms));
-                inference::Response r;
-                r.spec_hash = q.spec_hash;
-                r.seq = q.seq;
-                r.batch = static_cast<uint32_t>(q.decisions.size());
-                std::vector<size_t> rows;
-                for (const featurize::Tensors &t : q.decisions) rows.push_back(t.a());
-                for (uint32_t id : q.policies) {
-                    inference::PolicyResult pr;
-                    pr.id = id;
-                    auto it = o.versions.find(id);
-                    pr.version = it == o.versions.end() ? 1 : it->second;
-                    for (const featurize::Tensors &t : q.decisions) {
-                        pr.value.push_back(value_of(t.n(), id));
-                        std::vector<float> logits, lp(t.a());
-                        for (size_t a = 0; a < t.a(); ++a)
-                            logits.push_back(0.25f * static_cast<float>(a % 5) + 0.1f * static_cast<float>(id));
-                        inference::log_softmax(logits.data(), logits.size(), lp.data());
-                        pr.logits.insert(pr.logits.end(), logits.begin(), logits.end());
-                        pr.log_pi.insert(pr.log_pi.end(), lp.begin(), lp.end());
-                    }
-                    r.policies.push_back(std::move(pr));
-                }
-                size_t length = 0;
-                if (!inference::encode_response(
-                        region.data() + h.request_bytes, h.response_bytes, r, rows, &length, &err))
-                    return;
-                {
-                    std::lock_guard<std::mutex> lock(mu_);
-                    ++counts_.requests;
-                    ++answered_;
-                    counts_.decisions += q.decisions.size();
-                    counts_.largest = std::max(counts_.largest, q.decisions.size());
-                }
-                if (!inference::send_message(c, inference::MSG_DONE, inference::seq_body(q.seq, length), &err)) return;
-            }
-        }
-
-        int fd_ = -1;
-        std::string path_;
-        std::thread thread_;
-        std::atomic<bool> stop_{false};
-        mutable std::mutex mu_;
-        Options opt_;
-        Counts counts_;
-        long answered_ = 0;
-};
 
 }  // namespace
 
@@ -325,7 +164,7 @@ static void check_merged_values(const rmwork::CheckFn &check, const rmwork::App 
                 ++missing;
                 continue;
             }
-            if (std::fabs(r->value - FakeServer::value_of(t.n(), p)) > 1e-6f) ++wrong_value;
+            if (std::fabs(r->value - FakeServer::value_of(t, p)) > 1e-6f) ++wrong_value;
             double sum = 0;
             for (float l : r->log_pi) sum += std::exp(static_cast<double>(l));
             if (static_cast<int>(r->log_pi.size()) != d.menu_rows || std::fabs(sum - 1) > 1e-4) ++not_pi;

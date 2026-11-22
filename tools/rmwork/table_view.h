@@ -3,9 +3,11 @@
 
 #include <array>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <string>
 
+#include "attribution.h"
 #include "card_book.h"
 #include "card_picker.h"
 #include "card_picker_view.h"
@@ -151,6 +153,11 @@ struct TableDraw {
         bool answer = false;               // the human chooses here: a click on a pick or a button answers
         ImGuiKeyChord pass = 0;            // Play: the key that passes priority (named in the Pass button's tooltip)
         ImGuiKeyChord to_end_of_turn = 0;  // Play: F2's key (named there too)
+        // Attribution's Table layer (attribution.h): each card, stack object and player chip tinted by
+        // its unit's value, with a legend; null when the decision has no attribution. `attr_layer`
+        // shows it, and the legend's toggle flips it.
+        const AttrTints *tints = nullptr;
+        bool *attr_layer = nullptr;
 };
 
 class TableView {
@@ -186,6 +193,12 @@ class TableView {
         // of `m` (the human's pending one, in seat `seat`'s frames), -1 none; a stop or the end of the plan
         // is said in the status bar.
         int plan_reply(const Match &m, long index, int seat);
+        // The Attribution layer's tints as last drawn: per object handle and per player chip (by seat) the
+        // colour it was tinted with (empty when the layer is off).
+        const std::map<uint64_t, ImU32> &tinted_objects() const { return tinted_; }
+        const std::array<ImU32, 2> &tinted_players() const { return tinted_players_; }
+        // The legend's rectangle as last drawn (panel coordinates; empty when none).
+        const TRect &attr_legend() const { return attr_legend_; }
         // A player chip's rectangle as last drawn (panel coordinates), by seat.
         const TRect &chip_rect(int seat) const { return chip_rects_[seat == 1 ? 1 : 0]; }
         // The popup offering one object's rows: whether it is open, its rows, and its items' rectangles
@@ -281,6 +294,7 @@ class TableView {
         void draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_stack(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_chips(ImDrawList *dl, ImVec2 o, const TableDraw &d);
+        void draw_attribution(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d);
         void draw_decision_marks(ImDrawList *dl, const PlacedCard &c, ImVec2 a, ImVec2 b, float cw);
         // The pick a hit names (a card, a stack's member, a stack object, a player chip), nullptr none.
@@ -329,6 +343,9 @@ class TableView {
         std::string error_;
         std::string status_;
         std::array<TRect, 2> chip_rects_;  // by seat
+        std::map<uint64_t, ImU32> tinted_;
+        std::array<ImU32, 2> tinted_players_{{0, 0}};
+        TRect attr_legend_;
         uint64_t hovered_handle_ = 0;
         int hovered_stack_ = -1;
         int hovered_step_ = -1;

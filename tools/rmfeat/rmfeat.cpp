@@ -12,6 +12,9 @@
 //   rmfeat --digest-check FILE --cards CARDS
 //   rmfeat --table-drift OLD_TABLES NEW_TABLES
 //   rmfeat --compat MODEL NOW [--exact]
+//   rmfeat --perturb DUMP --viewer A|B --cards CARDS [--check [--every N]] [--decision N] [--out FILE]
+//          [--baseline none|mean|resample --reference FILE]
+//   rmfeat --slot-stats DUMP… --out FILE --cards CARDS
 //
 // Every mode also takes --text-table FILE (default bin/resources/embeddings/oracle_text.rmtb, else
 // resources/embeddings/oracle_text.rmtb: its row count is N_CARD_TYPES + 1 and its vocab_hash the
@@ -53,6 +56,17 @@
 // decision of every viewer with a menu (with --featurize: of that viewer) and prints token counts
 // per token type (mean and most per decision) and the timing (RMFEAT_STATS lines). Errors go to stderr as `rmfeat: …`;
 // exit 0, 1 on an error in the data, 2 on bad arguments or files.
+//
+// --perturb (Attribution's occlusion units, perturb.h; docs/workbench_plan.md §2.8) lists the units of
+// the viewer's decision N (1-based, every frame of the seat counted, menu or not; default 1) as UNIT
+// lines (index, kind, key, state label, tensors label) and with --out writes an RMTB tensors file of
+// the decision unchanged followed by each unit's change; --baseline and --reference (a --slot-stats
+// file) choose the slot baselines. With --check it runs the gate's checks (check_perturbations: the
+// empty change byte-identical, every change within the spec's shapes and indices, removed tokens'
+// relations gone and the rest renumbered, every unit naming a row of the seat's own frame) on every
+// N-th frame of the seat (--every, default 1): PERTURB-FAIL lines and a PERTURB summary, exit 1 on a
+// problem. --slot-stats accumulates every seat frame of the dumps (featurize_seat) into the slot
+// statistics file (an RMTB file of kind slot_stats keyed by the spec's hash) and prints an RMFEAT line.
 
 #include <algorithm>
 #include <chrono>
@@ -66,6 +80,8 @@
 #include "../../src/featurize/compat.h"
 #include "../../src/featurize/drift.h"
 #include "../../src/featurize/featurizer.h"
+#include "../../src/featurize/frame_stream.h"
+#include "../../src/featurize/perturb.h"
 #include "../../src/featurize/registry.h"
 #include "../../src/featurize/rmtb.h"
 #include "../../src/featurize/setup.h"
@@ -84,6 +100,11 @@ struct Options {
         std::string registry, registry_update, registry_check, registry_raise, raises, base;
         std::string digest_update, digest_check, drift_old, drift_new, compat_model, compat_now;
         bool exact = false;
+        std::string perturb, reference;
+        bool check = false;
+        long every = 1, decision = 1;
+        featurize::Baseline baseline = featurize::Baseline::NONE;
+        std::vector<std::string> slot_stats;
 };
 
 // Per token type rows, and the decisions' totals, for --stats.
@@ -122,6 +143,8 @@ static int run_digest(const Options &opt, const featurize::Featurization &f);
 static int run_table_drift(const Options &opt);
 static bool read_manifest(const std::string &path, featurize::Manifest *out);
 static int run_compat(const Options &opt);
+static int run_perturb(const Options &opt, const featurize::Featurization &f);
+static int run_slot_stats(const Options &opt, const featurize::Featurization &f);
 
 static int usage() {
     std::fprintf(stderr,
@@ -137,6 +160,9 @@ static int usage() {
         "       rmfeat --digest-check FILE --cards CARDS\n"
         "       rmfeat --table-drift OLD_TABLES NEW_TABLES\n"
         "       rmfeat --compat MODEL NOW [--exact]\n"
+        "       rmfeat --perturb DUMP --viewer A|B --cards CARDS [--check [--every N]] [--decision N] [--out FILE]\n"
+        "              [--baseline none|mean|resample --reference FILE]\n"
+        "       rmfeat --slot-stats DUMP... --out FILE --cards CARDS\n"
         "  (each also --text-table FILE, --registry FILE and --history N; the featurizing modes --tables DIR)\n");
     return 2;
 }
@@ -200,21 +226,41 @@ static bool parse_args(int argc, char **argv, Options *opt) {
             opt->compat_now = argv[++i];
         } else if (a == "--exact") {
             opt->exact = true;
+        } else if (a == "--perturb" && has1) {
+            opt->perturb = argv[++i];
+        } else if (a == "--check") {
+            opt->check = true;
+        } else if (a == "--every" && has1) {
+            opt->every = std::strtol(argv[++i], nullptr, 10);
+            if (opt->every < 1) return false;
+        } else if (a == "--decision" && has1) {
+            opt->decision = std::strtol(argv[++i], nullptr, 10);
+            if (opt->decision < 1) return false;
+        } else if (a == "--baseline" && has1) {
+            if (!featurize::parse_baseline(argv[++i], &opt->baseline)) return false;
+        } else if (a == "--reference" && has1) {
+            opt->reference = argv[++i];
+        } else if (a == "--slot-stats" && has1) {
+            while (i + 1 < argc && std::strncmp(argv[i + 1], "--", 2) != 0) opt->slot_stats.push_back(argv[++i]);
+            if (opt->slot_stats.empty()) return false;
         } else {
             return false;
         }
     }
     if (!opt->export_cards.empty()) opt->cards = opt->export_cards;
-    const int modes = (opt->spec ? 1 : 0) + (opt->export_cards.empty() ? 0 : 1) + (opt->featurize.empty() ? 0 : 1) +
-                      (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1) +
-                      (opt->registry_update.empty() ? 0 : 1) + (opt->registry_check.empty() ? 0 : 1) +
-                      (opt->registry_raise.empty() ? 0 : 1) + (opt->digest_update.empty() ? 0 : 1) +
-                      (opt->digest_check.empty() ? 0 : 1) + (opt->drift_old.empty() ? 0 : 1) +
-                      (opt->compat_model.empty() ? 0 : 1);
+    const int modes =
+        (opt->spec ? 1 : 0) + (opt->export_cards.empty() ? 0 : 1) + (opt->featurize.empty() ? 0 : 1) +
+        (opt->targets.empty() ? 0 : 1) + (opt->stats_dump.empty() ? 0 : 1) + (opt->registry_update.empty() ? 0 : 1) +
+        (opt->registry_check.empty() ? 0 : 1) + (opt->registry_raise.empty() ? 0 : 1) +
+        (opt->digest_update.empty() ? 0 : 1) + (opt->digest_check.empty() ? 0 : 1) + (opt->drift_old.empty() ? 0 : 1) +
+        (opt->compat_model.empty() ? 0 : 1) + (opt->perturb.empty() ? 0 : 1) + (opt->slot_stats.empty() ? 0 : 1);
     const bool no_cards = !opt->drift_old.empty() || !opt->compat_model.empty() || !opt->registry_raise.empty();
     if (modes != 1 || opt->cards.empty() != no_cards) return false;
     if (!opt->featurize.empty() && (opt->viewer < 0 || (opt->out.empty() && !opt->stats))) return false;
     if (!opt->targets.empty() && (opt->viewer < 0 || opt->viewer > 1 || opt->out.empty())) return false;
+    if (!opt->perturb.empty() && (opt->viewer < 0 || opt->viewer > 1)) return false;
+    if (!opt->perturb.empty() && opt->baseline != featurize::Baseline::NONE && opt->reference.empty()) return false;
+    if (!opt->slot_stats.empty() && opt->out.empty()) return false;
     return true;
 }
 
@@ -614,6 +660,122 @@ static int run_compat(const Options &opt) {
     return 1;
 }
 
+// --perturb: the units of one decision of the seat (and their changes), or the checks over its frames.
+static int run_perturb(const Options &opt, const featurize::Featurization &f) {
+    featurize::SlotStats stats;
+    std::string err;
+    if (!opt.reference.empty()) {
+        featurize::RmtbFile file;
+        if (!featurize::rmtb_read_file(opt.reference, &file, &err) ||
+            !featurize::parse_slot_stats(file, &stats, &err)) {
+            std::fprintf(stderr, "rmfeat: %s: %s\n", opt.reference.c_str(), err.c_str());
+            return 2;
+        }
+        if (stats.spec_hash != f.spec.hash) {
+            std::fprintf(stderr, "rmfeat: %s is of spec %s, not %s\n", opt.reference.c_str(),
+                featurize::hex16(stats.spec_hash).c_str(), featurize::hex16(f.spec.hash).c_str());
+            return 2;
+        }
+    }
+    featurize::BaselineChoice b;
+    b.kind = opt.baseline;
+    b.stats = opt.reference.empty() ? nullptr : &stats;
+    const std::vector<std::vector<featurize::SlotDef>> slots = featurize::type_slots(f.spec);
+    featurize::EventHistory history;
+    long frames = 0;
+    size_t checked = 0, units = 0, problems = 0;
+    bool listed = false;
+    const bool ok = featurize::read_stream(
+        opt.perturb,
+        [&](const featurize::ViewerFrames &v, const rmstate::DecodedFrame &state, std::string *e) {
+            if (state.header.viewer != opt.viewer) return true;
+            history.observe(f.spec, state);
+            ++frames;
+            if (opt.check ? (frames - 1) % opt.every != 0 : frames != opt.decision) return true;
+            featurize::Tensors t;
+            std::vector<featurize::TokenSource> sources;
+            featurize::UnitList list;
+            if (!featurize::featurize_traced(
+                    f.spec, f.tables, state, f.spec.history.on() ? &history : nullptr, &t, &sources, e) ||
+                !featurize::list_units(f.spec, f.tables, v.schema, state, t, sources, &list, e))
+                return false;
+            if (opt.check) {
+                size_t n = 0;
+                for (const std::string &p : featurize::check_perturbations(f.spec, f.tables, state, t, list, b, &n)) {
+                    if (++problems <= 40)
+                        std::printf("PERTURB-FAIL: frame %ld (decision %lld): %s\n", frames,
+                            static_cast<long long>(t.decision), p.c_str());
+                }
+                ++checked;
+                units += n;
+                return true;
+            }
+            listed = true;
+            for (size_t i = 0; i < list.units.size(); ++i) {
+                const featurize::Unit &u = list.units[i];
+                std::printf("UNIT %zu %s %s\t%s\t%s\n", i, featurize::unit_kind_name(u.kind), u.key.c_str(),
+                    u.label.c_str(), u.tensors.c_str());
+            }
+            if (opt.out.empty()) return true;
+            std::vector<featurize::Tensors> out = {t};
+            for (const featurize::Unit &u : list.units) {
+                out.push_back(t);
+                if (!featurize::apply_units(f.spec, slots, {&u}, b, &out.back(), e)) return false;
+            }
+            if (!featurize::rmtb_write_file(opt.out, featurize::tensors_file(f.spec, out), e)) return false;
+            std::printf("RMFEAT: wrote %s (the decision and %zu changes)\n", opt.out.c_str(), list.units.size());
+            return true;
+        },
+        &err);
+    if (!ok) {
+        std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
+        return 1;
+    }
+    if (opt.check) {
+        std::printf("PERTURB: %zu frames of seat %s checked (every %ld of %ld), %zu units, %zu problems\n", checked,
+            opt.viewer == 0 ? "A" : "B", opt.every, frames, units, problems);
+        return problems == 0 && checked > 0 ? 0 : 1;
+    }
+    if (!listed) {
+        std::fprintf(stderr, "rmfeat: the dump has %ld frames of the seat, not %ld\n", frames, opt.decision);
+        return 1;
+    }
+    return 0;
+}
+
+// --slot-stats: every seat frame of the dumps into the slot statistics file.
+static int run_slot_stats(const Options &opt, const featurize::Featurization &f) {
+    featurize::SlotStatsBuilder builder(f.spec);
+    std::string err;
+    for (const std::string &dump : opt.slot_stats) {
+        featurize::EventHistory history[2];
+        const bool ok = featurize::read_stream(
+            dump,
+            [&](const featurize::ViewerFrames &, const rmstate::DecodedFrame &state, std::string *e) {
+                if (state.header.viewer > 1) return true;
+                featurize::EventHistory &h = history[state.header.viewer];
+                h.observe(f.spec, state);
+                featurize::Tensors t;
+                if (!featurize::featurize_seat(f.spec, f.tables, state, &h, &t, e)) return false;
+                builder.add(t);
+                return true;
+            },
+            &err);
+        if (!ok) {
+            std::fprintf(stderr, "rmfeat: %s: %s\n", dump.c_str(), err.c_str());
+            return 1;
+        }
+    }
+    const featurize::SlotStats s = builder.finish();
+    if (!featurize::rmtb_write_file(opt.out, featurize::slot_stats_file(s), &err)) {
+        std::fprintf(stderr, "rmfeat: %s\n", err.c_str());
+        return 2;
+    }
+    std::printf("RMFEAT: wrote %s (%llu frames of %zu dumps, spec %s)\n", opt.out.c_str(),
+        static_cast<unsigned long long>(s.decisions), opt.slot_stats.size(), featurize::hex16(s.spec_hash).c_str());
+    return 0;
+}
+
 int main(int argc, char **argv) {
     Options opt;
     if (!parse_args(argc, argv, &opt)) return usage();
@@ -642,6 +804,8 @@ int main(int argc, char **argv) {
         return 0;
     }
     if (!opt.targets.empty()) return run_targets(opt, f);
+    if (!opt.perturb.empty()) return run_perturb(opt, f);
+    if (!opt.slot_stats.empty()) return run_slot_stats(opt, f);
     if (!opt.stats_dump.empty()) return run_featurize(opt, f, opt.stats_dump, false);
     return run_featurize(opt, f, opt.featurize, !opt.out.empty());
 }
