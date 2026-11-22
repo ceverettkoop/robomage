@@ -29,8 +29,9 @@ cadence, metrics, status and state; the engine's own schedule check when a built
 and the evaluators (sprt groups and an SPRT evaluation stopping its actors when
 the test decides, the exploiter's spec, the split of a request into separate evaluations, the
 ladder record and ratings), the end-of-run benchmark (its policy set, summary, sideboarding report
-and ``--opponent``), and ``run.feature_history`` (not live, fixed at creation, its flags, the start
-check against the tables' history, the actors' argv, the benchmark's default).
+and ``--opponent``), ``run.feature_history`` (not live, fixed at creation, its flags, the start
+check against the tables' history, the actors' argv, the benchmark's default), and ``runs/latest``
+(the writer, the export jobs under ``run.latest``, the rebuild after a retable, the reserved name).
 
 **The smoke** (``--smoke``; needs ``bin/release/robomage_nn`` and ``rmfeat``, the learner's venv and
 the GPU): a tiny run (3 actors, a d 64 / 2-layer model, B0 a few thousand decisions, B1 a few
@@ -181,7 +182,7 @@ def check_control(tmp):
 def fake_run(tmp, name="fake"):
     run = RD.RunDir(os.path.join(tmp, name))
     run.make()
-    cfg = C.resolve(None, ["actors.count=0", "b0.decisions=1000000", "run.bin_dir=" + tmp])
+    cfg = C.resolve(None, ["actors.count=0", "b0.decisions=1000000", "run.bin_dir=" + tmp, "run.latest=false"])
     RD.write_json(run.config, cfg)
     return run, cfg
 
@@ -910,8 +911,8 @@ def _b4_orchestrator(tmp, name, sets=()):
     from rmlearn.orchestrator.orchestrator import Orchestrator
     run = RD.RunDir(os.path.join(tmp, name))
     run.make()
-    cfg = C.resolve(None, ["actors.count=0", "run.bin_dir=" + tmp, "eval.actors=2", "eval.matches=2",
-                           "actors.policy_eval=remote", "eval.policy_eval=remote",
+    cfg = C.resolve(None, ["actors.count=0", "run.bin_dir=" + tmp, "run.latest=false", "eval.actors=2",
+                           "eval.matches=2", "actors.policy_eval=remote", "eval.policy_eval=remote",
                            "eval.ladder_matches=2", "eval.sprt_max_games=2", "league.decks=[\"a\", \"b\"]",
                            "eval.pairs=[[\"a\", \"b\"]]"] + list(sets))
     RD.write_json(run.config, cfg)
@@ -1216,7 +1217,8 @@ def check_local(tmp):
     # Schedules.
     run = RD.RunDir(os.path.join(tmp, "loc"))
     run.make()
-    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\"]", "actors.policy_eval=local", "b4.nn_options=temp=2"])
+    cfg = C.resolve(None, ["league.decks=[\"a\", \"b\"]", "actors.policy_eval=local", "b4.nn_options=temp=2",
+                           "run.latest=false"])
     cur = os.path.join(run.exports, "live", "current.ts.pt")
     sp, dg = SCH.selfplay(run, cfg, "b4"), SCH.dagger(run, cfg, 1, 0.5)
     check(all(e["agent_a"] == e["agent_b"] == "nn:%s:temp=2" % cur for e in sp["entries"]) and
@@ -1355,6 +1357,7 @@ def check_local(tmp):
 SMOKE_CONFIG = """
 [run]
 seed = 5
+latest = false
 memory_max = "24G"
 gpu_lock_wait = true
 restart_delay_s = 5
@@ -1666,6 +1669,7 @@ def smoke_history_checks(run, history, mets):
 START_FROM_CONFIG = """
 [run]
 seed = 6
+latest = false
 memory_max = "24G"
 gpu_lock_wait = true
 restart_on_failure = false
@@ -1966,6 +1970,232 @@ def check_retable(tmp):
           "the window keeps the lineage's episodes: %s" % dict(win.counts))
     print("  retable: the start check (no manifest, a stale cards frame: retable; current; run.tables), the "
           "exports rebuilt and removed, the window keeping the lineage's episodes", flush=True)
+
+
+def _bytes_file(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "wb") as fp:
+        fp.write(data)
+    return path
+
+
+def _tables_dir(path, tables, cards=1):
+    """A tables directory holding only the model manifest of `tables` (what latest.json records)."""
+    os.makedirs(path, exist_ok=True)
+    RD.write_json(os.path.join(path, "manifest.json"), dict(tables.hashes, layout_hash="l" * 16, tables_digest="d" * 16,
+                                                            vocab=[[i, "card%d" % i] for i in range(cards)]))
+    return path
+
+
+def check_latest(tmp):
+    """runs/latest (orchestrator/latest.py, docs/rmtrain.md §4.1): the writer (model.pt copied from a
+    model checkpoint or saved from a learner state's network, the exports copied, latest.json last with
+    the manifest and each file's sha256, a format the new policy lacks removed, the last write winning),
+    the orchestrator's export jobs (a fixed point and final carry --latest, other exports and run.latest
+    false none; an export made again over new tables rebuilding latest's exports; nothing written with
+    run.latest false), retable's rebuild of the exports when latest names the run, and the reserved
+    name (rmtrain start / status, the orchestrator, config.run_name_refusal)."""
+    import contextlib
+    import io
+    import hashlib
+    import check_rnad as CR
+    from rmlearn import export as EX
+    from rmlearn import model as M
+    from rmlearn.orchestrator import exporter as XP
+    from rmlearn.orchestrator import latest as LT
+    from rmlearn.orchestrator import orchestrator as OR
+    root = os.path.join(tmp, "latest-root")
+    run_a, run_b = RD.RunDir(os.path.join(root, "ra")), RD.RunDir(os.path.join(root, "rb"))
+    for r in (run_a, run_b):
+        r.make()
+    dest = LT.latest_dir(run_a.path)
+    check(dest == os.path.join(root, "latest") and LT.latest_dir(run_b.path + "/") == dest,
+          "latest/ is beside the run directories: %s" % dest)
+    check(LT.is_release("m7") and LT.is_release("final") and not any(LT.is_release(n) for n in
+                                                                       ("bc-final", "bc-r2", "m", "m7x", "live")),
+          "latest takes the fixed points and final only")
+    tables = CR.fake_tables()
+    tdir = _tables_dir(os.path.join(root, "tables"), tables)
+    sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()  # noqa: E731
+
+    # The writer: a fixed point's model checkpoint copied, its exports copied, latest.json last.
+    ck = _bytes_file(os.path.join(run_a.fixed, "m3.pt"), b"model checkpoint m3")
+    ex = {"ts": _bytes_file(os.path.join(run_a.exports, "m3.ts.pt"), b"ts m3"),
+          "pt2": _bytes_file(os.path.join(run_a.exports, "m3.pt2"), b"pt2 m3")}
+    order = []
+    real_replace = os.replace
+
+    def replace(src, dst):
+        order.append(os.path.basename(dst))
+        return real_replace(src, dst)
+    os.replace = replace
+    try:
+        info = LT.write(dest, run_a.path, "m3", ex, tdir, model_src=ck, learner_steps=1200, version=1201,
+                        trained_at=1000.0)
+    finally:
+        os.replace = real_replace
+    check(order[-1] == "latest.json" and sorted(order[:-1]) == ["model.pt", "policy.pt2", "policy.ts.pt"],
+          "each file renamed into place, latest.json last: %s" % order)
+    check(sorted(os.listdir(dest)) == ["latest.json", "model.pt", "policy.pt2", "policy.ts.pt"],
+          "latest/ holds the copies and nothing else: %s" % sorted(os.listdir(dest)))
+    check(not any(os.path.islink(os.path.join(dest, f)) for f in os.listdir(dest)), "copies, not links")
+    doc = RD.read_json(os.path.join(dest, "latest.json"))
+    check(doc == info and doc["run"] == "ra" and doc["run_dir"] == os.path.realpath(run_a.path) and doc["name"] == "m3"
+          and doc["learner_steps"] == 1200 and doc["version"] == 1201 and doc["trained_at"] == 1000.0
+          and doc["written_at"] >= 1000.0 and "engine_commit" in doc,
+          "latest.json: run, name, learner steps, version, when trained and written, the commit: %s" % doc)
+    check(doc["manifest"] == {"spec_hash": tables.hashes["spec_hash"], "vocab_hash": tables.hashes["vocab_hash"],
+                              "layout_hash": "l" * 16, "tables_digest": "d" * 16, "text_model": "fake@0", "cards": 1},
+          "latest.json: the tables' manifest: %s" % doc["manifest"])
+    check(all(doc["files"][f]["sha256"] == sha(os.path.join(dest, f)) and
+              doc["files"][f]["bytes"] == os.path.getsize(os.path.join(dest, f)) for f in doc["files"])
+          and sorted(doc["files"]) == ["model.pt", "policy.pt2", "policy.ts.pt"]
+          and open(os.path.join(dest, "policy.pt2"), "rb").read() == b"pt2 m3"
+          and open(os.path.join(dest, "model.pt"), "rb").read() == b"model checkpoint m3",
+          "latest.json: each file's sha256 and size, the files the run's")
+    check(LT.names_run(doc, run_a.path) and not LT.names_run(doc, run_b.path), "names_run")
+
+    # final from a learner state: the network saved as a model checkpoint (the exporter's write_latest),
+    # a real TorchScript export, a format the new policy lacks removed; the last write wins.
+    torch_model = M.RMNet(M.ModelConfig(d=16, heads=2, layers=1), tables)
+    paths = EX.export_policy(torch_model, os.path.join(run_b.exports, "final"), 7, formats=("ts",))
+    learner_ck = _bytes_file(os.path.join(run_b.ckpt, "rnad-final.pt"), b"a learner state")
+    info = XP.write_latest(dest, {"run_dir": run_b.path, "name": "final", "learner_steps": 7, "version": 7,
+                                  "trained_at": 2000.0}, torch_model, learner_ck, True, paths, tdir)
+    check(sorted(os.listdir(dest)) == ["latest.json", "model.pt", "policy.ts.pt"] and info["run"] == "rb"
+          and info["name"] == "final" and sorted(info["files"]) == ["model.pt", "policy.ts.pt"],
+          "the last policy written wins; the format it lacks is removed: %s" % sorted(os.listdir(dest)))
+    back = M.load_checkpoint(os.path.join(dest, "model.pt"), tables)
+    check(all((a == b).all() for a, b in zip(back.state_dict().values(), torch_model.state_dict().values())),
+          "model.pt from a learner state is a model checkpoint of its network (model.load_checkpoint)")
+    meta = EX.read_metadata(os.path.join(dest, "policy.ts.pt"))
+    check(meta["spec_hash"] == info["manifest"]["spec_hash"] and info["files"]["policy.ts.pt"]["sha256"] ==
+          sha(paths["ts"]), "policy.ts.pt is the run's export (its spec hash latest.json's)")
+    check(raises(lambda: LT.write(dest, run_b.path, "final", {}, tdir), "model_src"), "write needs model.pt's source")
+
+    # Retable's rebuild: only when latest names the run and its policy is among the rebuilt exports.
+    LT.write(dest, run_a.path, "m3", ex, tdir, model_src=ck, learner_steps=1200, version=1201, trained_at=1000.0)
+    model_rec = RD.read_json(os.path.join(dest, "latest.json"))["files"]["model.pt"]
+    tdir2 = _tables_dir(os.path.join(root, "tables2"), tables, cards=2)
+    _bytes_file(ex["ts"], b"ts m3 on the new tables")
+    _bytes_file(ex["pt2"], b"pt2 m3 on the new tables")
+    check(LT.rebuild_exports(dest, run_b.path, run_b.exports, tdir2, ["ts", "pt2"]) is None and
+          LT.rebuild_exports(dest, run_a.path, run_a.exports, tdir2, ["ts", "pt2"], rebuilt=["m2"]) is None and
+          open(os.path.join(dest, "policy.ts.pt"), "rb").read() == b"ts m3",
+          "another run's retable, or one not rebuilding latest's policy, leaves latest as it is")
+    info = LT.rebuild_exports(dest, run_a.path, run_a.exports, tdir2, ["ts", "pt2"], rebuilt=["m1", "m3"])
+    doc = RD.read_json(os.path.join(dest, "latest.json"))
+    check(info == doc and doc["manifest"]["cards"] == 2 and doc["files"]["model.pt"] == model_rec
+          and open(os.path.join(dest, "policy.pt2"), "rb").read() == b"pt2 m3 on the new tables"
+          and all(doc["files"][f]["sha256"] == sha(os.path.join(dest, f)) for f in doc["files"])
+          and doc["name"] == "m3" and doc["learner_steps"] == 1200,
+          "retable: latest's exports copied from the rebuilt ones, latest.json's manifest and sha256s rewritten, "
+          "model.pt kept")
+    src = open(os.path.join(HERE, "rmlearn", "orchestrator", "retable.py")).read()
+    check("LT.rebuild_exports(" in src and "rebuilt=rebuilt" in src,
+          "retable calls rebuild_exports on its rebuilt exports")
+
+    # The orchestrator's export jobs.
+    run_o, cfg = fake_run(root, "ro")
+    o = OR.Orchestrator(run_o)
+    o.log = lambda m: None
+    o.state = o.new_state()
+    o.metrics = RD.JsonLines(run_o.metrics)
+    o.queue_export("/ck/m1.pt", "m1", 5, release=40)
+    check(o.export_queue[-1][3] is None, "run.latest false: a fixed point's export writes no latest")
+    o.cfg = C.set_key(o.cfg, "run.latest", True)
+    o.queue_export("/ck/m2.pt", "m2", 6, release=50)
+    o.queue_export("/ck/bc-r1.pt", "bc-r1", 3, release=30)
+    o.queue_export("/ck/m1.pt", "m1", 5, again=True)
+    got = o.export_queue[-3:]
+    check(isinstance(got[0][3], dict) and got[0][3]["name"] == "m2" and got[0][3]["learner_steps"] == 50
+          and got[0][3]["version"] == 6 and got[0][3]["run_dir"] == run_o.path and got[1][3] is None
+          and got[2][3] == "again", "queue_export: a fixed point carries latest's info, bc-r1 none, a redo 'again'")
+    argvs = []
+    real_popen = OR.subprocess.Popen
+
+    class _Done:
+        returncode = 0
+
+        def poll(self):
+            return 0
+
+    def popen(argv, **kw):
+        argvs.append(argv)
+        return _Done()
+    # The exporter (stood in for) writes latest/ for the fixed point m2.
+    LT.write(dest, run_o.path, "m2", {"ts": _bytes_file(os.path.join(run_o.exports, "m2.ts.pt"), b"ts m2")}, tdir,
+             model_src=ck)
+    o.export_queue = [("/ck/m1.pt", "m1", 5, None), ("/ck/m2.pt", "m2", 6, got[0][3]), ("/ck/m2.pt", "m2", 6, "again")]
+    OR.subprocess.Popen = popen
+    try:
+        for _ in range(4):
+            o.export_tick()
+    finally:
+        OR.subprocess.Popen = real_popen
+    check(len(argvs) == 3 and "--latest" not in argvs[0] and "--latest" not in argvs[2]
+          and argvs[1][argvs[1].index("--latest") + 1] == dest
+          and json.loads(argvs[1][argvs[1].index("--latest-info") + 1])["name"] == "m2",
+          "the exporter gets --latest for a fixed point only: %s" % [a[-4:] for a in argvs])
+    check(open(os.path.join(dest, "policy.ts.pt"), "rb").read() == b"ts m2", "latest/ before the redo")
+    _bytes_file(os.path.join(run_o.exports, "m2.ts.pt"), b"ts m2 again")
+    o.export_job = ("/ck/m2.pt", "m2", 6, "again", time.time())
+    o.export_proc = _Done()
+    o.export_log = open(os.devnull, "w")
+    o.export_tick()
+    check(open(os.path.join(dest, "policy.ts.pt"), "rb").read() == b"ts m2 again" and
+          any(m["event"] == "latest" and m.get("rebuilt") for m in RD.read_jsonl(run_o.metrics)),
+          "an export made again over new tables: latest's export copied again")
+    o.metrics.close()
+
+    # run.latest false: an orchestrator's fixed point leaves no latest/ (a fresh root).
+    root2 = os.path.join(tmp, "latest-root2")
+    run_f, _ = fake_run(root2, "rf")
+    o = OR.Orchestrator(run_f)
+    o.log = lambda m: None
+    o.state = o.new_state()
+    o.metrics = RD.JsonLines(run_f.metrics)
+    o.queue_export("/ck/m1.pt", "m1", 5, release=40)
+    OR.subprocess.Popen = popen
+    try:
+        o.export_tick()
+        o.export_tick()
+    finally:
+        OR.subprocess.Popen = real_popen
+    o.metrics.close()
+    check(not os.path.exists(os.path.join(root2, "latest")) and "--latest" not in argvs[-1],
+          "run.latest false writes nothing")
+    check(C.defaults()["run"]["latest"] is True, "run.latest is on by default")
+
+    # The reserved name.
+    check(C.run_name_refusal(os.path.join(root, "latest")) and C.run_name_refusal("latest/")
+          and not C.run_name_refusal(os.path.join(root, "latest2")) and not C.run_name_refusal(run_a.path),
+          "config.run_name_refusal: latest only")
+    for argv in (["start", os.path.join(root2, "latest"), "--set", "actors.count=0"],
+                 ["status", os.path.join(root, "latest")], ["retable", os.path.join(root, "latest")]):
+        err = io.StringIO()
+        code = None
+        with contextlib.redirect_stderr(err):
+            try:
+                RT.main(argv)
+            except SystemExit as e:
+                code = e.code
+        check(code == 1 and "not a run name" in err.getvalue(), "rmtrain %s latest is refused (%r)"
+              % (argv[0], err.getvalue().strip()))
+    check(not os.path.exists(os.path.join(root2, "latest")), "rmtrain start latest creates nothing")
+    RD.write_json(os.path.join(root, "latest", "config.json"), cfg)
+    err = io.StringIO()
+    code = None
+    with contextlib.redirect_stderr(err):
+        try:
+            OR.Orchestrator(RD.RunDir(os.path.join(root, "latest")))
+        except SystemExit as e:
+            code = e.code
+    os.unlink(os.path.join(root, "latest", "config.json"))
+    check(code == RD.NO_RUN_EXIT and "not a run name" in err.getvalue(), "the orchestrator refuses a run named latest")
+    print("  latest: the writer (copies renamed into place, latest.json last, manifest and sha256s, a learner state's "
+          "network as model.pt, the last write winning), the orchestrator's export jobs and run.latest, retable's "
+          "rebuild, the reserved name", flush=True)
 
 
 def check_feature_history(tmp):
@@ -2732,6 +2962,7 @@ def main():
             check_benchmark_decks(tmp)
             check_league_expansion(tmp)
             check_retable(tmp)
+            check_latest(tmp)
             check_feature_history(tmp)
             check_benchmark_sideboarding(tmp)
             check_local(tmp)

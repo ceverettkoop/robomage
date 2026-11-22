@@ -45,6 +45,7 @@ import traceback
 
 from . import config as C
 from . import evaluation as EVAL
+from . import latest as LT
 from . import retable as RT
 from . import sb_explore as SBX
 from . import schedules as SCH
@@ -66,6 +67,9 @@ class Fatal(Exception):
 class Orchestrator:
     def __init__(self, run, echo=False):
         self.run = run
+        if C.run_name_refusal(run.path):
+            print("rmtrain: " + C.run_name_refusal(run.path), file=sys.stderr)
+            raise SystemExit(NO_RUN_EXIT)
         self.cfg = read_json(run.config)
         if self.cfg is None:
             print("rmtrain: %s has no config.json" % run.path, file=sys.stderr)
@@ -575,7 +579,7 @@ class Orchestrator:
         elif p == "done":
             if self.gpu is not None and self.gpu_model == "rnad" and not resume:
                 ck = self.checkpoint(name="rnad-final.pt")
-                self.queue_export(ck["path"], "final", ck["version"])
+                self.queue_export(ck["path"], "final", ck["version"], release=ck["learner_steps"])
             self.request_stop("the run is finished")
         self.save_state()
 
@@ -817,7 +821,7 @@ class Orchestrator:
         self.emit("rnad_iteration", **ev)
         self.log("R-NaD iteration %d at learner step %d (fixed point %s)" % (m, ev["learner_steps"],
                                                                             ev["fixed_point"]))
-        self.queue_export(ev["fixed_point"], "m%d" % m, int(ev["version"]))
+        self.queue_export(ev["fixed_point"], "m%d" % m, int(ev["version"]), release=int(ev["learner_steps"]))
         if self.cfg["eval"]["per_iteration"]:
             self.queue_eval("it%d" % m, self.eval_options(), self.cfg["eval"]["evaluators"],
                             policy=dict(rung, iteration=m))
@@ -1119,41 +1123,74 @@ class Orchestrator:
 
     # ── exports ─────────────────────────────────────────────────────────────────────────────
 
-    def queue_export(self, checkpoint, name, version):
+    def queue_export(self, checkpoint, name, version, release=None, again=False):
+        """`checkpoint` exported as exports/`name`. `release`: the learner steps of a policy just made
+        (a fixed point, final), which the exporter also writes into the runs root's latest/ (run.latest).
+        `again`: an export made again over new tables, which latest/ follows when it holds it."""
         if not self.cfg["checkpoint"]["export"]:
             return
-        self.export_queue.append((checkpoint, name, version))
+        latest = None
+        if release is not None and self.cfg["run"]["latest"] and LT.is_release(name):
+            latest = {"run_dir": self.run.path, "name": name, "learner_steps": int(release), "version": int(version),
+                      "trained_at": time.time()}
+        elif again:
+            latest = "again"
+        self.export_queue.append((checkpoint, name, version, latest))
 
     def export_tick(self):
         if self.export_proc is not None:
             if self.export_proc.poll() is None:
                 return
-            ck, name, version, t0 = self.export_job
+            ck, name, version, latest, t0 = self.export_job
             rc = self.export_proc.returncode
             self.export_log.close()
             self.export_proc = None
-            if rc == 0:
+            if rc in (0, LT.EXPORTED_WITHOUT_LATEST):
                 self.state["exports"].append({"name": name, "checkpoint": ck, "version": version,
                                               "prefix": os.path.join(self.run.exports, name), "at": time.time()})
                 self.emit("export", name=name, version=version, seconds=round(time.time() - t0, 1))
                 self.log("exported %s (%.0f s)" % (name, time.time() - t0))
+                self.note_latest(name, version, latest, rc)
             else:
                 self.log("export %s failed (exit %s; see logs/export.log)" % (name, rc))
                 self.emit("export_failed", name=name, code=rc)
         if not self.export_queue:
             return
-        ck, name, version = self.export_queue.pop(0)
+        ck, name, version, latest = self.export_queue.pop(0)
         tables = self.cfg["run"]["tables"] or self.run.tables
         argv = [sys.executable, "-m", "rmlearn.orchestrator.exporter", "--tables", tables, "--checkpoint", ck,
                 "--prefix", os.path.join(self.run.exports, name), "--version", str(version), "--formats",
                 ",".join(self.cfg["checkpoint"]["export_formats"])]
+        if isinstance(latest, dict):
+            argv += ["--latest", LT.latest_dir(self.run.path), "--latest-info", json.dumps(latest)]
         self.export_log = open(self.run.log("export"), "a", buffering=1)
         self.export_log.write("=== %s %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), " ".join(argv)))
         env = cpu_env()
         env["PYTHONPATH"] = LEARN_DIR
         self.export_proc = subprocess.Popen(argv, cwd=LEARN_DIR, stdout=self.export_log, stderr=subprocess.STDOUT,
                                             env=env, start_new_session=True)
-        self.export_job = (ck, name, version, time.time())
+        self.export_job = (ck, name, version, latest, time.time())
+
+    def note_latest(self, name, version, latest, rc):
+        """After the export of `name`: latest/ written by the exporter (`latest` a dict), or, for an export
+        made again over new tables (`latest` "again"), latest/'s exports copied again when it holds this
+        run's `name`."""
+        dest = LT.latest_dir(self.run.path)
+        if latest is None:
+            return
+        if latest == "again":
+            tables = self.cfg["run"]["tables"] or self.run.tables
+            info = LT.rebuild_exports(dest, self.run.path, self.run.exports, tables,
+                                      self.cfg["checkpoint"]["export_formats"], rebuilt=[name])
+            if info is not None:
+                self.log("%s: the exports of %s rebuilt" % (dest, name))
+                self.emit("latest", name=name, version=version, rebuilt=True)
+        elif rc == 0:
+            self.log("%s: %s (learner step %d)" % (dest, name, latest["learner_steps"]))
+            self.emit("latest", name=name, version=version, learner_steps=latest["learner_steps"])
+        else:
+            self.log("ERROR: %s not written for %s (see logs/export.log)" % (dest, name))
+            self.emit("latest_failed", name=name, version=version)
 
     # ── tables ──────────────────────────────────────────────────────────────────────────────
 
@@ -1186,7 +1223,7 @@ class Orchestrator:
                 os.unlink(p)
             redo = RT.latest_exports(self.state)
             for e in redo:
-                self.queue_export(e["checkpoint"], e["name"], e["version"])
+                self.queue_export(e["checkpoint"], e["name"], e["version"], again=True)
             self.log("the run's tables changed since the last start (spec %s -> %s): %d exports queued again"
                      % (last.get("spec_hash"), cur["spec_hash"], len(redo)))
             self.emit("tables_changed", previous=last.get("spec_hash"), spec_hash=cur["spec_hash"], exports=len(redo))
