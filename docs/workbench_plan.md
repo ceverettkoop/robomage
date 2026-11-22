@@ -791,7 +791,11 @@ a cost reducer: the printed cost is shown).
 New Game's opponent list is every run's exports in run-name then file-name order, and the run browser and
 the episode combo box start from whichever directory is opened. The old runs are kept on purpose (their checkpoints are the
 migration acceptance's originals and the earlier benches' baselines), so the clutter is solved in the views,
-not by deleting. Of this note only `runs/latest` is built (`rmtrain`, `docs/rmtrain.md` §4.1); the views are not.
+not by deleting. Built so far: `runs/latest` (`rmtrain`, `docs/rmtrain.md` §4.1), and the checkpoints by date
+for New Game's opponent list and Settings → Models' Add row suggestions (`tools/rmwork/policy_catalog.h`: the
+rows, dates, hidden rows and `latest` below; there the hidden rows are left out, `latest` is the first row and
+the default model, and a row plays its TorchScript export, else its `.pt2`). Still to come: the Model manager
+(its columns, compatibility, "Show all", filter and sorting) and the episodes by run.
 
 **Checkpoints by date.** The Model manager (item 4) and New Game's opponent list show one flat list over
 the runs directory, newest first, in place of the order by name:

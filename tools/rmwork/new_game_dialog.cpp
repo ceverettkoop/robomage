@@ -14,6 +14,7 @@
 #include "model_zip.h"
 #include "paths.h"
 #include "play_session.h"
+#include "policy_catalog.h"
 #include "theme.h"
 #include "widgets.h"
 
@@ -68,28 +69,19 @@ std::vector<std::string> NewGameDialog::list_decks(const std::string &workdir) {
 }
 
 std::vector<ModelChoice> NewGameDialog::list_models(const Settings &s) {
-    std::vector<ModelChoice> out;
+    std::vector<ModelChoice> out, exports = list_exports(s);
+    size_t i = 0;
+    if (!exports.empty() && exports[0].latest) out.push_back(std::move(exports[i++]));
     for (const PolicyEntry &p : s.models.policies)
         out.push_back({"policy " + p.id + " \xC2\xB7 " + p.model, policy_model_path(p)});
-    for (ModelChoice &e : list_exports(s)) out.push_back(std::move(e));
+    for (; i < exports.size(); ++i) out.push_back(std::move(exports[i]));
     return out;
 }
 
 std::vector<ModelChoice> NewGameDialog::list_exports(const Settings &s) {
     std::vector<ModelChoice> out;
-    const std::string runs = run_dir_path(s);
-    for (const std::string &run : names_in(runs, true)) {
-        const std::string exports = runs + "/" + run + "/exports";
-        for (const std::string &n : names_in(exports, false))
-            if (is_model_export(n)) out.push_back({run + "/" + n, exports + "/" + n});
-    }
-    const std::string zips = default_models_dir();
-    for (const std::string &n : names_in(zips, false)) {
-        if (!has_suffix(n, ".zip")) continue;
-        std::string why;
-        for (const ZipEntry &e : zip_model_entries(zips + "/" + n, &why))
-            out.push_back({zip_model_label(n, e.name), zips + "/" + n + "!" + e.name});
-    }
+    for (PolicyRow &r : scan_policies(run_dir_path(s), default_models_dir()))
+        if (!r.hidden && !r.play.empty()) out.push_back({std::move(r.label), std::move(r.play), r.latest});
     return out;
 }
 
@@ -118,6 +110,7 @@ void NewGameDialog::open(const NewGameSettings &from, const Settings &s, const s
     if (find_opponent(g_.opponent) < 0) g_.opponent = opponent_key(Opponent::EXPLORE);
     decks_ = list_decks(engine_workdir_path(s));
     models_ = list_models(s);
+    if (g_.model.empty() && !models_.empty() && models_[0].latest) g_.model = models_[0].path;
     engine_ = engine_configured;
     socket_ = socket_path(s);
     if (g_.server.empty()) g_.server = socket_;

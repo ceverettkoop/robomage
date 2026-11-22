@@ -11,17 +11,19 @@
 // Your deck and seat, the opponent (a model export, an inference server, explore, random or the
 // scripted agent) and its deck, best of one or three, the seed (with a random one), auto-mana and
 // Model's Read. The decks are the engine's top-level, league/ and heldout/ decks (under its working
-// directory's resources/decks); the models Settings → Models' policies and every run's exports under
-// its run directory (`<run>/exports/*.pt2`, `*.ts.pt`), and the exports inside the zip archives in
-// the models directory (<repo>/models, model_zip.h). It opens with the last choices (Settings'
-// new_game) and hands back the new ones when Start is pressed; the App starts the game and keeps
-// them. The engine a choice needs is checked as it is made (an nn: opponent needs robomage_nn).
+// directory's resources/decks); the models the runs directory's `latest` first, then Settings →
+// Models' policies, then the runs' policies newest first and the zipped exports of the models
+// directory (<repo>/models, model_zip.h): policy_catalog.h's rows, its hidden ones left out. It opens
+// with the last choices (Settings' new_game), the model `latest` when none was chosen before, and
+// hands back the new ones when Start is pressed; the App starts the game and keeps them. The engine a
+// choice needs is checked as it is made (an nn: opponent needs robomage_nn).
 
 namespace rmwork {
 
 struct ModelChoice {
-        std::string label;  // "league26-24h/m9.pt2", "policy 0 · …"
-        std::string path;   // absolute
+        std::string label;    // "2026-11-21 · league26-24h/m9", "latest · league26-24h m9", "policy 0 · …"
+        std::string path;     // absolute
+        bool latest = false;  // the runs directory's latest
 };
 
 class NewGameDialog {
@@ -38,11 +40,11 @@ class NewGameDialog {
         // The decks under `workdir`/resources/decks: top-level, league/ and heldout/ ("delver",
         // "league/burn"), in natural order.
         static std::vector<std::string> list_decks(const std::string &workdir);
-        // Settings → Models' policies, the exports of every run under the run directory, then those in
-        // the models directory's zip archives (paths `<archive>.zip!<member>`).
+        // `latest`, Settings → Models' policies, then the rest of list_exports.
         static std::vector<ModelChoice> list_models(const Settings &s);
-        // The exports alone: every run's under the run directory, then the models directory's zipped ones
-        // (Settings → Models' Add row suggests them).
+        // The exports alone, the policy catalog's rows that are shown and play an export: `latest`, every
+        // run's newest first, then the models directory's zipped ones (paths `<archive>.zip!<member>`;
+        // Settings → Models' Add row suggests them).
         static std::vector<ModelChoice> list_exports(const Settings &s);
         // What keeps `g` from starting ("" when nothing does): an empty deck, an nn: opponent with no
         // model or socket, or no engine for it.
