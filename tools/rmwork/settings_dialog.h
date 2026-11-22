@@ -2,8 +2,10 @@
 #define RMWORK_SETTINGS_DIALOG_H
 
 #include <string>
+#include <vector>
 
 #include "files.h"
+#include "new_game_dialog.h"
 #include "printings_tab.h"
 #include "settings.h"
 
@@ -53,6 +55,9 @@ class SettingsDialog {
             server_status_ = text;
             server_failed_ = failed;
         }
+        // The Add row's suggestions whose label or path contains `text` (any case; every one when it is
+        // empty).
+        static std::vector<const ModelChoice *> matching_models(const std::vector<ModelChoice> &all, const char *text);
         // True once after Restart server was pressed.
         bool take_server_restart() {
             const bool r = server_restart_;
@@ -76,7 +81,8 @@ class SettingsDialog {
         static void draw_theme_choice(std::string *theme, float field_x, float field_w);
         void draw_engine_tab(Settings *s);
         void draw_models_tab(Settings *s);
-        void draw_policies(ModelSettings *m, float field_x);
+        void draw_policies(const Settings &s, ModelSettings *m, float field_x);
+        void draw_model_suggestions(ModelSettings *m, float field_x, float width);
         static void draw_stops_tab(Settings *s);
         static bool stop_row(const char *label, std::array<bool, STOP_STEP_COUNT> *row);
         // A labelled path field ("" = `fallback`, shown as the hint) and, under it, the resolved
@@ -100,6 +106,11 @@ class SettingsDialog {
         char policy_id_[64] = {0};
         char policy_model_[1024] = {0};
         std::string policy_error_;
+        // The Add row's model suggestions: the exports under the run directory and the models directory,
+        // listed when the field is activated; shown while it is being edited or the list is hovered.
+        std::vector<ModelChoice> model_choices_;
+        bool suggest_open_ = false;
+        bool suggest_hovered_ = false;
         std::string server_status_;
         bool server_failed_ = false;
         bool server_restart_ = false;

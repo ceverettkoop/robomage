@@ -868,6 +868,22 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
             !add_policy(&s.models, "", "x", &why) && !add_policy(&s.models, "c", "", &why) &&
             s.models.policies.size() == 2,
         "add_policy accepts a taken, malformed or empty id or an empty model");
+    {
+        ModelSettings ids;
+        const std::string first = next_policy_id(ids);
+        add_policy(&ids, "0", "a.pt2", &why);
+        add_policy(&ids, "2", "b.pt2", &why);
+        add_policy(&ids, "x", "c.pt2", &why);
+        check(t, first == "0" && next_policy_id(ids) == "1", "next_policy_id is not the smallest free number");
+        const std::vector<ModelChoice> all = {{"league26-24h/final.ts.pt", "/r/runs/league26-24h/exports/final.ts.pt"},
+            {"m.zip \xC2\xB7 m9.pt2", "/r/models/m.zip!exports/m9.pt2"}};
+        check(t,
+            SettingsDialog::matching_models(all, "").size() == 2 &&
+                SettingsDialog::matching_models(all, "LEAGUE").size() == 1 &&
+                SettingsDialog::matching_models(all, "models/m.zip")[0] == &all[1] &&
+                SettingsDialog::matching_models(all, "nothing").empty(),
+            "the Add row's model suggestions do not match by label or path, in any case");
+    }
     s.stops.own.fill(false);
     s.stops.opponent[0] = s.stops.opponent[11] = true;
     s.image_cache = "/cache/images";

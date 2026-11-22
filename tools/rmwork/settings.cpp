@@ -530,6 +530,15 @@ bool add_policy(ModelSettings *m, const std::string &id, const std::string &mode
     return true;
 }
 
+std::string next_policy_id(const ModelSettings &m) {
+    for (unsigned n = 0;; ++n) {
+        const std::string id = std::to_string(n);
+        bool taken = false;
+        for (const PolicyEntry &p : m.policies) taken = taken || p.id == id;
+        if (!taken) return id;
+    }
+}
+
 void add_recent(std::vector<std::string> *recent, const std::string &path) {
     for (size_t i = 0; i < recent->size(); ++i) {
         if ((*recent)[i] != path) continue;

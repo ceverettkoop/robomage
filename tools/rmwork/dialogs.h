@@ -11,7 +11,8 @@
 namespace rmwork {
 
 // An error: a title, a message, a monospace detail text (an engine's stderr tail, a decoder's
-// report) and "Copy diagnostics", which puts all three on the clipboard.
+// report; left out with its "Details" label when empty) and "Copy diagnostics", which puts all three
+// on the clipboard.
 class ErrorDialog {
     public:
         void open(const std::string &title, const std::string &message, const std::string &detail);

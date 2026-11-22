@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cctype>
+#include <cstdio>
 #include <cstring>
 
 #include "modal.h"
@@ -429,12 +431,13 @@ void SettingsDialog::draw_models_tab(Settings *s) {
     ImGui::Separator();
     ImGui::TextDisabled("Policies (rmserve --policy ID=MODEL)");
     ImGui::Spacing();
-    draw_policies(&s->models, field_x);
+    draw_policies(*s, &s->models, field_x);
 }
 
 // The policy rows (each removable) and a row to add one, refused with a message when its id is
-// malformed or taken or its model path empty.
-void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
+// malformed or taken or its model path empty. While the model field is edited, the exports under the
+// run directory and the models directory that match it are listed under the row.
+void SettingsDialog::draw_policies(const Settings &s, ModelSettings *m, float field_x) {
     const ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersOuter;
     const float cw = char_width();
     if (ImGui::BeginTable("##policies", 4, flags)) {
@@ -477,6 +480,12 @@ void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
     ImGui::SetNextItemWidth(std::max(10 * cw, ImGui::GetContentRegionAvail().x - 8 * cw));
     ImGui::InputTextWithHint("##policy_model", "model (.pt2, TorchScript, or archive.zip!member)", policy_model_,
         sizeof policy_model_);
+    if (ImGui::IsItemActivated()) {
+        model_choices_ = NewGameDialog::list_exports(s);
+        suggest_open_ = true;
+    }
+    const bool model_editing = ImGui::IsItemActive();
+    const float model_w = ImGui::GetItemRectSize().x;
     ImGui::SameLine();
     if (ImGui::Button("Add")) {
         if (add_policy(m, policy_id_, policy_model_, &policy_error_)) {
@@ -485,6 +494,48 @@ void SettingsDialog::draw_policies(ModelSettings *m, float field_x) {
         }
     }
     if (!policy_error_.empty()) colored_note(policy_error_.c_str(), tok().BAD);
+    if (suggest_open_ && (model_editing || suggest_hovered_))
+        draw_model_suggestions(m, field_x, model_w);
+    else
+        suggest_hovered_ = false;
+}
+
+// The Add row's suggestions under it: a click puts the export's path in the model field, and the
+// next free number in an empty id field.
+void SettingsDialog::draw_model_suggestions(ModelSettings *m, float field_x, float width) {
+    const std::vector<const ModelChoice *> shown = matching_models(model_choices_, policy_model_);
+    const float row = ImGui::GetTextLineHeightWithSpacing();
+    const int rows = std::max(1, std::min(8, static_cast<int>(shown.size())));
+    ImGui::SetCursorPosX(field_x + 12 * char_width() + ImGui::GetStyle().ItemSpacing.x);
+    ImGui::BeginChild("##model_suggestions", ImVec2(width, rows * row + ImGui::GetStyle().WindowPadding.y * 2),
+        ImGuiChildFlags_Borders);
+    suggest_hovered_ = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
+    for (size_t i = 0; i < shown.size(); ++i) {
+        ImGui::PushID(static_cast<int>(i));
+        if (ImGui::Selectable(shown[i]->label.c_str())) {
+            std::snprintf(policy_model_, sizeof policy_model_, "%s", shown[i]->path.c_str());
+            if (!policy_id_[0]) std::snprintf(policy_id_, sizeof policy_id_, "%s", next_policy_id(*m).c_str());
+            suggest_open_ = suggest_hovered_ = false;
+        }
+        ImGui::SetItemTooltip("%s", shown[i]->path.c_str());
+        ImGui::PopID();
+    }
+    if (shown.empty())
+        ImGui::TextDisabled(model_choices_.empty() ? "No exports under the run directory or in models/"
+                                                   : "No export under the run directory or in models/ matches");
+    ImGui::EndChild();
+}
+
+std::vector<const ModelChoice *> SettingsDialog::matching_models(const std::vector<ModelChoice> &all, const char *text) {
+    std::string want = text;
+    std::transform(want.begin(), want.end(), want.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::vector<const ModelChoice *> out;
+    for (const ModelChoice &c : all) {
+        std::string hay = c.label + '\n' + c.path;
+        std::transform(hay.begin(), hay.end(), hay.begin(), [](unsigned char ch) { return std::tolower(ch); });
+        if (hay.find(want) != std::string::npos) out.push_back(&c);
+    }
+    return out;
 }
 
 // Play's default stops: in which steps priority stops when the stack is empty, in your turn and in

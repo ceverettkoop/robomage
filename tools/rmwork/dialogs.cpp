@@ -28,7 +28,8 @@ bool ErrorDialog::draw() {
         ImGui::OpenPopup(name.c_str());
         want_open_ = false;
     }
-    begin_modal_frame(ImVec2(720, 460));
+    // Without a detail the dialog is the message and the footer, its height fitted to them.
+    begin_modal_frame(ImVec2(720, detail_.empty() ? 0 : 460));
     bool keep = true;
     const bool visible = ImGui::BeginPopupModal(name.c_str(), &keep, ImGuiWindowFlags_NoSavedSettings);
     ImGui::PopStyleColor(3);
@@ -36,11 +37,13 @@ bool ErrorDialog::draw() {
     if (!visible) return false;
     ImGui::TextWrapped("%s", message_.c_str());
     ImGui::Spacing();
-    ImGui::TextDisabled("Details");
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, tok().PLOT_BG);
-    ImGui::InputTextMultiline(
-        "##detail", detail_.data(), detail_.size() + 1, ImVec2(-1, -footer_height()), ImGuiInputTextFlags_ReadOnly);
-    ImGui::PopStyleColor();
+    if (!detail_.empty()) {
+        ImGui::TextDisabled("Details");
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, tok().PLOT_BG);
+        ImGui::InputTextMultiline("##detail", detail_.data(), detail_.size() + 1, ImVec2(-1, -footer_height()),
+            ImGuiInputTextFlags_ReadOnly);
+        ImGui::PopStyleColor();
+    }
     ImGui::Separator();
     const bool copied = ImGui::Button("Copy diagnostics");
     if (copied) ImGui::SetClipboardText(diagnostics().c_str());

@@ -122,6 +122,8 @@ std::string policy_model_path(const PolicyEntry &p);
 bool policy_id_valid(const std::string &id, std::string *why);
 // Appends a policy with a valid id no other policy has and a model path; false with `why`.
 bool add_policy(ModelSettings *m, const std::string &id, const std::string &model, std::string *why);
+// The smallest number no policy has as its id ("0" when there are none): an id rmserve serves.
+std::string next_policy_id(const ModelSettings &m);
 
 // The table textures, by settings key, with their display names.
 struct TextureInfo {

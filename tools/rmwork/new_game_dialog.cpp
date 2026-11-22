@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <random>
+#include <utility>
 
 #include "file_picker.h"
 #include "files.h"
@@ -70,6 +71,12 @@ std::vector<ModelChoice> NewGameDialog::list_models(const Settings &s) {
     std::vector<ModelChoice> out;
     for (const PolicyEntry &p : s.models.policies)
         out.push_back({"policy " + p.id + " \xC2\xB7 " + p.model, policy_model_path(p)});
+    for (ModelChoice &e : list_exports(s)) out.push_back(std::move(e));
+    return out;
+}
+
+std::vector<ModelChoice> NewGameDialog::list_exports(const Settings &s) {
+    std::vector<ModelChoice> out;
     const std::string runs = run_dir_path(s);
     for (const std::string &run : names_in(runs, true)) {
         const std::string exports = runs + "/" + run + "/exports";

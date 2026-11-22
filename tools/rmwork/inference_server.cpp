@@ -82,7 +82,9 @@ void InferenceServer::start(const ServerConfig &c) {
         argv_.push_back(p.first + "=" + model);
     }
     if (argv_.size() == 3)
-        return fail("Settings \xE2\x86\x92 Models has no policy rmserve can serve (one with a number as its id).", "");
+        return fail("No policy for rmserve to serve. Add one in Settings \xE2\x86\x92 Models: on the Policies' Add "
+                    "row, give a number as its id and choose a model export, then press Add.",
+            "");
     if (!make_dirs(c.log_dir) || !make_dirs(parent_dir(c.socket)))
         return fail("Cannot create " + c.log_dir + " or the socket's directory.", "");
     err_path_ = c.log_dir + "/rmserve.err";

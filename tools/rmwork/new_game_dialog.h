@@ -41,6 +41,9 @@ class NewGameDialog {
         // Settings → Models' policies, the exports of every run under the run directory, then those in
         // the models directory's zip archives (paths `<archive>.zip!<member>`).
         static std::vector<ModelChoice> list_models(const Settings &s);
+        // The exports alone: every run's under the run directory, then the models directory's zipped ones
+        // (Settings → Models' Add row suggests them).
+        static std::vector<ModelChoice> list_exports(const Settings &s);
         // What keeps `g` from starting ("" when nothing does): an empty deck, an nn: opponent with no
         // model or socket, or no engine for it.
         static std::string check(const NewGameSettings &g, const std::string &engine_configured);
