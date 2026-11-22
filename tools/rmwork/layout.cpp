@@ -32,6 +32,9 @@ const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
     {"sideboard", "Sideboard",
         "A seat's 75 as cards; between the games of a best of three, the sideboarding: a plan of swaps, the league "
         "guide's and the model's."},
+    {"models", "Models",
+        "The runs' policies by date with their compatibility with the engine; play against one, serve it, and the "
+        "inference server."},
     {"hand_a", "Player A \xC2\xB7 Hand",
         "Player A's hand as the viewer knows it: the known cards and how many are hidden."},
     {"library_a", "Player A \xC2\xB7 Library",

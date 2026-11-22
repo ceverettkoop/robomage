@@ -9,6 +9,10 @@
 
 namespace rmwork {
 
+// Writes the synthetic runs directory below at `runs` (alpha, beta, latest/); false when a file cannot
+// be written.
+bool write_policy_fixture(const std::string &runs);
+
 // A synthetic runs directory under `tmp`: two runs with fixed points, final, periodic checkpoints, the
 // seed, a live export, the old layouts' copies, evaluation exports and temporary files, metrics.jsonl
 // dates that disagree with the files' modification times (a torn last line, noise lines), a policy no

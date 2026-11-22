@@ -17,6 +17,7 @@
 #include "layout_dialogs.h"
 #include "links.h"
 #include "loader.h"
+#include "model_manager_view.h"
 #include "new_game_dialog.h"
 #include "play_dialogs.h"
 #include "play_session.h"
@@ -206,6 +207,18 @@ class App {
         // The status bar's Play field: "Your decision", "Opponent is thinking…", "Match over", …
         std::string play_state_text() const;
 
+        // ── The Models tool ──
+        ModelManagerView &model_manager() { return models_; }
+        // Does what the tool asked for: play against, serve, copy a path, the server, Settings → Models.
+        void run_model_request(const ModelRequest &r);
+        // Game → New Game with the last choices but the opponent: the model `model`.
+        void open_new_game_with_model(const std::string &model);
+        // `model` served: added to Settings → Models' policies under the next free id unless a policy
+        // already names it, and the server started with the workbench; the policy's id.
+        std::string serve_model(const std::string &model);
+        // Restarts the server the workbench starts, as Settings → Models' Restart server does.
+        void restart_server() { settings_dialog_.request_server_restart(); }
+
         // ── The start page ──
         // Shows it in place of the mode's dockspace (its lists scanned again), or the dockspace.
         void show_start_page(bool on);
@@ -232,6 +245,7 @@ class App {
         void draw_status_bar();
         void draw_dock();
         void draw_tools();
+        void draw_models_tool();
         void draw_start_page();
         void refresh_start_page();
         StartContext start_context();
@@ -318,6 +332,7 @@ class App {
         bool engine_found_ = false;
         bool socket_present_ = false;
         InferenceServer server_;  // Settings → Models → Start the server (interactive sessions only)
+        ModelManagerView models_;
         StartPage start_page_;
         bool start_shown_ = false;
         double start_scanned_at_ = -1;  // when the page's last scan was asked for

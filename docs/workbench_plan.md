@@ -560,7 +560,29 @@ Ordered roughly by value against effort. Each is one dockable tool.
    it back; the game whose engine was killed listed as stopped and opened in Replay).
 2. **New Game dialog**: your deck and seat, opponent (model / checkpoint, scripted tier, explore), best-of-one or best-of-three, seed, auto-mana, Model's Read on or off, knowledge level.
 3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3), filtered by run (§4.6).
-4. **Model manager**: exports and checkpoints by date (§4.6), rmserve start/attach, compatibility check.
+4. ~~**Model manager**~~: built as the Models tool (`model_manager`, `model_manager_view`; View, Analysis →
+   Models; in both modes, in no preset). A strip with the inference server's state (the status bar's text),
+   the socket, Start server or Restart / Stop server (Settings → Models' checkbox and Restart server, the
+   same path) and Settings → Models…; a filter field (a substring of the run or name), a Run combo box
+   ("All runs" and each run), Show all (the hidden rows) and Refresh; the policy table of §4.6 (date, run,
+   name, learner steps, formats, compatible), sorted by a click on a header, date descending each time the
+   tool opens (not remembered), `latest` first under any sort; hovering a row shows its files and what its
+   compatibility rests on. Compatibility: the row's model manifest (its run's `tables/manifest.json`, or
+   `latest.json`'s `manifest`) against the engine's tables' (`<engine> --cards-frame` and the oracle-text
+   table loaded as Model's Read loads them, `Featurization::manifest()`), with `check_compatible`: exact for a
+   row that plays an export, the checkpoint rule for a checkpoint-only row ("checkpoint only" in its formats).
+   `latest.json`'s manifest carries the hashes but no vocab manifest or registry: equal `vocab_hash` values
+   stand for the same vocab, and an export with another is refused by that hash. The engine's manifest is
+   read once per engine binary (path and modification time) and each manifest file's verdicts kept by its
+   modification time, all on the checker's thread ("checking…" meanwhile); an incompatible row is greyed
+   and says `rmtrain retable <run>`; a row with no manifest (a zipped export, a run without tables, a
+   `latest.json` from before manifests) or an engine whose tables cannot be read is unknown. Actions on the
+   selected row: Play against (New Game with it as the opponent's model; also a double-click), Serve (added
+   to Settings → Models' policies under `next_policy_id` unless a policy names it, and the server started
+   with the workbench) and Copy path. Checked by `rmwork --selftest` (`selftest_model_manager`: the order
+   under each column, the filter, the run, Show all, the verdicts on synthetic manifest pairs, the checker
+   over the policy catalog's fixture with a given engine manifest; the App: the tool drawn, the rows and
+   their verdicts, a run listed on reopening, Serve once, Start / Stop, Play against, Settings).
 
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
@@ -794,8 +816,8 @@ migration acceptance's originals and the earlier benches' baselines), so the clu
 not by deleting. Built so far: `runs/latest` (`rmtrain`, `docs/rmtrain.md` §4.1), and the checkpoints by date
 for New Game's opponent list and Settings → Models' Add row suggestions (`tools/rmwork/policy_catalog.h`: the
 rows, dates, hidden rows and `latest` below; there the hidden rows are left out, `latest` is the first row and
-the default model, and a row plays its TorchScript export, else its `.pt2`). Still to come: the Model manager
-(its columns, compatibility, "Show all", filter and sorting) and the episodes by run.
+the default model, and a row plays its TorchScript export, else its `.pt2`), and the Model manager (§4.1 item
+4: its columns, compatibility, "Show all", filter, run and sorting). Still to come: the episodes by run.
 
 **Checkpoints by date.** The Model manager (item 4) and New Game's opponent list show one flat list over
 the runs directory, newest first, in place of the order by name:

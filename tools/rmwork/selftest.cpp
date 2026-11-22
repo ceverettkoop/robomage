@@ -21,6 +21,7 @@
 #include "selftest_images.h"
 #include "selftest_priority.h"
 #include "selftest_inference_server.h"
+#include "selftest_model_manager.h"
 #include "selftest_model_zip.h"
 #include "selftest_policy_catalog.h"
 #include "selftest_start.h"
@@ -1212,6 +1213,7 @@ int run_selftest() {
     check_app_persists(&t, paths);
     check_start_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
     check_app_server(&t, paths);
+    check_model_manager_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
     destroy_ui_context();
     check_settings_file(&t, paths, tmp);
     check_font_settings(&t);
@@ -1227,6 +1229,7 @@ int run_selftest() {
     check_model_zip_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_policy_catalog_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_inference_server_units([&t](bool ok, const std::string &what) { check(&t, ok, what); });
+    check_model_manager_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     begin_headless();
     check_theme_contrast(&t);
     check_image_units([&t](bool ok, const std::string &what) { check(&t, ok, "Images: " + what); }, tmp);

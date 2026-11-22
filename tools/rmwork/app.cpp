@@ -192,6 +192,7 @@ void App::frame() {
     draw_toolbar();
     draw_status_bar();
     if (start_page_.poll()) start_status_at_ = -1;
+    models_.set_open(!start_shown_ && settings_.tools[mode_index(mode())][tool_index(Tool::MODELS)]);
     if (start_shown_) {
         draw_start_page();
     } else {
@@ -219,7 +220,7 @@ void App::frame() {
 }
 
 bool App::working() const {
-    if (card_images_.textures().busy()) return true;
+    if (card_images_.textures().busy() || models_.busy()) return true;
     if (loader_.busy() || (run_browser_.is_open() && !run_browser_.ready())) return true;
     if (start_shown_ && !start_page_.fresh()) return true;
     if (!play_.running()) return false;
@@ -915,6 +916,7 @@ void App::draw_menu_bar() {
         if (ImGui::MenuItem("Re-evaluate With Checkpoint…")) not_built("Re-evaluate With Checkpoint");
         if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
         if (ImGui::MenuItem("Biggest Swings")) show_tool(Tool::SWINGS);
+        if (ImGui::MenuItem("Models")) show_tool(Tool::MODELS);
         if (ImGui::MenuItem("Batch Over Episodes…")) not_built("Batch Over Episodes");
         ImGui::EndMenu();
     }
@@ -1351,7 +1353,12 @@ void App::draw_tools() {
                                                                   : "";
         ctx.new_game = &new_game_pressed_;
         ctx.choosing = choosing();
-        if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) draw_tool_body(tool, ctx);
+        if (ImGui::Begin(window_names_[mi][t].c_str(), &settings_.tools[mi][t], flags)) {
+            if (tool == Tool::MODELS)
+                draw_models_tool();
+            else
+                draw_tool_body(tool, ctx);
+        }
         ImGui::End();
     }
     if (settled) focus_tools_.clear();
@@ -1362,6 +1369,64 @@ void App::draw_tools() {
     if (answered >= 0) play_reply(answered);
     const std::string table_status = table_.take_status();
     if (!table_status.empty()) status(table_status);
+}
+
+// The Models tool's body, against the engine replays and games run with, and what it asks for.
+void App::draw_models_tool() {
+    ModelManagerContext c;
+    c.settings = &settings_;
+    c.engine = absolute_path(engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+    c.server_state = inference_health();
+    c.server_bad = server_.state() == InferenceServer::State::FAILED;
+    if (c.server_bad) c.server_error = server_.message();
+    run_model_request(models_.draw(c));
+}
+
+void App::run_model_request(const ModelRequest &r) {
+    switch (r.kind) {
+        case ModelRequest::Kind::NONE:
+            return;
+        case ModelRequest::Kind::PLAY_AGAINST:
+            open_new_game_with_model(r.path);
+            return;
+        case ModelRequest::Kind::SERVE:
+            status("Serving " + r.path + " as policy " + serve_model(r.path));
+            return;
+        case ModelRequest::Kind::COPY_PATH:
+            ImGui::SetClipboardText(r.path.c_str());
+            status("Copied " + r.path);
+            return;
+        case ModelRequest::Kind::START_SERVER:
+            settings_.models.start_server = true;
+            return;
+        case ModelRequest::Kind::RESTART_SERVER:
+            restart_server();
+            return;
+        case ModelRequest::Kind::STOP_SERVER:
+            settings_.models.start_server = false;
+            return;
+        case ModelRequest::Kind::SETTINGS:
+            open_settings(SettingsDialog::MODELS);
+            return;
+    }
+}
+
+void App::open_new_game_with_model(const std::string &model) {
+    NewGameSettings g = settings_.new_game;
+    g.opponent = opponent_key(Opponent::MODEL);
+    g.model = model;
+    new_game_.open(g, settings_, engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+}
+
+std::string App::serve_model(const std::string &model) {
+    settings_.models.start_server = true;
+    const std::string path = resolve_path(model, "");
+    for (const PolicyEntry &p : settings_.models.policies)
+        if (policy_model_path(p) == path) return p.id;
+    const std::string id = next_policy_id(settings_.models);
+    std::string why;
+    add_policy(&settings_.models, id, model, &why);
+    return id;
 }
 
 // A tool from the Game or Analysis menu: opened, brought to the front, the dockspace shown.

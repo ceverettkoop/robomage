@@ -58,6 +58,8 @@ class SettingsDialog {
         // The Add row's suggestions whose label or path contains `text` (any case; every one when it is
         // empty).
         static std::vector<const ModelChoice *> matching_models(const std::vector<ModelChoice> &all, const char *text);
+        // Restarts the server at the next frame, as Restart server does.
+        void request_server_restart() { server_restart_ = true; }
         // True once after Restart server was pressed.
         bool take_server_restart() {
             const bool r = server_restart_;

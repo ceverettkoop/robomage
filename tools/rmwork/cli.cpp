@@ -165,7 +165,7 @@ static void usage() {
         "  --table-hover-card NAME  the Table: hover the first card whose name contains NAME every frame (what\n"
         "                     a click does, in Play at your decision)\n"
         "  --tool NAME        open a tool and bring its tab to the front (table, players, choices, inspector,\n"
-        "                     tree, log, swings, graph, model, sideboard, hand_a … exile_b); repeatable\n"
+        "                     tree, log, swings, graph, model, sideboard, models, hand_a … exile_b); repeatable\n"
         "  --choices-hover N  Choices: hover menu row N (0-based) every frame (its objects lit on the Table)\n"
         "  --tree-expand      the State Tree: expand the players' zones, the stack, the frame's tables and its\n"
         "                     object table\n"

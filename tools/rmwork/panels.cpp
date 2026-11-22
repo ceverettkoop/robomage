@@ -79,7 +79,7 @@ static std::string loaded_body(const rmwork::ReplaySession &s, rmwork::Tool t) {
 
 // One of the tools ReplayTools draws.
 static bool replay_tool(rmwork::Tool t) {
-    return t != rmwork::Tool::TABLE && t != rmwork::Tool::LOG;
+    return t != rmwork::Tool::TABLE && t != rmwork::Tool::LOG && t != rmwork::Tool::MODELS;
 }
 
 // Play with no game: what to do, and a New Game button under it.

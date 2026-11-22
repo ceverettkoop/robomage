@@ -65,8 +65,8 @@ static std::string row_keys(const std::vector<rmwork::PolicyRow> &rows, bool hid
 
 namespace rmwork {
 
-void check_policy_catalog_units(const CheckFn &check, const std::string &tmp) {
-    const std::string runs = tmp + "/policy_catalog/runs", a = runs + "/alpha", b = runs + "/beta";
+bool write_policy_fixture(const std::string &runs) {
+    const std::string a = runs + "/alpha", b = runs + "/beta";
     bool ok = true;
     // alpha: trained first (its metrics), its files the newest.
     std::string m = metrics_line(T0 + 10, "rnad_step", "\"learner_steps\": 10, \"loss\": 0.5");
@@ -104,6 +104,12 @@ void check_policy_catalog_units(const CheckFn &check, const std::string &tmp) {
         "{\"run\": \"beta\", \"run_dir\": \"/y\", \"name\": \"m1\", \"learner_steps\": 500, \"version\": 500, "
         "\"trained_at\": " + std::to_string(T0 + 86400) + ", \"written_at\": 1, \"files\": {}}\n", 0);
     ok &= put(runs + "/latest/policy.ts.pt", "x", 0) && put(runs + "/latest/model.pt", "x", 0);
+    return ok;
+}
+
+void check_policy_catalog_units(const CheckFn &check, const std::string &tmp) {
+    const std::string runs = tmp + "/policy_catalog/runs", a = runs + "/alpha", b = runs + "/beta";
+    const bool ok = write_policy_fixture(runs);
     check(ok, "Policy catalog: the fixture cannot be written");
 
     std::vector<PolicyRow> rows = scan_policies(runs, "");
