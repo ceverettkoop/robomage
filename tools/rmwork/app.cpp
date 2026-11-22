@@ -960,17 +960,28 @@ void App::draw_file_menu() {
     if (ImGui::MenuItem("Exit")) quit_ = true;
 }
 
+// View's item for tool `t`: a check mark while it is open; a click opens or closes it.
+void App::view_menu_tool(Tool t) {
+    const Mode m = mode();
+    const bool open = settings_.tools[mode_index(m)][tool_index(t)];
+    if (ImGui::MenuItem(tool_info(t).title, nullptr, open)) {
+        set_tool_open(m, t, !open);
+        show_start_page(false);
+    }
+}
+
 void App::draw_view_menu() {
     const Mode m = mode();
     // Each section has its own ID scope: the Play preset and the Play mode share a label.
     ImGui::TextDisabled("Tools");
     ImGui::PushID("tools");
-    for (int t = 0; t < TOOL_COUNT; ++t) {
-        const bool open = settings_.tools[mode_index(m)][t];
-        if (ImGui::MenuItem(tool_info(static_cast<Tool>(t)).title, nullptr, open)) {
-            set_tool_open(m, static_cast<Tool>(t), !open);
-            show_start_page(false);
+    for (int t = 0; t < FIRST_ZONE_TOOL; ++t) view_menu_tool(static_cast<Tool>(t));
+    if (ImGui::BeginMenu("Zones")) {
+        for (int t = FIRST_ZONE_TOOL; t < TOOL_COUNT; ++t) {
+            if (t > FIRST_ZONE_TOOL && (t - FIRST_ZONE_TOOL) % ZONE_TOOLS_PER_SEAT == 0) ImGui::Separator();
+            view_menu_tool(static_cast<Tool>(t));
         }
+        ImGui::EndMenu();
     }
     ImGui::PopID();
     ImGui::Separator();
@@ -1250,6 +1261,8 @@ void App::draw_dock() {
         tab_order_frames_[mi] = 3;
         pending_[mi] = false;
         rehome_[mi].fill(false);
+        // A tool asked to the front (--tool) stays open whatever the layout opens.
+        for (int t : focus_tools_) set_tool_open(m, static_cast<Tool>(t), true);
     } else if (tab_order_frames_[mi] > 0) {
         --tab_order_frames_[mi];
         order_layout_tabs(m, applied_root_[mi]);

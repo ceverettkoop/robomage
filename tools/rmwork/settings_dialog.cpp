@@ -526,7 +526,8 @@ void SettingsDialog::draw_model_suggestions(ModelSettings *m, float field_x, flo
     ImGui::EndChild();
 }
 
-std::vector<const ModelChoice *> SettingsDialog::matching_models(const std::vector<ModelChoice> &all, const char *text) {
+std::vector<const ModelChoice *> SettingsDialog::matching_models(
+    const std::vector<ModelChoice> &all, const char *text) {
     std::string want = text;
     std::transform(want.begin(), want.end(), want.begin(), [](unsigned char c) { return std::tolower(c); });
     std::vector<const ModelChoice *> out;

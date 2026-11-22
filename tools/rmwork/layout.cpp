@@ -32,6 +32,18 @@ const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
     {"sideboard", "Sideboard",
         "A seat's 75 as cards; between the games of a best of three, the sideboarding: a plan of swaps, the league "
         "guide's and the model's."},
+    {"hand_a", "Player A \xC2\xB7 Hand",
+        "Player A's hand as the viewer knows it: the known cards and how many are hidden."},
+    {"library_a", "Player A \xC2\xB7 Library",
+        "Player A's library as the viewer knows it: its known cards, top first."},
+    {"graveyard_a", "Player A \xC2\xB7 Graveyard", "Player A's graveyard, newest first."},
+    {"exile_a", "Player A \xC2\xB7 Exile", "The cards Player A owns in exile, newest first, with what exiled them."},
+    {"hand_b", "Player B \xC2\xB7 Hand",
+        "Player B's hand as the viewer knows it: the known cards and how many are hidden."},
+    {"library_b", "Player B \xC2\xB7 Library",
+        "Player B's library as the viewer knows it: its known cards, top first."},
+    {"graveyard_b", "Player B \xC2\xB7 Graveyard", "Player B's graveyard, newest first."},
+    {"exile_b", "Player B \xC2\xB7 Exile", "The cards Player B owns in exile, newest first, with what exiled them."},
 };
 
 const char *const MODE_KEYS[rmwork::MODE_COUNT] = {"play", "replay"};
@@ -307,6 +319,18 @@ int find_tool(const std::string &name) {
     for (int t = 0; t < TOOL_COUNT; ++t)
         if (want == TOOLS[t].key || want == lower(TOOLS[t].title)) return t;
     return -1;
+}
+
+bool zone_tool(Tool t, int *seat, int *zone) {
+    const int i = tool_index(t) - FIRST_ZONE_TOOL;
+    if (i < 0) return false;
+    *seat = i / ZONE_TOOLS_PER_SEAT;
+    *zone = i % ZONE_TOOLS_PER_SEAT;
+    return true;
+}
+
+Tool zone_tool_of(int seat, int zone) {
+    return static_cast<Tool>(FIRST_ZONE_TOOL + seat * ZONE_TOOLS_PER_SEAT + zone);
 }
 
 const ToolInfo &tool_info(Tool t) {

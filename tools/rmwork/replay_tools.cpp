@@ -14,6 +14,11 @@ void ReplayTools::begin_frame(ReplaySession &s, TableView &table, LinkState &lin
 }
 
 void ReplayTools::draw(Tool t, ReplaySession &s, LinkState *links) {
+    int seat = 0, zone = 0;
+    if (zone_tool(t, &seat, &zone)) {
+        players_.draw_zone_tool(data_, seat, static_cast<ZoneKind>(zone), links, magnify_);
+        return;
+    }
     switch (t) {
         case Tool::PLAYERS:
             players_.draw(data_, s, links);
@@ -39,8 +44,7 @@ void ReplayTools::draw(Tool t, ReplaySession &s, LinkState *links) {
         case Tool::SIDEBOARD:
             sideboard_.draw(data_, s, choosing_, magnify_);
             return;
-        case Tool::TABLE:
-        case Tool::LOG:
+        default:  // the Table, the Game Log and the zone tools: not here
             return;
     }
 }

@@ -4,10 +4,13 @@
 #include <cctype>
 
 #include "imgui_internal.h"
+#include "layout.h"
 #include "table_layout.h"
 #include "theme.h"
 #include "tool_widgets.h"
 #include "widgets.h"
+
+static_assert(rmwork::ZONE_KINDS == rmwork::ZONE_TOOLS_PER_SEAT, "a zone tool per seat and zone");
 
 namespace {
 
@@ -130,37 +133,41 @@ void PlayersView::draw_box(const ToolData &data, int seat, LinkState *links) {
 void PlayersView::open_zone(int seat, ZoneKind z) {
     if (zone_open(seat, z)) return;
     ZoneWindow w;
-    w.seat = seat;
-    w.kind = z;
+    w.pane.seat = seat;
+    w.pane.kind = z;
     windows_.push_back(w);
 }
 
 void PlayersView::close_zone(int seat, ZoneKind z) {
     windows_.erase(std::remove_if(windows_.begin(), windows_.end(),
-                       [&](const ZoneWindow &w) { return w.seat == seat && w.kind == z; }),
+                       [&](const ZoneWindow &w) { return w.pane.seat == seat && w.pane.kind == z; }),
         windows_.end());
 }
 
 bool PlayersView::zone_open(int seat, ZoneKind z) const {
     for (const ZoneWindow &w : windows_)
-        if (w.seat == seat && w.kind == z) return true;
+        if (w.pane.seat == seat && w.pane.kind == z) return true;
     return false;
 }
 
 uint64_t PlayersView::magnified() const {
     for (const ZoneWindow &w : windows_)
-        if (w.mag.handle()) return w.mag.handle();
+        if (w.pane.mag.handle()) return w.pane.mag.handle();
+    for (const ZonePane &p : tool_panes_)
+        if (p.mag.handle()) return p.mag.handle();
     return 0;
 }
 
 bool PlayersView::card_rect(int seat, ZoneKind z, size_t index, ImVec2 *min, ImVec2 *max) const {
+    const ZonePane *found = nullptr;
     for (const ZoneWindow &w : windows_)
-        if (w.seat == seat && w.kind == z && index < w.rects.size()) {
-            *min = w.rects[index].first;
-            *max = w.rects[index].second;
-            return true;
-        }
-    return false;
+        if (!found && w.pane.seat == seat && w.pane.kind == z && index < w.pane.rects.size()) found = &w.pane;
+    const ZonePane &tool = tool_panes_[static_cast<size_t>(seat * ZONE_KINDS + static_cast<int>(z))];
+    if (!found && index < tool.rects.size()) found = &tool;
+    if (!found) return false;
+    *min = found->rects[index].first;
+    *max = found->rects[index].second;
+    return true;
 }
 
 std::string PlayersView::zone_window_title(int seat, ZoneKind z) {
@@ -170,7 +177,7 @@ std::string PlayersView::zone_window_title(int seat, ZoneKind z) {
 void PlayersView::draw_zone_windows(ToolData &data, LinkState *links, ImGuiKeyChord magnify) {
     // Esc closes a magnifier before any window.
     bool magnifying = false;
-    for (const ZoneWindow &w : windows_) magnifying = magnifying || w.mag.handle() != 0;
+    for (const ZoneWindow &w : windows_) magnifying = magnifying || w.pane.mag.handle() != 0;
     for (size_t i = 0; i < windows_.size();) {
         if (draw_zone_window(data, windows_[i], links, magnify, i, !magnifying)) {
             ++i;
@@ -258,8 +265,8 @@ bool PlayersView::draw_zone_window(
         w.placed = true;
     }
     bool open = true;
-    const std::string title =
-        zone_window_title(w.seat, w.kind) + "###zone." + std::to_string(w.seat) + "." + zone_key(w.kind);
+    const std::string title = zone_window_title(w.pane.seat, w.pane.kind) + "###zone." + std::to_string(w.pane.seat) +
+                              "." + zone_key(w.pane.kind);
     const ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse;
     ImGui::PushStyleColor(ImGuiCol_WindowBg, tok().PANEL);
@@ -270,12 +277,25 @@ bool PlayersView::draw_zone_window(
         return open;
     }
     const bool focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    draw_zone_pane(data, w.pane, links, magnify);
+    if (focused && esc_closes && ImGui::IsKeyPressed(ImGuiKey_Escape, false)) open = false;
+    ImGui::End();
+    return open;
+}
+
+void PlayersView::draw_zone_tool(ToolData &data, int seat, ZoneKind z, LinkState *links, ImGuiKeyChord magnify) {
+    ZonePane &p = tool_panes_[static_cast<size_t>(seat * ZONE_KINDS + static_cast<int>(z))];
+    p.seat = seat;
+    p.kind = z;
+    draw_zone_pane(data, p, links, magnify);
+}
+
+void PlayersView::draw_zone_pane(ToolData &data, ZonePane &p, LinkState *links, ImGuiKeyChord magnify) {
     if (!data.ok()) {
         ImGui::TextDisabled("%s", data.error().c_str());
-        ImGui::End();
-        return open;
+        return;
     }
-    const ZoneList &z = data.models().zones.get(w.seat, w.kind);
+    const ZoneList &z = data.models().zones.get(p.seat, p.kind);
     ImGui::TextDisabled("%s", zone_caption(data, z).c_str());
     const float cw = std::round(ImGui::GetFontSize() * 6.0f), ch = std::round(cw * CARD_ASPECT);
     const float gap = 8, label_h = ImGui::GetTextLineHeight();
@@ -345,45 +365,42 @@ bool PlayersView::draw_zone_window(
     ImGui::EndChild();
     ImGui::TextDisabled("Hold %s over a card, or right-click it, to magnify it.",
         magnify ? ImGui::GetKeyChordName(magnify) : "the magnify key");
-    w.mag.update(under, over, magnify);
+    p.mag.update(under, over, magnify);
     if (!force_mag_.empty()) {
         const std::string want = lower(force_mag_);
         for (size_t i = 0; i < z.cards.size(); ++i)
             if (!z.cards[i].name.empty() && lower(z.cards[i].name).find(want) != std::string::npos) {
-                w.mag.open(z.cards[i].handle ? z.cards[i].handle : KNOWN_CARD_ID + i);
+                p.mag.open(z.cards[i].handle ? z.cards[i].handle : KNOWN_CARD_ID + i);
                 break;
             }
     }
-    if (w.mag.handle()) {
+    if (p.mag.handle()) {
         // The magnified card: the one under the mouse, else the one it was opened on (found again).
-        const ZoneCard *card = under == w.mag.handle() ? under_card : nullptr;
+        const ZoneCard *card = under == p.mag.handle() ? under_card : nullptr;
         ImVec2 mn = under_min, mx = under_max;
-        if (!card && w.mag.handle() != HIDDEN_ID)
+        if (!card && p.mag.handle() != HIDDEN_ID)
             for (size_t i = 0; i < z.cards.size(); ++i)
-                if ((z.cards[i].handle ? z.cards[i].handle : KNOWN_CARD_ID + i) == w.mag.handle()) {
+                if ((z.cards[i].handle ? z.cards[i].handle : KNOWN_CARD_ID + i) == p.mag.handle()) {
                     card = &z.cards[i];
                     mn = rects[i].first;
                     mx = rects[i].second;
                 }
-        if (w.mag.handle() == HIDDEN_ID && under != HIDDEN_ID && !rects.empty()) {
+        if (p.mag.handle() == HIDDEN_ID && under != HIDDEN_ID && !rects.empty()) {
             mn = rects.back().first;
             mx = rects.back().second;
         }
         if (card) {
             draw_magnified_card(*renderer_, look_of(data, *card), card_lines(z, *card), mn, mx);
-        } else if (w.mag.handle() == HIDDEN_ID) {
+        } else if (p.mag.handle() == HIDDEN_ID) {
             draw_magnified_card(*renderer_, CardLook(),
                 {std::to_string(z.hidden) + " hidden " + (z.hidden == 1 ? "card" : "cards"),
                     std::string(view_name(data.frame().view)) + " cannot name them"},
                 mn, mx);
         } else {
-            w.mag.close();
+            p.mag.close();
         }
     }
-    w.rects = rects;
-    if (focused && esc_closes && ImGui::IsKeyPressed(ImGuiKey_Escape, false)) open = false;
-    ImGui::End();
-    return open;
+    p.rects = rects;
 }
 
 }  // namespace rmwork

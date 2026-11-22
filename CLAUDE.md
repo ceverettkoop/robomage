@@ -887,7 +887,7 @@ handshake JSON, the shared region, request / response layouts.
   `decision_frame` (what a viewer sees of a decision: frame, menu, the decider's episode step),
   `zone_model` (hand, library, graveyard, exile as a viewer knows them, `k_*` included), `state_tree`
   (the frame as a lazy tree generic over the SCHEMA), `evaluations` (series per seat and policy, swings,
-  disagreements, turn bands), the views `players_view` (and the zone windows), `choices_view`,
+  disagreements, turn bands), the views `players_view` (and the zone windows and zone tools), `choices_view`,
   `inspector_view`, `state_tree_view`, `value_views` (Value Graph, Swings, Model's Read), `magnifier`
   (shared with the Table), `tool_widgets` (grids, seat chips, zone icons, bars, swatches, sparkline),
   `selftest_tools` (their checks in both self-tests); the shell: `layout` (modes,

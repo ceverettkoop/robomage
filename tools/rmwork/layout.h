@@ -34,9 +34,19 @@ enum class Tool {
     SWINGS,
     GRAPH,
     MODEL,
-    SIDEBOARD
+    SIDEBOARD,
+    // A player's zone as a tool: Player A's hand, library, graveyard and exile, then Player B's (the
+    // order of ZoneKind, zone_model.h).
+    HAND_A,
+    LIBRARY_A,
+    GRAVEYARD_A,
+    EXILE_A,
+    HAND_B,
+    LIBRARY_B,
+    GRAVEYARD_B,
+    EXILE_B
 };
-inline constexpr int TOOL_COUNT = 10;
+inline constexpr int TOOL_COUNT = 18;
 
 // Per tool: open (true) or closed.
 using ToolFlags = std::array<bool, TOOL_COUNT>;
@@ -53,6 +63,13 @@ int find_tool(const std::string &name);
 inline int tool_index(Tool t) {
     return static_cast<int>(t);
 }
+// The first zone tool (Player A's hand); the zone tools run from it to the end of Tool.
+inline constexpr int FIRST_ZONE_TOOL = static_cast<int>(Tool::HAND_A);
+inline constexpr int ZONE_TOOLS_PER_SEAT = 4;
+// Whether `t` is a zone tool, with its seat (0 = A) and zone (a ZoneKind's index).
+bool zone_tool(Tool t, int *seat, int *zone);
+// The zone tool of `seat`'s zone `zone` (a ZoneKind's index).
+Tool zone_tool_of(int seat, int zone);
 inline int mode_index(Mode m) {
     return static_cast<int>(m);
 }

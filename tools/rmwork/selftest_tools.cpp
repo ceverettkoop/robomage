@@ -669,6 +669,20 @@ void check_tools_drawing(
     p.close_zone(1, ZoneKind::HAND);
     ImGui::GetIO().AddMousePosEvent(-1000, -1000);
     frames(1);
+    // The zone tool of A's graveyard, its window not open, draws the zone's cards (the hidden ones'
+    // back after them) in its tab.
+    app.focus_tool(zone_tool_of(0, static_cast<int>(ZoneKind::GRAVEYARD)));
+    frames(3);
+    {
+        const ZoneList &gz = app.tools().data().models().zones.get(0, ZoneKind::GRAVEYARD);
+        const size_t drawn = gz.cards.size() + (gz.hidden > 0 ? 1 : 0);
+        ImVec2 a, b;
+        check(!p.zone_open(0, ZoneKind::GRAVEYARD) &&
+                  (drawn == 0 || p.card_rect(0, ZoneKind::GRAVEYARD, drawn - 1, &a, &b)) &&
+                  !p.card_rect(0, ZoneKind::GRAVEYARD, drawn, &a, &b),
+            at + ": the Player A \xC2\xB7 Graveyard tool does not draw the graveyard's " + std::to_string(drawn) +
+                " cards");
+    }
     s.go_to(0);
     s.set_view(VIEW_A);
 }

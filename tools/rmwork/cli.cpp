@@ -164,8 +164,8 @@ static void usage() {
         "  --table-magnify NAME   the Table: open the magnifier on the first card whose name contains NAME\n"
         "  --table-hover-card NAME  the Table: hover the first card whose name contains NAME every frame (what\n"
         "                     a click does, in Play at your decision)\n"
-        "  --tool NAME        bring a tool's tab to the front (table, players, choices, inspector, tree, log,\n"
-        "                     swings, graph, model, sideboard); repeatable\n"
+        "  --tool NAME        open a tool and bring its tab to the front (table, players, choices, inspector,\n"
+        "                     tree, log, swings, graph, model, sideboard, hand_a … exile_b); repeatable\n"
         "  --choices-hover N  Choices: hover menu row N (0-based) every frame (its objects lit on the Table)\n"
         "  --tree-expand      the State Tree: expand the players' zones, the stack, the frame's tables and its\n"
         "                     object table\n"
@@ -600,7 +600,11 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.table().picker_view().force_filter(opt.picker_filter);
     app.table().panel_view().force_filter(opt.picker_filter);
     app.table().picker_view().set_list(opt.picker_list);
-    for (const std::string &t : opt.focus_tools) app.focus_tool(static_cast<rmwork::Tool>(rmwork::find_tool(t)));
+    for (const std::string &name : opt.focus_tools) {
+        const rmwork::Tool t = static_cast<rmwork::Tool>(rmwork::find_tool(name));
+        app.set_tool_open(app.mode(), t, true);
+        app.focus_tool(t);
+    }
     app.tools().choices().force_hover(opt.choices_hover);
     if (opt.tree_expand) app.tools().tree().expand_overview();
     for (const auto &z : opt.zones) app.tools().players().open_zone(z.first, z.second);

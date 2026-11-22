@@ -227,6 +227,7 @@ class App {
         void draw_menu_bar();
         void draw_file_menu();
         void draw_view_menu();
+        void view_menu_tool(Tool t);
         void draw_toolbar();
         void draw_status_bar();
         void draw_dock();
