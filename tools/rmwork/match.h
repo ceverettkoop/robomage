@@ -127,6 +127,7 @@ class Match {
 
         std::string log_path;  // the decision log, absolute
         RmlogInfo log;
+        uint64_t log_hash = 0;  // the log's bytes' FNV-1a 64 (replay_cache.h), set by the loader
         std::string dump_path, narrative_path, stderr_path;
         std::string engine;         // the engine binary that replayed it
         bool from_cache = false;    // the replay's files came from the cache
@@ -143,6 +144,9 @@ class Match {
         MatchResult result;
         std::vector<EpisodeStepInfo> episode_steps;
         std::vector<std::string> episode_files;
+        // Counts the changes to the episode steps' evaluations made after the match was built (a
+        // re-evaluation merged or removed, reevaluation.h), so what reads them reads them again.
+        unsigned evaluations_changed = 0;
         std::array<std::string, 2> agents;  // per seat the agent its episodes name (`agent_a` / `agent_b`), "" none
         bool live = false;                  // Play's match: one seat's frames, still growing (append_live_frame)
         int live_seat = -1;                 // its seat
@@ -152,6 +156,8 @@ class Match {
         // The match ended with terminal frames (frame index decisions.size()); a stopped run has none.
         bool has_terminal() const { return terminal[VIEW_OMNI].valid(); }
         const agents::SeatStream &stream(int view) const { return *streams_[static_cast<size_t>(view)]; }
+        // The dump's once-per-match frames in its order: the viewer (VIEW_A …) and the frame.
+        const std::vector<std::pair<int, FrameRef>> &match_frames() const { return match_frames_; }
         // The decoded STATE frame of `view` at decision `index` (index == decisions.size(): the
         // terminal frame); nullptr with `err` when it cannot be read or decoded.
         std::shared_ptr<const rmstate::DecodedFrame> frame(size_t index, int view, std::string *err) const;

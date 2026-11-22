@@ -419,6 +419,10 @@ void SettingsDialog::draw_models_tab(Settings *s) {
         if (ImGui::SmallButton("Restart server")) server_restart_ = true;
         if (!server_status_.empty()) colored_note(server_status_.c_str(), server_failed_ ? tok().BAD : tok().DIM);
     }
+    ImGui::Checkbox("Re-evaluate a replay when it opens", &s->models.reevaluate_on_open);
+    ImGui::SetItemTooltip(
+        "With the policies below, both seats (Analysis \xE2\x86\x92 Re-evaluate\xE2\x80\xA6 chooses): the "
+        "cached results at once, the rest while a server listens at the socket");
     ImGui::Spacing();
     path_field("Server socket", &s->models.socket, s->models.start_server ? default_server_socket() : "",
         Want::SOCKET, field_x,

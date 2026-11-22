@@ -476,9 +476,8 @@ recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status
 target after a link changes, and a card hovered on the Table scrolling the tree to its row once) and, opt-in
 like the gate's `actor` tier, `rmwork --selftest-evals MODEL` (the same evaluation checks on an `nn:`
 self-play bo3 recorded with real evaluations: every decision evaluated, π a distribution, a series point
-per decision). Not done:
-re-evaluation (§2.7), so a second policy's series and the seats' disagreement come only from episodes that
-recorded them (a self-play match evaluates both seats).
+per decision). Re-evaluation (§2.7) adds a served policy's series for either seat to any replay, so a second
+policy and the seats' disagreement no longer need episodes that recorded them.
 
 | Tool | Real implementation | Size |
 |---|---|---|
@@ -493,11 +492,228 @@ recorded them (a self-play match evaluates both seats).
 
 ### 2.7 Evaluation
 
+**Status: done** (`tools/rmwork/`: `replay_evaluator`, `eval_cache`, `reevaluation`, `reevaluate_dialog`, and
+`eval_connection`, which Model's Read and the Models tool now share; checks in `selftest_reevaluation`).
+Analysis → Re-evaluate… (Ctrl+E in Replay, rebindable as `analysis.reevaluate`) opens a dialog of the served
+policies (Settings → Models' numeric ids, each with its model; all ticked at first, the choices kept for the
+session) and the seats (both by default). Each chosen policy evaluates each chosen seat's decisions in that
+seat's own STATE frame: the deciding seat's, which carries the menu, sideboarding decisions included. The frame
+is featurized by `featurize_seat`, never the omniscient one, and sent to rmserve through the torch-free remote
+evaluator, in requests no larger than the server's batch (WELCOME's `max_batch`, at most 64) that fit the
+request area. A model that wants recent-event history is refused at the handshake (a spec hash mismatch), as for
+Model's Read.
+
+- **The Replay evaluator** (`replay_evaluator`) runs on its own thread, with its progress and a Cancel in the
+  status bar. It takes jobs with priorities: between requests the highest takes over. A job is a match's frames
+  (copied out of the Match, so a replay opened meanwhile changes nothing), the served policies, and its items:
+  (decision, seat) pairs, each with an optional change to the featurized tensors. Attribution (§2.8) submits its
+  perturbed batches as such jobs, through the same featurization, the same LRU of featurized decisions and the
+  same connection. A job of no items only makes a handshake: it returns the versions the server serves now.
+- **Merging.** Results join the match's evaluations as series of their own, labelled `re p0 v12` beside the
+  recorded `p0 v12` (a re-evaluated policy's id is 2³² plus its served id). They sit on the decisions' episode
+  steps, with a step of its own where a decision had none (no μ, version or teacher label). So the Value Graph,
+  Swings (Omni's seat disagreement included), the Inspector, Choices' π bars, the Model's Read and the status
+  bar's V read them as they read an episode's. A seat view sees only its own seat's evaluations, Omni both.
+  Re-evaluating a policy again replaces its series.
+- **The cache**: `$XDG_CACHE_HOME/robomage/workbench/evaluations/<log hash>-<model hash>-<a|b>.rmev`, one entry
+  per (log, model, seat). The model's identity is its file's resolved path, size and modification time (a zipped
+  export's archive and member). An entry holds the version the server named. It is stale when the server now
+  serves another version (checked with a handshake when every entry came from the cache), or when its decisions'
+  keys or menu sizes are not the match's. An entry is written (to a `.tmp`, renamed) only once its seat's whole
+  job has returned, and it ends with a hash, so a damaged entry reads as none. The oldest are pruned past
+  512 MB. A cancelled or failed re-evaluation leaves no partial entry and no partial series, and reopening a
+  replay reads the cache with no server needed.
+- **On open**: Settings → Models' "Re-evaluate a replay when it opens" (on by default; also in the dialog)
+  re-evaluates each replay as it opens with every served policy and both seats: the cache's entries at once, the
+  rest while a server listens at the socket. With no server it says nothing.
+- **Failures** go to the error dialog: no server (only when asked for), a refused handshake (a policy not served,
+  a model of other tables), a server lost mid-way. A request on a kept connection that fails is sent once more on
+  a new one, so a restarted server does not fail the next re-evaluation. The evaluations already shown stay.
+
+Checked by `rmwork --selftest` (the cache's round trip; damaged, truncated and foreign entries; fitting a match;
+the model's identity; pruning; merging into a synthetic match; the served policies; the cache alone, no server, and
+Play's live match refused) and `rmwork --selftest-data`, with a stand-in RMIP server on a corpus log: no server on
+open and asked; every decision of both seats evaluated, each value that of its deciding seat's own frame, in
+requests within the server's batch; the tools on the merged evaluations in every view; reopening from the cache
+with one handshake; a changed version, a damaged entry and a replaced model evaluated again alone; a cancel
+mid-way; a refused handshake after a server restart; a server lost mid-way, and the retry. Opt-in,
+`--selftest-evals MODEL`: rmserve serving the reference policy reproduces the `nn:` match's recorded value and
+log π within 1e-5 at every decision of both seats, the tools show both policies, and reopening evaluates nothing.
+
+Not done:
+- Play's live game is re-evaluated only once it is opened in Replay. Model's Read evaluates the human seat as it
+  plays, and the evaluator already takes a live match's frames, for §2.8.
+- The cache key leaves out the engine that replayed the log. A rebuild that changes the frames but not the tables,
+  the menus or the decisions' keys keeps the old entries.
+- A re-evaluated series cannot be removed or hidden except in the Value Graph's legend.
+
 | Feature | Notes | Size |
 |---|---|---|
 | Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes. **Done** with §2.6 (`evaluations`: per seat and policy, shown by the Value Graph, Swings, the Inspector, Choices and the Model's Read; checked on made-up evaluations and, `--selftest-evals`, on an `nn:` match's real ones) | S |
-| Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk | M |
-| Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest) | M |
+| Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk. Its Replay evaluator (a match's seat frames featurized and sent through the torch-free remote evaluator) is also what Attribution (§2.8) runs on in Replay. **Done** (above) | M |
+| Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest). **Done** as the Models tool (§4.1, item 4) | M |
+
+### 2.8 Attribution: which inputs move V and π at a decision (design, 2026-11-22)
+
+At any decision the workbench shows which of the decision's inputs move the network's value and its
+policy the most. It shows them at two levels: the **tensors** the network reads (a token, a feature
+slot of a token type, a card slot, a relation type) and the **state** they come from (an object, a
+player, a column of an RMSTATE table, a card). The state level links to the Table, the State Tree
+and the zone windows. It is one tool, Attribution, in Play and Replay. §3's Influence Overlay becomes
+its Table layer.
+
+**What is measured.** The deciding seat's frame, because the network never sees any other. The frame
+is featurized by `featurize_seat`, which already returns each token's source (`TokenSource`: type,
+table, row, sub; `src/featurize/folds.h`). A policy evaluates it through rmserve twice: unchanged, and
+with one *unit* of input changed (occlusion). For each unit and policy the tool reports the metrics
+`learn/ablate.py` uses, so the offline ablations and the GUI read the same way:
+
+| Metric | Meaning |
+|---|---|
+| `dv` | ΔV on the deciding seat's scale (the Inspector's radio switches it to Player A's) |
+| `tv` | total variation between the two policies over the menu: the share of probability moved |
+| `kl` | KL(π ‖ π′) |
+| `dlogp` | Δ log π of the focus row |
+| `dmargin` | Δ(log π(focus) − log π(rival)): why this row rather than that one |
+| `flip` | the changed argmax is a row the unchanged policy ranked below its own |
+
+`dv`, `dlogp` and `dmargin` are signed, coloured by sign and sorted by magnitude. `tv` and `kl` are
+unsigned. The focus row is the chosen row (►) in Replay and the shown policy's argmax in Play. A click
+on a Choices row (or a menu link on the Table) makes that row the focus. The rival is the row with the
+next-highest π unless one is picked with Shift+click.
+
+**Units: what is changed.** Each unit changes the decision's tensors, never its frame, so the engine
+is not involved and nothing new has to be decoded:
+
+| Unit | Change to the tensors | What the tool names it by |
+|---|---|---|
+| Token | `tok_mask` 0 and every relation to or from it removed: "as if this row were not in the frame". A menu token is never removed, since that would change the menu. A single-row token (`header`, `turn`, `pending`, `pending_cost`) may be | its frame row: an object by its handle (a Table card, a zone window card), a player by its box, a stack object, a `k_*` row as a Knowledge row, anything else as its State Tree row |
+| Zone group | every token of one player's zone at once (B's lands, A's hand, the stack, A's graveyard as the seat knows it) | the Table's pile or zone |
+| Card | every `tok_card` slot holding the card set to -1 (none), in every token that holds it: the card unknown, its properties included, read the way the network reads a face-down card | every object of that card ("Counterspell ×2") |
+| Slot | one FEATURE_SPEC slot of one token type, in every token of that type: a numeric slot set to its baseline, a categorical slot to its none id, a mask block to zeros | the slot's source column (the spec's `source`) as a State Tree column: `object.tapped`, `player.life` |
+| Cell | one slot of one token | one value in the State Tree: object X's `tapped` |
+| Relation type | every relation of one registry type removed (blocks, targets, attachments, `k_pool_card.pool`) | its `(table, column)` |
+
+Two kinds of card ablation are left out because input tensors cannot express them: identity alone
+(the card's id row replaced by `unknown_id` with its properties kept, `learn/ablate.py`'s identity
+ablation) and card-table column groups. Both act inside the network. They come with the gradient phase
+below, through an export method that takes them as inputs.
+
+**Baselines** for a slot or a cell:
+- `none` (default): the featurizer's own encoding of absence (0, the none id, -1). It is on the
+  training distribution only where the format has absence.
+- `mean`: numeric slots set to their mean over a reference sample; categorical slots set to their most
+  frequent value.
+- `resample`: K draws of the slot's values from the reference sample, with the metrics averaged. It
+  costs K times as much.
+
+The reference sample is `rmfeat --slot-stats DUMP… --out FILE` over recorded decisions (the corpus or
+a run's episodes), keyed by `spec_hash`. The workbench builds it from the corpus on first use. Without
+it the workbench falls back to `none` and says so.
+
+**Drill-down rather than everything at once.** A decision has dozens to a few hundred tokens, and
+every token type has its slots. Evaluating every cell would take thousands of forward passes, so the
+work is staged:
+1. The first pass covers the coarse units: the zone groups, the players, the stack, the single-row
+   tokens and the cards, in one RMIP request.
+2. The second pass covers every token of the groups that moved the target most, and every slot of the
+   token types present. It is sent in requests no larger than the server's batch and streamed, so the
+   list fills in as results arrive.
+3. Expanding a row in the tool (or a node in the State Tree) asks for that row's children, such as a
+   token's cells.
+
+In Play the next decision cancels the work; in Replay a cursor move does. A request already in flight
+finishes and its results are cached.
+
+Changing one unit at a time misses redundancy: with two Counterspells in hand, removing either one
+alone moves little. The zone groups and the card unit (every copy at once) catch the common case. An
+optional `shapley` mode gives the precise answer on request: permutation sampling over the top k units
+(k ≤ 12, M permutations), checked for efficiency (the attributions sum to the change with all k
+removed).
+
+**Gradients (deferred, 2026-11-22; not part of the Attribution stage).** Occlusion needs only forward
+passes, so it works with every export and server. Gradient methods (gradient × input, integrated gradients against the `mean` baseline) cost
+less per cell. They need more, though:
+- The network's embedding layer: card and categorical inputs are integers and have no input gradient.
+- An export with an `attribute` method (token embeddings in, value and log π out, plus the embeddings
+  of the decision's inputs), which is a change to the network contract and the exporter.
+- A TorchScript export: AOTInductor has no backward pass.
+- An RMIP request kind that returns per-token, per-slot attributions.
+
+This phase also brings the in-network card ablations above. It stays deferred until occlusion's cost
+per decision has been measured in the `bench` tier and found to be a problem, or until the in-network
+card ablations are wanted in the GUI. Deferring it changes nothing in the network contract, the
+exporter or RMIP v2.
+
+**Where it runs.**
+- `src/featurize/perturb.{h,cpp}` (std only, beside `batch`) holds:
+  - a unit's change to one decision's `Tensors`. Removing a token renumbers `rel`, `act_tok` and the
+    other tokens' indices; slot baselines come from the FEATURE_SPEC plan;
+  - the unit list of a decision, built from its token sources and the spec;
+  - the slot statistics file.
+
+  `rmfeat --perturb` exposes it so the gate can check it without the GUI.
+- `tools/rmwork/attribution.{h,cpp}` (ImGui-free) submits its work to the Replay evaluator
+  (`replay_evaluator.h`, §2.7): its thread, featurization and RMIP connection, as jobs whose items carry
+  each unit's change to the tensors, at a priority. It keeps a queue of (decision, seat, policy, method,
+  units) work and streams results to the tool. It caches them on disk under
+  `$XDG_CACHE_HOME/robomage/workbench/attribution/<log hash>/<decision>-<seat>-<model hash>-<method>.bin`,
+  so a decision visited again costs nothing, and a Play game's attributions open with it in Replay.
+- **Replay** reads the frames from the dump: any decision, and either seat's frame (a seat view uses
+  that seat's frame, Omni uses the decider's). Like re-evaluation (§2.7) it needs the server, and it
+  shares §2.7's featurization and connection: one Replay evaluator with two clients. At a decision of
+  the other seat, a seat view's frame has no menu, so it gets the V metrics only, provided the
+  featurizer accepts a frame without a menu; otherwise it gets nothing.
+- **Play** uses the human seat's frames as Model's Read receives them. It never uses the opponent's,
+  which the workbench does not have; the opponent's decisions can be attributed after the game, in
+  Replay. Attribution runs on demand (the tool's Explain button, or a key in the key table), or at each
+  of your decisions while the tool is open with Auto ticked. Model's Read's evaluation of a decision
+  goes first and attribution runs after it, at lower priority.
+- **Policy**: the shown policy (the Inspector's radio) or any served policy. Policy Compare (§3) later
+  shows two side by side.
+
+**The views.**
+1. **The Attribution tool** (dockable, in both modes; in the Analysis preset beside the Inspector).
+   - The header holds the decision and seat, the policy, the target (V; π: TV; log π(focus); focus vs
+     rival), the baseline, the level (state or tensors), and progress with Cancel.
+   - The body is a ranked list with signed bars: each row has a label, its kind and the metrics as
+     sortable columns, and expands into its children.
+   - At the state level the labels are game names: "Ragavan (B, battlefield)", "Player A · life",
+     "object.tapped (all objects)", "Counterspell ×2".
+   - At the tensors level the labels are the spec's: the token type and its index, slots such as
+     `num[17] object.power (signed)`, `cat[3] object.zone` and `tok_card[0]`, and the relation type.
+   - Hovering a row links it (the `LinkState` handles) to the Table, the State Tree, the zone windows
+     and Choices. A click scrolls the State Tree to the row.
+2. **The Table layer.** Every card, player box and stack object is tinted by its unit's signed value
+   for the current target, in a diverging palette from the theme's tokens. A legend strip gives the
+   scale and the target. The layer is toggled from the tool and from the Table, and it replaces §3's
+   Influence Overlay.
+3. **An Impact column in the State Tree**, beside the value: a heat swatch on each node computed so
+   far, with "sort children by impact".
+4. **The Tensors view** answers "which tensors" directly. It is §3's Tokens tool (the decision's tokens
+   by slots, as a grid labelled by the spec) with the cell attributions as a heat layer. The Tokens
+   tool is built in this stage, ahead of the rest of §3.
+5. **Across the game (later).** Pin a unit, such as a card or a player's life, and the Value Graph
+   draws its `dv` over the game's decisions, computed for the pinned units only.
+
+**Checks.**
+- `rmfeat --perturb` in the `featurize` tier:
+  - the empty change is byte-identical;
+  - a removed token's relations are gone, and the remaining indices are renumbered consistently;
+  - every changed decision passes the spec's shape and index checks;
+  - every unit names a row the seat's own frame holds.
+- The `workbench` tier (`--selftest-data`, and as now the opt-in `--selftest-evals MODEL` against the
+  reference policy through rmserve):
+  - the unchanged evaluation equals Model's Read's for the decision;
+  - results are deterministic and cached;
+  - the Table layer's tints land on the cards the units name;
+  - Explain works at a live Play decision, and Replay at a decision of each seat;
+  - a cancelled job leaves nothing half-written;
+  - `shapley`'s efficiency sum is within tolerance.
+
+**Size.** The perturbations, the tool, the Table layer and the State Tree column: M (§2.7's Replay
+evaluator, M, comes first). The Tensors view with the Tokens tool: M. Shapley: S. Gradients with the
+export change (deferred): M–L.
 
 ## 3. Additional analysis tools that fit the framework
 
@@ -509,7 +725,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | **Policy Compare** | π and V of several checkpoints at the current decision and across the game: per-decision KL divergence, argmax agreement, where a newer checkpoint changed its mind | §2.7 re-evaluation | M |
 | **Teacher Disagreement** | Where the scripted teacher's label differs from the model's choice, with both π; filterable list that jumps into Replay | episode `teacher` labels; or attach `teacher.py` to a replay | S |
 | **Branch Explorer** | At a decision, take a different menu row and play the game out K times with chosen agents; per-row win rate next to π (a Monte Carlo Q). Uses the decision log's prefix plus the alternative reply as `--actions`, then in-process agents finish the game | engine subprocess, `--actions`, agents | M |
-| **Influence Overlay** | Per decision, replace one card's input with the unknown-card vector (or remove its token) and re-evaluate: tint each card on the Table by its ΔV / Δπ(chosen) | featurizer + rmserve; the method of `learn/ablate.py` | M |
+| **Influence Overlay** | Now part of Attribution (§2.8): its Table layer | §2.8 | — |
 | **Blunder Finder** | Query decisions across many games: e.g. π(chosen) < 0.2 and |ΔV| > 0.3, or a row the teacher picks with π < 0.1; results open in Replay | episodes + evaluations | M |
 | **Episode Browser** | Table of a run's episodes (decks, seats, result, length, policy versions, actor), filters and summary statistics; double-click opens Replay | `runs/<run>/episodes`, results files | M |
 | **Bench Matrix** | Win-rate heatmap per deck pair from `rmtrain bench` / ladder, with confidence intervals; a cell lists its games | `runs/<run>/bench`, `ladder` | S |
@@ -519,7 +735,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | **Card Statistics** | Per card across games: drawn, cast when castable, average ΔV after casting, win rate when drawn or in the opening hand | episodes + frames | M |
 | **Mulligan & Sideboard** | Keep rates by hand, results after a mulligan; sideboard swaps (including `sb_explore` proposals) and later game results | episodes (bo3) | M |
 | **Raw Frame** | The current frame's RMSTATE tables with SCHEMA column names and tags (the "hex editor" of the workbench), for engine and format debugging | decoder | S |
-| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph | `featurize_seat` | M |
+| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph; Attribution's Tensors view (§2.8) as a heat layer | `featurize_seat` | M |
 | **Bookmarks & Notes** | Mark decisions with notes, stored beside the game; list, jump, export to Markdown | sidecar file | S |
 | **Game Compare** | Two games side by side, e.g. one seed played by two checkpoints: synchronised by turn, two Tables and two value curves | two loaded games | M |
 | **Belief Spread** (research) | V re-evaluated over hidden worlds consistent with the seat's knowledge, showing how much V depends on what the opponent holds | knowledge solver worlds; needs frames built for sampled worlds (state format register 22, deferred) | L |
@@ -793,7 +1009,7 @@ a cost reducer: the printed cost is shown).
 17. Knowledge.
 18. Policy Compare.
 19. Branch Explorer (with its rollout configuration and progress).
-20. Influence Overlay (on the Table, with its legend and settings).
+20. Attribution (§2.8): the tool's ranked list at both levels, the Table layer with its legend, the State Tree's Impact column, the Tensors view.
 21. Blunder Finder (query builder and results).
 22. Bench Matrix, Calibration, Training Curves, Card Statistics, Mulligan & Sideboard.
 23. Raw Frame and Tokens.
@@ -889,6 +1105,6 @@ runs/latest/
 2. Replay of a recorded `.rmlog` with all three viewers: Table, Players, Choices, Inspector, State Tree, Log, Value Graph from recorded evaluations (§2.2, §2.5, §2.6). Mock up §4.3's game-over screen first, since Replay needs it.
 3. Card images and printings (§2.4).
 4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time.
-5. Re-evaluation and the model manager (§2.7), then Policy Compare, Knowledge and Teacher Disagreement.
+5. Re-evaluation and the model manager (§2.7), then Attribution (§2.8, with the Tokens tool), Policy Compare, Knowledge and Teacher Disagreement.
 6. The run tools: Episode Browser, Bench Matrix, Calibration, Training Curves.
-7. Branch Explorer, Influence Overlay, Blunder Finder, then the rest of §3.
+7. Branch Explorer, Blunder Finder, then the rest of §3.

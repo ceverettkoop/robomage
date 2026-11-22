@@ -42,6 +42,23 @@ you'd add an auxiliary CE loss or do an offline BC pre-train.
   activation flows run. Same gap for Dauthi's forced mini-cast (`effect_choose_card.cpp:208`). Check
   other "choose new targets" paths too.
 
+- **A cast's actual cost is not in the observation** (noted 2026-11-22; not planned). A `menu` row
+  (`src/state_format/schema.cpp`, `MENU`) carries its category, source, ability, `variant`
+  (`cast_variant`) and a text description, but no cost: what the cast would really take after
+  increases and reductions (Thalia's tax, a cost reducer, delve, affinity, convoke) or for an
+  alternative cost is not in the frame at the decision where the cast is chosen. The network sees only
+  that the row is offered (so affordable: `can_pay`) and the permanents causing the change; the
+  workbench shows the printed cost (from CARDS and the oracle text, `priority_costs`). The adjusted
+  cost appears only afterwards, in `pending_cost`, when payment is a decision of its own (rarely,
+  under the default auto-mana). Fix if wanted: the cost `can_pay` computes, as menu columns (the
+  `rem_*` pips, life, energy, discard; the `menu` token type has 13 free numeric slots of 48) or a
+  `menu_cost` child table. Either is a registry append: checkpoints keep loading, exports need
+  `rmtrain retable`, the corpus `make regen`. Before resuming training on it, zero the new slots'
+  `num_proj` columns (and the critic's) on load: reserved columns still hold their random
+  initialisation (std 1/√8; a zero input gets no gradient and `weight_decay` is 0), so a new nonzero
+  input would add a fixed random vector to every cast row. That load rule (beside `INHERIT_PARAMS`,
+  `learn/rmlearn/model.py`) applies to any column appended to an existing token type.
+
 ## Audit: ability-param keys the parser silently ignores
 
 `apply_param_to_ability` (`src/parse.cpp`, `ignored_keys` at ~1945) skips a hard-coded key set

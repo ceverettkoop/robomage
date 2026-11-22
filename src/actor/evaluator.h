@@ -53,6 +53,11 @@ struct ModelInfo {
         std::string format;            // "torchscript" | "aoti"
         featurize::Manifest manifest;  // no registry (an export carries none)
         uint64_t policy_version = 0;
+        // The most decisions a remote server evaluates in one batch (its WELCOME's max_batch); 0 for
+        // an in-process model or a server that names none.
+        uint64_t max_batch = 0;
+        // Per evaluated policy, in order, the version its WELCOME named (a remote evaluator's).
+        std::vector<uint64_t> welcome_versions;
 };
 
 // One policy's output for one decision, over its menu rows.

@@ -46,6 +46,9 @@ struct ModelSettings {
         std::vector<PolicyEntry> policies;
         std::string run_dir;  // where training runs live; default runs/
         bool start_server = false;  // the workbench runs rmserve with these policies (inference_server.h)
+        // A replay opened in Replay is re-evaluated with the served policies, both seats (reevaluation.h):
+        // its cached results at once, the rest while a server listens at the socket.
+        bool reevaluate_on_open = true;
 };
 
 // The twelve steps a stop can be set in (a stop at combat damage also covers first-strike damage).

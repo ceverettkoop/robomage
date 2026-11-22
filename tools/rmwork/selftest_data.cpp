@@ -29,6 +29,7 @@
 #include "selftest_images.h"
 #include "selftest_index.h"
 #include "selftest_play.h"
+#include "selftest_reevaluation.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
 #include "subprocess.h"
@@ -92,6 +93,7 @@ static void check_run_directory(Tally *t, const Env &env, const std::string &bo3
 static void check_picker(Tally *t, rmwork::App &app, const Env &env, const std::string &bo3_log);
 static bool make_env(const std::string &engine, const char *tmp_prefix, Env *env);
 static std::string make_nn_match(Tally *t, const Env &env, const std::string &nn, const std::string &model);
+static rmwork::ReevalHooks reeval_hooks(Tally *t, rmwork::App &app, const Env &env);
 
 static void check(Tally *t, bool ok, const std::string &what) {
     ++t->checks;
@@ -885,6 +887,18 @@ static std::string make_nn_match(Tally *t, const Env &env, const std::string &nn
     return logs.size() == 1 ? logs[0] : "";
 }
 
+// What re-evaluation's checks drive the App with.
+static rmwork::ReevalHooks reeval_hooks(Tally *t, rmwork::App &app, const Env &env) {
+    rmwork::ReevalHooks h;
+    h.frames = [&app](int n) { run_frames(app, n); };
+    h.escape = [&app] { press(app, ImGuiKey_Escape); };
+    h.open = [t, &app](const std::string &log) { return open_and_wait(t, app, log, "re-evaluation"); };
+    h.engine = env.engine;
+    h.workdir = env.workdir;
+    h.tmp = env.tmp;
+    return h;
+}
+
 namespace rmwork {
 
 int run_selftest_evals(const std::string &engine, const std::string &model) {
@@ -923,6 +937,7 @@ int run_selftest_evals(const std::string &engine, const std::string &model) {
                 want.agents = {"nn:" + model_path, "nn:" + model_path};
                 want.every_decision = true;
                 check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "nn: match", want, &tools);
+                check_reevaluation_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
             }
         }
         check(&t, tools.episode_decisions > 0, "Tools: no decision of the nn: match checked against its evaluations");
@@ -967,6 +982,8 @@ int run_selftest_data(const std::string &engine) {
             [&t, &app, &bo1] { return open_and_wait(&t, app, bo1, "index"); });
         check_cache(&t, app, env);
         check_corpus_episode(&t, app, env);
+        check_reevaluation_data(
+            [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
         const std::string bo3 = make_bo3(&t, env);
         if (!bo3.empty()) {
             check_bo3(&t, app, bo3, &cov, &tools);

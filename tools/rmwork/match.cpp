@@ -618,6 +618,10 @@ bool append_live_frame(Match *m, const std::string &payload, LiveFrame *out, std
             *err = "a once-per-match frame: " + *err;
             return false;
         }
+        FrameRef once;
+        once.offset = ls.end - payload.size();
+        once.size = static_cast<uint32_t>(payload.size());
+        m->match_frames_.emplace_back(viewer, once);
         return true;
     }
     FrameRef ref;

@@ -825,8 +825,20 @@ handshake JSON, the shared region, request / response layouts.
   live one), Play: `play_session` (a live game: the engine on `--machine` with the human's seat on the stream and the
   opponent an in-process agent or the teacher channel, `--decision-log` into `$XDG_DATA_HOME/robomage/workbench/games`;
   the reader thread, the live match, replies, concessions, the engine's failures, `kill_engine`), `autopass` (F2, F6
-  and the stops: a pure function of a decision's `PassFacts`), `model_read` (Model's Read: the featurizer's inputs
-  from the engine's `--cards-frame`, the torch-free remote evaluator to rmserve, on a thread), `new_game_dialog`
+  and the stops: a pure function of a decision's `PassFacts`), `model_read` (Model's Read: the human seat's
+  decisions evaluated through rmserve, on a thread), `eval_connection` (what an evaluation through the server needs:
+  the featurizer's inputs from the engine's `--cards-frame` and the text table, the torch-free remote evaluator's
+  connection, no socket told apart; Model's Read, the Replay evaluator and the Models tool share it), Replay's
+  re-evaluation (plan §2.7): `replay_evaluator` (the Replay evaluator, ImGui-free: one thread taking jobs by priority,
+  each a match's frames copied out of the Match, served policies and (decision, seat) items with an optional change to
+  the tensors; each seat's own frame featurized, an LRU of featurized decisions, requests within the server's
+  `max_batch` and request area, results streamed, cancel; Attribution's client too), `eval_cache` (the re-evaluations'
+  cache `$XDG_CACHE_HOME/robomage/workbench/evaluations/<log hash>-<model hash>-<a|b>.rmev`: the model's file identity,
+  the server's version, fitting the match, tmp + rename, a trailing hash, pruning), `reevaluation` (the served
+  policies' evaluations merged into a match's episode steps as series of their own, `re p0`: the cache first, a
+  handshake to check its versions, a job per seat, written and merged once whole), `reevaluate_dialog` (Analysis →
+  Re-evaluate…: the served policies and seats), `selftest_reevaluation` (its checks: a stand-in RMIP server in
+  `--selftest-data`, rmserve with the reference policy in `--selftest-evals`), `new_game_dialog`
   (decks, opponents, models, the choices kept as `new_game` in `settings.json`), `policy_catalog` (the runs directory's policies newest first, ImGui-free: a row per run's `final`, fixed point and other named checkpoint with its export formats, dated by `metrics.jsonl` else the files' times, `runs/latest` pinned first, periodic checkpoints, the seed and the live export hidden, old layouts' copies never; then the zipped exports; New Game's models and the Add row's suggestions; `selftest_policy_catalog` its checks), the Models tool (§4.1 item 4): `model_manager` (ImGui-free: the policy rows' filter, run and
   sort with `latest` first, each row's compatibility, its model manifest against the engine's tables' from `--cards-frame`, on
   `CompatChecker`'s thread), `model_manager_view` (the tool: the server strip, the table, Play against, Serve, Copy path),

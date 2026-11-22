@@ -134,8 +134,8 @@ void ValueGraphView::draw_legend(const std::vector<GraphSeries> &series, bool an
     ImGui::TextUnformatted("Life (A, B)");
     if (!any) {
         ImGui::SameLine(0, 16);
-        legend_wrap(ImGui::CalcTextSize("Load an episode for values").x);
-        ImGui::TextDisabled("Load an episode for values");
+        legend_wrap(ImGui::CalcTextSize("Re-evaluate, or load episodes, for values").x);
+        ImGui::TextDisabled("Re-evaluate, or load episodes, for values");
     }
     ImGui::PopStyleVar();
 }
@@ -262,9 +262,10 @@ void ValueGraphView::draw_values(ToolData &data, ReplaySession &s, const std::ve
         }
     }
     if (!data.values().any())
-        ImPlot::PlotText(m.live                    ? "Model's Read is off or not connected: no values"
-                         : m.episode_files.empty() ? "No episodes: load the match's episodes for values"
-                                                   : "The episodes carry no evaluations",
+        ImPlot::PlotText(m.live ? "Model's Read is off or not connected: no values"
+                         : m.episode_files.empty()
+                             ? "No evaluations: Analysis \xE2\x86\x92 Re-evaluate, or load the match's episodes"
+                             : "The episodes carry no evaluations: Analysis \xE2\x86\x92 Re-evaluate",
             n / 2, 0.5);
     // The cursor.
     const float cx = ImPlot::PlotToPixels(static_cast<double>(s.cursor()), 0).x;
@@ -341,9 +342,11 @@ void SwingsView::draw(ToolData &data, ReplaySession &s) {
     if (!data.values().any()) {
         centered_text_block("No evaluations",
             m.episode_files.empty()
-                ? "Swings come from the episodes' recorded evaluations: open the match's episodes (File \xE2\x86\x92 "
-                  "Open Trajectory Episode), or a run's log, whose episodes join by name."
-                : "The joined episodes carry no evaluations (only an nn: agent records them).",
+                ? "Swings come from the evaluations: re-evaluate the replay through the inference server (Analysis "
+                  "\xE2\x86\x92 Re-evaluate), or open the match's episodes (File \xE2\x86\x92 Open Trajectory "
+                  "Episode), or a run's log, whose episodes join by name."
+                : "The joined episodes carry no evaluations (only an nn: agent records them): re-evaluate the replay "
+                  "through the inference server (Analysis \xE2\x86\x92 Re-evaluate).",
             width);
         return;
     }
@@ -531,7 +534,10 @@ void ModelReadView::draw(ToolData &data, ReplaySession &s) {
         ImGui::TextDisabled("Model");
         ImGui::TableNextColumn();
         // Play's evaluations are Model's Read's of the human's seat, not the seat's agent.
-        const std::string agent = f.match->live ? "Model's Read" : agent_label(*f.match, seat);
+        // A re-evaluated policy is not the seat's agent.
+        const std::string agent = f.match->live                           ? "Model's Read"
+                                  : policy >= 0 && is_reevaluated(policy) ? "Re-evaluation"
+                                                                          : agent_label(*f.match, seat);
         std::string model = agent.empty() ? std::string("\xE2\x80\x94") : agent;
         if (policy >= 0) model += " \xC2\xB7 " + policy_label(policy, data.values().versions.at(policy));
         if (f.match->live && policy < 0) model += " off or not connected";

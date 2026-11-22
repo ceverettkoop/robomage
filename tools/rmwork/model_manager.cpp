@@ -4,18 +4,16 @@
 
 #include <algorithm>
 #include <cctype>
-#include <chrono>
 #include <set>
 
 #include "../../src/featurize/json.h"
 #include "../../src/featurize/setup.h"
+#include "eval_connection.h"
 #include "file_picker.h"
 #include "files.h"
-#include "subprocess.h"
 
 namespace {
 
-const char *const TEXT_TABLE = "/resources/embeddings/oracle_text.rmtb";
 const char *const FIXED_ENGINE = "(given)";
 
 }  // namespace
@@ -109,23 +107,11 @@ static bool engine_manifest(const rmwork::EngineTables &t, featurize::Manifest *
         *why = "no engine at " + t.engine;
         return false;
     }
-    rmwork::make_dirs(rmwork::parent_dir(t.cards_path));
-    rmwork::ChildProcess cards;
-    std::string err;
-    const std::string cards_err = t.cards_path + ".err";
-    if (!cards.start({t.engine, "--cards-frame", t.cards_path}, t.workdir, "/dev/null", cards_err, &err)) {
-        *why = "the engine's cards file: " + err;
-        return false;
-    }
-    while (cards.poll()) std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    if (!cards.ok()) {
-        *why = "the engine's cards file: " + t.engine + " --cards-frame " + cards.status_text();
-        return false;
-    }
     featurize::Featurization features;
-    const bool loaded = features.load(t.cards_path, t.workdir + TEXT_TABLE, "", &err);
+    std::string err;
+    const bool loaded = rmwork::load_engine_features(t.engine, t.workdir, t.cards_path, nullptr, &features, &err);
     unlink(t.cards_path.c_str());
-    unlink(cards_err.c_str());
+    unlink((t.cards_path + ".err").c_str());
     if (!loaded) {
         *why = "the engine's tables: " + err;
         return false;

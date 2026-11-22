@@ -163,13 +163,15 @@ static void episode_fields(const rmwork::ToolData &data, std::vector<rmwork::Ins
     const size_t n = data.models().menu.rows.size();
     if (const featurize::PolicyEvalRecord *r = rmwork::find_policy(*e, data.shown_policy())) {
         if (r->log_pi.size() == n) {
-            out->push_back({"H(\xCF\x80) \xC2\xB7 p" + std::to_string(r->id),
+            out->push_back({"H(\xCF\x80) \xC2\xB7 " + rmwork::policy_name(r->id),
                 number(rmwork::entropy(rmwork::policy_pi(*r)), 3) + " nats", false, 0});
             if (e->chosen >= 0 && static_cast<size_t>(e->chosen) < n)
                 out->push_back(
                     {"log \xCF\x80(chosen)", number(r->log_pi[static_cast<size_t>(e->chosen)], 3), false, 0});
         }
     }
+    // A step made for re-evaluated records alone has nothing recorded.
+    if (e->file == rmwork::REEVAL_STEP_FILE) return;
     if (e->has_mu && e->mu.size() == n) {
         size_t support = 0, at = 0;
         for (size_t i = 0; i < n; ++i)
@@ -257,7 +259,7 @@ void InspectorView::draw(ToolData &data, LinkState *links) {
         ImGui::TextDisabled("\xCF\x80 shown");
         for (int64_t p : data.values().policies) {
             ImGui::SameLine(0, 12);
-            ImGui::PushID(static_cast<int>(p));
+            ImGui::PushID(std::to_string(p).c_str());
             const std::string label = policy_label(p, data.values().versions.at(p));
             if (ImGui::RadioButton(label.c_str(), data.shown_policy() == p)) data.policy = p;
             ImGui::PopID();

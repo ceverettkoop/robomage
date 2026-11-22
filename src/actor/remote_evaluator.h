@@ -17,7 +17,8 @@
 // the policies to evaluate), then per evaluate() one request: the batch's unpadded tensors written
 // into the region, EVAL, and the server's response read back. Each Evaluation holds the requested
 // policies in the requested order with each one's version as the response gives it (so weights
-// swapped between decisions show), and `value` is the first's. Torch-free (the protocol code,
+// swapped between decisions show), and `value` is the first's. info() carries the WELCOME's
+// max_batch and per policy its version then. Torch-free (the protocol code,
 // inference/protocol.h, is standard library and POSIX).
 //
 // Every failure is fatal for the caller: an ERROR from the server (a refused handshake, a spec

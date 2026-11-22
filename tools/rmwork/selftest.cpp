@@ -19,11 +19,12 @@
 #include "implot.h"
 #include "paths.h"
 #include "selftest_images.h"
-#include "selftest_priority.h"
 #include "selftest_inference_server.h"
 #include "selftest_model_manager.h"
 #include "selftest_model_zip.h"
 #include "selftest_policy_catalog.h"
+#include "selftest_priority.h"
+#include "selftest_reevaluation.h"
 #include "selftest_start.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
@@ -1225,6 +1226,7 @@ int run_selftest() {
     check_table_units([&t](bool ok, const std::string &what) { check(&t, ok, "Table: " + what); });
     check_priority_units([&t](bool ok, const std::string &what) { check(&t, ok, "Priority costs: " + what); });
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
+    check_reevaluation_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_model_zip_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_policy_catalog_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);

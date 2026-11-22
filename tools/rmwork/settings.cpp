@@ -205,7 +205,8 @@ static bool read_models(const featurize::Json &v, rmwork::ModelSettings *out, st
     }
     if (!read_string(v, "socket", "models", &out->socket, err) ||
         !read_string(v, "run_dir", "models", &out->run_dir, err) ||
-        !read_bool(v, "start_server", "models", &out->start_server, err))
+        !read_bool(v, "start_server", "models", &out->start_server, err) ||
+        !read_bool(v, "reevaluate_on_open", "models", &out->reevaluate_on_open, err))
         return false;
     const featurize::Json *policies = v.get("policies");
     if (!policies) return true;
@@ -605,7 +606,8 @@ std::string settings_to_json(const Settings &s) {
            ", \"workdir\": " + json_quote(s.engine.workdir) + "},\n";
     out += "  \"models\": {\"socket\": " + json_quote(s.models.socket) +
            ", \"run_dir\": " + json_quote(s.models.run_dir) +
-           ", \"start_server\": " + (s.models.start_server ? "true" : "false") + ", \"policies\": [";
+           ", \"start_server\": " + (s.models.start_server ? "true" : "false") +
+           ", \"reevaluate_on_open\": " + (s.models.reevaluate_on_open ? "true" : "false") + ", \"policies\": [";
     for (size_t i = 0; i < s.models.policies.size(); ++i) {
         const PolicyEntry &p = s.models.policies[i];
         out +=

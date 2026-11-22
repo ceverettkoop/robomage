@@ -16,6 +16,8 @@ static size_t span_end(const rmwork::Match &m, size_t index) {
 
 namespace rmwork {
 
+const char *const REEVAL_STEP_FILE = "Re-evaluation";
+
 const featurize::PolicyEvalRecord *find_policy(const EpisodeStepInfo &e, int64_t id) {
     if (e.policies.empty()) return nullptr;
     if (id < 0) return &e.policies.front();
@@ -38,8 +40,13 @@ double entropy(const std::vector<double> &p) {
     return h;
 }
 
+std::string policy_name(int64_t id) {
+    if (is_reevaluated(id)) return "re p" + std::to_string(id - REEVAL_ID_BASE);
+    return "p" + std::to_string(id);
+}
+
 std::string policy_label(int64_t id, uint64_t version) {
-    return "p" + std::to_string(id) + " v" + std::to_string(version);
+    return policy_name(id) + " v" + std::to_string(version);
 }
 
 std::string signed_text(double v, int decimals) {

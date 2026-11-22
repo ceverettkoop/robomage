@@ -1,14 +1,11 @@
 #include "model_read.h"
 
-#include <chrono>
 #include <cstdlib>
 
-#include "../../src/actor/remote_evaluator.h"
 #include "../../src/agents/seat_frames.h"
 #include "../../src/featurize/featurizer.h"
 #include "../../src/featurize/setup.h"
-#include "files.h"
-#include "subprocess.h"
+#include "eval_connection.h"
 
 namespace rmwork {
 
@@ -122,46 +119,18 @@ void ModelReader::fail(State s, const std::string &why) {
 // nothing listens at the socket.
 bool ModelReader::connect(std::string *why, bool *no_server) {
     *no_server = false;
-    if (config_.socket.empty() || path_kind(config_.socket) != PathKind::SOCKET) {
+    const std::string absent = server_absent(config_.socket);
+    if (!absent.empty()) {
         *no_server = true;
-        *why = config_.socket.empty() ? "no server socket is configured (Settings \xE2\x86\x92 Models)"
-                                      : "no server at " + config_.socket;
-        return false;
-    }
-    make_dirs(parent_dir(config_.cards_path));
-    ChildProcess cards;
-    std::string err;
-    const std::string cards_err = config_.cards_path + ".err";
-    if (!cards.start(
-            {config_.engine, "--cards-frame", config_.cards_path}, config_.workdir, "/dev/null", cards_err, &err)) {
-        *why = "the cards file: " + err;
-        return false;
-    }
-    while (cards.poll()) {
-        if (stop_.load()) return false;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-    if (!cards.ok()) {
-        *why = "the cards file: " + config_.engine + " --cards-frame " + cards.status_text();
+        *why = absent;
         return false;
     }
     impl_.reset(new Impl());
-    const std::string text = config_.workdir + "/resources/embeddings/oracle_text.rmtb";
-    if (!impl_->features.load(config_.cards_path, text, "", &err)) {
-        *why = "the featurizer's inputs: " + err;
+    if (!load_engine_features(config_.engine, config_.workdir, config_.cards_path, &stop_, &impl_->features, why))
         return false;
-    }
-    actor::RemoteOptions opt;
-    opt.endpoint = config_.socket;
-    opt.policies = config_.policies;
-    opt.timeout_s = config_.timeout_s;
-    opt.client = "rmwork Model's Read";
-    impl_->evaluator = actor::connect_remote_evaluator(opt, impl_->features, &err);
-    if (!impl_->evaluator) {
-        *why = err;
-        return false;
-    }
-    return true;
+    impl_->evaluator = connect_server(
+        config_.socket, config_.policies, config_.timeout_s, "rmwork Model's Read", impl_->features, why);
+    return impl_->evaluator != nullptr;
 }
 
 void ModelReader::run() {

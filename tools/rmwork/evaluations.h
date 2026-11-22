@@ -20,8 +20,24 @@
 // one game (sideboarding phases left out), and from its last one to the game's result (z, +1 a win,
 // -1 a loss, 0 a draw). A disagreement compares adjacent decisions of one game decided by the two
 // seats, both evaluated by the policy: A's value against the negated value of B's seat.
+//
+// The evaluations are the episodes' recorded ones and those a re-evaluation added (reevaluation.h):
+// a policy re-evaluated through the inference server has its own id, REEVAL_ID_BASE plus its served
+// id, apart from every recorded id (an episode's ids are 32-bit), so it is a series of its own.
 
 namespace rmwork {
+
+inline constexpr int64_t REEVAL_ID_BASE = int64_t(1) << 32;
+// A re-evaluated policy's id.
+inline bool is_reevaluated(int64_t id) {
+    return id >= REEVAL_ID_BASE;
+}
+inline int64_t reevaluated_id(uint32_t served) {
+    return REEVAL_ID_BASE + static_cast<int64_t>(served);
+}
+// The `file` of an episode step made for a re-evaluation's records alone (the decision had none):
+// no μ, policy version or teacher label.
+extern const char *const REEVAL_STEP_FILE;
 
 // The step's record of policy `id`; the first record for id -1; nullptr when it has none.
 const featurize::PolicyEvalRecord *find_policy(const EpisodeStepInfo &e, int64_t id);
@@ -33,7 +49,9 @@ double entropy(const std::vector<double> &p);
 inline double on_a_scale(int seat, double v) {
     return seat == 1 ? -v : v;
 }
-// "p0 v9834".
+// "p0"; a re-evaluated policy "re p0" (its served id).
+std::string policy_name(int64_t id);
+// "p0 v9834", "re p0 v9834".
 std::string policy_label(int64_t id, uint64_t version);
 // "+0.42", "−0.17" (a minus sign), "0.00".
 std::string signed_text(double v, int decimals = 2);

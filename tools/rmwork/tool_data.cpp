@@ -13,10 +13,14 @@ bool ToolData::refresh(ReplaySession &s, TableView &table) {
         return false;
     }
     const Match &m = *s.match();
-    if (values_match_ != &m || values_dump_ != m.dump_path || values_steps_ != m.episode_steps.size()) {
+    if (values_match_ != &m || values_dump_ != m.dump_path || values_steps_ != m.episode_steps.size() ||
+        values_changed_ != m.evaluations_changed) {
         values_match_ = &m;
         values_dump_ = m.dump_path;
         values_steps_ = m.episode_steps.size();
+        values_changed_ = m.evaluations_changed;
+        // A merged evaluation changes what the decision's tools show (the frame's step is the same).
+        have_ = false;
         values_ = match_values(m);
     }
     if (have_ && s.generation() == generation_) return ok_;

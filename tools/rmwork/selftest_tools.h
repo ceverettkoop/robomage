@@ -49,9 +49,13 @@ struct ValuesExpect {
         // Recorded by nn: agents on both seats: every decision evaluated by every policy, each π a
         // distribution over the menu rows.
         bool every_decision = false;
+        // The evaluations the tools must show are the match's episode steps' (a re-evaluation merged
+        // with them), not the episode files read again.
+        bool from_match = false;
 };
 
-// The loaded match with evaluations in its episodes (`episode_files`, read again here): the Value
+// The loaded match with evaluations in its episodes (`episode_files`, read again here, or with
+// `from_match` its episode steps, re-evaluations merged): the Value
 // Graph's series are the episodes' values (on Player A's scale; a seat view only its own seat's),
 // Swings and seat disagreement recomputed independently, the toolbar's next swing, the
 // Inspector's values and π, Choices' π bars (the shown policy's, else the first, and each policy's),

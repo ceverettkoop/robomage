@@ -11,8 +11,8 @@
 #include "file_picker.h"
 #include "game_log.h"
 #include "image_renderer.h"
-#include "inference_server.h"
 #include "imgui.h"
+#include "inference_server.h"
 #include "layout.h"
 #include "layout_dialogs.h"
 #include "links.h"
@@ -21,6 +21,9 @@
 #include "new_game_dialog.h"
 #include "play_dialogs.h"
 #include "play_session.h"
+#include "reevaluate_dialog.h"
+#include "reevaluation.h"
+#include "replay_evaluator.h"
 #include "replay_session.h"
 #include "replay_tools.h"
 #include "run_browser.h"
@@ -58,6 +61,14 @@
 // Opening a replay, starting a game, the Start tab's ✕, the toolbar's mode switch and View's tools and
 // layouts go back to the dockspace. Its lists are scanned on its thread when it is shown and every
 // few seconds while it is; its status blocks look at the paths at most once a second.
+//
+// Re-evaluation (reevaluation.h): Analysis → Re-evaluate… (and its key) opens a dialog of the served
+// policies and seats (reevaluate_dialog.h); the Replay evaluator (replay_evaluator.h) runs it on its
+// thread, with its progress and a Cancel in the status bar, and the results join the replay's
+// evaluations. With Settings → Models' "Re-evaluate a replay when it opens" (on by default) every
+// replay that opens is re-evaluated with every served policy, both seats: its cached results at
+// once, the rest while a server listens at the socket. A failure of a re-evaluation asked for opens
+// the error dialog; one that opened with a replay does too, unless no server was there to ask.
 
 struct ImGuiDockNode;
 
@@ -86,6 +97,9 @@ class App {
         const Settings &settings() const { return settings_; }
         // Settings → Models → Start the server with the workbench, as its checkbox sets it.
         void set_start_server(bool on) { settings_.models.start_server = on; }
+        // Settings → Models as a whole (the socket, the policies, re-evaluating on open), as its tab
+        // sets them: for the checks.
+        void set_models(const ModelSettings &m) { settings_.models = m; }
         // The UI font from the next frame on (sanitized, as Settings → Appearance sets it).
         void set_font(const FontChoice &c);
         // The colour theme from the next frame on (the default for an unknown id).
@@ -219,6 +233,18 @@ class App {
         // Restarts the server the workbench starts, as Settings → Models' Restart server does.
         void restart_server() { settings_dialog_.request_server_restart(); }
 
+        // ── Re-evaluation ──
+        // Analysis → Re-evaluate… (its key): the dialog for the open replay; false (a status message)
+        // with no replay open in Replay.
+        bool open_reevaluate();
+        ReevaluateDialog &reevaluate_dialog() { return reeval_dialog_; }
+        // Re-evaluates the open replay with `r`'s policies and seats (its cache root and server use set
+        // here unless given); false (a status message) with no replay open. `asked`: the user asked
+        // (a failure opens the error dialog even when no server is there).
+        bool reevaluate(ReevalRequest r, bool asked = true);
+        Reevaluation &reevaluation() { return reeval_; }
+        ReplayEvaluator &evaluator() { return evaluator_; }
+
         // ── The start page ──
         // Shows it in place of the mode's dockspace (its lists scanned again), or the dockspace.
         void show_start_page(bool on);
@@ -253,7 +279,14 @@ class App {
         void show_tool(Tool t);
         void draw_game_combo();
         void draw_replay_nav();
-        void draw_load_progress(float right_edge);
+        // A background task's phase, a progress bar (fraction -1: unknown) and Cancel, ending at
+        // `right_edge`; true when Cancel was pressed.
+        bool draw_progress(const std::string &phase, double fraction, float right_edge);
+        void configure_evaluator();
+        void poll_reevaluation();
+        void report_reevaluation();
+        void reevaluate_on_open();
+        void draw_reevaluate_dialog();
         void poll_loader();
         void poll_play();
         void step_auto_play();
@@ -332,6 +365,10 @@ class App {
         bool engine_found_ = false;
         bool socket_present_ = false;
         InferenceServer server_;  // Settings → Models → Start the server (interactive sessions only)
+        ReplayEvaluator evaluator_;
+        Reevaluation reeval_;
+        bool reeval_asked_ = false;  // the running re-evaluation was asked for (not the one on open)
+        ReevaluateDialog reeval_dialog_;
         ModelManagerView models_;
         StartPage start_page_;
         bool start_shown_ = false;

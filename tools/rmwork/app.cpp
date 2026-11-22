@@ -1,5 +1,7 @@
 #include "app.h"
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <cstdlib>
 #include <utility>
@@ -178,6 +180,7 @@ void App::update_card_images() {
 void App::frame() {
     update_card_images();
     poll_loader();
+    poll_reevaluation();
     poll_play();
     run_server();
     replay_.tick(ImGui::GetTime());
@@ -207,6 +210,7 @@ void App::frame() {
         request_named_layout(show_name);
     }
     draw_play_dialogs();
+    draw_reevaluate_dialog();
     if (error_dialog_.draw()) status("Diagnostics copied to the clipboard");
     std::string picked;
     if (picker_.draw(&picked)) pick_done(picked);
@@ -221,7 +225,7 @@ void App::frame() {
 
 bool App::working() const {
     if (card_images_.textures().busy() || models_.busy()) return true;
-    if (loader_.busy() || (run_browser_.is_open() && !run_browser_.ready())) return true;
+    if (loader_.busy() || reeval_.running() || (run_browser_.is_open() && !run_browser_.ready())) return true;
     if (start_shown_ && !start_page_.fresh()) return true;
     if (!play_.running()) return false;
     return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||
@@ -659,6 +663,92 @@ void App::install(LoadOutcome *o) {
     target_decision_ = target_view_ = -1;
     status(msg);
     if (!o->title.empty()) report_error(o->title, o->message, o->detail);
+    reevaluate_on_open();
+}
+
+bool App::open_reevaluate() {
+    if (mode() != Mode::REPLAY || !replay_.loaded()) {
+        status("Re-evaluate: open a replay in Replay first");
+        return false;
+    }
+    reeval_dialog_.open(served_policies(settings_.models), settings_.models.reevaluate_on_open);
+    return true;
+}
+
+void App::draw_reevaluate_dialog() {
+    ReevalRequest r;
+    bool on_open = settings_.models.reevaluate_on_open;
+    const ReevaluateDialog::Choice c = reeval_dialog_.draw(&r, &on_open);
+    settings_.models.reevaluate_on_open = on_open;
+    if (c == ReevaluateDialog::Choice::REEVALUATE) reevaluate(r, true);
+    if (c == ReevaluateDialog::Choice::SETTINGS) open_settings(SettingsDialog::MODELS);
+}
+
+// The evaluator follows the settings: the socket, the engine that writes the cards file.
+void App::configure_evaluator() {
+    ReplayEvaluator::Config c;
+    c.socket = socket_path(settings_);
+    c.engine = replay_engine();
+    c.workdir = engine_workdir_path(settings_);
+    c.cards_path = workbench_cache_dir() + "/replay_evaluator/cards-" + std::to_string(getpid()) + ".rmst";
+    evaluator_.configure(c);
+}
+
+bool App::reevaluate(ReevalRequest r, bool asked) {
+    Match *m = replay_.match();
+    if (!m || m->live) {
+        status("Re-evaluate: open a replay in Replay first");
+        return false;
+    }
+    configure_evaluator();
+    if (r.cache_root.empty()) r.cache_root = eval_cache_root();
+    if (asked) r.use_server = true;
+    reeval_asked_ = asked;
+    reeval_.start(m, &evaluator_, r);
+    if (reeval_.running()) {
+        poll_reevaluation();
+    } else {
+        report_reevaluation();
+    }
+    return true;
+}
+
+// With the setting on: the served policies, both seats; the server asked only while it listens.
+void App::reevaluate_on_open() {
+    if (!settings_.models.reevaluate_on_open || !replay_.loaded()) return;
+    ReevalRequest r;
+    r.policies = served_policies(settings_.models);
+    if (r.policies.empty()) return;
+    r.use_server = socket_listening(socket_path(settings_));
+    reevaluate(r, false);
+}
+
+void App::poll_reevaluation() {
+    if (!reeval_.running()) return;
+    reeval_.poll(replay_.match());
+    if (!reeval_.running()) report_reevaluation();
+}
+
+// A re-evaluation's end: the status bar says what it did (after what it said, for one that opened with
+// the replay); a failure opens the error dialog (one that opened with the replay only when a server was
+// there to ask).
+void App::report_reevaluation() {
+    if (reeval_.state() == Reevaluation::State::IDLE) return;
+    status(reeval_asked_ ? reeval_.summary() : status_ + " \xC2\xB7 " + reeval_.summary());
+    if (reeval_.state() != Reevaluation::State::FAILED || (!reeval_asked_ && reeval_.no_server())) return;
+    if (reeval_.no_server()) {
+        report_error("No inference server",
+            "Re-evaluation needs the inference server: none listens at the configured socket. Start it with "
+            "Settings \xE2\x86\x92 Models \xE2\x86\x92 Start the server with the workbench (or rmserve --socket "
+            "PATH --policy ID=MODEL), then re-evaluate.",
+            reeval_.error() + "\n");
+        return;
+    }
+    report_error("Re-evaluation failed",
+        "The replay's decisions were not evaluated: the featurizer's inputs could not be made from the engine, or "
+        "the inference server refused the connection (a policy it does not serve, or a model of other tables than "
+        "the engine's: rmtrain retable <run>), went away or did not answer. The evaluations already shown stay.",
+        reeval_.error() + "\n");
 }
 
 bool App::next_swing() {
@@ -862,6 +952,9 @@ void App::run_action(Action a) {
         case Action::PLAY_PASS:
             play_pass_priority();
             break;
+        case Action::REEVALUATE:
+            open_reevaluate();
+            break;
     }
 }
 
@@ -913,7 +1006,11 @@ void App::draw_menu_bar() {
         ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Analysis")) {
-        if (ImGui::MenuItem("Re-evaluate With Checkpoint…")) not_built("Re-evaluate With Checkpoint");
+        const bool can_reeval = mode() == Mode::REPLAY && replay_.loaded();
+        if (ImGui::MenuItem("Re-evaluate\xE2\x80\xA6", shortcut(Action::REEVALUATE).c_str(), false, can_reeval))
+            open_reevaluate();
+        if (!can_reeval) ImGui::SetItemTooltip("Open a replay in Replay first");
+        if (reeval_.running() && ImGui::MenuItem("Cancel Re-evaluation")) reeval_.cancel();
         if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
         if (ImGui::MenuItem("Biggest Swings")) show_tool(Tool::SWINGS);
         if (ImGui::MenuItem("Models")) show_tool(Tool::MODELS);
@@ -1171,10 +1268,7 @@ void App::draw_replay_nav() {
     }
 }
 
-// While a load runs: its phase, a progress bar and Cancel, ending at `right_edge`.
-void App::draw_load_progress(float right_edge) {
-    double fraction = -1;
-    const std::string phase = load_phase(&fraction);
+bool App::draw_progress(const std::string &phase, double fraction, float right_edge) {
     const float bar_w = PROGRESS_EMS * ImGui::GetFontSize();
     const float cancel_w = ImGui::CalcTextSize("Cancel").x + 10;
     const ImVec2 p = ImGui::GetCursorScreenPos();
@@ -1193,9 +1287,10 @@ void App::draw_load_progress(float right_edge) {
     ImGui::ProgressBar(shown, ImVec2(bar_w, h), fraction < 0 ? "" : nullptr);
     ImGui::PopStyleColor();
     ImGui::SameLine(0, 6);
-    if (ImGui::SmallButton("Cancel")) cancel_load();
+    const bool cancel = ImGui::SmallButton("Cancel");
     ImGui::PopStyleVar();
     ImGui::SameLine(0, 10);
+    return cancel;
 }
 
 void App::draw_status_bar() {
@@ -1223,7 +1318,16 @@ void App::draw_status_bar() {
         const char *engine = engine_text.c_str();
         const char *server = server_text.c_str();
         const float right_w = ImGui::CalcTextSize(engine).x + ImGui::CalcTextSize(server).x + 12 * 2 + 21 + 2;
-        if (loader_.busy()) draw_load_progress(w->Pos.x + w->Size.x - 8 - right_w - 12);
+        const float progress_end = w->Pos.x + w->Size.x - 8 - right_w - 12;
+        if (loader_.busy()) {
+            double fraction = -1;
+            const std::string phase = load_phase(&fraction);
+            if (draw_progress(phase, fraction, progress_end)) cancel_load();
+        } else if (reeval_.running()) {
+            ImGui::PushID("reeval");
+            if (draw_progress(reeval_.phase(), reeval_.fraction(), progress_end)) reeval_.cancel();
+            ImGui::PopID();
+        }
         const ImVec2 msg_pos = ImGui::GetCursorScreenPos();
         const float msg_end = w->Pos.x + w->Size.x - 8 - right_w - 12;
         if (msg_end > msg_pos.x) {
@@ -1595,6 +1699,7 @@ bool App::close_session() {
         auto_left_ = 0;
     } else {
         if (loader_.busy()) cancel_load();
+        reeval_.cancel();
         if (replay_.loaded()) closed = "Closed the replay";
         replay_.clear();
     }

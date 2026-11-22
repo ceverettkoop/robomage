@@ -12,8 +12,9 @@
 // ── What the tools beside the Table share: the decision's frame and models, the evaluations ─────
 //
 // refresh() reads the session's decision in its viewer's frame once per change of decision or
-// viewer (the session's generation): the DecisionFrame and its FrameModels. The match's recorded
-// evaluations (evaluations.h) are read once per match and set of joined episodes. The Inspector's
+// viewer (the session's generation): the DecisionFrame and its FrameModels. The match's
+// evaluations (evaluations.h: the episodes' and the re-evaluations merged with them, reevaluation.h)
+// are read once per match, set of joined episodes and change of its evaluations. The Inspector's
 // choices are kept here because other tools follow them: the policy whose π and values the tools
 // show (-1: the first evaluated) and the value scale (the deciding seat's own, or Player A's).
 //
@@ -54,6 +55,7 @@ class ToolData {
         const Match *values_match_ = nullptr;
         std::string values_dump_;
         size_t values_steps_ = 0;
+        unsigned values_changed_ = 0;
         MatchValues values_;
 };
 

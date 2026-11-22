@@ -165,6 +165,7 @@ void Loader::run() {
         fail(&out, "Not a decision log",
             base_name(req_.log_path) + " is not a decision log the engine can replay (RMLOG v3).", err);
     } else if (replay(bytes, m.get(), &out)) {
+        m->log_hash = fnv1a64(bytes);
         const bool ok = index(bytes, m.get(), &out, &err);
         if (!ok) {
             fail(&out, "Replay not decoded",

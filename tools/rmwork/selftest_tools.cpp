@@ -50,6 +50,7 @@ static void check_links(const rmwork::CheckFn &check, const rmwork::FrameModels 
     const std::string &here, rmwork::ToolsCoverage *cov);
 static void key_press(ImGuiKey key, const std::function<void(int)> &frames);
 static std::map<size_t, StepFacts> read_steps(const rmwork::Match &m, std::string *err);
+static std::map<size_t, StepFacts> match_steps(const rmwork::Match &m);
 static std::vector<Expected> expected_swings(
     const rmwork::Match &m, const std::map<size_t, StepFacts> &steps, int seat, int64_t policy, size_t n);
 static std::string nats(double h);
@@ -306,7 +307,7 @@ static void check_inspector(
     if (r && r->log_pi.size() == td.models().menu.rows.size()) {
         double h = 0;
         for (float l : r->log_pi) h -= std::exp(static_cast<double>(l)) * static_cast<double>(l);
-        check(field(fields, "H(\xCF\x80) \xC2\xB7 p" + std::to_string(r->id)) == nats(h),
+        check(field(fields, "H(\xCF\x80) \xC2\xB7 " + rmwork::policy_name(r->id)) == nats(h),
             here + "the Inspector's H(\xCF\x80) is not the policy's");
         if (e->chosen >= 0 && static_cast<size_t>(e->chosen) < r->log_pi.size()) {
             char buf[32];
@@ -314,9 +315,14 @@ static void check_inspector(
             check(field(fields, "log \xCF\x80(chosen)") == buf, here + "the Inspector's log \xCF\x80(chosen) is wrong");
         }
     }
-    check(field(fields, "Policy version") ==
-              (e->policy_version >= 0 ? std::to_string(e->policy_version) : std::string("\xE2\x80\x94")),
-        here + "the Inspector's policy version is not the episode's");
+    if (e->file == rmwork::REEVAL_STEP_FILE) {
+        check(field(fields, "Policy version") == "<none>" && field(fields, "Teacher") == "<none>",
+            here + "the Inspector shows recorded fields for a decision only re-evaluated");
+    } else {
+        check(field(fields, "Policy version") ==
+                  (e->policy_version >= 0 ? std::to_string(e->policy_version) : std::string("\xE2\x80\x94")),
+            here + "the Inspector's policy version is not the episode's");
+    }
     ++cov->episode_decisions;
 }
 
@@ -473,6 +479,22 @@ static std::map<size_t, StepFacts> read_steps(const rmwork::Match &m, std::strin
     return out;
 }
 
+// The match's evaluations as its episode steps hold them (the recorded ones and those merged).
+static std::map<size_t, StepFacts> match_steps(const rmwork::Match &m) {
+    std::map<size_t, StepFacts> out;
+    for (size_t i = 0; i < m.decisions.size(); ++i) {
+        const int step = m.decisions[i].episode_step;
+        if (step < 0 || static_cast<size_t>(step) >= m.episode_steps.size()) continue;
+        const rmwork::EpisodeStepInfo &e = m.episode_steps[static_cast<size_t>(step)];
+        if (e.policies.empty()) continue;
+        StepFacts f;
+        f.seat = e.seat;
+        f.policies = e.policies;
+        out[i] = f;
+    }
+    return out;
+}
+
 static std::vector<Expected> expected_swings(
     const rmwork::Match &m, const std::map<size_t, StepFacts> &steps, int seat, int64_t policy, size_t n) {
     std::vector<Expected> all;
@@ -543,7 +565,12 @@ void check_tools_drawing(
     const CheckFn &check, App &app, const std::function<void(int)> &frames, const std::string &at, ToolsCoverage *cov) {
     ReplaySession &s = app.replay();
     if (!s.loaded()) return;
-    for (int t = 0; t < TOOL_COUNT; ++t) app.set_tool_open(Mode::REPLAY, static_cast<Tool>(t), true);
+    // Every tool open for the checks; the ones open before are what the next match's checks find again.
+    ToolFlags was_open{};
+    for (int t = 0; t < TOOL_COUNT; ++t) {
+        was_open[static_cast<size_t>(t)] = app.tool_open(Mode::REPLAY, static_cast<Tool>(t));
+        app.set_tool_open(Mode::REPLAY, static_cast<Tool>(t), true);
+    }
     const size_t n = s.count();
     const size_t step = std::max<size_t>(1, n / 8);
     for (size_t i = 0; i < n; i += step)
@@ -683,6 +710,12 @@ void check_tools_drawing(
             at + ": the Player A \xC2\xB7 Graveyard tool does not draw the graveyard's " + std::to_string(drawn) +
                 " cards");
     }
+    // The tools as they were, the Table in front: a zone tool left open shares a tab group with the
+    // Table, and the next match's Table checks need the Table drawn.
+    for (int t = 0; t < TOOL_COUNT; ++t)
+        app.set_tool_open(Mode::REPLAY, static_cast<Tool>(t), was_open[static_cast<size_t>(t)]);
+    app.focus_tool(Tool::TABLE);
+    frames(3);
     s.go_to(0);
     s.set_view(VIEW_A);
 }
@@ -693,7 +726,7 @@ void check_tools_values(const CheckFn &check, App &app, const std::function<void
     if (!s.loaded()) return;
     const Match &m = *s.match();
     std::string err;
-    const std::map<size_t, StepFacts> steps = read_steps(m, &err);
+    const std::map<size_t, StepFacts> steps = want_values.from_match ? match_steps(m) : read_steps(m, &err);
     check(!steps.empty(), at + ": the episodes do not read: " + err);
     if (steps.empty()) return;
     ToolData td;
