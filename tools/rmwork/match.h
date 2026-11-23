@@ -125,6 +125,7 @@ class Match {
         Match &operator=(const Match &) = delete;
         ~Match();
 
+        uint64_t serial = 0;   // unique among the process's matches: a match made at a freed one's address is another
         std::string log_path;  // the decision log, absolute
         RmlogInfo log;
         uint64_t log_hash = 0;  // the log's bytes' FNV-1a 64 (replay_cache.h), set by the loader

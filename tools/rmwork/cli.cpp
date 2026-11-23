@@ -55,6 +55,8 @@ struct CliOptions {
         std::string zone_magnify;
         std::string attr_target, attr_level, attr_expand, tokens_type;
         bool explain = false;
+        std::string compare_ref, compare_metric, compare_add;
+        bool compare_argmax_only = false, compare_picker = false, compare_report = false;
         // Play.
         std::string new_game;  // the --new-game spec ("" none)
         long play_decisions = 0;
@@ -121,7 +123,9 @@ static void usage() {
         "         [--table-hover-card NAME]\n"
         "         [--tool NAME]… [--choices-hover N] [--tree-expand] [--open-zone SEAT:ZONE]… [--zone-magnify NAME]\n"
         "         [--attr-target v|tv|logp|margin] [--attr-level state|tensors] [--attr-expand TEXT]\n"
-        "         [--tokens-type NAME] [--explain] (with --screenshot too)\n"
+        "         [--tokens-type NAME] [--explain] [--compare-ref NAME] [--compare-metric kl|tv]\n"
+        "         [--compare-argmax-only] [--compare-add MODEL|MODEL] [--compare-picker] [--compare-report]\n"
+        "         (with --screenshot too)\n"
         "       rmwork [--new-game SPEC [--play-decisions N]\n"
         "              [--play-until "
         "stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|mode|x|\n"
@@ -190,6 +194,14 @@ static void usage() {
         "  --tokens-type NAME the Tokens tool: show token type NAME (object, player, ledger, …)\n"
         "  --explain          attribute the opened decision (Attribution) without opening its tool: the Table\n"
         "                     layer\n"
+        "  --compare-ref NAME Policy Compare's reference: a policy by name (p0, \"re p1\")\n"
+        "  --compare-metric M Policy Compare's divergence: kl or tv\n"
+        "  --compare-argmax-only  Policy Compare's ranked list: the decisions where the argmax differs only\n"
+        "  --compare-add LIST once the replay is open, bring models in ('|'-separated exports, oldest first): served,\n"
+        "                     the replay re-evaluated with them (Policy Compare's Add checkpoints)\n"
+        "  --compare-picker   open Policy Compare's catalog popup (Add checkpoints…)\n"
+        "  --compare-report   when the window closes (after --screenshot), print Policy Compare's comparison of the\n"
+        "                     open replay: each policy's agreement with the reference, the top disagreements\n"
         "  --new-game SPEC    start a Play game: the New Game dialog's last choices changed by comma-separated items\n"
         "                     opp=explore|random|scripted|model|server, model=EXPORT, server=SOCKET, deck=DECK,\n"
         "                     opp-deck=DECK, seat=a|b, format=bo1|bo3, seed=N, auto-mana=on|off, read=on|off\n"
@@ -353,6 +365,23 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->attr_expand = argv[++i];
         } else if (a == "--tokens-type" && has_value) {
             opt->tokens_type = argv[++i];
+        } else if (a == "--compare-ref" && has_value) {
+            opt->compare_ref = argv[++i];
+        } else if (a == "--compare-metric" && has_value) {
+            opt->compare_metric = argv[++i];
+            if (opt->compare_metric != "kl" && opt->compare_metric != "tv") {
+                std::fprintf(stderr, "rmwork: --compare-metric is kl or tv, not '%s'\n", argv[i]);
+                *exit_code = 2;
+                return false;
+            }
+        } else if (a == "--compare-argmax-only") {
+            opt->compare_argmax_only = true;
+        } else if (a == "--compare-add" && has_value) {
+            opt->compare_add = argv[++i];
+        } else if (a == "--compare-picker") {
+            opt->compare_picker = true;
+        } else if (a == "--compare-report") {
+            opt->compare_report = true;
         } else if (a == "--new-game" && has_value) {
             opt->new_game = argv[++i];
         } else if (a == "--play-decisions" && has_value) {
@@ -737,6 +766,23 @@ static void open_data(rmwork::App &app, const CliOptions &opt) {
     app.force_attr_expand(split_list(opt.attr_expand, '|'));
     if (opt.explain) app.request_attribution();
     app.tokens_view().force_type(opt.tokens_type);
+    rmwork::PolicyCompareView &cmp = app.compare_view();
+    cmp.set_reference_name(opt.compare_ref);
+    if (!opt.compare_metric.empty())
+        cmp.set_metric(opt.compare_metric == "kl" ? rmwork::CompareMetric::KL : rmwork::CompareMetric::TV);
+    cmp.set_argmax_only(opt.compare_argmax_only);
+    if (opt.compare_picker) {
+        app.set_tool_open(app.mode(), rmwork::Tool::COMPARE, true);
+        app.focus_tool(rmwork::Tool::COMPARE);
+        // A screenshot keeps it open; a window opens it once.
+        if (opt.window.screenshot.empty())
+            cmp.open_picker();
+        else
+            cmp.force_picker(true);
+    }
+    std::vector<std::string> add;
+    for (const std::string &m : split_list(opt.compare_add, '|')) add.push_back(rmwork::absolute_path(m));
+    app.compare_bring_in_when_loaded(add);
 }
 
 // The start page shows at start when asked for, else when its setting is on and no flag opens a game,
@@ -783,7 +829,13 @@ static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool
             "The " + std::string(mode_title(app.mode())) + " mode has no saved layout named \"" + opt.layout +
                 "\". View lists the saved layouts.",
             "");
-    return run_window(app, opt.window);
+    const int status = run_window(app, opt.window);
+    if (opt.compare_report)
+        std::fputs(app.compare_view()
+                       .report(app.replay(), app.tools().data(), served_policies(app.settings().models), 12)
+                       .c_str(),
+            stdout);
+    return status;
 }
 
 namespace rmwork {

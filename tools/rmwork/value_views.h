@@ -26,6 +26,10 @@
 
 namespace rmwork {
 
+// Inside an ImPlot plot whose x axis is the match's decisions: a click in the plot (`hovered`) starts a
+// drag, and while the left button is held the session's cursor follows the decision under the mouse.
+void plot_scrub(ReplaySession &s, bool hovered, bool *dragging);
+
 // One line of the Value Graph's legend.
 struct GraphSeries {
         int seat = 0;

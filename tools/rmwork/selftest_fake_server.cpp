@@ -59,8 +59,8 @@ float FakeServer::value_of(const featurize::Tensors &t, uint32_t policy) {
     return static_cast<float>(0.9 * std::sin(0.37 * static_cast<double>(t.n()) + 1.3 * policy + 0.05 * content_sum(t)));
 }
 
-// Per menu row: its index and the policy, plus the features of the tokens its menu token relates to
-// and a share of the whole decision's sum.
+// Per menu row: its index and the policy (an id of 1 to 3 favours the odd rows, so policies' π differ), plus the
+// features of the tokens its menu token relates to and a share of the whole decision's sum.
 std::vector<float> FakeServer::logits_of(const featurize::Tensors &t, uint32_t policy) {
     const size_t F = t.n() ? t.tok_num.size() / t.n() : 0, K = t.n() ? t.tok_card.size() / t.n() : 0;
     const double whole = content_sum(t);
@@ -75,7 +75,8 @@ std::vector<float> FakeServer::logits_of(const featurize::Tensors &t, uint32_t p
             for (size_t c = 0; c < K; ++c) psi += 0.001 * static_cast<double>(t.tok_card[d * K + c] + 1);
         }
         out.push_back(static_cast<float>(0.25 * static_cast<double>(a % 5) + 0.1 * policy + 0.3 * std::sin(psi) +
-                                         0.02 * whole * static_cast<double>(a % 3)));
+                                         0.02 * whole * static_cast<double>(a % 3) +
+                                         0.3 * static_cast<double>(policy % 4) * static_cast<double>(a % 2)));
     }
     return out;
 }

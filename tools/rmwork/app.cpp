@@ -36,6 +36,7 @@ static std::string file_name(const std::string &path);
 static std::string seconds_text(double s);
 static uint64_t next_random(uint64_t *state);
 static bool auto_play_holds(const std::string &until, const agents::DecisionView &v);
+static std::string served_names(const std::vector<rmwork::ServedPolicy> &policies);
 
 static std::string file_name(const std::string &path) {
     const size_t slash = path.rfind('/');
@@ -46,6 +47,14 @@ static std::string seconds_text(double s) {
     char buf[32];
     std::snprintf(buf, sizeof buf, "%.1f s", s);
     return buf;
+}
+
+// "re p3, re p4": the re-evaluated names of served policies.
+static std::string served_names(const std::vector<rmwork::ServedPolicy> &policies) {
+    std::string out;
+    for (const rmwork::ServedPolicy &p : policies)
+        out += (out.empty() ? "" : ", ") + rmwork::policy_name(rmwork::reevaluated_id(p.id));
+    return out;
 }
 
 // splitmix64: the auto_play rule's generator.
@@ -185,6 +194,7 @@ void App::frame() {
     poll_play();
     poll_simulation();
     run_server();
+    poll_compare();
     replay_.tick(ImGui::GetTime());
     handle_keys();
     // The toolbar and the status bar read the tools' data: it follows the match, cursor and viewer.
@@ -230,6 +240,8 @@ void App::frame() {
 bool App::working() const {
     if (card_images_.textures().busy() || models_.busy()) return true;
     if (loader_.busy() || reeval_.running() || (run_browser_.is_open() && !run_browser_.ready())) return true;
+    if (compare_waiting()) return true;
+    if (compare_view_.picker_asked() && settings_.tools[mode_index(mode())][tool_index(Tool::COMPARE)]) return true;
     if (attribution_.busy() || attribution_.running() || slot_stats_.building() || attr_waiting_) return true;
     if (!attr_expand_.empty() && attribution_.base()) return true;
     if (start_shown_ && !start_page_.fresh()) return true;
@@ -963,12 +975,7 @@ void App::run_server() {
         settings_dialog_.set_server_status("", false);
         return;
     }
-    ServerConfig c;
-    c.binary = parent_dir(absolute_path(engine_binary_path(settings_))) + "/rmserve";
-    c.socket = socket_path(settings_);
-    c.cwd = repo_root();
-    c.log_dir = workbench_cache_dir() + "/rmserve";
-    for (const PolicyEntry &p : settings_.models.policies) c.policies.push_back({p.id, policy_model_path(p)});
+    const ServerConfig c = server_config();
     if (restart || server_.state() == InferenceServer::State::OFF || server_config_key(c) != server_.key()) {
         server_.start(c);
         if (server_.state() == InferenceServer::State::FAILED)
@@ -980,6 +987,16 @@ void App::run_server() {
     settings_dialog_.set_server_status(
         s == InferenceServer::State::FAILED ? server_.message() : std::string(server_state_text(s)).substr(11),
         s == InferenceServer::State::FAILED);
+}
+
+ServerConfig App::server_config() const {
+    ServerConfig c;
+    c.binary = parent_dir(absolute_path(engine_binary_path(settings_))) + "/rmserve";
+    c.socket = socket_path(settings_);
+    c.cwd = repo_root();
+    c.log_dir = workbench_cache_dir() + "/rmserve";
+    for (const PolicyEntry &p : settings_.models.policies) c.policies.push_back({p.id, policy_model_path(p)});
+    return c;
 }
 
 // The configured engine binary and socket, looked at again when their paths change or a second
@@ -1159,7 +1176,7 @@ void App::draw_menu_bar() {
             explain();
         if (attribution_.running() && ImGui::MenuItem("Cancel Attribution")) attribution_.cancel();
         if (ImGui::MenuItem("Tokens")) show_tool(Tool::TOKENS);
-        if (ImGui::MenuItem("Compare Policies…")) not_built("Compare Policies");
+        if (ImGui::MenuItem("Compare Policies\xE2\x80\xA6")) show_tool(Tool::COMPARE);
         if (ImGui::MenuItem("Biggest Swings")) show_tool(Tool::SWINGS);
         if (ImGui::MenuItem("Models")) show_tool(Tool::MODELS);
         if (ImGui::MenuItem("Batch Over Episodes…")) not_built("Batch Over Episodes");
@@ -1631,6 +1648,8 @@ void App::draw_tools() {
                 draw_attribution_tool();
             else if (tool == Tool::TOKENS)
                 draw_tokens_tool();
+            else if (tool == Tool::COMPARE)
+                draw_compare_tool();
             else
                 draw_tool_body(tool, ctx);
         }
@@ -1812,6 +1831,113 @@ void App::draw_tokens_tool() {
     c.att = attr_current_ ? &attribution_ : nullptr;
     c.tints = attr_tints_.on ? &attr_tints_ : nullptr;
     tokens_view_.draw(c);
+}
+
+void App::draw_compare_tool() {
+    CompareContext c;
+    c.mode = mode();
+    c.session = &session();
+    c.data = &tools_.data();
+    c.links = &links_;
+    c.settings = &settings_;
+    c.engine = absolute_path(engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+    c.served = served_policies(settings_.models);
+    c.reevaluating = reeval_.running();
+    c.reeval_phase = reeval_.phase();
+    c.reeval_fraction = reeval_.fraction();
+    c.note = compare_note_;
+    const CompareRequest r = compare_view_.draw(c);
+    if (r.kind == CompareRequest::Kind::BRING_IN) compare_bring_in(r.models);
+    if (r.kind == CompareRequest::Kind::SETTINGS) open_settings(SettingsDialog::MODELS);
+}
+
+bool App::compare_bring_in(const std::vector<std::string> &models) {
+    const Match *m = replay_.match();
+    if (mode() != Mode::REPLAY || !m || m->live) {
+        status("Policy Compare: open a replay in Replay first");
+        return false;
+    }
+    if (models.empty()) return false;
+    std::vector<std::string> ids, unserved;
+    for (const std::string &model : models) {
+        const std::string id = serve_model(model);
+        if (id.empty() || id.find_first_not_of("0123456789") != std::string::npos) {
+            unserved.push_back(model + " (policy \"" + id + "\")");
+            continue;
+        }
+        if (std::find(ids.begin(), ids.end(), id) == ids.end()) ids.push_back(id);
+    }
+    compare_pending_.clear();
+    const std::vector<ServedPolicy> served = served_policies(settings_.models);
+    for (const std::string &id : ids)
+        for (const ServedPolicy &p : served)
+            if (std::to_string(p.id) == id) compare_pending_.push_back(p);
+    const std::string names = served_names(compare_pending_);
+    compare_note_.clear();
+    for (const std::string &u : unserved)
+        compare_note_ +=
+            (compare_note_.empty() ? "Not re-evaluated, served under an id that is not a number: " : ", ") + u;
+    status(compare_pending_.empty() ? "Policy Compare: nothing to re-evaluate"
+                                    : "Policy Compare: serving " + names +
+                                          "; the replay is re-evaluated with them once the server serves them");
+    return !compare_pending_.empty();
+}
+
+// A bring-in waits for the server the workbench runs to serve its policies (started again with them) and for a
+// running re-evaluation to end, then re-evaluates the replay with them; an external server is asked as it is, and
+// the tool says what it must serve.
+void App::poll_compare() {
+    if (!compare_queued_.empty() && !loader_.busy()) {
+        const std::vector<std::string> models = std::move(compare_queued_);
+        compare_queued_.clear();
+        compare_bring_in(models);
+    }
+    if (compare_reeval_ && !reeval_.running()) {
+        compare_reeval_ = false;
+        compare_note_ = reeval_.state() == Reevaluation::State::DONE ? "" : compare_external_;
+    }
+    if (compare_pending_.empty()) return;
+    const Match *m = replay_.match();
+    if (mode() != Mode::REPLAY || !m || m->live) {
+        compare_pending_.clear();
+        compare_note_ = "The checkpoints were served, but no replay is open in Replay to re-evaluate.";
+        return;
+    }
+    const std::string names = served_names(compare_pending_);
+    const bool own = persist_ && settings_.models.start_server;
+    const InferenceServer::State s = server_.state();
+    if (own && s == InferenceServer::State::FAILED) {
+        compare_pending_.clear();
+        compare_note_ = "The inference server did not start with " + names + ": " + server_.message();
+        return;
+    }
+    if (own && (server_.key() != server_config_key(server_config()) ||
+                   (s != InferenceServer::State::RUNNING && s != InferenceServer::State::EXTERNAL))) {
+        compare_note_ = "Waiting for the inference server to serve " + names + " (" +
+                        std::string(server_state_text(s)).substr(11) + ")";
+        return;
+    }
+    if (reeval_.running()) {
+        compare_note_ = "Waiting for the running re-evaluation to finish before re-evaluating with " + names;
+        return;
+    }
+    compare_external_.clear();
+    if (!own || s == InferenceServer::State::EXTERNAL) {
+        std::string line = "rmserve --socket " + socket_path(settings_);
+        for (const ServedPolicy &p : served_policies(settings_.models))
+            line += " --policy " + std::to_string(p.id) + "=" + p.model;
+        compare_external_ =
+            "The inference server at the socket was not started by the workbench, which cannot add policies to it: it "
+            "must serve " +
+            names + ". If it does not, restart it as: " + line;
+    }
+    ReevalRequest r;
+    r.policies = compare_pending_;
+    for (const ServedPolicy &p : compare_pending_) compare_view_.set_included(reevaluated_id(p.id), true);
+    compare_view_.set_reference(reevaluated_id(compare_pending_.back().id));
+    compare_pending_.clear();
+    compare_note_ = compare_external_;
+    compare_reeval_ = reevaluate(r, true);
 }
 
 // The Models tool's body, against the engine replays and games run with, and what it asks for.

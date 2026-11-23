@@ -122,6 +122,19 @@ static bool engine_manifest(const rmwork::EngineTables &t, featurize::Manifest *
 
 namespace rmwork {
 
+const char *compat_verdict_text(const CompatVerdict &v) {
+    if (v.checking) return "checking\xE2\x80\xA6";
+    switch (v.compat) {
+        case PolicyCompat::COMPATIBLE:
+            return "compatible";
+        case PolicyCompat::INCOMPATIBLE:
+            return "incompatible";
+        case PolicyCompat::UNKNOWN:
+            return "unknown";
+    }
+    return "";
+}
+
 std::vector<size_t> model_view(
     const std::vector<PolicyRow> &rows, const ModelFilter &f, ModelColumn column, bool ascending) {
     const std::string needle = lower(f.text);

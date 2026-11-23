@@ -832,6 +832,86 @@ Not done:
 | Runner | Headless engines in parallel, per-match judgement and failures, `simulation.json`, cancel. **Done** | S |
 | Results | One match in Replay; the Simulations window with the summary and the rows; past simulations reopened. **Done** | S |
 
+### 2.10 Policy Compare: several policies at a decision and across the game (design, 2026-11-22)
+
+**Status: done** (`tools/rmwork/`: `policy_compare`, `policy_compare_view`, the App's `compare_bring_in`; checks in
+`selftest_policy_compare`, the stand-in server's policies now differing in π). §3's Policy Compare row and §4.4 item
+18, built on §2.7: π and V of two or more of a match's evaluation series (recorded `p0 v12` and re-evaluated `re p0
+v12`) side by side at the cursor's decision and over the game, against one of them as the reference. Built as
+designed below, with these choices:
+- The tool is in both modes: Replay compares whatever the match carries; Play compares the live game's decisions that
+  Model's Read evaluated (it evaluates every served policy with a numeric id), and its Add checkpoints… is disabled
+  (bringing a checkpoint in re-evaluates a whole match). The Analysis preset has it as a second tab behind the Value
+  Graph (the Value Graph stays the shown tab); Analysis → Compare Policies… opens it.
+- A wide tool (from 110 ems) is two columns: the decision and the agreement on the left, the plots and the ranked
+  list on the right; a narrow one stacks them. The agreement table's seat column is "A · B" in Omni (each seat's
+  counts in its tooltip) and the viewer's seat in a seat view.
+- The bring-in waits for a running re-evaluation (one that opened with the replay) to end rather than cancelling it.
+- `--compare-report` prints the comparison (the policies, their agreement, the top disagreements with the rows the
+  reference and the policy prefer) when the window closes: a comparison from the command line, with `--screenshot`.
+- A match made at the address of a freed one is told apart by `Match::serial`, so the comparison (and its rows' texts)
+  is never one of the match before.
+
+Measured on 2026-11-22: runs/latest (league26-24h-2's final) against league26-24h's final, both served by rmserve,
+on a bo1 the two played (burn vs ur_tempo, game seed 5, 52 decisions): argmax agreement 90% (47/52; A 96%, B 86%),
+mean KL 0.033, mean TV 0.056; the largest disagreement a Brainstorm put-back where the older final keeps Murktide
+Regent (TV 0.42).
+
+Not done:
+- Policies are told apart only by their labels (`re p1 v10502`); a run's two finals of the same learner step share
+  the version, so the model's file is in the chip's tooltip and the report, not in the label.
+- The catalog marks `runs/latest` incompatible when its `latest.json` holds its hashes under `hashes` rather than
+  `manifest` (a hand-written one, such as the one on 2026-11-22): the Models tool's reader (`read_model_manifest`)
+  refuses it, so the row cannot be ticked; served through Settings → Models it compares as any other.
+- Removing a policy's series (§2.7's not done) and pinning a policy's colour across sessions.
+
+The design as written before building:
+
+- **Which policies.** The candidates are the match's evaluated policies with a series of a seat the viewer sees
+  (§2.7's rule: a seat view its own seat's, Omni both); all are compared unless unticked, and the reference is the
+  last of them in id order (a re-evaluated id is 2³² plus its served id, so the policy served last) unless another
+  is chosen. With no candidate, or one, the tool says so and offers to bring checkpoints in.
+- **Bringing a checkpoint in.** "Add checkpoints…" lists the policy catalog (§4.6: `runs/latest` first, then the
+  runs' policies newest first, then the zipped exports; the hidden rows left out), each with the Models tool's
+  compatibility verdict (an incompatible row cannot be ticked). The ticked rows are served oldest first through the
+  Models tool's Serve (`App::serve_model`: Settings → Models' policies, the server started with the workbench), so
+  the newest gets the highest id and becomes the reference. When the workbench runs rmserve, its changed
+  configuration restarts it; once it listens with the new policies the match is re-evaluated with them, both seats,
+  through §2.7's re-evaluation (the cache first), and their series appear. An external server cannot be told to
+  serve more: the re-evaluation is tried as it is, and the tool names the policies it must serve and the `rmserve
+  --socket … --policy ID=MODEL …` line that would serve them. In Play the tool compares what Model's Read evaluated
+  (every served policy with a numeric id); bringing checkpoints in needs Replay.
+- **At the decision.** Per menu row each policy's π as a bar in its colour, its argmax marked (●), the chosen row
+  ► (Replay); per policy V (on the deciding seat's scale, or Player A's with the Inspector's radio), KL(ref‖p) and
+  TV against the reference. Hovering a row links it like Choices' rows (the Table outlines its source and target).
+- **Across the game.** For the decisions the viewer sees that the reference evaluated: KL or TV against the
+  reference per policy (argmax differences marked) and V (A) per policy, plotted over the match's decisions with
+  the cursor, click or drag scrubbing; per policy the argmax agreement rate overall and per seat, mean KL and TV,
+  and a strip of its agreement per turn. A ranked list of the decisions where a policy (or any) diverges most from
+  the reference, by KL or TV, filterable to "argmax differs only": the decisions where a newer checkpoint changed
+  its mind, ranked by the probability mass moved (TV); each row names the reference's and the policy's preferred
+  rows, and a click moves the cursor there.
+- **Metrics.** π = exp(log π) over the menu rows. KL(ref‖p) = Σ π_ref (log π_ref − log π_p) in nats; TV = ½ Σ
+  |π_ref − π_p|; argmax the first row of the largest π; agreement counts the decisions both evaluated.
+- **Code.** `policy_compare` (ImGui-free: the candidates, the metrics, a match's comparison and the ranked list),
+  `policy_compare_view` (the tool and its catalog picker), the App's bring-in flow (`compare_bring_in`), the
+  Analysis preset's Value Graph group as a second tab, Analysis → Compare Policies.
+
+| Feature | Notes | Size |
+|---|---|---|
+| Comparison | Candidates, reference, KL / TV / argmax per decision, agreement, ranked disagreements | S |
+| Tool | At the decision, the plots, the summary, the ranked list with jumps, links | S |
+| Bringing checkpoints in | The catalog picker with compatibility, Serve, the server restart, re-evaluation | S |
+
+Checked by `rmwork --selftest` (the metrics on made-up distributions against hand-computed values; a synthetic
+match's comparison, agreement and ranking; the candidates per viewer), `rmwork --selftest-data` (the stand-in server
+re-evaluating a corpus log with policies whose π differ: every decision's KL, TV and argmax against values computed
+from the merged records, the agreement, the ranked list sorted and filtered, a row's jump; every viewer; no policy and
+one policy; bringing two catalog rows of a made-up runs directory in: served, re-evaluated, their series compared,
+the newest the reference) and, opt-in, `rmwork --selftest-evals MODEL` (the reference policy served twice: KL 0 and
+full agreement at every decision). Screenshot flags `--tool compare`, `--compare-ref`, `--compare-metric`,
+`--compare-argmax-only`, `--compare-add`, `--compare-picker`.
+
 ## 3. Additional analysis tools that fit the framework
 
 Ordered roughly by value against effort. Each is one dockable tool.
@@ -839,7 +919,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | Tool | What it shows | Built on | Size |
 |---|---|---|---|
 | **Knowledge** | What the viewing seat knows or has deduced: opponent's hand candidates, known library positions, cards seen; the CLI's `know` panel as a tool | `k_*` tables (`docs/knowledge_store.md`) | S |
-| **Policy Compare** | π and V of several checkpoints at the current decision and across the game: per-decision KL divergence, argmax agreement, where a newer checkpoint changed its mind | §2.7 re-evaluation | M |
+| ~~**Policy Compare**~~ | π and V of several checkpoints at the current decision and across the game: per-decision KL divergence, argmax agreement, where a newer checkpoint changed its mind. **Built: §2.10** | §2.7 re-evaluation | M |
 | **Teacher Disagreement** | Where the scripted teacher's label differs from the model's choice, with both π; filterable list that jumps into Replay | episode `teacher` labels; or attach `teacher.py` to a replay | S |
 | **Branch Explorer** | At a decision, take a different menu row and play the game out K times with chosen agents; per-row win rate next to π (a Monte Carlo Q). Uses the decision log's prefix plus the alternative reply as `--actions`, then in-process agents finish the game | engine subprocess, `--actions`, agents | M |
 | **Influence Overlay** | Now part of Attribution (§2.8): its Table layer | §2.8 | — |
@@ -1128,7 +1208,7 @@ a cost reducer: the printed cost is shown).
 ### 4.4 Analysis tools (from §3)
 
 17. Knowledge.
-18. Policy Compare.
+18. ~~Policy Compare~~ (§2.10): built without a mock-up: π side by side at the decision, the divergence and value plots, the agreement summary, the ranked disagreements, checkpoints brought in from the catalog.
 19. Branch Explorer (with its rollout configuration and progress).
 20. ~~Attribution~~ (§2.8): built without a mock-up: the tool's ranked list at both levels, the Table layer with its legend, the State Tree's Impact column, the Tensors view (the Tokens tool).
 21. Blunder Finder (query builder and results).
@@ -1226,6 +1306,6 @@ runs/latest/
 2. Replay of a recorded `.rmlog` with all three viewers: Table, Players, Choices, Inspector, State Tree, Log, Value Graph from recorded evaluations (§2.2, §2.5, §2.6). Mock up §4.3's game-over screen first, since Replay needs it.
 3. Card images and printings (§2.4).
 4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time. Then Simulate (§2.9): any agent against any agent with no human seat, built on Play's agent arguments; its matches open in Replay. **Done.**
-5. Re-evaluation and the model manager (§2.7), then Attribution (§2.8, with the Tokens tool), Policy Compare, Knowledge and Teacher Disagreement.
+5. Re-evaluation and the model manager (§2.7), then Attribution (§2.8, with the Tokens tool), Policy Compare (§2.10), Knowledge and Teacher Disagreement. Done up to Policy Compare.
 6. The run tools: Episode Browser, Bench Matrix, Calibration, Training Curves.
 7. Branch Explorer, Blunder Finder, then the rest of §3.

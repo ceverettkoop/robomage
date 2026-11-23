@@ -67,6 +67,17 @@ static double clamp_unit(double v) {
 
 namespace rmwork {
 
+void plot_scrub(ReplaySession &s, bool hovered, bool *dragging) {
+    if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) *dragging = true;
+    if (!*dragging || !ImGui::IsMouseDown(ImGuiMouseButton_Left)) return;
+    const double x = ImPlot::GetPlotMousePos().x;
+    const long i = std::lround(x);
+    const long n = static_cast<long>(s.count());
+    if (n == 0) return;
+    s.set_playing(false, ImGui::GetTime());
+    s.go_to(static_cast<size_t>(std::max(0L, std::min(n - 1, i))));
+}
+
 std::vector<GraphSeries> ValueGraphView::series_for(const ToolData &data, int view) {
     std::vector<GraphSeries> out;
     const MatchValues &v = data.values();
@@ -157,14 +168,7 @@ void ValueGraphView::draw(ToolData &data, ReplaySession &s) {
 // Moves the cursor to the decision under the mouse while the left button is held after a click in
 // a plot.
 void ValueGraphView::scrub(ReplaySession &s, bool hovered) {
-    if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) dragging_ = true;
-    if (!dragging_ || !ImGui::IsMouseDown(ImGuiMouseButton_Left)) return;
-    const double x = ImPlot::GetPlotMousePos().x;
-    const long i = std::lround(x);
-    const long n = static_cast<long>(s.count());
-    if (n == 0) return;
-    s.set_playing(false, ImGui::GetTime());
-    s.go_to(static_cast<size_t>(std::max(0L, std::min(n - 1, i))));
+    plot_scrub(s, hovered, &dragging_);
 }
 
 void ValueGraphView::draw_values(ToolData &data, ReplaySession &s, const std::vector<GraphSeries> &series) {

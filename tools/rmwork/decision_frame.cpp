@@ -50,6 +50,17 @@ MenuModel build_menu_model(const DecisionFrame &f) {
     return m;
 }
 
+std::vector<std::string> menu_descriptions(const Match &m, size_t index, int view, std::string *err) {
+    std::vector<std::string> out;
+    if (index >= m.decisions.size() || (view != VIEW_OMNI && view != m.decisions[index].decider)) return out;
+    const std::shared_ptr<const rmstate::DecodedFrame> frame = m.frame(index, view, err);
+    if (!frame) return out;
+    const agents::Table t(*frame, m.stream(view).schema(), "menu");
+    const int c_desc = t.col("description");
+    for (size_t r = 0; r < t.rows(); ++r) out.push_back(t.text(r, c_desc));
+    return out;
+}
+
 FrameModels build_frame_models(const DecisionFrame &f) {
     FrameModels out;
     if (!f.frame) return out;

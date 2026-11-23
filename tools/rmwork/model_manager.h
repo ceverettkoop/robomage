@@ -61,6 +61,9 @@ struct CompatVerdict {
         std::string why;        // the refusal, or why it is unknown ("" when compatible)
 };
 
+// "compatible", "incompatible", "unknown", "checking…".
+const char *compat_verdict_text(const CompatVerdict &v);
+
 // A model manifest from `path`: a tables directory's manifest.json, or latest.json's `manifest`
 // object. False with `why` (no file, malformed, a latest.json without a manifest).
 bool read_model_manifest(const std::string &path, featurize::Manifest *out, std::string *why);

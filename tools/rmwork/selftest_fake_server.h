@@ -16,7 +16,7 @@
 // One connection at a time on its own thread, speaking RMIP v2 (the handshake, the shared region,
 // requests and responses). A policy's value of a decision is a function of the decision's tensors
 // (value_of: its token count and a weighted sum of its numeric, categorical and card columns), and its
-// logits a function of the row and of what the row's menu token relates to (logits_of), so the checks
+// logits a function of the row, the policy and what the row's menu token relates to (logits_of), so the checks
 // know what each decision's own tensors, changed or not, must give.
 
 namespace rmwork {

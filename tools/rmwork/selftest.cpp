@@ -24,6 +24,7 @@
 #include "selftest_model_manager.h"
 #include "selftest_model_zip.h"
 #include "selftest_policy_catalog.h"
+#include "selftest_policy_compare.h"
 #include "selftest_priority.h"
 #include "selftest_reevaluation.h"
 #include "selftest_simulation.h"
@@ -1248,6 +1249,7 @@ int run_selftest() {
     check_tools_units([&t](bool ok, const std::string &what) { check(&t, ok, "Tools: " + what); });
     check_reevaluation_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_attribution_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
+    check_policy_compare_units([&t](bool ok, const std::string &what) { check(&t, ok, what); });
     check_start_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_model_zip_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_policy_catalog_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);

@@ -23,6 +23,7 @@
 #include "new_game_dialog.h"
 #include "play_dialogs.h"
 #include "play_session.h"
+#include "policy_compare_view.h"
 #include "reevaluate_dialog.h"
 #include "reevaluation.h"
 #include "replay_evaluator.h"
@@ -82,6 +83,11 @@
 // replay that opens is re-evaluated with every served policy, both seats: its cached results at
 // once, the rest while a server listens at the socket. A failure of a re-evaluation asked for opens
 // the error dialog; one that opened with a replay does too, unless no server was there to ask.
+//
+// Policy Compare (policy_compare_view.h): its Add checkpoints… asks the App to bring catalog policies in
+// (compare_bring_in): each served (serve_model), then, once the server the workbench runs serves them (or as
+// it is, for a server it did not start) and no other re-evaluation runs, the open replay re-evaluated with
+// them; the tool shows what the bring-in waits for and what an external server must serve.
 
 struct ImGuiDockNode;
 
@@ -302,6 +308,21 @@ class App {
         // they are evaluated, the next one's.
         void force_attr_expand(const std::vector<std::string> &labels) { attr_expand_ = labels; }
 
+        // ── Policy Compare ──
+        PolicyCompareView &compare_view() { return compare_view_; }
+        // Brings the models `models` (the catalog's exports, oldest first) into the comparison: each served
+        // (serve_model), then, once the server serves them (the workbench's own restarted with them; an external
+        // one as it is), the open replay re-evaluated with them, both seats, through the re-evaluation (its cache
+        // first); the newest becomes the comparison's reference. False (a status message) with no replay open in
+        // Replay.
+        bool compare_bring_in(const std::vector<std::string> &models);
+        // The same once the replay being opened has loaded (the command line's --compare-add).
+        void compare_bring_in_when_loaded(const std::vector<std::string> &models) { compare_queued_ = models; }
+        // Brought-in policies waiting for the server to serve them.
+        bool compare_waiting() const { return !compare_pending_.empty() || !compare_queued_.empty(); }
+        // What the tool says of the last bring-in: waiting for the server, what an external server must serve.
+        const std::string &compare_note() const { return compare_note_; }
+
         // ── The start page ──
         // Shows it in place of the mode's dockspace (its lists scanned again), or the dockspace.
         void show_start_page(bool on);
@@ -331,6 +352,8 @@ class App {
         void draw_models_tool();
         void draw_attribution_tool();
         void draw_tokens_tool();
+        void draw_compare_tool();
+        void poll_compare();
         void update_attribution();
         void draw_start_page();
         void refresh_start_page();
@@ -364,6 +387,8 @@ class App {
         void save_if_changed();
         void check_health();
         void run_server();
+        // The server Settings → Models has the workbench start: rmserve beside the engine, the socket, the policies.
+        ServerConfig server_config() const;
         void request_layout(const LayoutNode &root, const std::string &label);
         std::string shortcut(Action a) const;
         static ImGuiDockNode *first_leaf(ImGuiDockNode *node);
@@ -450,6 +475,13 @@ class App {
         std::string attr_cache_root_;
         std::string attr_request_;  // what update_attribution last asked the attribution for
         std::vector<std::string> attr_expand_;
+        // Policy Compare.
+        PolicyCompareView compare_view_;
+        std::vector<ServedPolicy> compare_pending_;  // brought in, waiting for the server to serve them
+        std::string compare_note_;
+        std::string compare_external_;  // what an external server must serve for the bring-in's re-evaluation
+        bool compare_reeval_ = false;   // the running re-evaluation is a bring-in's
+        std::vector<std::string> compare_queued_;  // brought in once the replay has loaded
         Simulation simulation_;
         SimulateDialog simulate_dialog_;
         SimulationView sim_view_;

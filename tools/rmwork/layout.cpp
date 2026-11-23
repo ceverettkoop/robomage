@@ -41,6 +41,9 @@ const rmwork::ToolInfo TOOLS[rmwork::TOOL_COUNT] = {
     {"tokens", "Tokens",
         "The decision's tokens as the network reads them, one type at a time by slots, with Attribution's cells as a "
         "heat layer."},
+    {"compare", "Policy Compare",
+        "Several policies' \xCF\x80 and V side by side: at this decision, across the game against a reference (KL, TV, "
+        "argmax agreement), and the decisions where they disagree most."},
     {"hand_a", "Player A \xC2\xB7 Hand",
         "Player A's hand as the viewer knows it: the known cards and how many are hidden."},
     {"library_a", "Player A \xC2\xB7 Library",
@@ -110,7 +113,7 @@ static std::vector<rmwork::Preset> make_presets() {
         {split(K::ROW, {0.21f, 0.39f, 0.19f, 0.21f},
              {group({Tool::INSPECTOR}), group({Tool::ATTRIBUTION}), group({Tool::CHOICES, Tool::LOG}),
                  group({Tool::SWINGS, Tool::TREE, Tool::TOKENS})}),
-            split(K::ROW, {0.75f, 0.25f}, {group({Tool::GRAPH}), group({Tool::MODEL, Tool::PLAYERS})})});
+            split(K::ROW, {0.75f, 0.25f}, {group({Tool::GRAPH, Tool::COMPARE}), group({Tool::MODEL, Tool::PLAYERS})})});
     const LayoutNode table_only =
         split(K::ROW, {0.78f, 0.22f}, {group({Tool::TABLE, Tool::SIDEBOARD}), group({Tool::CHOICES, Tool::LOG})});
     return {{"Replay (ImHex)", "replay", replay}, {"Play", "play", play}, {"Analysis", "analysis", analysis},

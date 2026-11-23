@@ -19,22 +19,8 @@ const double REQUEST_EVERY_S = 1.0;
 
 }  // namespace
 
-static const char *compat_text(const rmwork::CompatVerdict &v);
 static ImU32 compat_color(const rmwork::CompatVerdict &v);
 static void cell_text(const std::string &text, ImU32 color);
-
-static const char *compat_text(const rmwork::CompatVerdict &v) {
-    if (v.checking) return "checking\xE2\x80\xA6";
-    switch (v.compat) {
-        case rmwork::PolicyCompat::COMPATIBLE:
-            return "compatible";
-        case rmwork::PolicyCompat::INCOMPATIBLE:
-            return "incompatible";
-        case rmwork::PolicyCompat::UNKNOWN:
-            return "unknown";
-    }
-    return "";
-}
 
 static ImU32 compat_color(const rmwork::CompatVerdict &v) {
     if (v.checking || v.compat == rmwork::PolicyCompat::UNKNOWN) return rmwork::tok().DIM;
@@ -102,7 +88,7 @@ std::string ModelManagerView::row_tooltip(const PolicyRow &r, const CompatVerdic
     for (const auto &f : files)
         if (!f.second->empty()) out += std::string("\n") + f.first + ": " + *f.second;
     if (r.play.empty()) out += "\nNo export to play: only a checkpoint (rmtrain exports it)";
-    out += std::string("\nCompatibility: ") + compat_text(v) + (v.why.empty() ? "" : " (" + v.why + ")");
+    out += std::string("\nCompatibility: ") + compat_verdict_text(v) + (v.why.empty() ? "" : " (" + v.why + ")");
     if (v.compat == PolicyCompat::INCOMPATIBLE)
         out += "\nRebuild its exports on the engine's tables: " + retable_hint(r);
     return out;
@@ -284,7 +270,7 @@ void ModelManagerView::draw_row(size_t index, ModelRequest *req) {
     else
         cell_text(policy_formats_text(r.formats), text);
     ImGui::TableNextColumn();
-    cell_text(compat_text(v), compat_color(v));
+    cell_text(compat_verdict_text(v), compat_color(v));
     if (v.compat == PolicyCompat::INCOMPATIBLE) {
         ImGui::SameLine();
         cell_text(retable_hint(r), tok().DIM);

@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cctype>
 #include <cerrno>
 #include <cstdio>
@@ -401,7 +402,10 @@ const char *view_name(int view) {
     return view >= 0 && view < VIEW_COUNT ? VIEW_NAMES[view] : "?";
 }
 
-Match::Match() = default;
+Match::Match() {
+    static std::atomic<uint64_t> next{1};
+    serial = next.fetch_add(1);
+}
 
 Match::~Match() {
     if (fd_ >= 0) close(fd_);

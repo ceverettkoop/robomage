@@ -30,6 +30,7 @@
 #include "selftest_images.h"
 #include "selftest_index.h"
 #include "selftest_play.h"
+#include "selftest_policy_compare.h"
 #include "selftest_reevaluation.h"
 #include "selftest_simulation.h"
 #include "selftest_table.h"
@@ -941,6 +942,7 @@ int run_selftest_evals(const std::string &engine, const std::string &model) {
                 check_tools_values(fn, app, [&app](int n) { run_frames(app, n); }, "nn: match", want, &tools);
                 check_reevaluation_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
                 check_attribution_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
+                check_policy_compare_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
             }
         }
         SimulationTestEnv sim_env;
@@ -995,6 +997,8 @@ int run_selftest_data(const std::string &engine) {
         check_reevaluation_data(
             [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
         check_attribution_data(
+            [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
+        check_policy_compare_data(
             [&t](bool ok, const std::string &what) { check(&t, ok, what); }, app, reeval_hooks(&t, app, env), bo1);
         const std::string bo3 = make_bo3(&t, env);
         if (!bo3.empty()) {

@@ -65,6 +65,9 @@ struct MenuModel {
 };
 
 MenuModel build_menu_model(const DecisionFrame &f);
+// The menu rows' descriptions of decision `index` of `m` in `view`'s frame (empty when that viewer does
+// not see the decision's menu or its frame cannot be read, with `err`).
+std::vector<std::string> menu_descriptions(const Match &m, size_t index, int view, std::string *err);
 
 struct FrameModels {
         TableModel table;
