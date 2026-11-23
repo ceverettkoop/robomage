@@ -230,6 +230,12 @@ std::string entity_name(Entity e);
 // none (CR 708.2a, 707.2). Differs from entity_name in leaving a token's name as it is.
 std::string permanent_label(Entity e);
 
+// A card script's descriptive text (a mode's SpellDescription$, a GiftDescription$) as shown for its
+// source object `source`: Forge's placeholders for the object's own name replaced, CARDNAME by its
+// name and NICKNAME by its short name (the part before the first ", ", how a legendary card's text
+// calls it). Every display of script text goes through here. With no source the text is unchanged.
+std::string script_text_for(const std::string &text, Entity source);
+
 // Card vocab index of an object or an ability's source (card_vocab.h), by its name as it is now:
 // a permanent's current name, a token's token-band index (else TOKEN_SENTINEL), a card's CardData
 // name; an ability entity resolves to its source. A source that ceased to exist (a token, CR 111.7)

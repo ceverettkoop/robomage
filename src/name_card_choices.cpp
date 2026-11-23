@@ -63,7 +63,7 @@ std::vector<LegalAction> build_name_card_choices(const EntitySet &entities, Zone
     std::vector<LegalAction> name_choices;
     out_names.clear();
     for (size_t idx : order) {
-        LegalAction la(PASS_PRIORITY, reps[idx], "Name card: " + names[idx]);
+        LegalAction la(CHOICE, reps[idx], "Name card: " + names[idx]);
         la.category = ActionCategory::NAME_CARD;
         la.card_is_public = true;
         name_choices.push_back(la);
@@ -90,7 +90,7 @@ static std::vector<LegalAction> vocab_name_card_choices(
     std::vector<LegalAction> name_choices;
     out_names.clear();
     for (const auto &card : cards) {
-        LegalAction la(PASS_PRIORITY, 0, "Name card: " + card.first);
+        LegalAction la(CHOICE, 0, "Name card: " + card.first);
         la.category = ActionCategory::NAME_CARD;
         la.card_is_public = true;
         la.named_card = card.second;

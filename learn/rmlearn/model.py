@@ -688,6 +688,60 @@ def gather_folded(tok_card, tok_ability, table, ability_index, slot_at: int, n_c
     return Fn.embedding_bag(idx.view(b * n, -1), table, mode="sum", padding_idx=pad).view(b, n, -1)
 
 
+# The layout-indexed parameters an appended enum value's positions live in (a critic's too): rows or
+# columns, and the kind of position (spec.inherited_positions).
+INHERIT_PARAMS = {
+    "encoder.embed.cat_emb.weight": ("rows", "categorical"),
+    "encoder.embed.num_proj.weight": ("cols", "numeric"),
+    "cards.card_proj.weight": ("cols", "card"),
+    "cards.ability_proj.weight": ("cols", "ability"),
+    "cards.part_proj.weight": ("cols", "part"),
+}
+
+
+def appended_positions(hashes, tables):
+    """spec.inherited_positions of a network trained on manifest `hashes` over `tables`: {} unless both
+    carry a layout registry."""
+    held, now = S.manifest_of(hashes).get("registry"), tables.hashes.get("registry")
+    if not held or not now:
+        return {}
+    return S.inherited_positions(S.registry_enum_values(held), now)
+
+
+def inherit_values(tensors, positions, moments=False):
+    """`tensors` ({parameter name: tensor}: a state_dict, or with `moments` an optimizer's moments by
+    parameter name) with every appended value's positions copied from its earlier value's and, unless
+    `moments`, the rows a rule's other tokens read shifted (`positions`, ``appended_positions``): a new
+    dict, the tensors it changes cloned."""
+    out = dict(tensors)
+    if not positions:
+        return out
+    for name, t in tensors.items():
+        how = INHERIT_PARAMS.get(name[len("critic."):] if name.startswith("critic.") else name)
+        pairs = positions.get(how[1]) if how else None
+        shifts = positions.get(how[1] + "_shift") if how and not moments else None
+        if not pairs and not shifts:
+            continue
+        idx = lambda xs: torch.tensor(xs, dtype=torch.int64, device=t.device)  # noqa: E731
+        src = t if how[0] == "rows" else t.t()
+        dst = src.clone()
+        if pairs:
+            dst[idx([d for _, d in pairs])] = src[idx([s for s, _ in pairs])]
+        if shifts:
+            dst[idx([d for d, _, _ in shifts])] += (src[idx([p for _, p, _ in shifts])] -
+                                                    src[idx([m for _, _, m in shifts])])
+        out[name] = dst if how[0] == "rows" else dst.t().contiguous()
+    return out
+
+
+def checkpoint_state(hashes, sd, tables, what):
+    """`sd`, a state_dict trained on manifest `hashes`, ready for an RMNet over `tables`: the manifest
+    checked (spec.require_compatible: ValueError naming `what`), then the enum values the registry
+    appended since inherited (spec.INHERITED_VALUES)."""
+    S.require_compatible(hashes, tables, what)
+    return inherit_values(sd, appended_positions(hashes, tables))
+
+
 def save_checkpoint(model, path, extra=None):
     """Saves `model`'s config, hashes and state_dict (and `extra`) to `path` (torch.save)."""
     import os
@@ -703,17 +757,16 @@ def save_checkpoint(model, path, extra=None):
 def load_checkpoint(path, tables, seen=None):
     """The RMNet a save_checkpoint file holds, built over `tables` (the checkpoint's manifest must be
     compatible with theirs, spec.check_compatible: the vocab may have grown). The model carries the
-    tables' manifest from then on. A file without ``cards.card_seen`` (made before the seen-card mask)
+    tables' manifest from then on, and the enum values appended since start as their earlier values
+    (``checkpoint_state``). A file without ``cards.card_seen`` (made before the seen-card mask)
     is refused unless `seen` gives the card ids its training saw (``CardRows.set_seen``); `seen` is
     refused for a file that has the mask."""
     data = torch.load(path, map_location="cpu", weights_only=True)
-    S.require_compatible(data["hashes"], tables, path)
+    sd = checkpoint_state(data["hashes"], data["state_dict"], tables, path)
     model = RMNet(ModelConfig.from_dict(data["config"]), tables)
-    sd = data["state_dict"]
     if seen is not None:
         if "cards.card_seen" in sd:
             raise ValueError("%s carries its seen-card mask; seen= is for a checkpoint without one" % path)
-        sd = dict(sd)
         sd["cards.card_seen"] = model.cards.card_seen
     model.load_state_dict(sd)
     if seen is not None:

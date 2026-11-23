@@ -15,7 +15,7 @@ fit the same frame (§3), and the screens still to be mocked up before building 
 | Layout | Dockable, tileable tool panels; drag a tab to re-dock, drag splitters to resize, close and reopen from **View**; preset layouts per mode (Replay (ImHex), Play, Analysis, Table only). ImGui's docking provides this; `imgui.ini` persists it and the DockBuilder API builds the presets |
 | Modes | **Play** (a live game against a model) and **Replay** (a recorded game), each with its own layout |
 | Platform | Desktop only; no phone layout |
-| Cards | Full-colour Scryfall images, oldest paper printing by default (non-promo, non-digital), per-card override under File → Settings only. Magnify by holding Q over a card or right-clicking it; no other enlargement |
+| Cards | Full-colour Scryfall images, oldest paper printing by default (non-promo, non-digital), per-card override under Edit → Settings only. Magnify by holding Q over a card or right-clicking it; no other enlargement |
 | Table | MTGO-style: opponent's lands and permanents on top, the phase and the stack (only when not empty) across the middle, your permanents, lands and hand below. Opponent's hand is a count only. Cards size themselves to fill the Table panel. Background: colour, texture (default wood) or image |
 | Passing | F2: pass to the end of the turn unless something goes on the stack. F6: pass to the end of the turn whatever happens, taking the first choice at every decision |
 
@@ -26,10 +26,35 @@ or two), L (more).
 
 ### 2.1 The application shell
 
+**Status: done** (`tools/rmwork/`, `make workbench`, `bin/<config>/rmwork`). Play and Replay, each with
+its own dockspace and layout (one `imgui.ini` under `~/.config/robomage/workbench/`); the tools as
+placeholders, the Value Graph's empty axes in ImPlot; the four presets (DockBuilder, the mock-up's split
+ratios) and the user's named layouts per mode (View → Save Layout As…, asking before it overwrites; the
+saved names under the presets; Manage Layouts… to show, rename or delete), each saved as its tree of
+splits and tab groups in `settings.json` and rebuilt like a preset; View's tool toggles, Reset Layout and
+mode switch; the menus, toolbar and status bar (the configured engine binary found or missing, the
+inference server's socket present or not connected); the key table (← → Home End, F2 / F6, Q reserved,
+the menu shortcuts), rebound from Settings → Keys (capture the next chord, Esc cancels; a chord another
+action answers to where both work is refused; a reset per row and Reset All); eight colour themes, each a
+full set of the mock-up's colour tokens and the only source of colour (ImHex Dark, the default and the
+mock-up's look; ImHex Light, ImGui Dark, ImGui Classic, Solarized Dark and Light, Nord, Windows 95), and
+eight embedded UI font families (JetBrains Mono, Fira Code, IBM Plex Mono, Source Code Pro, Cascadia
+Mono, Hack, and the proportional Inter and IBM Plex Sans) in two weights at 11–20 px (default JetBrains
+Mono Medium 14), chosen in Settings → Appearance and applied live; Settings' other tabs: table
+background, the printings placeholder and the image cache directory, Engine (binary, working
+directory), Models (server socket, the `id = model` policies, run directory), Stops (Play's default
+stops, your turn and the opponent's, per step), each path marked found or missing, stored and validated
+in `settings.json` for the stages that use them; the error dialog (`App::report_error`). At start, when no
+flag opens a game, replay or run or names a mode, preset, layout or tool, the start page (§4.1, item 1)
+takes the work area in place of the mode's dockspace (Settings' `start_page`, "Show this page when nothing
+is open"; `--start-page` forces it). Checked by
+`rmwork --selftest` (the gate's opt-in `workbench` tier); `rmwork --screenshot` renders a PNG. Waiting
+for later stages by design: the data links followed in §2.2.
+
 | Feature | Notes | Size |
 |---|---|---|
 | Binary and build | `bin/<config>/rmwork`, sources under `tools/rmwork/`, `make workbench` (not part of plain `make`, like `make actor`). Vendors Dear ImGui (docking), ImPlot and stb_image; links the std-only decoder (`src/state_format/decode.h`), the frame reader, `src/featurize/` and `src/knowledge/` like `rmfeat` / `rmknow`, no engine TU, no libtorch | M |
-| Theme and fonts | An ImHex-like ImGui style (colours, rounding 0–2, padding), JetBrains Mono embedded as a compressed TTF | S |
+| Theme and fonts | An ImHex-like ImGui style (rounding 0–2, padding) under eight colour themes; the UI fonts embedded (eight families, two weights each) | S |
 | Docking, presets, persistence | Dockspace over the window; one saved layout per mode; presets built with DockBuilder; View → tool toggles, presets, Reset Layout; user-named layouts (Save Layout As…) | S |
 | Settings file | `~/.config/robomage/settings.json`: table background, engine binary path, models and the inference server, default stops, key bindings, card-image cache location | S |
 | Menus, toolbar, status bar | As mocked; status bar shows mode, decision, turn/step/decider, V, and engine and inference-server health | S |
@@ -37,6 +62,56 @@ or two), L (more).
 | Error handling | Engine exits, a frame that fails to decode, rmserve disconnects: a modal with the stderr tail and a "copy diagnostics" button | S |
 
 ### 2.2 Data: recorded games
+
+**Status: done** (`tools/rmwork/`: `loader`, `match`, `episodes`, `replay_cache`, `replay_session`,
+`game_log`, `file_picker`, `run_browser`). File → Open Replay (`rmwork --open LOG`) replays a decision
+log on a background thread, `<engine> --replay LOG --rmstate-dump DUMP --narrative` in the engine's
+working directory (`posix_spawn`, stdout and stderr into files), with its progress (decisions replayed,
+then indexed) and a Cancel in the status bar; the engine is Settings → Engine's binary, except that a
+`robomage_nn` with a `robomage` beside it replays with that `robomage` (a replay needs no learned policy,
+and plain `make` keeps it current). The dump and the narrative are cached under
+`$XDG_CACHE_HOME/robomage/workbench/replays/<log hash>-<engine hash>/` (the engine's resolved path, size
+and modification time, so a rebuild replays again; written to a `.tmp-<pid>` directory and renamed into
+place once the engine exits 0; the oldest entries pruned past 4 GB), not beside the log, since run and
+corpus directories are not ours to write. The dump is indexed once: per decision the three viewers'
+`STATE` frame offsets (A, B, omniscient, in the dump's order, their headers' decision keys checked to
+agree), the deciding seat (the seat frame that carries the menu), game and sideboarding, turn, step,
+life, the reply; frames are decoded again on demand through a small LRU cache, never a whole match. The
+index is cached too, as the entry's `index.bin` (`match_index`: the once-per-match frames' offsets, every
+decision's fields, the seats' logs, the result; a format version, the dump's size and modification time
+and the log's hash, and a hash of the whole), so reopening a cached replay decodes no frame but the
+once-per-match ones: a 549-decision corpus log in 0.01 s instead of 0.83 s, a 3 178-decision bo3 (an 85 MB
+dump) in 0.03 s instead of 4.3 s (debug build); an index that is stale, of another version or corrupt is
+rebuilt from the dump and written again. The
+decision count must be the log's, except for a run that stopped without a result (its `--max-decisions`
+cap, a recorded `QUIT`): the engine wrote the frames of the decision it stopped at, which Replay shows as
+the last decision, unanswered, with the result "no result: the run stopped at decision N". Best-of-three: the toolbar's game list holds the games and their
+sideboarding phases ("Game 1", "Sideboarding 2", "Game 2"), each game's winner and the match result (from
+the omniscient frames' `game_end` / `match_end` events); choosing one goes to its first decision. The
+viewer toggle (A / B / Omni, seat A at start) selects the frames the tools read. The Game Log shows, in a
+seat view, that seat's own log built only from its own frames' event tables (the CLI's `event_lines`, with
+turn and game headers; decision i's lines are its frame at decision i, the terminal frame's at the last),
+and in Omni the narrative cut at the replay's per-decision lines (`(REPLAY) [… ] Input: n`, written as each
+logged decision is taken: decision i's lines run to its marker, which becomes "» Player X: <the chosen
+row>"); the current decision's lines highlighted with a rule after them, earlier ones normal, later ones
+dimmed, a click going to a line's decision, the view following the cursor. Navigation: first / previous /
+play-pause (0.6 s a decision) / next / last and ← → Home End, the status bar's decision `n / N`, game,
+turn, step and deciding seat; next swing (enabled with §2.6's Swings). Episodes: File → Open Trajectory
+Episode (`--episode`) opens its decision log (its `rmlog` attribute, else by name) with it, joining each
+step to the decision of its (game, sideboarding, decision) key with the same seat and reply (μ, versions,
+evaluations and teacher label kept per decision for §2.6–2.7); a log's own episodes (`<stem>.g<n>.rmtraj`
+beside it, in `<run>/episodes/<purpose>/` for `<run>/rmlog/<purpose>/`, or an actor's `traj/`) join
+whenever it is opened. File → Open Run Directory (`--run`) lists a run's logs by purpose, with the games
+their episodes cover, a filter and "with episodes only" (read on a thread: a run holds 180 000 logs);
+choosing one opens it with its episodes. The file picker (a path field, places, recent files kept in
+`settings.json`, the listing in natural order with size and time read only for the rows drawn, filters for
+decision logs, episodes, both, directories, all) serves every Open. Engine exits (the `FATAL` line, the
+stderr and stdout tails), dumps that do not decode, malformed logs, a missing engine and episodes of
+another match reach the error dialog. Checked by `rmwork --selftest-data` (the gate's `workbench` tier).
+Waiting for later stages: every other tool's contents (they say which game and decision they will show:
+the Table, Players, Choices, Inspector and State Tree from the frames, §2.5–2.6), the episodes'
+evaluations in the Value Graph, Swings and next swing (§2.7), the full Episode Browser and the run's other
+files (`bench/`, `metrics.jsonl`, §3).
 
 | Feature | Notes | Size |
 |---|---|---|
@@ -49,6 +124,111 @@ or two), L (more).
 
 ### 2.3 Data: live games (Play)
 
+**Status: done** (`tools/rmwork/`: `play_session`, `autopass`, `model_read`, `new_game_dialog`,
+`play_dialogs`; the live match in `match`). Game → New Game vs Model (Ctrl+N, the button on Play's empty
+Table, `rmwork --open-new-game`) chooses your deck (the engine's top-level, `league/` and `heldout/`
+decks) and seat, the opponent (a model export: Settings → Models' policies and every run's
+`exports/*.pt2`, `*.ts.pt`; an inference server's socket; explore; random; the scripted agent) and its
+deck, best of one or three, the seed (with Random), auto-mana and Model's Read, checked as they are made
+(an `nn:` opponent needs `robomage_nn`) and kept in `settings.json` (`new_game`). A game runs `<engine>
+--machine --game-seed N --deck-a … --deck-b … [--bo3] [--no-auto-mana] --decision-log <games>/<time>-<seed>.rmlog
+--agent-<opponent's seat> <spec>` in the engine's working directory, the games directory
+`$XDG_DATA_HOME/robomage/workbench/games` (default `~/.local/share/…`): the human's seat has no agent, so
+it reads the RMSTATE stream; the opponent is `nn:<export>` or `nn:remote:<socket>` (in the `robomage_nn`
+beside Settings → Engine's binary, its absence named), `explore`, `random`, or `first` taught by `python3
+python/teacher.py --tier hard --seed N` at `--teacher-mix 1` (the scripted agent playing the seat through
+the teacher channel); every other opponent runs the plain `robomage`. The engine's stdin and stdout are
+pipes (`posix_spawn`, its own process group, killed whole with what it started), its stderr
+`<stem>.stderr`; a thread reads the RMSTATE records and the UI thread appends them to the live match (one
+seat's frames, kept in `<stem>.seat-a.rmstate` / `.seat-b.rmstate` as its dump), which Play's tools read
+through the session: the Table, Players and zone windows, Choices, Inspector, State Tree, the Game Log
+(the seat's own log, with the row chosen after each decision), Value Graph, Swings and Model's Read, the
+same views as Replay's, at the newest decision; earlier decisions are browsable read-only (the Game Log,
+the Value Graph; the toolbar's Latest goes back). Only the human seat's frames reach them: at the match's
+end the engine writes every seat's terminal frame to the stream, the other seat's with its once-per-match
+frames, and the session drops a record of another viewer unread, by its header. Choosing: a click on a
+Choices row, or ↑ / ↓ and Enter, sends its index (an attacker or blocker declaration's confirm is the last
+row, the `-1` of `docs/state_format.md` §9); at a priority decision a click on a card in the hand or a permanent casts,
+plays, activates or taps it for mana (a popup naming each way with its cost when it has several), a flashback or escape
+from the graveyard is a button of the prompt line, and its Pass button or Space (Settings → Keys, "Pass priority")
+passes once (§4.2, "Priority decisions"); at a targeting or payment decision a click on the Table answers too (§4.2,
+items 6 and 11), as do a click in the card picker and on the opening hand (items 5 and 8), in the choice panel and on
+the prompt line's buttons (items 9, 10, 12 and 13), through the same reply; nothing is sent while the engine runs
+("Opponent is
+thinking…" in the status bar). F2, F6 and the stops (`autopass`: a pure function of the decision's facts
+from the seat's frame: the `PASS_PRIORITY` row at a decision with nothing pending, the game, turn and
+step, the stack's handles): F2 passes until a later turn, a decision that is not a plain priority pass or a
+new object on the stack; F6 takes row 0 until a later turn; with neither, a plain priority pass with an
+empty stack in a step without a stop (Settings → Stops, for the turn's player; a click on a step of the
+Table's step bar toggles the same stop, §2.5) is answered. Game →
+Concede Game / Match asks first and sends `-2` / `-3` (while the opponent thinks, at your next decision).
+The match's end opens the result screen (the winner, the bo3 score and each game's winner, your values'
+curve when Model's Read ran; Open in Replay through Replay's loader, New Game, Close); File → Save
+Decision Log (Ctrl+S, the file picker's save mode) copies the game's log (in Replay, the loaded one's).
+Model's Read, asked for per game: on its own thread the engine's `--cards-frame` file and the
+oracle-text table load the featurizer's inputs, the torch-free remote evaluator (`src/actor/
+remote_evaluator`, `src/inference/protocol`, linked into `rmwork`) connects to Settings → Models' socket
+for the policies listed there with numeric ids (else policy 0), and each of your decisions is featurized
+with `featurize_seat` (without recent-event history) and evaluated; the values and π join the decisions
+as episode steps, so Choices' π, the Model's Read, the Value Graph and the status bar's V show them. No
+server is "not connected" (a note, and the game goes on); a refused handshake or a lost server opens the
+error dialog. The engine's exit mid-game, a stream that breaks, a record that does not decode and a failed
+write open the error dialog with the command and the stderr tail and end the session; quitting kills and
+reaps the engine. Screenshot flags: `--new-game SPEC` (`opp=…,deck=…,opp-deck=…,seat=…,format=…,seed=…,
+auto-mana=…,read=…`), `--play-decisions N` and `--play-until stack|combat|sideboard|target|mana|end` (a seeded
+random row at each of your decisions until then; §4.2 adds `pick`, `mulligan`, `bottom`, `mode`, `x`, `order`, `name`,
+`discard`, `sacrifice`, `return`, `legend`, `unless`, `choice`, `cost` and `priority`), `--game-over`; for a sculpted game `--play-setup FLAGS` (the
+engine's test-setup flags, `;`-separated, as `PlayConfig::setup`, which the decision log's header records) and
+`--play-rows R,R,…` (your first decisions' rows). Checked by `rmwork --selftest-data` (`selftest_play`:
+the engine's arguments per opponent and the binary chosen; a bo1 against explore, Model's Read not
+connected, every kept record the seat's and the other seat's only after its last decision, the stops'
+answers, the result screen, its log in Replay with the seat's decisions, replies and frames (event tables
+aside), Save Decision Log; F2, F6 and the stops on that game's frames and on made-up facts, and given live;
+a bo3 with sideboarding as seat B; the concession dialog, `-2` then a queued `-3`; the scripted opponent;
+a killed engine, a broken stream and a record that is no frame) and `rmwork --selftest` (the `new_game`
+settings). Model's Read was checked by hand against `rmserve` serving `runs/league26-24h/exports/final.ts.pt`
+(not in the gate: it needs a server and a model). Sideboarding (§4.3, item 14; `sideboard_plan`,
+`sideboard_view`): the Sideboard tool, a tab beside the Table in the Play, Replay and Table-only presets
+(a layout saved before it existed gets it in the Table's tab group), brought to the front when the human's
+sideboarding phase begins (Game → Sideboard… too) and the Table given back at the next game. The engine's
+phase is one swap at a time, IN first: at a balanced deck "Done sideboarding" (`SIDEBOARD_DONE`, row 0) and
+a `SIDEBOARD_IN` row per sideboard card; an IN makes `match.sb_drift` 1 (the card in `pending.source_card`)
+and the next menu a `SIDEBOARD_OUT` row per deck card, Done withheld; the OUT completes the swap
+(`sb_swaps` + 1); a card brought in is never offered out again in the phase, nor a cut card back in; at 15
+swaps the phase ends with no Done; a one-row menu is the engine's own. Every STATE frame carries the
+viewer's 75 (`own_deck`) and the DECKLISTS frame both registered lists and deck names. The tool shows one
+seat's 75 as card images (the viewer's own; the omniscient viewer's the deciding seat's; during the
+opponent's phase a seat's view says so and shows its own): the deck grouped by type and the sideboard, a
+card once with its count, IN / OUT on the phase's locked cards, the header's coming game, the opponent and
+its deck, the games so far, play or draw, and the deck, sideboard and swap counts. A docked tool rather than
+a modal, as the mock-up has it: Choices, the Game Log and Model's Read stay beside it, and in Replay the
+same tool follows the cursor. At the human's decision, clicks plan (a sideboard card in, a deck card out, a
+planned card clicked again taken back; Undo, Reset) with the result's counts in the header; Confirm, once
+balanced, sends it: at each of the human's decisions of the phase the reply is found in the live menu by
+category and source card toward the planned deck (`next_sideboard_step`), each step checked in the frame
+that follows, Done last; the next game's frame must show the planned deck. A menu without the row the plan
+needs, a reply the session refuses or a step the next frame does not show stops the sending with the reason
+in the tool. Plans: the league guide for the matchup, play or draw as `match.plays_first` says
+(`python/sideboard_guides.json` from the repository: a `league/<stem>` deck against another; what the other
+of play and draw changes; a held-out pair noted; no row, a non-league deck or a missing file said), each
+line ticked when the plan meets it, Use This Plan (the moves from the current deck to the guide's target);
+the model's π over this decision's rows when Model's Read evaluated it, listed and under each card (the
+model decides one swap at a time, so the tool says π is for the decision in front of you; off, not
+connected or failed said, never blocking); the phase's swaps so far, in Replay the phase in all (the deck
+at its first decision against the viewer's frame after it), and the deck against its registered list.
+Screenshot flags `--play-until sideboard`, `--sideboard-plan guide|+CARD;-CARD…`, `--tool sideboard`.
+Checked by `rmwork --selftest-data` (`selftest_sideboard`: the plan's rules and the steps on made-up
+decisions, a menu without the planned row refused; the guides file against its JSON; a live bo3 as seat A
+sideboarded through the tool: the guide's plan for burn vs bug and Use This Plan, an unreachable target
+stopped before anything is sent, a planned swap sent as IN, OUT and Done with game 2's frame showing it;
+the match in Replay in seat A's view and seat B's). Every decision but sideboarding (its tool) has an answer on the
+Table (§4.2); Choices answers all of them. Beside each
+game's decision log Play
+writes `<stem>.game.json` (the human's seat, the opponent's kind and model, the decks, the format, the
+seed), which the start page reads; a game that ends without its result (stopped by File → Close, a new
+game or quitting, or its engine gone) gets the `QUIT` line appended to its log, as a human seat's quit
+writes it, so Replay opens it to the decision it stopped at.
+
 | Feature | Notes | Size |
 |---|---|---|
 | Engine session | Start `robomage_nn --machine` (or `robomage` for non-`nn` opponents) with the human's seat on the RMSTATE stream: read frames from stdout, write one integer per decision (`docs/state_format.md` §9). Write `--decision-log` so every game can be opened in Replay | M |
@@ -60,6 +240,53 @@ or two), L (more).
 
 ### 2.4 Card images and printings
 
+**Status: done** (`tools/scryfall/fetch_images.py`; `tools/rmwork/`: `card_images`, `image_textures`,
+`image_renderer`, `printings_tab`). The fetch tool (stdlib, its README) lists, for every vocab index and
+every token script the decks make (`bin/resources/tokenscripts/`), the paper printings Scryfall has
+(`/cards/named` then `oracleid:… game:paper`, `unique=prints`; a token by `t:token !"<name>"` with its
+script's colours, types, P/T and keywords, relaxed until one matches), chooses the default (the oldest
+by date, set and collector number that is paper, not digital, not a promo, not oversized, not from a
+memorabilia / funny / minigame / alchemy / vanguard / planechase / archenemy / treasure-chest set, with
+an image; else the oldest paper one with an image), downloads its `normal` images (each face of a
+double-faced card) into `~/.cache/robomage/scryfall/images/<set>/<number>[-<face>].jpg` and writes
+`manifest.json` (per card its key, vocab index, names, every paper printing with its faces' URLs and
+files, the default; the cards Scryfall lacks); API requests 500 ms apart (the search and named-card
+endpoints allow two a second), images 100 ms, retries honouring `Retry-After`, resumable, `--cards`,
+`--printing NAME=SET:NUMBER`, `--dry-run`, `--selftest`. Run over the vocab it found every card and token (441 of 441 vocab
+cards, 29 of 29 token scripts, 468 images, 56 MB, about 15 minutes). The workbench reads only the
+cache: `CardImages` (the manifest, the overrides in `~/.config/robomage/printings.json`, which image a
+face shows: the manifest card of its card id (a token's in the token band, an unregistered token by
+name), the override's printing when the manifest lists it, else the default; of a double-faced
+printing the face of the same name, else the back for a back face) and `ImageTextures` (a worker
+thread decodes with stb_image and halves to the level a card is drawn at, 1/1 to 1/8; at most twelve a
+frame are handed to ImGui 1.92 as user textures; at most 400 textures and 256 MB, the least recently
+drawn evicted past either, never one drawn this frame or the last; another level of the file stands in
+while one decodes; nothing blocks a frame). `ImageCardRenderer` draws the image with rounded corners,
+turned a quarter when tapped and faded when phased out, and falls back to the text renderer for a
+back (a face-down card keeps the drawn back with what the viewer knows of it; hidden cards are never
+named), a card or token without a cached image, and an image still decoding. The Table (its cards and
+the stack's thumbnails), the magnifier and the zone windows draw with it; a double-faced card shows the
+face it is on, and the magnifier shows both faces side by side (one image when a card is printed whole
+on one face, a split card). Edit → Settings → Card Printings: Card faces images / text (default images;
+no manifest draws text), the cache directory and its status (vocab cards and tokens with images, what
+Scryfall lacks, the command that fetches the rest, Reload), and the printings: a card list searched by
+name, the chosen card's paper printings oldest first (thumbnail when cached, set name and code, number,
+year, set type, default / promo / not downloaded); a row overrides the default (the default's row
+resets), "Default (oldest)" and Reset All; a shown printing not downloaded shows the
+`fetch_images.py --printing` command and a Fetch button that runs it (`/usr/bin/env python3`, its own
+network access) and reloads the cache when it exits. Screenshot flags `--card-faces images|text` and
+`--printings-card NAME`. Checked by `rmwork --selftest` (a synthetic cache of tiny PNGs: the manifest
+and its refusals, the overrides file, the printing and face each card shows, the status, the LRU and
+levels, the decode thread's hand-over, a file that does not decode, eviction, the renderer's image and
+fallbacks), `rmwork --selftest-data` (the Table over sampled corpus decisions in every view with images
+for half the cards: each card an image or text as the cache says, every image decoding) and
+`fetch_images.py --selftest` (the choice rule on canned Scryfall JSON), all in the `workbench` tier. A
+token's default is first the oldest that passes the rule from the token set (`t<set>`) of a card that
+makes it, by that card's own default printing (the makers read from the card scripts as
+`provision_decks.py` finds them: Orcish Bowmasters' Orc Army from `tltr`, Tamiyo's Clue from `tmh3`);
+the manifest keeps them as the token's `sources`. Not done: "flip on hover" on the Table (the magnifier
+shows both faces instead).
+
 | Feature | Notes | Size |
 |---|---|---|
 | Image cache | `tools/scryfall/fetch_images.py` (stdlib, like `tools/forge_fetch`): for every vocab card and token, list paper printings (`unique=prints`, oldest first), choose the oldest non-promo printing, download `normal` images into `~/.cache/robomage/scryfall/`, rate-limited, with a manifest. The C++ app reads only the cache, so it never touches the network | M |
@@ -70,16 +297,187 @@ or two), L (more).
 
 ### 2.5 The Table
 
+**Status: done** (`tools/rmwork/`: `table_model`, `table_layout`, `table_view`, `card_book`,
+`card_renderer`, `table_backdrop`, `links`). The Table shows Replay's current decision as the viewer saw
+it, built only from that viewer's STATE frame and its own CARDS frame (the omniscient viewer sits as
+seat A): the opponent's lands at the far edge and other permanents toward the middle, the middle strip
+(turn, active player, step, deciding seat, day or night, the twelve-step bar, narrowed to the strip when that
+is narrower; in Play a stop dot under each step, filled where Settings → Stops stops for the side whose turn
+it is, and a click on a step (its label or dot) toggles that stop, saved with the settings like Settings →
+Stops' own, a tooltip saying which; Replay's bar has no dots and takes no clicks;
+the stack, top first, only when it is not empty: each object's card thumbnail, controller chip, kind and
+type line, X, modes and targets), the viewer's other permanents, lands and hand on a shaded band, the
+player chips (name, deck, life, hand and library counts, poison, energy, other counters, monarch, the
+city's blessing, speed) with their player-effect and emblem chips beside them; the opponent's hand is its
+chip's count. A land is an object whose post-layer types hold Land and not Creature; Auras and
+Equipment peek above their host (an attachment's attachments join the root host's pile); rows are in
+entry (timestamp) order and centred. The fit is the mock-up's: one card width for the four rows and the
+hand (1.15×) so they fill the height and the widest row fits the width, every frame, so it follows a
+resize; a row keeps an upright card's height when empty. A wide board (`table_layout`, ImGui-free):
+every permanent is shown on its own while that fit gives cards at least 69 px wide (`LEGIBLE_CARD_W`:
+the text renderer prints the type line from 6.5 px text at 0.095 of a card's width, so below 69 px a
+card shows its name alone and an image's text is unreadable). Below it, while a row's width (not the
+panel's height, nor the hand) is what holds the cards down, the widest row gets room: its largest group
+of interchangeable permanents is stacked into one pile with an offset and a `×n` count (the model's
+groups: the same card and face, or the same token, and controller; tapped or not alike; the same P/T,
+damage, loyalty, counters, designations, colours, subtypes and summoning sickness; nothing attached and
+not attached; identified, face up, not phased out, attacking or blocking: lands, tokens, creatures and
+other permanents alike), then its next largest, and once it has none left it wraps onto another line
+(up to three, its piles in order, split evenly) when that widens its cards without narrowing another
+row's; it stops once the cards are 69 px wide, and what is left shrinks. A stack's front card stands for
+it: hovering it says the count, it glows when a menu row acts with any of its cards and is outlined when
+any of them is linked, and the magnifier on any of its cards adds "One of n identical". Cards are drawn by a `CardRenderer`: the card's image (§2.4), else
+the text renderer, which prints the CARDS face in a rounded card in its frame colour (one colour, two
+split, gold, colourless grey, a land tan with a land glyph and pips for its basic land types; a token
+silver-bordered and "Token" in its type line): the name (wrapped on a small card), the cost as pips, the
+type line once legible, and the oracle text from 120 px. Face-down objects are card backs (the identity
+printed on the back only where the viewer's frame gives it); hidden cards are never named. Over the
+cards: tapped cards turned a quarter, the post-layer P/T (green above the printed, red below, blue
+mixed), marked damage, loyalty, counters by kind, designations (monstrous, exerted, prepared, a chosen
+name, type, colour …), summoning sickness, phased-out permanents faded. Attackers stand forward of their
+row; an arrow runs from each blocker to the attacker it blocks. Linking: `LinkState` holds the hover and
+selection every tool shares (objects by handle, players, menu rows by their `source` / `target`
+handles); the Table reports the card, stack object or player chip under the mouse and outlines whatever
+it links to, hovering a stack object lights itself and its targets (`stack_target`; both ends highlighted, no
+line drawn between them), a click selects;
+when the viewer is the deciding seat the cards some menu row acts with glow. The magnifier: Q held over a
+card (or a stack object), or a right-click, shows it large beside it with its state listed under it
+(release Q; a right-click one closes on leaving the card, a click or Esc); a double-faced card (its
+`CardBook` has both faces) shows both side by side, the face up first, outlined and captioned "Face up",
+the other captioned "Back face" / "Front face", on the Table, the stack and the zone windows; a card the
+viewer cannot identify stays a back. It is placed to the card's right, else its left, else centred, and
+shrunk to stay on screen. The background is Settings →
+Table's colour, one of the five textures generated as GPU tiles on first use, or an image (stb_image,
+drawn covering the panel; one that cannot be read shows the wood and says so in the status bar). The
+twelve-step bar's "Opening hand" phase now counts a bottom-of-library pick only while a player owes
+London-mulligan cards (a scry-like effect's bottom pick was taken for the opening hands). `--table-hover-stack N`,
+`--table-hover-step N` (Play) and `--table-magnify NAME` force a hover, a step's tooltip and the magnifier
+for screenshots. Checked by `rmwork --selftest` (the layout and fit of synthetic boards: identical lands and
+tokens stacked one pile a row on a narrow panel and not on a wide one, different creatures wrapped onto two
+lines in order, tokens stacked before a row wraps, nothing wrapped on a panel too short for it; the step
+bar's cells; a step's stop toggled and kept in the settings file; the magnifier's two faces side by side on
+screen and shrunk on a small one; the links, the tiles, the new colour tokens' contrast) and `rmwork
+--selftest-data` (every decision of five corpus logs and the played bo3 in every view against its frame at
+four panel sizes, a narrow one among them: a stack's members interchangeable and identified, stacks and
+wrapped rows only where the full-detail cards would be narrower than 69 px, a row wrapped only with no group
+left to stack; drawn headless, and the hover and magnifier interactions, a click on Replay's step bar
+toggling nothing; in Play, a click on a step's dot toggling its stop, settings.json keeping it, a second
+click turning it back; `docs/ci.md`). Decisions on the Table (§4.2, items 6 and 11; `table_decision`): at a targeting decision (every row
+`SELECT_TARGET` or `DIVIDE_DAMAGE`) or a payment one (a `PAYING_COSTS` row: `--no-auto-mana`'s mana payment,
+a Phyrexian pip's life or mana) the objects and players a row names glow and the rest of the battlefield and
+hand is dimmed, the spell or ability chosen or paid for is lit (its stack object, else a "Source" tag on its
+permanent), targets chosen earlier in the same targeting are outlined in the accent colour with their number
+(read from the earlier decisions: the frame has no target of a spell still being cast), a point of divided
+damage given so far is counted on its target, and a prompt line at the foot of the middle strip says whose
+decision it is ("YOUR DECISION" in Play, "A DECIDES" in Replay), what is decided (the CLI's pending-decision
+line), the cost still to pay as pips with the life, energy and mana paid after it, the targets chosen so far,
+and the rows naming nothing (Done selecting targets, Cancel casting, Pay 2 life (instead of {B}), Pay {B}) as
+buttons on its right (on lines of their own when they would leave the prompt less than half the line). In Play
+at the human's pending decision a click on a lit card, stack object or player chip answers with its row, and an
+object several rows name (a dual land's two colours) opens a popup of them; at a priority decision a click on a
+playable card casts, plays, activates or taps it for mana (§4.2, "Priority decisions"); hovering a pick says what
+a click does and shades its Choices row. In Replay, an earlier decision or while the opponent thinks the highlights show
+and a click only selects. The player chips (and the Players tool) show floating mana as `pool {U}{R}`. Combat on
+the Table (§4.2, item 7; `table_decision`'s combat kinds, `table_combat`): every attacker is labelled with what it
+attacks ("→ Player B", "→ Kaito") during the combat decisions and whenever it attacks a planeswalker; at declare
+attackers the creatures that can attack glow, at declare blockers those that can block, the attackers kept lit.
+The engine declares a creature as soon as its row is answered and has no row taking it back, so in Play the human
+plans the declaration and nothing is sent until the confirm button: a click plans an attacker against the defending
+player (it stands forward, outlined in the accent colour); with a planeswalker to attack it stays armed, the
+planeswalkers glowing and the player's chip outlined, and a click on a planeswalker (or the chip) changes what it
+attacks; a click on a planned attacker takes it back. A click on a creature that can block arms it (a line follows
+the mouse) and a click on an attacker, or a drag from the blocker onto it, plans the block, an accent arrow blocker →
+attacker beside the declared blocks' red ones; a click on a planned blocker takes it back. Attackers a blocker cannot
+block by the frame's evasion (flying without flying or reach, can't be blocked) are not lit and refuse the click,
+saying why. The prompt line lists the declaration so far, and its buttons are "Attack with N" / "No attack" ("Block
+with N" / "No blocks"), "Attack with all" and "Clear"; the confirm sends the plan one reply per decision (each
+creature's row, its target's or attacker's row, the confirm row last, the engine taking a menu left with one row
+itself), and stops where the engine's rows lack what was planned (a blocker that cannot block that attacker), the
+rest of the plan kept, for the human to choose there. A creature declared in Choices stays declared. At
+ATTACK_TARGET and BLOCK_TARGET (after a row answered in Choices, or a stopped plan) the player chip, the planeswalkers
+or the attackers are picks, the attacker under the mouse joined to the blocker by an arrow. Damage assignment order:
+the current rules have none (CR 510.1c: a creature blocked by two or more creatures divides its combat damage among
+them as its controller chooses), and neither has the engine: when an attacker cannot kill all its blockers it asks
+`ASSIGN_DAMAGE`, lethal damage to one blocker at a time, then Done. The Table lights the blockers that can still be
+given lethal damage with "lethal N" (the row's), counts what each has been assigned ("N assigned", the `combat`
+table's `assigned`), tags the attacker "Assigning", says what is left ("2 of 2 left to assign"), and a click gives a
+blocker its lethal damage; Done is a button. For screenshots `--play-until attack|block|damage` stops at those
+decisions and `--table-plan SPEC` plans a declaration. The opening hand and the card picker (§4.2, items 5 and 8;
+`mulligan_plan`, `card_picker`, `card_picker_view`) are described there, as are the modes, numbers, names, costs
+and pickers (§4.2, items 9, 10, 12 and 13; `choice_panel`, `choice_panel_view`, `card_plan`), and priority decisions:
+casting, playing and activating from the Table (§4.2, "Priority decisions"; `priority_costs`). Waiting for later
+stages: the Choices tool's side of the linking (§2.6).
+
 | Feature | Notes | Size |
 |---|---|---|
-| Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical untapped lands stacked; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
+| Layout from frames | Battlefield rows split into lands and other permanents; attachments (Auras, Equipment) drawn overlapping their host; identical permanents stacked, and rows wrapped, only when the board is too wide to show each legibly; tokens; phased-out permanents dimmed (the frame flags them); emblems and player effects in a strip by the player | M |
 | Object state | Tapped, counters by kind, effective P/T (post-layer, from `object`), damage marked, summoning sickness, loyalty, designations (monarch, day/night, speed …; `designations.def`), energy and poison on the player | M |
-| Combat | Attackers set forward; arrows from blockers to attackers; damage assignment order | M |
-| Targets | Hovering a stack object highlights its targets (`stack_target` rows, not text matching as in the mock-up); optional arrows | S |
+| Combat | Attackers set forward; arrows from blockers to attackers; damage assignment among blockers (no damage assignment order in the current rules, CR 510.1c) | M |
+| Targets | Hovering a stack object highlights it and its targets (`stack_target` rows, not text matching as in the mock-up); no arrows: both ends are highlighted | S |
 | Card-to-choice linking | Use each menu row's `source` / `target` handles (`menu` table) to link rows and objects, replacing the mock-up's name matching | S |
 | Auto-fit | Size cards to fill the panel, as mocked | S |
 
 ### 2.6 Other tools in the mock-up
+
+**Status: done** (`tools/rmwork/`: `replay_tools` and the views `players_view`, `choices_view`,
+`inspector_view`, `state_tree_view`, `value_views`; their data `tool_data`, `decision_frame`,
+`zone_model`, `state_tree`, `evaluations`; `magnifier`, `tool_widgets`). Every tool reads the cursor's
+decision in the current viewer's STATE frame and that viewer's CARDS frame only. What a viewer sees of a
+decision: the omniscient viewer and the deciding seat its menu and the decider's recorded evaluations (μ,
+values, π, teacher); the other seat only whose decision it is. Of the evaluations over the match a seat
+view sees its own seat's (series, swings, reads), the omniscient view both. Players: a box per player,
+the viewer's opponent first (seat chip, the agent the episodes name, deck, life large, "deciding",
+poison, energy, counters, designations, effects and emblems, the zone icons with counts; hovering a box
+links the player). Zone windows (every zone icon opens one; floating, several at once, following the
+cursor and viewer; Esc closes a right-click magnifier, else the focused window): graveyard and exile
+newest first with an exiled card's linked source, a seat's library only its knowledge's exact positions
+and the cards its frame shows (the omniscient viewer's in full), the opponent's hand only the cards
+revealed or known (`k_known_hand`) and the rest as a counted card back; the cards drawn by the
+`CardRenderer`, hover links, the magnifier (shared with the Table, `magnifier`). Choices: the menu rows,
+► on the log's reply, π bars of the shown policy (the Inspector's choice, else the first) with π and μ,
+↑ / ↓ moving a highlight, a click selecting the row and Enter / a double-click submitting it
+(`take_submitted`, for §2.3), hovering a row lighting its source and target on the Table, the State Tree
+and the zone windows, a row shaded when what it acts with is hovered there. Decision Inspector: an ImHex
+Name / Value grid (decision, game, turn and active player, step, deciding seat and agent, the pending
+query, the pending cost's remaining pips, life, energy and discards, stack depth, menu size; from the
+episode V per policy on the deciding seat's or Player A's scale (a radio), H(π), log π(chosen), μ's
+support, policy version, teacher label against the chosen row), the shown policy's radio, and the menu
+with π per policy as bars, μ, ► chosen. State Tree: generic over the SCHEMA (`state_tree`): "game",
+"player A/B" (life, counters, the zones with their objects, the player row), "stack", then "frame tables"
+with every table and row, every column by its schema name, storage and semantic tag, its value by the
+tag (enums and masks by their string tables, cards by name, a handle named only where the viewer's
+object table identifies it); Col swatches in the card's colours (lands tan, colourless grey); nodes
+expanded lazily and kept expanded across decisions by their keys; hover linked both ways with the Table,
+and when the links' item changes to one another tool reported (a card hovered on the Table, a Choices row,
+a zone window's card, a player), the tree expands the nodes above its object's row (a menu row's source,
+else its target) and scrolls that row to the middle when it is off-screen, once per change, so the user's
+own scrolling is left alone.
+Value Graph (ImPlot): V per seat and policy on Player A's scale, turn bands, game boundaries,
+sideboarding shaded, each game's z with a line from the last value, a life strip, the cursor, click / drag
+to scrub, a hover tooltip, a wrapping legend of toggles; without evaluations the life strip and a note.
+Swings: the largest |ΔV| between a seat's consecutive decisions of a game and to its result, with the turn
+and the viewer's own log lines between; in Omni the seats' disagreement (adjacent A and B decisions:
+A's V against −V of B); a click goes to the decision; the toolbar's next swing walks the same rows.
+Model's Read: the deciding seat's (a seat view: its own) V, the shown policy's preferred row with its π,
+the model, a sparkline of the seat's values so far. The status bar's V is the deciding seat's when the
+viewer sees it. The links (`LinkState`) take the menu and stack targets from the tools' data every frame,
+so Choices, the Table, the State Tree and the zone windows link the same handles whichever are open; a
+hovered stack object lights itself and its targets (cards, player chips and boxes), with no line drawn
+(the Table's target arrows are gone; the combat lines stay). Screenshot and check flags: `--tool NAME`,
+`--choices-hover N`, `--tree-expand`, `--open-zone SEAT:ZONE`, `--zone-magnify NAME`. Checked by `rmwork
+--selftest` (the evaluations' series, swings, disagreements, turn bands and text on a synthetic match)
+and `rmwork --selftest-data` (every decision of the corpus logs and the played bo3 in every view: the
+Players' counts, the zone windows' cards exactly the frame's and its knowledge's, Choices the menu or
+nothing in a non-deciding seat's view, the chosen row the reply, the Inspector's fields, the State Tree's
+tables, rows and handle names, the links between Choices, the Table and the tree; a sample drawn with
+every tool open, a Choices hover lighting the Table, zone windows opened, magnified in and closed by Esc;
+the bo3 match with evaluations added to its episodes: the Value Graph's series, Swings and disagreements
+recomputed, next swing, the Inspector, Choices' π, the Model's Read, the status bar; the State Tree's scroll
+target after a link changes, and a card hovered on the Table scrolling the tree to its row once) and, opt-in
+like the gate's `actor` tier, `rmwork --selftest-evals MODEL` (the same evaluation checks on an `nn:`
+self-play bo3 recorded with real evaluations: every decision evaluated, π a distribution, a series point
+per decision). Re-evaluation (§2.7) adds a served policy's series for either seat to any replay, so a second
+policy and the seats' disagreement no longer need episodes that recorded them.
 
 | Tool | Real implementation | Size |
 |---|---|---|
@@ -94,11 +492,425 @@ or two), L (more).
 
 ### 2.7 Evaluation
 
+**Status: done** (`tools/rmwork/`: `replay_evaluator`, `eval_cache`, `reevaluation`, `reevaluate_dialog`, and
+`eval_connection`, which Model's Read and the Models tool now share; checks in `selftest_reevaluation`).
+Analysis → Re-evaluate… (Ctrl+E in Replay, rebindable as `analysis.reevaluate`) opens a dialog of the served
+policies (Settings → Models' numeric ids, each with its model; all ticked at first, the choices kept for the
+session) and the seats (both by default). Each chosen policy evaluates each chosen seat's decisions in that
+seat's own STATE frame: the deciding seat's, which carries the menu, sideboarding decisions included. The frame
+is featurized by `featurize_seat`, never the omniscient one, and sent to rmserve through the torch-free remote
+evaluator, in requests no larger than the server's batch (WELCOME's `max_batch`, at most 64) that fit the
+request area. A model that wants recent-event history is refused at the handshake (a spec hash mismatch), as for
+Model's Read.
+
+- **The Replay evaluator** (`replay_evaluator`) runs on its own thread, with its progress and a Cancel in the
+  status bar. It takes jobs with priorities: between requests the highest takes over. A job is a match's frames
+  (copied out of the Match, so a replay opened meanwhile changes nothing), the served policies, and its items:
+  (decision, seat) pairs, each with an optional change to the featurized tensors. Attribution (§2.8) submits its
+  perturbed batches as such jobs, through the same featurization, the same LRU of featurized decisions and the
+  same connection. A job of no items only makes a handshake: it returns the versions the server serves now.
+- **Merging.** Results join the match's evaluations as series of their own, labelled `re p0 v12` beside the
+  recorded `p0 v12` (a re-evaluated policy's id is 2³² plus its served id). They sit on the decisions' episode
+  steps, with a step of its own where a decision had none (no μ, version or teacher label). So the Value Graph,
+  Swings (Omni's seat disagreement included), the Inspector, Choices' π bars, the Model's Read and the status
+  bar's V read them as they read an episode's. A seat view sees only its own seat's evaluations, Omni both.
+  Re-evaluating a policy again replaces its series.
+- **The cache**: `$XDG_CACHE_HOME/robomage/workbench/evaluations/<log hash>-<model hash>-<a|b>.rmev`, one entry
+  per (log, model, seat). The model's identity is its file's resolved path, size and modification time (a zipped
+  export's archive and member). An entry holds the version the server named. It is stale when the server now
+  serves another version (checked with a handshake when every entry came from the cache), or when its decisions'
+  keys or menu sizes are not the match's. An entry is written (to a `.tmp`, renamed) only once its seat's whole
+  job has returned, and it ends with a hash, so a damaged entry reads as none. The oldest are pruned past
+  512 MB. A cancelled or failed re-evaluation leaves no partial entry and no partial series, and reopening a
+  replay reads the cache with no server needed.
+- **On open**: Settings → Models' "Re-evaluate a replay when it opens" (on by default; also in the dialog)
+  re-evaluates each replay as it opens with every served policy and both seats: the cache's entries at once, the
+  rest while a server listens at the socket. With no server it says nothing.
+- **Failures** go to the error dialog: no server (only when asked for), a refused handshake (a policy not served,
+  a model of other tables), a server lost mid-way. A request on a kept connection that fails is sent once more on
+  a new one, so a restarted server does not fail the next re-evaluation. The evaluations already shown stay.
+
+Checked by `rmwork --selftest` (the cache's round trip; damaged, truncated and foreign entries; fitting a match;
+the model's identity; pruning; merging into a synthetic match; the served policies; the cache alone, no server, and
+Play's live match refused) and `rmwork --selftest-data`, with a stand-in RMIP server on a corpus log: no server on
+open and asked; every decision of both seats evaluated, each value that of its deciding seat's own frame, in
+requests within the server's batch; the tools on the merged evaluations in every view; reopening from the cache
+with one handshake; a changed version, a damaged entry and a replaced model evaluated again alone; a cancel
+mid-way; a refused handshake after a server restart; a server lost mid-way, and the retry. Opt-in,
+`--selftest-evals MODEL`: rmserve serving the reference policy reproduces the `nn:` match's recorded value and
+log π within 1e-5 at every decision of both seats, the tools show both policies, and reopening evaluates nothing.
+
+Not done:
+- Play's live game is re-evaluated only once it is opened in Replay. Model's Read evaluates the human seat as it
+  plays, and the evaluator already takes a live match's frames, for §2.8.
+- The cache key leaves out the engine that replayed the log. A rebuild that changes the frames but not the tables,
+  the menus or the decisions' keys keeps the old entries.
+- A re-evaluated series cannot be removed or hidden except in the Value Graph's legend.
+
 | Feature | Notes | Size |
 |---|---|---|
-| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes | S |
-| Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk | M |
-| Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest) | M |
+| Recorded evaluations | Read `eval_value`, `eval_log_pi`, `eval_policy`, `eval_version` from episodes. **Done** with §2.6 (`evaluations`: per seat and policy, shown by the Value Graph, Swings, the Inspector, Choices and the Model's Read; checked on made-up evaluations and, `--selftest-evals`, on an `nn:` match's real ones) | S |
+| Re-evaluation | Evaluate any decision's seat frames (either seat) with any checkpoint through `rmserve` (`--policy ID=MODEL …`), batched over the whole game; cache results per (game, policy, seat) on disk. Its Replay evaluator (a match's seat frames featurized and sent through the torch-free remote evaluator) is also what Attribution (§2.8) runs on in Replay. **Done** (above) | M |
+| Model manager | List exports from a run (`runs/<run>/exports`, `ckpt`), start or attach to an `rmserve`, check compatibility (`check_compatible`, the model manifest). **Done** as the Models tool (§4.1, item 4) | M |
+
+### 2.8 Attribution: which inputs move V and π at a decision (design, 2026-11-22)
+
+**Status: done, occlusion only** (`src/featurize/perturb`, `rmfeat --perturb` / `--slot-stats`;
+`tools/rmwork/`: `attribution`, `attribution_view`, `tokens_view`, the Table layer in `table_view`, the State
+Tree's Impact column in `state_tree_view`; checks in `selftest_attribution` with the stand-in server now in
+`selftest_fake_server`). What was built, as designed below unless said otherwise:
+- **Units** (`perturb.h`): token, zone group (a player's zone: `A:hand`, `B:battlefield:lands` and
+  `:permanents`, `stack`, a player's knowledge rows and card ledger; a player's own rows as the player's group;
+  other tables' rows by table), card, slot, cell and relation type. A slot is everything one source column makes
+  in its type (an index's value and none flag, a mask block, a card slot with its current face and none flag),
+  so a slot and a cell are named by that column. Removing tokens drops them from the tensors (the rest renumbered,
+  their relations gone) rather than masking them in place; a card unit also clears the tok_ability slots of that
+  card's abilities and sets its none flag, so the card reads as a face-down one. Units compose: a list is applied
+  at once (Shapley's coalitions). Baselines `none`, `mean`, `resample` (4 draws, the metrics averaged).
+- **Staging, focus, cancel, cache** as below. The cache file is named by the decision's state-format key
+  (`g<game>[s]d<decision>`) rather than its index, so a Play game's entries (under `live-<hash of its log
+  path>/`, read by Replay after its own `<log hash>/`) are found again in Replay; an entry holds each unit and
+  its raw evaluations (value and log π per draw), so changing the target, the focus or the rival recomputes the
+  metrics with no evaluation. Jobs run at priority 10, re-evaluation's 0. A cached entry is checked against
+  the served version with a handshake before more is asked of it.
+- **Where it runs**: Replay attributes the cursor's decision while the Attribution or Tokens tool is open (or on
+  Explain), in the viewer's seat frame or, in Omni, the decider's; Play on Explain (Analysis → Explain Decision,
+  Ctrl+Shift+E, `analysis.explain`) or Auto, after Model's Read has evaluated the decision. In Omni the decider's
+  handles are mapped onto the omniscient frame's (zone, owner, controller, card and timestamp where the seat sees
+  the card; stack objects by position) for the Table and the links.
+- **Views**: the tool (header with policy, target, baseline, method, level, Table layer toggle, Explain, Auto,
+  progress and Cancel; focus and rival; Shapley's sums), the Table layer (signed tokens S_A / LIFE_B as
+  `signed_color`, TV in the accent; a legend with its toggle), the State Tree's Impact column and "sort children
+  by impact", and the Tokens tool (one token type at a time by its slots; the cells evaluated as heat, those
+  tokens first). The Analysis preset puts Attribution beside the Inspector and Tokens with the State Tree.
+- **Slot statistics**: built on first use from the first six corpus logs (replayed with `--rmstate-dump`) into
+  `$XDG_CACHE_HOME/robomage/workbench/slot_stats/<spec hash>.rmtb`; until then the tool says so and uses `none`.
+- **The cost** of occlusion per decision is measured by `rmwork --selftest-evals` (its `ATTRIBUTION-COST` lines):
+  on 2026-11-22, the debug rmwork against rmserve on the CPU serving the reference policy, a decision of 93 to
+  97 tokens took 0.08 to 0.12 s for the coarse pass (64 units with the unchanged evaluation: 1.2 to 1.9 ms a
+  unit) and 0.15 to 0.19 s for the second pass (190 to 204 units: 0.8 to 0.9 ms a unit), about 0.27 s in all;
+  Shapley's 85 coalitions took 0.11 s. A trained network of another size costs what its forward pass costs.
+- **A seat view at the other seat's decision gets nothing**: the featurizer takes a frame without a menu, but
+  RMIP v2 refuses a decision of no menu rows (a request's `A` is at least 1), so such a frame is never sent and
+  the tool says why. The metrics still treat an evaluation without a menu as V only.
+
+Not done: gradients (deferred, below); pinning a unit across the game (item 5 of the views); a choice of the
+second pass's group count or Shapley's k and M in the UI (fixed at 3, 12 and 8); the Tokens tool reads its
+featurizer inputs from the Replay evaluator, so it shows nothing until one evaluation through the server has run
+in the session; the State Tree's Impact column names cells by their source column, so a slot whose column the
+tree does not show (a ledger slot, a delta row's `removed`) has no node there.
+
+At any decision the workbench shows which of the decision's inputs move the network's value and its
+policy the most. It shows them at two levels: the **tensors** the network reads (a token, a feature
+slot of a token type, a card slot, a relation type) and the **state** they come from (an object, a
+player, a column of an RMSTATE table, a card). The state level links to the Table, the State Tree
+and the zone windows. It is one tool, Attribution, in Play and Replay. §3's Influence Overlay becomes
+its Table layer.
+
+**What is measured.** The deciding seat's frame, because the network never sees any other. The frame
+is featurized by `featurize_seat`, which already returns each token's source (`TokenSource`: type,
+table, row, sub; `src/featurize/folds.h`). A policy evaluates it through rmserve twice: unchanged, and
+with one *unit* of input changed (occlusion). For each unit and policy the tool reports the metrics
+`learn/ablate.py` uses, so the offline ablations and the GUI read the same way:
+
+| Metric | Meaning |
+|---|---|
+| `dv` | ΔV on the deciding seat's scale (the Inspector's radio switches it to Player A's) |
+| `tv` | total variation between the two policies over the menu: the share of probability moved |
+| `kl` | KL(π ‖ π′) |
+| `dlogp` | Δ log π of the focus row |
+| `dmargin` | Δ(log π(focus) − log π(rival)): why this row rather than that one |
+| `flip` | the changed argmax is a row the unchanged policy ranked below its own |
+
+`dv`, `dlogp` and `dmargin` are signed, coloured by sign and sorted by magnitude. `tv` and `kl` are
+unsigned. The focus row is the chosen row (►) in Replay and the shown policy's argmax in Play. A click
+on a Choices row (or a menu link on the Table) makes that row the focus. The rival is the row with the
+next-highest π unless one is picked with Shift+click.
+
+**Units: what is changed.** Each unit changes the decision's tensors, never its frame, so the engine
+is not involved and nothing new has to be decoded:
+
+| Unit | Change to the tensors | What the tool names it by |
+|---|---|---|
+| Token | `tok_mask` 0 and every relation to or from it removed: "as if this row were not in the frame". A menu token is never removed, since that would change the menu. A single-row token (`header`, `turn`, `pending`, `pending_cost`) may be | its frame row: an object by its handle (a Table card, a zone window card), a player by its box, a stack object, a `k_*` row as a Knowledge row, anything else as its State Tree row |
+| Zone group | every token of one player's zone at once (B's lands, A's hand, the stack, A's graveyard as the seat knows it) | the Table's pile or zone |
+| Card | every `tok_card` slot holding the card set to -1 (none), in every token that holds it: the card unknown, its properties included, read the way the network reads a face-down card | every object of that card ("Counterspell ×2") |
+| Slot | one FEATURE_SPEC slot of one token type, in every token of that type: a numeric slot set to its baseline, a categorical slot to its none id, a mask block to zeros | the slot's source column (the spec's `source`) as a State Tree column: `object.tapped`, `player.life` |
+| Cell | one slot of one token | one value in the State Tree: object X's `tapped` |
+| Relation type | every relation of one registry type removed (blocks, targets, attachments, `k_pool_card.pool`) | its `(table, column)` |
+
+Two kinds of card ablation are left out because input tensors cannot express them: identity alone
+(the card's id row replaced by `unknown_id` with its properties kept, `learn/ablate.py`'s identity
+ablation) and card-table column groups. Both act inside the network. They come with the gradient phase
+below, through an export method that takes them as inputs.
+
+**Baselines** for a slot or a cell:
+- `none` (default): the featurizer's own encoding of absence (0, the none id, -1). It is on the
+  training distribution only where the format has absence.
+- `mean`: numeric slots set to their mean over a reference sample; categorical slots set to their most
+  frequent value.
+- `resample`: K draws of the slot's values from the reference sample, with the metrics averaged. It
+  costs K times as much.
+
+The reference sample is `rmfeat --slot-stats DUMP… --out FILE` over recorded decisions (the corpus or
+a run's episodes), keyed by `spec_hash`. The workbench builds it from the corpus on first use. Without
+it the workbench falls back to `none` and says so.
+
+**Drill-down rather than everything at once.** A decision has dozens to a few hundred tokens, and
+every token type has its slots. Evaluating every cell would take thousands of forward passes, so the
+work is staged:
+1. The first pass covers the coarse units: the zone groups, the players, the stack, the single-row
+   tokens and the cards, in one RMIP request.
+2. The second pass covers every token of the groups that moved the target most, and every slot of the
+   token types present. It is sent in requests no larger than the server's batch and streamed, so the
+   list fills in as results arrive.
+3. Expanding a row in the tool (or a node in the State Tree) asks for that row's children, such as a
+   token's cells.
+
+In Play the next decision cancels the work; in Replay a cursor move does. A request already in flight
+finishes and its results are cached.
+
+Changing one unit at a time misses redundancy: with two Counterspells in hand, removing either one
+alone moves little. The zone groups and the card unit (every copy at once) catch the common case. An
+optional `shapley` mode gives the precise answer on request: permutation sampling over the top k units
+(k ≤ 12, M permutations), checked for efficiency (the attributions sum to the change with all k
+removed).
+
+**Gradients (deferred, 2026-11-22; not part of the Attribution stage).** Occlusion needs only forward
+passes, so it works with every export and server. Gradient methods (gradient × input, integrated gradients against the `mean` baseline) cost
+less per cell. They need more, though:
+- The network's embedding layer: card and categorical inputs are integers and have no input gradient.
+- An export with an `attribute` method (token embeddings in, value and log π out, plus the embeddings
+  of the decision's inputs), which is a change to the network contract and the exporter.
+- A TorchScript export: AOTInductor has no backward pass.
+- An RMIP request kind that returns per-token, per-slot attributions.
+
+This phase also brings the in-network card ablations above. It stays deferred until occlusion's cost
+per decision has been measured in the `bench` tier and found to be a problem, or until the in-network
+card ablations are wanted in the GUI. Deferring it changes nothing in the network contract, the
+exporter or RMIP v2.
+
+**Where it runs.**
+- `src/featurize/perturb.{h,cpp}` (std only, beside `batch`) holds:
+  - a unit's change to one decision's `Tensors`. Removing a token renumbers `rel`, `act_tok` and the
+    other tokens' indices; slot baselines come from the FEATURE_SPEC plan;
+  - the unit list of a decision, built from its token sources and the spec;
+  - the slot statistics file.
+
+  `rmfeat --perturb` exposes it so the gate can check it without the GUI.
+- `tools/rmwork/attribution.{h,cpp}` (ImGui-free) submits its work to the Replay evaluator
+  (`replay_evaluator.h`, §2.7): its thread, featurization and RMIP connection, as jobs whose items carry
+  each unit's change to the tensors, at a priority. It keeps a queue of (decision, seat, policy, method,
+  units) work and streams results to the tool. It caches them on disk under
+  `$XDG_CACHE_HOME/robomage/workbench/attribution/<log hash>/<decision>-<seat>-<model hash>-<method>.bin`,
+  so a decision visited again costs nothing, and a Play game's attributions open with it in Replay.
+- **Replay** reads the frames from the dump: any decision, and either seat's frame (a seat view uses
+  that seat's frame, Omni uses the decider's). Like re-evaluation (§2.7) it needs the server, and it
+  shares §2.7's featurization and connection: one Replay evaluator with two clients. At a decision of
+  the other seat, a seat view's frame has no menu, so it gets the V metrics only, provided the
+  featurizer accepts a frame without a menu; otherwise it gets nothing.
+- **Play** uses the human seat's frames as Model's Read receives them. It never uses the opponent's,
+  which the workbench does not have; the opponent's decisions can be attributed after the game, in
+  Replay. Attribution runs on demand (the tool's Explain button, or a key in the key table), or at each
+  of your decisions while the tool is open with Auto ticked. Model's Read's evaluation of a decision
+  goes first and attribution runs after it, at lower priority.
+- **Policy**: the shown policy (the Inspector's radio) or any served policy. Policy Compare (§3) later
+  shows two side by side.
+
+**The views.**
+1. **The Attribution tool** (dockable, in both modes; in the Analysis preset beside the Inspector).
+   - The header holds the decision and seat, the policy, the target (V; π: TV; log π(focus); focus vs
+     rival), the baseline, the level (state or tensors), and progress with Cancel.
+   - The body is a ranked list with signed bars: each row has a label, its kind and the metrics as
+     sortable columns, and expands into its children.
+   - At the state level the labels are game names: "Ragavan (B, battlefield)", "Player A · life",
+     "object.tapped (all objects)", "Counterspell ×2".
+   - At the tensors level the labels are the spec's: the token type and its index, slots such as
+     `num[17] object.power (signed)`, `cat[3] object.zone` and `tok_card[0]`, and the relation type.
+   - Hovering a row links it (the `LinkState` handles) to the Table, the State Tree, the zone windows
+     and Choices. A click scrolls the State Tree to the row.
+2. **The Table layer.** Every card, player box and stack object is tinted by its unit's signed value
+   for the current target, in a diverging palette from the theme's tokens. A legend strip gives the
+   scale and the target. The layer is toggled from the tool and from the Table, and it replaces §3's
+   Influence Overlay.
+3. **An Impact column in the State Tree**, beside the value: a heat swatch on each node computed so
+   far, with "sort children by impact".
+4. **The Tensors view** answers "which tensors" directly. It is §3's Tokens tool (the decision's tokens
+   by slots, as a grid labelled by the spec) with the cell attributions as a heat layer. The Tokens
+   tool is built in this stage, ahead of the rest of §3.
+5. **Across the game (later).** Pin a unit, such as a card or a player's life, and the Value Graph
+   draws its `dv` over the game's decisions, computed for the pinned units only.
+
+**Checks.**
+- `rmfeat --perturb` in the `featurize` tier:
+  - the empty change is byte-identical;
+  - a removed token's relations are gone, and the remaining indices are renumbered consistently;
+  - every changed decision passes the spec's shape and index checks;
+  - every unit names a row the seat's own frame holds.
+- The `workbench` tier (`--selftest-data`, and as now the opt-in `--selftest-evals MODEL` against the
+  reference policy through rmserve):
+  - the unchanged evaluation equals Model's Read's for the decision;
+  - results are deterministic and cached;
+  - the Table layer's tints land on the cards the units name;
+  - Explain works at a live Play decision, and Replay at a decision of each seat;
+  - a cancelled job leaves nothing half-written;
+  - `shapley`'s efficiency sum is within tolerance.
+
+**Size.** The perturbations, the tool, the Table layer and the State Tree column: M (§2.7's Replay
+evaluator, M, comes first). The Tensors view with the Tokens tool: M. Shapley: S. Gradients with the
+export change (deferred): M–L.
+
+### 2.9 Simulate: games with no human seat
+
+**Status: done** (`tools/rmwork/`: `simulation` (the runner, ImGui-free), `simulate_dialog`, `simulation_view`;
+Play's `play_session` now builds every seat's agent arguments with `agent_arguments`, which both share; checks in
+`selftest_simulation`). File → Simulate Match… (Ctrl+Shift+N, rebindable as `game.simulate`; the start page's
+Simulate Match action; `rmwork --open-simulate`) runs matches between two entrants, each an agent and a deck, and
+opens the result in Replay. Nothing here plays a seat by hand, so the engine runs headless: no `--machine` stream,
+both seats in-process agents (or a teacher), and Replay needs only the decision log and the plain engine.
+
+- **The dialog** (`simulate_dialog`): per seat the agent (a model export from the policy catalog, `runs/latest`
+  first and the zipped exports, as New Game lists them; a served policy, `nn:remote:<socket>`, Settings → Models'
+  socket by default; the scripted agent, `python/teacher.py --tier hard` through `--teacher-<a|b>` at
+  `--teacher-mix 1`, on either seat or both; explore; random), a model's options (Argmax, or a sampling
+  Temperature: the `nn:` agent's `:argmax` / `:temp=`) and the deck; then best of one or three, the matches N, the
+  first seed (match i plays `--game-seed` seed + i), Alternate seats (odd matches swap the entrants' agents and
+  decks, so each entrant plays both seats on the same seeds' worth of games), auto-mana and the parallel jobs (0:
+  a quarter of the hardware threads). New Game's deck, agent-kind and model widgets are shared functions now
+  (`new_game_dialog.h`). The choices are checked as they are made (a model or a served policy needs
+  `robomage_nn`) and kept in `settings.json` (`simulate`).
+- **The runner** (`simulation`) is polled on the UI thread once a frame: at most `jobs` engines at once, each in
+  its own process group (its teachers die with it) with its output in a file; an engine that exits is judged from
+  its exit status and output: a `FATAL` line, a nonzero exit or no `GAME_RESULT` (bo1) / `MATCH_RESULT` (bo3)
+  line fails that match alone, never the batch. A model export named in a zip archive is extracted once
+  (`model_zip`). Each batch is a directory `$XDG_DATA_HOME/robomage/workbench/simulations/<timestamp>-<agent>-<deck>-vs-<agent>-<deck>/`
+  (default `~/.local/share/…`) holding `m<NNN>.rmlog`, `m<NNN>.stderr` (stdout and stderr together: with no
+  seat on a stream the engine's result lines go to stdout) and `simulation.json` (the configuration, the engine,
+  the tally, and per match its seed, which entrant sat A, state, result, games, decisions, time, log, output and
+  error; paths relative to the directory), rewritten atomically whenever a match's state changes. Cancel (the
+  status bar's, the window's) kills the running engines, removes their partial logs, keeps the finished ones and
+  marks the rest cancelled in the summary.
+- **Results.** One match opens in Replay when it ends (its failure in the error dialog). Several open the
+  **Simulations window**: a floating window rather than a docked tool, so it belongs to neither mode's layout and
+  stays over Replay while a match chosen from it is looked at. It shows the past simulations (a combo box, newest
+  first), New…, Open Folder…, Cancel while running; the entrants and settings; a progress bar; the summary (per
+  entrant the matches and games won and its share; draws, failures, cancels; with alternating seats entrant 1's
+  score and its 95% Wilson interval, a draw counting half, else the wins by seat, since a seat's advantage is then
+  in the numbers); and a row per match (seed, the entrant on each seat with the winner's in green, result, games,
+  decisions, time). A click opens a finished match in Replay, or a failed one's error and output tail in the error
+  dialog. File → Simulations shows the window, File → Recent Simulations and File → Open Simulation… (the file
+  picker on directories; a directory holding `simulation.json` picked anywhere opens as one) reopen a past one; a
+  summary written mid-batch (the workbench quit) opens with its unfinished matches cancelled. The status bar shows
+  a running batch's progress with Cancel. `rmwork --simulate SPEC` runs one at start (`--screenshot` waits for it)
+  and `--open-simulation DIR` opens one.
+
+Checked by `rmwork --selftest` (the settings' round trip and refusals; the configuration from the choices; the
+engine's arguments for swapped seats, a scripted seat, both seats scripted with one `--teacher-mix`, a model's
+file and options; matches judged from canned output: a win, a draw, a bo3 match line, a FATAL, a killed engine,
+no result; the tally and its Wilson interval; `simulation.json` read back, a mid-batch summary opening as
+cancelled, the past simulations newest first; the App: the dialog from the key, the start page and File, ready to
+run, Esc; a stand-in engine's single match failing into the error dialog, the window over it, a failed row, New…,
+Open Folder…), `--selftest-data` (explore vs random opened in Replay when it ends; the scripted agent against
+explore and against itself; three matches with alternating seats on two jobs in the window, the second match's
+log naming the decks the other way round, `simulation.json` read back equal, a row opened in Replay; every finished
+match's result what the engine's `--replay` of its log reports; a stand-in engine failing one seed with a FATAL
+line, the other matches finished, and sleeping on another: a cancel mid-batch leaving the finished logs, no
+partial log and a summary that reads back cancelled) and, opt-in, `--selftest-evals MODEL` (the reference policy
+against itself in `robomage_nn`, one seat argmax, opened in Replay; against the scripted agent with alternating
+seats on two jobs; each result the plain engine's replay's).
+
+Not done:
+- No per-game decision cap: a game that never ends holds its job until it is cancelled.
+- The window shows results per match; per-game rows of a bo3 match, Elo across several simulations and a
+  deck-by-deck matrix (the Bench Matrix of §3) are not built.
+- The summary's interval treats matches as independent draws; with alternating seats a pair of matches on
+  consecutive seeds is not paired.
+
+| Feature | Notes | Size |
+|---|---|---|
+| Simulate dialog | Two entrants (agent, model options, deck), format, matches, first seed, alternate, auto-mana, jobs; kept in `settings.json`. **Done** | S |
+| Runner | Headless engines in parallel, per-match judgement and failures, `simulation.json`, cancel. **Done** | S |
+| Results | One match in Replay; the Simulations window with the summary and the rows; past simulations reopened. **Done** | S |
+
+### 2.10 Policy Compare: several policies at a decision and across the game (design, 2026-11-22)
+
+**Status: done** (`tools/rmwork/`: `policy_compare`, `policy_compare_view`, the App's `compare_bring_in`; checks in
+`selftest_policy_compare`, the stand-in server's policies now differing in π). §3's Policy Compare row and §4.4 item
+18, built on §2.7: π and V of two or more of a match's evaluation series (recorded `p0 v12` and re-evaluated `re p0
+v12`) side by side at the cursor's decision and over the game, against one of them as the reference. Built as
+designed below, with these choices:
+- The tool is in both modes: Replay compares whatever the match carries; Play compares the live game's decisions that
+  Model's Read evaluated (it evaluates every served policy with a numeric id), and its Add checkpoints… is disabled
+  (bringing a checkpoint in re-evaluates a whole match). The Analysis preset has it as a second tab behind the Value
+  Graph (the Value Graph stays the shown tab); Analysis → Compare Policies… opens it.
+- A wide tool (from 110 ems) is two columns: the decision and the agreement on the left, the plots and the ranked
+  list on the right; a narrow one stacks them. The agreement table's seat column is "A · B" in Omni (each seat's
+  counts in its tooltip) and the viewer's seat in a seat view.
+- The bring-in waits for a running re-evaluation (one that opened with the replay) to end rather than cancelling it.
+- `--compare-report` prints the comparison (the policies, their agreement, the top disagreements with the rows the
+  reference and the policy prefer) when the window closes: a comparison from the command line, with `--screenshot`.
+- A match made at the address of a freed one is told apart by `Match::serial`, so the comparison (and its rows' texts)
+  is never one of the match before.
+
+Measured on 2026-11-22: runs/latest (league26-24h-2's final) against league26-24h's final, both served by rmserve,
+on a bo1 the two played (burn vs ur_tempo, game seed 5, 52 decisions): argmax agreement 90% (47/52; A 96%, B 86%),
+mean KL 0.033, mean TV 0.056; the largest disagreement a Brainstorm put-back where the older final keeps Murktide
+Regent (TV 0.42).
+
+Not done:
+- Policies are told apart only by their labels (`re p1 v10502`); a run's two finals of the same learner step share
+  the version, so the model's file is in the chip's tooltip and the report, not in the label.
+- The catalog marks `runs/latest` incompatible when its `latest.json` holds its hashes under `hashes` rather than
+  `manifest` (a hand-written one, such as the one on 2026-11-22): the Models tool's reader (`read_model_manifest`)
+  refuses it, so the row cannot be ticked; served through Settings → Models it compares as any other.
+- Removing a policy's series (§2.7's not done) and pinning a policy's colour across sessions.
+
+The design as written before building:
+
+- **Which policies.** The candidates are the match's evaluated policies with a series of a seat the viewer sees
+  (§2.7's rule: a seat view its own seat's, Omni both); all are compared unless unticked, and the reference is the
+  last of them in id order (a re-evaluated id is 2³² plus its served id, so the policy served last) unless another
+  is chosen. With no candidate, or one, the tool says so and offers to bring checkpoints in.
+- **Bringing a checkpoint in.** "Add checkpoints…" lists the policy catalog (§4.6: `runs/latest` first, then the
+  runs' policies newest first, then the zipped exports; the hidden rows left out), each with the Models tool's
+  compatibility verdict (an incompatible row cannot be ticked). The ticked rows are served oldest first through the
+  Models tool's Serve (`App::serve_model`: Settings → Models' policies, the server started with the workbench), so
+  the newest gets the highest id and becomes the reference. When the workbench runs rmserve, its changed
+  configuration restarts it; once it listens with the new policies the match is re-evaluated with them, both seats,
+  through §2.7's re-evaluation (the cache first), and their series appear. An external server cannot be told to
+  serve more: the re-evaluation is tried as it is, and the tool names the policies it must serve and the `rmserve
+  --socket … --policy ID=MODEL …` line that would serve them. In Play the tool compares what Model's Read evaluated
+  (every served policy with a numeric id); bringing checkpoints in needs Replay.
+- **At the decision.** Per menu row each policy's π as a bar in its colour, its argmax marked (●), the chosen row
+  ► (Replay); per policy V (on the deciding seat's scale, or Player A's with the Inspector's radio), KL(ref‖p) and
+  TV against the reference. Hovering a row links it like Choices' rows (the Table outlines its source and target).
+- **Across the game.** For the decisions the viewer sees that the reference evaluated: KL or TV against the
+  reference per policy (argmax differences marked) and V (A) per policy, plotted over the match's decisions with
+  the cursor, click or drag scrubbing; per policy the argmax agreement rate overall and per seat, mean KL and TV,
+  and a strip of its agreement per turn. A ranked list of the decisions where a policy (or any) diverges most from
+  the reference, by KL or TV, filterable to "argmax differs only": the decisions where a newer checkpoint changed
+  its mind, ranked by the probability mass moved (TV); each row names the reference's and the policy's preferred
+  rows, and a click moves the cursor there.
+- **Metrics.** π = exp(log π) over the menu rows. KL(ref‖p) = Σ π_ref (log π_ref − log π_p) in nats; TV = ½ Σ
+  |π_ref − π_p|; argmax the first row of the largest π; agreement counts the decisions both evaluated.
+- **Code.** `policy_compare` (ImGui-free: the candidates, the metrics, a match's comparison and the ranked list),
+  `policy_compare_view` (the tool and its catalog picker), the App's bring-in flow (`compare_bring_in`), the
+  Analysis preset's Value Graph group as a second tab, Analysis → Compare Policies.
+
+| Feature | Notes | Size |
+|---|---|---|
+| Comparison | Candidates, reference, KL / TV / argmax per decision, agreement, ranked disagreements | S |
+| Tool | At the decision, the plots, the summary, the ranked list with jumps, links | S |
+| Bringing checkpoints in | The catalog picker with compatibility, Serve, the server restart, re-evaluation | S |
+
+Checked by `rmwork --selftest` (the metrics on made-up distributions against hand-computed values; a synthetic
+match's comparison, agreement and ranking; the candidates per viewer), `rmwork --selftest-data` (the stand-in server
+re-evaluating a corpus log with policies whose π differ: every decision's KL, TV and argmax against values computed
+from the merged records, the agreement, the ranked list sorted and filtered, a row's jump; every viewer; no policy and
+one policy; bringing two catalog rows of a made-up runs directory in: served, re-evaluated, their series compared,
+the newest the reference) and, opt-in, `rmwork --selftest-evals MODEL` (the reference policy served twice: KL 0 and
+full agreement at every decision). Screenshot flags `--tool compare`, `--compare-ref`, `--compare-metric`,
+`--compare-argmax-only`, `--compare-add`, `--compare-picker`.
 
 ## 3. Additional analysis tools that fit the framework
 
@@ -107,10 +919,10 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | Tool | What it shows | Built on | Size |
 |---|---|---|---|
 | **Knowledge** | What the viewing seat knows or has deduced: opponent's hand candidates, known library positions, cards seen; the CLI's `know` panel as a tool | `k_*` tables (`docs/knowledge_store.md`) | S |
-| **Policy Compare** | π and V of several checkpoints at the current decision and across the game: per-decision KL divergence, argmax agreement, where a newer checkpoint changed its mind | §2.7 re-evaluation | M |
+| ~~**Policy Compare**~~ | π and V of several checkpoints at the current decision and across the game: per-decision KL divergence, argmax agreement, where a newer checkpoint changed its mind. **Built: §2.10** | §2.7 re-evaluation | M |
 | **Teacher Disagreement** | Where the scripted teacher's label differs from the model's choice, with both π; filterable list that jumps into Replay | episode `teacher` labels; or attach `teacher.py` to a replay | S |
 | **Branch Explorer** | At a decision, take a different menu row and play the game out K times with chosen agents; per-row win rate next to π (a Monte Carlo Q). Uses the decision log's prefix plus the alternative reply as `--actions`, then in-process agents finish the game | engine subprocess, `--actions`, agents | M |
-| **Influence Overlay** | Per decision, replace one card's input with the unknown-card vector (or remove its token) and re-evaluate: tint each card on the Table by its ΔV / Δπ(chosen) | featurizer + rmserve; the method of `learn/ablate.py` | M |
+| **Influence Overlay** | Now part of Attribution (§2.8): its Table layer | §2.8 | — |
 | **Blunder Finder** | Query decisions across many games: e.g. π(chosen) < 0.2 and |ΔV| > 0.3, or a row the teacher picks with π < 0.1; results open in Replay | episodes + evaluations | M |
 | **Episode Browser** | Table of a run's episodes (decks, seats, result, length, policy versions, actor), filters and summary statistics; double-click opens Replay | `runs/<run>/episodes`, results files | M |
 | **Bench Matrix** | Win-rate heatmap per deck pair from `rmtrain bench` / ladder, with confidence intervals; a cell lists its games | `runs/<run>/bench`, `ladder` | S |
@@ -120,7 +932,7 @@ Ordered roughly by value against effort. Each is one dockable tool.
 | **Card Statistics** | Per card across games: drawn, cast when castable, average ΔV after casting, win rate when drawn or in the opening hand | episodes + frames | M |
 | **Mulligan & Sideboard** | Keep rates by hand, results after a mulligan; sideboard swaps (including `sb_explore` proposals) and later game results | episodes (bo3) | M |
 | **Raw Frame** | The current frame's RMSTATE tables with SCHEMA column names and tags (the "hex editor" of the workbench), for engine and format debugging | decoder | S |
-| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph | `featurize_seat` | M |
+| **Tokens** | The featurizer's tokens and relations for the decision: types, categorical and numeric columns, the menu's `act_tok`, relation graph; Attribution's Tensors view (§2.8) as a heat layer. **Built with §2.8** (`tokens_view`: one type at a time by its slots, the counts of tokens, relations and menu rows; the relation graph not drawn) | `featurize_seat` | M |
 | **Bookmarks & Notes** | Mark decisions with notes, stored beside the game; list, jump, export to Markdown | sidecar file | S |
 | **Game Compare** | Two games side by side, e.g. one seed played by two checkpoints: synchronised by turn, two Tables and two value curves | two loaded games | M |
 | **Belief Spread** (research) | V re-evaluated over hidden worlds consistent with the seat's knowledge, showing how much V depends on what the opponent holds | knowledge solver worlds; needs frames built for sampled worlds (state format register 22, deferred) | L |
@@ -129,38 +941,279 @@ Ordered roughly by value against effort. Each is one dockable tool.
 
 ### 4.1 Starting and loading
 
-1. **Start page**: recent games and runs, New Game, Open Replay, Open Run, inference-server status.
+1. ~~**Start page**~~: built (`start_data`, `start_page`; mock-up `start.html#start`). A page over the whole
+   work area in place of the mode's dockspace rather than a docked tool: with nothing open no tool has
+   anything to show, and neither mode's layout (tabs, splits, the saved layouts) is touched while it is
+   up, since the dockspace is simply not drawn, as for the other mode. It shows at start (setting
+   `start_page`, its checkbox on the page; `--start-page`), from File → Start Page (Alt+Home) and after
+   File → Close (Ctrl+W: the replay, or a Play game that is over; a running game is conceded first);
+   opening a replay or run log, starting a game, the Start tab's ✕, the toolbar's mode switch and View's
+   tools and layouts give the dockspace back. Left: New Game, Open Replay, Open Trajectory Episode, Open
+   Run (Ctrl+Shift+O) with their keys, the keys to know, the setting. Middle (double-click opens): Play's
+   recent games (the games directory's newest 40: when, your seat and deck, the opponent's agent from the
+   game's sidecar and deck, format, result, decisions; "playing", "no result (stopped)", a malformed log
+   named), the recent replays (settings' recent decision logs outside the games directory: decks, result,
+   decisions, modified) and the recent runs (the recent run directories, then the runs directory's by
+   last update: phase and running, updated, hours, games from `status.json`); each opens in Replay or the
+   run browser. Results are never replayed for the page: a Play game's from its stderr's `GAME_RESULT` /
+   `MATCH_RESULT` lines, else the replay cache's narrative of the log under the engine replays run with,
+   else "…" until it is opened; the scan runs on the page's thread when shown and every 5 s while it is.
+   Right: the engine (binary, built, working directory and `resources/`, the replays' plain engine or the
+   `robomage_nn` beside it, older than the engine said, `make actor`), card images (cards and tokens
+   cached, the fetch command), the inference server (socket configured and present, policies listed,
+   `rmserve` beside the engine, Model's Read's last state, a refused or lost connection in red), files
+   (the games directory, the replay cache's size), each linking its Settings tab. The model's
+   compatibility check stays with the Model manager (item 4). Checked by `rmwork --selftest`
+   (`selftest_start`: the result lines, the sidecar, a synthetic games directory with finished, stopped,
+   malformed, running and unread games and more than the page lists, recent replays with and without a
+   cached result, runs with and without `status.json`, the status blocks with and without engine,
+   `robomage_nn`, working directory, images and socket; the App: the page in place of the dockspace, ✕,
+   the key, Close with the setting on and off, a Settings link) and `--selftest-data` (Play's bo1 and bo3
+   listed with their seats, opponents and results, the bo1 opened in Replay from the page, Close bringing
+   it back; the game whose engine was killed listed as stopped and opened in Replay).
 2. **New Game dialog**: your deck and seat, opponent (model / checkpoint, scripted tier, explore), best-of-one or best-of-three, seed, auto-mana, Model's Read on or off, knowledge level.
-3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3).
-4. **Model manager**: exports and checkpoints, rmserve start/attach, compatibility check.
+3. **Open Run / Episode Browser**: the run's episodes as a filterable table (§3), filtered by run (§4.6).
+4. ~~**Model manager**~~: built as the Models tool (`model_manager`, `model_manager_view`; View, Analysis →
+   Models; in both modes, in no preset). A strip with the inference server's state (the status bar's text),
+   the socket, Start server or Restart / Stop server (Settings → Models' checkbox and Restart server, the
+   same path) and Settings → Models…; a filter field (a substring of the run or name), a Run combo box
+   ("All runs" and each run), Show all (the hidden rows) and Refresh; the policy table of §4.6 (date, run,
+   name, learner steps, formats, compatible), sorted by a click on a header, date descending each time the
+   tool opens (not remembered), `latest` first under any sort; hovering a row shows its files and what its
+   compatibility rests on. Compatibility: the row's model manifest (its run's `tables/manifest.json`, or
+   `latest.json`'s `manifest`) against the engine's tables' (`<engine> --cards-frame` and the oracle-text
+   table loaded as Model's Read loads them, `Featurization::manifest()`), with `check_compatible`: exact for a
+   row that plays an export, the checkpoint rule for a checkpoint-only row ("checkpoint only" in its formats).
+   `latest.json`'s manifest carries the hashes but no vocab manifest or registry: equal `vocab_hash` values
+   stand for the same vocab, and an export with another is refused by that hash. The engine's manifest is
+   read once per engine binary (path and modification time) and each manifest file's verdicts kept by its
+   modification time, all on the checker's thread ("checking…" meanwhile); an incompatible row is greyed
+   and says `rmtrain retable <run>`; a row with no manifest (a zipped export, a run without tables, a
+   `latest.json` from before manifests) or an engine whose tables cannot be read is unknown. Actions on the
+   selected row: Play against (New Game with it as the opponent's model; also a double-click), Serve (added
+   to Settings → Models' policies under `next_policy_id` unless a policy names it, and the server started
+   with the workbench) and Copy path. Checked by `rmwork --selftest` (`selftest_model_manager`: the order
+   under each column, the filter, the run, Show all, the verdicts on synthetic manifest pairs, the checker
+   over the policy catalog's fixture with a given engine manifest; the App: the tool drawn, the rows and
+   their verdicts, a run listed on reopening, Serve once, Start / Stop, Play against, Settings).
+
+Also built without a mock-up: ~~**Simulate Match**~~ (§2.9): File → Simulate Match… and the start page's action open
+a dialog of two entrants (agent, model options, deck) and the batch's settings; the floating Simulations window shows a
+batch's progress, summary and matches, each opening in Replay.
 
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
-5. **Mulligan**: the opening hand large, Keep / Mulligan, and for London mulligan the bottoming choice.
-6. **Targeting**: legal targets highlighted on the Table and players, click to choose, arrows from the spell.
-7. **Declare attackers / blockers**: click creatures to attack or block, arrows to their opponents, confirm (`-1`).
-8. **Library search, dig, scry, surveil, reveal**: a card-picker window with the shown cards, top/bottom placement, fail-to-find.
-9. **Modal and numeric choices**: choose modes (one or more, `mode:done`), choose X, divide damage among targets, order triggers.
-10. **Name a card**: the limited candidate list (or every vocab card under `--closed-decklist`), with search.
-11. **Mana payment**: under `--no-auto-mana`, tap lands and sources on the Table to pay, with the remaining cost (`pending_cost`).
-12. **Optional costs and alternative costs**: e.g. Force of Will's pitch, kicker, convoke and crew pickers.
-13. **Discard / sacrifice / return pickers** for mandatory choices.
+5. ~~**Mulligan**~~: built (mock-ups `decisions.html#mulligan`, `#mulligan-bottom`; `table_decision`'s MULLIGAN and
+   BOTTOM, `mulligan_plan`). At the opening hands the hand is drawn large on the Table (1.9 battlefield card widths,
+   `PREGAME_HAND_SCALE`, in place of 1.15) and never dimmed; the prompt line says what is decided from the frame's
+   `player.mulligans` / `to_bottom` ("Opening hand: keep these 7, or mulligan (draw 7, then put 1 on the bottom)",
+   "Mulligan 2: keep these 7 and put 2 on the bottom, or mulligan to 4"; play or draw and the opponent's mulligans
+   after it, dimmed) with Keep and Mulligan as buttons (rows 0 and 1). The London bottom picks (CR 103.5; one
+   BOTTOM_DECK_CARD decision per card, no pending flow, a row per hand card, no row taking a card back) are planned
+   on the hand rather than sent at each click (the mock-up's open question 1): a click on a lit hand card plans it
+   ("Bottom 1", "Bottom 2" in the accent colour), a click on a planned card takes it back, a click past the cards owed
+   is refused with a status message, Undo and Clear on the prompt line; once the plan holds every card owed, "Put N on
+   the bottom" sends it one reply per decision (`next_bottom_row`: the row naming the first planned card still in the
+   hand). The prompt says "Keeping 5: put 2 cards on the bottom of your library · planned: …" ("(1 of 2 done)" once
+   one is). The opponent's mulligans are on the prompt line, not in a window (open question 2). Replay: the same
+   highlights, the card chosen outlined in the accent colour with "Chosen" (as every pick the Table shows; a chosen
+   button is highlighted), no plan. `--play-until mulligan|bottom` stop there and `--table-plan "NAME,NAME"` plans the
+   bottom picks for screenshots. Checked by `rmwork --selftest-data` (`selftest_decisions`).
+6. ~~**Targeting**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#targeting`,
+   `#targeting-second`). Legal targets lit on the Table and the player chips, everything else dimmed; the spell
+   (or the ability's source) lit, linked to its targets by highlighting both, no arrow (user, 2026-11-18: arrows
+   only for blocks); a click on a target answers, a popup when rows share an object; the targets chosen so far
+   numbered in the accent colour; Done selecting targets (and the other rows naming nothing) a button on the
+   prompt line. Answered on the Table: `SELECT_TARGET` (a spell's, an ability's, a trigger's as it is put on the
+   stack) and `DIVIDE_DAMAGE` (one more point to a target, the points so far counted on it); `ATTACK_TARGET` and
+   `BLOCK_TARGET` belong to combat (item 7). A target the Table does not show (a card in a graveyard) is chosen
+   in Choices. Checked by `rmwork --selftest-data` (`selftest_decisions`).
+7. ~~**Declare attackers / blockers**~~: built (§2.5's combat on the Table; mock-ups `decisions.html#combat`,
+   `#combat-attackers`, `#combat-blockers`, `#combat-damage`). The engine declares a creature as its row is
+   answered and cannot take it back, so the Table plans the declaration and sends it on confirm: a click plans or
+   takes back an attacker (with a planeswalker to attack, a second click on it or on the player's chip says what it
+   attacks), a blocker then an attacker (or a drag) plans a block, drawn as an arrow blocker → attacker (user,
+   2026-11-18: arrows for blocks only); "Attack with N" / "Block with N", "Attack with all" and "Clear" on the prompt
+   line; the plan sent one reply per decision, stopping where the engine refuses a planned block. Combat damage
+   assignment among blockers (`ASSIGN_DAMAGE`): the blockers lit with their lethal damage, the damage assigned so
+   far on each, a click gives one its lethal damage, Done a button. Checked by `rmwork --selftest-data`
+   (`selftest_decisions`).
+8. ~~**Library search, dig, scry, surveil, reveal**~~: built (mock-ups `decisions.html#card-picker`, `-ponder`,
+   `-brainstorm`, `-surveil`; `card_picker`, `card_picker_view`). A card-picker decision is one whose every row is
+   SEARCH_LIBRARY (a row per legal find, the card its `source`; "Fail to find" names none), TOP_LIBRARY (Ponder's,
+   Doomsday's ordering and scry's keep with an `ordinal`, the depth the pick fills; Doomsday's five picks
+   "Thassa's Oracle (library)" / "Daze (graveyard)" and Brainstorm's put-back from the hand with none, each on top of
+   the last), BOTTOM_DECK_CARD at a resolution (scry's other pile), DIG_CHOICE ("Take nothing (rest go to the bottom
+   of library)" names none), CHOOSE_CARD (surveil's "Put X into graveyard", a tutor's, Delve's, Mox Diamond's
+   discard), EXILE_FROM_YARD (Escape) or SYLVAN_CHOICE; interchangeable library and graveyard cards are one row
+   (`interchangeable_cards`), hand cards never. The picker is a window inside the Table rather than a docked tool
+   (open question 1): the stack object resolving, the prompt line and the board stay where they are and nothing has to
+   be brought to the front and given back. It sits over the opponent's half (below the opponent's chip, down to the
+   middle strip) as wide as its cards need, centred; when its cards need more room it takes the Table's width down to
+   the prompt line (over the strip's step bar and stack; the title names what resolves), and a whole-zone pick too large
+   for that (Doomsday with a 45-card library) takes the Table down to its foot, the prompt then at the picker's own
+   foot; its title bar's button collapses it. The cards are the rows' (only what the viewer's frame shows: its menu,
+   its objects, `zone_model`), grouped by zone (the viewer's library top first with each card's place, then its
+   graveyard, exile, the other seat's zones), identical cards one entry with ×n; a search shows the rest of the library
+   its reveal window shows, dimmed (open question 3: both, an "Unpickable" toggle hides them). A filter box (name or
+   type line, case-insensitive) and a Cards / List switch above them, the list a line per entry with its count, type
+   line and place. A click on a card answers its row; a card with several (scry's Top / Bottom, surveil's Top /
+   Graveyard) has a button per row under it; the rows naming no card (Fail to find, Take nothing) are buttons under
+   the cards. Ponder and Doomsday are answered a click per pick, as the engine asks (open question 2: the pile shows
+   where each goes before it is clicked; the engine has no row taking a pick back). Beside the cards the pile being
+   built, top first, as the library will be: the picks this resolution made so far (the replies of the deciding seat's
+   decisions just before for the same pending source, read from their frames, since the frame no longer lists a card
+   put back), each in its final place (an ordinal pick at its depth, "Top", "2nd", "3rd", the deepest first for
+   Ponder; an on-top pick above the earlier ones, so Doomsday's first ends fifth), the place the next pick fills
+   marked, then what went to the bottom or the graveyard; the pass restarts where the menus change kind (Doomsday's
+   picks, then its ordering of the five). A decision whose cards are all on the Table (Brainstorm's put-back) is picked
+   on the hand, the picker showing the pile alone at the right. Replay (and an earlier decision of Play): read-only, the
+   card chosen marked and scrolled into view; a seat's view of the other seat's pick has none. Screenshot flags
+   `--play-until pick`, `--picker-filter TEXT`, `--picker-list`. Not in the frame (the engine was not changed): how many
+   picks a resolution will ask (Doomsday's five, Brainstorm's two), so the pile shows the picks so far and the next,
+   not empty places for the rest; and the card a pick put back (the pile is read from the earlier decisions' replies).
+   Checked by `rmwork --selftest-data` (`selftest_decisions`: a fetchland's search, Ponder, Preordain's scry,
+   Doomsday's five picks with the filter, Replay).
+9. ~~**Modal and numeric choices**~~: built (mock-ups `decisions.html#modes-numbers`, `-x`, `-divide`, `-order`;
+   `table_decision`'s MODES, NUMBER and ORDER, `choice_panel`, `choice_panel_view`). Modes (CHOOSE_MODE, one decision
+   per mode, CONFIRM_MODES once the fewest are chosen) and the triggers to order (ORDER_TRIGGERS) are rows of the
+   **choice panel**, a window inside the Table where the card picker goes (over the opponent's half, below its chip,
+   down to the middle strip, or to the prompt line when its rows need it, scrolling past that; its title bar's button
+   collapses it), for the picker's reason: the stack, the prompt line and the board stay in view and nothing is brought
+   to the front. A modal spell's card is drawn at its left; each mode a row with a tick box, its text (the mode's text
+   names the card, 36a5897a) and "row N"; the engine leaves the modes chosen out of the next menu, so the modes chosen
+   earlier in the cast are read from the decisions just before (the same pending source) and listed in the card's order
+   (each row's `ordinal`), ticked, "chosen 1st → Player B (20 life)" with the targets chosen for them. "Done choosing
+   modes" is a button of the prompt line and of the panel's foot. The triggers are a row each with their source card
+   small at the left; the note says the one chosen goes on the stack now, above those put there before (the stack shows
+   them), so the last resolves first (open question: the pending triggers are not drawn in the strip where the stack
+   goes; the panel lists them). X and delve's count (CHOOSE_X, a row per value, its `ordinal`): a **stepper on the
+   prompt line** — "−", the value's button ("X = 2", "Exile 4"; it sends that row), "+" — bounded by the rows (open
+   question 1: the stepper, not a row of value buttons), the cost the value leaves as pips with the mana it comes to
+   ("{2}{C}{C} to pay = 4 mana"; delve: the generic part less the cards exiled, "left after delve"), the range offered
+   ("X from 0 to 3"). The frame gives no mana available (the mock-up's "5 mana available"), so the stepper is bounded
+   by the rows alone. Divided damage stays item 6's (one click per point, the points so far on each target, "3 of the
+   damage given so far"; open question 2: no typed split); the frame has no total to divide, so the prompt counts what
+   is given and not what is left. Replay: the panel read-only with the row chosen outlined and "Chosen", the stepper at
+   the value chosen.
+10. ~~**Name a card**~~: built (mock-up `decisions.html#name-card`; NAME, the choice panel). The candidates (the engine's
+   limited set, CLAUDE.md "Name-a-card candidate set"; every vocab card under `--closed-decklist`) in the panel as a
+   searchable list (a search box over the name and type line, "n of N"), each row its menu row number, name and type
+   line, grouped by the DECKLISTS frame (open question 1: the opponent's main deck, the opponent's sideboard, your deck,
+   other cards; alphabetical within a group; "seen this game" not marked), the card's face magnified beside the panel
+   while a name is hovered; a click names it. Under `--closed-decklist` the same list holds every vocab card (open
+   question 2: it starts full, not empty; the search narrows it). `--picker-filter TEXT` fills the search box for
+   screenshots.
+11. ~~**Mana payment**~~: built (§2.5's decisions on the Table; mock-ups `decisions.html#mana-payment`,
+    `#mana-payment-phyrexian`). Under `--no-auto-mana` (New Game's auto-mana, `auto-mana=off`): the remaining
+    cost from `pending_cost` / `pending_cost_pip` as pips on the prompt line (life, energy and the mana paid
+    after them), the sources that can pay lit, a click taps one (its row; a source with several, a dual land or a
+    Mox, opens the popup of its colours), Cancel casting a button; a Phyrexian pip's "Pay 2 life (instead of
+    {B})" and "Pay {B}" buttons beside it; at a priority decision a click on a land taps it for mana, the floating
+    pool shown on the player chip and the Players tool. Checked by `rmwork --selftest-data`
+    (`selftest_decisions`).
+12. ~~**Optional costs and alternative costs**~~: built (mock-ups `decisions.html#costs`, `-daze`, `-delve`, `-convoke`).
+    A cost paid with a card is a pick on the Table: Force of Will's and Fury's exile (PAYING_COSTS rows naming hand
+    cards: the blue / red cards lit, the rest dimmed) and convoke's tap (PAYING_COSTS "Tap … (Convoke)": the creatures
+    lit) were already answered by item 11's payment; the prompt line now names the cost being paid ("alternative cost",
+    "additional cost", "unless cost", from `pending_cost.part`) and what a click does ("exile a card from your hand",
+    "tap a creature to pay (convoke)"), the life still owed after it. Daze's return (RETURN_PERMANENT) lights the
+    Islands; Cabal Therapy's flashback sacrifice (SACRIFICE_PERMANENT) the creatures (item 13). Delve: the count by the
+    stepper (item 9), then each card exiled in the card picker (CHOOSE_CARD, item 8), a click per card as the engine
+    asks (open question 1: sent per click, the pile listing the cards chosen so far; the graveyard keeps them until the
+    cast completes). The choice between a spell's costs (Cast Daze / Cast Daze (alternate cost)) is a priority row:
+    the card's popup names each way with its cost ("Priority decisions" below). Optional costs and every yes/no (OPTIONAL_YESNO: a shockland's 2 life, kicker,
+    bargain, replicate …), an unless cost (PAY_UNLESS: Pay / Don't pay, the cost as pips, the lands that pay it lit), a
+    shuffle, a colour, a creature type, a replacement to apply (dredge or draw) and the other row-only decisions
+    (OTHER_CHOICE: reveal or not) are the prompt line's buttons, each row's text spelling the cost out ("Accept: pay 2
+    life so it enters untapped"); more than six go to the choice panel's searchable list (a creature type).
+13. ~~**Discard / sacrifice / return pickers**~~: built (mock-ups `decisions.html#pickers`, `-discard`,
+    `-thoughtseize`; the card picker's categories now include DISCARD, SACRIFICE_PERMANENT, RETURN_PERMANENT and
+    KEEP_LEGEND). Rows naming a card the Table shows are its picks (the hand's cards to discard, the permanents to
+    sacrifice or return, the legends of which to keep one), lit with the rest dimmed, a click answering; an opponent's
+    edict lights yours in the same glow (open question 2: no separate "forced" colour). Rows naming cards off the Table
+    go to the card picker: Thoughtseize's pick from Player B's revealed hand ("Player B's hand", the cards the viewer's
+    frame shows, the ones no row picks — its lands — dimmed). A discard of several cards — the cleanup discard (CR 514.1;
+    the frame names no maximum hand size, so the cards owed are the hand beyond seven at the cleanup step) and an
+    escalate cost's (`pending_cost.rem_discard`) — is planned on the hand like the London mulligan's bottom picks
+    (open question 1: staged, then confirmed; `card_plan`): "Discard 1", "Discard 2" on the cards, a click on a planned
+    card takes it back, Undo, Clear, and "Discard N" once the plan holds every card owed sends it one reply per
+    decision; one card owed is a click. `--play-until discard|sacrifice|return|legend` and `--table-plan NAME,NAME` (the
+    discard plan) for screenshots.
+
+Checked by `rmwork --selftest-data` (`selftest_choices`, on sculpted live games against explore): Kozilek's Command's
+X by the stepper (+ twice, "X = 2", the pips the value leaves) and two modes clicked in the panel (the second
+decision's panel marking the first chosen with its target; once resolved Player B has the two Spawn tokens);
+Collective Brutality's mode and "Done choosing modes" by the prompt line's button (the bears die); Fury's evoke exile
+clicked on the hand, its two triggers ordered in the panel, three targets, a point of divided damage (the next decision
+counting 2); Cabal Therapy's name searched ("pon") and clicked in the panel (Player B discards it), its flashback's
+sacrifice clicked; Daze's Island returned by a click and its unless cost declined by the button (the Bolt countered),
+Force of Will's blue card exiled by a click (only the blue cards lit); Murktide Regent's delve count by the stepper
+(+, + past the last row, −) and a graveyard card exiled in the picker (the next pick listing it chosen); a cleanup
+discard of two cards planned on the hand and sent (both gone from the hand); Thoughtseize's pick from Player B's
+revealed hand in the picker (its Mountains dimmed; the card discarded); Watery Grave's 2 life accepted by its button
+(life 18, untapped) and the legend rule's Thalia kept by a click; and the Kozilek game in Replay (the stepper at X 2,
+the panel read-only with the mode chosen marked, nothing answered by a click, nothing in seat B's view). Each reply is
+checked to be the row naming what was clicked. Sideboarding has its tool (§4.3); every other decision has an answer on
+the Table, priority decisions included (below). Not in the frame (the engine was not changed): the mana available (the
+X stepper's bound is the rows'), a divided-damage spell's total, the maximum hand size (seven is assumed at cleanup), and
+how many modes a spell may still take beyond the rows offered.
+
+**Priority decisions** (casting, playing and activating; built: `table_decision`'s PRIORITY, `priority_costs`). A
+priority decision is one with the PASS_PRIORITY row or CAST_SPELL, PLAY_LAND, ACTIVATE_ABILITY, TURN_FACE_UP, COMPANION
+or (`--no-auto-mana`) MANA_* rows; each row names its card by `source` / `source_card`. Being the most common decision
+it does not dim the board: the hand cards that can be cast or played and the permanents with an ability to activate (or
+to tap for mana) get a thin outline in the glow colour, MTGO-like, thicker under the mouse. A click answers the card's
+row: a land played, a spell cast (its targeting, payment and modes follow on the Table as before), an ability
+activated. A card with several rows — Daze's "Cast Daze" and "Cast Daze (alternate cost)", Force of Will's two, a
+cycling card's cast and cycle, a land's mana and its other ability (Wasteland under `--no-auto-mana`), an adventure or
+a back face, morph's face-down cast, suspend — opens a popup naming each way with its cost beside it (pips, then the
+rest in words). The costs are read from the viewer's stream alone (the frame names how a card is cast, not what that
+costs): a cast's mana cost from CARDS (a back face's or an Adventure's from the back face; {3} face down or for a
+companion; nothing without paying its mana cost), a keyword's from the oracle text's line of that keyword (flashback,
+escape, evoke, warp, impending, overload, bestow, suspend; morph, megamorph and disguise to turn a permanent face
+up: "Escape—{G}{G}{U}{U}, Exile five other cards from your graveyard."), a plain alternative cost from the oracle's "You
+may … rather than pay this spell's mana cost" ("return an Island you control to its owner's hand"), an activated
+ability's from `card_ability.cost` (the row's `ab_card` / `ab_index`) in the script's cost syntax ("T PayLife<1>
+Sac<1/CARDNAME>": {T}, pay 1 life, sacrifice it). Hovering a playable card says what a click does with the cost ("Click:
+Cast Lightning Bolt {R}"; a card with several ways lists them) and, through the links, shades its Choices row. The
+prompt line says what may be done ("Play a land, cast a spell or activate an ability, or pass"; with the stack not
+empty "Respond to Player B's Lightning Bolt: …") and holds the rows naming a card off the Table as buttons — a
+flashback or escape from the graveyard, a companion from the sideboard (the cheap choice over the zone windows: the
+same rule as every decision's rows naming an object the Table does not show; past five of them one button opens their
+popup) — and Pass at its right. Passing: the Pass button, the new key "Pass priority" (Space, Settings → Keys) at a
+plain priority decision, F2, F6 and the stops (`autopass`, unchanged). Only the human's pending decision in Play
+answers; in Replay (and at an earlier decision of Play, or while the opponent thinks) the same lights show read-only,
+the row chosen marked (its card "Chosen" in the accent colour, a chosen Pass or off-Table button highlighted), and a
+click only selects. Hover and the magnifier (Q, right-click) are unchanged, and the other decisions' clicks are not
+affected (a priority decision is never one of theirs). `--play-until priority` stops at a priority decision offering
+more than a pass and mana, `--table-pick NAME` opens a card's popup and `--table-hover-card NAME` hovers a card for
+screenshots. Checked by `rmwork --selftest` (`selftest_priority`'s units: the costs from script costs and oracle text,
+the labels) and `rmwork --selftest-data` (`selftest_priority`, on sculpted live games against explore: a Mountain played
+and Lightning Bolt cast by clicks on the hand, its target clicked, Pass by the button with the Bolt on the stack and
+Space at the next priority decision; Daze's popup with both costs and its alternative chosen; Polluted Delta activated
+by a click ({T}, pay 1 life, sacrifice it), its search once it resolves; Wasteland's mana and ability in one popup under
+`--no-auto-mana`, the ability chosen and its target clicked; Cabal Therapy's flashback by the prompt line's button; the
+first game in Replay with the cast and a pass marked chosen, a click answering nothing, nothing in seat B's view). Not
+in the frame (the engine was not changed): a way's cost (read from CARDS and the oracle text as above, so an alternative
+cost an oracle words otherwise shows as "its alternative cost") and the cost after reductions or increases (Thalia's tax,
+a cost reducer: the printed cost is shown).
 
 ### 4.3 Between and after games
 
-14. **Sideboarding** (best-of-three): main deck and sideboard lists with counts, swap in/out, the model's suggested plan, Done.
+14. ~~**Sideboarding**~~ (best-of-three): built (§2.3, the Sideboard tool): main deck and sideboard as cards with counts, a plan of swaps sent one decision at a time, the league guide's and the model's plans, Done.
 15. **Game over / match result**: winner, score, the game's value curve and big swings, buttons to open the game in Replay or play again.
 16. **Concede confirmation**: game (`-2`) or match (`-3`).
 
 ### 4.4 Analysis tools (from §3)
 
 17. Knowledge.
-18. Policy Compare.
+18. ~~Policy Compare~~ (§2.10): built without a mock-up: π side by side at the decision, the divergence and value plots, the agreement summary, the ranked disagreements, checkpoints brought in from the catalog.
 19. Branch Explorer (with its rollout configuration and progress).
-20. Influence Overlay (on the Table, with its legend and settings).
+20. ~~Attribution~~ (§2.8): built without a mock-up: the tool's ranked list at both levels, the Table layer with its legend, the State Tree's Impact column, the Tensors view (the Tokens tool).
 21. Blunder Finder (query builder and results).
 22. Bench Matrix, Calibration, Training Curves, Card Statistics, Mulligan & Sideboard.
-23. Raw Frame and Tokens.
+23. Raw Frame (Tokens built with §2.8).
 24. Bookmarks & Notes.
 25. Game Compare.
 
@@ -169,14 +1222,90 @@ Ordered roughly by value against effort. Each is one dockable tool.
 26. **Settings**, the remaining tabs: Engine (binary, flags), Models (rmserve socket, policies), Keys, Stops (defaults per step), Appearance (font size, UI scale).
 27. **Layout manager**: save, rename and delete named layouts per mode.
 28. **Error dialog**: engine or inference-server failure with the stderr tail.
-29. **Card detail** (optional): the magnifier extended with oracle text, rulings links and the card's parse report, if a text view beside the image is wanted.
+29. ~~**Card detail**~~: dropped (user, 2026-11-18). The magnifier is the enlargement: the card's image (its printing's set symbol and year are printed on it), and both faces side by side for a double-faced card (§2.5).
+
+### 4.6 The runs directory: checkpoints by date, episodes by run, `runs/latest` (design note, 2026-11-21)
+
+`runs/` holds every run ever made (26 directories, 52 GB on 2026-11-21) and the workbench lists them all:
+New Game's opponent list is every run's exports in run-name then file-name order, and the run browser and
+the episode combo box start from whichever directory is opened. The old runs are kept on purpose (their checkpoints are the
+migration acceptance's originals and the earlier benches' baselines), so the clutter is solved in the views,
+not by deleting. Built so far: `runs/latest` (`rmtrain`, `docs/rmtrain.md` §4.1), and the checkpoints by date
+for New Game's opponent list and Settings → Models' Add row suggestions (`tools/rmwork/policy_catalog.h`: the
+rows, dates, hidden rows and `latest` below; there the hidden rows are left out, `latest` is the first row and
+the default model, and a row plays its TorchScript export, else its `.pt2`), and the Model manager (§4.1 item
+4: its columns, compatibility, "Show all", filter, run and sorting). Still to come: the episodes by run.
+
+**Checkpoints by date.** The Model manager (item 4) and New Game's opponent list show one flat list over
+the runs directory, newest first, in place of the order by name:
+
+- A row is a policy someone would pick: a run's `final` and its fixed points `m<k>` (`ckpt/fixed/`, the
+  phase-end checkpoints, and their exports `exports/*.pt2` / `*.ts.pt`). An export and the checkpoint it was
+  made from are one row, with the formats it exists in.
+- Columns: date, run, name, learner steps, formats, compatible with the engine or not (the Model manager's
+  manifest check; an incompatible row is greyed and says `rmtrain retable <run>`).
+- The date is when the policy was trained, not the file's modification time: a retable or a migration
+  rewrites every export and checkpoint of a run and would bring a month-old run to the top. Read it from
+  the run's `metrics.jsonl` (`rnad_iteration`, `export`, the phase transitions) and fall back to the
+  modification time for a file no metrics line names.
+- Hidden unless "Show all" is on: the periodic checkpoints (`rnad-p<step>.pt`, `bc-p<step>.pt`), the seed,
+  and the live export. Never listed: the old layouts' copies (`ckpt.v1`, `ckpt.layout1`, `exports.v1`,
+  `exports.layout1`), which no engine loads.
+- `latest` (below) is pinned as the first row and is New Game's default opponent model.
+- A filter field (run or name) and a run combo box narrow it; sorting by another column is a click on its
+  header, date descending being the default every time the list opens.
+
+**Episodes by run.** Wherever episodes or a run's logs are listed (the Episode Browser of §3, the episode
+combo box, the run browser, the file picker's episode filters when it is inside the runs directory) a Run
+combo box filters them, and its default is the most recent run alone:
+
+- The most recent run is the runs directory's by `status.json`'s `updated_at`, the order the Start page's
+  recent runs already use; a directory without `status.json` is no run and is never the default.
+- The combo box lists the runs in that order, each with its date and whether it still has episodes (a
+  finished run's replay window is often deleted; such a run says "logs only"), then "All runs".
+- The default is not remembered: every session starts on the most recent run, so a new run's games show
+  without anyone changing a setting. Choosing another run holds for the session.
+- When the most recent run has no episodes the list says so and offers its logs and the next run that has
+  some; it does not fall back silently.
+- The Start page's recent runs show the newest five, with "All runs" opening the run browser.
+
+**`runs/latest`: the most recent policy under one fixed name.** A directory `rmtrain` keeps, so a release
+or another machine takes the current policy without knowing which run made it:
+
+```
+runs/latest/
+  model.pt        the network as a model checkpoint (model.save_checkpoint: what run.start_from loads)
+  policy.ts.pt    its TorchScript export (nn:runs/latest/policy.ts.pt)
+  policy.pt2      its AOTInductor export
+  latest.json     run, name (m7, final), learner steps, when trained, when written, the engine's commit,
+                  the model manifest's hashes (spec, vocab, layout, tables digest, text model), each
+                  file's sha256
+```
+
+- A real directory of copies, not a symbolic link into a run: it is copied or archived as it stands
+  (`rsync -a runs/latest/ host:…/runs/latest/`), and it outlives the run it came from.
+- Written by the orchestrator whenever a run exports a fixed point or `final`: each file through a
+  temporary file renamed into place, `latest.json` last, so a reader that finds a `latest.json` whose
+  hashes match the files has a whole policy. It is not written per learner step: the live export changes
+  every 30 seconds and is no release.
+- "Most recent" is the last one written. A config key `run.latest` (default true) turns it off; smoke
+  runs and tests set it false so a 120-step run never replaces a real policy.
+- `rmtrain retable <run>` on the run `latest.json` names rebuilds the two exports with the run's; the
+  checkpoint needs nothing (a checkpoint loads across a grown vocab and appended enum values).
+- The name is reserved: `rmtrain start latest` is refused, the config refuses it as a run name, and the
+  run browser does not list it as a run.
+- On the other machine the exports need an engine of the same tables (`latest.json`'s hashes against
+  `rmfeat --compat`); `model.pt` alone is enough when the engine there differs, with an export made from
+  it there.
+- Until the orchestrator writes it, the same directory can be filled by hand from a finished run:
+  `final-model.pt` as `model.pt`, `exports/final.ts.pt` and `final.pt2` as the two exports.
 
 ## 5. Suggested order
 
 1. Shell, theme, docking and presets (§2.1).
 2. Replay of a recorded `.rmlog` with all three viewers: Table, Players, Choices, Inspector, State Tree, Log, Value Graph from recorded evaluations (§2.2, §2.5, §2.6). Mock up §4.3's game-over screen first, since Replay needs it.
 3. Card images and printings (§2.4).
-4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time.
-5. Re-evaluation and the model manager (§2.7), then Policy Compare, Knowledge and Teacher Disagreement.
+4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time. Then Simulate (§2.9): any agent against any agent with no human seat, built on Play's agent arguments; its matches open in Replay. **Done.**
+5. Re-evaluation and the model manager (§2.7), then Attribution (§2.8, with the Tokens tool), Policy Compare (§2.10), Knowledge and Teacher Disagreement. Done up to Policy Compare.
 6. The run tools: Episode Browser, Bench Matrix, Calibration, Training Curves.
-7. Branch Explorer, Influence Overlay, Blunder Finder, then the rest of §3.
+7. Branch Explorer, Blunder Finder, then the rest of §3.

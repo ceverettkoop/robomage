@@ -243,18 +243,18 @@ Surveil: looking at Brainstorm
 | >> Player A: 1 (Put Reanimate on top of library)
 | decision 18: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
-|   0: Put Underground Sea on top of library
-|   1: Put Brainstorm on top of library
+|   0: Put Underground Sea 2nd from the top of library
+|   1: Put Brainstorm 2nd from the top of library
 |   2: Put Underground Sea into graveyard
 |   3: Put Brainstorm into graveyard
 (REPLAY) [T2 | Upkeep | Player A] Input: 1
-| >> Player A: 1 (Put Brainstorm on top of library)
+| >> Player A: 1 (Put Brainstorm 2nd from the top of library)
 | decision 19: Player A (game 0, turn 2, UPKEEP, Player A active)
 | menu:
-|   0: Put Underground Sea on top of library
+|   0: Put Underground Sea 3rd from the top of library
 |   1: Put Underground Sea into graveyard
 (REPLAY) [T2 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Underground Sea on top of library)
+| >> Player A: 0 (Put Underground Sea 3rd from the top of library)
 Player A draws Reanimate
 | decision 20: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
@@ -404,18 +404,18 @@ Surveil: looking at Force of Will
 | >> Player A: 2 (Put Force of Will on top of library)
 | decision 32: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
-|   0: Put Flooded Strand on top of library
-|   1: Put Underground Sea on top of library
+|   0: Put Flooded Strand 2nd from the top of library
+|   1: Put Underground Sea 2nd from the top of library
 |   2: Put Flooded Strand into graveyard
 |   3: Put Underground Sea into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Flooded Strand on top of library)
+| >> Player A: 0 (Put Flooded Strand 2nd from the top of library)
 | decision 33: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
-|   0: Put Underground Sea on top of library
+|   0: Put Underground Sea 3rd from the top of library
 |   1: Put Underground Sea into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Underground Sea on top of library)
+| >> Player A: 0 (Put Underground Sea 3rd from the top of library)
 Otherworldly Gaze is exiled (flashback)
 Player A draws Force of Will
 | decision 34: Player A (game 0, turn 4, FIRST_MAIN, Player A active)

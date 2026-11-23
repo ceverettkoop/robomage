@@ -943,7 +943,7 @@ std::vector<LegalAction> tap_to_pay_rows(Zone::Ownership controller, const ManaV
     for (Entity e : orderer->mEntities) {
         if (!can_tap_to_pay(rule, e, controller)) continue;
         if (pip_left_payable(rule, e, controller, owed, paid_for, how, orderer) == owed.end()) continue;
-        LegalAction la(PASS_PRIORITY, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
+        LegalAction la(CHOICE, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
         la.category = ActionCategory::PAYING_COSTS;
         rows.push_back(la);
     }
@@ -1822,7 +1822,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
             for (auto e : orderer->mEntities) {
                 if (!can_tap_to_pay(rule, e, controller)) continue;
                 if (pip_paid_by_tap(rule, e, remaining) == remaining.end()) continue;
-                LegalAction la(PASS_PRIORITY, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
+                LegalAction la(CHOICE, e, "Tap " + permanent_label(e) + " (" + rule.keyword + ")");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
             }
@@ -1836,7 +1836,7 @@ PayStatus pay_mana_cost(ManaPaymentRT &rt, Zone::Ownership controller, const Man
         // no longer cover the rest of the cost, and a cancelled payment reverses the spell or
         // ability (the caller's rewind) and counts against it for the offer gate's
         // payment_blocked guard, which stops an agent from retrying it forever.
-        LegalAction cancel(PASS_PRIORITY, "Cancel casting");
+        LegalAction cancel(CHOICE, "Cancel casting");
         cancel.category = ActionCategory::PAYING_COSTS;
         pay_actions.push_back(cancel);
 

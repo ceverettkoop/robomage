@@ -135,6 +135,9 @@ bool RemoteEvaluator::connect(const featurize::Featurization &f, std::string *er
     for (size_t i = 0; i < w.policies.size(); ++i)
         if (w.policies[i].id != opt_.policies[i]) return fail("the server's WELCOME lists other policies", err);
     info_.policy_version = w.policies[0].version;
+    info_.max_batch = w.max_batch;
+    info_.welcome_versions.clear();
+    for (const inference::WelcomePolicy &p : w.policies) info_.welcome_versions.push_back(p.version);
     return true;
 }
 

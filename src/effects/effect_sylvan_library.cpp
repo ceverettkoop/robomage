@@ -71,7 +71,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
             }
             if (already) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, cd.name);
+            LegalAction la(CHOICE, e, cd.name);
             la.category = ActionCategory::SYLVAN_CHOICE;
             choose_actions.push_back(la);
         }
@@ -92,12 +92,12 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         // "Pay 4 life" is offered only when the player can pay it (CR 119.4).
         std::vector<LegalAction> pay_actions;
         if (can_pay_life(pl, 4)) {
-            LegalAction pay(PASS_PRIORITY, std::string("Pay 4 life"));
+            LegalAction pay(CHOICE, std::string("Pay 4 life"));
             pay.category = ActionCategory::SYLVAN_CHOICE;
             pay.option_ordinal = 1;  // 1 = pay 4 life
             pay_actions.push_back(pay);
         }
-        LegalAction top(PASS_PRIORITY, std::string("Put on top of library"));
+        LegalAction top(CHOICE, std::string("Put on top of library"));
         top.category = ActionCategory::SYLVAN_CHOICE;
         top.option_ordinal = 0;  // 0 = put on top of library
         pay_actions.push_back(top);

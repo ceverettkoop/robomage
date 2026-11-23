@@ -60,12 +60,12 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         std::vector<LegalAction> picks;
         for (auto e : cands) {
             const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
-            LegalAction la(PASS_PRIORITY, e, "Put " + nm + " (" + cur_game.resolution.memory.chosen_type + ") into hand");
+            LegalAction la(CHOICE, e, "Put " + nm + " (" + cur_game.resolution.memory.chosen_type + ") into hand");
             la.category = ActionCategory::CHOOSE_CARD;
             la.card_is_public = true;
             picks.push_back(la);
         }
-        LegalAction none(PASS_PRIORITY, std::string("Put no ") + cur_game.resolution.memory.chosen_type + " card into hand");
+        LegalAction none(CHOICE, std::string("Put no ") + cur_game.resolution.memory.chosen_type + " card into hand");
         none.category = ActionCategory::CHOOSE_CARD;
         picks.push_back(none);
 
@@ -123,7 +123,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             std::vector<LegalAction> picks;
             for (auto e : cands) {
                 const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
-                LegalAction la(PASS_PRIORITY, e, "Keep " + nm + " (" + type + ")");
+                LegalAction la(CHOICE, e, "Keep " + nm + " (" + type + ")");
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
@@ -165,7 +165,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
     std::vector<LegalAction> picks;
     for (auto e : cands) {
-        LegalAction la(PASS_PRIORITY, e, "Choose " + entity_name(e));
+        LegalAction la(CHOICE, e, "Choose " + entity_name(e));
         la.category = ActionCategory::CHOOSE_CARD;
         // Cards in a public zone (exile is face up, CR 406.3) are public; a hand or library
         // choice is not.
@@ -173,7 +173,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         picks.push_back(la);
     }
     if (!ab.def->mandatory) {
-        LegalAction none(PASS_PRIORITY, std::string("Choose no card"));
+        LegalAction none(CHOICE, std::string("Choose no card"));
         none.category = ActionCategory::CHOOSE_CARD;
         picks.push_back(none);
     }

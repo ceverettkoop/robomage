@@ -74,7 +74,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         int place_depth = static_cast<int>(actual - rt.pick - 1);
         for (auto card : rt.remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
-            LegalAction la(PASS_PRIORITY, card, cd.name);
+            LegalAction la(CHOICE, card, cd.name);
             la.category = ActionCategory::TOP_LIBRARY;
             la.option_ordinal = place_depth;
             pick_actions.push_back(la);
@@ -98,8 +98,8 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
 
     if (ab.def->may_shuffle) {
         std::vector<LegalAction> shuffle_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
-            LegalAction(PASS_PRIORITY, std::string("Shuffle")),
+            LegalAction(CHOICE, std::string("Don't shuffle")),
+            LegalAction(CHOICE, std::string("Shuffle")),
         };
         shuffle_actions[0].category = ActionCategory::DONT_SHUFFLE;
         shuffle_actions[1].category = ActionCategory::SHUFFLE;

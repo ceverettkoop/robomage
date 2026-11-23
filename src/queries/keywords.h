@@ -66,4 +66,9 @@ bool permanent_has_keyword(Entity e, const char *kw);
 // keywords into its last-known information (CR 608.2h).
 std::vector<std::string> permanent_keywords(Entity e);
 
+// A HIDDEN keyword ("HIDDEN CARDNAME can't block.") is a rule an object is under rather than an
+// ability it has: what it says of `holder`, worded for the log with the placeholders filled and no
+// final period ("Grizzly Bears can't block"); "" for any other keyword.
+std::string hidden_keyword_rule(const std::string &kw, Entity holder);
+
 #endif /* QUERIES_KEYWORDS_H */

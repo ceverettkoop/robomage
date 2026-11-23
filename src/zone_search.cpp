@@ -178,7 +178,7 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
     const bool label_zone = search.zones.size() > 1;
     std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
-        LegalAction ftf(PASS_PRIORITY, Entity(0), std::string("Fail to find"));
+        LegalAction ftf(CHOICE, Entity(0), std::string("Fail to find"));
         ftf.category = cat;
         search_actions.push_back(ftf);
     }
@@ -188,7 +188,7 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
         if (label_zone)
             label += std::string(" (") +
                      zone_word(global_coordinator.GetComponent<Zone>(entity).location) + ")";
-        LegalAction la(PASS_PRIORITY, entity, label);
+        LegalAction la(CHOICE, entity, label);
         la.category = cat;
         la.card_is_public = search.reveal;
         search_actions.push_back(la);

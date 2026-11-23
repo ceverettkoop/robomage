@@ -109,6 +109,18 @@ const Ability &stack_object_ability(Entity stack_object) {
     return global_coordinator.GetComponent<Ability>(stack_object);
 }
 
+int stack_object_x(Entity stack_object) {
+    const Game::PendingCast &pc = cur_game.pending.cast;
+    if (pc.active && pc.spell_entity == stack_object) return pc.chosen.x;
+    const Game::PendingActivation &pa = cur_game.pending.activation;
+    if (pa.active && pa.stack_entity == stack_object) return pa.stack_ab.x_paid;
+    if (global_coordinator.entity_has_component<Spell>(stack_object))
+        return global_coordinator.GetComponent<Spell>(stack_object).chosen.x;
+    if (global_coordinator.entity_has_component<Ability>(stack_object))
+        return stack_object_ability(stack_object).x_paid;
+    return -1;
+}
+
 // True if `r` is a continuous CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
 // controller-scoped spell filter covering every spell `player` controls, given that the
 // replacement's source is controlled by `source_ctrl`.

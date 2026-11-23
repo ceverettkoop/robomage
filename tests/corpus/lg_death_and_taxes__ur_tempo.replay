@@ -732,12 +732,19 @@ Player A's Ghost Quarter ability targeting Island is on the stack
 Resolving ability (category: Destroy)
 Island is destroyed
 Resolving ability (category: ChangeZone)
+| decision 77: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't search
+|   1: Search your library
+(REPLAY) [T6 | First Main | Player B] Input: 1
+| >> Player B: 1 (Search your library)
 Searching Player B's library:
 | auto: Player B: Fail to find
+Player B shuffles their library
 Player B fails to find
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
-| decision 77: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 78: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Meteor Sword
@@ -745,7 +752,7 @@ Player A chooses a card from Player A hand:
 | >> Player A: 1 (Meteor Sword)
 Player A puts Meteor Sword to the battlefield
 Choose target for Meteor Sword:
-| decision 78: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 79: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Cori-Steel Cutter
 |   1: Volcanic Island
@@ -769,7 +776,7 @@ Player A chooses a card from Player A hand:
 Player A fails to find
 
 --- Declare Attackers (Player A) ---
-| decision 79: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 80: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Phelia, Exuberant Shepherd [2/2]
@@ -780,7 +787,7 @@ White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 80: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 81: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: Confirm attackers
@@ -797,7 +804,7 @@ Attackers declared:
   White Orchid Phantom -> Player B
   Phelia, Exuberant Shepherd -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 81: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 82: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Meteor Sword
@@ -823,7 +830,7 @@ No creatures eligible to block.
 
 
 -------- TURN 8 (Player B) --------
-| decision 82: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 83: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -831,94 +838,110 @@ No creatures eligible to block.
 | >> Player B: 1 (Cast Brainstorm)
 Player B activated Volcanic Island for 1(U)
 Player B casts Brainstorm
-| decision 83: Player B (game 0, turn 7, UPKEEP, Player B active)
+| decision 84: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: Draw, amount: 3)
-Player B draws Scalding Tarn
-Player B draws Misty Rainforest
+Player B draws Force of Will
+Player B draws Brainstorm
 Player B draws Wasteland
 Resolving ability (category: ChangeZone)
-Player B chooses a card from Player B hand:
-| decision 84: Player B (game 0, turn 7, UPKEEP, Player B active)
-| menu:
-|   0: Flow State
-|   1: Daze
-|   2: Bilbo, Thief in the Night
-|   3: Dragon's Rage Channeler
-|   4: Wasteland
-|   5: Misty Rainforest
-|   6: Scalding Tarn
-(REPLAY) [T7 | Upkeep | Player B] Input: 4
-| >> Player B: 4 (Wasteland)
-Player B puts Wasteland to top of library
 Player B chooses a card from Player B hand:
 | decision 85: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
 |   0: Flow State
-|   1: Daze
-|   2: Bilbo, Thief in the Night
-|   3: Dragon's Rage Channeler
-|   4: Misty Rainforest
-|   5: Scalding Tarn
-(REPLAY) [T7 | Upkeep | Player B] Input: 4
-| >> Player B: 4 (Misty Rainforest)
-Player B puts Misty Rainforest to top of library
-Player B draws Misty Rainforest
-| decision 86: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
+|   1: Brainstorm
+|   2: Daze
+|   3: Force of Will
+|   4: Bilbo, Thief in the Night
+|   5: Dragon's Rage Channeler
+|   6: Wasteland
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Brainstorm)
+Player B puts Brainstorm to top of library
+Player B chooses a card from Player B hand:
+| decision 86: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
-|   0: Pass priority
-|   1: Play Misty Rainforest
-|   2: Play Scalding Tarn
-(REPLAY) [T7 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Misty Rainforest)
-Player B played Misty Rainforest
+|   0: Flow State
+|   1: Daze
+|   2: Force of Will
+|   3: Bilbo, Thief in the Night
+|   4: Dragon's Rage Channeler
+|   5: Wasteland
+(REPLAY) [T7 | Upkeep | Player B] Input: 1
+| >> Player B: 1 (Daze)
+Player B puts Daze to top of library
+Player B draws Daze
 | decision 87: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Misty Rainforest (ChangeZone)
+|   1: Play Wasteland
 (REPLAY) [T7 | First Main | Player B] Input: 1
-| >> Player B: 1 (Activate Misty Rainforest (ChangeZone))
-Player B pays 1 life
-Player B sacrifices Misty Rainforest
-Player B's Misty Rainforest ability is on the stack
-Resolving ability (category: ChangeZone)
-Searching Player B's library:
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
 | decision 88: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
-|   0: Fail to find
-|   1: Thundering Falls
-|   2: Volcanic Island
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
 (REPLAY) [T7 | First Main | Player B] Input: 1
-| >> Player B: 1 (Thundering Falls)
-Player B shuffles their library
-Player B puts Thundering Falls to the battlefield
-Thundering Falls enters tapped.
-Thundering Falls triggered
-Resolving ability (category: Surveil, amount: 1)
-Player B surveils 1.
-Surveil: looking at Mishra's Bauble
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
 | decision 89: Player B (game 0, turn 7, FIRST_MAIN, Player B active)
 | menu:
-|   0: Put Mishra's Bauble on top of library
-|   1: Put Mishra's Bauble into graveyard
+|   0: Flagstones of Trokair
+|   1: Wasteland
+|   2: Volcanic Island
 (REPLAY) [T7 | First Main | Player B] Input: 0
-| >> Player B: 0 (Put Mishra's Bauble on top of library)
+| >> Player B: 0 (Flagstones of Trokair)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Flagstones of Trokair is on the stack
+Resolving ability (category: Destroy)
+Flagstones of Trokair is destroyed
+Flagstones of Trokair triggered
+| decision 90: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Decline: use Flagstones of Trokair's triggered ability
+|   1: Accept: use Flagstones of Trokair's triggered ability
+(REPLAY) [T7 | First Main | Player A] Input: 1
+| >> Player A: 1 (Accept: use Flagstones of Trokair's triggered ability)
+Resolving ability (category: ChangeZone)
+Searching Player A's library:
+| decision 91: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Fail to find
+|   1: Shadowy Backstreet
+|   2: Plains
+(REPLAY) [T7 | First Main | Player A] Input: 1
+| >> Player A: 1 (Shadowy Backstreet)
+Player A shuffles their library
+Player A puts Shadowy Backstreet to the battlefield
+Shadowy Backstreet enters tapped.
+Shadowy Backstreet triggered
+Resolving ability (category: Surveil, amount: 1)
+Player A surveils 1.
+Surveil: looking at Recruiter of the Guard
+| decision 92: Player A (game 0, turn 7, FIRST_MAIN, Player B active)
+| menu:
+|   0: Put Recruiter of the Guard on top of library
+|   1: Put Recruiter of the Guard into graveyard
+(REPLAY) [T7 | First Main | Player A] Input: 0
+| >> Player A: 0 (Put Recruiter of the Guard on top of library)
 No creatures eligible to attack.
 
 -------- TURN 9 (Player A) --------
 Aether Vial triggered
-| decision 90: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 93: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 91: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 94: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -926,99 +949,88 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 4).
-| decision 92: Player A (game 0, turn 8, UPKEEP, Player A active)
+| decision 95: Player A (game 0, turn 8, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T8 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Player A draws White Orchid Phantom
-| decision 93: Player A (game 0, turn 8, DRAW, Player A active)
+Player A draws Recruiter of the Guard
+| decision 96: Player A (game 0, turn 8, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T8 | Draw | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 94: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 97: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   2: Cast White Orchid Phantom
+|   2: Cast Recruiter of the Guard
 |   3: Equip Meteor Sword
 |   4: Activate Aether Vial (ChangeZone)
 |   5: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T8 | First Main | Player A] Input: 2
-| >> Player A: 2 (Cast White Orchid Phantom)
-Player A activated Flagstones of Trokair for 1(W)
+| >> Player A: 2 (Cast Recruiter of the Guard)
 Player A activated Plains for 1(W)
-Player A casts White Orchid Phantom
-| decision 95: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
+Player A activated Shadowy Backstreet for 1(W)
+Player A activated Plains for 1(W)
+Player A casts Recruiter of the Guard
+| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 (REPLAY) [T8 | First Main | Player A] Input: 1
 | >> Player A: 1 (Activate Aether Vial (ChangeZone))
 Player A's Aether Vial ability is on the stack
-| decision 96: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| decision 99: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
+|   2: Cast Force of Will (alternate cost)
 (REPLAY) [T8 | First Main | Player B] Input: 1
 | >> Player B: 1 (Cast Daze (alternate cost))
 Choose target for Daze:
-| auto: Player B: White Orchid Phantom
+| auto: Player B: Recruiter of the Guard
 Targeting choice 0
-| decision 97: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| auto: Player B: Return Volcanic Island
+Player B returns Volcanic Island to hand
+Player B casts Daze targeting Recruiter of the Guard
+| decision 100: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
 | menu:
-|   0: Return Thundering Falls
-|   1: Return Volcanic Island
+|   0: Pass priority
+|   1: Cast Force of Will (alternate cost)
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Force of Will (alternate cost))
+Choose target for Force of Will:
+| decision 101: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Daze
+|   1: Recruiter of the Guard
+(REPLAY) [T8 | First Main | Player B] Input: 1
+| >> Player B: 1 (Recruiter of the Guard)
+Targeting choice 1
+| decision 102: Player B (game 0, turn 8, FIRST_MAIN, Player A active)
+| menu:
+|   0: Exile Flow State
+|   1: Exile Bilbo, Thief in the Night
 (REPLAY) [T8 | First Main | Player B] Input: 0
-| >> Player B: 0 (Return Thundering Falls)
-Player B returns Thundering Falls to hand
-Player B casts Daze targeting White Orchid Phantom
+| >> Player B: 0 (Exile Flow State)
+Player B pays 1 life
+Player B exiles Flow State
+Player B casts Force of Will targeting Recruiter of the Guard
 Resolving ability (category: Counter)
-White Orchid Phantom's controller may pay {1} to save it:
-| decision 98: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Tap Plains for (W)
-|   1: Don't pay (White Orchid Phantom is countered)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Tap Plains for (W))
-Player A tapped Plains for {W}
-| decision 99: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pay {1} (White Orchid Phantom is not countered)
-|   1: Don't pay (White Orchid Phantom is countered)
-(REPLAY) [T8 | First Main | Player A] Input: 0
-| >> Player A: 0 (Pay {1} (White Orchid Phantom is not countered))
-Player A pays {1} — White Orchid Phantom is not countered
+Recruiter of the Guard is countered
+Counter fizzles
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
 | auto: Player A: Fail to find
 Player A fails to find
-White Orchid Phantom enters the battlefield
-Choose target for White Orchid Phantom:
-| decision 100: Player A (game 0, turn 8, FIRST_MAIN, Player A active)
-| menu:
-|   0: No target
-|   1: Volcanic Island
-|   2: Flagstones of Trokair
-(REPLAY) [T8 | First Main | Player A] Input: 1
-| >> Player A: 1 (Volcanic Island)
-Targeting choice 1
-White Orchid Phantom triggered
-Resolving ability (category: Destroy)
-Volcanic Island is destroyed
-Resolving ability (category: ChangeZone)
-Searching Player B's library:
-| auto: Player B: Fail to find
-Player B shuffles their library
-Player B fails to find
 
 --- Declare Attackers (Player A) ---
-| decision 101: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 103: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [2/2]
 |   1: Stoneforge Mystic [1/2]
@@ -1030,7 +1042,7 @@ White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 102: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 104: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Stoneforge Mystic [1/2]
 |   1: Phelia, Exuberant Shepherd [2/2]
@@ -1042,7 +1054,7 @@ Stoneforge Mystic attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] White Orchid Phantom [2/2] -> Player B
   [attacking] Stoneforge Mystic [1/2] -> Player B
-| decision 103: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 105: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: Confirm attackers
@@ -1061,14 +1073,13 @@ Attackers declared:
   Stoneforge Mystic -> Player B
   Phelia, Exuberant Shepherd -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 104: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
+| decision 106: Player A (game 0, turn 8, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Meteor Sword
 |   2: Aether Vial
 |   3: White Orchid Phantom
-|   4: White Orchid Phantom
-|   5: Stoneforge Mystic
+|   4: Stoneforge Mystic
 (REPLAY) [T8 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (No target)
 Targeting choice 0
@@ -1089,71 +1100,53 @@ No creatures eligible to block.
 
 
 -------- TURN 10 (Player B) --------
-Player B draws Mishra's Bauble
-| decision 105: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Play Thundering Falls
-|   2: Play Scalding Tarn
-|   3: Cast Mishra's Bauble
-(REPLAY) [T9 | First Main | Player B] Input: 3
-| >> Player B: 3 (Cast Mishra's Bauble)
-Player B casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-| decision 106: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Play Thundering Falls
-|   2: Play Scalding Tarn
-|   3: Activate Mishra's Bauble (PeekAndReveal)
-(REPLAY) [T9 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Thundering Falls)
-Player B played Thundering Falls
-Thundering Falls enters tapped.
-Thundering Falls triggered
+Player B draws Brainstorm
 | decision 107: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Activate Mishra's Bauble (PeekAndReveal)
+|   1: Play Volcanic Island
 (REPLAY) [T9 | First Main | Player B] Input: 1
-| >> Player B: 1 (Activate Mishra's Bauble (PeekAndReveal))
-Choose target for Mishra's Bauble:
+| >> Player B: 1 (Play Volcanic Island)
+Player B played Volcanic Island
 | decision 108: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
-|   0: Player A (17 life)
-|   1: Player B (10 life)
-(REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Player A (17 life))
-Targeting choice 0
-Player B sacrifices Mishra's Bauble
-Player B's Mishra's Bauble ability targeting Player A is on the stack
-Resolving ability (category: PeekAndReveal)
-Player B looks at top of Player A's library: Disruptor Flute
-Resolving ability (category: DelayedTrigger)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Surveil, amount: 1)
-Player B surveils 1.
-Surveil: looking at Cori-Steel Cutter
+|   0: Pass priority
+|   1: Cast Brainstorm
+|   2: Cast Dragon's Rage Channeler
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Brainstorm)
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Dragon's Rage Channeler
+Player B draws Wasteland
+Player B draws Ponder
+Resolving ability (category: ChangeZone)
+Player B chooses a card from Player B hand:
 | decision 109: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
 | menu:
-|   0: Put Cori-Steel Cutter on top of library
-|   1: Put Cori-Steel Cutter into graveyard
+|   0: Ponder
+|   1: Bilbo, Thief in the Night
+|   2: Dragon's Rage Channeler
+|   3: Dragon's Rage Channeler
+|   4: Wasteland
 (REPLAY) [T9 | First Main | Player B] Input: 0
-| >> Player B: 0 (Put Cori-Steel Cutter on top of library)
+| >> Player B: 0 (Ponder)
+Player B puts Ponder to top of library
+Player B chooses a card from Player B hand:
+| decision 110: Player B (game 0, turn 9, FIRST_MAIN, Player B active)
+| menu:
+|   0: Bilbo, Thief in the Night
+|   1: Dragon's Rage Channeler
+|   2: Dragon's Rage Channeler
+|   3: Wasteland
+(REPLAY) [T9 | First Main | Player B] Input: 1
+| >> Player B: 1 (Dragon's Rage Channeler)
+Player B puts Dragon's Rage Channeler to top of library
 No creatures eligible to attack.
 
 -------- TURN 11 (Player A) --------
 Aether Vial triggered
-Delayed trigger fires.
-| decision 110: Player A (game 0, turn 10, UPKEEP, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-|   2: Activate Stoneforge Mystic (ChangeZone)
-(REPLAY) [T10 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Resolving ability (category: Draw, amount: 1)
-Player B draws Cori-Steel Cutter
 | decision 111: Player A (game 0, turn 10, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
@@ -1176,71 +1169,47 @@ Put 1 CHARGE counter(s) on Aether Vial (now 5).
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T10 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Player A draws Disruptor Flute
+Player A draws Eiganjo, Seat of the Empire
 | decision 114: Player A (game 0, turn 10, DRAW, Player A active)
 | menu:
 |   0: Pass priority
-|   1: Cast Disruptor Flute
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Stoneforge Mystic (ChangeZone)
-(REPLAY) [T10 | Draw | Player A] Input: 1
-| >> Player A: 1 (Cast Disruptor Flute)
-Player A activated Flagstones of Trokair for 1(W)
+|   1: Activate Aether Vial (ChangeZone)
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T10 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 115: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Eiganjo, Seat of the Empire
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   3: Equip Meteor Sword
+|   4: Activate Aether Vial (ChangeZone)
+|   5: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Eiganjo, Seat of the Empire)
+Player A played Eiganjo, Seat of the Empire
+| decision 116: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Equip Meteor Sword
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T10 | First Main | Player A] Input: 2
+| >> Player A: 2 (Equip Meteor Sword)
+Choose target for Meteor Sword:
+| decision 117: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: White Orchid Phantom
+|   1: Stoneforge Mystic
+|   2: Phelia, Exuberant Shepherd
+(REPLAY) [T10 | First Main | Player A] Input: 0
+| >> Player A: 0 (White Orchid Phantom)
+Targeting choice 0
+Player A activated Shadowy Backstreet for 1(W)
 Player A activated Plains for 1(W)
-Player A casts Disruptor Flute
-| decision 115: Player A (game 0, turn 10, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-Disruptor Flute enters the battlefield
-Choose a card name for Disruptor Flute:
-| decision 116: Player A (game 0, turn 10, DRAW, Player A active)
-| menu:
-|   0: Name card: Brainstorm
-|   1: Name card: Daze
-|   2: Name card: Dragon's Rage Channeler
-|   3: Name card: Force of Will
-|   4: Name card: Lightning Bolt
-|   5: Name card: Mishra's Bauble
-|   6: Name card: Misty Rainforest
-|   7: Name card: Ponder
-|   8: Name card: Scalding Tarn
-|   9: Name card: Volcanic Island
-|   10: Name card: Wasteland
-|   11: Name card: Cori-Steel Cutter
-|   12: Name card: Flow State
-|   13: Name card: Bilbo, Thief in the Night
-|   14: Name card: Consign to Memory
-|   15: Name card: Murktide Regent
-|   16: Name card: Price of Progress
-|   17: Name card: Pyroblast
-|   18: Name card: Unholy Heat
-|   19: Name card: Brazen Borrower
-|   20: Name card: Chain Lightning
-|   21: Name card: Echoing Truth
-|   22: Name card: Force of Negation
-|   23: Name card: Grafdigger's Cage
-|   24: Name card: Hydroblast
-|   25: Name card: Island
-|   26: Name card: Meltdown
-|   27: Name card: Petty Theft
-|   28: Name card: Preordain
-|   29: Name card: Prismari Charm
-|   30: Name card: Rough
-|   31: Name card: Surgical Extraction
-|   32: Name card: Thundering Falls
-|   33: Name card: Tumble
-(REPLAY) [T10 | Draw | Player A] Input: 2
-| >> Player A: 2 (Name card: Dragon's Rage Channeler)
-Player A names card: Dragon's Rage Channeler
-| decision 117: Player A (game 0, turn 10, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T10 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
+Player A activated Plains for 1(W)
+Player A's Meteor Sword ability targeting White Orchid Phantom is on the stack
 | decision 118: Player A (game 0, turn 10, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
@@ -1252,35 +1221,24 @@ Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
 | auto: Player A: Fail to find
 Player A fails to find
+Resolving ability (category: Attach)
+Equipment attached.
+White Orchid Phantom gains 3/3 (always)
 
 --- Declare Attackers (Player A) ---
 | decision 119: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
-|   0: White Orchid Phantom [2/2]
-|   1: White Orchid Phantom [2/2]
-|   2: Stoneforge Mystic [1/2]
-|   3: Phelia, Exuberant Shepherd [2/2]
-|   4: Confirm attackers
-(REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (White Orchid Phantom [2/2])
-White Orchid Phantom attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 120: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: White Orchid Phantom [2/2]
+|   0: White Orchid Phantom [5/5]
 |   1: Stoneforge Mystic [1/2]
 |   2: Phelia, Exuberant Shepherd [2/2]
 |   3: Confirm attackers
 (REPLAY) [T10 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (White Orchid Phantom [2/2])
+| >> Player A: 0 (White Orchid Phantom [5/5])
 White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 121: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+  [attacking] White Orchid Phantom [5/5] -> Player B
+| decision 120: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Stoneforge Mystic [1/2]
 |   1: Phelia, Exuberant Shepherd [2/2]
@@ -1290,10 +1248,9 @@ White Orchid Phantom attacking Player B.
 Stoneforge Mystic attacking Player B.
 
 --- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
+  [attacking] White Orchid Phantom [5/5] -> Player B
   [attacking] Stoneforge Mystic [1/2] -> Player B
-| decision 122: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 121: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: Confirm attackers
@@ -1302,27 +1259,23 @@ Stoneforge Mystic attacking Player B.
 Phelia, Exuberant Shepherd attacking Player B.
 
 --- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
+  [attacking] White Orchid Phantom [5/5] -> Player B
   [attacking] Stoneforge Mystic [1/2] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 | auto: Player A: Confirm attackers
 
 Attackers declared:
   White Orchid Phantom -> Player B
-  White Orchid Phantom -> Player B
   Stoneforge Mystic -> Player B
   Phelia, Exuberant Shepherd -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 123: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 122: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
 |   1: Meteor Sword
-|   2: Disruptor Flute
-|   3: Aether Vial
-|   4: White Orchid Phantom
-|   5: White Orchid Phantom
-|   6: Stoneforge Mystic
+|   2: Aether Vial
+|   3: White Orchid Phantom
+|   4: Stoneforge Mystic
 (REPLAY) [T10 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (No target)
 Targeting choice 0
@@ -1332,79 +1285,68 @@ Resolving ability (category: DelayedTrigger)
 No creatures eligible to block.
 
 --- First Strike Combat Damage ---
-  White Orchid Phantom deals 2 damage to Player B (now at 8 life)
-  White Orchid Phantom deals 2 damage to Player B (now at 6 life)
+  White Orchid Phantom deals 5 damage to Player B (now at 5 life)
 --- End First Strike Combat Damage ---
 
 
 --- Combat Damage ---
-  Stoneforge Mystic deals 1 damage to Player B (now at 5 life)
-  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 3 life)
+  Stoneforge Mystic deals 1 damage to Player B (now at 4 life)
+  Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 2 life)
 --- End Combat Damage ---
 
 
 -------- TURN 12 (Player B) --------
-Player B draws Lightning Bolt
-| decision 124: Player B (game 0, turn 11, DRAW, Player B active)
+Player B draws Dragon's Rage Channeler
+| decision 123: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Cast Lightning Bolt
-(REPLAY) [T11 | Draw | Player B] Input: 1
-| >> Player B: 1 (Cast Lightning Bolt)
-Choose target for Lightning Bolt:
-| decision 125: Player B (game 0, turn 11, DRAW, Player B active)
+|   1: Play Wasteland
+|   2: Cast Dragon's Rage Channeler
+|   3: Cast Dragon's Rage Channeler
+(REPLAY) [T11 | First Main | Player B] Input: 2
+| >> Player B: 2 (Cast Dragon's Rage Channeler)
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+| decision 124: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
-|   0: Player A (17 life)
-|   1: Player B (3 life)
-|   2: White Orchid Phantom
-|   3: White Orchid Phantom
-|   4: Stoneforge Mystic
-|   5: Phelia, Exuberant Shepherd
-(REPLAY) [T11 | Draw | Player B] Input: 0
-| >> Player B: 0 (Player A (17 life))
-Targeting choice 0
-Player B activated Thundering Falls for 1(R)
-Player B casts Lightning Bolt targeting Player A
-Resolving ability (category: DealDamage, amount: 3)
-Lightning Bolt deals 3 damage to Player A (now at 14 life)
+|   0: Pass priority
+|   1: Play Wasteland
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Wasteland)
+Player B played Wasteland
+| decision 125: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Wasteland (Destroy)
+(REPLAY) [T11 | First Main | Player B] Input: 1
+| >> Player B: 1 (Activate Wasteland (Destroy))
+Choose target for Wasteland:
 | decision 126: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
-|   0: Pass priority
-|   1: Play Scalding Tarn
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Scalding Tarn)
-Player B played Scalding Tarn
-| decision 127: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Activate Scalding Tarn (ChangeZone)
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Activate Scalding Tarn (ChangeZone))
-Player B pays 1 life
-Player B sacrifices Scalding Tarn
-Player B's Scalding Tarn ability is on the stack
-Resolving ability (category: ChangeZone)
-Searching Player B's library:
-| decision 128: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Fail to find
-|   1: Volcanic Island
-(REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Volcanic Island)
-Player B shuffles their library
-Player B puts Volcanic Island to the battlefield
+|   0: Shadowy Backstreet
+|   1: Eiganjo, Seat of the Empire
+|   2: Wasteland
+|   3: Volcanic Island
+(REPLAY) [T11 | First Main | Player B] Input: 0
+| >> Player B: 0 (Shadowy Backstreet)
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Shadowy Backstreet is on the stack
+Resolving ability (category: Destroy)
+Shadowy Backstreet is destroyed
 No creatures eligible to attack.
 
 -------- TURN 13 (Player A) --------
 Aether Vial triggered
-| decision 129: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 127: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T12 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-| decision 130: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 128: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Decline: use Aether Vial's triggered ability
 |   1: Accept: use Aether Vial's triggered ability
@@ -1412,102 +1354,62 @@ Aether Vial triggered
 | >> Player A: 1 (Accept: use Aether Vial's triggered ability)
 Resolving ability (category: PutCounter, amount: 1)
 Put 1 CHARGE counter(s) on Aether Vial (now 6).
-| decision 131: Player A (game 0, turn 12, UPKEEP, Player A active)
+| decision 129: Player A (game 0, turn 12, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
 |   2: Activate Stoneforge Mystic (ChangeZone)
 (REPLAY) [T12 | Upkeep | Player A] Input: 0
 | >> Player A: 0 (Pass priority)
-Player A draws Swords to Plowshares
-| decision 132: Player A (game 0, turn 12, DRAW, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Cast Swords to Plowshares
-|   2: Activate Aether Vial (ChangeZone)
-|   3: Activate Stoneforge Mystic (ChangeZone)
-(REPLAY) [T12 | Draw | Player A] Input: 0
-| >> Player A: 0 (Pass priority)
-| decision 133: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: Pass priority
-|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-|   2: Cast Swords to Plowshares
-|   3: Equip Meteor Sword
-|   4: Activate Aether Vial (ChangeZone)
-|   5: Activate Stoneforge Mystic (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 3
-| >> Player A: 3 (Equip Meteor Sword)
-Choose target for Meteor Sword:
-| decision 134: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
-| menu:
-|   0: White Orchid Phantom
-|   1: White Orchid Phantom
-|   2: Stoneforge Mystic
-|   3: Phelia, Exuberant Shepherd
-(REPLAY) [T12 | First Main | Player A] Input: 0
-| >> Player A: 0 (White Orchid Phantom)
-Targeting choice 0
-Player A activated Flagstones of Trokair for 1(W)
-Player A activated Plains for 1(W)
-Player A activated Plains for 1(W)
-Player A's Meteor Sword ability targeting White Orchid Phantom is on the stack
-| decision 135: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+Player A draws Solitude
+| decision 130: Player A (game 0, turn 12, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Aether Vial (ChangeZone)
-(REPLAY) [T12 | First Main | Player A] Input: 1
-| >> Player A: 1 (Activate Aether Vial (ChangeZone))
+|   2: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T12 | Draw | Player A] Input: 0
+| >> Player A: 0 (Pass priority)
+| decision 131: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Equip Meteor Sword
+|   3: Activate Aether Vial (ChangeZone)
+|   4: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 3
+| >> Player A: 3 (Activate Aether Vial (ChangeZone))
 Player A's Aether Vial ability is on the stack
+| decision 132: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Activate Stoneforge Mystic (ChangeZone)
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Activate Stoneforge Mystic (ChangeZone))
+Player A activated Plains for 1(W)
+Player A activated Plains for 1(W)
+Player A's Stoneforge Mystic ability is on the stack
 Resolving ability (category: ChangeZone)
 Player A chooses a card from Player A hand:
 | auto: Player A: Fail to find
 Player A fails to find
-Resolving ability (category: Attach)
-Equipment attached.
-White Orchid Phantom gains 3/3 (always)
+Resolving ability (category: ChangeZone)
+Player A chooses a card from Player A hand:
+| auto: Player A: Fail to find
+Player A fails to find
 
 --- Declare Attackers (Player A) ---
-| decision 136: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 133: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: White Orchid Phantom [5/5]
-|   1: White Orchid Phantom [2/2]
-|   2: Stoneforge Mystic [1/2]
-|   3: Phelia, Exuberant Shepherd [2/2]
-|   4: Confirm attackers
+|   1: Phelia, Exuberant Shepherd [2/2]
+|   2: Confirm attackers
 (REPLAY) [T12 | Declare Attackers | Player A] Input: 0
 | >> Player A: 0 (White Orchid Phantom [5/5])
 White Orchid Phantom attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] White Orchid Phantom [5/5] -> Player B
-| decision 137: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: White Orchid Phantom [2/2]
-|   1: Stoneforge Mystic [1/2]
-|   2: Phelia, Exuberant Shepherd [2/2]
-|   3: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (White Orchid Phantom [2/2])
-White Orchid Phantom attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [5/5] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-| decision 138: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
-| menu:
-|   0: Stoneforge Mystic [1/2]
-|   1: Phelia, Exuberant Shepherd [2/2]
-|   2: Confirm attackers
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (Stoneforge Mystic [1/2])
-Stoneforge Mystic attacking Player B.
-
---- Declare Attackers (Player A) ---
-  [attacking] White Orchid Phantom [5/5] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] Stoneforge Mystic [1/2] -> Player B
-| decision 139: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 134: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Phelia, Exuberant Shepherd [2/2]
 |   1: Confirm attackers
@@ -1517,39 +1419,35 @@ Phelia, Exuberant Shepherd attacking Player B.
 
 --- Declare Attackers (Player A) ---
   [attacking] White Orchid Phantom [5/5] -> Player B
-  [attacking] White Orchid Phantom [2/2] -> Player B
-  [attacking] Stoneforge Mystic [1/2] -> Player B
   [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 | auto: Player A: Confirm attackers
 
 Attackers declared:
   White Orchid Phantom -> Player B
-  White Orchid Phantom -> Player B
-  Stoneforge Mystic -> Player B
   Phelia, Exuberant Shepherd -> Player B
 Choose target for Phelia, Exuberant Shepherd:
-| decision 140: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| decision 135: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: No target
-|   1: Meteor Sword
-|   2: Disruptor Flute
+|   1: Dragon's Rage Channeler
+|   2: Meteor Sword
 |   3: Aether Vial
 |   4: White Orchid Phantom
-|   5: White Orchid Phantom
-|   6: Stoneforge Mystic
-(REPLAY) [T12 | Declare Attackers | Player A] Input: 0
-| >> Player A: 0 (No target)
-Targeting choice 0
+|   5: Stoneforge Mystic
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 1
+| >> Player A: 1 (Dragon's Rage Channeler)
+Targeting choice 1
 Phelia, Exuberant Shepherd triggered
 Resolving ability (category: ChangeZone)
+Dragon's Rage Channeler is moved to exile
 Resolving ability (category: DelayedTrigger)
+Delayed trigger registered: ChangeZone at next End of Turn.
 No creatures eligible to block.
 
 --- First Strike Combat Damage ---
   White Orchid Phantom deals 5 damage to Player B (now at -3 life)
-  White Orchid Phantom deals 2 damage to Player B (now at -5 life)
 --- End First Strike Combat Damage ---
 
 
-Player B has -5 life - Player A wins!
+Player B has -3 life - Player A wins!
 GAME_RESULT: 1 Player A wins

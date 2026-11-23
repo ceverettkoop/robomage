@@ -1,0 +1,15 @@
+{
+  "name": "cr702_66b_delve_pays_toward_the_mana_cost",
+  "why": "CR 702.66b: delve isn't an additional or alternative cost; the delve count and the delve picks pay toward the total cost's generic mana, so pending_cost's part is MANA there",
+  "hand_a": ["Murktide Regent"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island", "Island", "Island"],
+  "graveyard_a": ["Lightning Bolt", "Ponder", "Ponder"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Murktide Regent", "#0", "desc:Exile Lightning Bolt"],
+  "max_decisions": 6,
+  "expect_order": ["Player A exiles Lightning Bolt via Delve", "Player A exiles Ponder via Delve", "Player A casts Murktide Regent"],
+  "expect_menu": ["^Exile 2 cards from graveyard \\(Delve\\)$", "^Exile Ponder \\(Delve\\)$"],
+  "expect_dump": ["^A .* pending_cost MANA discard=0$"],
+  "expect_dump_not": ["pending_cost (ADDITIONAL|ALTERNATIVE)"]
+}

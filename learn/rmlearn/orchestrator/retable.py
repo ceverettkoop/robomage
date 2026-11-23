@@ -23,7 +23,9 @@ orchestrator, at every start) stops it with the command to run, and ``retable`` 
    spec.Tables.accepted_spec_hashes; tables of an earlier layout, a migrated run's, join none);
 5. rebuilds the exports (every ``state.json`` export, latest per name, from its checkpoint into
    ``exports/<name>``, in the run's ``checkpoint.export_formats``; the evaluations' and the live
-   exports are removed, the orchestrator makes them again);
+   exports are removed, the orchestrator makes them again); when the runs root's ``latest/``
+   (latest.py) holds one of the rebuilt exports of this run, its exports are copied again from the
+   rebuilt ones and its ``latest.json`` rewritten (``model.pt`` loads on the new tables as it is);
 6. records the change in ``state.json`` (``tables``, ``retables``) and ``metrics.jsonl`` (a
    ``retable`` line).
 
@@ -45,6 +47,7 @@ import tempfile
 import time
 
 from . import config as C
+from . import latest as LT
 from .actors import cpu_env
 from .rundir import REPO_ROOT, JsonLines, read_json, write_json
 
@@ -313,8 +316,13 @@ def retable(run, cfg, log=print):
                               cfg["checkpoint"]["export_formats"], log_fp)
             rebuilt.append(e["name"])
             log("re-exported %s from %s" % (e["name"], os.path.relpath(e["checkpoint"], run.path)))
+    latest = LT.rebuild_exports(LT.latest_dir(run.path), run.path, run.exports, run.tables,
+                                cfg["checkpoint"]["export_formats"], rebuilt=rebuilt)
+    if latest is not None:
+        log("%s: the exports of %s rebuilt" % (LT.latest_dir(run.path), latest["name"]))
     record = {"at": time.time(), "from": old or earlier, "to": new, "kept": os.path.basename(keep), "checkpoints": len(ckpts),
-              "drift": drift, "exports": rebuilt, "removed_exports": len(removed)}
+              "drift": drift, "exports": rebuilt, "removed_exports": len(removed),
+              "latest": latest["name"] if latest is not None else None}
     state["tables"] = new
     state.setdefault("retables", []).append(record)
     write_json(run.state, state)

@@ -20,6 +20,11 @@ a removed or renamed id is refused naming it), no registry entry of the model's 
 carry one); ``exact`` (an export, whose card rows are baked in) also the same ``spec_hash``, ``vocab_hash`` and
 ``tables_digest`` and no current id the model lacks. A manifest without ``layout_hash`` (a model made
 before manifests) passes only on its own tables' ``spec_hash``, ``vocab_hash`` and ``text_model``.
+
+**Inherited values.** ``INHERITED_VALUES`` lists enum values appended to take over inputs an earlier
+value encoded; ``inherited_positions`` gives the learned positions a network whose registry predates
+such a value copies from the earlier value's (``model.checkpoint_state`` on every load of a
+checkpoint or learner state, ``migrate.LayoutMap`` across a layout bump).
 """
 
 import json
@@ -160,6 +165,19 @@ def load_tables(tables_dir, text_table=None, legacy=False):
 # ── the model manifest and the compatibility check ──────────────────────────────────────────────
 
 MANIFEST_KEYS = ("spec_hash", "vocab_hash", "text_model", "layout_hash", "tables_digest", "vocab", "registry")
+# (enum, appended value, earlier value, others): an enum value appended to the layout registry that
+# takes over inputs the earlier value encoded before. A network trained before the append starts each
+# learned position of the appended value (its categorical ids' embedding rows, its numeric mask
+# columns, its table columns' projection weights) as a copy of the earlier value's, so on the inputs
+# as they are now encoded it computes what it computed on the old encoding (docs/featurizer.md §6.1).
+# `others` names the tokens the appended value took over from another value: {(enum of another
+# categorical slot of the same token, its value): the value of `enum` those tokens held}. Such a
+# token's rows are summed, so that slot value's row takes the difference of the two values' rows.
+SIDEBOARDING = ("SIDEBOARD_IN", "SIDEBOARD_OUT", "SIDEBOARD_DONE")
+INHERITED_VALUES = (
+    # a menu row of any decision but priority's: PASS_PRIORITY before, SPECIAL_ACTION when sideboarding
+    ("action_type", "CHOICE", "PASS_PRIORITY", {("action_category", c): "SPECIAL_ACTION" for c in SIDEBOARDING}),
+)
 SHOWN = 4
 REBUILD = ("; an export is built for one vocab and tables: rebuild it from its checkpoint on the current tables "
            "(docs/featurizer.md §6.2)")
@@ -219,6 +237,61 @@ def registry_entries(text):
     for sec in ("token_types", "numeric", "categorical", "cards", "abilities", "relations", "tables", "columns",
                 "ab_keys"):
         out.update((sec, json.dumps(item, sort_keys=True)) for item in doc.get(sec, []))
+    return out
+
+
+def registry_enum_values(text):
+    """{enum name: [value names]} of a layout registry's text."""
+    return {e["name"]: list(e["values"]) for e in json.loads(text).get("enums", [])}
+
+
+def inherited_positions(model_enums, registry_text):
+    """The learned positions a network trained on the enums `model_enums` ({name: [values]}) takes
+    over by ``INHERITED_VALUES`` in the layout of `registry_text`: {"categorical": [(id, id)],
+    "numeric": [(G column, G column)], "card" / "ability" / "part": [(column, column)]}, each pair
+    the earlier value's position and the appended one's, and "categorical_shift": [(id, plus, minus)],
+    a rule's other tokens: row `id` (the other slot's value) takes row `plus` (the value those tokens
+    held) minus row `minus` (the earlier value). A rule applies when the network's enum has the
+    earlier value and lacks the appended one and the layout has both (an other token when the network
+    and the layout have its values too); {} when none does."""
+    doc = json.loads(registry_text)
+    now = {e["name"]: e["values"] for e in doc.get("enums", [])}
+
+    def known(enum, *values):
+        held, vals = model_enums.get(enum) or [], now.get(enum) or []
+        return all(x in held and x in vals for x in values)
+
+    rules = {}
+    for enum, value, earlier, others in INHERITED_VALUES:
+        held, vals = model_enums.get(enum) or [], now.get(enum) or []
+        if value in held or value not in vals or not known(enum, earlier):
+            continue
+        shifts = [(e2, now[e2].index(x), vals.index(w)) for (e2, x), w in sorted(others.items()) if known(e2, x)
+                  and known(enum, w)]
+        rules.setdefault(enum, []).append((vals.index(earlier), vals.index(value), shifts))
+    out = {}
+    if not rules:
+        return out
+    by_type = {}
+    for s in doc.get("categorical", []):
+        by_type.setdefault(s["type"], {})[s.get("source", "")] = s
+    for s in doc.get("categorical", []):
+        src = s.get("source", "")
+        for u, v, shifts in rules.get(src[len("enum:"):], []) if src.startswith("enum:") else []:
+            out.setdefault("categorical", []).append((s["offset"] + 1 + u, s["offset"] + 1 + v))
+            for e2, x, w in shifts:
+                o = by_type[s["type"]].get("enum:" + e2)
+                if o is not None:
+                    out.setdefault("categorical_shift", []).append(
+                        (o["offset"] + 1 + x, s["offset"] + 1 + w, s["offset"] + 1 + u))
+    num_at = {t["name"]: t["num_at"] for t in doc.get("token_types", [])}
+    for s in doc.get("numeric", []):
+        for u, v, _ in rules.get(s.get("enum"), []) if s.get("kind") == "mask" else []:
+            base = num_at[s["type"]] + s["at"]
+            out.setdefault("numeric", []).append((base + u, base + v))
+    for c in doc.get("columns", []):
+        for u, v, _ in rules.get(c.get("enum"), []):
+            out.setdefault(c["table"], []).append((c["at"] + u, c["at"] + v))
     return out
 
 

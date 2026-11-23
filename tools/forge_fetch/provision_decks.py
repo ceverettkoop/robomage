@@ -25,6 +25,11 @@ Non-fatal by design: a card missing from Forge just needs hand-authoring, so a
 failed fetch never aborts provisioning (always exits 0). Set GITHUB_TOKEN in the
 environment to authenticate the contents-API calls fetch_script.py makes to
 resolve DFC filenames (raises the 60 req/hr unauthenticated cap to 5000 in CI).
+
+When it finishes it touches the stamp bin/resources/.provisioned. `make` runs this
+script only while that stamp is older than what decides the card set (src/card_vocab.h,
+FORGE_PIN, this script, the provisioned decks), so a build after a vocab or deck change
+fetches the new scripts and an up-to-date tree builds offline.
 """
 import glob
 import os
@@ -34,6 +39,7 @@ import sys
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 _VOCAB_H = os.path.join(_REPO_ROOT, "src", "card_vocab.h")
+_STAMP = os.path.join(_REPO_ROOT, "bin", "resources", ".provisioned")
 
 
 def name_to_uid(name):
@@ -143,6 +149,8 @@ def main(argv=None):
     tokens = collect_tokens(names, cards_dir)
     if tokens:
         subprocess.run([sys.executable, tool, "--token", *sorted(tokens)], check=False)
+    with open(_STAMP, "w", encoding="utf-8"):
+        pass
     return 0
 
 

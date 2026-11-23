@@ -22,7 +22,9 @@ carries their manifest, a removed or renamed card, another layout, text model or
 entry refused; an export of the old tables refused on the new ones with the rebuild message; the same
 verdicts as the C++ check, ``rmfeat --compat``, case by case, when the engine is given); the checkpoint
 migration (``rmlearn.migrate``) from a synthetic old layout and from a synthetic earlier registry
-layout (a layout bump, the seen mask carried), exact; the inference server on the CPU
+layout (a layout bump, the seen mask carried), exact; an appended enum value inheriting an earlier one's
+rows (``spec.INHERITED_VALUES``) on a checkpoint's load and in a migration, the network's function
+unchanged on the old encoding; the inference server on the CPU
 through the Python client (results against the model, several policies and versions, a swap, batching
 across concurrent clients, handshake and request refusals, shutdown); BC's event dropout; the replay
 window's splits by game and by match and its probe sample.
@@ -680,6 +682,74 @@ def check_migration(args, tables, model, x):
     check_migration_bump(doc, tables, model, x, rng)
 
 
+def check_inherited(args, tables, model, decs):
+    """spec.INHERITED_VALUES on action_type's CHOICE: a checkpoint whose registry predates it loads with
+    CHOICE's rows PASS_PRIORITY's and the sideboarding categories' rows shifted by SPECIAL_ACTION's less
+    PASS_PRIORITY's (policy and critic encoders), so it computes on today's inputs what it computed on
+    the old encoding; reloaded it is unchanged (its manifest is today's); a migration from that layout
+    gives the same network."""
+    print("inherited values", flush=True)
+    doc = model.spec.doc
+    vals, cats = doc["enums"]["action_type"], doc["enums"]["action_category"]
+    reg = json.loads(tables.hashes["registry"])
+    for e in reg["enums"]:
+        if e["name"] == "action_type":
+            e["values"] = [v for v in e["values"] if v != "CHOICE"]
+    ref = copy.deepcopy(model).cpu().eval()
+    ref.hashes = dict(model.hashes, registry=json.dumps(reg))
+    path = os.path.join(args.work, "inherit.pt")
+    M.save_checkpoint(ref, path)
+    got = M.load_checkpoint(path, tables).eval()
+    menu = model.spec.type_by_id[model.spec.menu_type]
+    slot = {s["source"]: s for s in menu["categorical"]}
+    at = lambda src, vs, v: slot[src]["offset"] + 1 + vs.index(v)  # noqa: E731
+    U, V, SA = (at("enum:action_type", vals, v) for v in ("PASS_PRIORITY", "CHOICE", "SPECIAL_ACTION"))
+    sb = [at("enum:action_category", cats, c) for c in S.SIDEBOARDING]
+    want = {k: v.clone() for k, v in ref.state_dict().items()}
+    for k in ("encoder.embed.cat_emb.weight", "critic.encoder.embed.cat_emb.weight"):
+        w = want[k]
+        w[sb] += w[SA] - w[U]
+        w[V] = w[U]
+    gsd = got.state_dict()
+    bad = [k for k in want if not torch.equal(gsd[k], want[k])]
+    ok(not bad, "inherited values: the loaded network differs from the expected one at %s" % bad[:4])
+    # Today's inputs on the loaded network vs the old encoding on the original (choice rows typed
+    # PASS_PRIORITY, sideboarding rows SPECIAL_ACTION).
+    has = [i for i in range(len(decs)) if (decs.select([i]).arrays["tok_cat"][:, slot["enum:action_type"]["col"]]
+                                           == V).any()][:24]
+    ok(len(has) > 0, "inherited values: no decision with a CHOICE menu row")
+    x = B.to_torch(B.pad(decs.select(has), model.spec))
+    xo = list(x)
+    tc = x[2].clone()
+    tcol, ccol = slot["enum:action_type"]["col"], slot["enum:action_category"]["col"]
+    choice = tc[:, :, tcol] == V
+    sideboarding = torch.isin(tc[:, :, ccol], torch.tensor(sb))
+    tc[:, :, tcol] = torch.where(choice & sideboarding, torch.full_like(tc[:, :, tcol], SA),
+                                 torch.where(choice, torch.full_like(tc[:, :, tcol], U), tc[:, :, tcol]))
+    xo[2] = tc
+    with torch.no_grad():
+        a, b = ref(*xo), got(*x)
+    d = max(maxdiff(a["logits"][x[9]], b["logits"][x[9]]), maxdiff(a["value"], b["value"]))
+    ok(d <= TOL, "inherited values: the loaded network on today's inputs differs from the original on the old "
+                 "encoding: %.3g" % d)
+    path2 = os.path.join(args.work, "inherit2.pt")
+    M.save_checkpoint(got, path2)
+    again = M.load_checkpoint(path2, tables).state_dict()
+    ok(all(torch.equal(again[k], gsd[k]) for k in gsd), "inherited values: a second load changed the network")
+    old_enums = dict(doc["enums"], action_type=[v for v in vals if v != "CHOICE"])
+    lm = MG.LayoutMap(MG.Layout(doc, old_enums), MG.Layout(doc, doc["enums"]), tables.hashes["registry"])
+    mig = MG.build_network(lm, ref.cfg.to_dict(), ref.state_dict(), tables, None).state_dict()
+    # The migration zeroes the positions no old name maps to, then inherits as the load does.
+    want = M.inherit_values(zero_unmapped(lm, ref.state_dict()), M.appended_positions(ref.hashes, tables))
+    bad = [k for k in want if not torch.equal(mig[k], want[k])]
+    ok(not bad, "inherited values: the migration's network differs from the expected one at %s" % bad[:4])
+    ok(lm.inherited == M.appended_positions(ref.hashes, tables), "inherited values: the migration inherits "
+                                                                  "other positions than the load")
+    info("inherited values: CHOICE from PASS_PRIORITY (%d sideboarding rows shifted) on load and migration; "
+         "%d decisions with choice rows, today's inputs vs the old encoding: %.3g; reload unchanged"
+         % (len(sb), len(has), d))
+
+
 def check_server(args, tables, model, decs):
     print("server", flush=True)
     sock = os.path.join(tempfile.mkdtemp(prefix="rmlc-", dir="/tmp"), "s.sock")
@@ -1200,6 +1270,7 @@ def main():
     check_seen(args, tables, model, x)
     check_compat(args, tables, model)
     check_migration(args, tables, model, x)
+    check_inherited(args, tables, model, decs)
     check_server(args, tables, model, decs)
     if args.engine_dir and not args.episodes:
         args.episodes = make_episodes(args)

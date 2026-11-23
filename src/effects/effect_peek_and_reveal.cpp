@@ -109,8 +109,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     int reveal_choice = 1;
     if (pp && pp->reveal_optional) {
         std::vector<LegalAction> reveal_actions = {
-            LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
-            LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
+            LegalAction(CHOICE, top_card, std::string("Don't reveal")),
+            LegalAction(CHOICE, top_card, std::string("Reveal")),
         };
         // The old inline get_input ran without a priority repoint — ambient priority
         // is the resolving controller here — so seating the ask on ab.controller is

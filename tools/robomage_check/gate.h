@@ -77,6 +77,7 @@ void tier_featurize(const Options &opt, Report &rep);
 void tier_traj(const Options &opt, Report &rep);
 void tier_actorloop(const Options &opt, Report &rep);
 void tier_actor(const Options &opt, Report &rep);
+void tier_workbench(const Options &opt, Report &rep);
 void tier_knowledge(const Options &opt, Report &rep);
 void tier_fuzz(const Options &opt, Report &rep);
 void tier_bench(const Options &opt, Report &rep);

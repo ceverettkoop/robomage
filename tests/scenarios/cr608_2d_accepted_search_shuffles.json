@@ -7,7 +7,7 @@
   "library_b": ["Forest", "Plains"],
   "battlefield_a": ["Ghost Quarter"],
   "battlefield_b": ["Wasteland"],
-  "play": ["A:keep", "B:keep", "A:activate:Ghost Quarter", "A:target:Wasteland", "B:search:Plains"],
+  "play": ["A:keep", "B:keep", "A:activate:Ghost Quarter", "A:target:Wasteland", "B:choice:Search your library", "B:search:Plains"],
   "max_decisions": 8,
   "expect": ["Wasteland is destroyed", "Player B shuffles their library"],
   "expect_not": ["Player B fails to find"]

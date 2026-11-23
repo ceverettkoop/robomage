@@ -325,11 +325,11 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
             std::vector<LegalAction> picks;
             for (auto e : cands) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
-                LegalAction la(PASS_PRIORITY, e, std::string("Put ") + cd.name + " onto the battlefield");
+                LegalAction la(CHOICE, e, std::string("Put ") + cd.name + " onto the battlefield");
                 la.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(la);
             }
-            LegalAction none(PASS_PRIORITY, std::string("Put nothing"));
+            LegalAction none(CHOICE, std::string("Put nothing"));
             none.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(none);
 
@@ -644,13 +644,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
                 const char *where = (loc == Zone::BATTLEFIELD) ? " (the chosen creature)" : " (from hand)";
-                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + cd.name + where);
+                LegalAction la(CHOICE, e, std::string("Exile ") + cd.name + where);
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
             }
             if (optional) {
-                LegalAction none(PASS_PRIORITY, std::string("Exile nothing"));
+                LegalAction none(CHOICE, std::string("Exile nothing"));
                 none.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(none);
             }
@@ -781,12 +781,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             for (auto e : cands) {
                 // A token among the candidates (e.g. an Orc Army you control when Yorion blinks)
                 // has no CardData — name it from its Permanent instead of crashing.
-                LegalAction la(PASS_PRIORITY, e, std::string(verb.imperative) + " " + object_display_name(e));
+                LegalAction la(CHOICE, e, std::string(verb.imperative) + " " + object_display_name(e));
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
             }
-            LegalAction done(PASS_PRIORITY, std::string("Done (") + verb.bare + " no more)");
+            LegalAction done(CHOICE, std::string("Done (") + verb.bare + " no more)");
             done.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(done);
             int choice = fctx.ask(std::move(picks), owner, ab.source.lki_entity());
@@ -869,6 +869,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // (Doomsday), so a card already chosen is not offered again.
     search.exclude_remembered = multi_zone;
     search.picking = &ab;
+    // Optional$ True on a library search is a "may search" (Ghost Quarter: "its controller may search
+    // their library ..."): the chooser first chooses whether to search. Declining is no search, so no
+    // shuffle (CR 608.2d); a search that finds nothing still shuffles (CR 701.23).
+    if (ab.def->optional_choice && ab.def->origin == Zone::LIBRARY && !multi_zone && !rt.searching) {
+        int yc = fctx.ask(yesno_menu("Don't search", "Search your library"), chooser, ab.source.lki_entity());
+        if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (yc != 1) {
+            game_log("%s doesn't search\n", player_name(chooser).c_str());
+            cur_game.priority.player_a_has_priority = rt.prev_priority;
+            return HandlerResult::DONE_RUN_SUBS;
+        }
+        rt.searching = true;
+    }
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
         Entity chosen = search_zones(orderer, search, fctx, ab.source.lki_entity(), suspended);
@@ -877,10 +890,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (suspended) return HandlerResult::SUSPENDED;
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it.
-        // ShuffleNonMandatory$ True is a "may search ..., then shuffle": finding nothing there is
-        // declining to search, and with no search there is no shuffle (CR 608.2d). NoShuffle$ True
-        // leaves the shuffle to a later instruction of the same effect (Gamble's DB$ Shuffle).
-        if (ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle && !(chosen == 0 && ab.def->shuffle_non_mandatory)) {
+        // ShuffleNonMandatory$ True is a "may search ..., then shuffle". Without Optional$ (the "may" is
+        // the trigger's, OptionalDecider$) finding nothing there is taken as declining to search, and
+        // with no search there is no shuffle (CR 608.2d); an Optional$ search the chooser chose to make
+        // shuffles even when it finds nothing. NoShuffle$ True leaves the shuffle to a later
+        // instruction of the same effect (Gamble's DB$ Shuffle).
+        if (ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle &&
+            !(chosen == 0 && ab.def->shuffle_non_mandatory && !rt.searching)) {
             orderer->shuffle_library(owner);
             game_log("%s shuffles their library\n", player_name(owner).c_str());
         }
@@ -948,7 +964,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
     // A search with no card left to find (The Stone Brain's four found already, Ugin's ChangeNum$ X
     // of nothing) is still a search, and its library is still shuffled (CR 701.23).
-    if (rt.num_to_move == 0 && ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle && !ab.def->shuffle_non_mandatory) {
+    if (rt.num_to_move == 0 && ab.def->origin == Zone::LIBRARY && !ab.def->no_shuffle &&
+        (!ab.def->shuffle_non_mandatory || rt.searching)) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library\n", player_name(owner).c_str());
     }

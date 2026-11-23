@@ -824,12 +824,19 @@ Player A's Ghost Quarter ability targeting Forest is on the stack
 Resolving ability (category: Destroy)
 Forest is destroyed
 Resolving ability (category: ChangeZone)
+| decision 64: Player B (game 0, turn 10, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't search
+|   1: Search your library
+(REPLAY) [T10 | First Main | Player B] Input: 1
+| >> Player B: 1 (Search your library)
 Searching Player B's library:
 | auto: Player B: Fail to find
+Player B shuffles their library
 Player B fails to find
 
 --- Declare Attackers (Player A) ---
-| decision 64: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
+| decision 65: Player A (game 0, turn 10, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Clarion Conqueror [3/3]
 |   1: White Orchid Phantom [2/2]
@@ -842,7 +849,7 @@ Attackers declared:
   (none)
 
 -------- TURN 12 (Player B) --------
-| decision 65: Player B (game 0, turn 11, UPKEEP, Player B active)
+| decision 66: Player B (game 0, turn 11, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Activate Urza's Saga (Token)
@@ -854,12 +861,12 @@ Player B's Urza's Saga ability is on the stack
 Resolving ability (category: Token)
 Token created: 0/0 Construct
 Construct token gains (always)
-Player B draws Mox Diamond
+Player B draws Maze of Ith
 Urza's Saga gets 1 lore counter (now 3).
 Urza's Saga chapter 3 triggers.
 Resolving ability (category: ChangeZone)
 Searching Player B's library:
-| decision 66: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 67: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Fail to find
 |   1: Mox Diamond
@@ -870,95 +877,76 @@ Searching Player B's library:
 Player B shuffles their library
 Player B puts Expedition Map to the battlefield
 Urza's Saga is sacrificed (final chapter completed).
-| decision 67: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
+| decision 68: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
-|   1: Play Thespian's Stage
-|   2: Play Forest (from graveyard)
-|   3: Play Urza's Saga (from graveyard)
-|   4: Cast Mox Diamond
-(REPLAY) [T11 | First Main | Player B] Input: 3
-| >> Player B: 3 (Play Urza's Saga (from graveyard))
+|   1: Play Maze of Ith
+|   2: Play Thespian's Stage
+|   3: Play Forest (from graveyard)
+|   4: Play Urza's Saga (from graveyard)
+(REPLAY) [T11 | First Main | Player B] Input: 4
+| >> Player B: 4 (Play Urza's Saga (from graveyard))
 Player B played Urza's Saga
 Urza's Saga gets 1 lore counter (now 1).
 Urza's Saga chapter 1 triggers.
 Resolving ability (category: Animate)
 Urza's Saga gains an activated ability.
-| decision 68: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
-|   0: Pass priority
-|   1: Play Thespian's Stage
-|   2: Play Forest (from graveyard)
-|   3: Cast Mox Diamond
-(REPLAY) [T11 | First Main | Player B] Input: 3
-| >> Player B: 3 (Cast Mox Diamond)
-Player B casts Mox Diamond
 | decision 69: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
 | menu:
-|   0: Discard Thespian's Stage (put Mox Diamond onto the battlefield)
-|   1: Don't discard (put Mox Diamond into graveyard)
-(REPLAY) [T11 | First Main | Player B] Input: 0
-| >> Player B: 0 (Discard Thespian's Stage (put Mox Diamond onto the battlefield))
-Player B discards Thespian's Stage.
-Mox Diamond enters the battlefield
-| decision 70: Player B (game 0, turn 11, FIRST_MAIN, Player B active)
-| menu:
 |   0: Pass priority
-|   1: Play Forest (from graveyard)
-|   2: Play Thespian's Stage (from graveyard)
+|   1: Play Maze of Ith
+|   2: Play Thespian's Stage
+|   3: Play Forest (from graveyard)
 (REPLAY) [T11 | First Main | Player B] Input: 1
-| >> Player B: 1 (Play Forest (from graveyard))
-Player B played Forest
+| >> Player B: 1 (Play Maze of Ith)
+Player B played Maze of Ith
 
 --- Declare Attackers (Player B) ---
-| decision 71: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| decision 70: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
-|   0: Construct token [8/8]
-|   1: Construct token [8/8]
+|   0: Construct token [7/7]
+|   1: Construct token [7/7]
 |   2: Eldrazi Spawn token [0/1]
 |   3: Confirm attackers
 (REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Construct token [8/8])
+| >> Player B: 0 (Construct token [7/7])
 Construct token attacking Player A.
 
 --- Declare Attackers (Player B) ---
-  [attacking] Construct token [8/8] -> Player A
-| decision 72: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+  [attacking] Construct token [7/7] -> Player A
+| decision 71: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
-|   0: Construct token [8/8]
+|   0: Construct token [7/7]
 |   1: Eldrazi Spawn token [0/1]
 |   2: Confirm attackers
 (REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Construct token [8/8])
+| >> Player B: 0 (Construct token [7/7])
 Construct token attacking Player A.
 
 --- Declare Attackers (Player B) ---
-  [attacking] Construct token [8/8] -> Player A
-  [attacking] Construct token [8/8] -> Player A
-| decision 73: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+  [attacking] Construct token [7/7] -> Player A
+  [attacking] Construct token [7/7] -> Player A
+| decision 72: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Eldrazi Spawn token [0/1]
 |   1: Confirm attackers
-(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
-| >> Player B: 0 (Eldrazi Spawn token [0/1])
-Eldrazi Spawn token attacking Player A.
-
---- Declare Attackers (Player B) ---
-  [attacking] Construct token [8/8] -> Player A
-  [attacking] Construct token [8/8] -> Player A
-  [attacking] Eldrazi Spawn token [0/1] -> Player A
-| auto: Player B: Confirm attackers
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 1
+| >> Player B: 1 (Confirm attackers)
 
 Attackers declared:
   Construct token -> Player A
   Construct token -> Player A
-  Eldrazi Spawn token -> Player A
+| decision 73: Player B (game 0, turn 11, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Maze of Ith (Untap)
+(REPLAY) [T11 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
 
 --- Declare Blockers (Player A) ---
 Attackers:
-  0: Construct token [8/8]
-  1: Construct token [8/8]
-  2: Eldrazi Spawn token [0/1]
+  0: Construct token [7/7]
+  1: Construct token [7/7]
 Your creatures:
 | decision 74: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
 | menu:
@@ -970,26 +958,280 @@ Your creatures:
 |   5: Insect token [1/1]
 |   6: Insect token [1/1]
 |   7: Confirm blockers
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 1
+(REPLAY) [T11 | Declare Blockers | Player A] Input: 7
+| >> Player A: 7 (Confirm blockers)
+
+Blockers declared:
+  (none)
+| decision 75: Player B (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Maze of Ith (Untap)
+(REPLAY) [T11 | Declare Blockers | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+--- Combat Damage ---
+  Construct token deals 7 damage to Player A (now at 8 life)
+  Construct token deals 7 damage to Player A (now at 1 life)
+--- End Combat Damage ---
+
+| decision 76: Player B (game 0, turn 11, COMBAT_DAMAGE, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Maze of Ith (Untap)
+(REPLAY) [T11 | Combat Damage | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+| decision 77: Player B (game 0, turn 11, END_OF_COMBAT, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Activate Maze of Ith (Untap)
+(REPLAY) [T11 | End of Combat | Player B] Input: 0
+| >> Player B: 0 (Pass priority)
+
+-------- TURN 13 (Player A) --------
+Player A draws Karakas
+| decision 78: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Play Karakas
+|   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Play Karakas)
+Player A played Karakas
+| decision 79: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: Pass priority
+|   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
+|   2: Cast Solitude
+(REPLAY) [T12 | First Main | Player A] Input: 2
+| >> Player A: 2 (Cast Solitude)
+Player A activated Plains for 1(W)
+Player A activated Plains for 1(W)
+Player A activated Eiganjo, Seat of the Empire for 1(W)
+Player A activated Karakas for 1(W)
+Player A activated Wasteland for 1(C)
+Player A casts Solitude
+Solitude enters the battlefield
+Choose target for Solitude:
+| decision 80: Player A (game 0, turn 12, FIRST_MAIN, Player A active)
+| menu:
+|   0: No target
+|   1: Construct token
+|   2: Construct token
+|   3: Eldrazi Spawn token
+|   4: Construct token
+|   5: Canoptek Scarab Swarm
+|   6: Clarion Conqueror
+|   7: White Orchid Phantom
+|   8: Recruiter of the Guard
+|   9: Insect token
+|   10: Insect token
+|   11: Insect token
+(REPLAY) [T12 | First Main | Player A] Input: 1
+| >> Player A: 1 (Construct token)
+Targeting choice 1
+Solitude triggered
+Resolving ability (category: ChangeZone)
+Construct token is moved to exile
+Resolving ability (category: GainLife, amount: 7)
+Player B gains 7 life (now at 22)
+Construct (token) is put into exile and ceases to exist.
+
+--- Declare Attackers (Player A) ---
+| decision 81: Player A (game 0, turn 12, DECLARE_ATTACKERS, Player A active)
+| menu:
+|   0: Canoptek Scarab Swarm [1/1]
+|   1: Clarion Conqueror [3/3]
+|   2: White Orchid Phantom [2/2]
+|   3: Recruiter of the Guard [1/1]
+|   4: Insect token [1/1]
+|   5: Insect token [1/1]
+|   6: Insect token [1/1]
+|   7: Confirm attackers
+(REPLAY) [T12 | Declare Attackers | Player A] Input: 7
+| >> Player A: 7 (Confirm attackers)
+
+Attackers declared:
+  (none)
+
+-------- TURN 14 (Player B) --------
+Player B draws Urza's Saga
+Urza's Saga gets 1 lore counter (now 2).
+Urza's Saga chapter 2 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 82: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Thespian's Stage
+|   3: Play Forest (from graveyard)
+|   4: Cast Icetill Explorer
+|   5: Activate Urza's Saga (Token)
+(REPLAY) [T13 | First Main | Player B] Input: 5
+| >> Player B: 5 (Activate Urza's Saga (Token))
+Player B activated Ancient Tomb for 1(G)
+Player B activated Yavimaya, Cradle of Growth for 1(G)
+Player B's Urza's Saga ability is on the stack
+Resolving ability (category: Token)
+Token created: 0/0 Construct
+Construct token gains (always)
+| decision 83: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Urza's Saga
+|   2: Play Thespian's Stage
+|   3: Play Forest (from graveyard)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Urza's Saga)
+Player B played Urza's Saga
+Urza's Saga gets 1 lore counter (now 1).
+Urza's Saga chapter 1 triggers.
+Resolving ability (category: Animate)
+Urza's Saga gains an activated ability.
+| decision 84: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Thespian's Stage
+|   2: Play Forest (from graveyard)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Thespian's Stage)
+Player B played Thespian's Stage
+| decision 85: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Cast Icetill Explorer
+|   2: Activate Thespian's Stage (Clone)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Cast Icetill Explorer)
+Player B activated Maze of Ith for 1(G)
+Player B activated Urza's Saga for 1(G)
+Player B activated Thespian's Stage for 1(C)
+Player B activated Wasteland for 1(C)
+Player B casts Icetill Explorer
+Icetill Explorer enters the battlefield
+| decision 86: Player B (game 0, turn 13, FIRST_MAIN, Player B active)
+| menu:
+|   0: Pass priority
+|   1: Play Forest (from graveyard)
+(REPLAY) [T13 | First Main | Player B] Input: 1
+| >> Player B: 1 (Play Forest (from graveyard))
+Player B played Forest
+Icetill Explorer triggered
+Resolving ability (category: Mill, amount: 1)
+Player B mills Thespian's Stage.
+
+--- Declare Attackers (Player B) ---
+| decision 87: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [7/7]
+|   1: Eldrazi Spawn token [0/1]
+|   2: Construct token [7/7]
+|   3: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [7/7])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [7/7] -> Player A
+| decision 88: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Eldrazi Spawn token [0/1]
+|   1: Construct token [7/7]
+|   2: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Eldrazi Spawn token [0/1])
+Eldrazi Spawn token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [7/7] -> Player A
+  [attacking] Eldrazi Spawn token [0/1] -> Player A
+| decision 89: Player B (game 0, turn 13, DECLARE_ATTACKERS, Player B active)
+| menu:
+|   0: Construct token [7/7]
+|   1: Confirm attackers
+(REPLAY) [T13 | Declare Attackers | Player B] Input: 0
+| >> Player B: 0 (Construct token [7/7])
+Construct token attacking Player A.
+
+--- Declare Attackers (Player B) ---
+  [attacking] Construct token [7/7] -> Player A
+  [attacking] Eldrazi Spawn token [0/1] -> Player A
+  [attacking] Construct token [7/7] -> Player A
+| auto: Player B: Confirm attackers
+
+Attackers declared:
+  Construct token -> Player A
+  Eldrazi Spawn token -> Player A
+  Construct token -> Player A
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [7/7]
+  1: Eldrazi Spawn token [0/1]
+  2: Construct token [7/7]
+Your creatures:
+| decision 90: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Canoptek Scarab Swarm [1/1]
+|   1: Clarion Conqueror [3/3]
+|   2: White Orchid Phantom [2/2]
+|   3: Solitude [3/2]
+|   4: Recruiter of the Guard [1/1]
+|   5: Insect token [1/1]
+|   6: Insect token [1/1]
+|   7: Insect token [1/1]
+|   8: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
 | >> Player A: 1 (Clarion Conqueror [3/3])
 Select attacker for Clarion Conqueror to block:
-| decision 75: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 91: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
-|   0: Construct token [8/8]
-|   1: Construct token [8/8]
-|   2: Eldrazi Spawn token [0/1]
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 2
-| >> Player A: 2 (Eldrazi Spawn token [0/1])
+|   0: Construct token [7/7]
+|   1: Eldrazi Spawn token [0/1]
+|   2: Construct token [7/7]
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Eldrazi Spawn token [0/1])
 Clarion Conqueror blocking Eldrazi Spawn token.
 
 --- Declare Blockers (Player A) ---
 Attackers:
-  0: Construct token [8/8]
-  1: Construct token [8/8]
-  2: Eldrazi Spawn token [0/1]
+  0: Construct token [7/7]
+  1: Eldrazi Spawn token [0/1]
+  2: Construct token [7/7]
 Your creatures:
   (assigned) Clarion Conqueror [3/3] blocking Eldrazi Spawn token
-| decision 76: Player A (game 0, turn 11, DECLARE_BLOCKERS, Player B active)
+| decision 92: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Canoptek Scarab Swarm [1/1]
+|   1: White Orchid Phantom [2/2]
+|   2: Solitude [3/2]
+|   3: Recruiter of the Guard [1/1]
+|   4: Insect token [1/1]
+|   5: Insect token [1/1]
+|   6: Insect token [1/1]
+|   7: Confirm blockers
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 2
+| >> Player A: 2 (Solitude [3/2])
+Select attacker for Solitude to block:
+| decision 93: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
+| menu:
+|   0: Construct token [7/7]
+|   1: Eldrazi Spawn token [0/1]
+|   2: Construct token [7/7]
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 1
+| >> Player A: 1 (Eldrazi Spawn token [0/1])
+Solitude blocking Eldrazi Spawn token.
+
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Construct token [7/7]
+  1: Eldrazi Spawn token [0/1]
+  2: Construct token [7/7]
+Your creatures:
+  (assigned) Clarion Conqueror [3/3] blocking Eldrazi Spawn token
+  (assigned) Solitude [3/2] blocking Eldrazi Spawn token
+| decision 94: Player A (game 0, turn 13, DECLARE_BLOCKERS, Player B active)
 | menu:
 |   0: Canoptek Scarab Swarm [1/1]
 |   1: White Orchid Phantom [2/2]
@@ -998,18 +1240,21 @@ Your creatures:
 |   4: Insect token [1/1]
 |   5: Insect token [1/1]
 |   6: Confirm blockers
-(REPLAY) [T11 | Declare Blockers | Player A] Input: 6
+(REPLAY) [T13 | Declare Blockers | Player A] Input: 6
 | >> Player A: 6 (Confirm blockers)
 
 Blockers declared:
   Clarion Conqueror blocking Eldrazi Spawn token
+  Solitude blocking Eldrazi Spawn token
 
 --- Combat Damage ---
-  Construct token deals 8 damage to Player A (now at 7 life)
-  Construct token deals 8 damage to Player A (now at -1 life)
+  Construct token deals 7 damage to Player A (now at -6 life)
   Clarion Conqueror deals 3 damage to Eldrazi Spawn token
+  Solitude deals 3 damage to Eldrazi Spawn token
+  Player A gains 3 life (lifelink)
+  Construct token deals 7 damage to Player A (now at -10 life)
 --- End Combat Damage ---
 
 
-Player A has -1 life - Player B wins!
+Player A has -10 life - Player B wins!
 GAME_RESULT: 1 Player B wins

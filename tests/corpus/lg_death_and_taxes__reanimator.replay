@@ -442,18 +442,18 @@ Surveil: looking at Polluted Delta
 | >> Player B: 0 (Put Brainstorm on top of library)
 | decision 42: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
-|   0: Put Lotus Petal on top of library
-|   1: Put Polluted Delta on top of library
+|   0: Put Lotus Petal 2nd from the top of library
+|   1: Put Polluted Delta 2nd from the top of library
 |   2: Put Lotus Petal into graveyard
 |   3: Put Polluted Delta into graveyard
 (REPLAY) [T5 | Draw | Player B] Input: 0
-| >> Player B: 0 (Put Lotus Petal on top of library)
+| >> Player B: 0 (Put Lotus Petal 2nd from the top of library)
 | decision 43: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
-|   0: Put Polluted Delta on top of library
+|   0: Put Polluted Delta 3rd from the top of library
 |   1: Put Polluted Delta into graveyard
 (REPLAY) [T5 | Draw | Player B] Input: 0
-| >> Player B: 0 (Put Polluted Delta on top of library)
+| >> Player B: 0 (Put Polluted Delta 3rd from the top of library)
 | decision 44: Player A (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
@@ -751,18 +751,18 @@ Surveil: looking at Thoughtseize
 | >> Player B: 0 (Put Thoughtseize on top of library)
 | decision 80: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
-|   0: Put Marsh Flats on top of library
-|   1: Put Thoughtseize on top of library
+|   0: Put Marsh Flats 2nd from the top of library
+|   1: Put Thoughtseize 2nd from the top of library
 |   2: Put Marsh Flats into graveyard
 |   3: Put Thoughtseize into graveyard
 (REPLAY) [T7 | Upkeep | Player B] Input: 1
-| >> Player B: 1 (Put Thoughtseize on top of library)
+| >> Player B: 1 (Put Thoughtseize 2nd from the top of library)
 | decision 81: Player B (game 0, turn 7, UPKEEP, Player B active)
 | menu:
-|   0: Put Marsh Flats on top of library
+|   0: Put Marsh Flats 3rd from the top of library
 |   1: Put Marsh Flats into graveyard
 (REPLAY) [T7 | Upkeep | Player B] Input: 0
-| >> Player B: 0 (Put Marsh Flats on top of library)
+| >> Player B: 0 (Put Marsh Flats 3rd from the top of library)
 Otherworldly Gaze is exiled (flashback)
 | decision 82: Player A (game 0, turn 7, UPKEEP, Player B active)
 | menu:

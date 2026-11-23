@@ -21,6 +21,8 @@ import os
 import re
 import tomllib
 
+from .latest import NAME as LATEST
+
 # The default league.decks: the eleven league decks, named, not read from decks/league/, so a deck
 # onboarded there later joins a run only through its league.decks (docs/rmtrain.md §1.1).
 LEAGUE = ["bug", "burn", "death_and_taxes", "eldrazi_aggro", "lands_top8", "maverick", "reanimator", "ur_tempo",
@@ -54,6 +56,9 @@ SPEC = {
          "trajectories and nn: / nn:remote: agents, evaluations, the ladder, the exploiter, rmtrain bench). Fixed "
          "when the run is created: not live, and a resume refuses a change (a checkpoint of either setting starts "
          "the run: run.start_from)"),
+        ("latest", True, "every fixed point and final the run exports is copied into the runs root's latest/ "
+         "(model.pt, the exports, latest.json; docs/rmtrain.md §4.1): the most recent policy under one fixed name "
+         "(false: the run never writes it; smoke runs and tests)"),
     ],
     "league": [
         ("decks", list(LEAGUE), "deck stems under bin/resources/decks/league/ (never heldout/); a deck is added to a "
@@ -529,6 +534,16 @@ def validate(cfg):
     need(c["every_minutes"] > 0 and c["keep"] >= 1, "checkpoint.every_minutes > 0, keep >= 1")
     need(all(f in ("ts", "pt2", "onnx") for f in c["export_formats"]), "checkpoint.export_formats: ts, pt2, onnx")
     return cfg
+
+
+def run_name_refusal(path):
+    """Why the run directory `path` cannot be a run ("" when it can): ``latest`` is the runs root's most
+    recent policy (latest.py), never a run."""
+    name = os.path.basename(os.path.abspath(path).rstrip("/"))
+    if name == LATEST:
+        return ("%s is not a run name: %s/ holds the most recent policy the runs exported (docs/rmtrain.md §4.1)"
+                % (name, name))
+    return ""
 
 
 def fixed_changes(old, new):

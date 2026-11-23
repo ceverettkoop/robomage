@@ -897,8 +897,8 @@ static void pregame_mull_decide(EcsSystems &sys) {
         }
     }
     std::vector<LegalAction> mull_actions = {
-        LegalAction(PASS_PRIORITY, std::string("Keep")),
-        LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+        LegalAction(CHOICE, std::string("Keep")),
+        LegalAction(CHOICE, std::string("Mulligan")),
     };
     mull_actions[0].category = ActionCategory::KEEP_HAND;
     mull_actions[1].category = ActionCategory::MULLIGAN;
@@ -951,7 +951,7 @@ static void pregame_mull_bottom(EcsSystems &sys) {
     std::vector<LegalAction> btm_actions;
     for (auto card : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(card);
-        LegalAction la(PASS_PRIORITY, card, cd.name);
+        LegalAction la(CHOICE, card, cd.name);
         la.category = ActionCategory::BOTTOM_DECK_CARD;
         btm_actions.push_back(la);
     }
@@ -1343,10 +1343,9 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // the persistent st.force_done.
         bool forced_this_menu = false;
         // Keep the three parallel vectors aligned; every menu entry goes through here.
-        auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies,
-                              const std::string &name, bool is_in) {
-            actions.emplace_back(ActionType::SPECIAL_ACTION,
-                std::string(verb) + std::to_string(copies) + "x " + sideboard_card_label(name));
+        auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies, const std::string &name, bool is_in) {
+            actions.emplace_back(
+                ActionType::CHOICE, std::string(verb) + std::to_string(copies) + "x " + sideboard_card_label(name));
             actions.back().category = is_in ? ActionCategory::SIDEBOARD_IN
                                             : ActionCategory::SIDEBOARD_OUT;
             actions.back().option_ordinal = sideboard_copy_ordinal(copies);
@@ -1361,7 +1360,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // finishes the phase rather than making an arbitrary swap.
         const bool balanced = (st.delta == 0);
         if (balanced) {
-            actions.emplace_back(ActionType::SPECIAL_ACTION, "Done sideboarding");
+            actions.emplace_back(ActionType::CHOICE, "Done sideboarding");
             actions.back().category = ActionCategory::SIDEBOARD_DONE;
             action_deck_idx.push_back(0);
             action_is_in.push_back(false);

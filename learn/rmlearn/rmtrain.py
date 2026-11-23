@@ -83,6 +83,8 @@ def prepare(run, args):
 
 def cmd_start(args):
     run = RunDir(resolve_run(args.run))
+    if C.run_name_refusal(run.path):
+        die(C.run_name_refusal(run.path))
     if run.exists() and alive(run.control_sock):
         die("run %s is already running" % run.name)
     if run.exists() and not args.foreground and _unit_active(unit_name(run)):
@@ -200,6 +202,8 @@ def double_fork(argv, env, out_path):
 
 def existing(name):
     run = RunDir(resolve_run(name))
+    if C.run_name_refusal(run.path):
+        die(C.run_name_refusal(run.path))
     if not run.exists():
         die("no run %s (%s)" % (name, run.path))
     return run

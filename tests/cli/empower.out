@@ -161,7 +161,7 @@ You know:
   Player B's hand holds Island x7
   Player B's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
   Player A's library: top: Island; 2nd from the top: Island; 3rd from the top: Island; ...
-Decision: Jace resolving: choose a card to put on top of the library
+Decision: Jace resolving: choose a card to put on top of the library or into the graveyard
   0: Put Island on top of library
   1: Put Island into graveyard
 Player A [0-1, help]> 

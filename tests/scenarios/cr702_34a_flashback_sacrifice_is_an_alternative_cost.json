@@ -1,0 +1,15 @@
+{
+  "name": "cr702_34a_flashback_sacrifice_is_an_alternative_cost",
+  "why": "CR 702.34a, 118.9: a flashback cost is paid rather than the mana cost; Cabal Therapy's sacrifice pick is a part of that alternative cost, so pending_cost's part is ALTERNATIVE there",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp"],
+  "graveyard_a": ["Cabal Therapy"],
+  "battlefield_a": ["Grizzly Bears", "Llanowar Elves"],
+  "library_b": ["Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B", "A:sacrifice:Llanowar Elves"],
+  "max_decisions": 6,
+  "expect_order": ["Player A sacrifices Llanowar Elves", "Player A casts Cabal Therapy"],
+  "expect_menu": ["^Sacrifice Grizzly Bears$"],
+  "expect_dump": ["^A .* pending_cost ALTERNATIVE discard=0$"],
+  "expect_dump_not": ["pending_cost ADDITIONAL"]
+}

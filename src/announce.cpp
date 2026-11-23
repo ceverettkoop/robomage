@@ -9,10 +9,12 @@
 #include "classes/game.h"
 #include "cli_output.h"
 #include "coverage.h"
+#include "queries/characteristics.h"
 #include "systems/state_manager_internal.h"
 #include "targeting.h"
 
-// The display label for mode `idx` of `modal`: its script description, else a positional fallback.
+// The display label for mode `idx` of `modal`: its script description as shown for the modal
+// object's source, else a positional fallback.
 static std::string mode_desc(const Ability &modal, size_t idx);
 
 // Record the pick of printed mode `idx` in modal.charm_chosen and return the mode instance its
@@ -67,7 +69,7 @@ static AnnounceStatus announce_targets(Ability &ab, AnnounceRT &rt, TargetAsker 
 static std::string mode_desc(const Ability &modal, size_t idx) {
     return (idx < modal.def->charm_choice_descriptions.size() &&
             !modal.def->charm_choice_descriptions[idx].empty())
-               ? modal.def->charm_choice_descriptions[idx]
+               ? script_text_for(modal.def->charm_choice_descriptions[idx], modal.source.lki_entity())
                : ("Mode " + std::to_string(idx + 1));
 }
 
@@ -109,7 +111,7 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
         // only by the raw option_ordinal scalar, which reads as "all modes
         // identical" to the policy/search. The distinct option_ordinal still
         // separates the modes from one another.
-        LegalAction la(PASS_PRIORITY, modal.source.lki_entity(), mode_desc(modal, i));
+        LegalAction la(CHOICE, modal.source.lki_entity(), mode_desc(modal, i));
         la.category = ActionCategory::CHOOSE_MODE;
         la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
         mode_actions.push_back(la);
@@ -119,8 +121,7 @@ static std::vector<LegalAction> build_mode_menu(Ability &modal, std::shared_ptr<
 }
 
 static LegalAction confirm_modes_action(const Ability &modal, int chosen) {
-    LegalAction la(
-        PASS_PRIORITY, modal.source.lki_entity(), "Done choosing modes (" + std::to_string(chosen) + " chosen)");
+    LegalAction la(CHOICE, modal.source.lki_entity(), "Done choosing modes (" + std::to_string(chosen) + " chosen)");
     la.category = ActionCategory::CONFIRM_MODES;
     la.option_ordinal = chosen;  // how many modes are chosen
     return la;
@@ -180,7 +181,7 @@ static std::vector<LegalAction> division_menu(const Ability &ab) {
     for (size_t i = 0; i < chosen.size(); i++) {
         const Entity target = chosen[i].get();
         const int share = ab.target_shares[i];
-        LegalAction la(PASS_PRIORITY, target,
+        LegalAction la(CHOICE, target,
             target_display_name(cur_game, target) + ": one more damage (" + std::to_string(share) + " so far)");
         la.category = ActionCategory::DIVIDE_DAMAGE;
         la.option_ordinal = share;

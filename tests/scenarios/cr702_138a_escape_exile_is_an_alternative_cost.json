@@ -1,0 +1,14 @@
+{
+  "name": "cr702_138a_escape_exile_is_an_alternative_cost",
+  "why": "CR 702.138a, 118.9: an escape cost is paid rather than the mana cost; Nethergoyf's graveyard exiles are part of that alternative cost, so pending_cost's part is ALTERNATIVE there",
+  "hand_a": ["Mountain"],
+  "library_a": ["Swamp"],
+  "library_b": ["Forest"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp"],
+  "graveyard_a": ["Nethergoyf", "Forest", "Grizzly Bears", "Lightning Bolt", "Ponder", "Mishra's Bauble"],
+  "play": ["A:keep", "B:keep", "A:cast:Nethergoyf", "exile:Forest", "exile:Grizzly Bears", "exile:Lightning Bolt", "exile:Mishra's Bauble"],
+  "max_decisions": 8,
+  "expect_order": ["Player A exiles Forest from their graveyard", "Player A exiles Mishra's Bauble from their graveyard", "Player A casts Nethergoyf"],
+  "expect_dump": ["^A .* pending_cost ALTERNATIVE discard=0$"],
+  "expect_dump_not": ["pending_cost ADDITIONAL"]
+}

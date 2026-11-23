@@ -111,7 +111,8 @@ from . import rnad as R
 from . import spec as S
 from .replay import spec_accepted
 from .batch import INPUTS, attention_cells, forward_groups, padded
-from .model import ModelConfig, RMNet, load_checkpoint, smoothed_log_policy
+from .model import (ModelConfig, RMNet, appended_positions, checkpoint_state, inherit_values, load_checkpoint,
+                    smoothed_log_policy)
 
 
 @dataclass
@@ -328,11 +329,12 @@ class RNaDLearner:
     @classmethod
     def from_state_dict(cls, sd, tables, device="cpu"):
         """A learner rebuilt from ``state_dict()`` (over `tables`, with which the state's manifest must
-        be compatible: spec.check_compatible)."""
+        be compatible: spec.check_compatible; the enum values appended since start as their earlier
+        values in every network and in Adam's moments, model.checkpoint_state)."""
         S.require_compatible(sd["hashes"], tables, "learner state")
         model = RMNet(ModelConfig.from_dict(sd["model_config"]), tables)
         learner = cls(model, RNaDConfig.from_dict(sd["config"]), device)
-        learner.load_state_dict(sd)
+        learner.load_state_dict(_inherited_learner_state(sd, appended_positions(sd["hashes"], tables), model))
         return learner
 
     def configure(self, **changes):
@@ -851,13 +853,30 @@ def _checkpointed(groups, cfg):
     return tokens > cfg.checkpoint_tokens or cells > cfg.attention_budget
 
 
+def _inherited_learner_state(sd, positions, model):
+    """A learner ``state_dict()`` with `positions` (model.appended_positions) inherited in the online,
+    target and regularisation networks and in Adam's moments (in `model`'s parameter order)."""
+    if not positions:
+        return sd
+    names = [k for k, _ in model.named_parameters()]
+
+    def moments(xs):
+        by_name = inherit_values(dict(zip(names, xs)), positions, moments=True)
+        return [by_name[k] for k in names]
+
+    regs = [r if "state" not in r else dict(r, state=inherit_values(r["state"], positions)) for r in sd["regs"]]
+    adam = dict(sd["adam"], m=moments(sd["adam"]["m"]), v=moments(sd["adam"]["v"]))
+    return dict(sd, model=inherit_values(sd["model"], positions), target=inherit_values(sd["target"], positions),
+                regs=regs, adam=adam)
+
+
 def _load_with_config(path, tables, model_cfg):
     data = torch.load(path, map_location="cpu", weights_only=True)
-    S.require_compatible(data["hashes"], tables, path)
+    sd = checkpoint_state(data["hashes"], data["state_dict"], tables, path)
     cfg = ModelConfig.from_dict({**data["config"], **(model_cfg if isinstance(model_cfg, dict) else
                                                       model_cfg.to_dict())})
     model = RMNet(cfg, tables)
-    missing, unexpected = model.load_state_dict(data["state_dict"], strict=False)
+    missing, unexpected = model.load_state_dict(sd, strict=False)
     bad = [k for k in missing if not k.startswith("critic.")] + list(unexpected)
     if bad:
         raise ValueError("%s: the checkpoint does not fit the model config: %s" % (path, bad[:5]))

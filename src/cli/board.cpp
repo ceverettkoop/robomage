@@ -129,6 +129,7 @@ static std::vector<std::string> pool_mana_notes(const Frame &f, uint64_t seat);
 static std::vector<std::string> player_lines(const Frame &f, bool sideboarding);
 static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t controller);
 static std::string stack_item(const Frame &f, size_t row);
+static bool x_unannounced(const Frame &f, uint64_t handle);
 static std::vector<std::string> stack_lines(const Frame &f);
 static std::vector<std::string> hand_lines(const Frame &f);
 static std::vector<size_t> zone_rows(const Frame &f, int zone, uint64_t owner);
@@ -140,6 +141,9 @@ static std::vector<std::string> effect_lines(const Frame &f);
 static std::vector<std::string> deck_lines(const Frame &f);
 static bool opening_hand_decision(const Frame &f);
 static std::string category_task(const std::string &category);
+static std::string menu_task(const Frame &f, size_t row);
+static std::string choose_x_task(const Frame &f, size_t row);
+static std::string top_library_task(const Frame &f, size_t row);
 static std::string pending_context(const Frame &f);
 static std::string cost_text(const Frame &f, size_t row);
 static std::string card_cost(const Frame &f, int cid);
@@ -501,6 +505,15 @@ static std::vector<std::string> battlefield_lines(const Frame &f, uint64_t contr
 // The key of the ability a player's speed brings: it has no source to name it by.
 static const char *const kSpeedTriggerKey = "triggered:IncreaseSpeed";
 
+// Whether the cost being paid for this stack object still owes an {X} whose value is not yet
+// announced (CR 601.2b / 602.2b): the object has no X yet.
+static bool x_unannounced(const Frame &f, uint64_t handle) {
+    const agents::Table &c = f.cost;
+    for (size_t r = 0; r < c.rows(); ++r)
+        if (c.u(r, c.col("for")) == handle && c.u(r, c.col("rem_x")) > 0) return true;
+    return false;
+}
+
 // One stack object: name, kind and controller, X / modes / kicker, targets.
 static std::string stack_item(const Frame &f, size_t row) {
     const agents::Table &s = f.stack;
@@ -521,7 +534,7 @@ static std::string stack_item(const Frame &f, size_t row) {
     line += " " + ref(h) + " (" + seat_name(f.v, s.u(row, s.col("controller"))) + ")";
     std::vector<std::string> extra;
     const int64_t x = s.s(row, s.col("x"));
-    if (x >= 0 && kind == "SPELL") extra.push_back("X=" + std::to_string(x));
+    if (x >= 0 && kind == "SPELL" && !x_unannounced(f, h)) extra.push_back("X=" + std::to_string(x));
     std::vector<std::string> modes;
     for (size_t r = 0; r < f.smode.rows(); ++r)
         if (f.smode.u(r, f.smode.col("stack")) == h)
@@ -834,6 +847,41 @@ static std::string category_task(const std::string &category) {
     return it != tasks.end() ? it->second : lower_words(category);
 }
 
+// What menu row `row` asks for: its category's task, worded by what the row itself says where one
+// category covers several choices.
+static std::string menu_task(const Frame &f, size_t row) {
+    const std::string &category = f.v.category(row);
+    if (category == "CHOOSE_X") return choose_x_task(f, row);
+    if (category == "TOP_LIBRARY") return top_library_task(f, row);
+    return category_task(category);
+}
+
+// A CHOOSE_X row: a delve count carries the spell being cast as its source (an X ladder none), and
+// a number chosen as an effect resolves is no X.
+static std::string choose_x_task(const Frame &f, size_t row) {
+    if (f.menu.u(row, f.menu.col("source")) != 0 || !f.menu.none(row, f.menu.col("source_card")))
+        return "choose how many cards to exile from your graveyard (delve)";
+    if (f.pending.rows() && f.st.enum_name("pending_tag", f.pending.u(0, f.pending.col("tag"))) == "RESOLUTION")
+        return "choose a number";
+    return "choose X";
+}
+
+// A TOP_LIBRARY row: where the chosen card goes, its ordinal the depth from the top when the effect
+// fills a given position (Ponder's first pick goes 3rd from the top), and the menu's other pile when
+// the cards are split (scry's bottom, surveil's graveyard).
+static std::string top_library_task(const Frame &f, size_t row) {
+    const int64_t depth = f.menu.s(row, f.menu.col("ordinal"));
+    std::string task =
+        "choose a card to put " +
+        (depth > 0 ? ordinal(static_cast<uint64_t>(depth) + 1) + " from the top" : std::string("on top")) +
+        " of the library";
+    for (size_t r = 0; r < f.v.n(); ++r) {
+        if (f.v.category(r) == "BOTTOM_DECK_CARD") return task + " or on the bottom";
+        if (f.v.category(r) == "CHOOSE_CARD") return task + " or into the graveyard";
+    }
+    return task;
+}
+
 // What the paused flow is doing ("casting Force of Will"), from the pending table; "" when none.
 static std::string pending_context(const Frame &f) {
     if (f.pending.rows() == 0) return "";
@@ -865,9 +913,9 @@ std::vector<std::string> pending_lines(const agents::DecisionView &v) {
             c == "TURN_FACE_UP" || c.rfind("MANA_", 0) == 0)
             priority = priority || c == "PASS_PRIORITY";
         else if (task.empty())
-            task = category_task(c);
+            task = menu_task(f, i);
     }
-    if (task.empty() && v.n() > 0) task = category_task(v.category(0));
+    if (task.empty() && v.n() > 0) task = menu_task(f, 0);
     if (priority && f.turn.rows() && f.turn.u(0, f.turn.col("priority_window"))) task = "act or pass priority";
     if (f.turn.rows()) {
         const std::string mandatory = f.st.enum_name("mandatory_choice", f.turn.u(0, f.turn.col("mandatory")));

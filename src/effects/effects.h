@@ -83,7 +83,8 @@ enum class LookSplitRest { LIBRARY_BOTTOM, GRAVEYARD };
 // fixes the final library order (the FIRST one ends up topmost); each is put at its final depth
 // the moment it is chosen, so it sits on top for the remaining choices. Cards sent
 // to the bottom go under the ones bottomed before them, so both piles are in any order the looker
-// wants. Menu: "Put X on top of library" (TOP_LIBRARY, option_ordinal = the depth it will sit at)
+// wants. Menu: "Put X on top of library" / "Put X 2nd from the top of library" (TOP_LIBRARY,
+// option_ordinal = the depth it will sit at)
 // for each remaining card, then one `rest` option per card (BOTTOM_DECK_CARD / CHOOSE_CARD) — the
 // two share the card entity, so they differ by category for the semantic action resolver.
 // Returns SUSPENDED when a pick parked. Defined in effect_surveil.cpp.

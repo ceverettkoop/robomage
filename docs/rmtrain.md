@@ -108,7 +108,11 @@ stopped run. `retable` (refused while the run runs; `orchestrator/retable.py`):
    oldest first): the window and R-NaD's episode filter accept the lineage's spec hashes
    (`spec.Tables.accepted_spec_hashes`);
 5. rebuilds every export of `state.json` (the latest per name: phase ends, fixed points, `final`)
-   in `checkpoint.export_formats`, and removes the evaluations' and live exports;
+   in `checkpoint.export_formats`, and removes the evaluations' and live exports (each from its
+   checkpoint loaded over the new tables, so an enum value appended to take over an earlier value's
+   inputs starts as that value, `docs/featurizer.md` §6.1; the resumed learner state does the same);
+   when `runs/latest` holds one of those exports of this run, its exports are copied from the rebuilt
+   ones and `latest.json` rewritten (§4.1);
 6. records the change in `state.json` (`tables`; `retables`: from, to, kept directory, checkpoints
    checked, drift, exports rebuilt) and a `retable` metrics line.
 
@@ -192,6 +196,7 @@ policy), `rnad.push_every`, `rnad.report_every`, `rnad.games_per_step`, `rnad.va
 | `run.restart_on_failure`, `run.restart_delay_s` | true, 60 | systemd's restart of a failed run |
 | `run.crash_loop_fatals` | 3 | fatal stops in a row without progress before exit status 4 (not restarted; 0: never; §5) |
 | `run.start_from` | `""` | a BC checkpoint (e.g. another run's `ckpt/bc-final.pt`): start at B3 from it, B0–B2 skipped, its model config |
+| `run.latest` | true | every fixed point and `final` the run exports is also written into the runs root's `latest/` (§4.1); false: never (the checks' runs and the smoke set it false) |
 | `run.feature_history` | 0 | recent-event history tokens (`docs/featurizer.md` §3.7), at most N events (0: off). Fixed at creation (not live; a resume changing it is refused). Passed to the tables export (`--history N`, at start and in `retable`) and every engine the run starts (`--feature-history N`: training, evaluation, ladder and exploiter actors; `rmtrain bench`'s default). Changes the spec hash, not the layout hash: a checkpoint of either setting can start a run (`run.start_from`); the window keeps only the tables' spec; exports are rebuilt per setting |
 | `league.decks` / `league.pairs` | the eleven decks of `config.py`'s `LEAGUE` (not read from `decks/league/`; add others with `add-decks`) / every pair | matchups and weights (`[[a, b, w], …]`, naming exactly `league.decks`); never a `heldout/` deck; live |
 | `league.format`, `league.knowledge`, `league.max_game_decisions` | `bo3`, `expert`, 5000 | |
@@ -278,6 +283,44 @@ runs/<name>/
   bench/<label>[-vs-<tier>]/     benchmarks (§7.1)
 ```
 
+### 4.1 `runs/latest`: the most recent policy
+
+Beside the run directories (the parent of `runs/<name>`), `rmtrain` keeps the most recent policy
+any run exported under one fixed name, so a release or another machine takes it without knowing
+which run made it (`orchestrator/latest.py`):
+
+```
+runs/latest/
+  model.pt        the network as a model checkpoint (model.save_checkpoint: what run.start_from loads)
+  policy.ts.pt    its TorchScript export (nn:runs/latest/policy.ts.pt)
+  policy.pt2      its AOTInductor export (policy.onnx with onnx in checkpoint.export_formats)
+  latest.json     run, run_dir, name (m7, final), learner_steps, version, trained_at, written_at (Unix
+                  seconds), engine_commit (the repository's HEAD when written), manifest (the tables'
+                  spec, vocab, layout hashes, tables digest, text model, card count), files (each
+                  file's sha256 and bytes)
+```
+
+- **Written** by the exporter (`--latest`) after it exports an R-NaD fixed point `m<k>` or `final`
+  of a run with `run.latest` (and `checkpoint.export`); never per learner step (the live export) and
+  never for the BC exports. A fixed point's `ckpt/fixed/m<k>.pt` is copied as `model.pt`; `final`'s
+  learner state (`rnad-final.pt`) has its network saved there. Each file goes through a temporary
+  file renamed into place, `latest.json` last, so a `latest.json` whose sha256s match the files is a
+  whole policy; a policy file of a format the new policy lacks is removed afterwards. The run's log
+  and a `latest` metrics line name it; a failure to write it (`latest_failed`, the exporter's exit
+  status 3) leaves the export itself recorded.
+- **Copies, not links**: `rsync -a runs/latest/ host:…/runs/latest/` takes it as it stands. It
+  outlives its run (deleting a run never touches it), and the last one written wins: two runs
+  exporting at once take no lock beyond the renames.
+- **Retable** (§1.1) of the run `latest.json` names, with its policy among the exports rebuilt,
+  copies the rebuilt exports into `latest/` and rewrites `latest.json` (manifest, sha256s,
+  `written_at`); `model.pt` loads across a grown vocab as it is. The orchestrator does the same when
+  it re-exports at a start over changed tables.
+- **The name is reserved**: `rmtrain start latest` (any directory named `latest`) and every other
+  command on it are refused, and so is an orchestrator over it (`config.run_name_refusal`).
+- On another machine the exports need an engine of the same tables (`latest.json`'s manifest against
+  `rmfeat --compat`); `model.pt` alone is enough when the engine there differs, with an export made
+  from it there.
+
 ## 5. Processes
 
 | Process | What |
@@ -286,7 +329,7 @@ runs/<name>/
 | GPU process | `python -m rmlearn.orchestrator.gpu RUN`: **the only process that touches the GPU**: the learner (BC: `BCTrainer` and its window; R-NaD: `RNaDLearner`, `ServerLink`, the self-play window) and the RMIP `InferenceServer` at `/tmp/rmtrain-<hash>/rmip.sock`. Holds the flock `run.gpu_lock` while it lives (fails at once naming the lock, or waits with `run.gpu_lock_wait`). Commands as JSON lines on stdin, replies and events on stdout (fd 1 redirected to `gpu.log`); ignores SIGTERM / SIGINT, exits on end of input |
 | actors | `bin/<build>/robomage_nn --actor` (docs/actor.md) on `schedule.json`, GPU hidden (`HIP_VISIBLE_DEVICES=` …), `OMP_NUM_THREADS=1`, one process group each (with their `python/teacher.py`) |
 | evaluation actors | the same with `--actor-matches`, in `eval/<seq>-<label>/` |
-| exporter | `python -m rmlearn.orchestrator.exporter` (CPU), one at a time: `.ts.pt` / `.pt2` of a checkpoint |
+| exporter | `python -m rmlearn.orchestrator.exporter` (CPU), one at a time: `.ts.pt` / `.pt2` of a checkpoint; for a fixed point or `final`, also `runs/latest/` (§4.1) |
 | live exporter | `python -m rmlearn.orchestrator.exporter --serve` (CPU, kept running): local actors' and local evaluations' exports (`orchestrator/live.py`) |
 
 ### 5.1 Local evaluation (`actors.policy_eval = "local"`)
@@ -584,8 +627,12 @@ snapshot cadence, metrics, status, and the engine reading the schedule when buil
 the request split, ladder ratings; resume rollback (lost rungs, evaluations and ladder players;
 non-fresh episodes); evaluation subjects, failures, collisions and options; draws as findings; the
 benchmark (default policies, summary, sideboarding report, `--opponent`, `--decks`, `--focus`);
-`add-decks` and live `league.*`; and `run.feature_history` (not live, resume refusal, the engines'
-and `rmfeat`'s flags, the start check, `bench`'s default).
+`add-decks` and live `league.*`; `run.feature_history` (not live, resume refusal, the engines'
+and `rmfeat`'s flags, the start check, `bench`'s default); and `runs/latest` (the writer's files,
+order, `latest.json` and sha256s, a learner state's network as `model.pt`, the last write winning;
+the export jobs that carry `--latest` and `run.latest` false writing nothing; the rebuild after a
+retable or a re-export; the reserved name refused by `start`, `status`, `retable` and the
+orchestrator).
 
 The smoke runs a tiny run (3 actors, d 64 / 2 layers, B0 5,000 decisions, BC ended by `phase next`,
 one DAgger round of 3,000 decisions, R-NaD with Δm 30 and G 2) detached under systemd, exercises

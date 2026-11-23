@@ -15,7 +15,9 @@ index), a relation by (table, column, target), a table column by its name, a car
 (type, slot name). Every position the old layout lacks reads zero (reserved capacity, and the none /
 pad rows' places); an old reserved position (a table column named ``#<i>`` or ``<entry>#<i>``, an id
 past an enum's values) reads zero in every input and has no counterpart. The omniscient critic's own
-encoder is remapped the same way. Everything else must keep its name and shape. The same tool
+encoder is remapped the same way. An enum value the old layout lacks that takes over an earlier value's
+inputs (``spec.INHERITED_VALUES``) starts from the earlier value's old positions instead of zero (the
+record's ``inherited``). Everything else must keep its name and shape. The same tool
 migrates across a later layout bump (a registry ``layout_version`` raised: docs/rmtrain.md §1.2).
 
 **What is dropped:** only the removed inputs (``REMOVED_TYPES``, ``REMOVED_VALUES``,
@@ -154,9 +156,11 @@ def reserved_column(name):
 
 class LayoutMap:
     """The old → new position maps of every layout-indexed parameter, by name; ``dropped`` lists what
-    the old layout had and the new lacks (all of it removed inputs, else MigrationError)."""
+    the old layout had and the new lacks (all of it removed inputs, else MigrationError). With the new
+    layout's registry text (`registry`), ``inherited``: the positions an enum value the old layout lacks
+    takes over from an earlier value's (spec.inherited_positions), set once the rest is remapped."""
 
-    def __init__(self, old, new):
+    def __init__(self, old, new, registry=None):
         self.old, self.new = old, new
         self.dropped = []
         bad = []
@@ -212,6 +216,12 @@ class LayoutMap:
         if bad:
             raise MigrationError("the old layout has %d name(s) the current one lacks (not removed inputs): %s"
                                  % (len(bad), "; ".join(bad[:8]) + (" ..." if len(bad) > 8 else "")))
+        # In the new layout's positions, applied to a network once remapped (inherit).
+        self.inherited = S.inherited_positions(old.enums, registry) if registry else {}
+
+    def inherit(self, tensors, moments=False):
+        """`tensors` (by parameter name, remapped) with the inherited positions (model.inherit_values)."""
+        return M.inherit_values(tensors, self.inherited, moments)
 
     def _cat_slot(self, type_name, s, ns):
         """Appends the slot's id pairs; the problems found."""
@@ -286,7 +296,9 @@ def layout_map(old_tables, old_cards, tables_dir):
     old_doc, old_hash = read_spec_doc(old_tables)
     new_doc, _ = read_spec_doc(tables_dir)
     enums = old_doc["enums"] if "enums" in old_doc else old_enums(old_cards)
-    return LayoutMap(Layout(old_doc, enums), Layout(new_doc, new_doc.get("enums", {}))), old_hash
+    with open(os.path.join(tables_dir, "registry.json")) as fp:
+        registry = fp.read()
+    return LayoutMap(Layout(old_doc, enums), Layout(new_doc, new_doc.get("enums", {})), registry), old_hash
 
 
 # ── networks ──────────────────────────────────────────────────────────────────────────────────
@@ -321,6 +333,7 @@ def migrate_state(lm, old_sd, model):
                 raise MigrationError("%s: shape %s, the current model's %s" % (k, tuple(o.shape), tuple(t.shape)))
             r = o.clone()
         out[k] = r.to(t.dtype)
+    out = lm.inherit(out)
     gone = [k for k in old_sd if k not in tmpl]
     bad = [k for k in gone if not k.startswith(REMOVED_PARAMS) and k != "cards.card_seen"]
     if bad:
@@ -376,13 +389,15 @@ def migrate_adam(lm, adam, old_sd, model):
             raise MigrationError("Adam's moment %d does not have the shape of %s" % (i, k))
     at = {k: i for i, k in enumerate(names)}
     mask = None if "cards.card_seen" in old_sd else model.cards.card_seen.cpu()
-    out = {"t": adam["t"], "m": [], "v": []}
+    order = [k for k, _ in model.named_parameters()]
+    m, v = {}, {}
     for k, p in model.named_parameters():
         if k not in at:
             raise MigrationError("no Adam moment for %s" % k)
-        out["m"].append(migrate_moment(lm, k, adam["m"][at[k]], p, mask))
-        out["v"].append(migrate_moment(lm, k, adam["v"][at[k]], p, mask))
-    return out
+        m[k] = migrate_moment(lm, k, adam["m"][at[k]], p, mask)
+        v[k] = migrate_moment(lm, k, adam["v"][at[k]], p, mask)
+    m, v = lm.inherit(m, moments=True), lm.inherit(v, moments=True)
+    return {"t": adam["t"], "m": [m[k] for k in order], "v": [v[k] for k in order]}
 
 
 def migrate_bc_opt(lm, opt_state, old_sd, model):
@@ -400,8 +415,8 @@ def migrate_bc_opt(lm, opt_state, old_sd, model):
         st = o["state"].get(o["param_groups"][0]["params"][at[k]])
         if st is None:
             continue
-        state[j] = {sk: (migrate_moment(lm, k, sv, p, mask) if sk in ("exp_avg", "exp_avg_sq") else sv)
-                    for sk, sv in st.items()}
+        state[j] = {sk: (lm.inherit({k: migrate_moment(lm, k, sv, p, mask)}, moments=True)[k]
+                         if sk in ("exp_avg", "exp_avg_sq") else sv) for sk, sv in st.items()}
     group = dict(o["param_groups"][0], params=list(range(len(params))))
     return dict(opt_state, opt={"state": state, "param_groups": [group]})
 
@@ -523,7 +538,7 @@ def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards
     info = {"tool": "rmlearn.migrate", "format": FORMAT, "old_tables": os.path.abspath(old_tables),
             "old_spec_hash": old_hash, "spec_hash": tables.hashes["spec_hash"],
             "layout_hash": tables.hashes["layout_hash"], "seen": None if seen is None else list(seen),
-            "dropped": lm.dropped}
+            "dropped": lm.dropped, "inherited": lm.inherited}
     records = []
     for src in files:
         out = os.path.join(stage, os.path.relpath(src, ckpt))
@@ -539,6 +554,7 @@ def migrate_run(run_dir, tables_dir, seen, log=print, old_tables=None, old_cards
                                                               ("spec_hash", "vocab_hash", "layout_hash",
                                                                "tables_digest", "text_model")},
            "seen": records[0]["seen"] if seen is None else list(seen), "dropped": lm.dropped,
+           "inherited": lm.inherited,
            "files": [{k: r[k] for k in ("source", "source_sha256", "out", "sha256", "kind", "seen")}
                      for r in records]}
     previous = os.path.join(ckpt, "migration.json")
@@ -597,7 +613,7 @@ def main(argv=None):
                            {"tool": "rmlearn.migrate", "format": FORMAT, "old_tables": os.path.abspath(old_tables),
                             "old_spec_hash": old_hash, "spec_hash": tables.hashes["spec_hash"],
                             "layout_hash": tables.hashes["layout_hash"], "seen": seen, "dropped": lm.dropped,
-                            "at": time.time()})
+                            "inherited": lm.inherited, "at": time.time()})
         print("migrated %s -> %s (%s)" % (a.checkpoint, a.out, rec["kind"]))
         return 0
     except MigrationError as err:

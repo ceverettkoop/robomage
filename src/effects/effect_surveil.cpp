@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "../choice_labels.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
@@ -68,15 +69,16 @@ HandlerResult look_and_split(LookSplitRt &rt, Zone::Ownership looker, LookSplitR
         int place_depth = static_cast<int>(rt.to_top.size());
         for (Entity card : rt.remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
-            LegalAction la(PASS_PRIORITY, card, "Put " + cd.name + " on top of library");
+            LegalAction la(
+                CHOICE, card, "Put " + cd.name + " " + library_depth_phrase(static_cast<size_t>(place_depth)));
             la.category = ActionCategory::TOP_LIBRARY;
             la.option_ordinal = place_depth;
             actions.push_back(la);
         }
         for (Entity card : rt.remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
-            LegalAction la(PASS_PRIORITY, card,
-                           "Put " + cd.name + (to_bottom ? " on the bottom of library" : " into graveyard"));
+            LegalAction la(
+                CHOICE, card, "Put " + cd.name + (to_bottom ? " on the bottom of library" : " into graveyard"));
             la.category = to_bottom ? ActionCategory::BOTTOM_DECK_CARD : ActionCategory::CHOOSE_CARD;
             actions.push_back(la);
         }

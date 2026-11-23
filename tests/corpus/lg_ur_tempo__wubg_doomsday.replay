@@ -269,10 +269,10 @@ Scry: looking at Wasteland
 | >> Player A: 0 (Put Prismari Charm on top of library)
 | decision 22: Player A (game 0, turn 2, FIRST_MAIN, Player A active)
 | menu:
-|   0: Put Wasteland on top of library
+|   0: Put Wasteland 2nd from the top of library
 |   1: Put Wasteland on the bottom of library
 (REPLAY) [T2 | First Main | Player A] Input: 0
-| >> Player A: 0 (Put Wasteland on top of library)
+| >> Player A: 0 (Put Wasteland 2nd from the top of library)
 Resolving ability (category: Draw, amount: 1)
 Player A draws Prismari Charm
 | decision 23: Player A (game 0, turn 2, FIRST_MAIN, Player A active)

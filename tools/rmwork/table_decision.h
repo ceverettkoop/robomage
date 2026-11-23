@@ -1,0 +1,209 @@
+#ifndef RMWORK_TABLE_DECISION_H
+#define RMWORK_TABLE_DECISION_H
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+#include "../../src/agents/decision_view.h"
+#include "card_book.h"
+#include "match.h"
+#include "priority_costs.h"
+#include "table_model.h"
+
+// ── What a click on the Table answers: a decision's menu rows by the object or player they name ──
+//
+// Direct manipulation on the Table (docs/workbench_plan.md §4.2). Read from the viewer's STATE frame
+// only (its menu, pending, pending_cost, combat and object tables), so a seat view of the other seat's
+// decision has none. These kinds of decision are answered on the Table:
+//   - TARGET: every row is SELECT_TARGET or DIVIDE_DAMAGE (a spell's or ability's targets, a trigger's
+//     as it is put on the stack, one more point of divided damage). A target row names its candidate
+//     as its source (a player as its source player);
+//   - PAY: a PAYING_COSTS row in the menu: the interactive mana payment of --no-auto-mana (a mana
+//     ability's row names its permanent) and a Phyrexian pip paid with life or mana;
+//   - PRIORITY: a priority decision (the PASS_PRIORITY row, CAST_SPELL, PLAY_LAND, ACTIVATE_ABILITY,
+//     TURN_FACE_UP, COMPANION and, under --no-auto-mana, MANA_* rows). A row naming a card the Table
+//     shows (a hand card cast or played, a permanent activated or tapped for mana) is that card's pick,
+//     a card with several (Daze's two casts, a land's mana and its other ability, a cycling card) its
+//     popup; each row's cost (priority_costs.h) is in `costs`. The pass row is `pass`, a button of the
+//     prompt line with the rows naming a card off the Table (a flashback or escape from the graveyard, a
+//     companion); the prompt says what may be done ("Respond to Player B's Lightning Bolt: cast a spell
+//     or activate an ability, or pass");
+//   - combat (CR 508.1, 509.1, 510.1c): ATTACKERS (SELECT_ATTACKER rows, one per creature that can
+//     still attack, and CONFIRM_ATTACKERS), ATTACK_TARGET (what the creature just chosen attacks: the
+//     defending player or one of their planeswalkers), BLOCKERS (SELECT_BLOCKER rows and
+//     CONFIRM_BLOCKERS), BLOCK_TARGET (which attacker the blocker just chosen blocks) and DAMAGE
+//     (ASSIGN_DAMAGE: an attacker blocked by two or more creatures it cannot all kill gives lethal
+//     damage to one blocker at a time, then Done). The engine declares an attacker or blocker as its
+//     row is answered and has no row to take one back, so the Table plans a declaration and sends it
+//     (table_combat.h). The current rules have no damage assignment order (CR 510.1c), and neither
+//     has the engine: the attacking player divides the damage among the blockers as it chooses;
+//   - MULLIGAN (KEEP_HAND and MULLIGAN rows: the opening hand kept or mulliganed, their buttons on the
+//     prompt line) and BOTTOM (the London mulligan's BOTTOM_DECK_CARD picks from the hand, CR 103.5,
+//     planned on the Table and sent on confirm: mulligan_plan.h), with the player's MulliganFacts;
+//   - CARDS (card_picker.h: a library search, a card put on top or the bottom of a library, a dig's,
+//     a tutor's, a graveyard card for a cost, a card discarded, a permanent sacrificed or returned, the
+//     legend kept): rows naming a card the Table shows (the hand: Brainstorm's put-back, a discard; the
+//     battlefield: a sacrifice, Daze's Island, the legend kept) are its picks, the rest the card
+//     picker's (card_picker_view.h: Thoughtseize's pick from the opponent's revealed hand). A discard
+//     of several cards (the cleanup discard, an escalate cost's) is planned on the hand and sent on
+//     confirm (`plan_owed`, card_plan.h);
+//   - MODES (CHOOSE_MODE rows, CONFIRM_MODES: a modal spell's modes, one decision per mode, "Done
+//     choosing modes" once the fewest are chosen), ORDER (ORDER_TRIGGERS: the next of the player's
+//     simultaneous triggers to put on the stack) and NAME (NAME_CARD: the engine's limited candidate
+//     set, src/name_card_choices.h): their rows in the choice panel (choice_panel.h), a window over the
+//     opponent's half as the card picker is; CONFIRM_MODES a button of the prompt line;
+//   - NUMBER (CHOOSE_X: an X, a delve count; a row per value): a stepper on the prompt line, bounded
+//     by the rows, with the cost the value leaves (number_pips);
+//   - UNLESS (PAY_UNLESS: an unless cost, CR 118.12, with the mana rows that pay it): Pay / Don't pay
+//     on the prompt line, the cost as pips, the lands that pay it lit;
+//   - CHOICE: any other decision that is not a priority decision or sideboarding (a yes/no, an optional
+//     cost, a shuffle, a colour or creature type, a replacement to apply, …): its rows as prompt-line
+//     buttons (an object's row a pick when the Table shows the object), in the choice panel's list when
+//     there are more than MAX_PROMPT_ROWS of them.
+// Every decision but sideboarding (its tool, sideboard_view.h) has an answer on the Table; Choices stays
+// available for all of them.
+// A row naming an object shown on the Table (a battlefield or hand card, a stack object) or a player
+// is a pick of that object or player: a click on it answers with the row, or, when it names several
+// (a dual land's two colours), offers them in a popup. A row naming nothing (Done selecting targets,
+// Cancel casting, Pay 2 life, Pay {B}, Confirm attackers, Done assigning) is a button on the
+// decision's prompt line in the middle strip, beside the prompt and the cost still to pay; a row naming
+// an object the Table does not show (a card in a graveyard) is a button too, except at a card-picker
+// decision (the picker shows it). Buttons beyond MAX_PROMPT_ROWS go to the choice panel's list.
+//
+// The frame lists no target chosen so far while a spell is being cast or an ability activated or put
+// on the stack (its `stack_target` rows are written once the targets are announced), so the targets
+// already chosen are read from the earlier decisions of the same targeting (chosen_targets).
+
+namespace rmwork {
+
+enum class DecisionKind {
+    NONE,
+    TARGET,
+    PAY,
+    PRIORITY,
+    ATTACKERS,
+    ATTACK_TARGET,
+    BLOCKERS,
+    BLOCK_TARGET,
+    DAMAGE,
+    MULLIGAN,
+    BOTTOM,
+    CARDS,
+    MODES,
+    NUMBER,
+    ORDER,
+    NAME,
+    UNLESS,
+    CHOICE
+};
+
+// The most buttons a decision's prompt line offers; more go to the choice panel's list.
+inline constexpr size_t MAX_PROMPT_ROWS = 6;
+
+// Whether `k` is part of declaring attackers (ATTACKERS, ATTACK_TARGET) / blockers (BLOCKERS,
+// BLOCK_TARGET).
+bool declares_attackers(DecisionKind k);
+bool declares_blockers(DecisionKind k);
+
+struct DecisionPick {
+        uint64_t handle = 0;    // an object's (a card on the Table, a stack object), 0 for a player
+        int seat = -1;          // a player's: 0 A, 1 B
+        std::vector<int> rows;  // the menu rows naming it, in menu order
+        int so_far = -1;        // DIVIDE_DAMAGE: the points it has been given so far
+        int lethal = -1;        // DAMAGE: the lethal damage its row assigns ("(lethal 2)")
+};
+
+// What the frame says of blocking, for planning blocks before the engine names an attacker's
+// blockers: the attackers, and the evasion the frame shows (flying, reach, can't be blocked). The
+// engine's own checks (CR 509.1b: protection, landwalk, menace …) are wider; its BLOCK_TARGET rows are
+// the legal attackers of a chosen blocker.
+struct BlockFacts {
+        std::vector<uint64_t> attackers;  // in the combat table's order
+        std::vector<uint64_t> flying, reach, unblockable;
+};
+
+// The deciding player's opening-hand facts (the `player` and `match` tables).
+struct MulliganFacts {
+        int mulligans = 0;  // taken so far
+        int to_bottom = 0;  // cards still owed to the bottom of the library
+        int hand = 0;       // the hand's size
+        int on_play = -1;   // 1 on the play, 0 on the draw, -1 unknown
+        int opponent_mulligans = 0;
+};
+
+// A target chosen earlier in the same targeting (`order` from 1).
+struct ChosenTarget {
+        uint64_t handle = 0;
+        int seat = -1;
+        int order = 0;
+        std::string label;  // the chosen row's description
+};
+
+struct TableDecision {
+        DecisionKind kind = DecisionKind::NONE;
+        std::string prompt;                 // "Casting Prismari Charm: choose a target"
+        uint64_t source = 0;                // the spell or ability chosen or paid for (`pending.source`), 0 none
+        std::vector<std::string> row_text;  // every menu row's description
+        std::vector<DecisionPick> picks;    // in menu order of their first row
+        std::vector<int> buttons;           // the rows the prompt line offers as buttons, in menu order
+        std::vector<int> panel_rows;        // the rows the choice panel offers (MODES' modes, ORDER, NAME, a
+                                            // decision's buttons beyond MAX_PROMPT_ROWS), in menu order
+        std::vector<std::string> pips;      // the cost still to pay as mana symbols: "2", "W", "B/P", "U/R", "X", "S"
+        std::string owed;                   // the rest of it and what is paid: "2 life · 1 mana paid"; MULLIGAN
+                                            // and BOTTOM: play or draw, the opponent's mulligans; a discard plan:
+                                            // the hand and the cards to discard; TARGET: divided damage given
+        std::string cost_part;              // which cost is paid: "alternative cost", "additional cost", "", …
+        std::vector<int> numbers;           // NUMBER: each row's value (the X, the cards delve exiles)
+        bool delve = false;                 // NUMBER: a delve count (each card exiled pays {1})
+        int plan_owed = 0;                  // CARDS: the cards a discard plan holds (planned when more than 1)
+        std::vector<ChosenTarget> chosen;   // TARGET: the targets chosen so far (chosen_targets)
+        int confirm = -1;                   // ATTACKERS / BLOCKERS: the confirm row (the menu's last)
+        int pass = -1;                      // PRIORITY: the PASS_PRIORITY row
+        std::vector<WayCost> costs;         // PRIORITY: each row's cost (empty without the CARDS book)
+        BlockFacts block;                   // BLOCKERS
+        MulliganFacts mulligan;             // MULLIGAN, BOTTOM
+        // The row chosen at this decision (Replay, an earlier decision of Play: the log's reply), -1 none;
+        // set by the Table.
+        int chosen_row = -1;
+
+        // The prompt line shows (every kind but NONE).
+        bool prompted() const { return kind != DecisionKind::NONE; }
+        // The choice panel shows (choice_panel.h).
+        bool paneled() const { return !panel_rows.empty(); }
+        // NUMBER: the row of value `value`, -1 none.
+        int number_row(int value) const;
+        // The pick of object `handle` / player `seat`, nullptr when none.
+        const DecisionPick *pick_of_object(uint64_t handle) const;
+        const DecisionPick *pick_of_seat(int seat) const;
+        // Object `handle` / player `seat` was chosen earlier in this targeting: its order, else 0.
+        int chosen_order_of_object(uint64_t handle) const;
+        int chosen_order_of_seat(int seat) const;
+        // Whether pick `p` holds the chosen row.
+        bool holds_chosen(const DecisionPick &p) const;
+        // BLOCKERS: whether `blocker` may block `attacker` as far as the frame shows (BlockFacts); when
+        // not, `why` says why: "it has flying" or "it can't be blocked" (it: the attacker).
+        bool may_block(uint64_t blocker, uint64_t attacker, std::string *why) const;
+};
+
+// The decision of `v`, a STATE frame of the Table's viewer, against the Table's model of it (the
+// objects and stack objects it shows); NONE when the frame has no menu or the menu is of another kind.
+// `book` (`v`'s stream's CARDS faces) gives a priority decision's costs; nullptr leaves them out.
+TableDecision read_table_decision(const agents::DecisionView &v, const TableModel &m, const CardBook *book = nullptr);
+
+// The targets chosen so far in the targeting decision `index` of `m` (in `view`'s frames): the rows
+// chosen at the decisions just before it of the same seat for the same source (`source`), as long as
+// they chose a target (SELECT_TARGET) or a point of divided damage (DIVIDE_DAMAGE, skipped), oldest
+// first; a row naming nothing (Done) is no target.
+std::vector<ChosenTarget> chosen_targets(const Match &m, size_t index, int view, uint64_t source);
+
+// NUMBER: the cost left to pay once value `value` is chosen, as mana symbols: the X pips counted as
+// `value` each (an X), or the generic part less `value` (a delve count).
+std::vector<std::string> number_pips(const TableDecision &d, int value);
+
+// The mana a list of symbols comes to ("2", "U", "B/P" … each 1 but a number's value).
+int mana_count(const std::vector<std::string> &pips);
+
+}  // namespace rmwork
+
+#endif /* RMWORK_TABLE_DECISION_H */

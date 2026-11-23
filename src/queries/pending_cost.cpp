@@ -82,13 +82,15 @@ static bool cast_cost(const Cast &pc, PendingCost &out) {
         out.discard = std::max(0, discards - pc.pay.discards_chosen);
     }
     // A cast that pays its mana cost folds X, hybrid and Phyrexian pips into cost_to_pay one step at
-    // a time (KICKER through PHYREXIAN_PIP): the pips of the steps not yet reached are still owed as
-    // printed.
+    // a time (KICKER through PHYREXIAN_PIP), the hybrid and Phyrexian steps a pip at a time: the pips
+    // not yet announced are still owed as printed.
     const CardData *face = face_being_cast(pc);
     const bool regular = !pc.mana_cost_replaced && pc.step >= Cast::KICKER && pc.step <= Cast::PHYREXIAN_PIP;
     if (face && regular) {
         if (pc.step <= Cast::CHOOSE_X && face->has_x_cost) out.x_pips = face->x_pip_count;
-        if (pc.step <= Cast::HYBRID) out.hybrid = face->hybrid_mana;
+        if (pc.step <= Cast::HYBRID)
+            out.hybrid.assign(
+                face->hybrid_mana.begin() + static_cast<std::ptrdiff_t>(pc.hybrid_idx), face->hybrid_mana.end());
         for (size_t i = pc.phyrexian_idx; i < face->phyrexian_mana.size(); ++i)
             out.phyrexian.push_back(face->phyrexian_mana[i]);
     }

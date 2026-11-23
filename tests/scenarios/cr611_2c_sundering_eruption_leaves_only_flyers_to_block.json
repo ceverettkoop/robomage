@@ -46,6 +46,7 @@
     "B:keep",
     "A:cast:Sundering Eruption",
     "A:target:Forest@opp",
+    "B:choice:Search your library",
     "B:search:Plains",
     "B:cast:Containment Priest",
     "A:attack:Haywire Mite",

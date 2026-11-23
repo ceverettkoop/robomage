@@ -46,7 +46,7 @@
     "B:keep",
     "A:cast:Sundering Eruption",
     "A:target:Forest@opp",
-    "B:search:fail",
+    "B:choice:Don't search",
     "A:attack:Grizzly Bears",
     "A:attack:done",
     "B:attack:done",

@@ -124,4 +124,11 @@ bool current_gift_promised();
 // Ability component. `stack_object` must have an Ability component.
 const Ability &stack_object_ability(Entity stack_object);
 
+// The X of a spell or ability on the stack (CR 107.3a), as it stands now: for the spell being cast or
+// the ability being activated, the X its cast or activation has announced so far (CR 601.2b /
+// 602.2b; before the announcement a spell's is 0, an ability's -1, and the cost being paid still
+// owes the {X}: PendingCost::x_pips); else the X the object was put on the stack with (Spell's
+// chosen X, Ability's x_paid: -1 for a triggered ability with no X recorded).
+int stack_object_x(Entity stack_object);
+
 #endif /* QUERIES_SPELLS_H */

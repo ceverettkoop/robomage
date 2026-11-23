@@ -116,7 +116,24 @@ $(ODIR)/featurize/registry.o: CXXFLAGS += -DRM_REGISTRY_JSON='"$(abspath $(REGIS
 .DEFAULT_GOAL := all
 
 # text-table: the committed oracle-text table's completeness check (regenerates stale rows; below).
-all: program rmknow rmfeat robomage_check text-table
+# provision: the card and token scripts the engine reads at run time (below).
+all: provision program rmknow rmfeat robomage_check text-table
+
+# The Forge card and token scripts (bin/resources/cardsfolder, tokenscripts) are not tracked; they
+# are fetched from GitHub at the pinned Forge commit by tools/forge_fetch/provision_decks.py, which
+# touches $(PROVISION_STAMP) when done. The fetch runs only while the stamp is older than what decides
+# the card set (the vocab, the pin, the script, the provisioned decks), so an up-to-date tree builds
+# offline. `make NO_PROVISION=1` skips it.
+PROVISION_STAMP := bin/resources/.provisioned
+PROVISION_INPUTS := src/card_vocab.h tools/forge_fetch/FORGE_PIN tools/forge_fetch/provision_decks.py \
+                    $(wildcard bin/resources/decks/*.dk $(addprefix bin/resources/decks/,$(addsuffix /*.dk,league heldout candidates)))
+ifeq ($(NO_PROVISION),)
+provision: $(PROVISION_STAMP)
+else
+provision:
+endif
+$(PROVISION_STAMP): $(PROVISION_INPUTS)
+	$(PYTHON) tools/forge_fetch/provision_decks.py
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -127,8 +144,7 @@ program:$(C_OBJ) $(CXX_OBJ)
 # concede, rules scenarios, the human CLI's golden transcripts, byte-identical replay corpus,
 # state-format and knowledge self-checks, explore fuzz, bench, and the smoke tier through the
 # Python driver). Exits nonzero on any finding.
-# Requires the card scripts to be provisioned first (tools/forge_fetch/provision_decks.py; the
-# SessionStart hook does this).
+# `all` provisions the card scripts first when they are out of date (provision, above).
 check: all
 	$(BINDIR)/robomage_check
 
@@ -153,7 +169,8 @@ regen:
 # behavior — investigate it; if the change is intentional, run `make regen` to
 # re-record and commit the new corpus.
 refetch:
-	rm -f bin/resources/cardsfolder/*/*.txt bin/resources/tokenscripts/*.txt
+	find bin/resources/cardsfolder bin/resources/tokenscripts -name '*.txt' -type f -delete
+	rm -f $(PROVISION_STAMP)
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
@@ -257,7 +274,7 @@ TEXT_TABLE_CHECK = cd bin && ./$(CONFIG)/$(BINNAME) --text-table-check ../$(TEXT
 TEXT_TABLE_FAIL = echo "text-table: $(TEXT_TABLE) is stale (rows above) and could not be regenerated: $$step failed." \
 	"Run \`make text-table\` with network access to huggingface.co and libtorch (LIBTORCH_DIR=/path/to/torch)."; exit 1
 
-text-table: program
+text-table: program provision
 	@if ($(TEXT_TABLE_CHECK)); then exit 0; fi; \
 	mkdir -p .cache/embed $(dir $(TEXT_TABLE)); \
 	step="robomage --text-table-inputs"; \
@@ -298,6 +315,69 @@ RMKNOW_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMKNOW_SRCS))
 RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
                   $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/knowledge/*.cpp))
 
+# ── make workbench — bin/<config>/rmwork, the workbench GUI (docs/workbench_plan.md), NOT in the default build ──
+# tools/rmwork/ on the vendored Dear ImGui (docking), ImPlot and stb (third_party/, unmodified), GLFW and
+# OpenGL 3 (and zlib: zipped model exports, tools/rmwork/model_zip.cpp); linked with the std-only RMSTATE decoder and schema, the agents' std-only frame reader, the
+# CLI's std-only renderer (src/cli/board: the seat logs' event lines), src/featurize/ (std only: the
+# JSON reader, the episode reader, the featurizer for Model's Read), and the torch-free remote evaluator
+# (src/actor/remote_evaluator.cpp, compiled here with the engine's flags into its own object, not the
+# actor's) with src/inference/ (std + POSIX, the inference protocol); no engine TU, no libtorch; the
+# engine runs as a subprocess. The vendored sources are compiled with the configuration's flags minus
+# $(CHECKFLAGS); tools/rmwork/ with all of them, the vendored headers included as system headers so their
+# warnings stay theirs.
+WORKBENCH_SRCS := $(wildcard tools/rmwork/*.cpp)
+WORKBENCH_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(WORKBENCH_SRCS))
+WORKBENCH_VENDOR_SRCS := $(addprefix third_party/imgui/,imgui.cpp imgui_draw.cpp imgui_tables.cpp imgui_widgets.cpp \
+                         backends/imgui_impl_glfw.cpp backends/imgui_impl_opengl3.cpp) \
+                         $(addprefix third_party/implot/,implot.cpp implot_items.cpp)
+WORKBENCH_VENDOR_OBJ := $(patsubst third_party/%.cpp,$(ODIR)/third_party/%.o,$(WORKBENCH_VENDOR_SRCS))
+WORKBENCH_REMOTE_OBJ := $(ODIR)/rmwork_lib/remote_evaluator.o
+WORKBENCH_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                     $(ODIR)/agents/seat_frames.o $(ODIR)/agents/decision_view.o $(ODIR)/cli/board.o \
+                     $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/featurize/*.cpp)) \
+                     $(WORKBENCH_REMOTE_OBJ) $(INFERENCE_OBJ)
+WORKBENCH_FONTS := $(wildcard third_party/fonts/*/*.ttf)
+ifneq (,$(filter workbench,$(MAKECMDGOALS)))
+GLFW_CFLAGS := $(shell pkg-config --cflags glfw3 2>/dev/null)
+GLFW_LIBS := $(shell pkg-config --libs glfw3 2>/dev/null)
+ifeq ($(strip $(GLFW_LIBS)),)
+$(error make workbench: pkg-config finds no glfw3. Install GLFW 3 (e.g. the glfw package))
+endif
+endif
+# OpenGL: the system framework on macOS, libGL elsewhere.
+ifeq ($(PLATFORM), OSX)
+GL_LIBS := -framework OpenGL
+else
+GL_LIBS := -lGL
+endif
+WORKBENCH_IFLAGS = -isystem third_party/imgui -isystem third_party/imgui/backends -isystem third_party/implot \
+                   -isystem third_party/stb $(GLFW_CFLAGS)
+
+$(ODIR)/third_party/%.o: third_party/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(WORKBENCH_IFLAGS) $(filter-out $(CHECKFLAGS),$(CXXFLAGS)) $(DEPFLAGS) $(PLATFLAGS)
+
+# Defined before the generic $(ODIR)/tools/%.o rule (Apple's make 3.81; see the actor rule above).
+$(ODIR)/tools/rmwork/%.o: tools/rmwork/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(WORKBENCH_IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+# The remote evaluator is torch-free (its header names the in-process evaluator only by declaration):
+# compiled with the engine's flags, exceptions off, apart from the actor's object.
+$(WORKBENCH_REMOTE_OBJ): $(SRCDIR)/actor/remote_evaluator.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+# tools/rmwork/fonts.cpp compiles the UI fonts in (the assembler's .incbin, like src/featurize/registry.cpp);
+# the compiler's dependency file does not see .incbin, so the object depends on every font file here.
+$(ODIR)/tools/rmwork/fonts.o: $(WORKBENCH_FONTS)
+$(ODIR)/tools/rmwork/fonts.o: CXXFLAGS += -DRM_FONT_DIR='"$(abspath third_party/fonts)"'
+
+workbench: $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmwork $(WORKBENCH_OBJ) $(WORKBENCH_VENDOR_OBJ) $(WORKBENCH_LIB_OBJ) $(LDFLAGS) $(LDLIBS) \
+		$(GLFW_LIBS) $(GL_LIBS) -lz -pthread $(PLATFLAGS)
+
 $(ODIR)/tools/%.o: tools/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
@@ -336,7 +416,7 @@ robomage_check: $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/robomage_check $(RMCHECK_OBJ) $(RMCHECK_LIB_OBJ) $(LDFLAGS) $(LDLIBS) -pthread $(PLATFLAGS)
 
-.PHONY: all check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo
+.PHONY: all provision check regen refetch clean actor rmserve rmembed text-table registry rmknow rmfeat robomage_check pgo workbench
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -362,7 +442,7 @@ pgo:
 
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve
+	rm -f bin/*/$(BINNAME) bin/*/rmknow bin/*/rmfeat bin/*/robomage_check bin/*/rmembed bin/*/robomage_nn bin/*/rmserve bin/*/rmwork
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -375,3 +455,6 @@ clean:
 -include $(RMEMBED_OBJ:.o=.d)
 -include $(RMSERVE_OBJ:.o=.d)
 -include $(INFERENCE_OBJ:.o=.d)
+-include $(WORKBENCH_OBJ:.o=.d)
+-include $(WORKBENCH_VENDOR_OBJ:.o=.d)
+-include $(WORKBENCH_REMOTE_OBJ:.o=.d)

@@ -835,8 +835,14 @@ Player A's Ghost Quarter ability targeting Undercity Sewers is on the stack
 Resolving ability (category: Destroy)
 Undercity Sewers is destroyed
 Resolving ability (category: ChangeZone)
-Searching Player B's library:
 | decision 71: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| menu:
+|   0: Don't search
+|   1: Search your library
+(REPLAY) [T4 | First Main | Player B] Input: 1
+| >> Player B: 1 (Search your library)
+Searching Player B's library:
+| decision 72: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Fail to find
 |   1: Island
@@ -844,7 +850,7 @@ Searching Player B's library:
 | >> Player B: 1 (Island)
 Player B shuffles their library
 Player B puts Island to the battlefield
-| decision 72: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
+| decision 73: Player B (game 0, turn 4, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -854,7 +860,7 @@ Player B puts Island to the battlefield
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T4 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 73: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
+| decision 74: Player B (game 0, turn 4, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -865,7 +871,7 @@ Player B puts Island to the battlefield
 (REPLAY) [T4 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 74: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
+| decision 75: Player B (game 0, turn 4, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -875,7 +881,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T4 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 75: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
+| decision 76: Player B (game 0, turn 4, END_OF_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -885,7 +891,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T4 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 76: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
+| decision 77: Player B (game 0, turn 4, SECOND_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -895,7 +901,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T4 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 77: Player B (game 0, turn 4, END_STEP, Player A active)
+| decision 78: Player B (game 0, turn 4, END_STEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -907,7 +913,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 6 (Player B) --------
-| decision 78: Player B (game 0, turn 5, UPKEEP, Player B active)
+| decision 79: Player B (game 0, turn 5, UPKEEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -918,7 +924,7 @@ No creatures eligible to attack.
 (REPLAY) [T5 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player B draws Brainstorm
-| decision 79: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 80: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Brainstorm
@@ -931,7 +937,7 @@ Player B draws Brainstorm
 | >> Player B: 1 (Cast Brainstorm)
 Player B activated Island for 1(U)
 Player B casts Brainstorm
-| decision 80: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 81: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Cast Daze (alternate cost)
@@ -949,7 +955,7 @@ Player B draws Dark Ritual
 Player B draws Brainstorm
 Resolving ability (category: ChangeZone)
 Player B chooses a card from Player B hand:
-| decision 81: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 82: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Brainstorm
 |   1: Dark Ritual
@@ -962,7 +968,7 @@ Player B chooses a card from Player B hand:
 | >> Player B: 0 (Brainstorm)
 Player B puts Brainstorm to top of library
 Player B chooses a card from Player B hand:
-| decision 82: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 83: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Dark Ritual
 |   1: Daze
@@ -973,7 +979,7 @@ Player B chooses a card from Player B hand:
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Dark Ritual)
 Player B puts Dark Ritual to top of library
-| decision 83: Player B (game 0, turn 5, DRAW, Player B active)
+| decision 84: Player B (game 0, turn 5, DRAW, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -983,7 +989,7 @@ Player B puts Dark Ritual to top of library
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T5 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 84: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Play Tundra
@@ -996,7 +1002,7 @@ Player B puts Dark Ritual to top of library
 (REPLAY) [T5 | First Main | Player B] Input: 1
 | >> Player B: 1 (Play Tundra)
 Player B played Tundra
-| decision 85: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
+| decision 86: Player B (game 0, turn 5, FIRST_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1006,7 +1012,7 @@ Player B played Tundra
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T5 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 86: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
+| decision 87: Player B (game 0, turn 5, BEGIN_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1017,7 +1023,7 @@ Player B played Tundra
 (REPLAY) [T5 | Begin Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to attack.
-| decision 87: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
+| decision 88: Player B (game 0, turn 5, DECLARE_ATTACKERS, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1027,7 +1033,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T5 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 88: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
+| decision 89: Player B (game 0, turn 5, END_OF_COMBAT, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1037,7 +1043,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T5 | End of Combat | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 89: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
+| decision 90: Player B (game 0, turn 5, SECOND_MAIN, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1047,7 +1053,7 @@ No creatures eligible to attack.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T5 | Second Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 90: Player B (game 0, turn 5, END_STEP, Player B active)
+| decision 91: Player B (game 0, turn 5, END_STEP, Player B active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1059,7 +1065,7 @@ No creatures eligible to attack.
 | >> Player B: 0 (Pass priority)
 
 -------- TURN 7 (Player A) --------
-| decision 91: Player B (game 0, turn 6, UPKEEP, Player A active)
+| decision 92: Player B (game 0, turn 6, UPKEEP, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1070,7 +1076,7 @@ No creatures eligible to attack.
 (REPLAY) [T6 | Upkeep | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 Player A draws Dark Depths
-| decision 92: Player B (game 0, turn 6, DRAW, Player A active)
+| decision 93: Player B (game 0, turn 6, DRAW, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1080,7 +1086,7 @@ Player A draws Dark Depths
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T6 | Draw | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 93: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 94: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Play Dark Depths
@@ -1088,7 +1094,7 @@ Player A draws Dark Depths
 | >> Player A: 1 (Play Dark Depths)
 Player A played Dark Depths
 Dark Depths enters with 10 ICE counter(s).
-| decision 94: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 95: Player A (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Activate Dark Depths (RemoveCounter)
@@ -1098,7 +1104,7 @@ Player A activated Yavimaya, Cradle of Growth for 1(G)
 Player A activated Boseiju, Who Endures for 1(G)
 Player A activated Dark Depths for 1(G)
 Player A's Dark Depths ability is on the stack
-| decision 95: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 96: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1110,7 +1116,7 @@ Player A's Dark Depths ability is on the stack
 | >> Player B: 0 (Pass priority)
 Resolving ability (category: RemoveCounter, amount: 1)
 Removed 1 ICE counter(s) from Dark Depths.
-| decision 96: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
+| decision 97: Player B (game 0, turn 6, FIRST_MAIN, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1120,7 +1126,7 @@ Removed 1 ICE counter(s) from Dark Depths.
 |   5: Tap Lion's Eye Diamond for (G)
 (REPLAY) [T6 | First Main | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
-| decision 97: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
+| decision 98: Player B (game 0, turn 6, BEGIN_COMBAT, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1132,7 +1138,7 @@ Removed 1 ICE counter(s) from Dark Depths.
 | >> Player B: 0 (Pass priority)
 
 --- Declare Attackers (Player A) ---
-| decision 98: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 99: Player A (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Marit Lage token [20/20]
 |   1: Confirm attackers
@@ -1146,7 +1152,7 @@ Marit Lage token attacking Player B.
 
 Attackers declared:
   Marit Lage token -> Player B
-| decision 99: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
+| decision 100: Player B (game 0, turn 6, DECLARE_ATTACKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)
@@ -1157,7 +1163,7 @@ Attackers declared:
 (REPLAY) [T6 | Declare Attackers | Player B] Input: 0
 | >> Player B: 0 (Pass priority)
 No creatures eligible to block.
-| decision 100: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
+| decision 101: Player B (game 0, turn 6, DECLARE_BLOCKERS, Player A active)
 | menu:
 |   0: Pass priority
 |   1: Tap Lion's Eye Diamond for (W)

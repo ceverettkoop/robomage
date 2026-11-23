@@ -1,0 +1,14 @@
+{
+  "name": "cr701_23_accepted_search_finding_nothing_shuffles",
+  "why": "CR 701.23: Ghost Quarter's target's controller who chooses to search shuffles even when no basic land is found; only declining the search skips the shuffle (CR 608.2d)",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island"],
+  "hand_b": ["Island"],
+  "library_b": ["Wasteland", "Wasteland"],
+  "battlefield_a": ["Ghost Quarter"],
+  "battlefield_b": ["Wasteland"],
+  "play": ["A:keep", "B:keep", "A:activate:Ghost Quarter", "A:target:Wasteland", "B:choice:Search your library", "B:search:fail"],
+  "max_decisions": 8,
+  "expect": ["Wasteland is destroyed", "Player B fails to find", "Player B shuffles their library"],
+  "expect_not": ["Player B doesn't search"]
+}

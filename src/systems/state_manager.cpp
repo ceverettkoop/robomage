@@ -403,7 +403,7 @@ static bool choose_legend_rule_keep(Game &game, const EntitySet &entities, SbaAc
             if (grp.second.size() < 2) continue;
             std::vector<LegalAction> choices;
             for (auto e : grp.second) {
-                LegalAction la(PASS_PRIORITY, e, "Keep " + entity_name(e));
+                LegalAction la(CHOICE, e, "Keep " + entity_name(e));
                 la.category = ActionCategory::KEEP_LEGEND;
                 choices.push_back(la);
             }

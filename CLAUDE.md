@@ -77,8 +77,10 @@ update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
-Card scripts are not tracked; provision them first on a fresh clone (the SessionStart hook does
-it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
+Card scripts are not tracked; `make` provisions them (`python3 tools/forge_fetch/provision_decks.py`,
+network) whenever the stamp `bin/resources/.provisioned` is older than `src/card_vocab.h`, `FORGE_PIN`,
+the script or a provisioned deck; `make NO_PROVISION=1` skips it (the SessionStart hook and CI run
+the script themselves, which writes the stamp).
 
 - `make` — debug build (`-ggdb`, warnings, `-D_GLIBCXX_ASSERTIONS`, no `-O2`) of the four
   binaries: `bin/debug/robomage` (the engine), `bin/debug/rmknow` (the knowledge sidecar over a
@@ -112,6 +114,33 @@ it in cloud sessions): `python3 tools/forge_fetch/provision_decks.py`.
   (`docs/featurizer.md` §6), and `bin/<config>/rmserve`, the reference inference server
   (`docs/inference_protocol.md`). Needs a torch importable by `python3`, or `LIBTORCH_DIR=…`; not
   part of plain `make`
+- `make workbench` — `bin/<config>/rmwork`, the workbench GUI (`docs/workbench_plan.md`): Dear ImGui
+  and ImPlot (`third_party/`) on GLFW and OpenGL 3 (`pkg-config glfw3`), no engine TU; not part of
+  plain `make`. `rmwork --selftest` and `--selftest-data` run headless; `--screenshot FILE.png` (under
+  `xvfb-run -a -s "-screen 0 1600x1000x24"` without a display) renders and writes a PNG (with `--open
+  LOG --decision N --view a|b|omni`, `--episode`, `--run DIR`, `--open-picker`, `--game-combo`, `--tool
+  NAME`, `--choices-hover N`, `--tree-expand`, `--open-zone SEAT:ZONE`, Attribution's `--explain`, `--attr-target
+  v|tv|logp|margin`, `--attr-level state|tensors`, `--attr-expand TEXT|TEXT`, `--tokens-type NAME`, Policy Compare's
+  `--compare-ref NAME`, `--compare-metric kl|tv`, `--compare-argmax-only`, `--compare-add MODEL|MODEL` (served, the replay
+  re-evaluated with them), `--compare-picker` and `--compare-report` (the comparison printed when the window closes): once
+  the game is loaded; Play:
+  `--new-game "opp=explore,deck=league/burn,opp-deck=league/bug,seed=3"` with `--play-decisions N`,
+  `--play-until stack|combat|attack|block|damage|sideboard|target|mana|pick|mulligan|bottom|mode|x|order|name|discard|`
+  `sacrifice|return|legend|unless|choice|cost|priority|end` or `--game-over` (a seeded random row
+  at each of your decisions), `--play-setup "--hand-a;Lightning Bolt;--battlefield-b;Grizzly Bears"` (a sculpted
+  game, the engine's setup flags; `--agent-b;first` makes the opponent attack with everything and block the first
+  attacker) with `--play-rows R,R,…` (your first decisions' rows), `--table-pick NAME` (a card's popup of rows),
+  `--table-hover-card NAME` (a card hovered: what a click does),
+  `--table-plan "Goblin Guide>Kaito,Swiftspear>?"` (a combat declaration planned on the Table; at the London
+  mulligan's bottom pick or a discard of several cards the hand cards, `"Skewer,Mountain"`), `--picker-filter TEXT`
+  (the card picker's and the choice panel's filter) and `--picker-list` (the card picker's list view), `--sideboard-plan guide|+CARD;-CARD`, and `--open-new-game`; Simulate (no human seat):
+  `--simulate "a=model,model-a=runs/latest/policy.ts.pt,b=scripted,deck-a=league/burn,deck-b=league/bug,matches=8,alternate=on,jobs=4"`
+  (also `server-a/-b=SOCKET`, `argmax-a/-b=on`, `temp-a/-b=T`, `format=bo1|bo3`, `seed=N`, `auto-mana=on|off`; a
+  screenshot waits for the batch: one match opens in Replay, several in the Simulations window),
+  `--open-simulate` (the dialog), `--open-simulation DIR` (a past batch); the start page shows when no flag opens or names something, `--start-page` forces it;
+  set `$XDG_DATA_HOME` to keep a screenshot's games and simulations out of `~/.local/share`; card
+  images: `--card-faces images|text`, `--printings-card NAME`; `python3 tools/scryfall/fetch_images.py`
+  fills the image cache, without which cards are drawn as text)
 - `make clean`
 
 **Which binary the tooling runs is independent of which one you just built.** The gate
@@ -151,10 +180,11 @@ background** and make the live output inspectable by the user:
   | `cli` | the human CLI's golden transcripts: each scripted stdin session (`tests/cli/<name>.json`), stdout byte-identical to `<name>.out` |
   | `replay` | each corpus decision log (`tests/corpus/<name>.rmlog`) replayed, output byte-identical to `<name>.replay` |
   | `state` | the state format's self-checks over the replayed corpus, explore fuzz games and the scenarios; re-encoding, decoder refusals, stream sessions vs dumps, name-a-card menus, include isolation |
-  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); the layout registry's append-only property (a card and a keyword appended, an enum reordered: the same layout and tensors; capacities refused); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files; the open-vocabulary fixtures' gate sources featurized to their recorded inputs (`tests/open_vocab/inputs.json`, `pycheck.py --part open_vocab`) |
+  | `featurize` | the card tables and FEATURE_SPEC from `--cards-frame`, exported and read back; the corpus's and explore games' dumps featurized (deterministic, shapes and indices against the spec, row-order invariance, the actor entry point's refusal, learner targets); the layout registry's append-only property (a card and a keyword appended, an enum reordered: the same layout and tensors; capacities refused); `--selfcheck-featurize`; `rmfeat` vs in-process; `python/pycheck.py` on the files; the open-vocabulary fixtures' gate sources featurized to their recorded inputs (`tests/open_vocab/inputs.json`, `pycheck.py --part open_vocab`); Attribution's perturbations (`rmfeat --perturb --check` on an explore game's dump, every third frame of each seat: the empty change byte-identical, every change within the spec's shapes and indices, removed tokens' relations gone and the rest renumbered, every unit naming a row of the seat's frame; the `mean` and `resample` baselines over `--slot-stats`) |
   | `traj` | the trajectory writer (`--trajectory-out`, `docs/trajectory_format.md`): in-process runs (bo1 with the omniscient part, bo3, concessions, a capped seat-A-only run) and their `--replay`: identical episodes, the replies the decision log's, tensors those of the dump's frames featurized, μ a distribution with mass at the reply, one episode per game with the `GAME_RESULT` footers; `python/rmtraj.py` vs the C++ reader; a `rm_driver.py --rmlog-dir` scripted match re-featurized; the teacher channel (`--teacher-a/-b`, `python/teacher.py`): at `--teacher-mix 1` the decisions are `rm_driver.py` scripted:hard's and the teacher's stream is the `--machine` stream byte for byte, at mix 0 the decision log is unchanged, at mix 0.5 the coin, the μ mixture and the replay; the labels `teacher.py`'s on the recorded streams; broken teachers fatal |
   | `actorloop` | the continuous actor (`--actor`, `docs/actor.md`): six matches of a two-entry schedule (bo1 swapping sides, bo3 swapping decks), the status and results files against the episodes' footers, every match's decision log replayed alone to the same episodes, a rerun with the same run seed and actor id writing the same logs; the per-game cap (end reason `cap`, the actor goes on); a taught entry over three matches, labels a fresh `teacher.py`'s on each replay; a schedule rewritten mid-run picked up at the next match, then SIGTERM mid-match: exit 0, `QUIT` in the log, no partial episode; sideboard exploration (`sb_explore` for every agent at p 1): μ = `q` recomputed from replayed frames, the results lines' `sb`, swap counts covering 0–10, card weights moving the frequencies, replays and reruns identical, p 0 changing nothing, the schedule's refusals |
   | `actor` | the policy projection's (`thresh=` / `disc=`) unit checks; then opt-in (`bin/<config>/robomage_nn` and `$ROBOMAGE_TORCH_PYTHON`, else skipped): the reference policy (`tools/nn/`) built; the checkpoint migration's acceptance (`learn/open_vocab_acceptance.py gate`: S0's fixture checkpoints migrated, against S0's outputs; skipped without the originals under `runs/`); `nn:` vs explore bo3 matches (one under `temp=0.02:thresh=0.03:disc=16`, its behaviour distributions checked), `.pt2` and TorchScript playing the same argmax match, exact re-featurization of a `--replay`, the three exports' agreement, `nn:` trajectories against `dump=` / `evals=`; `nn:remote:` through `rmserve` (concurrent actors, batches across clients) and through `tools/nn/serve_check.py` playing the in-process games, evaluations within 1e-5, handshake refusals, a killed server failing the actor; `robomage_nn --actor` reloading a replaced `nn:<model>` between matches; a continuous `--actor` smoke run (the random-initialised reference policy on both seats, one taught at mix 0.5, bo3: μ, labels, status and results checked, every match replayed to the same episodes); `nn:` self-play with `sb_explore` at p 0.5 (exploring steps' μ = `q` with the evaluation kept, other steps' μ = π); the recent-event history case (`--feature-history 32`, the reference policy over `rmfeat --history` tables): an `nn:` self-play bo3 match, exact re-featurization of its `--replay` with history tokens, its episodes and a `--replay --trajectory-out` the same, `--selfcheck-featurize` clean over the replay, exports refused across the option (`spec_hash`) |
+  | `workbench` | opt-in (`bin/<config>/rmwork`, `make workbench`, else skipped): `rmwork --selftest` (headless: every preset in both modes docked as the preset says, each mode keeping its layout, the settings file round trip, the key bindings, every UI font and the bars at 11 and 20 px, every colour theme and its contrast, named layouts, key rebinding, the later stages' settings, the card images on a synthetic cache); `rmwork --selftest-data --engine <engine>` (Replay's data on corpus logs and a bo3 match the engine replays: decision counts, every viewer's frames decoding, bo3 games and sideboarding, the narrative and each seat's own log, the replay cache, episodes joined, navigation, the error paths; the Table and the other tools against every frame in every view, nothing shown that the view cannot see; the evaluations' tools on the bo3 match's episodes with evaluations added; the match index cached beside the dump; Play: the engine's arguments per opponent, games against explore, random and the scripted agent played to their end through the session, only the human seat's frames kept, the stops, F2 and F6 (on recorded frames and live), targets and mana payment answered by clicks on the Table (sculpted games, and in Replay none), concessions, a bo3 sideboarded through the Sideboard tool (the guide's plan, a planned swap sent, a menu mismatch stopped), the decision log in Replay against the seat's frames, the engine's failures; the Table drawn with images from a synthetic cache); Attribution (`docs/workbench_plan.md` §2.8) with a stand-in RMIP server: units' evaluations, the cache, the Table layer, links, the State Tree's impact, the Tokens tool's heat, cancel, Shapley, a live Play decision explained and found again in Replay; Policy Compare (§2.10) with the stand-in server: no policy and one, three re-evaluated policies' KL, TV and argmax at every decision against the merged records, the agreement, the ranked list and its jump, a row's link, every view, two catalog checkpoints brought in (served, re-evaluated, the newest the reference); opt-in as `actor` (`robomage_nn`, `$ROBOMAGE_TORCH_PYTHON`), `rmwork --selftest-evals <reference policy>` (an `nn:` self-play bo3's real evaluations through the same tools: every decision evaluated, π a distribution; Attribution through rmserve, its cost printed; Policy Compare: the reference policy served twice agreeing everywhere, KL 0; Simulate's matches of the reference policy against itself and the scripted agent); Simulate (§2.9) in all three: the settings, arguments, judging, tally and summary units, the dialog and window, explore / random / scripted matches and an alternating batch whose results equal the engine's `--replay` of each log, a stand-in engine's failure and a cancel mid-batch, a match opened in Replay; `tools/scryfall/fetch_images.py --selftest` (the printing rule on canned Scryfall JSON, a token's printing from its maker's token set first) |
   | `knowledge` | `rmknow --selftest` / `--exactness`, soundness under `--selfcheck-knowledge`, isolation and truth |
   | `fuzz` | C++ explore vs explore over the playable decks' matchups (`league/` and `heldout/`) (bo1, plus bo3 `explore:patient` and bo1 `--no-auto-mana`); draws are findings; then each fixture deck (`decks/tests/mech_*.dk`) against itself under `--coverage`: a key of its `.expect` with no hits is an error (summed counts `ci_out/coverage/<stem>.txt`; `docs/ci.md`) |
   | `bench` | per-decision cost of a fixed explore workload by stage: engine alone, + frames, + knowledge, + featurizer, and (opt-in, as `actor`) evaluation in process and through `rmserve` (no threshold) |
@@ -708,7 +738,12 @@ sections above are not repeated here.
   frame), `setup` (`Featurization`: the cards file and text table loaded, the tables exported with
   their `manifest.json` and `registry.json`, `manifest()`),
   `batch` (the padding batcher: decisions → the network contract's `[B, …]` arrays), `episode`
-  (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`)
+  (the trajectory episode format: `EpisodeWriter`, `read_episode`; `docs/trajectory_format.md`), `perturb`
+  (Attribution's occlusion units, `docs/workbench_plan.md` §2.8: a decision's units from its token sources and
+  the spec, each with its frame row, handle, player and labels: tokens, zone groups, cards, slots, cells,
+  relation types; their changes to the tensors applied at once, removed tokens renumbered; the baselines
+  `none` / `mean` / `resample` and the slot statistics file; `tensor_problems`, the shape and index checks,
+  and `check_perturbations`, the gate's)
 - `src/state_format/cards_file.{h,cpp}` — `--cards-frame FILE`: the SCHEMA and whole-vocab CARDS
   frames for the card tables; plays no game. `load_engine_featurization`: the same
   records and the text table as the featurizer's inputs in process (`nn:`, `--featurize-seats`)
@@ -781,8 +816,11 @@ handshake JSON, the shared region, request / response layouts.
   A|B|omniscient --out FILE`, `--targets DUMP --seat A|B --out FILE`, `--stats` (token counts,
   timing); `--registry-update FILE` (`make registry`) and `--registry-check FILE [--base FILE]` (the
   `vocab` tier); `--digest-update` / `--digest-check FILE` (the card digest), `--table-drift OLD NEW`
-  (two tables directories, `rmtrain retable`), `--compat MODEL NOW [--exact]` (two manifests); `--tables
-  DIR`, `--text-table FILE`, `--registry FILE`
+  (two tables directories, `rmtrain retable`), `--compat MODEL NOW [--exact]` (two manifests); `--perturb
+  DUMP --viewer A|B [--check [--every N]] [--decision N --out FILE] [--baseline B --reference FILE]` (a
+  decision's Attribution units and their changes; `--check`: the `featurize` tier's perturbation checks),
+  `--slot-stats DUMP… --out FILE` (the slot statistics, keyed by `spec_hash`); `--tables DIR`, `--text-table
+  FILE`, `--registry FILE`
 - `tools/rmembed/` — `bin/<config>/rmembed` (`make rmembed`, libtorch): the BERT encoder in the
   libtorch C++ API and its safetensors reader; writes the oracle-text table
 - `tools/embed/` — `MODEL_PIN` (the text model's repo, commit, pooling, prefix), `fetch_model.py`
@@ -797,6 +835,128 @@ handshake JSON, the shared region, request / response layouts.
   [--threads N]`): many clients, batches across them, the in-process evaluator per policy,
   `RMSERVE-STATS:` on SIGTERM; `tools/nn/serve_check.py` — a minimal Python server of the same
   protocol (torch + numpy, never run by `make`; the `actor` tier plays a game against it)
+- `tools/rmwork/` — `bin/<config>/rmwork` (`make workbench`): the workbench GUI
+  (`docs/workbench_plan.md` §2.1–2.3, §2.5–2.9): `app` (menu bar, toolbar, the mode's dockspace and tools, status
+  bar, keys, health, opening Replay's data, Play's game; `session()`: the tools' source, Replay's match or Play's
+  live one), Play: `play_session` (a live game: the engine on `--machine` with the human's seat on the stream and the
+  opponent an in-process agent or the teacher channel, `--decision-log` into `$XDG_DATA_HOME/robomage/workbench/games`;
+  the reader thread, the live match, replies, concessions, the engine's failures, `kill_engine`; `agent_arguments`,
+  the seats' `--agent-*` / `--teacher-*` arguments Simulate shares), Simulate (plan §2.9): `simulation` (ImGui-free:
+  a batch of matches between two entrants with no human seat, headless engines at most `jobs` at once in their own
+  process groups, each judged from its output (a FATAL, a nonzero exit or no result line fails that match alone),
+  `simulation.json` and the logs under `$XDG_DATA_HOME/robomage/workbench/simulations/<time>-<desc>/`, cancel, past
+  batches read back), `simulate_dialog` (File → Simulate Match…: per seat agent, model options and deck; format,
+  matches, first seed, alternate seats, auto-mana, jobs; kept as `simulate` in `settings.json`), `simulation_view`
+  (the floating Simulations window: progress, the summary with a Wilson interval, a row per match opening it in
+  Replay), `selftest_simulation` (its checks in all three self-tests), `autopass` (F2, F6
+  and the stops: a pure function of a decision's `PassFacts`), `model_read` (Model's Read: the human seat's
+  decisions evaluated through rmserve, on a thread), `eval_connection` (what an evaluation through the server needs:
+  the featurizer's inputs from the engine's `--cards-frame` and the text table, the torch-free remote evaluator's
+  connection, no socket told apart; Model's Read, the Replay evaluator and the Models tool share it), Replay's
+  re-evaluation (plan §2.7): `replay_evaluator` (the Replay evaluator, ImGui-free: one thread taking jobs by priority,
+  each a match's frames copied out of the Match, served policies and (decision, seat) items with an optional change to
+  the tensors; each seat's own frame featurized, an LRU of featurized decisions, requests within the server's
+  `max_batch` and request area, results streamed, cancel; Attribution's client too), `eval_cache` (the re-evaluations'
+  cache `$XDG_CACHE_HOME/robomage/workbench/evaluations/<log hash>-<model hash>-<a|b>.rmev`: the model's file identity,
+  the server's version, fitting the match, tmp + rename, a trailing hash, pruning), `reevaluation` (the served
+  policies' evaluations merged into a match's episode steps as series of their own, `re p0`: the cache first, a
+  handshake to check its versions, a job per seat, written and merged once whole), `reevaluate_dialog` (Analysis →
+  Re-evaluate…: the served policies and seats), `selftest_reevaluation` (its checks: the stand-in RMIP server of
+  `selftest_fake_server`, its values a function of each decision's tensors, in `--selftest-data`, rmserve with the
+  reference policy in `--selftest-evals`), Attribution (plan §2.8): `attribution` (ImGui-free: a decision's units
+  evaluated through the Replay evaluator at priority 10, staged (coarse units, the top groups' tokens and every slot
+  and relation type, children on expand, Shapley's coalitions), the metrics against the unchanged evaluation,
+  focus and rival, cancel, the cache `$XDG_CACHE_HOME/robomage/workbench/attribution/<log hash or live-…>/…bin`,
+  the tints the views read, the omniscient frame's handles mapped, the slot statistics built from the corpus),
+  `attribution_view` (the tool), `tokens_view` (the Tokens tool: a token type by its slots, the cells' heat),
+  the Table layer (`table_view`) and the State Tree's Impact column (`state_tree_view`), `selftest_attribution`
+  (their checks in all three self-tests; `ATTRIBUTION-COST` lines in `--selftest-evals`), Policy Compare (plan
+  §2.10): `policy_compare` (ImGui-free: the policies a viewer can compare, per decision each one's π, V, argmax and KL /
+  TV against a reference, the agreement overall, per seat and per turn, the ranked disagreements), `policy_compare_view`
+  (the tool: π side by side at the decision, the divergence and value plots, the agreement, the ranked list jumping the
+  cursor; its catalog popup bringing checkpoints in: served through `App::serve_model`, the replay re-evaluated with
+  them, `App::compare_bring_in`), `selftest_policy_compare` (its checks in all three self-tests), `new_game_dialog`
+  (decks, opponents, models, the choices kept as `new_game` in `settings.json`), `policy_catalog` (the runs directory's policies newest first, ImGui-free: a row per run's `final`, fixed point and other named checkpoint with its export formats, dated by `metrics.jsonl` else the files' times, `runs/latest` pinned first, periodic checkpoints, the seed and the live export hidden, old layouts' copies never; then the zipped exports; New Game's models and the Add row's suggestions; `selftest_policy_catalog` its checks), the Models tool (§4.1 item 4): `model_manager` (ImGui-free: the policy rows' filter, run and
+  sort with `latest` first, each row's compatibility, its model manifest against the engine's tables' from `--cards-frame`, on
+  `CompatChecker`'s thread), `model_manager_view` (the tool: the server strip, the table, Play against, Serve, Copy path),
+  `selftest_model_manager` (its checks), `inference_server` (Settings → Models → Start the server: `rmserve` run for the session with the configured socket and policies, stopped with SIGTERM; a server already listening is used as it is; `selftest_inference_server` its checks with stand-in servers), `model_zip` (model exports read straight from the zip archives in `<repo>/models/` (git-ignored but for its README): `<archive>.zip!<member>` references, extracted for the engine into the workbench cache; zlib; `selftest_model_zip` its checks), `play_dialogs` (the concession's
+  confirmation, the match result screen), `selftest_play` (Play's `--selftest-data` checks); the start page (plan §4.1 item 1): `start_data` (Play's recent games from the games directory with their `<stem>.game.json` sidecars and stderr result lines, recent replays with the replay cache's results, recent runs from `status.json`, the status blocks; never a replay), `start_page` (the page in place of the dockspace, its scan thread, the actions, lists and status), `selftest_start` (its checks in both self-tests); the Sideboard tool (plan §4.3 item 14): `sideboard_plan` (a seat's 75 and sideboarding facts from a frame, the plan's locks and balance, the next reply toward the planned deck by category and source card, `python/sideboard_guides.json`'s guides and a matchup's plan), `sideboard_view` (the tool: the 75 as cards, the plan, its sending through the play session, the guide's and the model's plans, Replay read-only), `selftest_sideboard` (its `--selftest-data` checks); Replay's data: `loader` (a decision log opened on a thread:
+  the cached replay or the engine's `--replay --rmstate-dump --narrative`, the index, the episodes;
+  progress, cancel), `subprocess` (`posix_spawn`, output into files, or Play's pipes in a process group), `replay_cache`
+  (`$XDG_CACHE_HOME/robomage/workbench/replays/<log hash>-<engine hash>`), `rmlog` (the RMLOG v3
+  header and replies), `match` (the index: per decision every viewer's frame offsets and its key,
+  decider, turn, step; frames decoded on demand through an LRU; the games and sideboarding phases, the
+  result; each seat's own log from its frames' event tables, the omniscient narrative cut at the replay's
+  decision markers; Play's live match appended record by record from one seat's stream), `match_index`
+  (the index kept as `index.bin` beside a cached dump: versioned, checked against the dump's size and
+  modification time and the log's hash, rebuilt when stale or unreadable), `selftest_index` (its
+  `--selftest-data` checks), `episodes` (trajectory episodes ↔ decision logs by name and `rmlog`, the join by
+  decision key), `replay_session` (cursor, viewer, autoplay, the status bar's fields), `game_log` (the
+  Game Log tool), `file_picker` (the modal file browser; its save mode), `run_browser` (a run directory's logs),
+  `panels` (the tools' contents), `selftest_data` (`--selftest-data`, and `--selftest-evals`: the evaluations'
+  tools on an `nn:` match's real evaluations); the Table: `table_model` (one
+  viewer's frame as rows of piles: lands, other permanents, attachments with their host, identical
+  permanents grouped; the hand, the players, the stack and its targets, blocks, menu links), `table_layout`
+  (the fit; on a board too wide for legible cards, groups stacked and rows wrapped; every card's, strip's,
+  step-bar cell's and stack object's rectangle, ImGui-free), `table_view` (the tool: drawing, state
+  badges, combat lines, the middle strip, the step bar's stop toggles in Play, hover and selection, the
+  magnifier, the decision's highlights, prompt line and buttons, clicks answering it in Play, combat
+  planning: clicks and drags, attack labels, planned block arrows),
+  `table_decision` (what a click on the Table answers: every decision but sideboarding — a priority (cast,
+  play, activate, mana, pass), targeting, payment, combat, mulligan, card-picker, mode, number, trigger-order,
+  name, unless or other row-only decision — its rows by the object or player they name, the buttons, the choice
+  panel's rows, the cost still to pay and which cost it is, a number's values and the pips one leaves
+  (`number_pips`), a discard plan's cards owed, the targets chosen so far, a damage assignment's lethal damage, the
+  opening hand's facts, the row chosen in Replay), `priority_costs` (what each way of a priority decision costs,
+  ImGui-free: a cast's mana cost, a keyword's or an alternative cost from the oracle text, an activated ability's
+  from its script cost, `way_label`: "Cast Lightning Bolt {R}"), `table_combat` (`CombatPlan`: an attacker or blocker declaration planned on
+  the Table and sent one reply per decision, `next_plan_step`; the engine cannot take a declared creature back),
+  `card_plan` (`CardPlan`: cards planned on the hand and sent one reply per decision, `next_planned_row`: the
+  London mulligan's bottom picks and a discard of several cards), `mulligan_plan` (`london_bottom_menu`,
+  `next_bottom_row`), `card_picker` (the card picker's model, ImGui-free: a search's, dig's, scry's, surveil's,
+  Ponder's, Doomsday's, delve's, Thoughtseize's … rows naming cards off the Table, grouped by zone with identical
+  cards counted, the pile being built in its final order from the earlier picks of the same resolution, the
+  filter; a discard's, sacrifice's, return's or legend's rows on the Table are its picks), `card_picker_view`
+  (`CardPickerView`: the picker as a window inside the Table over the opponent's half, growing over the middle
+  strip for a whole-zone pick; cards or a list, the filter, the pile, placement and Fail to find buttons,
+  read-only in Replay), `choice_panel` (the choice panel's model, ImGui-free: a modal spell's modes with those
+  chosen earlier in the cast, the triggers to order, a name-a-card decision's candidates grouped by decklist, a
+  decision's buttons beyond the prompt line's six), `choice_panel_view` (`ChoicePanelView`: that panel as a
+  window where the picker goes, rows or a searchable list, the named card magnified on hover, read-only in
+  Replay); `selftest_live` (the live-game helpers the checks share), `selftest_decisions`, `selftest_choices` and
+  `selftest_priority` check them on sculpted live games),
+  `card_book` (a viewer's CARDS faces), `card_renderer` (`CardRenderer`, the text-face renderer, the
+  rotate-and-fade pass), card images: `card_images` (the Scryfall cache's manifest, the printing
+  overrides `printings.json`, which image a face shows, the cache's status), `image_textures` (the
+  decode thread, halved levels, GPU textures in a bounded LRU), `image_renderer` (`ImageCardRenderer`,
+  falling back to the text renderer), `printings_tab` (Settings → Card Printings), `selftest_images`
+  (their checks in both self-tests), `table_backdrop` (the background: colour, the five generated textures, an image),
+  `links` (the tools' shared hover and selection over handles and menu rows), `selftest_table` (the
+  Table's checks in both self-tests); the other tools: `replay_tools` (Players, Choices, Decision
+  Inspector, State Tree, Swings, Value Graph, Model's Read and the zone windows; the links' menu and stack
+  targets each frame, next swing, the status bar's V), `tool_data` (the decision in the viewer's frame,
+  once per cursor or viewer change; the match's evaluations; the Inspector's policy and value scale),
+  `decision_frame` (what a viewer sees of a decision: frame, menu, the decider's episode step),
+  `zone_model` (hand, library, graveyard, exile as a viewer knows them, `k_*` included), `state_tree`
+  (the frame as a lazy tree generic over the SCHEMA), `evaluations` (series per seat and policy, swings,
+  disagreements, turn bands), the views `players_view` (and the zone windows and zone tools), `choices_view`,
+  `inspector_view`, `state_tree_view`, `value_views` (Value Graph, Swings, Model's Read), `magnifier`
+  (shared with the Table), `tool_widgets` (grids, seat chips, zone icons, bars, swatches, sparkline),
+  `selftest_tools` (their checks in both self-tests); the shell: `layout` (modes,
+  tools, layouts as trees built with DockBuilder: the presets and the user's named layouts, read back
+  from the dockspace), `settings` (`~/.config/robomage/settings.json`: layouts, engine, models, stops,
+  image cache, keys, recent files …), `paths` (the repository from the binary's own
+  path, the default engine binary and directories), `keys` (the action → key table, conflicts,
+  capture), `settings_dialog` (Settings' tabs, key rebinding), `layout_dialogs` (Save Layout As…,
+  Manage Layouts…), `dialogs` (the error dialog), `modal` (what the dialogs share), `theme` (the colour themes: eight palettes of the mock-up's tokens, the only source of colour,
+  chosen in Settings → Appearance; `--theme`), `fonts` (the eight embedded UI font families,
+  each regular and heavier, chosen in Settings → Appearance; `--font` / `--font-weight` /
+  `--font-size`), `selftest`, `platform` (GLFW, screenshots)
+- `third_party/` — vendored, unmodified: Dear ImGui (docking), ImPlot, stb, the UI fonts
+  (`fonts/<family>/`); pins and licences in its README; only `make workbench` compiles them
+- `tools/scryfall/fetch_images.py` — the workbench's card-image cache from the Scryfall API (stdlib only,
+  its README): per vocab card and token script every paper printing, the oldest non-promo paper one's
+  images downloaded (a token's from the token set of a card that makes it first), `manifest.json`; `--cards`, `--printing NAME=SET:NUMBER`, `--dry-run`, `--selftest`
 - `tools/forge_fetch/` — pinned Forge script provisioning (above); `tools/meta_scraper/` — MTGTop8 →
   `.dk` scraper (stdlib only, its own README; `--manifest` records the scrape)
 - `tools/onboard/` — the deck onboarding pipeline (its README):

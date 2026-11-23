@@ -4,7 +4,7 @@
   "hand_a": ["Preordain", "Island", "Island", "Island", "Island", "Island", "Island"],
   "library_a": ["Mountain", "Forest", "Swamp"],
   "battlefield_a": ["Island"],
-  "play": ["A:keep", "B:keep", "A:cast:Preordain", "A:desc:Put Forest on top", "A:desc:Put Mountain on top"],
+  "play": ["A:keep", "B:keep", "A:cast:Preordain", "A:desc:Put Forest on top", "A:desc:Put Mountain 2nd from the top"],
   "max_decisions": 8,
   "expect_order": ["Player A casts Preordain", "Player A scries 2", "^Player A draws Forest"]
 }

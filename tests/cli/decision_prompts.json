@@ -1,0 +1,4 @@
+{"name": "decision_prompts",
+ "why": "the pending decision says what the choice is: Ponder's picks go 3rd then 2nd from the top, Prismari Charm's mode names the card (no CARDNAME), Hogaak's delve count asks how many cards to exile (no choose X)",
+ "args": ["--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Ponder,Prismari Charm,Hogaak Arisen Necropolis,Plains,Plains,Plains,Plains", "--library-a", "Mountain,Forest,Island,Swamp,Plains,Plains,Plains,Plains", "--battlefield-a", "Volcanic Island,Volcanic Island,Volcanic Island,Llanowar Elves,Llanowar Elves,Llanowar Elves,Llanowar Elves,Llanowar Elves", "--graveyard-a", "Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain", "--hand-b", "Island", "--library-b", "Island", "--battlefield-b", "Grizzly Bears"],
+ "input": ["0", "0", "0", "5", "0", "0", "0", "0", "6", "1", "2", "0", "6", "0", "0"]}

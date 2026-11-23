@@ -57,3 +57,11 @@ std::vector<std::string> permanent_keywords(Entity e) {
               out.end());
     return out;
 }
+
+std::string hidden_keyword_rule(const std::string &kw, Entity holder) {
+    static const std::string kHidden = "HIDDEN ";
+    if (kw.compare(0, kHidden.size(), kHidden) != 0) return "";
+    std::string rule = script_text_for(kw.substr(kHidden.size()), holder);
+    if (!rule.empty() && rule.back() == '.') rule.pop_back();
+    return rule;
+}

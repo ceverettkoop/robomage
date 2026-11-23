@@ -43,6 +43,7 @@
     "A:desc:Destroy target land",
     "A:target:Tropical Island",
     "A:desc:3 damage",
+    "B:choice:Search your library",
     "B:search:Forest"
   ],
   "seed": 1,
@@ -55,7 +56,7 @@
   ],
   "expect_order": [
     "chooses mode \u2014 Destroy target land",
-    "chooses mode \u2014 CARDNAME deals 3 damage",
+    "chooses mode \u2014 Avengers Disassembled deals 3 damage",
     "Player A casts Avengers Disassembled",
     "Avengers Disassembled deals 3 damage to Grizzly Bears",
     "Tropical Island is destroyed",

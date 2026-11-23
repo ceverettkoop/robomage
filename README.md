@@ -50,19 +50,30 @@ TUI and a GUI) is archived on branch `archive/rl-stack`.
   - libtorch, from a torch importable by `python3` or from `LIBTORCH_DIR=…`, for `make actor`;
   - the learner's own venv: `python3 -m venv learn/.venv && learn/.venv/bin/pip install -r
     learn/requirements.txt` (torch, numpy and onnx; the pinned torch is a ROCm build).
+- Optional, for the workbench GUI: GLFW 3 found by `pkg-config glfw3` (`brew install glfw` on macOS,
+  `apt install libglfw3-dev` on Debian/Ubuntu), OpenGL 3 and zlib (both come with macOS; on Linux
+  `libgl-dev` and `zlib1g-dev`).
 
 ## Building
 
-Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts/`. They are in
-Forge format, not tracked in git, and pinned to a Forge commit in `tools/forge_fetch/FORGE_PIN`.
-Fetch them first:
-
 ```bash
-python3 tools/forge_fetch/provision_decks.py   # every vocab card + the top-level/league/heldout/candidates deck cards + their tokens
 make                  # debug build   -> bin/debug/{robomage,rmknow,rmfeat,robomage_check}
 make BUILD=RELEASE    # optimized     -> bin/release/…
 make check            # the test gate (below)
 ```
+
+**Card scripts.** The engine reads Forge card scripts from `bin/resources/cardsfolder/` and
+`bin/resources/tokenscripts/` at run time. They are not tracked in git: they are fetched from the
+Card-Forge GitHub repository, pinned to the commit in `tools/forge_fetch/FORGE_PIN`, by
+`tools/forge_fetch/provision_decks.py` (every vocab card, every top-level / `league/` / `heldout/` /
+`candidates/` deck card, and the tokens they make). `make` runs it for you: on a fresh clone, and
+again whenever the vocab (`src/card_vocab.h`), the pin, the script or one of those decks changes.
+It records each run in the stamp `bin/resources/.provisioned`, so an up-to-date tree builds without
+the network. The fetch is kept out of the compile itself because it needs the network (about 480
+scripts on a fresh clone, and several seconds of GitHub lookups even when nothing is missing), while the C++
+build needs no scripts at all; only the engine's runs, and the build's oracle-text table check, read them.
+`make NO_PROVISION=1` skips it (offline); running the script by hand is the same as `make`'s run. A
+card missing from Forge is reported and skipped, never fatal.
 
 Each configuration has its own `bin/<config>/` and `obj/<config>/` tree, so switching needs no
 `make clean`. The four binaries:
@@ -77,6 +88,7 @@ Other targets:
 
 - `make actor`: `robomage_nn` (the engine plus the libtorch `nn:` agents) and `rmserve` (the
   reference inference server).
+- `make workbench`: `rmwork`, the workbench GUI (below).
 - `make pgo`: a profile-guided release engine.
 - `make registry`: after adding a card, keyword or mechanic, appends to the featurizer's layout
   registry and card digest.
@@ -131,6 +143,35 @@ cd bin
   --hand-a "Lightning Bolt" --battlefield-a "Mountain" --battlefield-b "Grizzly Bears" \
   --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
+
+## The workbench
+
+`rmwork` is a desktop GUI (Dear ImGui on GLFW and OpenGL) for replaying decision logs with every
+viewer's frames and the model's evaluations, and for playing games against an agent or a learned
+policy on the Table. **Plain `make` does not build it**; it has its own target and needs GLFW
+(Prereqs):
+
+```bash
+make workbench                     # -> bin/debug/rmwork
+make workbench BUILD=RELEASE       # -> bin/release/rmwork
+make actor BUILD=RELEASE           # robomage_nn: needed only to play against a model (needs libtorch)
+python3 tools/scryfall/fetch_images.py   # optional: card images (otherwise cards are drawn as text)
+bin/release/rmwork
+```
+
+It finds the repository and the engine beside its own binary (`bin/<config>/`), so it can be started
+from any directory. Game → New Game vs Model (Ctrl+N) starts a game. Its model list holds Settings →
+Models' policies, every `runs/<run>/exports/*.ts.pt` / `*.pt2`, and every export inside a zip archive
+in `models/`: drop a packaged model (e.g. `league26-24h-model.zip`) there as it is, unzipped is not
+needed (`models/README.md`; git ignores the folder's contents). `bin/<config>/rmwork --help` lists
+its flags, and `docs/workbench_plan.md` describes it.
+
+**Model's Read and server opponents** need an inference server (`rmserve`, built by `make actor`).
+Settings → Models → *Start the server with the workbench* runs it for you while the workbench is open,
+serving the policies listed there (a model path may be a zipped export, `models/<archive>.zip!<member>`)
+at the socket set there, or `~/.cache/robomage/workbench/rmserve.sock` when none is. A server already
+listening at the socket is used instead and left running. Otherwise start one by hand:
+`bin/release/rmserve --socket /tmp/rmserve.sock --policy 0=<model>`.
 
 ## The state format and the knowledge sidecar
 

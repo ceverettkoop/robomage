@@ -483,10 +483,10 @@ Player A puts Polluted Delta into their graveyard.
 | >> Player A: 0 (Put Brainstorm on top of library)
 | decision 37: Player A (game 0, turn 4, UPKEEP, Player A active)
 | menu:
-|   0: Put Brainstorm on top of library
+|   0: Put Brainstorm 2nd from the top of library
 |   1: Put Brainstorm into graveyard
 (REPLAY) [T4 | Upkeep | Player A] Input: 0
-| >> Player A: 0 (Put Brainstorm on top of library)
+| >> Player A: 0 (Put Brainstorm 2nd from the top of library)
 Otherworldly Gaze is exiled (flashback)
 Player A draws Brainstorm
 | decision 38: Player A (game 0, turn 4, FIRST_MAIN, Player A active)

@@ -1,0 +1,4 @@
+{"name": "x_spell",
+ "why": "CR 601.2b: a spell's X is announced during casting; Kozilek's Command shows no X on the stack while X is being chosen, then the X chosen (X=2) at its mode choice",
+ "args": ["--player", "A", "--agent-b", "first", "--game-seed", "1", "--hand-a", "Kozilek's Command", "--library-a", "Island", "--battlefield-a", "Urza's Mine,Urza's Power Plant,Ancient Tomb,Underground Sea", "--hand-b", "Island", "--library-b", "Island"],
+ "input": ["0", "1", "2"]}
