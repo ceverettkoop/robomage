@@ -13,8 +13,8 @@
 // ── The start page (plan §4.1, item 1): what the workbench shows when nothing is open ────────────
 //
 // A page over the whole work area in place of the mode's dockspace (app.h decides when): a "Start"
-// tab whose ✕ goes to the mode's layout; on the left the actions (New Game, Open Replay, Open
-// Trajectory Episode, Open Run, each with its key), the keys to know and "show this page when
+// tab whose ✕ goes to the mode's layout; on the left the actions (New Game, Simulate Match, Open
+// Replay, Open Trajectory Episode, Open Run, each with its key), the keys to know and "show this page when
 // nothing is open"; in the middle Play's recent games, the recent replays and the recent runs (a
 // double-click opens one: a game or replay in Replay, a run in the run browser); on the right the
 // status blocks (engine, card images, inference server, files), each with the Settings tab that
@@ -28,6 +28,7 @@ struct StartRequest {
         enum class Kind {
             NONE,
             NEW_GAME,
+            SIMULATE,      // the Simulate dialog
             OPEN_REPLAY,   // the file picker on decision logs
             OPEN_EPISODE,  // the file picker on episodes
             PICK_RUN,      // the file picker on run directories

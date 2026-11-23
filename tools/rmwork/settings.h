@@ -51,14 +51,18 @@ struct ModelSettings {
         bool reevaluate_on_open = true;
 };
 
-// The twelve steps a stop can be set in (a stop at combat damage also covers first-strike damage).
+// The twelve steps of a turn, as the Table's step strip shows them; a stop can be set in each step a
+// player gets priority in (a stop at combat damage also covers first-strike damage).
 inline constexpr int STOP_STEP_COUNT = 12;
 struct StepInfo {
-        const char *key;     // settings key ("declare_attackers")
-        const char *name;    // "Declare attackers"
-        const char *abbrev;  // "Atk", as the Table's step strip shows it
+        const char *key;          // settings key ("declare_attackers")
+        const char *name;         // "Declare attackers"
+        const char *abbrev;       // "Atk", as the Table's step strip shows it
+        const char *no_priority;  // why the step has no stop (untap, cleanup), else nullptr
 };
 const StepInfo &stop_step(int index);
+// Whether a stop can be set in step `index`: players get priority in it.
+bool stop_settable(int index);
 // The step with settings key `key`, or -1.
 int find_stop_step(const std::string &key);
 // The stop step of the state format's `step` enum value name ("FIRST_MAIN" -> main1; first-strike
@@ -70,7 +74,7 @@ struct StopSettings {
         std::array<bool, STOP_STEP_COUNT> own{};       // in your turn
         std::array<bool, STOP_STEP_COUNT> opponent{};  // in the opponent's turn
 };
-// The mock-up's: upkeep, main 1, declare attackers, declare blockers and end step, in both turns.
+// Upkeep, main 1, declare attackers, declare blockers and end step in both turns, and main 2 in your own.
 StopSettings default_stops();
 // The stop of step `step` (0 .. STOP_STEP_COUNT - 1) in your turn (`own_turn`) or the opponent's.
 bool *stop_flag(StopSettings *s, bool own_turn, int step);
@@ -89,6 +93,29 @@ struct NewGameSettings {
         bool model_read = false;  // evaluate your decisions through the inference server
 };
 
+// One seat of the Simulate dialog's last choices (simulation.h).
+struct SimulateSeatSettings {
+        std::string agent = "explore";  // the agent's kind (play_session.h's keys: model, server, explore, random, scripted)
+        std::string model;              // model: the export (nn:<model>)
+        std::string server;             // server: the inference server's socket (nn:remote:<socket>)
+        std::string deck = "league/burn";
+        bool argmax = false;       // model, server: always the most likely row (the nn: agent's argmax)
+        double temperature = 1.0;  // model, server: the sampling temperature (temp=)
+};
+
+// The Simulate dialog's last choices.
+struct SimulateSettings {
+        std::array<SimulateSeatSettings, 2> seats;  // the first entrant (seat A of match 1), the second
+        bool bo3 = false;
+        uint64_t seed = 1;  // match i (from 0) plays --game-seed seed + i
+        bool auto_mana = true;
+        int matches = 10;
+        bool alternate = true;  // odd matches swap the seats' agents and decks
+        int jobs = 0;           // engines at once; 0 = default_simulation_jobs()
+};
+// The default seats: explore with league/burn against random with league/bug.
+SimulateSettings default_simulate_settings();
+
 struct Settings {
         Mode mode = Mode::REPLAY;
         std::array<ToolFlags, MODE_COUNT> tools{};     // per mode, which tools are open
@@ -104,6 +131,7 @@ struct Settings {
         bool card_images = true;          // cards drawn as their images where the cache has them
         std::vector<std::string> recent;  // files and run directories opened, the latest first
         NewGameSettings new_game;
+        SimulateSettings simulate = default_simulate_settings();
         bool start_page = true;  // the start page shows at start and when the open game or replay is closed
 };
 

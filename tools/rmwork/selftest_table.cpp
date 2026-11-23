@@ -945,7 +945,15 @@ void check_step_bar_clicks(
     check(load_settings(settings_path, &saved, &err) && saved.stops.own == before.own &&
               saved.stops.opponent == before.opponent,
         "Step bar: the stop turned back is not in settings.json " + err);
-    std::printf("rmwork: Step bar: End of combat's stop in %s toggled by a click, saved, and back\n",
+    for (const int none : {0, STOP_STEP_COUNT - 1}) {
+        const TRect &n = L.step_cells[static_cast<size_t>(none)];
+        click(ImVec2(o.x + (n.x0 + n.x1) / 2, o.y + n.y1 - 3), frames);
+        check(app.settings().stops.own == before.own && app.settings().stops.opponent == before.opponent,
+            std::string("Step bar: a click on ") + stop_step(none).name +
+                " (no priority, CR 502.4, 514.3) toggles a stop");
+    }
+    std::printf("rmwork: Step bar: End of combat's stop in %s toggled by a click, saved, and back; untap and "
+                "cleanup have none\n",
         own ? "your turn" : "the opponent's turn");
     move_mouse(ImVec2(-1000, -1000), frames);
 }

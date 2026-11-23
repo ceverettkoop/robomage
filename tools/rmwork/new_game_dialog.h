@@ -1,6 +1,7 @@
 #ifndef RMWORK_NEW_GAME_DIALOG_H
 #define RMWORK_NEW_GAME_DIALOG_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,20 @@ struct ModelChoice {
         std::string path;     // absolute
         bool latest = false;  // the runs directory's latest
 };
+
+// A seed from 1 to 999 999 (the dialogs' Random button).
+uint64_t random_seed();
+// The widgets the New Game and Simulate dialogs share (each in its own ID scope `id`).
+// An agent kind's combo box (play_session.h's kinds, `*key` the chosen one's key).
+void agent_kind_combo(const char *id, std::string *key);
+// A deck's combo box over `decks` (NewGameDialog::list_decks), grouped by directory.
+void deck_combo(const char *id, const std::vector<std::string> &decks, std::string *deck);
+// A model's combo box over `models` and, on the next line (its label column `field_x` wide), a field for
+// the export's path.
+void model_combo(const char *id, const std::vector<ModelChoice> &models, std::string *model, float field_x);
+// What keeps an agent of kind `key` from playing ("" nothing): a model kind with no model or one that is
+// not there, a server kind with no socket or none there.
+std::string agent_problem(const std::string &key, const std::string &model, const std::string &server);
 
 class NewGameDialog {
     public:
@@ -51,7 +66,6 @@ class NewGameDialog {
         static std::string check(const NewGameSettings &g, const std::string &engine_configured);
 
     private:
-        void draw_deck_combo(const char *id, std::string *deck);
         void draw_opponent();
         bool want_open_ = false;
         bool open_ = false;

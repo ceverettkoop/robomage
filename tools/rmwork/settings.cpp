@@ -12,12 +12,19 @@ namespace {
 
 const char *const BACKGROUND_KINDS[] = {"color", "texture", "image"};
 
-const rmwork::StepInfo STOP_STEPS[rmwork::STOP_STEP_COUNT] = {{"untap", "Untap", "Unt"}, {"upkeep", "Upkeep", "Upk"},
-    {"draw", "Draw", "Drw"}, {"main1", "Main 1", "M1"}, {"beginning_of_combat", "Beginning of combat", "BC"},
-    {"declare_attackers", "Declare attackers", "Atk"}, {"declare_blockers", "Declare blockers", "Blk"},
-    {"combat_damage", "Combat damage", "Dmg"}, {"end_of_combat", "End of combat", "EC"}, {"main2", "Main 2", "M2"},
-    {"end_step", "End step", "End"}, {"cleanup", "Cleanup", "Cln"}};
+const rmwork::StepInfo STOP_STEPS[rmwork::STOP_STEP_COUNT] = {
+    {"untap", "Untap", "Unt", "No player gets priority in the untap step (CR 502.4)."},
+    {"upkeep", "Upkeep", "Upk", nullptr}, {"draw", "Draw", "Drw", nullptr}, {"main1", "Main 1", "M1", nullptr},
+    {"beginning_of_combat", "Beginning of combat", "BC", nullptr},
+    {"declare_attackers", "Declare attackers", "Atk", nullptr},
+    {"declare_blockers", "Declare blockers", "Blk", nullptr}, {"combat_damage", "Combat damage", "Dmg", nullptr},
+    {"end_of_combat", "End of combat", "EC", nullptr}, {"main2", "Main 2", "M2", nullptr},
+    {"end_step", "End step", "End", nullptr},
+    {"cleanup", "Cleanup", "Cln",
+        "No player gets priority in the cleanup step unless something happens in it (CR 514.3, 514.3a); then an "
+        "object on the stack stops it."}};
 const int DEFAULT_STOPS[] = {1, 3, 5, 6, 10};
+const int DEFAULT_OWN_STOPS[] = {9};
 const char *const STOP_TURNS[] = {"own", "opponent"};
 
 }  // namespace
@@ -38,6 +45,12 @@ static bool read_images(const featurize::Json &v, std::string *out, bool *card_i
 static bool read_recent(const featurize::Json &v, std::vector<std::string> *out, std::string *err);
 static bool read_bool(const featurize::Json &obj, const char *key, const char *where, bool *out, std::string *err);
 static bool read_new_game(const featurize::Json &v, rmwork::NewGameSettings *out, std::string *err);
+static bool read_count(const featurize::Json &obj, const char *key, const char *where, int min, int max, int *out,
+    std::string *err);
+static bool read_simulate_seat(
+    const featurize::Json &v, const std::string &where, rmwork::SimulateSeatSettings *out, std::string *err);
+static bool read_simulate(const featurize::Json &v, rmwork::SimulateSettings *out, std::string *err);
+static std::string simulate_json(const rmwork::SimulateSettings &s);
 static bool read_layout_node(const featurize::Json &v, int depth, rmwork::LayoutNode *out, std::string *err);
 static bool read_layouts(
     const featurize::Json &v, std::array<rmwork::NamedLayouts, rmwork::MODE_COUNT> *out, std::string *err);
@@ -189,6 +202,97 @@ static bool read_new_game(const featurize::Json &v, rmwork::NewGameSettings *out
     return true;
 }
 
+// `obj`.`key`, when present, as a whole number from `min` to `max`; `where` names `obj` in the error.
+static bool read_count(const featurize::Json &obj, const char *key, const char *where, int min, int max, int *out,
+    std::string *err) {
+    const featurize::Json *v = obj.get(key);
+    if (!v) return true;
+    if (!v->is_number() || !v->is_integer() || v->as_number() < min || v->as_number() > max) {
+        *err = std::string("\"") + where + "\".\"" + key + "\" is not a whole number from " + std::to_string(min) +
+               " to " + std::to_string(max);
+        return false;
+    }
+    *out = static_cast<int>(v->as_int());
+    return true;
+}
+
+// {"agent", "model", "server", "deck", "argmax", "temperature"}.
+static bool read_simulate_seat(
+    const featurize::Json &v, const std::string &where, rmwork::SimulateSeatSettings *out, std::string *err) {
+    if (!v.is_object()) {
+        *err = "\"" + where + "\" is not an object";
+        return false;
+    }
+    const char *w = where.c_str();
+    if (!read_string(v, "agent", w, &out->agent, err) || !read_string(v, "model", w, &out->model, err) ||
+        !read_string(v, "server", w, &out->server, err) || !read_string(v, "deck", w, &out->deck, err) ||
+        !read_bool(v, "argmax", w, &out->argmax, err))
+        return false;
+    if (const featurize::Json *t = v.get("temperature")) {
+        if (!t->is_number() || t->as_number() <= 0 || t->as_number() > 100) {
+            *err = "\"" + where + "\".\"temperature\" is not a number above 0 (at most 100)";
+            return false;
+        }
+        out->temperature = t->as_number();
+    }
+    return true;
+}
+
+// {"seats": [A, B], "format": "bo1"|"bo3", "seed", "auto_mana", "matches", "alternate", "jobs"}.
+static bool read_simulate(const featurize::Json &v, rmwork::SimulateSettings *out, std::string *err) {
+    if (!v.is_object()) {
+        *err = "\"simulate\" is not an object";
+        return false;
+    }
+    if (const featurize::Json *seats = v.get("seats")) {
+        if (!seats->is_array() || seats->items().size() != 2) {
+            *err = "\"simulate\".\"seats\" is not a list of two seats";
+            return false;
+        }
+        for (size_t i = 0; i < 2; ++i)
+            if (!read_simulate_seat(seats->items()[i], i == 0 ? "simulate.seats[0]" : "simulate.seats[1]",
+                    &out->seats[i], err))
+                return false;
+    }
+    std::string format = out->bo3 ? "bo3" : "bo1";
+    if (!read_string(v, "format", "simulate", &format, err) ||
+        !read_bool(v, "auto_mana", "simulate", &out->auto_mana, err) ||
+        !read_bool(v, "alternate", "simulate", &out->alternate, err) ||
+        !read_count(v, "matches", "simulate", 1, 100000, &out->matches, err) ||
+        !read_count(v, "jobs", "simulate", 0, 1024, &out->jobs, err))
+        return false;
+    if (format != "bo1" && format != "bo3") {
+        *err = "\"simulate\".\"format\" is \"bo1\" or \"bo3\"";
+        return false;
+    }
+    out->bo3 = format == "bo3";
+    if (const featurize::Json *seed = v.get("seed")) {
+        if (!seed->is_number() || !seed->is_integer() || seed->as_number() < 0) {
+            *err = "\"simulate\".\"seed\" is not a whole number from 0";
+            return false;
+        }
+        out->seed = static_cast<uint64_t>(seed->as_int());
+    }
+    return true;
+}
+
+static std::string simulate_json(const rmwork::SimulateSettings &s) {
+    using featurize::json_quote;
+    std::string out = "{\"seats\": [";
+    for (size_t i = 0; i < 2; ++i) {
+        const rmwork::SimulateSeatSettings &p = s.seats[i];
+        char temp[32];
+        std::snprintf(temp, sizeof temp, "%.6g", p.temperature);
+        out += std::string(i ? ", " : "") + "{\"agent\": " + json_quote(p.agent) + ", \"model\": " +
+               json_quote(p.model) + ", \"server\": " + json_quote(p.server) + ", \"deck\": " + json_quote(p.deck) +
+               ", \"argmax\": " + (p.argmax ? "true" : "false") + ", \"temperature\": " + temp + "}";
+    }
+    out += "], \"format\": " + json_quote(s.bo3 ? "bo3" : "bo1") + ", \"seed\": " + std::to_string(s.seed) +
+           ", \"auto_mana\": " + (s.auto_mana ? "true" : "false") + ", \"matches\": " + std::to_string(s.matches) +
+           ", \"alternate\": " + (s.alternate ? "true" : "false") + ", \"jobs\": " + std::to_string(s.jobs) + "}";
+    return out;
+}
+
 static bool read_engine(const featurize::Json &v, rmwork::EngineSettings *out, std::string *err) {
     if (!v.is_object()) {
         *err = "\"engine\" is not an object";
@@ -254,7 +358,8 @@ static bool read_stops(const featurize::Json &v, rmwork::StopSettings *out, std:
                        ", not a step such as \"upkeep\" or \"declare_attackers\"";
                 return false;
             }
-            row[static_cast<size_t>(i)] = true;
+            // A step without priority has no stop; a settings file naming one is read without it.
+            if (rmwork::stop_settable(i)) row[static_cast<size_t>(i)] = true;
         }
     }
     return true;
@@ -468,7 +573,12 @@ int find_stop_step(const std::string &key) {
 StopSettings default_stops() {
     StopSettings s;
     for (int i : DEFAULT_STOPS) s.own[static_cast<size_t>(i)] = s.opponent[static_cast<size_t>(i)] = true;
+    for (int i : DEFAULT_OWN_STOPS) s.own[static_cast<size_t>(i)] = true;
     return s;
+}
+
+bool stop_settable(int index) {
+    return STOP_STEPS[index].no_priority == nullptr;
 }
 
 bool *stop_flag(StopSettings *s, bool own_turn, int step) {
@@ -550,6 +660,13 @@ void add_recent(std::vector<std::string> *recent, const std::string &path) {
     if (recent->size() > RECENT_MAX) recent->resize(RECENT_MAX);
 }
 
+SimulateSettings default_simulate_settings() {
+    SimulateSettings s;
+    s.seats[1].agent = "random";
+    s.seats[1].deck = "league/bug";
+    return s;
+}
+
 Settings default_settings() {
     Settings s;
     for (int m = 0; m < MODE_COUNT; ++m)
@@ -625,6 +742,7 @@ std::string settings_to_json(const Settings &s) {
            ", \"format\": " + json_quote(g.bo3 ? "bo3" : "bo1") + ", \"seed\": " + std::to_string(g.seed) +
            ", \"auto_mana\": " + (g.auto_mana ? "true" : "false") +
            ", \"model_read\": " + (g.model_read ? "true" : "false") + "},\n";
+    out += "  \"simulate\": " + simulate_json(s.simulate) + ",\n";
     out += std::string("  \"start_page\": ") + (s.start_page ? "true" : "false") + ",\n";
     out += "  \"recent\": [";
     for (size_t i = 0; i < s.recent.size(); ++i) out += std::string(i ? ", " : "") + json_quote(s.recent[i]);
@@ -681,6 +799,8 @@ bool settings_from_json(const std::string &text, Settings *out, std::string *err
         if (!read_recent(*v, &out->recent, err)) return false;
     if (const featurize::Json *v = doc.get("new_game"))
         if (!read_new_game(*v, &out->new_game, err)) return false;
+    if (const featurize::Json *v = doc.get("simulate"))
+        if (!read_simulate(*v, &out->simulate, err)) return false;
     if (const featurize::Json *v = doc.get("start_page")) {
         if (!v->is_bool()) {
             *err = "\"start_page\" is not true or false";

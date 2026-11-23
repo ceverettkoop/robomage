@@ -26,6 +26,7 @@
 #include "selftest_policy_catalog.h"
 #include "selftest_priority.h"
 #include "selftest_reevaluation.h"
+#include "selftest_simulation.h"
 #include "selftest_start.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
@@ -855,10 +856,27 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
     const StopSettings stops = default_stops();
     int own = 0;
     for (int i = 0; i < STOP_STEP_COUNT; ++i) own += stops.own[static_cast<size_t>(i)] ? 1 : 0;
+    std::array<bool, STOP_STEP_COUNT> opponent_expected = stops.own;
+    opponent_expected[9] = false;
     check(t,
-        own == 5 && stops.own[1] && stops.own[3] && stops.own[5] && stops.own[6] && stops.own[10] &&
-            stops.opponent == stops.own && def.stops.own == stops.own,
-        "the default stops are not upkeep, main 1, declare attackers, declare blockers and end step");
+        own == 6 && stops.own[1] && stops.own[3] && stops.own[5] && stops.own[6] && stops.own[9] && stops.own[10] &&
+            stops.opponent == opponent_expected && def.stops.own == stops.own,
+        "the default stops are not upkeep, main 1, declare attackers, declare blockers and end step, and main 2 in "
+        "your own turn");
+    int settable = 0;
+    for (int i = 0; i < STOP_STEP_COUNT; ++i) settable += stop_settable(i) ? 1 : 0;
+    check(t, settable == 10 && !stop_settable(0) && !stop_settable(STOP_STEP_COUNT - 1) && stop_step(0).no_priority &&
+                 stop_step(STOP_STEP_COUNT - 1).no_priority,
+        "the untap and cleanup steps (no priority, CR 502.4, 514.3) are not the only steps without a stop");
+    {
+        Settings read;
+        std::string why;
+        const bool ok = settings_from_json(
+            "{\"stops\": {\"own\": [\"untap\", \"upkeep\", \"cleanup\"], \"opponent\": [\"cleanup\"]}}", &read, &why);
+        check(t, ok && read.stops.own[1] && !read.stops.own[0] && !read.stops.own[STOP_STEP_COUNT - 1] &&
+                     !read.stops.opponent[STOP_STEP_COUNT - 1],
+            "a settings file's untap or cleanup stop is not read as no stop " + why);
+    }
 
     Settings s = def;
     s.engine = {"bin/release/robomage", "/tmp/work"};
@@ -889,7 +907,7 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
             "the Add row's model suggestions do not match by label or path, in any case");
     }
     s.stops.own.fill(false);
-    s.stops.opponent[0] = s.stops.opponent[11] = true;
+    s.stops.opponent[2] = s.stops.opponent[8] = true;
     s.image_cache = "/cache/images";
     s.new_game.deck = "heldout/storm";
     s.new_game.seat = 1;
@@ -911,7 +929,7 @@ static void check_later_settings(Tally *t, const std::string &tmp) {
         "the read-back New Game choices differ");
     check(t,
         back.models.policies.size() == 2 && back.models.policies[1].id == "b.2-x_" && !back.stops.own[1] &&
-            back.stops.opponent[11] && back.engine.workdir == "/tmp/work",
+            back.stops.opponent[8] && back.engine.workdir == "/tmp/work",
         "the read-back later-stage settings differ");
     const char *refused[] = {"{\"stops\": {\"own\": [\"upkeep\", \"second_breakfast\"]}}",
         "{\"stops\": {\"own\": \"upkeep\"}}", "{\"stops\": []}", "{\"engine\": {\"binary\": 3}}",
@@ -1216,6 +1234,7 @@ int run_selftest() {
     check_start_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
     check_app_server(&t, paths);
     check_model_manager_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
+    check_simulation_app([&t](bool ok, const std::string &what) { check(&t, ok, what); }, paths, tmp);
     destroy_ui_context();
     check_settings_file(&t, paths, tmp);
     check_font_settings(&t);
@@ -1234,6 +1253,7 @@ int run_selftest() {
     check_policy_catalog_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     check_inference_server_units([&t](bool ok, const std::string &what) { check(&t, ok, what); });
     check_model_manager_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
+    check_simulation_units([&t](bool ok, const std::string &what) { check(&t, ok, what); }, tmp);
     begin_headless();
     check_theme_contrast(&t);
     check_image_units([&t](bool ok, const std::string &what) { check(&t, ok, "Images: " + what); }, tmp);

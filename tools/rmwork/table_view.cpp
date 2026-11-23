@@ -598,7 +598,9 @@ void TableView::draw(const TableDraw &d) {
     const bool answered = clicked && answering_ && hit.step < 0 && answer_click(hit);
     if (answering_ && planning() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) plan_release(hit);
     if (over || forced_card) hover_hint(hit, d);
-    if (hit.step >= 0) {
+    if (hit.step >= 0 && !stop_settable(hit.step)) {
+        ImGui::SetTooltip("%s", stop_step(hit.step).no_priority);
+    } else if (hit.step >= 0) {
         // A click on a step toggles its stop for the side whose turn the Table shows.
         const bool own = model_.active == model_.bottom;
         bool *stop = stop_flag(d.stops, own, hit.step);
@@ -1188,8 +1190,9 @@ void TableView::draw_prompt(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     }
 }
 
-// The twelve steps, the current one highlighted; in Play a stop dot under each (filled where the
-// stops stop for the side whose turn it is), the step under the mouse outlined (a click toggles it).
+// The twelve steps, the current one highlighted; in Play a stop dot under each step with priority
+// (filled where the stops stop for the side whose turn it is), the step under the mouse outlined (a
+// click toggles it).
 void TableView::draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
     const float h = ImGui::GetTextLineHeight();
     const bool own = model_.active == model_.bottom;
@@ -1201,7 +1204,7 @@ void TableView::draw_steps(ImDrawList *dl, ImVec2 o, const TableDraw &d) {
         const char *ab = stop_step(static_cast<int>(i)).abbrev;
         const float tw = ImGui::CalcTextSize(ab).x;
         dl->AddText(ImVec2(a.x + (r.w() - tw) / 2, a.y + 1), on ? tok().TEXT : tok().DIM, ab);
-        if (!d.play || !d.stops) continue;
+        if (!d.play || !d.stops || !stop_settable(static_cast<int>(i))) continue;
         const ImVec2 c((a.x + z.x) / 2, a.y + h + 2 + STOP_DOT_H / 2);
         if (*stop_flag(d.stops, own, static_cast<int>(i))) {
             dl->AddCircleFilled(c, 3, tok().BAD);

@@ -14,7 +14,8 @@
 // nothing has to drain a pipe while the caller waits. start_piped() (Play's session): stdin and
 // stdout are pipes the caller writes and reads, stderr a file, and the child leads a process group
 // of its own, so kill_and_reap() also kills what it started (a teacher subprocess holding the
-// pipe). The caller polls (poll()) and may kill it; the destructor kills and reaps a child still
+// pipe); start() with `own_group` does the same for a child with its output in files (a
+// simulation's engine and its teachers). The caller polls (poll()) and may kill it; the destructor kills and reaps a child still
 // running.
 
 namespace rmwork {
@@ -27,9 +28,11 @@ class ChildProcess {
         ~ChildProcess();
 
         // Starts argv[0] (a path) with `argv` in `cwd` ("" = this process's), stdout into
-        // `stdout_path` and stderr into `stderr_path` (each created or truncated). False with `err`.
+        // `stdout_path` and stderr into `stderr_path` (each created or truncated; the same path puts
+        // both in that one file, in the order written); with `own_group`
+        // the child leads a process group of its own, as start_piped's does. False with `err`.
         bool start(const std::vector<std::string> &argv, const std::string &cwd, const std::string &stdout_path,
-            const std::string &stderr_path, std::string *err);
+            const std::string &stderr_path, std::string *err, bool own_group = false);
         // Starts argv[0] in `cwd` in a new process group with stdin and stdout on pipes: `to_child`
         // gets the write end of its stdin, `from_child` the read end of its stdout (both close on
         // exec, owned by the caller); stderr into `stderr_path`. False with `err`.

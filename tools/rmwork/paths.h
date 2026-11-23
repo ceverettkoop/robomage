@@ -30,6 +30,8 @@ std::string default_models_dir();
 std::string default_image_cache();
 // $XDG_DATA_HOME/robomage/workbench/games, else ~/.local/share/…: Play's games (decision logs).
 std::string default_games_dir();
+// $XDG_DATA_HOME/robomage/workbench/simulations, else ~/.local/share/…: Simulate's batches (simulation.h).
+std::string default_simulations_dir();
 // $XDG_CACHE_HOME/robomage/workbench, else ~/.cache/robomage/workbench.
 std::string workbench_cache_dir();
 // `text` as a path: `fallback` when empty, "~/…" under $HOME, a relative path under repo_root().

@@ -31,6 +31,7 @@
 #include "selftest_index.h"
 #include "selftest_play.h"
 #include "selftest_reevaluation.h"
+#include "selftest_simulation.h"
 #include "selftest_table.h"
 #include "selftest_tools.h"
 #include "subprocess.h"
@@ -942,6 +943,13 @@ int run_selftest_evals(const std::string &engine, const std::string &model) {
                 check_attribution_real(fn, app, reeval_hooks(&t, app, env), log, model_path);
             }
         }
+        SimulationTestEnv sim_env;
+        sim_env.engine = env.engine;
+        sim_env.workdir = env.workdir;
+        sim_env.tmp = env.tmp + "/simulate";
+        make_dirs(sim_env.tmp);
+        check_simulation_evals([&t](bool ok, const std::string &what) { check(&t, ok, what); }, app,
+            [&app](int n) { run_frames(app, n); }, sim_env, model_path);
         check(&t, tools.episode_decisions > 0, "Tools: no decision of the nn: match checked against its evaluations");
     }
     destroy_ui_context();
@@ -1014,6 +1022,12 @@ int run_selftest_data(const std::string &engine) {
         const CheckFn play_check = [&t](bool ok, const std::string &what) { check(&t, ok, what); };
         check_play(play_check, app, [&app](int n) { run_frames(app, n); }, play_env);
         check_attribution_play(play_check, app, reeval_hooks(&t, app, env));
+        SimulationTestEnv sim_env;
+        sim_env.engine = env.engine;
+        sim_env.workdir = env.workdir;
+        sim_env.tmp = env.tmp + "/simulate";
+        make_dirs(sim_env.tmp);
+        check_simulation_data(play_check, app, [&app](int n) { run_frames(app, n); }, sim_env);
     }
     destroy_ui_context();
     remove_tree(env.tmp);

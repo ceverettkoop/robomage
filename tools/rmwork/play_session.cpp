@@ -26,7 +26,6 @@ const char *const MODEL_READ_FILE = "Model's Read";
 
 static std::string base_name(const std::string &path);
 static std::string shell_quote(const std::string &s);
-static std::string timestamp();
 static std::string game_stem(const std::string &dir, uint64_t seed);
 static void append_quit(const std::string &log);
 
@@ -42,19 +41,9 @@ static std::string shell_quote(const std::string &s) {
     return out + "'";
 }
 
-// "20261116-191502", local time.
-static std::string timestamp() {
-    const std::time_t now = std::time(nullptr);
-    std::tm tm;
-    localtime_r(&now, &tm);
-    char buf[32];
-    std::strftime(buf, sizeof buf, "%Y%m%d-%H%M%S", &tm);
-    return buf;
-}
-
 // "<dir>/<timestamp>-<seed>", with a suffix when a game of that name exists.
 static std::string game_stem(const std::string &dir, uint64_t seed) {
-    const std::string base = dir + "/" + timestamp() + "-" + std::to_string(seed);
+    const std::string base = dir + "/" + rmwork::file_timestamp() + "-" + std::to_string(seed);
     std::string stem = base;
     for (int i = 2; rmwork::file_exists(stem + ".rmlog"); ++i) stem = base + "-" + std::to_string(i);
     return stem;
@@ -120,12 +109,12 @@ std::string play_engine_binary(const std::string &configured, Opponent o, std::s
     return "";
 }
 
-std::string opponent_agent(const PlayConfig &c) {
-    switch (c.opponent) {
+std::string seat_agent_spec(const SeatAgent &a) {
+    switch (a.kind) {
         case Opponent::MODEL:
-            return "nn:" + c.model;
+            return "nn:" + a.model + a.options;
         case Opponent::SERVER:
-            return "nn:remote:" + c.model;
+            return "nn:remote:" + a.model + a.options;
         case Opponent::EXPLORE:
             return "explore";
         case Opponent::RANDOM:
@@ -136,21 +125,49 @@ std::string opponent_agent(const PlayConfig &c) {
     return "first";
 }
 
+std::vector<std::string> agent_arguments(const SeatAgent *a, const SeatAgent *b, uint64_t seed,
+    const std::string &repo, const std::string &python) {
+    const SeatAgent *seats[2] = {a, b};
+    std::vector<std::string> out, teachers;
+    for (int s = 0; s < 2; ++s) {
+        if (!seats[s]) continue;
+        const std::string key = s == 0 ? "a" : "b";
+        out.insert(out.end(), {"--agent-" + key, seat_agent_spec(*seats[s])});
+        if (seats[s]->kind == Opponent::SCRIPTED)
+            teachers.insert(teachers.end(), {"--teacher-" + key, shell_quote(python) + " " +
+                                                                     shell_quote(repo + "/python/teacher.py") +
+                                                                     " --tier hard --seed " + std::to_string(seed)});
+    }
+    if (!teachers.empty()) {
+        out.insert(out.end(), teachers.begin(), teachers.end());
+        out.insert(out.end(), {"--teacher-mix", "1"});
+    }
+    return out;
+}
+
+std::string opponent_agent(const PlayConfig &c) {
+    SeatAgent a;
+    a.kind = c.opponent;
+    a.model = c.model;
+    return seat_agent_spec(a);
+}
+
 std::vector<std::string> play_arguments(
     const PlayConfig &c, const std::string &log_path, const std::string &repo, const std::string &python) {
     const std::string seed = std::to_string(c.seed);
-    const std::string opp = c.seat == 0 ? "b" : "a";
     std::vector<std::string> a = {"--machine", "--game-seed", seed, "--deck-a", c.seat == 0 ? c.deck : c.opponent_deck,
         "--deck-b", c.seat == 0 ? c.opponent_deck : c.deck};
     if (c.bo3) a.push_back("--bo3");
     if (!c.auto_mana) a.push_back("--no-auto-mana");
-    a.insert(a.end(), {"--decision-log", log_path, "--agent-" + opp, opponent_agent(c)});
+    a.insert(a.end(), {"--decision-log", log_path});
+    SeatAgent opp;
+    opp.kind = c.opponent;
+    opp.model = c.model;
+    const std::vector<std::string> agents =
+        agent_arguments(c.seat == 1 ? &opp : nullptr, c.seat == 0 ? &opp : nullptr, c.seed, repo, python);
+    a.insert(a.end(), agents.begin(), agents.end());
+    // The setup flags after the agent's: a sculpted game's own --agent-<seat> wins.
     a.insert(a.end(), c.setup.begin(), c.setup.end());
-    if (c.opponent == Opponent::SCRIPTED)
-        a.insert(a.end(),
-            {"--teacher-" + opp,
-                shell_quote(python) + " " + shell_quote(repo + "/python/teacher.py") + " --tier hard --seed " + seed,
-                "--teacher-mix", "1"});
     return a;
 }
 

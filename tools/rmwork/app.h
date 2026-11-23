@@ -31,6 +31,9 @@
 #include "run_browser.h"
 #include "settings.h"
 #include "settings_dialog.h"
+#include "simulate_dialog.h"
+#include "simulation.h"
+#include "simulation_view.h"
 #include "start_page.h"
 #include "table_view.h"
 #include "tokens_view.h"
@@ -57,6 +60,13 @@
 // copies the game's log. The human's sideboarding phase brings the Sideboard tool to the front (and
 // the next game the Table), and the tool sends its confirmed plan after each poll
 // (sideboard_view.h). The engine's failures reach the error dialog; quitting kills the engine.
+//
+// Simulate (simulation.h, plan §2.9): File → Simulate Match… (and its key, and the start page's action)
+// opens the Simulate dialog (simulate_dialog.h); Run starts a Simulation, polled once a frame, with its
+// progress and a Cancel in the status bar. A single match opens in Replay when it ends (its failure in
+// the error dialog); a batch of several opens the Simulations window (simulation_view.h), whose rows
+// open their matches in Replay. File → Simulations shows the window, File → Recent Simulations and
+// File → Open Simulation… reopen a past simulation's directory. Quitting kills the engines.
 //
 // The start page (start_page.h) takes the place of the mode's dockspace and tools while it is shown,
 // so neither mode's layout changes under it: at start when its setting is on and nothing was opened,
@@ -141,7 +151,8 @@ class App {
             PICK_REPLAY,
             PICK_EPISODE,
             PICK_RUN,
-            PICK_SAVE_LOG
+            PICK_SAVE_LOG,
+            PICK_SIMULATION
         };
         void open_file_picker(PickPurpose purpose);
         bool loading() const { return loader_.busy(); }
@@ -223,6 +234,22 @@ class App {
         bool choosing() const;
         // The status bar's Play field: "Your decision", "Opponent is thinking…", "Match over", …
         std::string play_state_text() const;
+
+        // ── Simulate ──
+        // File → Simulate Match…, with the last choices.
+        void open_simulate();
+        SimulateDialog &simulate_dialog() { return simulate_dialog_; }
+        // Starts a simulation of `g` (kept as the next one's choices); false after the error dialog. One
+        // match opens in Replay when it ends; several open the Simulations window.
+        bool start_simulation(const SimulateSettings &g);
+        Simulation &simulation() { return simulation_; }
+        SimulationView &simulation_view() { return sim_view_; }
+        // Opens a past simulation's directory in the Simulations window; false after the error dialog.
+        bool open_simulation(const std::string &dir);
+        // File → Simulations: the window, with the past simulations listed again.
+        void show_simulations();
+        // Does what the window asked for: a match in Replay, a failure, New…, a past one, Cancel.
+        void run_simulation_request(const SimulationRequest &r);
 
         // ── The Models tool ──
         ModelManagerView &model_manager() { return models_; }
@@ -322,6 +349,9 @@ class App {
         void draw_reevaluate_dialog();
         void poll_loader();
         void poll_play();
+        void poll_simulation();
+        void draw_simulation();
+        void draw_recent_simulations();
         void step_auto_play();
         void follow_sideboarding();
         void apply_sideboard_spec();
@@ -420,6 +450,11 @@ class App {
         std::string attr_cache_root_;
         std::string attr_request_;  // what update_attribution last asked the attribution for
         std::vector<std::string> attr_expand_;
+        Simulation simulation_;
+        SimulateDialog simulate_dialog_;
+        SimulationView sim_view_;
+        bool sim_single_ = false;                   // the running simulation is one match: Replay when it ends
+        std::vector<SimulationEntry> recent_sims_;  // File → Recent Simulations, read when it opens
         StartPage start_page_;
         bool start_shown_ = false;
         double start_scanned_at_ = -1;  // when the page's last scan was asked for

@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <vector>
 
 namespace rmwork {
@@ -151,6 +152,15 @@ void remove_tree(const std::string &path) {
     } else {
         unlink(path.c_str());
     }
+}
+
+std::string file_timestamp() {
+    const std::time_t now = std::time(nullptr);
+    std::tm tm;
+    localtime_r(&now, &tm);
+    char buf[32];
+    std::strftime(buf, sizeof buf, "%Y%m%d-%H%M%S", &tm);
+    return buf;
 }
 
 }  // namespace rmwork

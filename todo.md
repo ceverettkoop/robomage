@@ -97,16 +97,6 @@ Marked "NOT YET MODELED" at the site (`parse.cpp` ~2053-2061):
 
 ## Deferred — bigger, needs its own session
 
-### T3.2 cleanup-step trigger priority (rule 514.3a) — DEFERRED
-Cleanup triggers exist only as bookkeeping: `Phase$ Cleanup` parses to `CLEANUP_BEGAN`
-(`parse.cpp` ~3336), used by Carpet of Flowers' `Static$ True` reset, which bypasses the stack.
-Missing: if a stack-using trigger fires or an SBA happens during cleanup, players must get priority
-and another cleanup step follows (514.3a). Entering CLEANUP force-sets both pass flags
-(`game.cpp` ~577), so such a trigger would resolve with no priority window. No vocab card needs it;
-Thawing Glaciers (delayed "return at the next cleanup") or a madness/discard card are natural test
-vehicles. Fix: when triggers/SBAs occur in cleanup, reset the pass flags and give the active player
-priority, keeping the no-trigger fast path.
-
 ### Aura-on-PLAYER state-based action (CR 704.5m) — DEFERRED, latent
 The Aura fall-off SBA (`state_manager.cpp` ~231, "704.5n" comment) destroys an Aura whenever
 `Permanent::equipped_to == 0`. `equipped_to` is only written for a Permanent enchant target

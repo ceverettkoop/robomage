@@ -105,8 +105,22 @@ struct PlayPaths {
 // robomage_nn beside it), else the plain robomage beside a configured robomage_nn (no learned policy
 // needed), else `configured`. "" with `why` when an nn: opponent has no robomage_nn.
 std::string play_engine_binary(const std::string &configured, Opponent o, std::string *why);
-// The opponent seat's agent spec ("explore", "nn:<model>", "nn:remote:<socket>", "first" for the
+
+// An agent on a seat (Play's opponent, either seat of a simulation, simulation.h).
+struct SeatAgent {
+        Opponent kind = Opponent::EXPLORE;
+        std::string model;    // MODEL: the export's file; SERVER: the socket
+        std::string options;  // MODEL / SERVER: the nn: agent's options after the model (":argmax", ":temp=0.5")
+};
+// The agent's spec ("explore", "nn:<model><options>", "nn:remote:<socket><options>", "first" for the
 // scripted agent's seat, which its teacher plays).
+std::string seat_agent_spec(const SeatAgent &a);
+// The engine's arguments that put agents on the seats (nullptr: no agent, a human seat): per seat
+// `--agent-<a|b> <spec>`; a scripted seat's teacher (`--teacher-<a|b>` python/teacher.py --tier hard
+// --seed `seed`, run with `python` from `repo`), and `--teacher-mix 1` once when a seat is scripted.
+std::vector<std::string> agent_arguments(const SeatAgent *a, const SeatAgent *b, uint64_t seed,
+    const std::string &repo, const std::string &python);
+// The opponent seat's agent spec (seat_agent_spec of its agent).
 std::string opponent_agent(const PlayConfig &c);
 // The engine's arguments after its path.
 std::vector<std::string> play_arguments(

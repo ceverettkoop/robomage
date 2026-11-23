@@ -37,15 +37,25 @@ ChildProcess::~ChildProcess() {
 }
 
 bool ChildProcess::start(const std::vector<std::string> &argv, const std::string &cwd, const std::string &stdout_path,
-    const std::string &stderr_path, std::string *err) {
+    const std::string &stderr_path, std::string *err, bool own_group) {
     posix_spawn_file_actions_t actions;
     posix_spawn_file_actions_init(&actions);
     posix_spawn_file_actions_addopen(&actions, 0, "/dev/null", O_RDONLY, 0);
     posix_spawn_file_actions_addopen(&actions, 1, stdout_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    posix_spawn_file_actions_addopen(&actions, 2, stderr_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (stderr_path == stdout_path)
+        posix_spawn_file_actions_adddup2(&actions, 1, 2);
+    else
+        posix_spawn_file_actions_addopen(&actions, 2, stderr_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (!cwd.empty()) posix_spawn_file_actions_addchdir_np(&actions, cwd.c_str());
-    group_ = false;
-    const bool ok = spawn(argv, &actions, nullptr, err);
+    posix_spawnattr_t attr;
+    posix_spawnattr_init(&attr);
+    if (own_group) {
+        posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETPGROUP);
+        posix_spawnattr_setpgroup(&attr, 0);
+    }
+    group_ = own_group;
+    const bool ok = spawn(argv, &actions, &attr, err);
+    posix_spawnattr_destroy(&attr);
     posix_spawn_file_actions_destroy(&actions);
     return ok;
 }

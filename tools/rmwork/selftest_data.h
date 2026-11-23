@@ -30,7 +30,9 @@
 //   - the Table and the other tools on every match (selftest_table.h, selftest_tools.h), and the
 //     evaluations' tools on the bo3 match with made-up evaluations added to its episodes;
 //   - Play (selftest_play.h): games against the engine's agents and the scripted agent played to their
-//     end, the passing, concessions, the decision logs in Replay, the engine's failures.
+//     end, the passing, concessions, the decision logs in Replay, the engine's failures;
+//   - Simulate (selftest_simulation.h): matches with no human seat, their results against the engine's
+//     replays, a batch with alternating seats, a failure and a cancel, a match opened in Replay.
 // Prints "RMWORK-SELFTEST-DATA: N checks, M failures"; nonzero exit on a failure.
 
 namespace rmwork {
@@ -43,7 +45,8 @@ int run_selftest_data(const std::string &engine);
 // with its episodes (every decision joined) and check_tools_values (selftest_tools.h) runs on it:
 // every decision evaluated, π a distribution over its menu, the Value Graph's series a point per
 // decision of the seat, Swings, seat disagreement and next swing recomputed from the values, the
-// Inspector, Choices' π and the Model's Read. Same temporary directories as --selftest-data. Prints
+// Inspector, Choices' π and the Model's Read; then Simulate's matches of the model against itself and
+// against the scripted agent (selftest_simulation.h). Same temporary directories as --selftest-data. Prints
 // "RMWORK-SELFTEST-EVALS: N checks, M failures"; nonzero exit on a failure or a missing
 // robomage_nn or model.
 int run_selftest_evals(const std::string &engine, const std::string &model);

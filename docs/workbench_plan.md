@@ -760,6 +760,78 @@ exporter or RMIP v2.
 evaluator, M, comes first). The Tensors view with the Tokens tool: M. Shapley: S. Gradients with the
 export change (deferred): M–L.
 
+### 2.9 Simulate: games with no human seat
+
+**Status: done** (`tools/rmwork/`: `simulation` (the runner, ImGui-free), `simulate_dialog`, `simulation_view`;
+Play's `play_session` now builds every seat's agent arguments with `agent_arguments`, which both share; checks in
+`selftest_simulation`). File → Simulate Match… (Ctrl+Shift+N, rebindable as `game.simulate`; the start page's
+Simulate Match action; `rmwork --open-simulate`) runs matches between two entrants, each an agent and a deck, and
+opens the result in Replay. Nothing here plays a seat by hand, so the engine runs headless: no `--machine` stream,
+both seats in-process agents (or a teacher), and Replay needs only the decision log and the plain engine.
+
+- **The dialog** (`simulate_dialog`): per seat the agent (a model export from the policy catalog, `runs/latest`
+  first and the zipped exports, as New Game lists them; a served policy, `nn:remote:<socket>`, Settings → Models'
+  socket by default; the scripted agent, `python/teacher.py --tier hard` through `--teacher-<a|b>` at
+  `--teacher-mix 1`, on either seat or both; explore; random), a model's options (Argmax, or a sampling
+  Temperature: the `nn:` agent's `:argmax` / `:temp=`) and the deck; then best of one or three, the matches N, the
+  first seed (match i plays `--game-seed` seed + i), Alternate seats (odd matches swap the entrants' agents and
+  decks, so each entrant plays both seats on the same seeds' worth of games), auto-mana and the parallel jobs (0:
+  a quarter of the hardware threads). New Game's deck, agent-kind and model widgets are shared functions now
+  (`new_game_dialog.h`). The choices are checked as they are made (a model or a served policy needs
+  `robomage_nn`) and kept in `settings.json` (`simulate`).
+- **The runner** (`simulation`) is polled on the UI thread once a frame: at most `jobs` engines at once, each in
+  its own process group (its teachers die with it) with its output in a file; an engine that exits is judged from
+  its exit status and output: a `FATAL` line, a nonzero exit or no `GAME_RESULT` (bo1) / `MATCH_RESULT` (bo3)
+  line fails that match alone, never the batch. A model export named in a zip archive is extracted once
+  (`model_zip`). Each batch is a directory `$XDG_DATA_HOME/robomage/workbench/simulations/<timestamp>-<agent>-<deck>-vs-<agent>-<deck>/`
+  (default `~/.local/share/…`) holding `m<NNN>.rmlog`, `m<NNN>.stderr` (stdout and stderr together: with no
+  seat on a stream the engine's result lines go to stdout) and `simulation.json` (the configuration, the engine,
+  the tally, and per match its seed, which entrant sat A, state, result, games, decisions, time, log, output and
+  error; paths relative to the directory), rewritten atomically whenever a match's state changes. Cancel (the
+  status bar's, the window's) kills the running engines, removes their partial logs, keeps the finished ones and
+  marks the rest cancelled in the summary.
+- **Results.** One match opens in Replay when it ends (its failure in the error dialog). Several open the
+  **Simulations window**: a floating window rather than a docked tool, so it belongs to neither mode's layout and
+  stays over Replay while a match chosen from it is looked at. It shows the past simulations (a combo box, newest
+  first), New…, Open Folder…, Cancel while running; the entrants and settings; a progress bar; the summary (per
+  entrant the matches and games won and its share; draws, failures, cancels; with alternating seats entrant 1's
+  score and its 95% Wilson interval, a draw counting half, else the wins by seat, since a seat's advantage is then
+  in the numbers); and a row per match (seed, the entrant on each seat with the winner's in green, result, games,
+  decisions, time). A click opens a finished match in Replay, or a failed one's error and output tail in the error
+  dialog. File → Simulations shows the window, File → Recent Simulations and File → Open Simulation… (the file
+  picker on directories; a directory holding `simulation.json` picked anywhere opens as one) reopen a past one; a
+  summary written mid-batch (the workbench quit) opens with its unfinished matches cancelled. The status bar shows
+  a running batch's progress with Cancel. `rmwork --simulate SPEC` runs one at start (`--screenshot` waits for it)
+  and `--open-simulation DIR` opens one.
+
+Checked by `rmwork --selftest` (the settings' round trip and refusals; the configuration from the choices; the
+engine's arguments for swapped seats, a scripted seat, both seats scripted with one `--teacher-mix`, a model's
+file and options; matches judged from canned output: a win, a draw, a bo3 match line, a FATAL, a killed engine,
+no result; the tally and its Wilson interval; `simulation.json` read back, a mid-batch summary opening as
+cancelled, the past simulations newest first; the App: the dialog from the key, the start page and File, ready to
+run, Esc; a stand-in engine's single match failing into the error dialog, the window over it, a failed row, New…,
+Open Folder…), `--selftest-data` (explore vs random opened in Replay when it ends; the scripted agent against
+explore and against itself; three matches with alternating seats on two jobs in the window, the second match's
+log naming the decks the other way round, `simulation.json` read back equal, a row opened in Replay; every finished
+match's result what the engine's `--replay` of its log reports; a stand-in engine failing one seed with a FATAL
+line, the other matches finished, and sleeping on another: a cancel mid-batch leaving the finished logs, no
+partial log and a summary that reads back cancelled) and, opt-in, `--selftest-evals MODEL` (the reference policy
+against itself in `robomage_nn`, one seat argmax, opened in Replay; against the scripted agent with alternating
+seats on two jobs; each result the plain engine's replay's).
+
+Not done:
+- No per-game decision cap: a game that never ends holds its job until it is cancelled.
+- The window shows results per match; per-game rows of a bo3 match, Elo across several simulations and a
+  deck-by-deck matrix (the Bench Matrix of §3) are not built.
+- The summary's interval treats matches as independent draws; with alternating seats a pair of matches on
+  consecutive seeds is not paired.
+
+| Feature | Notes | Size |
+|---|---|---|
+| Simulate dialog | Two entrants (agent, model options, deck), format, matches, first seed, alternate, auto-mana, jobs; kept in `settings.json`. **Done** | S |
+| Runner | Headless engines in parallel, per-match judgement and failures, `simulation.json`, cancel. **Done** | S |
+| Results | One match in Replay; the Simulations window with the summary and the rows; past simulations reopened. **Done** | S |
+
 ## 3. Additional analysis tools that fit the framework
 
 Ordered roughly by value against effort. Each is one dockable tool.
@@ -844,6 +916,10 @@ Ordered roughly by value against effort. Each is one dockable tool.
    under each column, the filter, the run, Show all, the verdicts on synthetic manifest pairs, the checker
    over the policy catalog's fixture with a given engine manifest; the App: the tool drawn, the rows and
    their verdicts, a run listed on reopening, Serve once, Start / Stop, Play against, Settings).
+
+Also built without a mock-up: ~~**Simulate Match**~~ (§2.9): File → Simulate Match… and the start page's action open
+a dialog of two entrants (agent, model options, deck) and the batch's settings; the floating Simulations window shows a
+batch's progress, summary and matches, each opening in Replay.
 
 ### 4.2 Decisions in Play (direct manipulation on the Table)
 
@@ -1149,7 +1225,7 @@ runs/latest/
 1. Shell, theme, docking and presets (§2.1).
 2. Replay of a recorded `.rmlog` with all three viewers: Table, Players, Choices, Inspector, State Tree, Log, Value Graph from recorded evaluations (§2.2, §2.5, §2.6). Mock up §4.3's game-over screen first, since Replay needs it.
 3. Card images and printings (§2.4).
-4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time.
+4. Play against a model with F2 / F6 and stops, through the menu list first (§2.3); then the direct-manipulation decisions of §4.2, one category at a time. Then Simulate (§2.9): any agent against any agent with no human seat, built on Play's agent arguments; its matches open in Replay. **Done.**
 5. Re-evaluation and the model manager (§2.7), then Attribution (§2.8, with the Tokens tool), Policy Compare, Knowledge and Teacher Disagreement.
 6. The run tools: Episode Browser, Bench Matrix, Calibration, Training Curves.
 7. Branch Explorer, Blunder Finder, then the rest of §3.

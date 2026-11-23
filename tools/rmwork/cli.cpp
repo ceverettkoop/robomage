@@ -68,6 +68,10 @@ struct CliOptions {
         std::string sideboard_plan;
         bool open_new_game = false;
         bool game_over = false;
+        // Simulate.
+        std::string simulate;         // the --simulate spec ("" none)
+        bool open_simulate = false;   // --open-simulate
+        std::string open_simulation;  // --open-simulation's directory
         bool start_page = false;  // --start-page
         rmwork::WindowOptions window;
 };
@@ -83,6 +87,8 @@ static void show_demo_error(rmwork::App &app);
 static int parse_view(const std::string &text);
 static bool parse_zone(const std::string &text, std::pair<int, rmwork::ZoneKind> *out);
 static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, std::string *why);
+static bool parse_simulate(const std::string &spec, rmwork::SimulateSettings *g, std::string *why);
+static void open_simulate(rmwork::App &app, const CliOptions &opt);
 static std::vector<std::string> split_list(const std::string &text, char sep);
 static void open_data(rmwork::App &app, const CliOptions &opt);
 static void open_play(rmwork::App &app, const CliOptions &opt);
@@ -125,6 +131,7 @@ static void usage() {
         "              [--game-over]]\n"
         "         [--sideboard-plan SPEC]\n"
         "         [--open-new-game] [--table-hover-step N] [--engine PATH] (with --screenshot too)\n"
+        "       rmwork [--simulate SPEC] [--open-simulate] [--open-simulation DIR] [--engine PATH] (with --screenshot too)\n"
         "       rmwork [--start-page] (with --screenshot too)\n"
         "       rmwork --selftest\n"
         "       rmwork --selftest-data [--engine PATH]\n"
@@ -222,6 +229,14 @@ static void usage() {
         "                     league guide's plan) or ';'-separated +CARD (bring in) and -CARD (cut) items\n"
         "  --game-over        play the --new-game to its end with that rule: the match result screen opens\n"
         "  --open-new-game    open Game \xE2\x86\x92 New Game vs Model at start\n"
+        "  --simulate SPEC    run a simulation: the Simulate dialog's last choices changed by comma-separated items\n"
+        "                     a=KIND, b=KIND (model|server|explore|random|scripted), model-a=EXPORT, model-b=EXPORT,\n"
+        "                     server-a=SOCKET, server-b=SOCKET, deck-a=DECK, deck-b=DECK, argmax-a=on|off,\n"
+        "                     argmax-b=on|off, temp-a=T, temp-b=T, format=bo1|bo3, seed=N, matches=N,\n"
+        "                     alternate=on|off, jobs=N (0 the default), auto-mana=on|off; one match opens in Replay\n"
+        "                     when it ends, several in the Simulations window (a screenshot waits for the batch)\n"
+        "  --open-simulate    open File \xE2\x86\x92 Simulate Match at start\n"
+        "  --open-simulation DIR  open a past simulation's directory in the Simulations window\n"
         "  --start-page       show the start page at start, whatever its setting (it shows by default when no\n"
         "                     flag opens a game, replay or run or names a mode, preset, layout or tool)\n"
         "  --selftest         headless checks of the presets, modes and settings file; prints\n"
@@ -381,6 +396,12 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
             opt->game_over = true;
         } else if (a == "--open-new-game") {
             opt->open_new_game = true;
+        } else if (a == "--simulate" && has_value) {
+            opt->simulate = argv[++i];
+        } else if (a == "--open-simulate") {
+            opt->open_simulate = true;
+        } else if (a == "--open-simulation" && has_value) {
+            opt->open_simulation = argv[++i];
         } else if (a == "--start-page") {
             opt->start_page = true;
         } else if (a == "--open-settings") {
@@ -472,6 +493,15 @@ static bool parse_args(int argc, char **argv, CliOptions *opt, int *exit_code) {
         std::string why;
         if (!parse_new_game(opt->new_game, &g, &why)) {
             std::fprintf(stderr, "rmwork: --new-game: %s\n", why.c_str());
+            *exit_code = 2;
+            return false;
+        }
+    }
+    if (!opt->simulate.empty()) {
+        rmwork::SimulateSettings g;
+        std::string why;
+        if (!parse_simulate(opt->simulate, &g, &why)) {
+            std::fprintf(stderr, "rmwork: --simulate: %s\n", why.c_str());
             *exit_code = 2;
             return false;
         }
@@ -594,6 +624,62 @@ static bool parse_new_game(const std::string &spec, rmwork::NewGameSettings *g, 
     return true;
 }
 
+// "a=model,model-a=…,b=scripted,…" over `g` (the Simulate dialog's keys); false with `why`.
+static bool parse_simulate(const std::string &spec, rmwork::SimulateSettings *g, std::string *why) {
+    for (const std::string &item : split_list(spec, ',')) {
+        const size_t eq = item.find('=');
+        const std::string key = item.substr(0, eq), value = eq == std::string::npos ? "" : item.substr(eq + 1);
+        const bool on = value == "on" || value == "true" || value == "1";
+        const bool off = value == "off" || value == "false" || value == "0";
+        const bool number = !value.empty() && value.find_first_not_of("0123456789") == std::string::npos;
+        // A seat's key: "a", "model-b", …
+        const char last = key.empty() ? 0 : key.back();
+        const bool seat_key = key.size() >= 1 && (last == 'a' || last == 'b') &&
+                              (key.size() == 1 || key[key.size() - 2] == '-');
+        rmwork::SimulateSeatSettings *seat = seat_key ? &g->seats[last == 'a' ? 0 : 1] : nullptr;
+        const std::string field = seat_key ? key.substr(0, key.size() > 1 ? key.size() - 2 : 0) : key;
+        if (seat && field.empty() && rmwork::find_opponent(value) >= 0) {
+            seat->agent = value;
+        } else if (seat && field == "model" && !value.empty()) {
+            seat->model = rmwork::absolute_path(value);
+        } else if (seat && field == "server" && !value.empty()) {
+            seat->server = rmwork::absolute_path(value);
+        } else if (seat && field == "deck" && !value.empty()) {
+            seat->deck = value;
+        } else if (seat && field == "argmax" && (on || off)) {
+            seat->argmax = on;
+        } else if (seat && field == "temp" && std::atof(value.c_str()) > 0) {
+            seat->temperature = std::atof(value.c_str());
+        } else if (!seat && key == "format" && (value == "bo1" || value == "bo3")) {
+            g->bo3 = value == "bo3";
+        } else if (!seat && key == "seed" && number) {
+            g->seed = std::strtoull(value.c_str(), nullptr, 10);
+        } else if (!seat && key == "matches" && number && std::atoi(value.c_str()) >= 1) {
+            g->matches = std::atoi(value.c_str());
+        } else if (!seat && key == "jobs" && number) {
+            g->jobs = std::atoi(value.c_str());
+        } else if (!seat && key == "alternate" && (on || off)) {
+            g->alternate = on;
+        } else if (!seat && key == "auto-mana" && (on || off)) {
+            g->auto_mana = on;
+        } else {
+            *why = "bad item '" + item + "'";
+            return false;
+        }
+    }
+    return true;
+}
+
+// Simulate's flags: the dialog, a simulation started at once, a past one opened.
+static void open_simulate(rmwork::App &app, const CliOptions &opt) {
+    if (opt.open_simulate) app.open_simulate();
+    if (!opt.open_simulation.empty()) app.open_simulation(opt.open_simulation);
+    if (opt.simulate.empty()) return;
+    rmwork::SimulateSettings g = app.settings().simulate;
+    std::string why;
+    if (parse_simulate(opt.simulate, &g, &why)) app.start_simulation(g);
+}
+
 // Play's flags: the dialog, or a game started at once and answered by the seeded rule.
 static void open_play(rmwork::App &app, const CliOptions &opt) {
     if (opt.open_new_game) app.open_new_game();
@@ -659,7 +745,8 @@ static bool start_page_at_start(const CliOptions &opt, const rmwork::Settings &s
     if (opt.start_page) return true;
     const bool names = !opt.mode.empty() || !opt.preset.empty() || !opt.layout.empty() || opt.save_layout ||
                        opt.manage_layouts || !opt.focus_tools.empty() || !opt.open_log.empty() ||
-                       !opt.episodes.empty() || !opt.run_dir.empty() || !opt.new_game.empty();
+                       !opt.episodes.empty() || !opt.run_dir.empty() || !opt.new_game.empty() ||
+                       !opt.simulate.empty() || !opt.open_simulation.empty();
     return s.start_page && !names;
 }
 
@@ -689,6 +776,7 @@ static int run_app(const CliOptions &opt, const rmwork::ConfigPaths &paths, bool
     if (opt.manage_layouts) app.layout_dialogs().open_manage(app.mode());
     open_data(app, opt);
     open_play(app, opt);
+    open_simulate(app, opt);
     if (start_page_at_start(opt, app.settings())) app.show_start_page(true);
     if (!opt.layout.empty() && !app.request_named_layout(opt.layout))
         app.report_error("No such layout",

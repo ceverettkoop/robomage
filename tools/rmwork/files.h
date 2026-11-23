@@ -47,6 +47,8 @@ bool write_file_atomic(const std::string &path, const std::string &data, std::st
 std::string make_temp_dir(const char *prefix);
 // Removes `path` and everything under it.
 void remove_tree(const std::string &path);
+// "20261116-191502": the local time now, for the names of files made now.
+std::string file_timestamp();
 
 }  // namespace rmwork
 

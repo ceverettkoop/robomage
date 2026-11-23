@@ -87,6 +87,10 @@ std::string default_games_dir() {
     return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.local/share") + "/robomage/workbench/games";
 }
 
+std::string default_simulations_dir() {
+    return parent_dir(default_games_dir()) + "/simulations";
+}
+
 std::string workbench_cache_dir() {
     const char *xdg = std::getenv("XDG_CACHE_HOME");
     return (xdg && *xdg ? std::string(xdg) : home_dir() + "/.cache") + "/robomage/workbench";

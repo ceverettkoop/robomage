@@ -183,6 +183,7 @@ void App::frame() {
     poll_loader();
     poll_reevaluation();
     poll_play();
+    poll_simulation();
     run_server();
     replay_.tick(ImGui::GetTime());
     handle_keys();
@@ -212,6 +213,7 @@ void App::frame() {
         request_named_layout(show_name);
     }
     draw_play_dialogs();
+    draw_simulation();
     draw_reevaluate_dialog();
     if (error_dialog_.draw()) status("Diagnostics copied to the clipboard");
     std::string picked;
@@ -231,6 +233,7 @@ bool App::working() const {
     if (attribution_.busy() || attribution_.running() || slot_stats_.building() || attr_waiting_) return true;
     if (!attr_expand_.empty() && attribution_.base()) return true;
     if (start_shown_ && !start_page_.fresh()) return true;
+    if (simulation_.running()) return true;
     if (!play_.running()) return false;
     return !play_.view().loaded() || auto_playing() || play_.model_read().thinking() ||
            play_.model_read().state() == ModelReader::State::CONNECTING;
@@ -510,6 +513,129 @@ void App::draw_play_dialogs() {
     }
 }
 
+void App::open_simulate() {
+    simulate_dialog_.open(
+        settings_.simulate, settings_, engine_override_.empty() ? engine_binary_path(settings_) : engine_override_);
+}
+
+bool App::start_simulation(const SimulateSettings &g) {
+    settings_.simulate = g;
+    SimConfig c;
+    std::string why;
+    if (!sim_config_from(g, &c, &why)) {
+        report_error("The simulation could not start", why, "");
+        return false;
+    }
+    SimPaths p;
+    p.engine = engine_override_.empty() ? engine_binary_path(settings_) : engine_override_;
+    p.workdir = engine_workdir_path(settings_);
+    p.root = default_simulations_dir();
+    p.repo = repo_root();
+    std::string err;
+    if (!simulation_.start(c, p, &err)) {
+        report_error("The simulation could not start", err, "$ " + p.engine + "\n");
+        return false;
+    }
+    sim_single_ = c.matches == 1;
+    if (!sim_single_) sim_view_.open(p.root);
+    status("Simulating " + sim_entrant_text(c.entrants[0]) + " vs " + sim_entrant_text(c.entrants[1]) + ": " +
+           std::to_string(c.matches) + (c.matches == 1 ? " match" : " matches") + " in " + simulation_.dir());
+    return true;
+}
+
+bool App::open_simulation(const std::string &dir) {
+    std::string err;
+    if (!simulation_.open(dir, &err)) {
+        report_error("The simulation could not be opened", err, "");
+        return false;
+    }
+    sim_single_ = false;
+    sim_view_.open(default_simulations_dir());
+    add_recent(&settings_.recent, simulation_.dir());
+    status("Opened the simulation " + file_name(simulation_.dir()) + ": " + simulation_.progress_text());
+    return true;
+}
+
+void App::show_simulations() {
+    sim_view_.open(default_simulations_dir());
+}
+
+// A batch's end: one match opens in Replay (its failure in the error dialog); several say how it went.
+void App::poll_simulation() {
+    simulation_.poll();
+    if (!simulation_.take_finished()) return;
+    sim_view_.refresh();
+    const std::vector<SimMatch> &ms = simulation_.matches();
+    if (sim_single_ && ms.size() == 1) {
+        sim_single_ = false;
+        if (ms[0].state == SimState::FINISHED) {
+            open_replay(ms[0].log);
+        } else {
+            run_simulation_request({SimulationRequest::Kind::FAILURE, "", 0});
+        }
+        return;
+    }
+    const SimTally t = tally_simulation(ms);
+    status("Simulation done: " + std::to_string(t.wins[0]) + "-" + std::to_string(t.wins[1]) +
+           (t.draws ? " (" + std::to_string(t.draws) + " drawn)" : "") +
+           (t.failed ? ", " + std::to_string(t.failed) + " failed" : "") + " \xC2\xB7 " + simulation_.dir());
+}
+
+void App::draw_simulation() {
+    SimulateSettings g;
+    if (simulate_dialog_.draw(&g)) start_simulation(g);
+    run_simulation_request(sim_view_.draw(simulation_));
+}
+
+void App::run_simulation_request(const SimulationRequest &r) {
+    switch (r.kind) {
+        case SimulationRequest::Kind::NONE:
+            return;
+        case SimulationRequest::Kind::OPEN_LOG:
+            open_replay(r.path);
+            return;
+        case SimulationRequest::Kind::FAILURE: {
+            if (r.match >= simulation_.matches().size()) return;
+            const SimMatch &m = simulation_.matches()[r.match];
+            std::string cmd;
+            for (const std::string &a : simulation_.command(r.match)) cmd += (cmd.empty() ? "$ " : " ") + a;
+            report_error("Match " + std::to_string(m.index + 1) + " failed",
+                "The engine of match " + std::to_string(m.index + 1) + " (seed " + std::to_string(m.seed) +
+                    ") failed: " + m.error + ". The other matches are not affected. Its stderr is " + m.stderr_path +
+                    ".",
+                (cmd.empty() ? "" : cmd + "\n") + simulation_.stderr_tail(r.match));
+            return;
+        }
+        case SimulationRequest::Kind::NEW:
+            open_simulate();
+            return;
+        case SimulationRequest::Kind::OPEN_PAST:
+            open_simulation(r.path);
+            return;
+        case SimulationRequest::Kind::PICK:
+            open_file_picker(PICK_SIMULATION);
+            return;
+        case SimulationRequest::Kind::CANCEL:
+            simulation_.cancel();
+            status("Simulation cancelled: " + simulation_.progress_text());
+            return;
+    }
+}
+
+// File → Recent Simulations: the simulations directory's newest, read as the menu opens.
+void App::draw_recent_simulations() {
+    if (!ImGui::BeginMenu("Recent Simulations")) return;
+    if (ImGui::IsWindowAppearing()) recent_sims_ = list_simulations(default_simulations_dir(), RECENT_MAX);
+    for (size_t i = 0; i < recent_sims_.size(); ++i) {
+        ImGui::PushID(static_cast<int>(i));
+        if (ImGui::MenuItem(recent_sims_[i].label.c_str())) open_simulation(recent_sims_[i].dir);
+        ImGui::SetItemTooltip("%s", recent_sims_[i].dir.c_str());
+        ImGui::PopID();
+    }
+    if (recent_sims_.empty()) ImGui::TextDisabled("No simulations yet");
+    ImGui::EndMenu();
+}
+
 void App::open_save_picker() {
     const ReplaySession &s = session();
     const std::string log = mode() == Mode::PLAY ? play_.log_path() : s.loaded() ? s.match()->log_path : "";
@@ -583,9 +709,12 @@ void App::open_file_picker(PickPurpose purpose) {
     std::string start = settings_.recent.empty() ? std::string() : parent_dir(settings_.recent.front());
     if (replay_.loaded()) start = parent_dir(replay_.match()->log_path);
     if (purpose == PICK_RUN) start = run_dir_path(settings_);
+    if (purpose == PICK_SIMULATION) start = default_simulations_dir();
     if (start.empty() || path_kind(start) != PathKind::DIRECTORY) start = repo_root();
-    const char *titles[] = {"Open Replay", "Open Trajectory Episode", "Open Run Directory"};
-    const FileFilter filters[] = {FileFilter::DECISION_LOGS, FileFilter::EPISODES, FileFilter::DIRECTORIES};
+    const char *titles[] = {"Open Replay", "Open Trajectory Episode", "Open Run Directory", "Save Decision Log",
+        "Open Simulation"};
+    const FileFilter filters[] = {FileFilter::DECISION_LOGS, FileFilter::EPISODES, FileFilter::DIRECTORIES,
+        FileFilter::DECISION_LOGS, FileFilter::DIRECTORIES};
     picker_.open(titles[purpose], purpose, filters[purpose], start, settings_.recent);
 }
 
@@ -597,6 +726,10 @@ void App::pick_done(const std::string &path) {
         } else {
             report_error("The decision log was not saved", "It could not be copied to " + path + ".", err + "\n");
         }
+        return;
+    }
+    if (picker_.purpose() == PICK_SIMULATION || file_exists(path + "/simulation.json")) {
+        open_simulation(path);
         return;
     }
     if (path_kind(path) == PathKind::DIRECTORY) {
@@ -962,6 +1095,9 @@ void App::run_action(Action a) {
         case Action::EXPLAIN:
             explain();
             break;
+        case Action::SIMULATE:
+            open_simulate();
+            break;
     }
 }
 
@@ -1049,6 +1185,12 @@ void App::draw_file_menu() {
     if (ImGui::MenuItem("Open Replay (.rmlog)…", shortcut(Action::OPEN_REPLAY).c_str())) open_file_picker(PICK_REPLAY);
     if (ImGui::MenuItem("Open Trajectory Episode…")) open_file_picker(PICK_EPISODE);
     if (ImGui::MenuItem("Open Run Directory…", shortcut(Action::OPEN_RUN).c_str())) open_file_picker(PICK_RUN);
+    ImGui::Separator();
+    if (ImGui::MenuItem("Simulate Match\xE2\x80\xA6", shortcut(Action::SIMULATE).c_str())) open_simulate();
+    if (ImGui::MenuItem("Simulations", nullptr, sim_view_.is_open())) show_simulations();
+    if (ImGui::MenuItem("Open Simulation\xE2\x80\xA6")) open_file_picker(PICK_SIMULATION);
+    draw_recent_simulations();
+    ImGui::Separator();
     if (ImGui::BeginMenu("Open Recent", !settings_.recent.empty())) {
         for (size_t i = 0; i < settings_.recent.size(); ++i) {
             const std::string path = settings_.recent[i];
@@ -1335,6 +1477,11 @@ void App::draw_status_bar() {
             double fraction = -1;
             const std::string phase = load_phase(&fraction);
             if (draw_progress(phase, fraction, progress_end)) cancel_load();
+        } else if (simulation_.running()) {
+            ImGui::PushID("simulation");
+            if (draw_progress("Simulating: " + simulation_.progress_text(), simulation_.fraction(), progress_end))
+                simulation_.cancel();
+            ImGui::PopID();
         } else if (reeval_.running()) {
             ImGui::PushID("reeval");
             if (draw_progress(reeval_.phase(), reeval_.fraction(), progress_end)) reeval_.cancel();
@@ -1800,6 +1947,8 @@ StartContext App::start_context() {
         {StartRequest::Kind::NEW_GAME, Icon::MODE_PLAY, "New Game\xE2\x80\xA6", shortcut(Action::NEW_GAME),
             "Your deck and seat; a model export, a server's policy, the scripted agent, explore or random; bo1 or "
             "bo3."},
+        {StartRequest::Kind::SIMULATE, Icon::MODE_PLAY, "Simulate Match\xE2\x80\xA6", shortcut(Action::SIMULATE),
+            "Agents on both seats (models, a served policy, scripted, explore, random): N matches, results, Replay."},
         {StartRequest::Kind::OPEN_REPLAY, Icon::MODE_REPLAY, "Open Replay\xE2\x80\xA6", shortcut(Action::OPEN_REPLAY),
             "A decision log (.rmlog); its episodes join when they lie beside it or in the run's episodes/."},
         {StartRequest::Kind::OPEN_EPISODE, Icon::OPEN, "Open Trajectory Episode\xE2\x80\xA6", "",
@@ -1852,6 +2001,9 @@ void App::run_start_request(const StartRequest &r) {
             break;
         case StartRequest::Kind::NEW_GAME:
             open_new_game();
+            break;
+        case StartRequest::Kind::SIMULATE:
+            open_simulate();
             break;
         case StartRequest::Kind::OPEN_REPLAY:
             open_file_picker(PICK_REPLAY);

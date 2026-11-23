@@ -549,7 +549,8 @@ void SettingsDialog::draw_stops_tab(Settings *s) {
     note(
         "In Play, priority passes by itself in a step without a stop while the stack is empty; F2 and F6 pass "
         "further (§2.3). A click on a step of the Table's step bar in Play toggles the same stop, for the side "
-        "whose turn it is. A stop at combat damage covers first-strike damage too.");
+        "whose turn it is. A stop at combat damage covers first-strike damage too. The untap and cleanup steps "
+        "have none: no player gets priority in them (CR 502.4, 514.3).");
     ImGui::Spacing();
     const ImGuiTableFlags flags = ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_RowBg;
     if (ImGui::BeginTable("##stops", 1 + STOP_STEP_COUNT, flags)) {
@@ -571,7 +572,7 @@ void SettingsDialog::draw_stops_tab(Settings *s) {
     if (ImGui::Button("Default")) s->stops = def;
     ImGui::EndDisabled();
     ImGui::SameLine();
-    ImGui::TextDisabled("upkeep, main 1, declare attackers, declare blockers, end step");
+    ImGui::TextDisabled("upkeep, main 1, declare attackers, declare blockers, end step; main 2 in your turn");
 }
 
 // A row of the stops table: the turn, then a checkbox per step; true when one changed.
@@ -584,6 +585,12 @@ bool SettingsDialog::stop_row(const char *label, std::array<bool, STOP_STEP_COUN
     ImGui::PushID(label);
     for (int i = 0; i < STOP_STEP_COUNT; ++i) {
         ImGui::TableNextColumn();
+        if (!stop_settable(i)) {
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextDisabled("\xE2\x80\x94");
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", stop_step(i).no_priority);
+            continue;
+        }
         ImGui::PushID(i);
         bool on = (*row)[static_cast<size_t>(i)];
         if (ImGui::Checkbox("##stop", &on)) {

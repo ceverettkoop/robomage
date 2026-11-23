@@ -28,7 +28,6 @@ const char *const DECK_DIRS[] = {"", "league", "heldout"};
 
 static std::vector<std::string> names_in(const std::string &dir, bool dirs);
 static bool has_suffix(const std::string &s, const char *suffix);
-static uint64_t random_seed();
 
 // The entries of `dir` that are directories (`dirs`) or files, in natural order, hidden ones left out.
 static std::vector<std::string> names_in(const std::string &dir, bool dirs) {
@@ -50,13 +49,82 @@ static bool has_suffix(const std::string &s, const char *suffix) {
     return s.size() > x.size() && s.compare(s.size() - x.size(), x.size(), x) == 0;
 }
 
-// A seed from 1 to 999 999.
-static uint64_t random_seed() {
+namespace rmwork {
+
+uint64_t random_seed() {
     std::random_device rd;
     return 1 + static_cast<uint64_t>(rd()) % 999999u;
 }
 
-namespace rmwork {
+void agent_kind_combo(const char *id, std::string *key) {
+    const int current = std::max(0, find_opponent(*key));
+    ImGui::SetNextItemWidth(-1);
+    if (ImGui::BeginCombo(id, opponent_label(static_cast<Opponent>(current)))) {
+        for (int o = 0; o < OPPONENT_COUNT; ++o)
+            if (ImGui::Selectable(opponent_label(static_cast<Opponent>(o)), o == current))
+                *key = opponent_key(static_cast<Opponent>(o));
+        ImGui::EndCombo();
+    }
+}
+
+void deck_combo(const char *id, const std::vector<std::string> &decks, std::string *deck) {
+    ImGui::SetNextItemWidth(-1);
+    if (ImGui::BeginCombo(id, deck->empty() ? "(choose a deck)" : deck->c_str(), ImGuiComboFlags_HeightLarge)) {
+        std::string group = "-";
+        for (const std::string &d : decks) {
+            const size_t slash = d.find('/');
+            const std::string g = slash == std::string::npos ? "" : d.substr(0, slash);
+            if (g != group) {
+                group = g;
+                ImGui::TextDisabled("%s", g.empty() ? "decks/" : (g + "/").c_str());
+            }
+            if (ImGui::Selectable(d.c_str(), d == *deck)) *deck = d;
+            if (d == *deck && ImGui::IsWindowAppearing()) ImGui::SetScrollHereY(0.5f);
+        }
+        if (decks.empty()) ImGui::TextDisabled("No decks under the engine's resources/decks");
+        ImGui::EndCombo();
+    }
+}
+
+void model_combo(const char *id, const std::vector<ModelChoice> &models, std::string *model, float field_x) {
+    ImGui::PushID(id);
+    std::string preview = model->empty() ? "(choose a model)" : *model;
+    for (const ModelChoice &m : models)
+        if (m.path == *model) preview = m.label;
+    ImGui::SetNextItemWidth(-1);
+    if (ImGui::BeginCombo("##model", preview.c_str(), ImGuiComboFlags_HeightLarge)) {
+        for (size_t i = 0; i < models.size(); ++i) {
+            ImGui::PushID(static_cast<int>(i));
+            if (ImGui::Selectable(models[i].label.c_str(), models[i].path == *model)) *model = models[i].path;
+            ImGui::SetItemTooltip("%s", models[i].path.c_str());
+            ImGui::PopID();
+        }
+        if (models.empty())
+            ImGui::TextDisabled(
+                "No policies in Settings \xE2\x86\x92 Models, no exports under its run directory and no "
+                "zipped exports in models/");
+        ImGui::EndCombo();
+    }
+    field_label("", field_x);
+    char buf[2048];
+    std::snprintf(buf, sizeof buf, "%s", model->c_str());
+    ImGui::SetNextItemWidth(-1);
+    if (ImGui::InputTextWithHint(
+            "##model_path", "or the export's path (archive.zip!member for a zipped one)", buf, sizeof buf))
+        *model = buf;
+    ImGui::PopID();
+}
+
+std::string agent_problem(const std::string &key, const std::string &model, const std::string &server) {
+    const std::string m = resolve_path(model, ""), sock = resolve_path(server, "");
+    if (key == opponent_key(Opponent::MODEL)) {
+        if (m.empty()) return "Choose the model the agent plays.";
+        return model_problem(m);
+    }
+    if (key == opponent_key(Opponent::SERVER) && (sock.empty() || path_kind(sock) != PathKind::SOCKET))
+        return sock.empty() ? "Give the inference server's socket." : "No server at " + sock + ".";
+    return "";
+}
 
 std::vector<std::string> NewGameDialog::list_decks(const std::string &workdir) {
     std::vector<std::string> out;
@@ -90,14 +158,8 @@ std::string NewGameDialog::check(const NewGameSettings &g, const std::string &en
     if (o < 0) return "Choose an opponent.";
     if (g.deck.empty() || g.opponent_deck.empty()) return "Choose both decks.";
     const Opponent opp = static_cast<Opponent>(o);
-    const std::string model = resolve_path(g.model, ""), server = resolve_path(g.server, "");
-    if (opp == Opponent::MODEL) {
-        if (model.empty()) return "Choose the model the opponent plays.";
-        const std::string problem = model_problem(model);
-        if (!problem.empty()) return problem;
-    }
-    if (opp == Opponent::SERVER && (server.empty() || path_kind(server) != PathKind::SOCKET))
-        return server.empty() ? "Give the inference server's socket." : "No server at " + server + ".";
+    const std::string problem = agent_problem(g.opponent, g.model, g.server);
+    if (!problem.empty()) return problem;
     std::string why;
     const std::string engine = play_engine_binary(engine_configured, opp, &why);
     if (engine.empty()) return why;
@@ -117,62 +179,15 @@ void NewGameDialog::open(const NewGameSettings &from, const Settings &s, const s
     want_open_ = true;
 }
 
-void NewGameDialog::draw_deck_combo(const char *id, std::string *deck) {
-    ImGui::SetNextItemWidth(-1);
-    if (ImGui::BeginCombo(id, deck->empty() ? "(choose a deck)" : deck->c_str(), ImGuiComboFlags_HeightLarge)) {
-        std::string group = "-";
-        for (const std::string &d : decks_) {
-            const size_t slash = d.find('/');
-            const std::string g = slash == std::string::npos ? "" : d.substr(0, slash);
-            if (g != group) {
-                group = g;
-                ImGui::TextDisabled("%s", g.empty() ? "decks/" : (g + "/").c_str());
-            }
-            if (ImGui::Selectable(d.c_str(), d == *deck)) *deck = d;
-            if (d == *deck && ImGui::IsWindowAppearing()) ImGui::SetScrollHereY(0.5f);
-        }
-        if (decks_.empty()) ImGui::TextDisabled("No decks under the engine's resources/decks");
-        ImGui::EndCombo();
-    }
-}
-
 // The opponent's kind and, for a model, its export or server.
 void NewGameDialog::draw_opponent() {
     const float field_x = 16 * char_width();
-    const int current = std::max(0, find_opponent(g_.opponent));
     field_label("Opponent", field_x);
-    ImGui::SetNextItemWidth(-1);
-    if (ImGui::BeginCombo("##opponent", opponent_label(static_cast<Opponent>(current)))) {
-        for (int o = 0; o < OPPONENT_COUNT; ++o)
-            if (ImGui::Selectable(opponent_label(static_cast<Opponent>(o)), o == current))
-                g_.opponent = opponent_key(static_cast<Opponent>(o));
-        ImGui::EndCombo();
-    }
+    agent_kind_combo("##opponent", &g_.opponent);
     char buf[2048];
     if (g_.opponent == opponent_key(Opponent::MODEL)) {
         field_label("Model", field_x);
-        std::string preview = g_.model.empty() ? "(choose a model)" : g_.model;
-        for (const ModelChoice &m : models_)
-            if (m.path == g_.model) preview = m.label;
-        ImGui::SetNextItemWidth(-1);
-        if (ImGui::BeginCombo("##model", preview.c_str(), ImGuiComboFlags_HeightLarge)) {
-            for (size_t i = 0; i < models_.size(); ++i) {
-                ImGui::PushID(static_cast<int>(i));
-                if (ImGui::Selectable(models_[i].label.c_str(), models_[i].path == g_.model))
-                    g_.model = models_[i].path;
-                ImGui::SetItemTooltip("%s", models_[i].path.c_str());
-                ImGui::PopID();
-            }
-            if (models_.empty())
-                ImGui::TextDisabled(
-                    "No policies in Settings \xE2\x86\x92 Models, no exports under its run directory and no "
-                    "zipped exports in models/");
-            ImGui::EndCombo();
-        }
-        field_label("", field_x);
-        std::snprintf(buf, sizeof buf, "%s", g_.model.c_str());
-        ImGui::SetNextItemWidth(-1);
-        if (ImGui::InputTextWithHint("##model_path", "or the export's path (archive.zip!member for a zipped one)", buf, sizeof buf)) g_.model = buf;
+        model_combo("##model", models_, &g_.model, field_x);
     } else if (g_.opponent == opponent_key(Opponent::SERVER)) {
         field_label("Server socket", field_x);
         std::snprintf(buf, sizeof buf, "%s", g_.server.c_str());
@@ -200,7 +215,7 @@ bool NewGameDialog::draw(NewGameSettings *out) {
     ImGui::PushItemWidth(40 * char_width());
     ImGui::Dummy(ImVec2(56 * char_width(), 0));
     field_label("Your deck", field_x);
-    draw_deck_combo("##deck", &g_.deck);
+    deck_combo("##deck", decks_, &g_.deck);
     field_label("Your seat", field_x);
     const Segment seats[] = {
         {"Player A", false, Icon::LOGO, "Seat A (the engine's player A)"}, {"Player B", false, Icon::LOGO, "Seat B"}};
@@ -209,7 +224,7 @@ bool NewGameDialog::draw(NewGameSettings *out) {
     ImGui::Spacing();
     draw_opponent();
     field_label("Opponent's deck", field_x);
-    draw_deck_combo("##opp_deck", &g_.opponent_deck);
+    deck_combo("##opp_deck", decks_, &g_.opponent_deck);
     ImGui::Spacing();
     field_label("Format", field_x);
     const Segment formats[] = {

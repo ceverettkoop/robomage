@@ -24,6 +24,7 @@ const rmwork::ActionInfo ACTIONS[rmwork::ACTION_COUNT] = {
     {"analysis.reevaluate", "Re-evaluate the replay", ImGuiMod_Ctrl | ImGuiKey_E, rmwork::Scope::REPLAY, false},
     {"analysis.explain", "Explain the decision (Attribution)", ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_E,
         rmwork::Scope::ANY, false},
+    {"game.simulate", "Simulate Match", ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_N, rmwork::Scope::ANY, false},
 };
 
 struct ModName {
